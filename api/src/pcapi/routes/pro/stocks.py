@@ -5,18 +5,15 @@ from flask_login import login_required
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.repository import atomic
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -26,22 +23,6 @@ from . import blueprint
 
 
 logger = logging.getLogger(__name__)
-
-
-def _stock_exists(
-    stock_data: stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel,
-    existing_stocks: list[offers_models.Stock],
-) -> bool:
-    for stock in existing_stocks:
-        if (
-            (stock.id != stock_data.id if isinstance(stock_data, stock_serialize.StockEditionBodyModel) else True)
-            and stock.beginningDatetime
-            == (stock_data.beginning_datetime.replace(tzinfo=None) if stock_data.beginning_datetime else None)
-            and stock.priceCategoryId == stock_data.price_category_id
-            and (stock.price == stock_data.price if not stock.priceCategoryId else True)
-        ):
-            return True
-    return False
 
 
 def _stock_already_exists(
@@ -58,22 +39,6 @@ def _stock_already_exists(
     )
 
 
-def _get_existing_stocks_by_fields(
-    offer_id: int,
-    stock_payload: list[stock_serialize.StockCreationBodyModel | stock_serialize.StockEditionBodyModel],
-) -> list[offers_models.Stock]:
-    combinaisons_to_check = [
-        sa.and_(
-            offers_models.Stock.offerId == offer_id,
-            offers_models.Stock.isSoftDeleted == False,
-            offers_models.Stock.beginningDatetime == stock.beginning_datetime,
-            offers_models.Stock.priceCategoryId == stock.price_category_id,
-        )
-        for stock in stock_payload
-    ]
-    return db.session.query(offers_models.Stock).filter(sa.or_(*combinaisons_to_check)).all()
-
-
 def _find_offer_matching_event_stocks(
     offer_id: int,
     stocks_payload: stock_serialize.EventStocksList,
@@ -81,7 +46,7 @@ def _find_offer_matching_event_stocks(
     combinaisons_to_check = [
         sa.and_(
             offers_models.Stock.offerId == offer_id,
-            offers_models.Stock.isSoftDeleted == False,
+            offers_models.Stock.isSoftDeleted.is_(False),
             offers_models.Stock.beginningDatetime == stock.beginning_datetime,
             offers_models.Stock.priceCategoryId == stock.price_category_id,
         )
@@ -92,7 +57,7 @@ def _find_offer_matching_event_stocks(
 
 def _get_existing_stocks_by_id(
     offer_id: int,
-    stocks_payload: list[stock_serialize.StockEditionBodyModel] | list[stock_serialize.EventStockUpdateBodyModel],
+    stocks_payload: list[stock_serialize.EventStockUpdateBodyModel],
 ) -> dict[int, offers_models.Stock]:
     existing_stocks = (
         db.session.query(offers_models.Stock)
@@ -152,7 +117,7 @@ def update_thing_stock(
     return stock_serialize.StockIdResponseModel.from_orm(stock)
 
 
-@private_api.route("/stocks/bulk_create", methods=["POST"])
+@private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -223,15 +188,21 @@ def bulk_update_event_stocks(
     # Step 3 : Bulk update
     edited_stocks_count = 0
     existing_stocks = _get_existing_stocks_by_id(body.offer_id, stocks_to_edit)
+    missing_stocks_ids = {stock.id for stock in stocks_to_edit} - set(existing_stocks.keys())
+    if missing_stocks_ids:
+        raise api_errors.ApiErrors(
+            {
+                "stock_id": [
+                    "Pas de stocks avec les ids: %s" % ", ".join(str(stock_id) for stock_id in missing_stocks_ids)
+                ]
+            }
+        )
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
     stocks_with_edited_beginning_datetime = []
 
     try:
         with transaction():
             for stock in stocks_to_edit:
-                if stock.id not in existing_stocks:
-                    raise api_errors.ApiErrors({"stock_id": ["Le stock avec l'id %s n'existe pas" % stock.id]})
-
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
                     existing_stocks[stock.id],
                     quantity=stock.quantity,
@@ -256,109 +227,6 @@ def bulk_update_event_stocks(
         offers_api.handle_event_stock_beginning_datetime_update(edited_stock)
 
     return stock_serialize.StocksResponseModel(stocks_count=edited_stocks_count)
-
-
-@private_api.route("/stocks/bulk", methods=["POST"])
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    response_model=stock_serialize.StocksResponseModel,
-    api=blueprint.pro_private_schema,
-)
-def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serialize.StocksResponseModel:
-    try:
-        offerer = offerers_repository.get_by_offer_id(body.offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise api_errors.ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    offer = (
-        db.session.query(offers_models.Offer)
-        .options(
-            sa_orm.joinedload(offers_models.Offer.priceCategories),
-        )
-        .filter_by(id=body.offer_id)
-        .one()
-    )
-
-    matching_stocks = _get_existing_stocks_by_fields(body.offer_id, body.stocks)
-    stocks_to_edit = [
-        stock
-        for stock in body.stocks
-        if (isinstance(stock, stock_serialize.StockEditionBodyModel) and not _stock_exists(stock, matching_stocks))
-    ]
-    stocks_to_create = [
-        stock
-        for stock in body.stocks
-        if (isinstance(stock, stock_serialize.StockCreationBodyModel) and not _stock_exists(stock, matching_stocks))
-    ]
-
-    offers_validation.check_stocks_price(stocks_to_edit, offer)
-    offers_validation.check_stocks_price(stocks_to_create, offer)
-    offers_validation.check_stocks_count_with_previous_offer_stock(stocks_to_create, offer)
-
-    price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
-
-    upserted_stocks = []
-    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
-    try:
-        with transaction():
-            if stocks_to_edit:
-                existing_stocks = _get_existing_stocks_by_id(body.offer_id, stocks_to_edit)
-                for stock_to_edit in stocks_to_edit:
-                    if stock_to_edit.id not in existing_stocks:
-                        raise api_errors.ApiErrors(
-                            {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]},
-                        )
-
-                    offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
-
-                    edited_stock, is_beginning_updated = offers_api.edit_stock(
-                        existing_stocks[stock_to_edit.id],
-                        price=stock_to_edit.price,
-                        quantity=stock_to_edit.quantity,
-                        beginning_datetime=stock_to_edit.beginning_datetime,
-                        booking_limit_datetime=stock_to_edit.booking_limit_datetime,
-                        price_category=price_categories.get(stock_to_edit.price_category_id, None),
-                    )
-                    if edited_stock:
-                        upserted_stocks.append(edited_stock)
-                        edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
-
-            for stock_to_create in stocks_to_create:
-                offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
-
-                created_stock = offers_api.create_stock(
-                    offer,
-                    price=stock_to_create.price,
-                    activation_codes=stock_to_create.activation_codes,
-                    activation_codes_expiration_datetime=stock_to_create.activation_codes_expiration_datetime,
-                    quantity=stock_to_create.quantity,
-                    beginning_datetime=stock_to_create.beginning_datetime,
-                    booking_limit_datetime=stock_to_create.booking_limit_datetime,
-                    price_category=price_categories.get(stock_to_create.price_category_id, None),
-                )
-                upserted_stocks.append(created_stock)
-
-    except offers_exceptions.BookingLimitDatetimeTooLate:
-        raise api_errors.ApiErrors(
-            {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
-        )
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise api_errors.ApiErrors(error.errors)
-
-    try:
-        offers_api.handle_stocks_edition(edited_stocks_with_update_info)
-    except booking_exceptions.BookingIsAlreadyCancelled:
-        raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
-    except booking_exceptions.BookingIsAlreadyRefunded:
-        raise api_errors.ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})
-    except booking_exceptions.BookingHasActivationCode:
-        raise api_errors.ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
-    except booking_exceptions.BookingIsNotUsed:
-        raise api_errors.ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
-
-    return stock_serialize.StocksResponseModel(stocks_count=len(upserted_stocks))
 
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])

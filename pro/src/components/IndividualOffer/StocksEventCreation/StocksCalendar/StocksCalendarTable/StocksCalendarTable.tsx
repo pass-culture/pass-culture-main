@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-  StockEditionBodyModel,
+  EventStockCreateBodyModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -31,7 +31,7 @@ export type StocksCalendarTableProps = {
   updateCheckedStocks: (newStocks: Set<number>) => void
   departmentCode: string
   mode: OFFER_WIZARD_MODE
-  onUpdateStock: (stock: StockEditionBodyModel) => Promise<void>
+  onUpdateStock: (stock: EventStockCreateBodyModel) => Promise<void>
 }
 
 export function StocksCalendarTable({
@@ -62,7 +62,7 @@ export function StocksCalendarTable({
     updateCheckedStocks(newChecked)
   }
 
-  async function handleUpdateStock(stock: StockEditionBodyModel) {
+  async function handleUpdateStock(stock: EventStockCreateBodyModel) {
     try {
       await onUpdateStock(stock)
     } catch {

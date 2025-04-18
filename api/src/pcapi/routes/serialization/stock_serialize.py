@@ -6,14 +6,10 @@ from pydantic.v1 import Field
 from pydantic.v1 import validator
 
 from pcapi.core.offers import models
-import pcapi.core.offers.validation as offers_validation
 from pcapi.routes.serialization import BaseModel
 import pcapi.serialization.utils as serialization_utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-
-
-######################
 
 
 class ThingStockCreateBodyModel(BaseModel):
@@ -25,9 +21,13 @@ class ThingStockCreateBodyModel(BaseModel):
     booking_limit_datetime: datetime | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 
+    _validate_activation_codes_expiration_datetime = serialization_utils.validate_datetime(
+        "activation_codes_expiration_datetime"
+    )
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+
     class Config:
         alias_generator = to_camel
-        json_encoders = {datetime: format_into_utc_date}
         extra = "forbid"
 
 
@@ -36,9 +36,10 @@ class ThingStockUpdateBodyModel(BaseModel):
     booking_limit_datetime: datetime | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+
     class Config:
         alias_generator = to_camel
-        json_encoders = {datetime: format_into_utc_date}
         extra = "forbid"
 
 
@@ -48,20 +49,11 @@ class EventStockCreateBodyModel(BaseModel):
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
     booking_limit_datetime: datetime | None
 
-    @validator("beginning_datetime")
-    def format_beginning_datetime(cls, value: datetime) -> datetime:
-        return serialization_utils.as_utc_without_timezone(value)
-
-    @validator("booking_limit_datetime")
-    def format_booking_limit_datetime(cls, value: datetime | None) -> datetime | None:
-        if not value:
-            return None
-
-        return serialization_utils.as_utc_without_timezone(value)
+    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
     class Config:
         alias_generator = to_camel
-        json_encoders = {datetime: format_into_utc_date}
         extra = "forbid"
 
 
@@ -71,46 +63,6 @@ class EventStockUpdateBodyModel(EventStockCreateBodyModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-
-class StockCreationBodyModel(BaseModel):
-    activation_codes: list[str] | None
-    activation_codes_expiration_datetime: datetime | None
-    beginning_datetime: datetime | None
-    booking_limit_datetime: datetime | None
-    price: decimal.Decimal | None
-    price_category_id: int | None
-    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
-
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-    _validate_activation_codes_expiration_datetime = serialization_utils.validate_datetime(
-        "activation_codes_expiration_datetime"
-    )
-
-    class Config:
-        alias_generator = to_camel
-        json_encoders = {datetime: format_into_utc_date}
-        extra = "forbid"
-
-
-class StockEditionBodyModel(BaseModel):
-    beginning_datetime: datetime | None
-    booking_limit_datetime: datetime | None
-    id: int
-    price: decimal.Decimal | None
-    price_category_id: int | None
-    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
-
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-######################
 
 
 class StocksResponseModel(BaseModel):
@@ -136,21 +88,6 @@ class EventStocksBulkUpdateBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-
-class StocksUpsertBodyModel(BaseModel):
-    offer_id: int
-    stocks: list[StockCreationBodyModel | StockEditionBodyModel]
-
-    @validator("stocks")
-    def check_max_stocks_per_offer_limit(
-        cls, value: list[StockCreationBodyModel] | list[StockEditionBodyModel]
-    ) -> list[StockCreationBodyModel] | list[StockEditionBodyModel]:
-        offers_validation.check_stocks_count(len(value))
-        return value
-
-    class Config:
-        alias_generator = to_camel
 
 
 class StockIdResponseModel(BaseModel):

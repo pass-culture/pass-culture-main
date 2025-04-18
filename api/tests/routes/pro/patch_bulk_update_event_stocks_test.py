@@ -21,7 +21,6 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-
     def test_edit_one_stock(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.EventStockFactory(offer=offer, quantity=10)
@@ -270,7 +269,7 @@ class Returns200Test:
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.utcnow() + relativedelta(hours=4)
         date_used_in_48_hours = now + relativedelta(days=2)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
@@ -365,6 +364,7 @@ class Returns400Test:
             "offerId": ["Ce champ est obligatoire"],
             "stocks.0.id": ["Ce champ est obligatoire"],
             "stocks.0.beginningDatetime": ["Ce champ est obligatoire"],
+            "stocks.0.bookingLimitDatetime": ["The datetime must be in the future."],
             "stocks.0.priceCategoryId": ["Ce champ est obligatoire"],
             "stocks.0.quantity": ["Saisissez un nombre supérieur ou égal à 0"],
         }
@@ -415,7 +415,7 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        assert response.json == {"stock_id": [f"Le stock avec l'id {existing_stock.id} n'existe pas"]}
+        assert response.json == {"stock_id": [f"Pas de stocks avec les ids: {existing_stock.id}"]}
 
     def test_beginning_datetime_after_booking_limit_datetime(self, client):
         stock = offers_factories.EventStockFactory()
@@ -482,7 +482,7 @@ class Returns403Test:
     def when_user_has_no_rights_and_creating_stock_from_offer_id(self, client, db_session):
         users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.EventOfferFactory()
-        booking_datetime = datetime.datetime.utcnow()
+        booking_datetime = datetime.datetime.utcnow() + relativedelta(hours=4)
 
         response = client.with_session_auth("wrong@example.com").patch(
             "/stocks/bulk",

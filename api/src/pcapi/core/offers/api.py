@@ -957,8 +957,8 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
         if booking.status is bookings_models.BookingStatus.USED:
             try:
                 bookings_api.mark_as_unused(booking)
-            except booking_exceptions.BookingIsAlreadyRefunded:  # should not happen
-                logger.exception("Unexpected error when invalidating booking", extra={"bookingId": booking.id})
+            except booking_exceptions.BookingIsAlreadyRefunded:
+                pass  # should not happen (race condition)
     return bookings
 
 

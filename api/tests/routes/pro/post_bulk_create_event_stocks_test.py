@@ -46,8 +46,8 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
-        print(response.json)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
+
         assert response.status_code == 201
 
         assert response.json["stocks_count"] == len(stock_data["stocks"])
@@ -101,7 +101,7 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 201
         created_stocks = Stock.query.order_by(Stock.price).all()
         assert len(created_stocks) == 3
@@ -141,14 +141,14 @@ class Returns201Test:
                 }
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 201
         assert response.json["stocks_count"] == 0
         assert existing_stock.quantity == 10
 
     def should_not_create_duplicated_stock(self, client):
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow()
+        beginning = datetime.datetime.utcnow() + relativedelta(hours=4)
         beginning_later = beginning + relativedelta(days=10)
         price_cat_label_1 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat_label_2 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 2")
@@ -204,7 +204,7 @@ class Returns201Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
 
         assert response.status_code == 201
         assert response.json["stocks_count"] == 2
@@ -212,7 +212,6 @@ class Returns201Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.core.offers.models.Offer.MAX_STOCKS_PER_OFFER", 2)
     def test_create_event_exceed_max_stocks_count(self, mocked_async_index_offer_ids, client):
@@ -237,7 +236,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 400
         assert response.json["stocks"] == ["Le nombre maximum de stocks par offre est de 2"]
 
@@ -247,20 +246,22 @@ class Returns400Test:
 
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        bookingLimitDatetime = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
             "offerId": offer.id,
             "stocks": [
                 {
-                    "beginningDatetime": "2022-06-11T08:00:00Z",
-                    "bookingLimitDatetime": "2022-06-12T21:59:59Z",
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(bookingLimitDatetime),
                     "priceCategoryId": price_cat.id,
                     "quantity": 1000,
                 },
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
 
         assert response.status_code == 400
 
@@ -285,7 +286,7 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 400
         assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
@@ -310,7 +311,7 @@ class Returns400Test:
         }
 
         # Then
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 400
         assert response.json["priceCategoryId"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
@@ -334,7 +335,7 @@ class Returns403Test:
                 },
             ],
         }
-        response = client.with_session_auth(user.email).post("/stocks/bulk_create", json=stock_data)
+        response = client.with_session_auth(user.email).post("/stocks/bulk", json=stock_data)
 
         assert response.status_code == 403
         assert response.json == {

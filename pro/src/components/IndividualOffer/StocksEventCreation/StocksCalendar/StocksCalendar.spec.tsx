@@ -17,7 +17,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     getStocks: vi.fn(),
     deleteStocks: vi.fn(),
-    upsertStocks: vi.fn(),
+    bulkCreateEventStocks: vi.fn(),
   },
 }))
 
@@ -35,7 +35,7 @@ function renderStocksCalendar(
     hasStocks: stocks.length > 0,
   })
 
-  vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 20 })
+  vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({ stocks_count: 20 })
 
   renderWithProviders(
     <>
@@ -238,7 +238,7 @@ describe('StocksCalendar', () => {
       screen.getByRole('button', { name: 'Modifier la date' })
     )
 
-    const updateStockSpy = vi.spyOn(api, 'upsertStocks')
+    const updateStockSpy = vi.spyOn(api, 'bulkCreateEventStocks')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 

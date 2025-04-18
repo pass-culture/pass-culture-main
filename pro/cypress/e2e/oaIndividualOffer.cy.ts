@@ -10,7 +10,8 @@ describe('Create individual offers with OA', () => {
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postOffersDraft')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
-    cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
+    cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postEventStocks')
+    cy.intercept({ method: 'POST', url: '/stocks' }).as('postProductStock')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
       'getCategories'
@@ -90,7 +91,7 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
-    cy.wait(['@postStocks'])
+    cy.wait(['@postEventStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')
@@ -224,7 +225,8 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@postStocks', '@getOffer'], {
+
+    cy.wait(['@patchOffer', '@postProductStock', '@getOffer'], {
       requestTimeout: 60 * 1000 * 3,
       responseTimeout: 60 * 1000 * 3,
     })

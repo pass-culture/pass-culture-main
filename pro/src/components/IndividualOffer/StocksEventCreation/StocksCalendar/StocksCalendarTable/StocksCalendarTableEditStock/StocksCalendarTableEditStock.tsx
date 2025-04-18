@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-  StockEditionBodyModel,
+  EventStockUpdateBodyModel,
 } from 'apiClient/v1'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
@@ -37,7 +37,7 @@ export type StocksCalendarTableEditStockProps = {
   stock: GetOfferStockResponseModel
   departmentCode: string
   priceCategories: GetIndividualOfferResponseModel['priceCategories']
-  onUpdateStock: (body: StockEditionBodyModel) => void
+  onUpdateStock: (body: EventStockUpdateBodyModel) => void
 }
 
 export function StocksCalendarTableEditStock({

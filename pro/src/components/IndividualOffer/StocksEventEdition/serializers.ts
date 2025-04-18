@@ -9,7 +9,7 @@ import {
 import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
 import { StockEventFormValues } from 'components/IndividualOffer/StocksEventEdition/StockFormList/types'
 
-const serializeBookingLimitDatetime = (
+export const serializeBookingLimitDatetime = (
   beginningDate: string,
   beginningTime: string,
   bookingLimitDatetime: string,
@@ -118,7 +118,7 @@ export const serializeStockEventEdition = (
   const today = getToday()
   return formValuesList
     .filter((stockFormValues) => {
-      const beginingDatetime =
+      const beginningDatetime =
         stockFormValues.beginningDate !== '' &&
         stockFormValues.beginningTime !== ''
           ? buildDateTime(
@@ -126,7 +126,7 @@ export const serializeStockEventEdition = (
               stockFormValues.beginningTime
             )
           : null
-      return beginingDatetime === null || beginingDatetime >= today
+      return beginningDatetime === null || beginningDatetime >= today
     })
     .map((formValues: StockEventFormValues) =>
       serializeStockEvent(formValues, departementCode)
