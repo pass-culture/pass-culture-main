@@ -4,7 +4,9 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .icon-radio-group {
-  margin-bottom: rem.torem(8px);
+  &-legend {
+    margin-bottom: rem.torem(8px);
+  }
 
   &-items {
     display: flex;
@@ -36,11 +38,10 @@
   }
 }
 
-.fieldset-layout-error {
-  margin-top: rem.torem(forms.$input-space-before-error);
-  min-height: rem.torem(forms.$input-error-reserved-space);
-}
-
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.error {
+  margin-top: rem.torem(forms.$input-space-before-error);
 }

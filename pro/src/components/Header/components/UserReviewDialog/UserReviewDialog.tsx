@@ -99,6 +99,8 @@ export const UserReviewDialog = ({
     },
   ]
 
+  const iconGroupError = formik.errors.userSatisfaction
+
   return (
     <DialogBuilder
       onOpenChange={(open) => {
@@ -123,9 +125,15 @@ export const UserReviewDialog = ({
                 <ScrollToFirstErrorAfterSubmit />
                 <IconRadioGroup
                   name="userSatisfaction"
+                  error={iconGroupError}
                   legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
                   group={group}
-                  hideAsterisk
+                  required
+                  asterisk={false}
+                  value={formik.values.userSatisfaction}
+                  onChange={(e) =>
+                    formik.setValues({ ...formik.values, userSatisfaction: e })
+                  }
                 />
 
                 <TextArea
