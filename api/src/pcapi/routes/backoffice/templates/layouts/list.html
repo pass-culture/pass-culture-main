@@ -9,9 +9,11 @@
         </h1>
       </div>
     </div>
-    <div class="pc-search-block rounded p-4">
-      {% block search_block %}{% endblock %}
-    </div>
+    {% if not hide_search_block %}
+      <div class="pc-search-block rounded p-4">
+        {% block search_block %}{% endblock %}
+      </div>
+    {% endif %}
     <div class="vstack gap-4">
       {% block before_table %}{% endblock %}
       {% if rows_count %}

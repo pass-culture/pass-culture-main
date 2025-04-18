@@ -94,8 +94,8 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
 
         assert b'<i class="bi bi-cloud-download-fill"></i>' not in response.data
         assert (
-            b"""<i style="opacity: 0.5"
-                       class="bi bi-cloud-download-fill"></i>"""
+            b"""<i class="bi bi-trash"
+             style="opacity: 0.5"></i>"""
             in response.data
         )
         assert expected_action_target.encode("utf-8") not in response.data
