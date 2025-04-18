@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OpeningHoursModel } from './OpeningHoursModel';
+import type { OpeningHoursByWeekDayModel } from './OpeningHoursByWeekDayModel';
 export type UpdateEventOpeningHoursModel = {
   endDatetime?: string | null;
-  openingHours?: OpeningHoursModel | null;
+  openingHours?: OpeningHoursByWeekDayModel | null;
   startDatetime?: string | null;
 };
 
