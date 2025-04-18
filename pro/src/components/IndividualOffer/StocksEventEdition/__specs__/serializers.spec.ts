@@ -1,4 +1,4 @@
-import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
+import { EventStockUpdateBodyModel } from 'apiClient/v1'
 import { stockEventFactory } from 'commons/utils/factories/stockEventFactories'
 
 import { serializeStockEventEdition } from '../serializers'
@@ -26,50 +26,16 @@ describe('serializeStockEventEdition', () => {
         bookingLimitDatetime: '2022-10-26',
         isDeletable: true,
         readOnlyFields: [],
-        stockId: undefined,
+        stockId: 42,
       }),
     ]
     departementCode = '75'
   })
 
-  it('should serialize data for stock event creation', () => {
-    const expectedApiStockEvent: StockCreationBodyModel = {
-      beginningDatetime: '2022-10-26T13:00:00Z',
-      bookingLimitDatetime: '2022-10-26T13:00:00Z',
-      priceCategoryId: 1,
-      quantity: null,
-    }
-
-    const serializedData = serializeStockEventEdition(
-      formValuesList,
-      departementCode
-    )
-    expect(serializedData).toStrictEqual([expectedApiStockEvent])
-  })
-
-  it('should serialize data for stock event with "bookingLimitDatetime" even if not provided', () => {
-    const expectedApiStockEvent: StockCreationBodyModel = {
-      beginningDatetime: '2022-10-26T13:00:00Z',
-      bookingLimitDatetime: '2022-10-26T13:00:00Z',
-      priceCategoryId: 1,
-      quantity: null,
-    }
-
-    const serializedData = serializeStockEventEdition(
-      [
-        ...formValuesList.map((formValues: StockEventFormValues) => ({
-          ...formValues,
-          bookingLimitDatetime: '',
-        })),
-      ],
-      departementCode
-    )
-    expect(serializedData).toStrictEqual([expectedApiStockEvent])
-  })
 
   it('should serialize data for stock event edition', () => {
-    const expectedApiStockEvent: StockEditionBodyModel = {
-      id: 1,
+    const expectedApiStockEvent: EventStockUpdateBodyModel = {
+      id: 42,
       beginningDatetime: '2022-10-11T13:00:00Z',
       bookingLimitDatetime: '2022-10-10T21:59:59Z',
       priceCategoryId: 1,
@@ -80,7 +46,7 @@ describe('serializeStockEventEdition', () => {
       [
         ...formValuesList.map((formValues: StockEventFormValues) => ({
           ...formValues,
-          stockId: 1,
+          stockId: 42,
           beginningDate: '2022-10-11',
           beginningTime: '15:00',
           bookingLimitDatetime: '2022-10-10',

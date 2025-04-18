@@ -344,12 +344,12 @@ describe('onSubmit', () => {
   cases.forEach(
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
-        vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
+        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce({
           stocks_count: expectedStocks.length,
         })
         await onSubmit(formValues, '75', 66, notify)
 
-        expect(api.upsertStocks).toBeCalledWith({
+        expect(api.bulkCreateEventStocks).toBeCalledWith({
           offerId: 66,
           stocks: expectedStocks.map(
             ({
@@ -382,7 +382,7 @@ describe('onSubmit', () => {
       monthlyOption: MonthlyOption.BY_FIRST_DAY,
     }
 
-    vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({ stocks: ['Erreur'] })
+    vi.spyOn(api, 'bulkCreateEventStocks').mockRejectedValueOnce({ stocks: ['Erreur'] })
 
     const result = await onSubmit(formValues, '75', 66, notify)
 

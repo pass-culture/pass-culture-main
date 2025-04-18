@@ -9,7 +9,7 @@ export const submitToApi = async (
   departmentCode: string
 ) => {
   try {
-    await api.upsertStocks({
+    await api.bulkUpdateEventStocks({
       offerId,
       stocks: serializeStockEventEdition(allStockValues, departmentCode),
     })

@@ -75,7 +75,7 @@ export function StocksCalendarForm({
             )
           : getStocksForMultipleDays(formValues, departmentCode)
 
-      const { stocks_count } = await api.upsertStocks({
+      const { stocks_count } = await api.bulkCreateEventStocks({
         offerId: offer.id,
         stocks: stocks,
       })

@@ -4,8 +4,8 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { format } from 'date-fns'
-import { Routes, Route } from 'react-router'
+import { Routes, Route } from 'react-router-dom'
+
 
 import { api } from 'apiClient/api'
 import {
@@ -25,7 +25,6 @@ import {
   getIndividualOfferUrl,
 } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
-import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -217,11 +216,11 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
     expect(api.getStocks).not.toHaveBeenCalled()
 
-    vi.spyOn(api, 'upsertStocks')
+    vi.spyOn(api, 'bulkUpdateEventStocks')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(api.bulkUpdateEventStocks).not.toHaveBeenCalled()
   })
 
   it('should reload the page if deleting last stock of the page', async () => {
@@ -351,30 +350,6 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
-  it('should display new stocks notification when creating new stock', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
-      stocks_count: apiStocks.length,
-    })
-    await renderStockEventScreen(apiOffer, apiStocks)
-
-    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
-
-    await userEvent.type(
-      screen.getByLabelText('Date de l’évènement *'),
-      format(new Date(), FORMAT_ISO_DATE_ONLY)
-    )
-    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '14:15')
-    await userEvent.selectOptions(
-      screen.getAllByLabelText('Tarif *')[1],
-      priceCategoryId
-    )
-    await userEvent.click(screen.getByText('Valider'))
-
-    expect(
-      screen.getByText('1 nouvelle date a été ajoutée')
-    ).toBeInTheDocument()
-  })
-
   it('should not allow user to add a date for a synchronized offer', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
@@ -391,7 +366,7 @@ describe('screens:StocksEventEdition', () => {
       name: 'ciné office',
     }
     await renderStockEventScreen(apiOffer, apiStocks)
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
       stocks_count: apiStocks.length,
     })
 
@@ -403,7 +378,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(api.bulkUpdateEventStocks).toHaveBeenCalledTimes(1)
   })
 
   it('should display an error message when there is an api error', async () => {
@@ -441,7 +416,7 @@ describe('screens:StocksEventEdition', () => {
     })
 
     await renderStockEventScreen(apiOffer, [testedStock])
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
       stocks_count: 1,
     })
 
@@ -452,6 +427,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
+
     await waitFor(() => {
       expect(
         screen.getByText('This is the read only route content')
@@ -461,7 +437,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should show a warning on click on "Enregistrer les modifications" when stock has already been booked', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValueOnce({
       stocks_count: apiStocks.length,
     })
     await renderStockEventScreen(apiOffer, apiStocks)
@@ -479,7 +455,7 @@ describe('screens:StocksEventEdition', () => {
       await screen.findByText('Des réservations sont en cours pour cette offre')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Confirmer les modifications'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(api.bulkUpdateEventStocks).toHaveBeenCalledTimes(1)
   })
 
   it('should show a success notification if nothing has been touched', async () => {
@@ -526,7 +502,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should not block when going outside and form is not touched', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
       stocks_count: 0,
     })
 
@@ -538,7 +514,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
       stocks_count: 0,
     })
 
@@ -554,7 +530,7 @@ describe('screens:StocksEventEdition', () => {
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Quitter la page'))
 
-    expect(api.upsertStocks).toHaveBeenCalledTimes(0)
+    expect(api.bulkUpdateEventStocks).toHaveBeenCalledTimes(0)
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 

@@ -1,6 +1,6 @@
 import { endOfDay } from 'date-fns'
 
-import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
+import { EventStockUpdateBodyModel } from 'apiClient/v1'
 import {
   getToday,
   isDateValid,
@@ -75,12 +75,15 @@ export const serializeDateTimeToUTCFromLocalDepartment = (
 const serializeStockEvent = (
   formValues: StockEventFormValues,
   departementCode?: string | null
-): StockCreationBodyModel | StockEditionBodyModel => {
+): EventStockUpdateBodyModel => {
   if (!isDateValid(formValues.beginningDate)) {
     throw Error("La date de début d'évenement est invalide")
   }
   if (formValues.beginningTime === '') {
     throw Error("L'heure de début d'évenement est invalide")
+  }
+  if (formValues.priceCategoryId === '') {
+    throw Error("Le tarif est invalide")
   }
 
   const serializedbeginningDatetime = serializeDateTimeToUTCFromLocalDepartment(
@@ -88,7 +91,9 @@ const serializeStockEvent = (
     formValues.beginningTime,
     departementCode
   )
-  const apiStock: StockCreationBodyModel = {
+  
+  return {
+    id: formValues.stockId,
     beginningDatetime: serializedbeginningDatetime,
     bookingLimitDatetime: isDateValid(formValues.bookingLimitDatetime)
       ? serializeBookingLimitDatetime(
@@ -98,28 +103,18 @@ const serializeStockEvent = (
           departementCode
         )
       : serializedbeginningDatetime,
-    priceCategoryId:
-      formValues.priceCategoryId !== ''
-        ? parseInt(formValues.priceCategoryId)
-        : null,
+    priceCategoryId:parseInt(formValues.priceCategoryId),
     quantity:
       formValues.remainingQuantity === ''
         ? null
         : formValues.remainingQuantity + formValues.bookingsQuantity,
   }
-  if (formValues.stockId) {
-    return {
-      ...apiStock,
-      id: formValues.stockId,
-    }
-  }
-  return apiStock
 }
 
 export const serializeStockEventEdition = (
   formValuesList: StockEventFormValues[],
   departementCode?: string | null
-): StockCreationBodyModel[] | StockEditionBodyModel[] => {
+): EventStockUpdateBodyModel[] => {
   const today = getToday()
   return formValuesList
     .filter((stockFormValues) => {
