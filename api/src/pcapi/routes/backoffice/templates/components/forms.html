@@ -76,22 +76,25 @@
         <div class="input-group">
           {% for form_field in row1_fields %}{{ form_field }}{% endfor %}
         </div>
-        <div class="input-group hstack gap-2 pt-2">
-          {% for form_field in select_multiple %}<div class="col-2">{{ form_field }}</div>{% endfor %}
-        </div>
-        <div class="input-group hstack gap-2 pt-2">
-          {% for form_field in switches %}<div>{{ form_field }}</div>{% endfor %}
-        </div>
+        <div class="input-group hstack gap-1px">
+          {% for form_field in select_multiple %}
+            <div class="col-2 pt-2 {% if loop.index % 6 != 1 %}ps-2{% endif %}
+            ">{{ form_field }}</div>
+        {% endfor %}
       </div>
-      <div class="text-center d-flex justify-content-between">
-        {% if limit_fields %}{{ limit_fields[0] }}{% endif %}
-        <button type="submit"
-                class="btn py-2 px-3 btn-primary">
-          Rechercher<i class="bi bi-search ms-2"></i>
-        </button>
+      <div class="input-group pt-2">
+        {% for form_field in switches %}<div>{{ form_field }}</div>{% endfor %}
       </div>
     </div>
-  </form>
+    <div class="text-center d-flex justify-content-between">
+      {% if limit_fields %}{{ limit_fields[0] }}{% endif %}
+      <button type="submit"
+              class="btn py-2 px-3 btn-primary">
+        Rechercher<i class="bi bi-search ms-2"></i>
+      </button>
+    </div>
+  </div>
+</form>
 {% endmacro %}
 {% macro build_form_fields_group(form) %}
   <div class="form-group">
