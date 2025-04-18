@@ -432,6 +432,13 @@ class OpeningHoursModel(BaseModel):
     SATURDAY: offers_schemas.TimeSpanListType
     SUNDAY: offers_schemas.TimeSpanListType
 
+    @validator("*")
+    def validate_time_spans_dont_overlap(
+        cls, value: offers_schemas.TimeSpanListType
+    ) -> offers_schemas.TimeSpanListType:
+        offers_schemas.validate_time_spans_dont_overlap(value)
+        return value
+
 
 def _format_time(time_to_format: datetime.time) -> str:
     return time_to_format.strftime("%H:%M")
@@ -445,8 +452,8 @@ class GetEventOpeningHoursResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
         getter_dict = GetEventOpeningHoursResponseGetterDict
+        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
 
 
 class IndividualOfferResponseGetterDict(GetterDict):
@@ -517,7 +524,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
         use_enum_values = True
         getter_dict = IndividualOfferResponseGetterDict
 

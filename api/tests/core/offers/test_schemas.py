@@ -88,6 +88,10 @@ class CreateEventOpeningHoursModelTest:
                 "Time spans overlaps",
             ),
             (
+                {"WEDNESDAY": [{"open": "14:00", "close": "16:00"}, {"open": "15:00", "close": "15:30"}]},
+                "Time spans overlaps",
+            ),
+            (
                 {
                     "WEDNESDAY": [
                         {"open": "14:00", "close": "16:00"},

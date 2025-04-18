@@ -262,13 +262,13 @@ class Returns200Test:
         assert response.json["eventOpeningHours"] == {
             "id": event_opening_hours_id,
             "openingHours": {
-                "MONDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
+                "MONDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}],
                 "TUESDAY": [],
                 "WEDNESDAY": [],
                 "THURSDAY": [],
-                "FRIDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
-                "SATURDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
-                "SUNDAY": [{"open": "10:00:00", "close": "13:00:00"}, {"open": "14:00:00", "close": "19:30:00"}],
+                "FRIDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}],
+                "SATURDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}],
+                "SUNDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}],
             },
             "startDatetime": datetime.strftime(start, "%Y-%m-%dT%H:%M:%SZ"),
             "endDatetime": datetime.strftime(end, "%Y-%m-%dT%H:%M:%SZ"),
