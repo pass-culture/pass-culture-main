@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router'
 
 
 import { api } from 'apiClient/api'
@@ -433,7 +433,7 @@ describe('screens:StocksEventEdition', () => {
         screen.getByText('This is the read only route content')
       ).toBeInTheDocument()
     })
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(api.bulkUpdateEventStocks).toHaveBeenCalledTimes(1)
   })
 
   it('should show a warning on click on "Enregistrer les modifications" when stock has already been booked', async () => {

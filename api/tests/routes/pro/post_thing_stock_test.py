@@ -15,7 +15,6 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
-
     @patch("pcapi.core.search.async_index_offer_ids")
     @pytest.mark.parametrize(
         "input_json",

@@ -1,7 +1,7 @@
 import { EventStockUpdateBodyModel } from 'apiClient/v1'
 import { stockEventFactory } from 'commons/utils/factories/stockEventFactories'
 
-import { serializeStockEventEdition } from '../serializers'
+import { serializeStockEventEdition, serializeBookingLimitDatetime, buildDateTime } from '../serializers'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../StockFormList/constants'
 import { StockEventFormValues } from '../StockFormList/types'
 
@@ -57,4 +57,71 @@ describe('serializeStockEventEdition', () => {
     )
     expect(serializedData).toStrictEqual([expectedApiStockEvent])
   })
+  
+  it('should throw error', () => {
+    expect(() => serializeStockEventEdition(
+      [
+        ...formValuesList.map((formValues: StockEventFormValues) => ({
+          ...formValues,
+          priceCategoryId: '',
+        })),
+      ],
+      departementCode
+    )).toThrowError('Le tarif est invalide')
+
+    expect(() => serializeStockEventEdition(
+      [
+        ...formValuesList.map((formValues: StockEventFormValues) => ({
+          ...formValues,
+          beginningTime: '',
+        })),
+      ],
+      departementCode
+    )).toThrowError("L'heure de début d'évenement est invalide")
+
+    expect(() => serializeStockEventEdition(
+      [
+        ...formValuesList.map((formValues: StockEventFormValues) => ({
+          ...formValues,
+          beginningDate: '20',
+        })),
+      ],
+      departementCode
+    )).toThrowError("La date ou l’heure est invalide")
+
+    expect(() => serializeStockEventEdition(
+      [
+        ...formValuesList.map((formValues: StockEventFormValues) => ({
+          ...formValues,
+          beginningDate: '',
+          beginningTime: '',
+        })),
+      ],
+      departementCode
+    )).toThrowError("La date de début d'évenement est invalide")
+  })
+})
+
+describe('serializeBookingLimitDatetime', () => {
+  it('should serialize booking limit datetime when beginningDatetime and bookingLimitDatetime are on the same date', () => {
+    const serializedBookingLimitDatetime = serializeBookingLimitDatetime('2022-10-11', '13:00', '2022-10-11T14:00:00', '75')
+    expect(serializedBookingLimitDatetime).toStrictEqual('2022-10-11T11:00:00Z')
+  })
+
+  it('should serialize booking limit datetime', () => {
+    const serializedBookingLimitDatetime = serializeBookingLimitDatetime('2022-10-11', '13:00', '2022-10-13T14:00:00', '75')
+    expect(serializedBookingLimitDatetime).toStrictEqual('2022-10-13T21:59:59Z')
+  })
+})
+
+describe('buildDateTime', () => {
+  it('should raise error', () => {
+    expect(() => buildDateTime('2022-10-11','13')).toThrowError("La date ou l’heure est invalide")
+    expect(() => buildDateTime('2022-1011','13:00')).toThrowError("La date ou l’heure est invalide")
+  })
+
+  it('should build datetime', () => {
+    expect(buildDateTime('2022-10-11','13:00')).toEqual(new Date(2022, 9, 11, 13, 0))
+  })
+
 })

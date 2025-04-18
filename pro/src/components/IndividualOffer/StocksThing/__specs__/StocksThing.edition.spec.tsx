@@ -120,7 +120,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 0 })
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({ stocks_count: 0 })
   })
 
   it('should allow user to delete a stock', async () => {
@@ -152,7 +152,7 @@ describe('screens:StocksThing', () => {
     expect(
       await screen.findByText('This is the read only route content')
     ).toBeInTheDocument()
-    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(api.bulkUpdateEventStocks).not.toHaveBeenCalled()
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {

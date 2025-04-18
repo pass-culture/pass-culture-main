@@ -4,7 +4,7 @@ import useSWR, { mutate } from 'swr'
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
-  StockEditionBodyModel,
+  EventStockCreateBodyModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
 import {
@@ -98,8 +98,8 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
   }
 
-  async function updateStock(stock: StockEditionBodyModel) {
-    await api.upsertStocks({
+  async function updateStock(stock: EventStockCreateBodyModel) {
+    await api.bulkCreateEventStocks({
       offerId: offer.id,
       stocks: [stock],
     })

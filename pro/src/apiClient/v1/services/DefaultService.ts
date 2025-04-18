@@ -108,7 +108,6 @@ import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
-import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
 import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
 import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
@@ -2330,26 +2329,6 @@ export class DefaultService {
     });
   }
   /**
-   * upsert_stocks <POST>
-   * @param requestBody
-   * @returns StocksResponseModel Created
-   * @throws ApiError
-   */
-  public upsertStocks(
-    requestBody?: StocksUpsertBodyModel,
-  ): CancelablePromise<StocksResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/stocks/bulk',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * bulk_create_event_stocks <POST>
    * @param requestBody
    * @returns StocksResponseModel Created
@@ -2360,7 +2339,7 @@ export class DefaultService {
   ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/stocks/bulk_create',
+      url: '/stocks/bulk',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

@@ -93,7 +93,7 @@ describe('Edit digital individual offers', () => {
           login2 = response.body.user.email
         }
       )
-      cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
+      cy.intercept({ method: 'PATCH', url: '/stocks/bulk' }).as('patchStock')
     })
 
     it('I should be able to change offer date and it should change date in bookings', function () {
@@ -133,7 +133,7 @@ describe('Edit digital individual offers', () => {
 
       cy.stepLog({ message: 'Confirm modifications' })
       cy.findByText('Confirmer les modifications').click()
-      cy.wait('@postStocks')
+      cy.wait('@patchStock')
       cy.stepLog({ message: 'Check that booking date has been modified' })
       cy.visit('/offre/individuelle/2/reservations')
       cy.findAllByTestId('spinner').should('not.exist')
