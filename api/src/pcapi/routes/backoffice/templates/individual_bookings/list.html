@@ -200,9 +200,35 @@
               data-modal-selector="#batch-validate-booking-modal">Valider</button>
       <button disabled
               type="button"
-              class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap {% if has_permission("CREATE_INCIDENTS") %}border-end{% endif %}"
+              class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap {% if has_permission("CREATE_INCIDENTS") or has_permission("PRO_FRAUD_ACTIONS") %}border-end{% endif %}"
               data-use-confirmation-modal="true"
               data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
+    </div>
+  {% endif %}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    <div data-toggle="pc-batch-confirm-btn-group"
+         data-toggle-id="table-container-individual-booking-btn-group"
+         data-pc-table-multi-select-id="{{ table_name }}"
+         data-input-ids-name="object_ids"
+         class="d-flex">
+      <button disabled
+              type="button"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+              data-use-confirmation-modal="true"
+              data-modal-selector="#batch-tag-fraudulent-booking-modal"
+              data-mode="fetch"
+              data-fetch-url="{{ url_for('backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form') }}">
+        Marquer comme frauduleuse
+      </button>
+      <button disabled
+              type="button"
+              class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap {% if has_permission("CREATE_INCIDENTS") %}border-end{% endif %}"
+              data-use-confirmation-modal="true"
+              data-modal-selector="#batch-remove-fraudulent-booking-tag-modal"
+              data-mode="fetch"
+              data-fetch-url="{{ url_for('backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form') }}">
+        Supprimer le marquage frauduleux
+      </button>
     </div>
   {% endif %}
   {% if has_permission("CREATE_INCIDENTS") %}
@@ -231,6 +257,10 @@
 {% block after_table %}
   {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "eager") }}
   {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "eager") }}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form") , "batch-tag-fraudulent-booking-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form") , "batch-remove-fraudulent-booking-tag-modal", "eager") }}
+  {% endif %}
   {% if has_permission("CREATE_INCIDENTS") %}
     {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") , "overpayment-creation-modal", "eager") }}
     {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") , "commercial-gesture-creation-modal", "eager") }}

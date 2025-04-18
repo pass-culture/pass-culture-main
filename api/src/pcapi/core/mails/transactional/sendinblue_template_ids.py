@@ -115,6 +115,7 @@ class TransactionalEmail(Enum):
     PRO_EMAIL_CHANGE_REQUEST = models.TemplatePro(id_prod=15, id_not_prod=15, use_priority_queue=True)
     FIRST_VENUE_APPROVED_OFFER_TO_PRO = models.TemplatePro(id_prod=4, id_not_prod=4)
     FIRST_VENUE_BOOKING_TO_PRO = models.TemplatePro(id_prod=20, id_not_prod=20)
+    FRAUDULENT_BOOKING_SUSPICION = models.TemplatePro(id_prod=237, id_not_prod=64)
     INVOICE_AVAILABLE_TO_PRO = models.TemplatePro(id_prod=27, id_not_prod=27)
     NEW_BOOKING_TO_PRO = models.TemplatePro(id_prod=21, id_not_prod=21)
     NEW_OFFERER_VALIDATION = models.TemplatePro(id_prod=3, id_not_prod=3)

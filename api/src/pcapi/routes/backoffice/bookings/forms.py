@@ -278,3 +278,7 @@ class CancelIndividualBookingForm(FlaskForm):
 
 class BatchCancelIndividualBookingsForm(BatchForm, CancelIndividualBookingForm):
     pass
+
+
+class BatchTagFraudulentBookingsForms(BatchForm):
+    send_mails = fields.PCSwitchBooleanField("Envoyer un mail d'avertissement aux acteurs culturels", full_row=True)
