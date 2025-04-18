@@ -1,6 +1,7 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -9,7 +10,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import fullSmsIcon from 'icons/full-sms.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -19,13 +20,13 @@ import {
   IconRadioGroup,
   IconRadioGroupValues,
 } from 'ui-kit/form/IconRadioGroup/IconRadioGroup'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UserReviewDialog.module.scss'
 import { validationSchema } from './validationSchema'
 
-interface UserReviewDialogFormValues {
+export interface UserReviewDialogFormValues {
   userSatisfaction: string
   userComment: string
 }
@@ -62,10 +63,9 @@ export const UserReviewDialog = ({
     userComment: '',
   }
 
-  const formik = useFormik<UserReviewDialogFormValues>({
-    initialValues,
-    onSubmit: onSubmitReview,
-    validationSchema: validationSchema,
+  const form = useForm<UserReviewDialogFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
   })
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -99,14 +99,15 @@ export const UserReviewDialog = ({
     },
   ]
 
-  const iconGroupError = formik.errors.userSatisfaction
+  const iconGroupError = form.formState.errors.userSatisfaction?.message
+  const textareaError = form.formState.errors.userComment?.message
 
   return (
     <DialogBuilder
       onOpenChange={(open) => {
         if (!open) {
           setDisplayConfirmation(false)
-          formik.resetForm()
+          form.reset()
         }
       }}
       title={displayConfirmation ? undefined : 'Votre avis compte !'}
@@ -115,14 +116,17 @@ export const UserReviewDialog = ({
     >
       <div className={styles.dialog}>
         {!displayConfirmation ? (
-          <FormikProvider value={formik}>
-            <Form className={styles['dialog-form']}>
+          <FormProvider {...form}>
+            <form
+              className={styles['dialog-form']}
+              onSubmit={form.handleSubmit((values) => onSubmitReview(values))}
+            >
               <div className={styles['dialog-form-content']}>
                 <MandatoryInfo
                   areAllFieldsMandatory
                   className={styles['dialog-mandatory']}
                 />
-                <ScrollToFirstErrorAfterSubmit />
+                <ScrollToFirstHookFormErrorAfterSubmit />
                 <IconRadioGroup
                   name="userSatisfaction"
                   error={iconGroupError}
@@ -130,14 +134,14 @@ export const UserReviewDialog = ({
                   group={group}
                   required
                   asterisk={false}
-                  value={formik.values.userSatisfaction}
-                  onChange={(e) =>
-                    formik.setValues({ ...formik.values, userSatisfaction: e })
-                  }
+                  value={form.watch('userSatisfaction')}
+                  onChange={(e) => form.setValue('userSatisfaction', e)}
                 />
 
                 <TextArea
                   name="userComment"
+                  value={form.watch('userComment')}
+                  onChange={(e) => form.setValue('userComment', e.target.value)}
                   label={
                     <>
                       Pourriez-vous préciser ? Nous lisons tous les
@@ -146,7 +150,9 @@ export const UserReviewDialog = ({
                     </>
                   }
                   maxLength={500}
-                  hideAsterisk
+                  asterisk={false}
+                  required
+                  error={textareaError}
                   className={styles['text-area-container']}
                 />
               </div>
@@ -159,8 +165,8 @@ export const UserReviewDialog = ({
                   <Button type="submit">Envoyer</Button>
                 </div>
               </DialogBuilder.Footer>
-            </Form>
-          </FormikProvider>
+            </form>
+          </FormProvider>
         ) : (
           <div className={styles['confirmation-dialog']}>
             <SvgIcon
