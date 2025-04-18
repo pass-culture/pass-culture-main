@@ -1,0 +1,35 @@
+@use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+
+.wrapper {
+  position: relative;
+}
+
+.text-area {
+  @include forms.input-theme;
+
+  $padding: 16px;
+
+  display: block;
+  padding-top: rem.torem($padding);
+  padding-bottom: rem.torem($padding);
+  resize: none;
+  overflow: hidden;
+  border-radius: rem.torem(6px);
+
+  @include forms.input-theme-nested;
+
+  &.has-error {
+    @include forms.input-theme-error;
+  }
+}
+
+.template-button {
+  position: absolute;
+  bottom: rem.torem(16px);
+  left: rem.torem(16px);
+}
+
+.error {
+  margin-top: rem.torem(8px);
+}
