@@ -4,7 +4,14 @@ import { userEvent } from '@testing-library/user-event'
 import { PriceInput, PriceInputProps } from './PriceInput'
 
 const renderPriceInput = (props: Partial<PriceInputProps>) => {
-  return render(<PriceInput {...props} name="price" label="Prix" />)
+  return render(
+    <PriceInput
+      {...props}
+      name="price"
+      label="Prix"
+      updatePriceValue={() => {}}
+    />
+  )
 }
 
 const LABELS = {

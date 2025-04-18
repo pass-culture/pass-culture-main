@@ -1,9 +1,10 @@
-import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
@@ -13,20 +14,37 @@ import { isOfferAllocineSynchronized } from 'commons/core/Offers/utils/typology'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import {
+  UNIQUE_PRICE,
+  PRICE_CATEGORY_LABEL_MAX_LENGTH,
+  PRICE_CATEGORY_PRICE_MAX,
+  INITIAL_PRICE_CATEGORY,
+  PRICE_CATEGORY_MAX_LENGTH,
+} from 'components/IndividualOffer/PriceCategoriesScreen/form/constants'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import fullMoreIcon from 'icons/full-more.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
+import { PriceInput } from 'ui-kit/formV2/PriceInput/PriceInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'
 import { submitToApi } from './form/submitToApi'
 import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
-import { validationSchema } from './form/validationSchema'
-import { PriceCategoriesForm } from './PriceCategoriesForm'
+import styles from './PriceCategoriesScreen.module.scss'
 
 export interface PriceCategoriesScreenProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 const hasFieldChange = (
@@ -103,7 +121,32 @@ export const PriceCategoriesScreen = ({
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const onSubmit = async (values: PriceCategoriesFormValues) => {
+  const defaultValues = computeInitialValues(offer)
+  const hookForm = useForm({
+    defaultValues,
+    mode: 'onBlur',
+  })
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    setValue,
+    reset,
+    watch,
+    control,
+    formState: { isDirty, isSubmitting },
+  } = hookForm
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'priceCategories',
+  })
+
+  const priceCategories = watch('priceCategories')
+
+  const onSubmit = async () => {
+    const values = getValues()
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -116,7 +159,7 @@ export const PriceCategoriesScreen = ({
     })
 
     // Return when saving in edition with an empty form
-    const isFormEmpty = formik.values === formik.initialValues
+    const isFormEmpty = !arePriceCategoriesChanged(defaultValues, values)
     if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
@@ -125,7 +168,7 @@ export const PriceCategoriesScreen = ({
 
     // Show popin if necessary
     const showConfirmationModal =
-      offer.hasStocks && arePriceCategoriesChanged(formik.initialValues, values)
+      offer.hasStocks && arePriceCategoriesChanged(defaultValues, values)
     setIsConfirmationModalOpen(showConfirmationModal)
     if (!isConfirmationModalOpen && showConfirmationModal) {
       return
@@ -133,7 +176,7 @@ export const PriceCategoriesScreen = ({
 
     // Submit
     try {
-      await submitToApi(values, offer, formik.resetForm)
+      await submitToApi(values, offer, reset)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
     } catch (error) {
       if (error instanceof Error) {
@@ -149,13 +192,6 @@ export const PriceCategoriesScreen = ({
     setIsConfirmationModalOpen(false)
   }
 
-  const initialValues = computeInitialValues(offer)
-
-  const formik = useFormik<PriceCategoriesFormValues>({
-    initialValues,
-    validationSchema,
-    onSubmit,
-  })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       navigate(
@@ -178,11 +214,67 @@ export const PriceCategoriesScreen = ({
     }
   }
 
+  const [currentDeletionIndex, setCurrentDeletionIndex] = useState<
+    number | null
+  >(null)
+
+  const onDeletePriceCategory = async (
+    index: number,
+    priceCategories: PriceCategoryForm[]
+  ) => {
+    const priceCategoryId = priceCategories[index].id
+
+    if (priceCategoryId) {
+      if (currentDeletionIndex === null && offer.hasStocks) {
+        setCurrentDeletionIndex(index)
+        return
+      } else {
+        setCurrentDeletionIndex(null)
+      }
+      try {
+        await api.deletePriceCategory(offer.id, priceCategoryId)
+        remove(index)
+        notify.success('Le tarif a été supprimé.')
+      } catch {
+        notify.error(
+          'Une erreur est survenue lors de la suppression de votre tarif'
+        )
+      }
+    } else {
+      remove(index)
+    }
+
+    if (priceCategories.length === 2) {
+      setValue(`priceCategories.0.label`, UNIQUE_PRICE)
+      const otherPriceCategory = priceCategories.filter(
+        (pC) => pC.id !== priceCategoryId
+      )
+      const otherPriceCategoryId = otherPriceCategory[0]?.id
+      if (otherPriceCategoryId) {
+        const requestBody = {
+          priceCategories: [
+            {
+              label: UNIQUE_PRICE,
+              id: otherPriceCategoryId,
+            },
+          ],
+        }
+        try {
+          await api.postPriceCategories(offer.id, requestBody)
+        } catch {
+          notify.error(
+            'Une erreur est survenue lors de la mise à jour de votre tarif'
+          )
+        }
+      }
+    }
+  }
+
   return (
-    <FormikProvider value={formik}>
+    <>
       <ConfirmDialog
         onCancel={() => setIsConfirmationModalOpen(false)}
-        onConfirm={formik.submitForm}
+        onConfirm={handleSubmit(onSubmit)}
         title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
         confirmText="Confirmer la modification"
         cancelText="Annuler"
@@ -196,25 +288,143 @@ export const PriceCategoriesScreen = ({
         )}
       </ConfirmDialog>
 
-      <form onSubmit={formik.handleSubmit}>
-        <PriceCategoriesForm
-          offer={offer}
-          mode={mode}
-          isDisabled={isDisabled}
-          canBeDuo={canBeDuo}
-        />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <>
+          <FormLayout>
+            <FormLayout.MandatoryInfo areAllFieldsMandatory />
+            <FormLayout.Section title="Tarifs">
+              <ConfirmDialog
+                onCancel={() => setCurrentDeletionIndex(null)}
+                onConfirm={() => {
+                  return onDeletePriceCategory(
+                    //  TODO : restructure this composant so that this hack is not necessary
+                    //  By creating a component for each of the price category lines
+                    currentDeletionIndex!,
+                    priceCategories
+                  )
+                }}
+                title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
+                confirmText="Confirmer la supression"
+                cancelText="Annuler"
+                open={currentDeletionIndex !== null}
+              />
+              {fields.map((field, index) => (
+                <fieldset key={field.id}>
+                  <legend className={styles['visually-hidden']}>
+                    Tarif {index + 1}
+                  </legend>
+                  <FormLayout.Row
+                    inline
+                    smSpaceAfter
+                    className={styles['form-layout-row-price-category']}
+                  >
+                    <TextInput
+                      {...register(`priceCategories.${index}.label`)}
+                      name={`priceCategories.${index}.label`}
+                      label="Intitulé du tarif"
+                      description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
+                      maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
+                      count={field.price.toString().length}
+                      className={styles['label-input']}
+                      disabled={priceCategories.length <= 1 || isDisabled}
+                    />
+                    <PriceInput
+                      {...register(`priceCategories.${index}.price`)}
+                      className={styles['price-input']}
+                      name={`priceCategories.${index}.price`}
+                      label="Prix par personne"
+                      max={PRICE_CATEGORY_PRICE_MAX}
+                      rightIcon={strokeEuroIcon}
+                      disabled={isDisabled}
+                      showFreeCheckbox
+                      hideAsterisk={true}
+                      smallLabel
+                      updatePriceValue={(value) =>
+                        setValue(
+                          `priceCategories.${index}.price`,
+                          parseFloat(value)
+                        )
+                      }
+                    />
+                    {mode === OFFER_WIZARD_MODE.CREATION && (
+                      <Button
+                        className={styles['delete-icon']}
+                        iconClassName={styles['delete-icon-svg']}
+                        data-testid={'delete-button'}
+                        variant={ButtonVariant.TERNARY}
+                        icon={fullTrashIcon}
+                        iconPosition={IconPositionEnum.CENTER}
+                        disabled={priceCategories.length <= 1 || isDisabled}
+                        onClick={() =>
+                          onDeletePriceCategory(index, priceCategories)
+                        }
+                        tooltipContent={
+                          priceCategories.length > 1 && !isDisabled ? (
+                            <>Supprimer le tarif</>
+                          ) : undefined
+                        }
+                      />
+                    )}
+                  </FormLayout.Row>
+                </fieldset>
+              ))}
+
+              <Button
+                variant={ButtonVariant.TERNARY}
+                icon={fullMoreIcon}
+                onClick={() => {
+                  append(INITIAL_PRICE_CATEGORY)
+                  if (priceCategories[0].label === UNIQUE_PRICE) {
+                    setValue(`priceCategories.0.label`, '')
+                  }
+                }}
+                disabled={
+                  priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH ||
+                  isDisabled
+                }
+              >
+                Ajouter un tarif
+              </Button>
+            </FormLayout.Section>
+          </FormLayout>
+
+          {canBeDuo && (
+            <FormLayout fullWidthActions>
+              <FormLayout.Section
+                className={styles['duo-section']}
+                title="Réservations “Duo”"
+              >
+                <FormLayout.Row
+                  sideComponent={
+                    <InfoBox>
+                      Cette option permet au bénéficiaire de venir accompagné.
+                      La seconde place sera délivrée au même tarif que la
+                      première, quel que soit l’accompagnateur.
+                    </InfoBox>
+                  }
+                >
+                  <Checkbox
+                    {...register('isDuo')}
+                    label="Accepter les réservations “Duo“"
+                    name="isDuo"
+                    disabled={isDisabled}
+                    variant={CheckboxVariant.BOX}
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
+            </FormLayout>
+          )}
+        </>
 
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
-          isDisabled={formik.isSubmitting}
-          dirtyForm={formik.dirty}
+          isDisabled={isSubmitting}
+          dirtyForm={isDirty}
         />
       </form>
 
-      <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !formik.isSubmitting}
-      />
-    </FormikProvider>
+      <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
+    </>
   )
 }

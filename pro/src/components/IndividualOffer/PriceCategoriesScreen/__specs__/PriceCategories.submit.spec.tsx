@@ -1,9 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { generatePath, Route, Routes } from 'react-router-dom'
+import { generatePath } from 'react-router-dom'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
@@ -27,27 +29,27 @@ const renderPriceCategories = (
       step: OFFER_WIZARD_STEP_IDS.TARIFS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
-    { offerId: 'AA' }
+    { offerId: '12' }
   )
-) =>
-  renderWithProviders(
+) => {
+  let context = {
+    offer: props.offer,
+    categories: [],
+    subCategories: [],
+    isEvent: null,
+    setIsEvent: () => {},
+  }
+
+  return renderWithProviders(
     <>
-      <Routes>
-        {Object.values(OFFER_WIZARD_MODE).map((mode) => (
-          <Route
-            path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.TARIFS,
-              mode,
-            })}
-            element={<PriceCategoriesScreen {...props} />}
-            key={mode}
-          />
-        ))}
-      </Routes>
-      <Notification />
+      <IndividualOfferContext.Provider value={context}>
+        <PriceCategoriesScreen {...props} />
+        <Notification />
+      </IndividualOfferContext.Provider>
     </>,
     { initialRouterEntries: [url] }
   )
+}
 
 describe('PriceCategories', () => {
   beforeEach(() => {
@@ -81,16 +83,12 @@ describe('PriceCategories', () => {
   it('should display price modification modal', async () => {
     renderPriceCategories({
       offer: getIndividualOfferFactory({
+        id: 12,
         bookingsCount: 0,
         priceCategories: [priceCategoryFactory({ id: 666 })],
       }),
     })
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
-
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
