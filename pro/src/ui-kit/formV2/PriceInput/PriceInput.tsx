@@ -1,7 +1,16 @@
-import { useState, useEffect, useRef, ChangeEvent } from 'react'
+import classnames from 'classnames'
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  ForwardedRef,
+} from 'react'
 
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
+
+import styles from './PriceInput.module.scss'
 
 /**
  * Props for the PriceInput component.
@@ -22,6 +31,7 @@ export type PriceInputProps = Pick<
    */
   showFreeCheckbox?: boolean
   hideAsterisk?: boolean
+  updatePriceValue: (value: string) => void
 }
 
 /**
@@ -44,79 +54,99 @@ export type PriceInputProps = Pick<
  * @accessibility
  * - **Labels**: Always provide a meaningful label using the `label` prop.
  */
-export const PriceInput = ({
-  className,
-  name,
-  label,
-  max,
-  rightIcon,
-  disabled,
-  showFreeCheckbox,
-  hideAsterisk = false,
-}: PriceInputProps): JSX.Element => {
-  const priceRef = useRef<HTMLInputElement>(null)
+export const PriceInput = React.forwardRef(
+  (
+    {
+      className,
+      name,
+      label,
+      max,
+      rightIcon,
+      disabled,
+      smallLabel,
+      showFreeCheckbox,
+      hideAsterisk = false,
+      updatePriceValue,
+    }: PriceInputProps,
+    ref: ForwardedRef<HTMLInputElement>
+  ): JSX.Element => {
+    const priceRef = useRef<HTMLInputElement>(null)
 
-  const freeName = `${name}.free`
-  const freeRef = useRef<HTMLInputElement>(null)
+    const freeName = `${name}.free`
+    const freeRef = useRef<HTMLInputElement>(null)
 
-  const [isFree, setIsFree] = useState(priceRef.current?.value === '0')
+    const [isFree, setIsFree] = useState(false)
 
-  useEffect(() => {
-    // Move focus to the price input if free is unchecked.
-    const focusedElement = document.activeElement as HTMLElement
-    const isFreeCheckboxFocused = focusedElement === freeRef.current
-    if (!isFree && isFreeCheckboxFocused) {
-      priceRef.current?.focus()
+    useEffect(() => {
+      // Move focus to the price input if free is unchecked.
+      const focusedElement = document.activeElement as HTMLElement
+      const isFreeCheckboxFocused = focusedElement === freeRef.current
+      if (!isFree && isFreeCheckboxFocused) {
+        priceRef.current?.focus()
+      }
+    }, [isFree])
+
+    useEffect(() => {
+      if (freeRef.current && priceRef.current?.value === '0') {
+        setIsFree(true)
+      }
+    }, [priceRef.current?.value, freeRef.current?.value])
+
+    const onTextInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+      updatePriceValue(e.target.value)
+      showFreeCheckbox && setIsFree(e.target.value === '0')
     }
-  }, [isFree])
+    const onCheckboxChange = () => {
+      const nextIsFreeState = !isFree
+      setIsFree(nextIsFreeState)
 
-  const onTextInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    showFreeCheckbox && setIsFree(e.target.value === '0')
+      let nextFieldValue = ''
+      if (nextIsFreeState) {
+        // If the checkbox is going to be checked,
+        // we need to clear the quantity field as an empty
+        // string means unlimited quantity.
+        nextFieldValue = '0'
+      }
+
+      if (priceRef.current) {
+        updatePriceValue(nextFieldValue)
+        priceRef.current.value = nextFieldValue
+      }
+    }
+
+    const inputExtension = (
+      <BaseCheckbox
+        ref={freeRef}
+        label="Gratuit"
+        checked={isFree}
+        name={freeName}
+        onChange={onCheckboxChange}
+        disabled={disabled}
+      />
+    )
+
+    return (
+      <div ref={ref}>
+        <TextInput
+          ref={priceRef}
+          className={classnames(className, {
+            [styles['input-layout-small-label']]: smallLabel,
+          })}
+          required={!hideAsterisk}
+          name={name}
+          label={label}
+          type="number"
+          step="0.01"
+          min={0}
+          max={max}
+          rightIcon={rightIcon}
+          disabled={disabled}
+          asterisk={!hideAsterisk}
+          onChange={onTextInputChange}
+          {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
+        />
+      </div>
+    )
   }
-  const onCheckboxChange = () => {
-    const nextIsFreeState = !isFree
-    setIsFree(nextIsFreeState)
-
-    let nextFieldValue = ''
-    if (nextIsFreeState) {
-      // If the checkbox is going to be checked,
-      // we need to clear the quantity field as an empty
-      // string means unlimited quantity.
-      nextFieldValue = '0'
-    }
-
-    if (priceRef.current) {
-      priceRef.current.value = nextFieldValue
-    }
-  }
-
-  const inputExtension = (
-    <BaseCheckbox
-      ref={freeRef}
-      label="Gratuit"
-      checked={isFree}
-      name={freeName}
-      onChange={onCheckboxChange}
-      disabled={disabled}
-    />
-  )
-
-  return (
-    <TextInput
-      ref={priceRef}
-      className={className}
-      required={!hideAsterisk}
-      name={name}
-      label={label}
-      type="number"
-      step="0.01"
-      min={0}
-      max={max}
-      rightIcon={rightIcon}
-      disabled={disabled}
-      asterisk={!hideAsterisk}
-      onChange={onTextInputChange}
-      {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
-    />
-  )
-}
+)
+PriceInput.displayName = 'PriceInput'

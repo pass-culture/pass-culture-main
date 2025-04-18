@@ -1,51 +1,48 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { priceCategoryFormFactory } from 'commons/utils/factories/priceCategoryFactories'
+import {
+  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
+} from 'apiClient/v1'
+import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  getIndividualOfferFactory,
+  subcategoryFactory,
+  priceCategoryFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { PriceCategoriesScreen } from 'components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
 
-import {
-  FIRST_INITIAL_PRICE_CATEGORY,
-  PRICE_CATEGORY_MAX_LENGTH,
-} from '../form/constants'
-import { PriceCategoriesFormValues } from '../form/types'
-import {
-  PriceCategoriesForm,
-  PriceCategoriesFormProps,
-} from '../PriceCategoriesForm'
-
-const defaultValues: PriceCategoriesFormValues = {
-  priceCategories: [
-    priceCategoryFormFactory(),
-    priceCategoryFormFactory(),
-    priceCategoryFormFactory(),
-  ],
-  isDuo: false,
-}
+import { PRICE_CATEGORY_MAX_LENGTH } from '../form/constants'
 
 const renderPriceCategoriesForm = (
-  customValues?: Partial<PriceCategoriesFormValues>,
-  customProps?: Partial<PriceCategoriesFormProps>
+  canBeDuo = true,
+  customGetIndividualOffer?: Partial<GetIndividualOfferWithAddressResponseModel>
 ) => {
-  const values = { ...defaultValues, ...customValues }
+  const offer = getIndividualOfferFactory({
+    id: 42,
+    hasStocks: false,
+    priceCategories: [
+      priceCategoryFactory(),
+      priceCategoryFactory(),
+      priceCategoryFactory(),
+    ],
+    ...customGetIndividualOffer,
+  })
+  let context = {
+    offer,
+    categories: [],
+    subCategories: [subcategoryFactory({ id: offer.subcategoryId, canBeDuo })],
+    isEvent: null,
+    setIsEvent: () => {},
+  }
   return renderWithProviders(
-    <Formik initialValues={values} onSubmit={vi.fn()}>
-      <PriceCategoriesForm
-        offer={getIndividualOfferFactory({
-          id: 42,
-          hasStocks: false,
-          priceCategories: [],
-        })}
-        mode={OFFER_WIZARD_MODE.CREATION}
-        isDisabled={false}
-        {...customProps}
-      />
-    </Formik>
+    <IndividualOfferContext.Provider value={context}>
+      <PriceCategoriesScreen offer={offer} />
+    </IndividualOfferContext.Provider>,
+    { initialRouterEntries: ['/creation'] }
   )
 }
 
@@ -58,40 +55,40 @@ describe('PriceCategories', () => {
   })
 
   it('should render without error', () => {
-    renderPriceCategoriesForm(undefined, { canBeDuo: true })
+    renderPriceCategoriesForm()
 
     expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(3)
     expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
   it('should not suggest duo choice when offer cannot be duo', () => {
-    renderPriceCategoriesForm(undefined, { canBeDuo: false })
+    renderPriceCategoriesForm(false)
 
     expect(screen.queryByText('Réservations “Duo”')).not.toBeInTheDocument()
   })
 
   it('should set tarif to 0 when clicking on free checkbox and vice versa', async () => {
-    const values: PriceCategoriesFormValues = {
+    const values = {
       priceCategories: [
-        priceCategoryFormFactory(),
-        priceCategoryFormFactory({ price: 0 }),
-        priceCategoryFormFactory(),
+        priceCategoryFactory(),
+        priceCategoryFactory(),
+        priceCategoryFactory({ price: 0 }),
       ],
       isDuo: false,
     }
 
-    renderPriceCategoriesForm(values)
+    renderPriceCategoriesForm(true, values)
 
     const freeCheckboxes = screen.getAllByLabelText('Gratuit')
 
     // I check initial values
     expect(freeCheckboxes[0]).not.toBeChecked()
-    expect(freeCheckboxes[1]).toBeChecked()
-    expect(freeCheckboxes[2]).not.toBeChecked()
+    expect(freeCheckboxes[1]).not.toBeChecked()
+    expect(freeCheckboxes[2]).toBeChecked()
 
     // I checked all checkboxes are checked
     await userEvent.click(freeCheckboxes[0])
-    await userEvent.click(freeCheckboxes[2])
+    await userEvent.click(freeCheckboxes[1])
 
     expect(freeCheckboxes[0]).toBeChecked()
     expect(freeCheckboxes[1]).toBeChecked()
@@ -105,7 +102,7 @@ describe('PriceCategories', () => {
     // I set prices checkboxes are unchecked
     await userEvent.type(tarifFields[0], '20')
     await userEvent.type(tarifFields[1], '21')
-    await userEvent.type(tarifFields[2], '0.1')
+    await userEvent.type(tarifFields[2], '0,1')
 
     expect(freeCheckboxes[0]).not.toBeChecked()
     expect(freeCheckboxes[1]).not.toBeChecked()
@@ -113,7 +110,9 @@ describe('PriceCategories', () => {
   })
 
   it('should not let add more than 20 price categories', async () => {
-    renderPriceCategoriesForm({ priceCategories: [priceCategoryFormFactory()] })
+    renderPriceCategoriesForm(false, {
+      priceCategories: [priceCategoryFactory()],
+    })
 
     for (let i = 0; i < PRICE_CATEGORY_MAX_LENGTH - 1; i++) {
       await userEvent.click(screen.getByText('Ajouter un tarif'))
@@ -128,7 +127,18 @@ describe('PriceCategories', () => {
   it('should remove price categories on trash button click', async () => {
     vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
 
-    renderPriceCategoriesForm()
+    renderPriceCategoriesForm(false, {
+      priceCategories: [],
+    })
+
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '66.7')
+    await userEvent.click(screen.getByText('Ajouter un tarif'))
+
+    await userEvent.type(
+      screen.getAllByLabelText('Prix par personne')[1],
+      '666.7'
+    )
+    await userEvent.click(screen.getByText('Ajouter un tarif'))
 
     expect(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
@@ -146,15 +156,19 @@ describe('PriceCategories', () => {
 
   it('should remove price categories on trash button click and rename last one', async () => {
     vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
-    const values: PriceCategoriesFormValues = {
+    const values = {
       priceCategories: [
-        priceCategoryFormFactory({ id: 66 }),
-        priceCategoryFormFactory({ id: 2 }),
+        priceCategoryFactory({ id: 66 }),
+        priceCategoryFactory({ id: 2 }),
       ],
       isDuo: true,
     }
 
-    renderPriceCategoriesForm(values, { canBeDuo: true })
+    renderPriceCategoriesForm(true, values)
+
+    expect(
+      screen.getByLabelText('Accepter les réservations “Duo“')
+    ).toBeChecked()
     await userEvent.click(
       screen.getByLabelText('Accepter les réservations “Duo“')
     )
@@ -176,17 +190,17 @@ describe('PriceCategories', () => {
 
   it('should display delete banner when stock is linked and delete right line', async () => {
     vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
-    const values: PriceCategoriesFormValues = {
+    const values = {
       priceCategories: [
-        priceCategoryFormFactory({ id: 2 }),
-        priceCategoryFormFactory({ id: 144 }),
+        priceCategoryFactory({ id: 2 }),
+        priceCategoryFactory({ id: 144 }),
       ],
       isDuo: false,
+      id: 42,
+      hasStocks: true,
     }
 
-    renderPriceCategoriesForm(values, {
-      offer: getIndividualOfferFactory({ id: 42, hasStocks: true }),
-    })
+    renderPriceCategoriesForm(false, values)
 
     // I can cancel
     await userEvent.click(
@@ -210,17 +224,17 @@ describe('PriceCategories', () => {
 
   it('should be able to delete the first price category when it has stocks', async () => {
     vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
-    const values: PriceCategoriesFormValues = {
+    const values = {
       priceCategories: [
-        priceCategoryFormFactory({ id: 2 }),
-        priceCategoryFormFactory({ id: 144 }),
+        priceCategoryFactory({ id: 2 }),
+        priceCategoryFactory({ id: 144 }),
       ],
       isDuo: false,
+      id: 42,
+      hasStocks: true,
     }
 
-    renderPriceCategoriesForm(values, {
-      offer: getIndividualOfferFactory({ id: 42, hasStocks: true }),
-    })
+    renderPriceCategoriesForm(true, values)
 
     // I can cancel
     await userEvent.click(
@@ -237,8 +251,8 @@ describe('PriceCategories', () => {
   })
 
   it('should handle unique line label cases', async () => {
-    renderPriceCategoriesForm({
-      priceCategories: [FIRST_INITIAL_PRICE_CATEGORY],
+    renderPriceCategoriesForm(true, {
+      priceCategories: [],
     })
 
     // one price category line : label is default and field is disable
