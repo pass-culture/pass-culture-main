@@ -121,11 +121,13 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "address": {
                 "city": offerer_address.address.city,
+                "inseeCode": offerer_address.address.inseeCode,
                 "label": oa_label,
                 "latitude": offerer_address.address.latitude,
                 "longitude": offerer_address.address.longitude,
                 "postalCode": offerer_address.address.postalCode,
                 "street": offerer_address.address.street,
+                "banId": offerer_address.address.banId,
             },
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)

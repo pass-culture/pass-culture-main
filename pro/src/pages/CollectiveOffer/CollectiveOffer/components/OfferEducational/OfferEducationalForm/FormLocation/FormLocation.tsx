@@ -65,6 +65,7 @@ export const FormLocation = ({
         setFieldValue('latitude', address?.latitude),
         setFieldValue('postalCode', address?.postalCode),
         setFieldValue('street', address?.street),
+        setFieldValue('location.address.inseeCode', address?.inseeCode),
         setFieldValue('location.address.label', address?.label),
         setFieldValue('location.address.isVenueAddress', true),
         setFieldValue('location.address.isManualEdition', false),

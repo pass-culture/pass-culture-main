@@ -186,6 +186,7 @@ export function homePageLoaded() {
  * interceptSearch5Adresses()
  * ...
  * cy.wait('@search5Address')
+ * FIXME 22/04/25 bdalbianco: change this and constants.ts to reproduce proper api address call 
  */
 export function interceptSearch5Adresses() {
   cy.intercept(

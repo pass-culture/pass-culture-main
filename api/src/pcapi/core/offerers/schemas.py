@@ -94,6 +94,11 @@ class VenueCity(RequiredStrippedString):
     max_length = 200
 
 
+class VenueInseeCode(RequiredStrippedString):
+    min_length = 4
+    max_length = 6
+
+
 class VenuePostalCode(RequiredStrippedString):
     min_length = 4
     max_length = 6
@@ -121,6 +126,7 @@ class AddressBodyModel(BaseModel):
     isManualEdition: bool = False
     banId: str | None
     city: VenueCity
+    inseeCode: VenueInseeCode | None
     label: str | None
     latitude: float | str
     longitude: float | str

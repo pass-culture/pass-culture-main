@@ -39,6 +39,7 @@ class EditAccountForm(utils.PCForm):
         "Adresse",
         street="street",
         ban_id="ban_id",
+        insee_code="insee_code",
         city="city",
         postal_code="postal_code",
         latitude=None,

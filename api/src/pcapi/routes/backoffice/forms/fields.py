@@ -154,13 +154,6 @@ class PCPostalCodeHiddenField(PCOptHiddenField):
     ]
 
 
-class PCBanIdHiddenField(PCHiddenField):
-    validators = [
-        validators.Optional(""),
-        validators.Length(max=20, message="doit contenir au maximum %(max)d caractères"),
-    ]
-
-
 class PCOptPostalCodeHiddenField(PCOptHiddenField):
     validators = [
         validators.Optional(""),
@@ -449,6 +442,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
         *,
         street: str | None,
         ban_id: str | None,
+        insee_code: str | None,
         city: str | None,
         postal_code: str | None,
         latitude: str | None,
@@ -463,6 +457,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
         super().__init__(label, **kwargs)
         self.street = street
         self.ban_id = ban_id
+        self.insee_code = insee_code
         self.city = city
         self.postal_code = postal_code
         self.latitude = latitude

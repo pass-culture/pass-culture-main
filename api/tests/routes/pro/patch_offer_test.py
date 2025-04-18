@@ -84,6 +84,7 @@ class Returns200Test:
                 "postalCode": "37700",
                 "street": "20 Rue des Grands Mortiers",
                 "banId": "37233_0531_00020",
+                "inseeCode": "37233",
                 "label": "",
                 "isManualEdition": False,
                 "isVenueAddress": False,
@@ -474,6 +475,8 @@ class Returns200Test:
                 "latitude": 48.8566,
                 "longitude": 2.3522,
                 "label": label,
+                "inseeCode": "75102",
+                "banId": "75102_7560_00001",
             },
         }
         get_address_mock.return_value = api_adresse.AddressInfo(

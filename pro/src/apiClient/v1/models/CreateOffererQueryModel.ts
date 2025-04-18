@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type CreateOffererQueryModel = {
   city: string;
+  inseeCode?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   name: string;

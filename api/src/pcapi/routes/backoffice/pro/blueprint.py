@@ -223,6 +223,7 @@ def create_offerer() -> utils.BackofficeResponse:
         name=form.public_name.data,
         street=address.street,  # [ND]
         postalCode=postal_code,
+        inseeCode=city_info.citycode,
         city=address.city,
         latitude=city_info.latitude,
         longitude=city_info.longitude,
@@ -247,6 +248,7 @@ def create_offerer() -> utils.BackofficeResponse:
         street=offerers_schemas.VenueAddress(address.street),
         city=offerers_schemas.VenueCity(address.city),
         postalCode=offerers_schemas.VenuePostalCode(postal_code),
+        inseeCode=offerers_schemas.VenueInseeCode(city_info.citycode),
         latitude=city_info.latitude,
         longitude=city_info.longitude,
         banId=city_info.id,

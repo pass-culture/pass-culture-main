@@ -108,6 +108,7 @@ def _create_pro_user(row: dict) -> User:
         longitude=gps[1],
         name=f"{(row['Type'] or 'test').split(':')[-1].capitalize()} {row['Prénom']} {row['Nom']}",
         postalCode="75001",
+        inseeCode="75101",
         siren=siret[:9],
         street="1 place de la Concorde",
         phoneNumber=None,
@@ -143,6 +144,7 @@ def _create_pro_user(row: dict) -> User:
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
         postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postalCode),
+        inseeCode=offerers_schemas.VenueInseeCode("75101"),
         latitude=gps[0],
         longitude=gps[1],
         banId=offerers_schemas.VenueBanId("75101_2259_00001"),  # 1 place de la Concorde

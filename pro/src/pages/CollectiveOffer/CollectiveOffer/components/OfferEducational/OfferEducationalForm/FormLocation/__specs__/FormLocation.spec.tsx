@@ -22,6 +22,7 @@ const mockAdressData = [
     longitude: -11.1,
     label: '10 Rue des lilas 69002 Lyon',
     postalCode: '69002',
+    inseeCode: '69102',
   },
 ]
 

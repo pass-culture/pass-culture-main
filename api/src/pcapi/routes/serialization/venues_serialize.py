@@ -290,6 +290,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     longitude: float | str | None
     bookingEmail: offerers_schemas.VenueBookingEmail | None
     postalCode: offerers_schemas.VenuePostalCode | None
+    inseeCode: str | None
     city: offerers_schemas.VenueCity | None
     publicName: offerers_schemas.VenuePublicName | None
     comment: offerers_schemas.VenueComment | None

@@ -5,6 +5,7 @@
 export type AddressBodyModel = {
   banId?: string | null;
   city: string;
+  inseeCode?: string | null;
   isManualEdition?: boolean;
   isVenueAddress?: boolean;
   label?: string | null;

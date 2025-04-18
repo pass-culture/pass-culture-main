@@ -137,6 +137,7 @@ def update_venue(
             for field in (
                 "street",
                 "city",
+                "inseeCode",
                 "postalCode",
                 "latitude",
                 "longitude",
@@ -158,6 +159,7 @@ def update_venue(
                 is_manual_edition=is_manual_edition,
             )
         elif is_manual_edition_updated:
+            # PC-35419 TODO refacto cette logique bdalbianco 30/04/2025
             duplicate_oa(
                 venue=venue,
                 old_oa=old_oa,
@@ -222,7 +224,6 @@ def update_venue(
             setattr(venue, key, value)
     elif venue_snapshot.is_empty:
         return venue
-
     venue_snapshot.add_action()
 
     # keep commit with repository.save() as long as venue is validated in pcapi.validation.models.venue
@@ -287,6 +288,7 @@ def update_venue_location(
     # When street is cleared from the BO, location_modifications contains: {'street': None}
     street = location_modifications.get("street", venue.offererAddress.address.street)
     city = location_modifications.get("city", venue.offererAddress.address.city)
+    insee_code = location_modifications.get("inseeCode", venue.offererAddress.address.inseeCode)
     postal_code = location_modifications.get("postalCode", venue.offererAddress.address.postalCode)
     latitude = location_modifications.get("latitude", venue.offererAddress.address.latitude)
     longitude = location_modifications.get("longitude", venue.offererAddress.address.longitude)
@@ -296,35 +298,21 @@ def update_venue_location(
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
     )
 
-    if not is_manual_edition:
-        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)
-        location_data = LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
-        )
-    else:
-        insee_code = None
-        if city and postal_code:
-            # Address entered manually does not provide INSEE code, find it
-            try:
-                insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
-            except api_adresse.AdresseException:
-                pass
-
-        location_data = LocationData(
-            city=typing.cast(str, city),
-            postal_code=typing.cast(str, postal_code),
-            latitude=typing.cast(float, latitude),
-            longitude=typing.cast(float, longitude),
-            street=street,
-            ban_id=ban_id,
-            insee_code=insee_code,
-        )
+    if is_manual_edition:
+        ban_id = None
+        try:
+            insee_code = api_adresse.get_municipality_centroid(city=city, postcode=postal_code).citycode
+        except api_adresse.NoResultException:
+            insee_code = None
+    location_data = LocationData(
+        city=typing.cast(str, city),
+        postal_code=typing.cast(str, postal_code),
+        latitude=typing.cast(float, latitude),
+        longitude=typing.cast(float, longitude),
+        street=street,
+        ban_id=ban_id,
+        insee_code=insee_code,
+    )
 
     address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
     snapshot_location_data = {
@@ -363,6 +351,8 @@ def update_venue_location(
         modifications["city"] = address.city
     if modifications.get("postalCode"):
         modifications["postalCode"] = address.postalCode
+    if modifications.get("inseeCode"):
+        modifications["inseeCode"] = address.inseeCode
     if modifications.get("latitude"):
         modifications["latitude"] = address.latitude
     if modifications.get("longitude"):
@@ -2250,6 +2240,7 @@ def create_from_onboarding_data(
         longitude=float(onboarding_data.address.longitude),
         name=name,
         postalCode=onboarding_data.address.postalCode,
+        inseeCode=onboarding_data.address.inseeCode,
         siren=onboarding_data.siret[:9],
         phoneNumber=onboarding_data.phoneNumber,
     )
@@ -3131,39 +3122,24 @@ def duplicate_oa(
 
 
 def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
-    if address.isManualEdition:
-        try:
-            address_info = api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode)
-            location_data = LocationData(
-                city=address.city,
-                postal_code=address.postalCode,
-                latitude=float(address.latitude),
-                longitude=float(address.longitude),
-                street=address.street,
-                insee_code=address_info.citycode,
-                ban_id=None,
-            )
-        except api_adresse.NoResultException:
-            location_data = LocationData(
-                city=address.city,
-                postal_code=address.postalCode,
-                latitude=float(address.latitude),
-                longitude=float(address.longitude),
-                street=address.street,
-                insee_code=None,
-                ban_id=None,
-            )
-    else:
-        address_info = api_adresse.get_address(address=address.street, postcode=address.postalCode, city=address.city)
-        location_data = LocationData(
-            city=address_info.city,
-            postal_code=address_info.postcode,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            street=address_info.street,
-            insee_code=address_info.citycode,
-            ban_id=address_info.id,
+    try:
+        insee_code = (
+            address.inseeCode
+            if not address.isManualEdition
+            else api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode).citycode
         )
+    except api_adresse.NoResultException:
+        insee_code = None
+    _ban_id = address.banId if not address.isManualEdition else None
+    location_data = LocationData(
+        city=address.city,
+        postal_code=address.postalCode,
+        latitude=float(address.latitude),
+        longitude=float(address.longitude),
+        street=address.street,
+        insee_code=insee_code,
+        ban_id=_ban_id,
+    )
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
 
 

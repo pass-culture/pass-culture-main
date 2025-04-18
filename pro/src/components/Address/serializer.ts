@@ -15,6 +15,7 @@ export const serializeAdressData = (
       longitude: data.longitude,
       address: data.address,
       city: data.city,
+      inseeCode: data.inseeCode,
     },
   }))
 }
