@@ -28,10 +28,12 @@ from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
 from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.mails.transactional.pro.fraudulent_booking_suspicion import send_fraudulent_booking_suspicion_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
@@ -576,3 +578,115 @@ def _build_booking_error_str(tokens: list[str], message: str) -> str:
         ),
         tokens=", ".join(tokens),
     )
+
+
+@individual_bookings_blueprint.route("/batch-tag-fraudulent-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
+    form = booking_forms.BatchTagFraudulentBookingsForms()
+    if form.object_ids.data:
+        tags_count = (
+            db.session.query(bookings_models.FraudulentBookingTag)
+            .filter(
+                bookings_models.FraudulentBookingTag.bookingId.in_(form.object_ids_list),
+            )
+            .count()
+        )
+
+        if tags_count == len(form.object_ids_list):
+            mark_transaction_as_invalid()
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=["Toutes les réservations sélectionnées sont déjà frauduleuses."],
+            )
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.individual_bookings.batch_tag_fraudulent_bookings"),
+        div_id="batch-tag-fraudulent-booking-modal",
+        title="Voulez-vous vraiment marquer ces réservations comme frauduleuses ?",
+        button_text="Marquer ces réservations comme frauduleuses",
+    )
+
+
+@individual_bookings_blueprint.route("/batch-tag-fraudulent", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
+    form = booking_forms.BatchTagFraudulentBookingsForms()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_individual_booking_action()
+
+    bookings = (
+        db.session.query(bookings_models.Booking)
+        .options(
+            sa_orm.joinedload(bookings_models.Booking.stock)
+            .load_only()
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.bookingEmail),
+            sa_orm.joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.bookingEmail),
+        )
+        .filter(
+            bookings_models.Booking.id.in_(form.object_ids_list), bookings_models.Booking.fraudulentBookingTag == None
+        )
+    )
+    tokens_by_email = defaultdict(list)
+    for booking in bookings:
+        fraudulent_booking_tag = bookings_models.FraudulentBookingTag(booking=booking, author=current_user)
+        if booking_email := booking.stock.offer.bookingEmail or booking.venue.bookingEmail:
+            tokens_by_email[booking_email].append(booking.token)
+        db.session.add(fraudulent_booking_tag)
+
+    if form.send_mails.data:
+        for pro_email in tokens_by_email:
+            send_fraudulent_booking_suspicion_email(pro_email, tokens_by_email[pro_email])
+    db.session.flush()
+
+    return _redirect_after_individual_booking_action()
+
+
+@individual_bookings_blueprint.route("/batch-remove-fraudulent-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if form.object_ids.data:
+        tags_count = (
+            db.session.query(bookings_models.FraudulentBookingTag)
+            .filter(
+                bookings_models.FraudulentBookingTag.bookingId.in_(form.object_ids_list),
+            )
+            .count()
+        )
+
+        if tags_count == 0:
+            mark_transaction_as_invalid()
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=["Aucune réservation sélectionnée n'a de marquage frauduleux."],
+            )
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag"),
+        div_id="batch-remove-fraudulent-booking-tag-modal",
+        title="Voulez-vous vraiment ne plus marquer ces réservations comme frauduleuses ?",
+        button_text="Supprimer le tag frauduleux de ces réservations",
+    )
+
+
+@individual_bookings_blueprint.route("/batch-remove-fraudulent", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_remove_fraudulent_booking_tag() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_individual_booking_action()
+
+    db.session.query(bookings_models.FraudulentBookingTag).filter(
+        bookings_models.FraudulentBookingTag.bookingId.in_(form.object_ids_list)
+    ).delete(synchronize_session=False)
+    db.session.flush()
+
+    return _redirect_after_individual_booking_action()

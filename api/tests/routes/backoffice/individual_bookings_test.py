@@ -192,8 +192,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Fraude"] == "Frauduleuse"
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-        assert f"Date de marquage frauduleux : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
-        assert f"Auteur du tag frauduleux : {fraudulent_booking_tag.author.full_name}" in extra_data
+        assert f"Date et auteur du marquage frauduleux : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
+        assert f"par {fraudulent_booking_tag.author.full_name}" in extra_data
 
     def test_list_bookings_by_list_of_tokens(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):
@@ -1296,6 +1296,166 @@ class BatchCancelIndividualBookingsTest(PostEndpointHelper):
         assert "Certaines réservations n'ont pas pu être annulées et ont été ignorées :" in alerts[1]
         assert f"- 1 réservation déjà remboursée ({already_reimbursed_booking.token})" in alerts[1]
         assert f"- 1 réservation déjà annulée ({already_cancelled_booking.token})" in alerts[1]
+
+
+class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_get_batch_tag_fraudulent_bookings_form(self, legit_user, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{booking.id}"},
+        )
+
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous vraiment marquer ces réservations comme frauduleuses ?" in response_text
+
+    def test_get_batch_tag_fraudulent_bookings_form_with_no_valid_booking(self, legit_user, authenticated_client):
+        booking = bookings_factories.FraudulentBookingTagFactory().booking
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{booking.id}"},
+        )
+
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Toutes les réservations sélectionnées sont déjà frauduleuses." in response_text
+
+
+class BatchTagFraudulentBookingsTest(PostEndpointHelper):
+    endpoint = "backoffice_web.individual_bookings.batch_tag_fraudulent_bookings"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_batch_tag_fraudulent_bookings_without_email(self, legit_user, authenticated_client):
+        bookings = bookings_factories.BookingFactory.create_batch(3)
+        bookings.append(
+            bookings_factories.FraudulentBookingTagFactory(
+                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4)
+            ).booking
+        )
+        bookings.append(
+            bookings_factories.FraudulentBookingTagFactory(
+                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4)
+            ).booking
+        )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids, "send_mails": False})
+
+        assert response.status_code == 303
+        all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
+        assert len(all_tags) == 5
+        just_created_tags = (
+            db.session.query(bookings_models.FraudulentBookingTag)
+            .filter(
+                bookings_models.FraudulentBookingTag.dateCreated
+                > datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            )
+            .all()
+        )
+        assert len(just_created_tags) == 3
+        assert len(mails_testing.outbox) == 0
+
+    def test_batch_tag_fraudulent_bookings_with_email(self, legit_user, authenticated_client):
+        booking_with_email = bookings_factories.BookingFactory(stock__offer__bookingEmail="email1@example.com")
+        booking_with_venue_email = bookings_factories.BookingFactory(
+            stock__offer__venue__bookingEmail="email1@example.com"
+        )
+        booking_with_other_email = bookings_factories.BookingFactory(stock__offer__bookingEmail="email2@example.com")
+        already_fraudulent_booking_with_other_email = bookings_factories.FraudulentBookingTagFactory(
+            booking__stock__offer__bookingEmail="email2@example.com",
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        ).booking
+        already_fraudulent_booking_with_different_email = bookings_factories.FraudulentBookingTagFactory(
+            booking__stock__offer__bookingEmail="email3@example.com",
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        ).booking
+        parameter_ids = f"{booking_with_email.id},{booking_with_venue_email.id},{booking_with_other_email.id},{already_fraudulent_booking_with_other_email.id},{already_fraudulent_booking_with_different_email.id}"
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids, "send_mails": True})
+
+        assert response.status_code == 303
+        all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
+        assert len(all_tags) == 5
+        just_created_tags = (
+            db.session.query(bookings_models.FraudulentBookingTag)
+            .filter(
+                bookings_models.FraudulentBookingTag.dateCreated
+                > datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            )
+            .all()
+        )
+        assert len(just_created_tags) == 3
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == "email1@example.com"
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.FRAUDULENT_BOOKING_SUSPICION.value
+        )
+        assert set(mails_testing.outbox[0]["params"]["TOKEN_LIST"].split(", ")) == {
+            booking_with_email.token,
+            booking_with_venue_email.token,
+        }
+        assert mails_testing.outbox[1]["To"] == "email2@example.com"
+        assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
+            TransactionalEmail.FRAUDULENT_BOOKING_SUSPICION.value
+        )
+        assert set(mails_testing.outbox[1]["params"]["TOKEN_LIST"].split(", ")) == {booking_with_other_email.token}
+
+
+class GetBatchRemoveFraudulentBookingTagFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_get_batch_remove_fraudulent_booking_tag_form(self, legit_user, authenticated_client):
+        booking = bookings_factories.FraudulentBookingTagFactory().booking
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{booking.id}"},
+        )
+
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous vraiment ne plus marquer ces réservations comme frauduleuses ?" in response_text
+
+    def test_get_batch_remove_fraudulent_booking_tag_form_with_no_valid_booking(self, legit_user, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": f"{booking.id}"},
+        )
+
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Aucune réservation sélectionnée n'a de marquage frauduleux." in response_text
+
+
+class BatchRemoveFraudulentBookingTagTest(PostEndpointHelper):
+    endpoint = "backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_batch_remove_fraudulent_booking_tag(self, legit_user, authenticated_client):
+        bookings_factories.BookingFactory()
+        bookings = {
+            bookings_factories.FraudulentBookingTagFactory().booking,
+            bookings_factories.FraudulentBookingTagFactory().booking,
+        }
+        unrelated_tag = bookings_factories.FraudulentBookingTagFactory()
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+        )
+
+        assert response.status_code == 303
+        all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
+        assert len(all_tags) == 1
+        assert all_tags[0].bookingId == unrelated_tag.bookingId
 
 
 class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):

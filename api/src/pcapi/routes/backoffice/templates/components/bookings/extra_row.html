@@ -54,12 +54,8 @@
               {% endif %}
               {% if booking.fraudulentBookingTag and has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
                 <li>
-                  Date de marquage frauduleux :
-                  {{ booking.fraudulentBookingTag.dateCreated | format_date_time }}
-                </li>
-                <li>
-                  Auteur du tag frauduleux :
-                  {{ booking.fraudulentBookingTag.author.full_name }}
+                  Date et auteur du marquage frauduleux :
+                  {{ booking.fraudulentBookingTag.dateCreated | format_date_time }} par {{ booking.fraudulentBookingTag.author.full_name }}
                 </li>
               {% endif %}
             </ul>
