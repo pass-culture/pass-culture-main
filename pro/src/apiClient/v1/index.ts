@@ -192,6 +192,7 @@ export type { OffererStatsResponseModel } from './models/OffererStatsResponseMod
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
+export type { OpeningHoursByWeekDayModel } from './models/OpeningHoursByWeekDayModel';
 export type { OpeningHoursModel } from './models/OpeningHoursModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';

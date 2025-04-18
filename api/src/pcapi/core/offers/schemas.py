@@ -64,7 +64,7 @@ def _convert_to_numeric_ranges(time_spans: list[TimeSpan]) -> list[NumericRange]
     return []
 
 
-class OpeningHoursModel(BaseModel):
+class OpeningHoursByWeekDayModel(BaseModel):
     MONDAY: TimeSpanListType
     TUESDAY: TimeSpanListType
     WEDNESDAY: TimeSpanListType
@@ -88,7 +88,7 @@ class OpeningHoursModel(BaseModel):
 class CreateEventOpeningHoursModel(BaseModel):
     startDatetime: datetime.datetime
     endDatetime: datetime.datetime | None
-    openingHours: OpeningHoursModel
+    openingHours: OpeningHoursByWeekDayModel
 
     _validate_startDatetime = serialization_utils.validate_datetime("startDatetime")
     _validate_endDatetime = serialization_utils.validate_datetime("endDatetime")
@@ -120,7 +120,7 @@ class CreateEventOpeningHoursModel(BaseModel):
 class UpdateEventOpeningHoursModel(CreateEventOpeningHoursModel):
     startDatetime: datetime.datetime | None  # type: ignore[assignment]
     endDatetime: datetime.datetime | None
-    openingHours: OpeningHoursModel | None  # type: ignore[assignment]
+    openingHours: OpeningHoursByWeekDayModel | None  # type: ignore[assignment]
 
 
 class PostDraftOfferBodyModel(BaseModel):
