@@ -1,9 +1,8 @@
-import { useField } from 'formik'
 import { useId } from 'react'
 
-import { IconRadio } from 'ui-kit/form/IconRadioGroup/IconRadio/IconRadio'
+import { IconRadio } from 'ui-kit/formV2/IconRadio/IconRadio'
 
-import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
+import { FieldError } from '../shared/FieldError/FieldError'
 
 import styles from './IconRadioGroup.module.scss'
 
@@ -13,9 +12,9 @@ export type IconRadioGroupValues = {
   value: string
 }
 
-interface IconRadioGroupProps {
+export interface IconRadioGroupProps {
   name: string
-  legend?: string
+  legend: string
   /**
    * ```
    * {
@@ -26,23 +25,28 @@ interface IconRadioGroupProps {
    * ```
    */
   group: IconRadioGroupValues[]
-  children?: React.ReactNode
   isOptional?: boolean
-  hideAsterisk?: boolean
+  asterisk?: boolean
+  error?: string
+  required?: boolean
+  value: string
+  onChange: (value: string) => void
 }
 
 export const IconRadioGroup = ({
   group,
   name,
   legend,
-  isOptional = false,
-  hideAsterisk,
+  required = false,
+  asterisk = true,
+  error,
+  value,
+  onChange,
 }: IconRadioGroupProps): JSX.Element => {
-  const [, meta] = useField({ name })
-
   const scaleId = useId()
+  const errorId = useId()
 
-  const hasError = meta.touched && !!meta.error
+  const hasError = Boolean(error)
   const scale =
     group.length > 0 ? [group[0].label, group[group.length - 1].label] : []
 
@@ -50,16 +54,15 @@ export const IconRadioGroup = ({
 
   return (
     <>
-      <FieldSetLayout
+      <fieldset
         className={styles['icon-radio-group']}
-        error={hasError ? meta.error : undefined}
-        legend={legend}
         name={`icon-radio-group-${name}`}
-        hideFooter
-        isOptional={isOptional}
-        hideAsterisk={hideAsterisk}
-        ariaDescribedBy={displayScale ? scaleId : undefined}
+        aria-describedby={`${hasError ? errorId : ''} ${scaleId}`}
       >
+        <legend className={styles['icon-radio-group-legend']}>
+          {legend}
+          {required && asterisk && ' *'}
+        </legend>
         {displayScale && (
           <p className={styles['visually-hidden']} id={scaleId}>
             L’échelle de sélection va de {scale[0]} à {scale[1]}
@@ -74,9 +77,11 @@ export const IconRadioGroup = ({
                 key={item.label}
                 icon={item.icon}
                 label={item.label}
-                value={item.value}
+                checked={item.value === value}
                 hasError={hasError}
-                {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
+                onChange={() => {
+                  onChange(item.value)
+                }}
               />
             ))}
           </div>
@@ -90,8 +95,15 @@ export const IconRadioGroup = ({
               ))}
             </div>
           )}
+          <div role="alert" id={errorId}>
+            {error && (
+              <FieldError name={name} className={styles['error']}>
+                {error}
+              </FieldError>
+            )}
+          </div>
         </div>
-      </FieldSetLayout>
+      </fieldset>
     </>
   )
 }
