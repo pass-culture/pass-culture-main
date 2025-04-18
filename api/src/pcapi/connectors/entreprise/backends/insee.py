@@ -202,20 +202,23 @@ class InseeBackend(BaseBackend):
 
     def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
         results = []
-        offset: int = 0
-        total: int = 1
-        while offset < total:
+        cursor = "*"
+        while True:
             subpath = (
                 f"/siren?q=dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
                 "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)"
                 "&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale"
-                f"&debut={offset}&nombre=1000"
+                f"&curseur={cursor}&nombre=1000"
             )
             data = self._cached_get(subpath)
-            offset += data["header"]["nombre"]
-            total = data["header"]["total"]
             for item in data["unitesLegales"]:
                 closure_date = self._get_closure_date_from_siren_data(item)
                 if closure_date is not None:
                     results.append(item["siren"])
+            if (
+                data["header"]["nombre"] == data["header"]["total"]
+                or data["header"]["curseurSuivant"] == data["header"]["curseur"]
+            ):
+                break
+            cursor = data["header"]["curseurSuivant"]
         return results
