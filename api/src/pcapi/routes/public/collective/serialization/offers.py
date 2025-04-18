@@ -545,3 +545,17 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class ArchiveCollectiveOfferBodyModel(BaseModel):
+    ids: list[int] = fields.COLLECTIVE_OFFER_IDS
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+    @validator("ids")
+    def validate_ids(cls, ids: list[int]) -> list[int]:
+        if len(ids) == 0:
+            raise ValueError("ids must have at least one value")
+        return ids

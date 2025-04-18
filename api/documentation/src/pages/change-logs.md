@@ -13,6 +13,10 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+## May 2025
+
+- A new endpoint has been added to archive collective offers : [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers). See the following for details on the different collective offer statuses [**here**](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).
+
 ## February 2025
 
 - You can specify a `publicationDate` precise to the quarter of hour using the [**Create Product Offer endpoint**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Create Event Offer endpoint**](/rest-api#tag/Event-Offers/operation/PostEventOffer).

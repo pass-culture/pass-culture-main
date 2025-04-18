@@ -458,6 +458,11 @@ class PublishedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         CollectiveStockFactory.create(startDatetime=future, collectiveOffer=self)
 
 
+class ArchivedPublishedCollectiveOfferFactory(PublishedCollectiveOfferFactory):
+    isActive = False
+    dateArchived = factory.LazyFunction(datetime.datetime.utcnow)
+
+
 class HiddenCollectiveOfferFactory(CollectiveOfferBaseFactory):
     isActive = False
 

@@ -127,7 +127,9 @@ Meaning: if a school project is booked for a 30 students class, there will be on
 
 Also, the validation process is not the same as individual offers since these offers are meant to be a part of a larger school/teaching project.
 
-## Collective offer status and allowed actions (⚠️ upcoming changes)
+## Collective offer status and allowed actions
+
+### ⚠️ Upcoming changes
 
 A collective offer can have different statuses, depending on the event dates and the related booking status. You can check the current possible status values in the [Get Collective Offer endpoint response schema](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic).
 
@@ -167,3 +169,9 @@ Here are the allowed actions depending on the offer status:
 |**REIMBURSED**   | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 |**CANCELLED**    | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 |**ARCHIVED**     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+
+### Current state of developments
+
+Those limitations are currently enforced **only** on the following endpoints :
+
+* [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers)

@@ -58,12 +58,29 @@ STATUSES_NOT_ALLOWING_CREATE_BOOKABLE_OFFER = (
 STATUSES_ALLOWING_ARCHIVE_OFFER = (
     models.CollectiveOfferDisplayedStatus.DRAFT,
     models.CollectiveOfferDisplayedStatus.PUBLISHED,
-    models.CollectiveOfferDisplayedStatus.HIDDEN,
     models.CollectiveOfferDisplayedStatus.REJECTED,
-    models.CollectiveOfferDisplayedStatus.ENDED,
+    models.CollectiveOfferDisplayedStatus.EXPIRED,
+    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+    models.CollectiveOfferDisplayedStatus.CANCELLED,
 )
 
 STATUSES_NOT_ALLOWING_ARCHIVE_OFFER = (
+    models.CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+    models.CollectiveOfferDisplayedStatus.PREBOOKED,
+    models.CollectiveOfferDisplayedStatus.BOOKED,
+    models.CollectiveOfferDisplayedStatus.ENDED,
+    models.CollectiveOfferDisplayedStatus.ARCHIVED,
+)
+
+STATUSES_ALLOWING_ARCHIVE_OFFER_TEMPLATE = (
+    models.CollectiveOfferDisplayedStatus.DRAFT,
+    models.CollectiveOfferDisplayedStatus.PUBLISHED,
+    models.CollectiveOfferDisplayedStatus.REJECTED,
+    models.CollectiveOfferDisplayedStatus.HIDDEN,
+    models.CollectiveOfferDisplayedStatus.ENDED,
+)
+
+STATUSES_NOT_ALLOWING_ARCHIVE_OFFER_TEMPLATE = (
     models.CollectiveOfferDisplayedStatus.UNDER_REVIEW,
     models.CollectiveOfferDisplayedStatus.ARCHIVED,
 )

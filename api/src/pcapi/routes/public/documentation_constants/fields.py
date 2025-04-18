@@ -228,6 +228,7 @@ class _FIELDS:
 
     # Collective offer fields
     COLLECTIVE_OFFER_ID = Field(description="Collective offer id", example=12345)
+    COLLECTIVE_OFFER_IDS = Field(description="List of collective offer ids", example=[12345, 67890])
     COLLECTIVE_OFFER_STATUS = Field(
         description=descriptions.COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE"
     )

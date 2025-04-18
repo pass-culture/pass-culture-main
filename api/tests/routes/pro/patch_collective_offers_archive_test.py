@@ -2,23 +2,10 @@ import pytest
 
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
+from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
-
-
-STATUSES_NOT_ALLOWING_ARCHIVE = (
-    models.CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-    models.CollectiveOfferDisplayedStatus.PREBOOKED,
-    models.CollectiveOfferDisplayedStatus.BOOKED,
-    models.CollectiveOfferDisplayedStatus.ENDED,
-    models.CollectiveOfferDisplayedStatus.ARCHIVED,
-)
-
-STATUSES_ALLOWING_ARCHIVE = tuple(
-    set(models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_NOT_ALLOWING_ARCHIVE, models.CollectiveOfferDisplayedStatus.HIDDEN}
-)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -59,7 +46,7 @@ class Returns204Test:
         assert not other_offer.isArchived
         assert other_offer.isActive
 
-    @pytest.mark.parametrize("status", STATUSES_ALLOWING_ARCHIVE)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_ARCHIVE_OFFER)
     def test_archive_offer_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
         venue = offer.venue
@@ -78,7 +65,7 @@ class Returns204Test:
         assert offer.isArchived
         assert not offer.isActive
 
-    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_ARCHIVE)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_ARCHIVE_OFFER)
     def test_archive_offer_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
         venue = offer.venue
