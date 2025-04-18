@@ -48,13 +48,9 @@ def _convert_to_numeric_ranges(time_spans: list[TimeSpan]) -> list[NumericRange]
         return [NumericRange(time_to_int(open_value), time_to_int(close), "[]")]
 
     if len(time_spans) == 2:
-        open1 = time_to_int(time_spans[0].open)
-        close1 = time_to_int(time_spans[0].close)
-        open2 = time_to_int(time_spans[1].open)
-        close2 = time_to_int(time_spans[1].close)
-
-        if (open2 <= open1 <= close2) or (open2 <= close1 <= close2):
-            raise ValueError("Time spans overlaps")
+        validate_time_spans_dont_overlap(time_spans)
+        open1, close1 = _get_open_and_close_time_as_int(time_spans[0])
+        open2, close2 = _get_open_and_close_time_as_int(time_spans[1])
 
         return [
             NumericRange(open1, close1, "[]"),
@@ -62,6 +58,48 @@ def _convert_to_numeric_ranges(time_spans: list[TimeSpan]) -> list[NumericRange]
         ]
 
     return []
+
+
+def validate_time_spans_dont_overlap(time_spans: list[TimeSpan]) -> None:
+    if len(time_spans) != 2:
+        return
+
+    sorted_time_spans = sorted(time_spans, key=lambda ts: ts.open)
+    open1, close1 = _get_open_and_close_time_as_int(sorted_time_spans[0])
+    open2, close2 = _get_open_and_close_time_as_int(sorted_time_spans[1])
+
+    if open1 > close1 or open2 > close2:
+        raise ValueError("`open` should be before `close`")
+
+    # Because we sorted the timespans by `open` time, we can assume 3 possibilities:
+    # Case ok: first time span is before second time span
+    # open 1 --- close 1 --- open 2 --- close 2
+    # ^             ^             ^             ^
+    # |             |             |             |
+    # -------------                -------------
+    # Equality is weird but technically ok
+
+    # Case not ok: second time span starts before first time span ends
+    #              -- open 2 is before close 1
+    # open 1 --- open 2 --- close 1 --- close 2
+    # ^             ^             ^             ^
+    # |             |             |             |
+    #  -------------|-------------             |
+    #                ---------------------------
+    # Case not ok: second time span is inside first time span
+    # open 1 --- open 2 --- close 2 --- close 1
+    # ^             ^             ^             ^
+    # |             |             |             |
+    # |              -------------              |
+    #  -----------------------------------------
+
+    # We can sum that up in this deceptively simple condition:
+    if open2 < close1:
+        raise ValueError("Time spans overlaps")
+
+
+def _get_open_and_close_time_as_int(time_span: TimeSpan) -> tuple[int, int]:
+    return time_to_int(time_span.open), time_to_int(time_span.close)
 
 
 class OpeningHoursByWeekDayModel(BaseModel):
