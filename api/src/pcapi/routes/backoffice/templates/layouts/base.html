@@ -11,7 +11,9 @@
     <meta name="csrf-token"
           content="{{ csrf_token.current_token }}">
     <title>
-      {% if self.title and self.title() %}
+      {% if page_title %}
+        {{ page_title }} - Backoffice
+      {% elif self.title and self.title() %}
         {{ self.title() }} - Backoffice
       {% else %}
         Backoffice
