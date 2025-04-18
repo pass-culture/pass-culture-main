@@ -84,6 +84,7 @@ class Returns200Test:
                 "postalCode": "37700",
                 "street": "20 Rue des Grands Mortiers",
                 "banId": "37233_0531_00020",
+                "inseeCode": "37233",
                 "label": "",
                 "isManualEdition": False,
                 "isVenueAddress": False,
@@ -153,7 +154,6 @@ class Returns200Test:
                 street=None,
             ),
         ):
-
             # User of offerer 2 create the exact same address but manually. Maybe the BAN API is down, maybe is though the
             # address wasn't knwon. Anyway this can happen and it should be handled.
             response = client_session.patch(f"/offers/{offer.id}", json=data)
@@ -475,6 +475,8 @@ class Returns200Test:
                 "latitude": 48.8566,
                 "longitude": 2.3522,
                 "label": label,
+                "inseeCode": "75102",
+                "banId": "75102_7560_00001",
             },
         }
         get_address_mock.return_value = api_adresse.AddressInfo(

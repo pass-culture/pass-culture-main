@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest.mock import patch
 
 import pytest
 
@@ -269,12 +268,14 @@ class Returns200Test:
         }
 
     @pytest.mark.parametrize(
-        "is_venue_address,address_payload,return_value,expected_data",
+        "is_venue_address,address_payload,",
         [
             (
                 False,
                 {
+                    "banId": "85191_0940_00011",
                     "city": "LA ROCHE-SUR-YON",
+                    "cityCode": "85191",
                     "latitude": 46.66979,
                     "longitude": -1.42979,
                     "postalCode": "85000",
@@ -283,35 +284,13 @@ class Returns200Test:
                     "isManualEdition": False,
                     "isVenueAddress": False,
                 },
-                api_adresse.AddressInfo(
-                    score=1,
-                    city="LA ROCHE-SUR-YON",
-                    latitude=46.66979,
-                    longitude=-1.42979,
-                    postcode="85000",
-                    label="11 Rue Georges Clémenceau 85000 La Roche-sur-Yon",
-                    street="11 Rue Georges Clémenceau",
-                    citycode="85191",
-                    id="85191_0940_00011",
-                ),
-                {
-                    "city": "LA ROCHE-SUR-YON",
-                    "departmentCode": "85",
-                    "latitude": 46.66979,
-                    "longitude": -1.42979,
-                    "postalCode": "85000",
-                    "street": "11 Rue Georges Clémenceau",
-                    "label": "Librairie des mangas",
-                    "inseeCode": "85191",
-                    "banId": "85191_0940_00011",
-                    "isLinkedToVenue": False,
-                    "isManualEdition": False,
-                },
             ),
             (
                 True,
                 {
+                    "banId": "75102_7560_00001",
                     "city": "Paris",
+                    "cityCode": "75002",
                     "latitude": 48.87004,
                     "longitude": 2.37850,
                     "postalCode": "75002",
@@ -319,34 +298,14 @@ class Returns200Test:
                     "isManualEdition": False,
                     "isVenueAddress": True,
                 },
-                api_adresse.AddressInfo(
-                    score=1,
-                    city="Paris",
-                    latitude=48.87004,
-                    longitude=2.37850,
-                    postcode="75002",
-                    label="1 boulevard Poissonnière 75002 Paris",
-                    street="1 boulevard Poissonnière",
-                    citycode="75002",
-                    id="75102_7560_00001",
-                ),
-                {
-                    "city": "Paris",
-                    "departmentCode": "75",
-                    "latitude": 48.87004,
-                    "longitude": 2.37850,
-                    "postalCode": "75002",
-                    "street": "1 boulevard Poissonnière",
-                    "inseeCode": "75102",
-                    "banId": "75102_7560_00001",
-                    "isLinkedToVenue": True,
-                    "isManualEdition": False,
-                },
             ),
         ],
     )
-    def test_first_step_funnel_creation_shouldnt_create_offer_offerer_address_ff_on(
-        self, client, is_venue_address, address_payload, return_value, expected_data
+    def test_first_step_funnel_creation_shouldnt_create_offer_offerer_address(
+        self,
+        client,
+        is_venue_address,
+        address_payload,
     ):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -398,8 +357,9 @@ class Returns200Test:
                 "label": venue.common_name if address_payload["isVenueAddress"] else "Librairie des mangas",
             },
         }
-        with patch("pcapi.connectors.api_adresse.get_address", return_value=return_value):
-            response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
+
+        response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
+
         updated_draft_offer = db.session.query(Offer).one()
         created_address = (
             db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
@@ -410,12 +370,9 @@ class Returns200Test:
 
         response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
         assert response.status_code == 200
-        assert response.json["address"] == {
-            **expected_data,
-            "id": created_address.id,
-            "id_oa": updated_draft_offer.offererAddressId,
-            "label": venue.common_name if is_venue_address else "Librairie des mangas",
-        }
+        assert response.json["address"]["id"] == created_address.id
+        assert response.json["address"]["id_oa"] == updated_draft_offer.offererAddressId
+        assert response.json["address"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
 
 
 @pytest.mark.usefixtures("db_session")

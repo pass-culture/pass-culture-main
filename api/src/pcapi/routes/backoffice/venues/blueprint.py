@@ -229,6 +229,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
                 postal_code=venue.offererAddress.address.postalCode,
                 street=venue.offererAddress.address.street,
                 ban_id=venue.offererAddress.address.banId,
+                insee_code=venue.offererAddress.address.inseeCode,
                 acceslibre_url=venue.external_accessibility_url,
                 booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,
@@ -788,7 +789,11 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         contact_data = None
 
     location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
-    update_location_attrs = {field: value for field, value in attrs.items() if field in location_fields}
+    update_location_attrs = {
+        to_camelcase(field.name): field.data
+        for field in form
+        if field.name and to_camelcase(field.name) in location_fields
+    }
     location_modifications = {}
     if venue.offererAddress:
         location_modifications = {

@@ -23,7 +23,8 @@ REQUEST_BODY = {
         "latitude": 2.30829,
         "longitude": 48.87171,
         "postalCode": "75001",
-        "street": "3 RUE DE VALOIS",
+        "inseeCode": "75101",
+        "street": "3 Rue de Valois",
     },
     "siret": "85331845900031",
     "publicName": "Pass Culture",
@@ -37,20 +38,7 @@ REQUEST_BODY = {
 
 
 class Returns200Test:
-    @patch(
-        "pcapi.connectors.api_adresse.TestingBackend.get_single_address_result",
-        return_value=AddressInfo(
-            id="75101_9575_00003",
-            label="3 Rue de Valois 75001 Paris",
-            postcode="75001",
-            citycode="75056",
-            score=0.9651727272727272,
-            latitude=48.87171,
-            longitude=2.308289,
-            city="Paris",
-            street="3 Rue de Valois",
-        ),
-    )
+    @patch("pcapi.connectors.api_adresse.TestingBackend.get_single_address_result")
     def test_nominal(self, mocked_get_address, client):
         user = users_factories.UserFactory(email="pro@example.com")
 
@@ -59,13 +47,13 @@ class Returns200Test:
 
         assert response.status_code == 201
         created_offerer = db.session.query(offerers_models.Offerer).one()
-        assert created_offerer.street == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 Rue de Valois"
         assert created_offerer.city == "Paris"
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
         created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
-        assert created_venue.street == "3 RUE DE VALOIS"
+        assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
         assert created_venue.audioDisabilityCompliant is None
@@ -97,8 +85,7 @@ class Returns200Test:
         assert created_venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert created_venue.action_history[0].authorUser == user
 
-        mocked_get_address.assert_called_once()
-
+        mocked_get_address.assert_not_called()
         address = db.session.query(geography_models.Address).one()
         assert created_venue.offererAddress.addressId == address.id
         assert address.street == "3 Rue de Valois"
@@ -127,17 +114,18 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
         data = {**REQUEST_BODY}
         data["address"]["isManualEdition"] = True
+        data["address"].pop("inseeCode")
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 201
         created_offerer = db.session.query(offerers_models.Offerer).one()
-        assert created_offerer.street == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 Rue de Valois"
         assert created_offerer.city == "Paris"
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
         created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
-        assert created_venue.street == "3 RUE DE VALOIS"
+        assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
         assert created_venue.audioDisabilityCompliant is None
@@ -174,6 +162,8 @@ class Returns200Test:
         assert address.street == REQUEST_BODY["address"]["street"]
         assert address.city == REQUEST_BODY["address"]["city"]
         assert address.isManualEdition is True
+        assert address.inseeCode == "75056"
+        assert address.banId is None
         mocked_get_centroid.assert_called_once()
 
     def test_returns_public_information_only(self, client):

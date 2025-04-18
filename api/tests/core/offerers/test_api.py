@@ -2584,6 +2584,7 @@ class CreateFromOnboardingDataTest:
                 latitude=2.30829,
                 longitude=48.87171,
                 postalCode=offerers_schemas.VenuePostalCode("75001"),
+                inseeCode="75101",
                 street=offerers_schemas.VenueAddress("3 RUE DE VALOIS"),
             ),
             isOpenToPublic=True,

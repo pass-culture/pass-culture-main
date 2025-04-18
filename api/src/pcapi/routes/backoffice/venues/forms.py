@@ -45,6 +45,7 @@ class EditVenueForm(EditVirtualVenueForm):
         "Adresse",
         street="street",
         ban_id="ban_id",
+        insee_code="insee_code",
         city="city",
         postal_code="postal_code",
         latitude="latitude",
@@ -68,7 +69,14 @@ class EditVenueForm(EditVirtualVenueForm):
     )
     latitude = fields.PCHiddenField("Latitude")
     longitude = fields.PCHiddenField("Longitude")
-    ban_id = fields.PCOptHiddenField("Identifiant Base Adresse Nationale")
+    ban_id = fields.PCOptHiddenField(
+        "Identifiant Base Adresse Nationale",
+        validators=(wtforms.validators.Length(max=20, message="doit contenir au maximum %(max)d caractères"),),
+    )
+    insee_code = fields.PCOptHiddenField(
+        "Code INSEE",
+        validators=(wtforms.validators.Length(max=5, message="doit contenir au maximum %(max)d caractères"),),
+    )
     is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
     venue_type_code = fields.PCSelectWithPlaceholderValueField(
         "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)

@@ -23,6 +23,7 @@ function formatAdressApiResponse(response: AdresseApiJson) {
   return response.features.map((f) => ({
     address: f.properties.name,
     city: f.properties.city,
+    inseeCode: f.properties.citycode,
     id: f.properties.id,
     latitude: f.geometry.coordinates[1],
     longitude: f.geometry.coordinates[0],

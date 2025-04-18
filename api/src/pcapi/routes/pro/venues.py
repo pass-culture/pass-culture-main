@@ -99,6 +99,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "isManualEdition",
         "contact",
         "openingHours",
+        "inseeCode",
     }
     location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)

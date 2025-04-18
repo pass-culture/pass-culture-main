@@ -10,7 +10,6 @@ import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
-from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
@@ -76,13 +75,13 @@ class Returns200Test:
                 "street": "3 Rue de Valois",
                 "banId": "75101_9575_00003",
                 "city": "Paris",
+                "inseeCode": "75056",
                 "latitude": 48.87171,
                 "longitude": 2.308289,
                 "postalCode": "75001",
             },
             venue,
         )
-
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         # then
@@ -272,19 +271,7 @@ class Returns200Test:
         assert venue.isPermanent is True
         assert not venue.accessibilityProvider
 
-    @patch(
-        "pcapi.connectors.api_adresse.get_address",
-        return_value=AddressInfo(
-            id="09160_0350_00011",
-            street="11 Rue Jean Jaurès",
-            postcode="09300",
-            citycode="09160",
-            city="Lavelanet",
-            score=0.801001652892562,
-            longitude=1.847675,
-            latitude=42.932433,
-        ),
-    )
+    @patch("pcapi.connectors.api_adresse.get_address")
     def test_updating_venue_location_should_rely_on_address_table_data(self, mocked_get_address, client):
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
@@ -324,12 +311,12 @@ class Returns200Test:
 
         # At this point, the user is displayed the address contained in the address table, i.e. the "wrong" address
         response = client_http.get(f"/venues/{venue.id}")
+        mocked_get_address.assert_not_called()
         assert response.json["address"]["street"] == "11 Avenue Jean Jaurès"
         assert response.json["address"]["city"] == "Millau"
         assert response.json["address"]["postalCode"] == "12100"
 
         response = client_http.patch(f"/venues/{venue.id}", json=venue_data)
-        mocked_get_address.assert_called_once_with(address="11 Rue Jean Jaurès", postcode="09300", city="Lavelanet")
         assert response.status_code == 200
 
         response = client_http.get(f"/venues/{venue.id}")
@@ -570,103 +557,6 @@ class Returns200Test:
         # Ensures we can edit another time the venue just fine
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
-
-    @patch("pcapi.connectors.api_adresse.get_address")
-    def test_update_should_be_able_to_update_venue_even_if_only_centroid_found(
-        self, mocked_get_address, client
-    ) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-        )
-        venue_without_siret = offerers_factories.VenueWithoutSiretFactory(managingOfferer=user_offerer.offerer)
-        initial_offer_address_ids = [venue.offererAddressId, venue_without_siret.offererAddressId]
-
-        mocked_get_address.return_value = AddressInfo(
-            id="58062",
-            label="Château-Chinon (Ville)",
-            postcode="58120",
-            citycode="58062",
-            latitude=47.066641,
-            longitude=3.933363,
-            score=0.9384945454545454,
-            city="Château-Chinon (Ville)",
-            street=None,
-        )
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-        venue_data = populate_missing_data_from_venue(
-            {
-                # Data sent by the frontend, originated from BAN autocomplete field
-                "street": "Château-Chinon (Ville)",
-                "banId": "58062",
-                "city": "Château-Chinon (Ville)",
-                "latitude": 47.066641,
-                "longitude": 3.933363,
-                "postalCode": "58120",
-                "isManualEdition": False,
-                "comment": "Lieu sans SIRET car dépend du SIRET d'un autre lieu",
-            },
-            venue_without_siret,
-        )
-
-        response = auth_request.patch("/venues/%s" % venue_without_siret.id, json=venue_data)
-
-        # then
-        assert response.status_code == 200
-        venue = db.session.query(offerers_models.Venue).filter_by(id=venue_without_siret.id).one()
-        address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        offerer_address = offerer_addresses[0]
-
-        assert len(offerer_addresses) == 3
-        assert {oa.id for oa in offerer_addresses} == {*initial_offer_address_ids, venue_without_siret.offererAddressId}
-        assert venue.offererAddressId == offerer_address.id
-        assert address.street == None  # Centroid found only, nothing to fill in street column
-        assert address.city == venue.city == "Château-Chinon (Ville)"
-        assert address.postalCode == venue.postalCode == "58120"
-        assert address.inseeCode.startswith(address.departmentCode)
-        assert address.longitude == venue.longitude == Decimal("3.93336")
-        assert address.latitude == venue.latitude == Decimal("47.06664")
-        assert address.isManualEdition is False
-        assert offerer_address.addressId == address.id
-        assert offerer_address.label is None
-
-        assert response.json["street"] == venue.street
-        assert response.json["banId"] == venue.banId
-        assert response.json["city"] == venue.city
-        assert response.json["siret"] == venue.siret
-        assert response.json["postalCode"] == venue.postalCode
-        assert len(venue.action_history) == 2
-
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
-            0
-        ]
-        update_snapshot = update_action.extraData["modified_info"]
-        assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert update_action.venueId == venue_without_siret.id
-        assert update_action.authorUser.id == user_offerer.user.id
-        assert update_snapshot["street"] == {
-            "new_info": None,
-            "old_info": "1 boulevard Poissonnière",
-        }
-        assert update_snapshot["banId"] == {
-            "new_info": "58062",
-            "old_info": "75102_7560_00001",
-        }
-        assert update_snapshot["latitude"] == {
-            "new_info": "47.06664",
-            "old_info": "48.87004",
-        }
-        assert update_snapshot["longitude"] == {
-            "new_info": "3.93336",
-            "old_info": "2.3785",
-        }
-        assert update_snapshot["postalCode"] == {
-            "new_info": "58120",
-            "old_info": "75002",
-        }
 
     def test_should_not_create_oa_when_not_updating_location(self, client):
         user_offerer = offerers_factories.UserOffererFactory()

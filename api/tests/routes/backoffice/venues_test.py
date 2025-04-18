@@ -925,6 +925,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "siret": venue.siret or "",
             "city": venue.offererAddress.address.city or "",
             "postal_code": venue.offererAddress.address.postalCode or "",
+            "insee_code": venue.offererAddress.address.inseeCode or "",
             "street": venue.offererAddress.address.street or "",
             "ban_id": venue.offererAddress.address.banId or "",
             "acceslibre_url": venue.external_accessibility_url or "",
@@ -975,6 +976,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "siret": new_siret,
             "city": "Paris",
             "postal_code": "75001",
+            "insee_code": "75101",
             "street": "23 Boulevard de la Madeleine",
             "ban_id": "75101_5888_00023",
             "is_manual_address": "",  # autocompletion used
@@ -1263,14 +1265,13 @@ class UpdateVenueTest(PostEndpointHelper):
         update_snapshot = update_action.extraData["modified_info"]
 
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
-
-        assert update_snapshot["street"]["new_info"] == "3 Rue de Valois"
+        assert update_snapshot["offererAddress.address.street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == "48.87171"
-        assert update_snapshot["longitude"]["new_info"] == "2.30829"  # rounding due to Decimal column in db
+        assert update_snapshot["latitude"]["new_info"] == "48.86931"
+        assert update_snapshot["longitude"]["new_info"] == "2.32546"  # rounding due to Decimal column in db
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
-        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == "48.87171"
-        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.30829"
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == "48.86931"
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.32546"
         assert "offererAddress.address.city" not in update_snapshot  # not changed
 
     @pytest.mark.parametrize(

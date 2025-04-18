@@ -141,7 +141,7 @@ describe('Create individual offers with OA', () => {
       responseTimeout: 60 * 1000 * 2,
     })
     cy.contains('Intitulé : Libellé de mon adresse')
-    cy.contains(`Adresse : ${MOCKED_BACK_ADDRESS_LABEL}`)
+    cy.contains(`Adresse : 3 RUE DE VALOIS 75008 Paris`)
   })
 
   it('I should be able to create an individual offer (thing)', () => {

@@ -62,7 +62,9 @@ class EditOffererForm(FlaskForm):
         "Adresse",
         street="street",
         city="city",
-        ban_id="ban_id",
+        # TODO: bdalbianco 5/5/2025 check if ban_id and inseecode are relevant here. If not, remove and fix tests
+        ban_id=None,
+        insee_code=None,
         postal_code="postal_code",
         latitude=None,
         longitude=None,

@@ -38,6 +38,7 @@ export interface AdresseApiJson {
 export interface AdresseData {
   address: string
   city: string
+  inseeCode: string
   id: string
   latitude: number
   longitude: number

@@ -13,6 +13,7 @@ export type EditVenueBodyModel = {
   comment?: string | null;
   contact?: VenueContactModel | null;
   description?: string | null;
+  inseeCode?: string | null;
   isAccessibilityAppliedOnAllOffers?: boolean | null;
   isManualEdition?: boolean | null;
   isOpenToPublic?: boolean | null;

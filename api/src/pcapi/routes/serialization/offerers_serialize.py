@@ -271,6 +271,7 @@ class CreateOffererQueryModel(BaseModel):
     longitude: float | None
     name: str
     postalCode: str
+    inseeCode: str | None
     siren: str
     street: str | None
     phoneNumber: str | None

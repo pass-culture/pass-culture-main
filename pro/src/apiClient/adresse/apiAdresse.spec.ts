@@ -97,6 +97,7 @@ describe('apiAdresse', () => {
           longitude: 2.4,
           label: '15 Rue des Tests 75001 Paris',
           postalCode: '75001',
+          inseeCode: '75056',
         },
       ])
     })
@@ -127,6 +128,7 @@ describe('apiAdresse', () => {
           longitude: 2.4,
           label: 'Paris',
           postalCode: '75001',
+          inseeCode: '75056',
         },
       ])
     })
@@ -162,6 +164,7 @@ describe('apiAdresse', () => {
           longitude: 2.4,
           label: '15 Rue des Tests 75001 Paris',
           postalCode: '75001',
+          inseeCode: '75056',
         },
       ])
     })
