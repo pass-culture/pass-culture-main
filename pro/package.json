@@ -58,7 +58,7 @@
     "downshift": "^9.0.9",
     "eslint-plugin-cypress": "^4.2.1",
     "formik": "^2.4.6",
-    "libphonenumber-js": "^1.12.6",
+    "libphonenumber-js": "^1.12.7",
     "orejime": "^2.3.1",
     "react": "^18.3.1",
     "react-avatar-editor": "^13.0.2",
