@@ -23,6 +23,8 @@ HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE = {
     "HTTP_204": (None, "This collective booking's status has been successfully updated")
 }
 
+HTTP_204_COLLECTIVE_OFFERS_ARCHIVE_SUCCESS = {"HTTP_204": (None, "Collective offers have been successfully archived")}
+
 # Client errors
 HTTP_400_BAD_REQUEST = {
     "HTTP_400": (None, "The request is invalid. The response body contains a list of errors."),

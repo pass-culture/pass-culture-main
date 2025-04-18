@@ -1012,6 +1012,28 @@
                 "title": "AddressResponse",
                 "type": "object"
             },
+            "ArchiveCollectiveOfferBodyModel": {
+                "additionalProperties": false,
+                "properties": {
+                    "ids": {
+                        "description": "List of collective offer ids",
+                        "example": [
+                            12345,
+                            67890
+                        ],
+                        "items": {
+                            "type": "integer"
+                        },
+                        "title": "Ids",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "ids"
+                ],
+                "title": "ArchiveCollectiveOfferBodyModel",
+                "type": "object"
+            },
             "AvailableEANsResponse": {
                 "properties": {
                     "available": {
@@ -12383,6 +12405,58 @@
                     }
                 ],
                 "summary": "Create Collective Offer",
+                "tags": [
+                    "Collective Offers"
+                ]
+            }
+        },
+        "/v2/collective/offers/archive": {
+            "post": {
+                "description": "Archive multiple collective offers.",
+                "operationId": "ArchiveCollectiveOffers",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ArchiveCollectiveOfferBodyModel"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Collective offers have been successfully archived"
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "Some resource has not been found."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Archive Collective Offers",
                 "tags": [
                     "Collective Offers"
                 ]

@@ -128,7 +128,7 @@ class Returns204Test:
         assert other_template_offer.isArchived
         assert not other_template_offer.isActive
 
-    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_ARCHIVE_OFFER)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_ARCHIVE_OFFER_TEMPLATE)
     def test_when_archiving_allowed_offers_templates(self, client, status):
         pending_template_offer = educational_factories.create_collective_offer_template_by_status(status)
         venue = pending_template_offer.venue
@@ -146,7 +146,7 @@ class Returns204Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_ARCHIVE_OFFER)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_ARCHIVE_OFFER_TEMPLATE)
     def test_when_archiving_not_allowed_offers_templates(self, client, status):
         pending_template_offer = educational_factories.create_collective_offer_template_by_status(status)
         venue = pending_template_offer.venue

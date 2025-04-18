@@ -687,12 +687,15 @@ def list_public_collective_offers(
     venue_id: int | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
+    ids: list[int] | None = None,
     limit: int = 500,
 ) -> list[educational_models.CollectiveOffer]:
     query = db.session.query(educational_models.CollectiveOffer)
 
     query = query.join(providers_models.Provider, educational_models.CollectiveOffer.provider)
+
     query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
+
     filters = [
         educational_models.CollectiveOffer.providerId == required_id,
         educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
@@ -706,6 +709,9 @@ def list_public_collective_offers(
         filters.append(educational_models.CollectiveStock.startDatetime >= period_beginning_date)
     if period_ending_date:
         filters.append(educational_models.CollectiveStock.startDatetime <= period_ending_date)
+    if ids is not None:
+        filters.append(educational_models.CollectiveOffer.id.in_(ids))
+
     query = query.filter(*filters)
     query = query.options(
         sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock)

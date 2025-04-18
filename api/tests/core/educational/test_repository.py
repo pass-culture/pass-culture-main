@@ -12,6 +12,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.repository import _filter_collective_offers_by_statuses
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -803,3 +804,108 @@ class OffererHasOngoingCollectiveBookingsTest:
         offerer_id = offerer.id
         with assert_num_queries(1):
             assert educational_repository.offerer_has_ongoing_collective_bookings(offerer_id=offerer_id) is False
+
+
+class ListPublicCollectiveOffersTest:
+    def test_should_return_offers_for_provider(self, app):
+        provider = providers_factories.ProviderFactory()
+        offer = educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
+        )
+
+        other_provider = providers_factories.ProviderFactory()
+        educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=other_provider
+        )  # another offer from different provider
+
+        offers = educational_repository.list_public_collective_offers(required_id=provider.id)
+
+        assert len(offers) == 1
+        assert offers[0].id == offer.id
+
+    def test_should_filter_by_status(self, app):
+        # TODO: (rprasquier) adapt this test to use the new status on the public API
+        provider = providers_factories.ProviderFactory()
+        approved_offer = educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
+        )
+
+        educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.UNDER_REVIEW, provider=provider
+        )
+
+        offers = educational_repository.list_public_collective_offers(
+            required_id=provider.id, status=offer_mixin.CollectiveOfferStatus.ACTIVE
+        )
+
+        assert len(offers) == 1
+        assert offers[0].id == approved_offer.id
+
+    def test_should_filter_by_venue(self, app):
+        provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider, venue=venue
+        )
+
+        other_venue = offerers_factories.VenueFactory()
+        educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider, venue=other_venue
+        )  # another offer from same provider
+
+        offers = educational_repository.list_public_collective_offers(required_id=provider.id, venue_id=venue.id)
+
+        assert len(offers) == 1
+        assert offers[0].id == offer.id
+
+    def test_should_filter_by_date_range(self, app):
+        provider = providers_factories.ProviderFactory()
+        start_date = datetime.utcnow() - timedelta(days=2)
+        end_date = datetime.utcnow() + timedelta(days=2)
+
+        stock_in_range = educational_factories.CollectiveStockFactory(
+            startDatetime=datetime.utcnow(), collectiveOffer__provider=provider
+        )
+
+        educational_factories.CollectiveStockFactory(
+            startDatetime=datetime.utcnow() + timedelta(days=3), collectiveOffer__provider=provider
+        )
+
+        offers = educational_repository.list_public_collective_offers(
+            required_id=provider.id,
+            period_beginning_date=start_date.isoformat(),
+            period_ending_date=end_date.isoformat(),
+        )
+
+        assert len(offers) == 1
+        assert offers[0].id == stock_in_range.collectiveOffer.id
+
+    def test_should_filter_by_ids(self, app):
+        provider = providers_factories.ProviderFactory()
+        offer1 = educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
+        )
+        offer2 = educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
+        )
+        educational_factories.create_collective_offer_by_status(
+            CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
+        )  # another offer
+
+        offers = educational_repository.list_public_collective_offers(
+            required_id=provider.id, ids=[offer1.id, offer2.id]
+        )
+
+        assert len(offers) == 2
+        assert {offer.id for offer in offers} == {offer1.id, offer2.id}
+
+    def test_should_respect_limit(self, app):
+        provider = providers_factories.ProviderFactory()
+        for _ in range(3):
+            educational_factories.create_collective_offer_by_status(
+                CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
+            )
+
+        offers = educational_repository.list_public_collective_offers(required_id=provider.id, limit=2)
+
+        assert len(offers) == 2
