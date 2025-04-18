@@ -108,7 +108,7 @@ describe('IndividualOffersScreen', () => {
   let offersRecap: ListOffersOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
-  const mockNotifyPending = vi.fn()
+  const mockNotifyInfo = vi.fn()
   const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
     offersRecap = [listOffersOfferFactory()]
@@ -131,7 +131,7 @@ describe('IndividualOffersScreen', () => {
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: mockNotifyError,
-      pending: mockNotifyPending,
+      information: mockNotifyInfo,
       success: mockNotifySuccess,
     }))
   })
@@ -495,7 +495,7 @@ describe('IndividualOffersScreen', () => {
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
 
-      expect(mockNotifyPending).toHaveBeenCalledWith(
+      expect(mockNotifyInfo).toHaveBeenCalledWith(
         'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
       )
       expect(api.patchAllOffersActiveStatus).toHaveBeenCalledWith({

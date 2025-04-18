@@ -16,7 +16,6 @@ const mockErrorNotification = vi.fn()
 const notify = {
   success: mockSuccessNotification,
   error: mockErrorNotification,
-  pending: vi.fn(),
   information: vi.fn(),
   close: vi.fn(),
 }

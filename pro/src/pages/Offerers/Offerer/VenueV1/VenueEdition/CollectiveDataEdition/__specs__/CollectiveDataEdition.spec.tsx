@@ -122,7 +122,6 @@ describe('CollectiveDataEdition', () => {
       success: notifySuccessMock,
       error: notifyErrorMock,
       information: vi.fn(),
-      pending: vi.fn(),
       close: vi.fn(),
     }))
   })

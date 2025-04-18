@@ -11,7 +11,6 @@ const TestComponent = (): JSX.Element | null => {
   notify.error('notfication error', {
     duration: 2,
   })
-  notify.pending('notfication pending')
   notify.information('notfication information')
   notify.close()
 
@@ -31,7 +30,7 @@ describe('useNotification', () => {
 
     renderWithProviders(<TestComponent />)
 
-    expect(mockShowNotification).toHaveBeenCalledTimes(4)
+    expect(mockShowNotification).toHaveBeenCalledTimes(3)
     expect(mockShowNotification).toHaveBeenNthCalledWith(1, {
       duration: 1,
       text: 'notfication sucess',
@@ -43,11 +42,6 @@ describe('useNotification', () => {
       type: 'error',
     })
     expect(mockShowNotification).toHaveBeenNthCalledWith(3, {
-      duration: 5000,
-      text: 'notfication pending',
-      type: 'pending',
-    })
-    expect(mockShowNotification).toHaveBeenNthCalledWith(4, {
       duration: 5000,
       text: 'notfication information',
       type: 'information',
