@@ -11,6 +11,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils import siren as siren_utils
@@ -123,6 +124,17 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
             extra={"siren": scheduled_siren_list},
         )
         _create_check_offerer_tasks(scheduled_siren_list, dry_run=dry_run)
+
+
+@blueprint.cli.command("delete_user_offerers_on_closed_offerers")
+@click.option("--dry-run", type=bool, default=False)
+def delete_user_offerers_on_closed_offerers(dry_run: bool = False) -> None:
+    offerers_api.auto_delete_attachments_on_closed_offerers()
+
+    if not dry_run:
+        db.session.commit()
+    else:
+        db.session.rollback()
 
 
 @log_cron_with_transaction
