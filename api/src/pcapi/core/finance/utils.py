@@ -1,9 +1,12 @@
 import datetime
 import decimal
+import re
 
 from babel import numbers
 from flask import Flask
 import pytz
+
+from pcapi.utils.clean_accents import clean_accents
 
 
 ACCOUNTING_TIMEZONE = pytz.timezone("Europe/Paris")
@@ -92,3 +95,7 @@ def get_cutoff_as_datetime(last_day: datetime.date) -> datetime.datetime:
     next_day = last_day + datetime.timedelta(days=1)
     first_second = datetime.datetime.combine(next_day, datetime.time.min)
     return ACCOUNTING_TIMEZONE.localize(first_second).astimezone(pytz.utc)
+
+
+def clean_names_for_SEPA(name: str) -> str:
+    return re.sub("[^A-Za-z0-9\ ]+", "", clean_accents(name))
