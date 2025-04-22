@@ -115,7 +115,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
     def get_bank_account(self, bank_account_id: int) -> dict:
         url = f"{self.base_url}/{self._interface}/Vendor/{bank_account_id}"
-        params = {"$expand": "MainContact/Address,PrimaryContact,Attributes"}
+        params = {"$expand": "MainContact/Address,PrimaryContact,Attributes,PaymentInstructions"}
         response = self._request("GET", url, params=params)
 
         if self._get_exception_type(response) == "PX.Api.ContractBased.NoEntitySatisfiesTheConditionException":
@@ -128,32 +128,24 @@ class CegidFinanceBackend(BaseFinanceBackend):
             )
 
         response_json = response.json()
-        response_json["VendorLocation"] = self._get_vendor_location(bank_account_id)
 
         return response_json
 
     def push_bank_account(self, bank_account: finance_models.BankAccount) -> dict:
         """
         Create or update a bank account in Flex.
-        The logic of storage in Flex is different: bank account model is split into 2 entities:
-         - Vendor: the actual BankAccount
-         - VendorLocation where the RIB information (IBAN) is stored
-        In order to operate a creation/update operation we have to send 3 requests:
-         - PUT Vendor
-         - GET VendorLocation
-         - PUT VendorLocation
-         Missing : SIEN (aka siret dans cegid), famille de fournisseur (VendorClassID)
         """
         url_vendor = f"{self.base_url}/{self._interface}/Vendor"
+        params = {"$expand": "PaymentInstructions"}
 
         body = {
             "CashAccount": {"value": "CD512000"},
             "CurrencyID": {"value": "EUR"},
-            "LegalName": {
-                "value": bank_account.offerer.name[:70],
-            },
+            "LegalName": {"value": finance_utils.clean_names_for_SEPA(bank_account.offerer.name)[:70]},
+            "LocationName": {"value": "Emplacement principal"},
             "MainContact": {
                 "Address": {
+                    "AddressID": {"value": "PRINCIPAL"},
                     "Country": {"value": "FR"},
                     "City": {"value": bank_account.offerer.city},
                     "PostalCode": {"value": bank_account.offerer.postalCode},
@@ -162,119 +154,33 @@ class CegidFinanceBackend(BaseFinanceBackend):
                 },
             },
             "NatureEco": {"value": "Exempt operations"},
-            "PaymentMethod": {
-                "value": "VSEPA",
-            },
+            "PaymentMethod": {"value": "VSEPA"},
+            "PaymentInstructions": [
+                {
+                    "Description": {"value": "IBAN"},
+                    "PaymentInstructionsID": {"value": "IBAN"},
+                    "PaymentMethod": {"value": "VSEPA"},
+                    "Value": {"value": bank_account.iban},
+                    "custom": {},
+                },
+            ],
             "Siret": {"value": bank_account.offerer.siren},
-            "Status": {
-                "value": "Active",
-            },
+            "Status": {"value": "Active"},
             "TaxZone": {"value": "EXO"},
             "Terms": {"value": "30J"},
             "VendorClass": {"value": "ACTEURCULT"},
-            "VendorID": {
-                "value": str(bank_account.id),
-            },
-            "VendorName": {
-                "value": bank_account.label,
-            },
+            "VendorID": {"value": str(bank_account.id)},
+            "VendorName": {"value": bank_account.label},
         }
 
-        response = self._request("PUT", url_vendor, json=body)
+        response = self._request("PUT", url_vendor, params=params, json=body)
         if response.status_code != 200:
             raise exceptions.FinanceBackendUnexpectedResponse(
                 response, f"Couldn't create Vendor for BankAccount #{bank_account.id}"
             )
 
         response_json = response.json()
-        response_json["VendorLocation"] = self._upsert_vendor_location(bank_account)
-
         return response_json
-
-    def _upsert_vendor_location(self, bank_account: finance_models.BankAccount) -> dict:
-        """
-        Create or update VendorLocation where the RIB parameter is stored (IBAN)
-        To be able to update the values for an existing entry we have to:
-         - First check if there is already an existing VendorLocation
-         - If not any proceed to creation
-         - If any, there must be only one entry as we only have one RIB per BankAccount. (cf. _get_vendor_location)
-         - To avoid creating a new entry we have to get the VendorLocation's id as well as the id of IBAN row
-         - Inject it in the creation body to allow Flex to identify and update it
-         - Send the body with ids to update the VendorLocation
-        """
-        iban = {
-            "rowNumber": 1,
-            "Code": {"value": "IBAN"},
-            "PaymentMethod": {"value": "VSEPA"},
-            "Valeur": {"value": bank_account.iban},
-        }
-        body = {
-            "LocationID": {"value": "MAIN"},
-            "PaymentMethod": {"value": "VSEPA"},
-            "RIB": [iban],
-            "Status": {"value": "Active"},
-            "VendorID": {"value": str(bank_account.id)},
-        }
-        vendor_location = self._get_vendor_location(bank_account.id)
-        if vendor_location:  # Update existing VendorLocation
-            # Inject the VendorLocation id to allow Flex to identify it and update it
-            body["id"] = vendor_location["id"]
-
-            del body["LocationID"]
-
-            old_rib = vendor_location.get("RIB", [])
-
-            old_ibans = [e for e in old_rib if e.get("Code", {}).get("value") == "IBAN"]
-            if old_ibans:
-                old_iban = old_ibans[0]  # It's certainly 1 iban as the check is done in `_get_vendor_location`
-                # Inject existing row's "id" and "rowNumber" fields to operate and avoid creating a new one
-                if "id" in old_iban:
-                    iban["id"] = old_iban["id"]
-                if "rowNumber" in old_iban:
-                    iban["rowNumber"] = old_iban["rowNumber"]
-
-        url_vendor_location = f"{self.base_url}/{self._interface}/VendorLocation"
-        params_vendor_location = {"$expand": "RIB"}
-        response = self._request("PUT", url_vendor_location, params=params_vendor_location, json=body)
-        if response.status_code != 200:
-            raise exceptions.FinanceBackendUnexpectedResponse(
-                response, f"Couldn't update VendorLocation for BankAccount #{bank_account.id}"
-            )
-        return response.json()
-
-    def _get_vendor_location(self, bank_account_id: int) -> dict:
-        url = f"{self.base_url}/{self._interface}/VendorLocation"
-        params = {"$expand": "RIB", "$filter": f"VendorID eq '{bank_account_id}'"}
-        response = self._request("GET", url, params=params)
-        response_json = response.json()
-
-        if self._get_exception_type(response) == "PX.Api.ContractBased.NoEntitySatisfiesTheConditionException":
-            raise exceptions.FinanceBackendBankAccountNotFound(
-                response, f"Wrong query to get VendorLocation for BankAccount #{bank_account_id}"
-            )
-        if response.status_code != 200:
-            raise exceptions.FinanceBackendUnexpectedResponse(
-                response, f"Unexpected response for VendorLocation query of BankAccount #{bank_account_id}"
-            )
-        if len(response_json) > 1:
-            raise exceptions.FinanceBackendInconsistentDistantData(
-                response, f"Found more than 1 VendorLocation for Vendor {bank_account_id}"
-            )
-
-        if len(response_json) == 1:
-            vendor_location = response_json[0]
-            old_rib = vendor_location.get("RIB", [])
-
-            old_ibans = [e for e in old_rib if e.get("Code", {}).get("value") == "IBAN"]
-            if len(old_ibans) > 1:
-                # Shouldn't happen
-                raise exceptions.FinanceBackendInconsistentDistantData(
-                    response, f"Found multiple iban rows for VendorLocation of BankAccount #{bank_account_id}"
-                )
-
-            return vendor_location
-
-        return {}
 
     @staticmethod
     def _format_amount(amount_in_cent: int) -> str:
@@ -288,7 +194,8 @@ class CegidFinanceBackend(BaseFinanceBackend):
         Create a new invoice.
         """
         assert invoice.bankAccountId  # helps mypy
-        url = f"{self.base_url}/{self._interface}/Bill?$expand=Details"
+        url = f"{self.base_url}/{self._interface}/Bill"
+        params = {"$expand": "Details"}
         invoice_lines = self.get_invoice_lines(invoice)
         lines = [
             {
@@ -304,7 +211,6 @@ class CegidFinanceBackend(BaseFinanceBackend):
             for line in invoice_lines
         ]
 
-        vendor_location = self._get_vendor_location(invoice.bankAccountId)
         total_amount_str = self._format_amount(sum(e["amount"] for e in invoice_lines))
         invoice_date_range = self._get_formatted_invoice_description(invoice.date)
         body = {
@@ -317,7 +223,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "Description": {"value": f"{invoice.reference} - {invoice_date_range}"},  # F25xxxx - <01/12-15/12>
             "Details": lines,
             "Hold": {"value": False},
-            "LocationID": {"value": vendor_location["LocationID"]["value"]},
+            "LocationID": {"value": "PRINCIPAL"},
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             # "ReferenceNbr": {"value": invoice.reference},  # This has no effect because XRP generates an incremental ID that cannot be overriden
             "RefNbr": {"value": invoice.reference},
@@ -329,7 +235,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "VendorRef": {"value": invoice.reference},
         }
 
-        response = self._request("PUT", url, json=body)
+        response = self._request("PUT", url, params=params, json=body)
 
         if (
             response.status_code == 500
