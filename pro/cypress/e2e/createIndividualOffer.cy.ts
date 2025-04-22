@@ -82,30 +82,30 @@ describe('Create individual offers', () => {
     cy.findByText('Ajouter un tarif').click()
     cy.findByText('Ajouter un tarif').click()
 
-    cy.findByTestId('wrapper-priceCategories[0].label').within(() => {
+    cy.findByTestId('wrapper-priceCategories.0.label').within(() => {
       // trouve le premier champ avec le label:
       cy.findByLabelText('Intitulé du tarif').type('Carré Or')
     })
-    cy.findByTestId('wrapper-priceCategories[0].price').within(() => {
+    cy.findByTestId('wrapper-priceCategories.0.price').within(() => {
       // trouve le premier champ avec le label:
       cy.findByLabelText('Prix par personne').type('100')
     })
 
-    cy.findByTestId('wrapper-priceCategories[1].label').within(() => {
+    cy.findByTestId('wrapper-priceCategories.1.label').within(() => {
       // trouve le deuxième champ avec le label:
       cy.findByLabelText('Intitulé du tarif').type('Fosse Debout')
     })
-    cy.findByTestId('wrapper-priceCategories[1].price').within(() => {
+    cy.findByTestId('wrapper-priceCategories.1.price').within(() => {
       // trouve le deuxième champ avec le label:
       cy.findByLabelText('Prix par personne').type('10')
     })
 
-    cy.findByTestId('wrapper-priceCategories[2].label').within(() => {
+    cy.findByTestId('wrapper-priceCategories.2.label').within(() => {
       // trouve le troisième champ avec le label:
       cy.findByLabelText('Intitulé du tarif').type('Fosse Sceptique')
     })
     // manque un data-testid ou un accessibility label
-    cy.get('[name="priceCategories[2].price.free"]').click()
+    cy.get('[name="priceCategories.2.price.free"]').click()
 
     cy.findByText('Accepter les réservations “Duo“').should('exist')
 
@@ -130,35 +130,25 @@ describe('Create individual offers', () => {
     cy.findByText('Ajouter d’autres places et tarifs').click()
     cy.findByText('Ajouter d’autres places et tarifs').click()
 
-    cy.findByTestId(
-      'wrapper-quantityPerPriceCategories[0].priceCategory'
-    ).within(() => {
+    cy.findByTestId('wrapper-quantityPerPriceCategories.0').within(() => {
       // trouve la première liste déroulante avec le label:
       cy.findByLabelText('Tarif *').select('0,00\xa0€ - Fosse Sceptique')
     })
 
-    cy.findByTestId('wrapper-quantityPerPriceCategories[1].quantity').within(
-      () => {
-        // trouve le deuxième champ avec le label:
-        cy.findByLabelText('Nombre de places').type('100')
-      }
-    )
-    cy.findByTestId(
-      'wrapper-quantityPerPriceCategories[1].priceCategory'
-    ).within(() => {
+    cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
+      // trouve le deuxième champ avec le label:
+      cy.findByLabelText('Nombre de places').type('100')
+    })
+    cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
       // trouve la euxième liste déroulante avec le label:
       cy.findByLabelText('Tarif *').select('10,00\xa0€ - Fosse Debout')
     })
 
-    cy.findByTestId('wrapper-quantityPerPriceCategories[2].quantity').within(
-      () => {
-        // trouve le troisième champ avec le label:
-        cy.findByLabelText('Nombre de places').type('20')
-      }
-    )
-    cy.findByTestId(
-      'wrapper-quantityPerPriceCategories[2].priceCategory'
-    ).within(() => {
+    cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
+      // trouve le troisième champ avec le label:
+      cy.findByLabelText('Nombre de places').type('20')
+    })
+    cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
       // trouve la troisième liste déroulante avec le label:
       cy.findByLabelText('Tarif *').select('100,00\xa0€ - Carré Or')
     })

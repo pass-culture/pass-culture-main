@@ -309,7 +309,10 @@ export const PriceCategoriesScreen = ({
                 open={currentDeletionIndex !== null}
               />
               {fields.map((field, index) => (
-                <fieldset key={field.id}>
+                <fieldset
+                  key={field.id}
+                  data-testid={`priceCategories.${index}.label`}
+                >
                   <legend className={styles['visually-hidden']}>
                     Tarif {index + 1}
                   </legend>
