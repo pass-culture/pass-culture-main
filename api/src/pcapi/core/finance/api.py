@@ -3162,6 +3162,10 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
         if not recredit_type_to_create:
             continue
 
+        recredit_amount = conf.get_credit_amount_per_age(age_to_recredit)
+        if not recredit_amount:
+            continue
+
         has_been_recredited = any(
             recredit.recreditType == recredit_type_to_create for recredit in user.deposit.recredits
         )

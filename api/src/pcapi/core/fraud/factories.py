@@ -158,6 +158,8 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     @factory.lazy_attribute
     def eligibilityType(self) -> users_models.EligibilityType:
         if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and self.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
+            if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and self.user.age in [15, 16]:
+                return users_models.EligibilityType.FREE
             return users_models.EligibilityType.AGE17_18
         if self.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             return users_models.EligibilityType.UNDERAGE

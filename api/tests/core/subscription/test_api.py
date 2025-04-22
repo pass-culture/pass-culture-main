@@ -40,6 +40,11 @@ class RequiresIdCheckTest:
 
         assert subscription_api.requires_identity_check_step(user) is True
 
+    def test_does_not_requires_id_check_for_free_eligibility(self):
+        user = users_factories.UserFactory(age=15)
+
+        assert not subscription_api.requires_identity_check_step(user)
+
     @pytest.mark.parametrize(
         "fraud_check_type,expected_result",
         [
@@ -185,7 +190,7 @@ class EduconnectFlowTest:
 @pytest.mark.usefixtures("db_session")
 class NextSubscriptionStepTest:
     class NoNextStepTest:
-        @pytest.mark.parametrize("age", [15, 16, 19, 20, 21])
+        @pytest.mark.parametrize("age", [14, 19, 20, 21])
         def test_ineligible_user(self, age):
             user = users_factories.UserFactory(age=age)
             assert subscription_api.get_user_subscription_state(user).next_step is None
@@ -226,7 +231,7 @@ class NextSubscriptionStepTest:
 
             assert next_step is None
 
-        def test_next_subscription_step_finished(self):
+        def test_eighteen_year_old_subscription_finished(self):
             user = users_factories.UserFactory(
                 age=18,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -254,8 +259,21 @@ class NextSubscriptionStepTest:
 
             assert next_step is None
 
+        def test_free_subscription_finished(self):
+            user = users_factories.UserFactory(
+                age=15,
+                address="3 rue du quai",
+                activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+            )
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+            fraud_factories.HonorStatementFraudCheckFactory(user=user)
+
+            next_step = subscription_api.get_user_subscription_state(user).next_step
+
+            assert next_step is None
+
         @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1))
-        def test_17_18_transition_with_v3(self):
+        def test_17_18_transition_after_decree(self):
             user = users_factories.BeneficiaryFactory(age=17)
 
             # Assert factory does what we expect
@@ -343,7 +361,9 @@ class NextSubscriptionStepTest:
             assert user.deposit.amount == 200
 
         def test_user_with_ubble_modified_birth_date_can_get_their_deposit_activated(self):
-            user = users_factories.ProfileCompletedUserFactory(age=16)
+            user = users_factories.ProfileCompletedUserFactory(
+                age=16, beneficiaryFraudChecks__eligibilityType=users_models.EligibilityType.UNDERAGE
+            )
             # Ubble sets birth_date to a year before, user is 17yo
             ubble_birth_date = user.birth_date - relativedelta(years=1)
             fraud_factories.BeneficiaryFraudCheckFactory(
@@ -351,6 +371,7 @@ class NextSubscriptionStepTest:
                 type=fraud_models.FraudCheckType.UBBLE,
                 status=fraud_models.FraudCheckStatus.OK,
                 resultContent=fraud_factories.UbbleContentFactory(birth_date=ubble_birth_date),
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
             user.validatedBirthDate = ubble_birth_date
             fraud_factories.HonorStatementFraudCheckFactory(user=user)
@@ -492,8 +513,11 @@ class NextSubscriptionStepTest:
 
             assert next_step is None
 
+        @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
         def test_underage_user_with_pending_dms_application_should_not_fill_profile(self):
-            user = users_factories.UserFactory(age=15)
+            before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+            fifteen_years_ago = datetime.utcnow() - relativedelta(years=15, days=1)
+            user = users_factories.UserFactory(dateOfBirth=fifteen_years_ago)
             # Pending DMS application
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,
@@ -501,6 +525,7 @@ class NextSubscriptionStepTest:
                 status=fraud_models.FraudCheckStatus.PENDING,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
                 resultContent=fraud_factories.DMSContentFactory(city="Brockton Bay"),
+                dateCreated=before_decree,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,
@@ -508,6 +533,7 @@ class NextSubscriptionStepTest:
                 status=fraud_models.FraudCheckStatus.OK,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
                 resultContent=None,
+                dateCreated=before_decree,
             )
 
             next_step = subscription_api.get_user_subscription_state(user).next_step

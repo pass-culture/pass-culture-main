@@ -456,14 +456,10 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
                 ),
             )
         case subscription_machines.SubscriptionStates.SUBSCRIPTION_COMPLETED_BUT_NOT_BENEFICIARY_YET:
-            if not subscription_state_machine.identity_fraud_check_status:
-                raise ValueError(
-                    f"Identity fraud check status should not be None for {user = } at {subscription_state = }"
-                )
             return subscription_models.UserSubscriptionState(
                 identity_fraud_check=subscription_state_machine.identity_fraud_check,
                 is_activable=True,
-                fraud_status=subscription_state_machine.identity_fraud_check_status,
+                fraud_status=models.SubscriptionItemStatus.OK,
                 subscription_message=None,
                 next_step=None,
                 young_status=young_status_module.Eligible(
@@ -799,6 +795,9 @@ def _get_steps_details(
 
 
 def requires_identity_check_step(user: users_models.User) -> bool:
+    if user.eligibility == users_models.EligibilityType.FREE:
+        return False
+
     if not user.has_underage_beneficiary_role:
         return True
 

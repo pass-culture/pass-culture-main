@@ -40,7 +40,7 @@ class DecideEligibilityTest:
 
         assert eligibility == users_models.EligibilityType.AGE17_18
 
-    @pytest.mark.parametrize("age", [14, 15, 16, 19, 20, 21])
+    @pytest.mark.parametrize("age", [14, 19, 20, 21])
     def test_not_eligible_age(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
@@ -350,7 +350,8 @@ class EligibilityForNextRecreditActivationStepsTest:
         assert can_do_next_activation_steps
 
 
-class EligibilityStartTest:
+class EligibilityDatesTest:
+    @pytest.mark.features(WIP_FREE_ELIGIBILITY=False)
     def test_eligibility_start_after_decree(self):
         birth_date = datetime(2008, 1, 1)
 
@@ -358,7 +359,7 @@ class EligibilityStartTest:
 
         assert eligibility_start == datetime(2025, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
 
-    def test_eligibility_start_before_decree(self):
+    def test_eligibility_start(self):
         birth_date = datetime(2008, 1, 1)
 
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -366,8 +367,6 @@ class EligibilityStartTest:
 
         assert eligibility_start == datetime(2023, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
 
-
-class EligibilityEndTest:
     def test_eligibility_end(self):
         birth_date = datetime(2008, 1, 1)
 
@@ -375,8 +374,6 @@ class EligibilityEndTest:
 
         assert eligibility_end == datetime(2027, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
 
-
-class GetExtendedEligibilityTest:
     def test_get_eligibility_at_date_timezones_tolerance(self):
         date_of_birth = datetime(2000, 2, 1, 0, 0)
 

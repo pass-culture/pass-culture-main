@@ -203,7 +203,7 @@ class UbbleWorkflowV2Test:
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
     def test_ubble_identification_approved(self, requests_mock):
-        user = users_factories.UserFactory(age=16)
+        user = users_factories.UserFactory(age=17)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             user=user,
@@ -213,7 +213,7 @@ class UbbleWorkflowV2Test:
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
             json=build_ubble_identification_v2_response(
-                birth_date=datetime.date.today() - relativedelta(years=17), created_on=datetime.datetime.today()
+                birth_date=datetime.date.today() - relativedelta(years=18), created_on=datetime.datetime.today()
             ),
         )
 

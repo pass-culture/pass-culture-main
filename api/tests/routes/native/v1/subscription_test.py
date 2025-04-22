@@ -1647,7 +1647,7 @@ class ActivityTypesTest:
     def test_get_activity_types(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
         client.with_token(user.email)
-        with assert_num_queries(1):  # user
+        with assert_num_queries(2):  # user + free eligibility FF
             response = client.get("/native/v1/subscription/activity_types")
             assert response.status_code == 200
 
