@@ -77,6 +77,23 @@ def get_pre_decree_eligibility(
     return None
 
 
+def get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
+    if not user.birth_date:
+        return None
+
+    first_registration_date = get_first_eligible_registration_date(user, user.birth_date, eligibility)
+    if not first_registration_date:
+        return user.age
+
+    age_at_registration = users_utils.get_age_at_date(user.birth_date, first_registration_date, user.departementCode)
+    if (
+        eligibility == users_models.EligibilityType.UNDERAGE
+        and age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE
+    ):
+        return None
+    return age_at_registration
+
+
 def get_first_eligible_registration_date(
     user: users_models.User,
     birth_date: datetime.date | None,
