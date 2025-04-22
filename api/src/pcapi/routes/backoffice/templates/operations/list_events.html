@@ -1,68 +1,38 @@
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5">
-    <h1>Opérations spéciales</h1>
-    {% if has_permission("MANAGE_SPECIAL_EVENTS") %}
-      <div class="mt-4">
-        {{ build_modal_form("create-special-event", url_for("backoffice_web.operations.create_event") ,
-        create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
-      </div>
-    {% endif %}
+{% set rows_count = rows.total %}
+{% set pagination = True %}
+{% block title %}Opérations spéciales{% endblock %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  {% if has_permission("MANAGE_SPECIAL_EVENTS") %}
     <div class="mt-4">
-      <form name="filter-special-event"
-            action="{{ dst }}"
-            method="get"
-            class="col-8 row">
-        <div class="col-8">
-          <div class="input-group mb-3">
-            {% for form_field in form %}{{ form_field }}{% endfor %}
-          </div>
-        </div>
-        <div class="col-4">
-          <button type="submit"
-                  class="btn btn-primary">Appliquer</button>
-        </div>
-      </form>
+      {{ build_modal_form("create-special-event", url_for("backoffice_web.operations.create_event") ,
+      create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
     </div>
-    <div>
-      {% if rows and rows.total > 0 %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
-          <div>{% include "components/search/pagination.html" %}</div>
-        </div>
-        <table class="table mb-4">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">ID</th>
-              <th scope="col">Id. Typeform</th>
-              <th scope="col">Date</th>
-              <th scope="col" class="col-9">Titre</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for special_event in rows.items %}
-              <tr>
-                <td></td>
-                <td>{{ links.build_special_event_id_to_details_link(special_event) }}</td>
-                <td>
-                  <a href="https://admin.typeform.com/form/{{ special_event.externalId }}/create"
-                     target="_blank"
-                     title="Ouvrir dans Typeform"
-                     class="link-primary">
-                  {{ special_event.externalId }} <i class="bi bi-box-arrow-up-right"></i></a>
-                </td>
-                <td>{{ special_event.eventDate | format_date }}</td>
-                <td>{{ special_event.title }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p class="lead num-results">Aucun résultat</p>
-      {% endif %}
-    </div>
-  </div>
+  {% endif %}
 {% endblock %}
+{% block table_header %}
+  <th>ID</th>
+  <th>Id. Typeform</th>
+  <th>Date</th>
+  <th class="col-9">Titre</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for special_event in rows.items %}
+    <tr>
+      <td>{{ links.build_special_event_id_to_details_link(special_event) }}</td>
+      <td>
+        <a href="https://admin.typeform.com/form/{{ special_event.externalId }}/create"
+           target="_blank"
+           title="Ouvrir dans Typeform"
+           class="link-primary">
+        {{ special_event.externalId }} <i class="bi bi-box-arrow-up-right"></i></a>
+      </td>
+      <td>{{ special_event.eventDate | format_date }}</td>
+      <td>{{ special_event.title }}</td>
+    </tr>
+  {% endfor %}
+{% endblock table_body %}

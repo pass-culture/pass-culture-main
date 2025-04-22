@@ -61,7 +61,7 @@ def list_events() -> utils.BackofficeResponse:
 
     paginated_rows = query.order_by(operations_models.SpecialEvent.dateCreated.desc()).paginate(
         page=int(form.page.data),
-        per_page=int(form.per_page.data),
+        per_page=int(form.limit.data),
     )
 
     form_url = partial(url_for, ".list_events", **form.raw_data)
