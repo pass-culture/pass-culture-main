@@ -17,7 +17,11 @@ import {
   TimeSlotTypeOption,
 } from '../../form/types'
 import { validationSchema } from '../../form/validationSchema'
-import { getStocksForMultipleDays, getStocksForOneDay } from '../utils'
+import {
+  GetStocksCustomError,
+  getStocksForMultipleDays,
+  getStocksForOneDay,
+} from '../utils'
 
 import styles from './StocksCalendarForm.module.scss'
 import { StocksCalendarFormFooter } from './StocksCalendarFormFooter/StocksCalendarFormFooter'
@@ -61,16 +65,17 @@ export function StocksCalendarForm({
   const onSubmit = async () => {
     const departmentCode = getDepartmentCode(offer)
     const formValues = form.getValues()
-    const stocks =
-      formValues.durationType === DurationTypeOption.ONE_DAY
-        ? getStocksForOneDay(
-            new Date(formValues.oneDayDate || ''),
-            formValues,
-            departmentCode
-          )
-        : getStocksForMultipleDays(formValues, departmentCode)
 
     try {
+      const stocks =
+        formValues.durationType === DurationTypeOption.ONE_DAY
+          ? getStocksForOneDay(
+              new Date(formValues.oneDayDate || ''),
+              formValues,
+              departmentCode
+            )
+          : getStocksForMultipleDays(formValues, departmentCode)
+
       const { stocks_count } = await api.upsertStocks({
         offerId: offer.id,
         stocks: stocks,
@@ -84,8 +89,12 @@ export function StocksCalendarForm({
       )
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      if (e instanceof GetStocksCustomError) {
+        notify.error(e.customMessage)
+        return
+      }
       notify.error(
-        'Une erreur est survenue lors de l’enregistrement de vos stocks.'
+        'Une erreur est survenue lors de l’enregistrement de vos dates.'
       )
     }
 
