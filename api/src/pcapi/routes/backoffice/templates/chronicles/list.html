@@ -1,88 +1,77 @@
-{% extends "layouts/connected.html" %}
-{% from "components/forms.html" import build_filters_form with context %}
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/collapsable_text.html" import collapsable_text with context %}
-{% block page %}
-  <div class="pt-3 px-5">
-    <h1>Chroniques</h1>
-    <div class="filters">{{ build_filters_form(form, dst) }}</div>
-    <div>
-      {% if rows %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results d-inline">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
-          <div>{% include "components/search/pagination.html" %}</div>
-        </div>
-        <table class="table mb-4">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">ID</th>
-              <th scope="col">Titres des œuvres</th>
-              <th scope="col">Contenu</th>
-              <th scope="col">Date de création</th>
-              <th scope="col">Publiée</th>
-              <th scope="col">Diffusibilité RS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for chronicle in rows.items %}
-              <tr>
-                <td>
-                  {% if has_permission("MANAGE_CHRONICLE") %}
-                    <div class="dropdown">
-                      <button type="button"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                              class="btn p-0">
-                        <i class="bi bi-three-dots-vertical"></i>
-                      </button>
-                      <ul class="dropdown-menu">
-                        {% if chronicle.isActive %}
-                          <li class="dropdown-item">
-                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                               data-bs-toggle="modal"
-                               data-bs-target="#unpublish-chronicle-modal-{{ chronicle.id }}-modal">Dépublier</a>
-                          </li>
-                        {% else %}
-                          <li class="dropdown-item">
-                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                               data-bs-toggle="modal"
-                               data-bs-target="#publish-chronicle-modal-{{ chronicle.id }}-modal">Publier</a>
-                          </li>
-                        {% endif %}
-                        <li class="dropdown-item">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#update-chronicle-content-{{ chronicle.id }}">Modifier le contenu</a>
-                        </li>
-                      </ul>
-                    </div>
-                  {% endif %}
-                </td>
-                <td>
-                  <a class="link-primary"
-                     href="{{ url_for('backoffice_web.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
-                </td>
-                <td>
-                  {% if chronicle.products %}
-                    {% for product in chronicle.products %}<div>{{ product }}</div>{% endfor %}
-                  {% endif %}
-                </td>
-                <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
-                <td>{{ chronicle.dateCreated | format_date }}</td>
-                <td>{{ chronicle.isActive | format_bool_badge }}</td>
-                <td>{{ chronicle.isSocialMediaDiffusible | format_bool_badge }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+{% set rows_count = rows.total %}
+{% set pagination = True %}
+{% block title %}Chroniques{% endblock %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block table_header %}
+  {% if has_permission("MANAGE_CHRONICLE") %}<th>Actions</th>{% endif %}
+  <th>ID</th>
+  <th>Titres des œuvres</th>
+  <th>Contenu</th>
+  <th>Date de création</th>
+  <th>Publiée</th>
+  <th>Diffusibilité RS</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for chronicle in rows.items %}
+    <tr>
+      {% if has_permission("MANAGE_CHRONICLE") %}
+        <td>
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
+              {% if chronicle.isActive %}
+                <li class="dropdown-item">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#unpublish-chronicle-modal-{{ chronicle.id }}-modal">Dépublier</a>
+                </li>
+              {% else %}
+                <li class="dropdown-item">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#publish-chronicle-modal-{{ chronicle.id }}-modal">Publier</a>
+                </li>
+              {% endif %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#update-chronicle-content-{{ chronicle.id }}">Modifier le contenu</a>
+              </li>
+            </ul>
+          </div>
+        </td>
       {% endif %}
-    </div>
-  </div>
+      <td>
+        <a class="link-primary"
+           href="{{ url_for('backoffice_web.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
+      </td>
+      <td>
+        {% if chronicle.products %}
+          {% for product in chronicle.products %}<div>{{ product }}</div>{% endfor %}
+        {% endif %}
+      </td>
+      <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
+      <td>{{ chronicle.dateCreated | format_date }}</td>
+      <td>{{ chronicle.isActive | format_bool_badge }}</td>
+      <td>{{ chronicle.isSocialMediaDiffusible | format_bool_badge }}</td>
+    </tr>
+  {% endfor %}
+{% endblock table_body %}
+{% block after_table %}
   {% for chronicle in rows.items %}
     {{ build_modal_form("publish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.publish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "", "Publier la chronique " + chronicle.id|string, "Publier") }}
     {{ build_modal_form("unpublish-chronicle-modal-" + chronicle.id|string, url_for('backoffice_web.chronicles.unpublish_chronicle', chronicle_id=chronicle.id) , chronicle_publication_form, "", "Dépublier la chronique " + chronicle.id|string, "Dépublier") }}
     {{ build_lazy_modal(url_for('backoffice_web.chronicles.get_update_chronicle_content_form', chronicle_id=chronicle.id) , "update-chronicle-content-" + chronicle.id|string) }}
   {% endfor %}
-{% endblock page %}
+{% endblock after_table %}

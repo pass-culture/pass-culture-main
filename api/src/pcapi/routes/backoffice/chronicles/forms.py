@@ -30,10 +30,16 @@ class GetChronicleSearchForm(forms_utils.PCForm):
 
     date_range = fields.PCDateRangeField("Dates", validators=(Optional(),))
     page = fields.PCHiddenField("page", default="1", validators=(Optional(),))
-    per_page = fields.PCSelectField(
-        "Par page",
-        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (10, "Afficher 10 résultats maximum"),
+            (25, "Afficher 25 résultats maximum"),
+            (50, "Afficher 50 résultats maximum"),
+            (100, "Afficher 100 résultats maximum"),
+        ),
         default="100",
+        coerce=int,
         validators=(Optional(),),
     )
 
