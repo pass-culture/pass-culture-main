@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.connectors.dms import api as dms_connector_api
+from pcapi.connectors.dms import utils as dms_utils
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckStatus
@@ -13,16 +14,11 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
-from pcapi.utils.lock import lock
 from pcapi.validation.routes import dms as dms_validation
 from pcapi.validation.routes import ubble as ubble_validation
 
 
 logger = logging.getLogger(__name__)
-
-
-DS_WEBHOOK_LOCK_FORMAT = "webhooks:dms:application_status:%d:lock"
-DS_WEBHOOK_LOCK_TIME = 30
 
 
 @public_api.route("/webhooks/dms/application_status", methods=["POST"])
@@ -31,8 +27,7 @@ DS_WEBHOOK_LOCK_TIME = 30
 def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest) -> None:
     # Ensure that the same application is not handled twice at the same time.
     # Webhook may be called twice in the same second when instructor makes two changes quickly.
-    lock_name = DS_WEBHOOK_LOCK_FORMAT % (form.dossier_id,)
-    with lock(lock_name, ttl=DS_WEBHOOK_LOCK_TIME, timeout=DS_WEBHOOK_LOCK_TIME):
+    with dms_utils.lock_ds_application(form.dossier_id):
         dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(form.dossier_id)
         dms_subscription_api.handle_dms_application(dms_application)
 

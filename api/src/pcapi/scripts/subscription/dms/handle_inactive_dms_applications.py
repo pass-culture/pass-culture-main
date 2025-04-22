@@ -9,6 +9,7 @@ from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
+from pcapi.connectors.dms import utils as dms_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
 from pcapi.repository import repository
@@ -37,23 +38,24 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
     )
 
     for draft_application in draft_applications:
-        try:
-            if not _has_inactivity_delay_expired(draft_application):
+        with dms_utils.lock_ds_application(draft_application.number):
+            try:
+                if not _has_inactivity_delay_expired(draft_application):
+                    continue
+                if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application):
+                    continue
+                _mark_without_continuation_a_draft_application(draft_application)
+                _mark_cancel_dms_fraud_check(
+                    draft_application.number, draft_application.applicant.email or draft_application.profile.email
+                )
+                marked_applications_count += 1
+            except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
+                logger.exception(
+                    "[DMS] Could not mark application %s without continuation",
+                    draft_application.number,
+                    extra={"procedure_number": procedure_number},
+                )
                 continue
-            if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application):
-                continue
-            _mark_without_continuation_a_draft_application(draft_application)
-            _mark_cancel_dms_fraud_check(
-                draft_application.number, draft_application.applicant.email or draft_application.profile.email
-            )
-            marked_applications_count += 1
-        except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
-            logger.exception(
-                "[DMS] Could not mark application %s without continuation",
-                draft_application.number,
-                extra={"procedure_number": procedure_number},
-            )
-            continue
 
     logger.info("[DMS] Marked %d inactive applications for procedure %d", marked_applications_count, procedure_number)
 

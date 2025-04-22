@@ -1,9 +1,11 @@
+from contextlib import contextmanager
 import datetime
 import logging
 import typing
 
 from pcapi.connectors.dms import models as ds_models
 from pcapi.models import db
+from pcapi.utils.lock import lock
 
 
 logger = logging.getLogger(__name__)
@@ -59,3 +61,14 @@ def import_ds_applications(
         current_import.processedApplications = application_numbers
         current_import.isProcessing = False
         db.session.commit()
+
+
+DS_LOCK_FORMAT = "dms:application:%d:lock"
+DS_LOCK_TIME = 30
+
+
+@contextmanager
+def lock_ds_application(application_id: int) -> typing.Iterator[None]:
+    lock_name = DS_LOCK_FORMAT % (application_id,)
+    with lock(lock_name, ttl=DS_LOCK_TIME, timeout=DS_LOCK_TIME):
+        yield
