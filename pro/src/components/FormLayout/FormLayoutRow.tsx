@@ -11,6 +11,7 @@ interface FormLayoutRowProps {
   mdSpaceAfter?: boolean
   smSpaceAfter?: boolean
   sideComponent?: JSX.Element | null
+  testId?: string
 }
 
 export const Row = ({
@@ -20,6 +21,7 @@ export const Row = ({
   mdSpaceAfter,
   smSpaceAfter,
   sideComponent,
+  testId,
 }: FormLayoutRowProps): JSX.Element => {
   return sideComponent !== undefined ? (
     <RowWithInfo
@@ -28,6 +30,7 @@ export const Row = ({
       mdSpaceAfter={mdSpaceAfter}
       smSpaceAfter={smSpaceAfter}
       sideComponent={sideComponent}
+      testId={testId}
     >
       {children}
     </RowWithInfo>
@@ -38,6 +41,7 @@ export const Row = ({
         [style['medium-space-after']]: mdSpaceAfter,
         [style['small-space-after']]: smSpaceAfter,
       })}
+      data-testid={testId}
     >
       {children}
     </div>

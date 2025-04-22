@@ -11,6 +11,7 @@ interface FormLayoutRowWithInfoProps {
   mdSpaceAfter?: boolean
   smSpaceAfter?: boolean
   sideComponent: JSX.Element | null
+  testId?: string
 }
 
 export const RowWithInfo = ({
@@ -20,12 +21,14 @@ export const RowWithInfo = ({
   mdSpaceAfter,
   smSpaceAfter,
   sideComponent,
+  testId,
 }: FormLayoutRowWithInfoProps): JSX.Element => {
   return (
     <Row
       className={cn(className, style['form-layout-row-info'])}
       mdSpaceAfter={mdSpaceAfter}
       smSpaceAfter={smSpaceAfter}
+      testId={testId}
     >
       <Row className={style['form-layout-row-info-field']} inline={inline}>
         {children}

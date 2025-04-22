@@ -357,7 +357,12 @@ export const RecurrenceForm = ({
                 render={(arrayHelpers) => (
                   <>
                     {values.quantityPerPriceCategories.map((_, index) => (
-                      <FormLayout.Row key={index} inline mdSpaceAfter>
+                      <FormLayout.Row
+                        key={index}
+                        inline
+                        mdSpaceAfter
+                        testId={`wrapper-quantityPerPriceCategories.${index}`}
+                      >
                         <QuantityInput
                           label="Nombre de places"
                           name={`quantityPerPriceCategories[${index}].quantity`}
