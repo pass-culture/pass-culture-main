@@ -62,6 +62,12 @@
       margin-left: rem.torem(8px);
     }
 
+    &-actions {
+      display: flex;
+      gap: rem.torem(8px);
+      justify-content: flex-end;
+    }
+
     &:first-of-type {
       padding-left: rem.torem(16px);
 
