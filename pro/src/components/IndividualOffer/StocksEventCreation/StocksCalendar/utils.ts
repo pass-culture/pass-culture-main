@@ -1,4 +1,12 @@
-import { addDays, format, getISODay, isAfter, isSameDay, sub } from 'date-fns'
+import {
+  addDays,
+  format,
+  getISODay,
+  isAfter,
+  isBefore,
+  isSameDay,
+  sub,
+} from 'date-fns'
 
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -9,6 +17,14 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
 import { weekDays } from '../form/constants'
 import { StocksCalendarFormValues } from '../form/types'
+
+export class GetStocksCustomError extends Error {
+  public customMessage: string = ''
+  constructor(m: string) {
+    super()
+    this.customMessage = m
+  }
+}
 
 export function getStocksForMultipleDays(
   formValues: StocksCalendarFormValues,
@@ -41,18 +57,28 @@ export function getStocksForOneDay(
   const times = formValues.specificTimeSlots.map((s) => s.slot)
 
   if (times.length === 0) {
-    throw new Error('Selected times are invalid')
+    throw new GetStocksCustomError('Les horaires sélectionnés sont invalides.')
   }
 
   const formattedDate = format(date, FORMAT_ISO_DATE_ONLY)
 
-  return times.flatMap((t) => {
-    const dateTime = serializeDateTimeToUTCFromLocalDepartment(
-      formattedDate,
-      t,
-      departmentCode
+  const validDateTimes = times
+    .map((t) =>
+      serializeDateTimeToUTCFromLocalDepartment(
+        formattedDate,
+        t,
+        departmentCode
+      )
     )
+    .filter((dateTime) => isBefore(new Date(), dateTime))
 
+  if (validDateTimes.length === 0) {
+    throw new GetStocksCustomError(
+      'Vous ne pouvez pas ajouter de dates dans le passé.'
+    )
+  }
+
+  return validDateTimes.flatMap((dateTime) => {
     return formValues.pricingCategoriesQuantities.map(
       (quantityPerPriceCategory) => {
         const quantity = quantityPerPriceCategory.quantity || null
