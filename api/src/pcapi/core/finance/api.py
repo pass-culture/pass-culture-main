@@ -3106,7 +3106,6 @@ def _create_new_deposit_and_transfer_funds(
         user,
         deposit_source="Transfer deposit to age_17_18 type",
         eligibility=user_eligibility,
-        age_at_registration=None,
     )
 
     # Transfer bookings and update deposit amount
@@ -3153,15 +3152,9 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
     if not current_age or not user.deposit:
         return None
 
-    age_at_first_registration: int | None = None
-    first_registration_datetime = eligibility_api.get_first_eligible_registration_date(
-        user, user.birth_date, users_models.EligibilityType.AGE17_18
+    age_at_first_registration = eligibility_api.get_age_at_first_registration(
+        user, users_models.EligibilityType.AGE17_18
     )
-    if first_registration_datetime:
-        age_at_first_registration = users_utils.get_age_at_date(
-            user.birth_date, first_registration_datetime, user.departementCode
-        )
-
     latest_age_related_recredit: models.Recredit | None = None
     starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
     for age_to_recredit in range(starting_age, end_age + 1):
@@ -3288,19 +3281,18 @@ def create_deposit(
 ) -> models.Deposit:
     """Create a new deposit for the user if there is no deposit yet."""
     if feature.FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        return create_deposit_v3(beneficiary, deposit_source, eligibility, age_at_registration)
+        return create_deposit_v3(beneficiary, deposit_source, eligibility)
 
-    return create_deposit_v2(beneficiary, deposit_source, eligibility, age_at_registration)
+    return create_deposit_v2(beneficiary, deposit_source, eligibility)
 
 
 def create_deposit_v3(
     beneficiary: users_models.User,
     deposit_source: str,
     eligibility: users_models.EligibilityType,
-    age_at_registration: int | None,
 ) -> models.Deposit:
     if eligibility in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]:
-        return create_deposit_v2(beneficiary, deposit_source, eligibility, age_at_registration)
+        return create_deposit_v2(beneficiary, deposit_source, eligibility)
 
     if repository.deposit_exists_for_beneficiary_and_type(beneficiary, models.DepositType.GRANT_17_18):
         raise exceptions.DepositTypeAlreadyGrantedException(models.DepositType.GRANT_17_18)
@@ -3330,15 +3322,12 @@ def create_deposit_v2(
     beneficiary: users_models.User,
     deposit_source: str,
     eligibility: users_models.EligibilityType,
-    age_at_registration: int | None = None,
 ) -> models.Deposit:
     """Create a new deposit for the user if there is no deposit yet."""
-    granted_deposit = get_granted_deposit(
-        beneficiary,
-        eligibility,
-        age_at_registration=age_at_registration,
-    )
+    from pcapi.core.users import eligibility_api
 
+    age_at_registration = eligibility_api.get_age_at_first_registration(beneficiary, eligibility)
+    granted_deposit = get_granted_deposit(beneficiary, eligibility, age_at_registration)
     if not granted_deposit:
         raise exceptions.UserNotGrantable()
 

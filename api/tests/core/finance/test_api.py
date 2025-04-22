@@ -4334,7 +4334,7 @@ class CreateDepositTest:
                 ),
             )
 
-        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility)
 
         assert deposit.type == models.DepositType.GRANT_15_17
         assert deposit.version == 1
@@ -4372,7 +4372,7 @@ class CreateDepositTest:
         )
 
         # Deposit is created right after the validation of the registration
-        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility)
 
         assert deposit.type == models.DepositType.GRANT_17_18
         assert deposit.version == 1
@@ -4381,7 +4381,7 @@ class CreateDepositTest:
     def test_create_underage_deposit_with_birthday_since_registration(self):
         sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
         beneficiary = users_factories.UserFactory(
-            dateOfBirth=sixteen_years_ago.date(), validatedBirthDate=sixteen_years_ago.date()
+            dateOfBirth=sixteen_years_ago, validatedBirthDate=sixteen_years_ago.date()
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
@@ -4393,7 +4393,8 @@ class CreateDepositTest:
             ),
         )
 
-        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=15)
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility)
+
         assert deposit.type == models.DepositType.GRANT_17_18
 
     def test_create_18_years_old_deposit(self):
@@ -4479,9 +4480,7 @@ class CreateDepositTest:
         user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2008, 1, 1))
         assert user.age == 17
 
-        deposit = api.create_deposit(
-            user, "created by test", users_models.EligibilityType.AGE17_18, age_at_registration=user.age
-        )
+        deposit = api.create_deposit(user, "created by test", users_models.EligibilityType.AGE17_18)
 
         assert deposit.type == models.DepositType.GRANT_17_18
 
@@ -4490,9 +4489,7 @@ class CreateDepositTest:
         user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2009, 1, 1))
         assert user.age == 16
 
-        deposit = api.create_deposit(
-            user, "created by test", users_models.EligibilityType.UNDERAGE, age_at_registration=user.age
-        )
+        deposit = api.create_deposit(user, "created by test", users_models.EligibilityType.UNDERAGE)
 
         assert deposit.type == models.DepositType.GRANT_15_17
         assert deposit.amount == 30
