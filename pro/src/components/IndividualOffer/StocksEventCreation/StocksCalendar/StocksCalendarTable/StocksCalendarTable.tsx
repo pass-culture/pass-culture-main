@@ -1,17 +1,27 @@
+import { isBefore } from 'date-fns'
+import { useRef, useState } from 'react'
+
 import {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
+  StockEditionBodyModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import { useNotification } from 'commons/hooks/useNotification'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, removeTime } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getPriceCategoryName } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
+import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StocksCalendarTable.module.scss'
+import { StocksCalendarTableEditStock } from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
 
 export type StocksCalendarTableProps = {
   stocks: GetOfferStockResponseModel[]
@@ -21,17 +31,27 @@ export type StocksCalendarTableProps = {
   updateCheckedStocks: (newStocks: Set<number>) => void
   departmentCode: string
   mode: OFFER_WIZARD_MODE
+  onUpdateStock: (stock: StockEditionBodyModel) => Promise<void>
 }
 
 export function StocksCalendarTable({
   stocks,
   offer,
   onDeleteStocks,
+  onUpdateStock,
   checkedStocks,
   updateCheckedStocks,
   departmentCode,
   mode,
 }: StocksCalendarTableProps) {
+  const [isEditStockDialogOpen, setIsEditStockDialogOpen] = useState(false)
+  const [stockOpenedInDialog, setStockOpenedInDialog] =
+    useState<GetOfferStockResponseModel | null>(null)
+
+  const openedStockTriggerRef = useRef<HTMLButtonElement | null>(null)
+
+  const notify = useNotification()
+
   function handleStockCheckboxClicked(stockId: number) {
     const newChecked = new Set(Array.from(checkedStocks))
     if (checkedStocks.has(stockId)) {
@@ -40,6 +60,18 @@ export function StocksCalendarTable({
       newChecked.add(stockId)
     }
     updateCheckedStocks(newChecked)
+  }
+
+  async function handleUpdateStock(stock: StockEditionBodyModel) {
+    try {
+      await onUpdateStock(stock)
+    } catch {
+      notify.error(
+        'Une erreur est survenue pendant la modification de la date.'
+      )
+    } finally {
+      setIsEditStockDialogOpen(false)
+    }
   }
 
   if (stocks.length === 0) {
@@ -60,6 +92,30 @@ export function StocksCalendarTable({
 
   return (
     <div className={styles['container']}>
+      {/* The dialog must be outside of the table rows, otherwise radix created a dialog root for each line */}
+      <DialogBuilder
+        title="Modifier la date"
+        variant="drawer"
+        open={isEditStockDialogOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setTimeout(() => {
+              //  Re-focus the trigger of the dialog when it's closed
+              openedStockTriggerRef.current?.focus()
+            })
+          }
+          setIsEditStockDialogOpen(isOpen)
+        }}
+      >
+        {stockOpenedInDialog && (
+          <StocksCalendarTableEditStock
+            stock={stockOpenedInDialog}
+            departmentCode={departmentCode}
+            priceCategories={offer.priceCategories}
+            onUpdateStock={handleUpdateStock}
+          />
+        )}
+      </DialogBuilder>
       <table className={styles['table']}>
         <thead className={styles['thead']}>
           <tr>
@@ -92,8 +148,12 @@ export function StocksCalendarTable({
             </th>
             <th className={styles['thead-th']}>Horaire</th>
             <th className={styles['thead-th']}>Tarif</th>
-            <th className={styles['thead-th']}>Place</th>
             <th className={styles['thead-th']}>Date limite de réservation</th>
+            <th className={styles['thead-th']}>
+              {mode === OFFER_WIZARD_MODE.EDITION
+                ? 'Quantité restante'
+                : 'Place'}
+            </th>
             {mode !== OFFER_WIZARD_MODE.CREATION && (
               <th className={styles['thead-th']}>Réservations</th>
             )}
@@ -110,11 +170,26 @@ export function StocksCalendarTable({
 
             const checkboxDateLabel = stock.beginningDatetime ? (
               <span className={styles['tbody-td-date']}>
-                {new Date(stock.beginningDatetime).toLocaleDateString()}
+                {formatLocalTimeDateString(
+                  stock.beginningDatetime,
+                  departmentCode,
+                  FORMAT_DD_MM_YYYY
+                )}
               </span>
             ) : (
               'Date invalide'
             )
+
+            const canDeleteStock =
+              mode !== OFFER_WIZARD_MODE.READ_ONLY &&
+              !isOfferDisabled(offer.status) &&
+              stock.isEventDeletable
+
+            const canEditStock =
+              mode === OFFER_WIZARD_MODE.EDITION &&
+              !isOfferDisabled(offer.status) &&
+              stock.beginningDatetime &&
+              !isBefore(stock.beginningDatetime, removeTime(new Date()))
 
             return (
               <tr key={stock.id} className={styles['tr']}>
@@ -135,7 +210,7 @@ export function StocksCalendarTable({
                     ? formatLocalTimeDateString(
                         stock.beginningDatetime,
                         departmentCode,
-                        'HH:mm'
+                        FORMAT_HH_mm
                       )
                     : 'Horaire invalide'}
                 </td>
@@ -145,27 +220,53 @@ export function StocksCalendarTable({
                     : 'Tarif invalide'}
                 </td>
                 <td className={styles['tbody-td']}>
-                  {stock.quantity === null ? 'Illimité' : stock.quantity}
+                  {stock.bookingLimitDatetime
+                    ? formatLocalTimeDateString(
+                        stock.bookingLimitDatetime,
+                        departmentCode,
+                        FORMAT_DD_MM_YYYY
+                      )
+                    : 'Date invalide'}
                 </td>
                 <td className={styles['tbody-td']}>
-                  {stock.bookingLimitDatetime
-                    ? new Date(stock.bookingLimitDatetime).toLocaleDateString()
-                    : 'Date invalide'}
+                  {stock.quantity === null
+                    ? 'Illimité'
+                    : mode === OFFER_WIZARD_MODE.EDITION
+                      ? (stock.quantity || 0) - stock.bookingsQuantity
+                      : stock.quantity}
                 </td>
                 {mode !== OFFER_WIZARD_MODE.CREATION && (
                   <td className={styles['tbody-td']}>
                     {stock.bookingsQuantity}
                   </td>
                 )}
-                {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
-                  <td className={styles['tbody-td']}>
-                    <ListIconButton
-                      icon={fullTrashIcon}
-                      tooltipContent="Supprimer le stock"
-                      onClick={() => onDeleteStocks([stock.id])}
-                    />
-                  </td>
-                )}
+
+                <td className={styles['tbody-td']}>
+                  <div className={styles['tbody-td-actions']}>
+                    {canEditStock && (
+                      <ListIconButton
+                        icon={fullEditIcon}
+                        tooltipContent="Modifier la date"
+                        ref={
+                          stock.id === stockOpenedInDialog?.id
+                            ? openedStockTriggerRef
+                            : undefined
+                        }
+                        onClick={() => {
+                          setStockOpenedInDialog(stock)
+                          setIsEditStockDialogOpen(true)
+                        }}
+                      />
+                    )}
+                    {canDeleteStock && (
+                      <ListIconButton
+                        icon={fullTrashIcon}
+                        tooltipContent="Supprimer la date"
+                        onClick={() => onDeleteStocks([stock.id])}
+                      />
+                    )}
+                  </div>
+                </td>
               </tr>
             )
           })}
