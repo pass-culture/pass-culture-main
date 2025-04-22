@@ -1239,7 +1239,7 @@ def reject_offerer_attachment(
 
 def delete_offerer_attachment(
     user_offerer: offerers_models.UserOfferer,
-    author_user: users_models.User,
+    author_user: users_models.User | None,
     comment: str | None = None,
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.DELETED
@@ -1391,6 +1391,47 @@ def close_offerer(
 
     if was_validated:
         _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+
+
+def auto_delete_attachments_on_closed_offerers() -> None:
+    last_closed_date_subquery = (
+        db.session.query(history_models.ActionHistory.actionDate)
+        .filter(
+            history_models.ActionHistory.offererId == offerers_models.Offerer.id,
+            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_CLOSED,
+        )
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    rows = (
+        db.session.query(
+            offerers_models.UserOfferer,
+            last_closed_date_subquery.label("offererClosedDate"),
+        )
+        .join(offerers_models.UserOfferer.offerer)
+        .filter(
+            offerers_models.Offerer.isClosed,
+            offerers_models.UserOfferer.validationStatus.in_(
+                [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.VALIDATED]
+            ),
+        )
+        .all()
+    )
+
+    for row in rows:
+        if row.offererClosedDate <= datetime.utcnow() - timedelta(days=settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY):
+            user_offerer = row.UserOfferer
+            comment = (
+                f"Délai de {settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY} jours expiré "
+                f"après fermeture de l'entité juridique sur la plateforme le {row.offererClosedDate.strftime('%d/%m/%Y')}"
+            )
+            if user_offerer.isWaitingForValidation:
+                reject_offerer_attachment(user_offerer, author_user=None, comment=comment, send_email=False)
+            else:
+                delete_offerer_attachment(user_offerer, author_user=None, comment=comment)
 
 
 def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:

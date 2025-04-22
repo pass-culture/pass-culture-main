@@ -103,6 +103,14 @@ class CheckClosedOfferersTest:
         )
 
 
+class DeleteUserOfferersOnClosedOfferersTest:
+    @patch("pcapi.core.offerers.api.auto_delete_attachments_on_closed_offerers")
+    def test_delete_user_offerers_on_closed_offerers(self, mock_auto_delete_attachments_on_closed_offerers, app):
+        run_command(app, "delete_user_offerers_on_closed_offerers")
+
+        mock_auto_delete_attachments_on_closed_offerers.assert_called_once()
+
+
 class SynchronizeVenuesBannerWithGooglePlacesTest:
     @pytest.mark.parametrize("day", [29, 30, 31])
     def test_does_not_execute_and_log_after_28th(self, day, caplog, app):

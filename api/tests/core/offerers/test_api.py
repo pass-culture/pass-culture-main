@@ -24,6 +24,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -2039,6 +2040,119 @@ class CloseOffererTest:
 
         # no user_offerer in this test, no transactional email for EAC
         assert len(mails_testing.outbox) == 0
+
+
+class AutoDeleteAttachmentsOnClosedOfferersTest:
+    @pytest.mark.parametrize(
+        "validation_status_before,validation_status_after,action_type",
+        [
+            (ValidationStatus.NEW, ValidationStatus.REJECTED, history_models.ActionType.USER_OFFERER_REJECTED),
+            (ValidationStatus.PENDING, ValidationStatus.REJECTED, history_models.ActionType.USER_OFFERER_REJECTED),
+            (ValidationStatus.VALIDATED, ValidationStatus.DELETED, history_models.ActionType.USER_OFFERER_DELETED),
+            (ValidationStatus.REJECTED, ValidationStatus.REJECTED, None),
+            (ValidationStatus.DELETED, ValidationStatus.DELETED, None),
+        ],
+    )
+    def test_depending_on_user_offerer_validation(self, validation_status_before, validation_status_after, action_type):
+        offerer = offerers_factories.ClosedOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, validationStatus=validation_status_before)
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2025, 1, 21),
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            offerer=offerer,
+        )
+
+        offerers_api.auto_delete_attachments_on_closed_offerers()
+
+        assert user_offerer.validationStatus == validation_status_after
+        if action_type is None:
+            assert len(user_offerer.user.action_history) == 0
+        else:
+            assert len(user_offerer.user.action_history) == 1
+            action = user_offerer.user.action_history[0]
+            assert action.actionType == action_type
+            assert action.user == user_offerer.user
+            assert (
+                action.comment
+                == "Délai de 90 jours expiré après fermeture de l'entité juridique sur la plateforme le 21/01/2025"
+            )
+
+    def test_less_than_deletion_delay(self):
+        offerer = offerers_factories.ClosedOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=88),
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            offerer=offerer,
+        )
+
+        with assert_num_queries(1):
+            offerers_api.auto_delete_attachments_on_closed_offerers()
+
+        assert user_offerer.isValidated
+        assert len(user_offerer.user.action_history) == 0
+
+    def test_offerer_no_longer_closed(self):
+        offerer = offerers_factories.OffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=95),
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            offerer=offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=85),
+            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            offerer=offerer,
+        )
+
+        with assert_num_queries(1):
+            offerers_api.auto_delete_attachments_on_closed_offerers()
+
+        assert user_offerer.isValidated
+        assert len(user_offerer.user.action_history) == 0
+
+    @pytest.mark.parametrize(
+        "days,expected_validation_status", [(95, ValidationStatus.DELETED), (85, ValidationStatus.VALIDATED)]
+    )
+    def test_offerer_closed_twice(self, days, expected_validation_status):
+        offerer = offerers_factories.ClosedOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=100),
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            offerer=offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=98),
+            actionType=history_models.ActionType.OFFERER_VALIDATED,
+            offerer=offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=days),
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            offerer=offerer,
+        )
+
+        offerers_api.auto_delete_attachments_on_closed_offerers()
+
+        assert user_offerer.validationStatus == expected_validation_status
+
+    def test_mutiple_users_on_the_same_offerer(self):
+        offerer = offerers_factories.ClosedOffererFactory()
+        user_offerer_list = offerers_factories.UserOffererFactory.create_batch(3, offerer=offerer)
+        pending_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=91),
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            offerer=offerer,
+        )
+
+        offerers_api.auto_delete_attachments_on_closed_offerers()
+
+        for user_offerer in user_offerer_list:
+            assert user_offerer.isDeleted
+        assert pending_user_offerer.isRejected
 
 
 def test_grant_user_offerer_access():
