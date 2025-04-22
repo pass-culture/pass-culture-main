@@ -36,6 +36,10 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "patch"
     default_path_params = {"offer_id": 1}
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         pass
 
@@ -1180,6 +1184,10 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "patch"
     default_path_params = {"offer_id": 1}
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
+
     def test_change_to_offerer_venue(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -1456,6 +1464,10 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/v2/collective/offers/{offer_id}"
     endpoint_method = "patch"
     default_path_params = {"offer_id": 1}
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        num_queries = 2  # Select API key + rollback
+        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         pass
