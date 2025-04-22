@@ -205,6 +205,9 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
         import pcapi.core.fraud.factories as fraud_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
+        profile_completion_kwargs: dict = {"dateCreated": kwargs.get("dateCreated", datetime.utcnow())}
+        if "eligibilityType" in kwargs:
+            profile_completion_kwargs["eligibilityType"] = kwargs["eligibilityType"]
         fraud_checks.append(
             fraud_factories.ProfileCompletionFraudCheckFactory(
                 user=obj,
@@ -213,7 +216,7 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
                 resultContent__firstName=obj.firstName,
                 resultContent__lastName=obj.lastName,
                 resultContent__postalCode=obj.postalCode,
-                dateCreated=kwargs.get("dateCreated", datetime.utcnow()),
+                **profile_completion_kwargs,
             )
         )
         return fraud_checks

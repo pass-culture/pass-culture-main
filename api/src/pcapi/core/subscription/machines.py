@@ -43,9 +43,9 @@ FINAL_STATES = [
 
 class SubscriptionStateMachineTemplate:
     state: SubscriptionStates
-    phone_validation_status: subscription_models.SubscriptionItemStatus | None
-    identity_fraud_check: fraud_models.BeneficiaryFraudCheck | None
-    identity_fraud_check_status: subscription_models.SubscriptionItemStatus | None
+    phone_validation_status: subscription_models.SubscriptionItemStatus | None = None
+    identity_fraud_check: fraud_models.BeneficiaryFraudCheck | None = None
+    identity_fraud_check_status: subscription_models.SubscriptionItemStatus | None = None
 
     def __init__(self, user: users_models.User):
         self.user = user
@@ -152,6 +152,70 @@ class SubscriptionStateMachineTemplate:
                 break
 
         return self.state
+
+
+class FreeSubscriptionStateMachine(SubscriptionStateMachineTemplate):
+    excluded_states = [
+        SubscriptionStates.PHONE_VALIDATION,
+        SubscriptionStates.FAILED_PHONE_VALIDATION,
+        SubscriptionStates.IDENTITY_CHECK,
+        SubscriptionStates.IDENTITY_CHECK_RETRY,
+        SubscriptionStates.FAILED_IDENTITY_CHECK,
+        SubscriptionStates.WAITING_FOR_IDENTITY_CHECK,
+        SubscriptionStates.WAITING_FOR_MANUAL_REVIEW,
+        SubscriptionStates.HONOR_STATEMENT,
+    ]
+
+    def __init__(self, user: users_models.User):
+        super().__init__(user)
+
+        self.machine = transitions.Machine(
+            model=self,
+            states=[state for state in SubscriptionStates if state not in FreeSubscriptionStateMachine.excluded_states],
+            initial=SubscriptionStates.EMAIL_VALIDATION,
+            model_override=True,
+        )
+
+        self.machine.add_transition(
+            "proceed",
+            SubscriptionStates.EMAIL_VALIDATION,
+            SubscriptionStates.BENEFICIARY,
+            conditions=["has_validated_email", "is_beneficiary", "has_active_deposit"],
+            unless="is_eligible_for_next_recredit_activation_steps",
+        )
+        self.machine.add_transition(
+            "proceed",
+            SubscriptionStates.EMAIL_VALIDATION,
+            SubscriptionStates.EX_BENEFICIARY,
+            conditions=["has_validated_email", "is_beneficiary"],
+            unless=["has_active_deposit", "is_eligible_for_next_recredit_activation_steps"],
+        )
+        self.machine.add_transition(
+            "proceed",
+            SubscriptionStates.EMAIL_VALIDATION,
+            SubscriptionStates.NOT_ELIGIBLE,
+            conditions="has_validated_email",
+            unless="is_eligible",
+        )
+        self.machine.add_transition(
+            "proceed",
+            SubscriptionStates.EMAIL_VALIDATION,
+            SubscriptionStates.ADMIN_KO_REVIEW,
+            conditions=["has_validated_email", "has_admin_ko_review"],
+        )
+        self.machine.add_transition(
+            "proceed",
+            SubscriptionStates.EMAIL_VALIDATION,
+            SubscriptionStates.PROFILE_COMPLETION,
+            conditions=["has_validated_email", "is_eligible"],
+        )
+
+        self.machine.add_transition(
+            "proceed",
+            SubscriptionStates.PROFILE_COMPLETION,
+            SubscriptionStates.SUBSCRIPTION_COMPLETED_BUT_NOT_BENEFICIARY_YET,
+            conditions="has_completed_profile",
+        )
 
 
 class UnderageSubscriptionStateMachine(SubscriptionStateMachineTemplate):
@@ -385,4 +449,6 @@ def create_state_machine_to_current_state(user: users_models.User) -> Subscripti
 def _create_user_relevant_state_machine(user: users_models.User) -> SubscriptionStateMachineTemplate:
     if user.is_18_or_above_eligible:
         return EighteenSubscriptionStateMachine(user)
-    return UnderageSubscriptionStateMachine(user)
+    if user.is_underage_eligible:
+        return UnderageSubscriptionStateMachine(user)
+    return FreeSubscriptionStateMachine(user)

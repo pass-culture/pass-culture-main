@@ -9,6 +9,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 
 from . import exceptions
@@ -37,12 +38,14 @@ def decide_eligibility(
         return None
 
     eligibility_at_datetime = get_eligibility_at_date(birth_date, at_datetime, user.departementCode)
-    if eligibility_at_datetime:
+    if eligibility_at_datetime and eligibility_at_datetime != users_models.EligibilityType.FREE:
         return eligibility_at_datetime
 
     pre_decree_eligibility = get_pre_decree_eligibility(user, birth_date, at_datetime)
     if pre_decree_eligibility:
         return pre_decree_eligibility
+    if eligibility_at_datetime:
+        return eligibility_at_datetime
 
     first_age_17_to_18_registration_date = get_first_eligible_registration_date(
         user, birth_date, users_models.EligibilityType.AGE17_18
@@ -136,6 +139,9 @@ def get_eligibility_at_date(
     if 17 <= age <= 18:
         return users_models.EligibilityType.AGE17_18
 
+    if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and 15 <= age <= 16:
+        return users_models.EligibilityType.FREE
+
     return None
 
 
@@ -171,7 +177,7 @@ def get_eligibility_start_datetime(
     fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
     seventeenth_birthday = date_of_birth + relativedelta(years=17)
 
-    if at_datetime < settings.CREDIT_V3_DECREE_DATETIME:
+    if at_datetime < settings.CREDIT_V3_DECREE_DATETIME or FeatureToggle.WIP_FREE_ELIGIBILITY.is_active():
         return fifteenth_birthday
 
     return seventeenth_birthday
