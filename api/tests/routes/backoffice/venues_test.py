@@ -1744,6 +1744,8 @@ class UpdateVenueTest(PostEndpointHelper):
             ("latitude", "98.87004"),
             ("longitude", "2.3785O"),
             ("longitude", "237.850"),
+            ("latitude", ""),
+            ("longitude", ""),
         ],
     )
     def test_update_venue_with_validation_error(self, authenticated_client, field, value):

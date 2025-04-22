@@ -65,8 +65,8 @@ class EditVenueForm(EditVirtualVenueForm):
             wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
         ),
     )
-    latitude = fields.PCOptHiddenField("Latitude")
-    longitude = fields.PCOptHiddenField("Longitude")
+    latitude = fields.PCHiddenField("Latitude")
+    longitude = fields.PCHiddenField("Longitude")
     ban_id = fields.PCOptHiddenField("Identifiant Base Adresse Nationale")
     is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
     venue_type_code = fields.PCSelectWithPlaceholderValueField(
