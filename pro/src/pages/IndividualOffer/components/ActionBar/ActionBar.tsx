@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -36,6 +37,9 @@ export const ActionBar = ({
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
   const notify = useNotification()
+  const isEventWithOpeningHoursEnabled = useActiveFeature(
+    'WIP_ENABLE_EVENT_WITH_OPENING_HOUR'
+  )
 
   const Left = (): JSX.Element => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -47,6 +51,18 @@ export const ActionBar = ({
           disabled={isDisabled}
         >
           Retour
+        </Button>
+      )
+    }
+
+    if (
+      mode === OFFER_WIZARD_MODE.EDITION &&
+      step === OFFER_WIZARD_STEP_IDS.STOCKS &&
+      isEventWithOpeningHoursEnabled
+    ) {
+      return (
+        <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>
+          Quitter le mode édition
         </Button>
       )
     }
