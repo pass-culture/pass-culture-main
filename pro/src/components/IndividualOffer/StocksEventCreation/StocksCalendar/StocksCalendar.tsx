@@ -4,6 +4,7 @@ import useSWR, { mutate } from 'swr'
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
+  StockEditionBodyModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
 import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -24,13 +25,12 @@ import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 
 const STOCKS_PER_PAGE = 20
 
-export function StocksCalendar({
-  offer,
-  mode,
-}: {
+export type StocksCalendarProps = {
   offer: GetIndividualOfferWithAddressResponseModel
   mode: OFFER_WIZARD_MODE
-}) {
+}
+
+export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
   const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
@@ -94,6 +94,17 @@ export function StocksCalendar({
     await mutate(queryKeys)
   }
 
+  async function updateStock(stock: StockEditionBodyModel) {
+    await api.upsertStocks({
+      offerId: offer.id,
+      stocks: [stock],
+    })
+
+    notify.success('Les modifications ont été enregistrées')
+
+    await mutate(queryKeys)
+  }
+
   const stocks = data?.stocks || []
 
   return (
@@ -123,6 +134,7 @@ export function StocksCalendar({
                     orderByDesc: Boolean(desc),
                   })
                 }}
+                mode={mode}
               />
             </div>
             {data.stockCount > 0 && (
@@ -138,6 +150,7 @@ export function StocksCalendar({
               updateCheckedStocks={setCheckedStocks}
               departmentCode={departmentCode}
               mode={mode}
+              onUpdateStock={updateStock}
             />
             <div className={styles['pagination']}>
               <Pagination
