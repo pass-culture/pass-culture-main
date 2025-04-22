@@ -4,6 +4,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.dms import utils as dms_utils
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.subscription.dms import repository as dms_repository
 from pcapi.repository import repository
@@ -84,7 +85,9 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
                 latest_modification_datetime = application_details.latest_modification_datetime
                 if new_import_datetime is None or latest_modification_datetime > new_import_datetime:
                     new_import_datetime = latest_modification_datetime
-                dms_api.handle_dms_application(application_details)
+
+                with dms_utils.lock_ds_application(application_details.number):
+                    dms_api.handle_dms_application(application_details)
                 processed_applications.append(application_details.number)
             except Exception:  # pylint: disable=broad-except
                 logger.exception("[DMS] Error in script while importing application %s", application_details.number)
