@@ -2,8 +2,10 @@ import dataclasses
 import datetime
 import decimal
 import enum
+import functools
 from functools import partial
 import logging
+import time
 import typing
 
 from flask_sqlalchemy import BaseQuery
@@ -67,6 +69,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
@@ -1057,15 +1060,15 @@ def create_mediation(
     return mediation
 
 
-def delete_mediation(offer: models.Offer) -> None:
-    mediations = db.session.query(models.Mediation).filter(models.Mediation.offerId == offer.id).all()
+def delete_mediations(offer_ids: typing.Collection[int]) -> None:
+    mediations = db.session.query(models.Mediation).filter(models.Mediation.offerId.in_(offer_ids)).all()
 
     _delete_mediations_and_thumbs(mediations)
 
     on_commit(
         partial(
             search.async_index_offer_ids,
-            [offer.id],
+            offer_ids,
             reason=search.IndexationReason.MEDIATION_DELETION,
         ),
     )
@@ -2214,3 +2217,96 @@ def delete_event_opening_hours(event_opening_hours: offers_models.EventOpeningHo
                 raise exceptions.EventOpeningHoursException(
                     field="booking", msg=f"booking #{booking.id} is already used, it cannot be cancelled"
                 )
+
+
+def delete_offers_stocks_related_objects(offer_ids: typing.Collection[int]) -> None:
+    stock_ids_query = db.session.query(models.Stock.id).filter(models.Stock.offerId.in_(offer_ids))
+    stock_ids = [row[0] for row in stock_ids_query]
+
+    for chunk in get_chunks(stock_ids, chunk_size=128):
+        models.ActivationCode.query.filter(
+            models.ActivationCode.stockId.in_(chunk),
+            # All bookingId should be None if venue_has_bookings is False,
+            # keep condition to get an exception otherwise
+            models.ActivationCode.bookingId.is_(None),
+        ).delete(synchronize_session=False)
+
+
+def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
+    delete_offers_stocks_related_objects(offer_ids)
+
+    related_models = [
+        models.Stock,
+        users_models.Favorite,
+        models.Mediation,
+        models.OfferReport,
+        finance_models.CustomReimbursementRule,
+        models.EventOpeningHours,
+    ]
+
+    for model in related_models:
+        model.query.filter(model.offerId.in_(offer_ids)).delete(synchronize_session=False)  # type: ignore[attr-defined]
+
+    delete_mediations(offer_ids)
+
+
+def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], offer_chunk_size: int = 16) -> None:
+    """Delete a set of offers and all of their related objects and
+    unindex them all. Each removal is done by batch which runs inside
+    a transaction.
+
+    Notes:
+        The `offer_chunk_size` should be bigger if offers have no or
+        very few related objects and kept quite small otherwise
+        because of the transaction that should not last long.
+    """
+    for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=offer_chunk_size)):
+        with atomic():
+            start = time.time()
+
+            delete_offers_related_objects(chunk)
+
+            unindex_offers_partial = functools.partial(search.unindex_offer_ids, chunk)
+            on_commit(unindex_offers_partial)
+
+            models.Offer.query.filter(models.Offer.id.in_(chunk)).delete(synchronize_session=False)
+            db.session.flush()
+
+            log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}
+            logger.info("delete offers and related objects: round %d, end", idx, extra=log_extra)
+
+
+def delete_unbookable_unbooked_old_offers(
+    min_id: int = 0, max_id: int | None = None, offer_chunk_size: int = 16
+) -> None:
+    """Delete all unusable offers.
+
+    This means offers that:
+        * have been updated more than a year ago;
+        * (AND) are not bookable (no available stock);
+        * (AND) have never been booked.
+
+    Each offer should be deleted, with its stocks and all related objects.
+    Each offer should also be unindexed.
+    """
+    start = time.time()
+    log_extra = {"min_id": min_id, "max_id": max_id, "offer_chunk_size": offer_chunk_size}
+    logger.info("delete_unbookable_unbooked_unmodified_old_offers start", extra=log_extra)
+
+    offer_ids = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id)
+    for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=2_500)):
+        inner_start = time.time()
+
+        delete_offers_and_all_related_objects(chunk, offer_chunk_size)
+
+        extra = {
+            "round": idx,
+            "time_spent": time.time() - inner_start,
+            "offers_count": len(chunk),
+            "min_id": min(chunk),
+            "max_id": max(chunk),
+        }
+        logger.info("delete_unbookable_unbooked_unmodified_old_offers round %d: end", idx, extra=extra)
+
+    log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
+    logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
