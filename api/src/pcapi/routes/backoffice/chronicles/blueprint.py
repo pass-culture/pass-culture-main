@@ -103,7 +103,7 @@ def list_chronicles() -> utils.BackofficeResponse:
 
     paginated_chronicles = query.paginate(
         page=int(form.page.data),
-        per_page=int(form.per_page.data),
+        per_page=int(form.limit.data),
     )
 
     form_url = partial(url_for, "backoffice_web.chronicles.list_chronicles", **form.raw_data)
