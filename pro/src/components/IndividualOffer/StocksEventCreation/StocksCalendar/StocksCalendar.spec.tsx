@@ -11,7 +11,7 @@ import {
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
-import { StocksCalendar } from './StocksCalendar'
+import { StocksCalendar, StocksCalendarProps } from './StocksCalendar'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -25,7 +25,10 @@ const defaultStocks = Array(19)
   .fill(null)
   .map((_, index) => getOfferStockFactory({ id: index }))
 
-function renderStocksCalendar(stocks = defaultStocks) {
+function renderStocksCalendar(
+  stocks = defaultStocks,
+  props?: Partial<StocksCalendarProps>
+) {
   vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
     stocks: stocks,
     stockCount: stocks.length,
@@ -39,6 +42,7 @@ function renderStocksCalendar(stocks = defaultStocks) {
       <StocksCalendar
         offer={getIndividualOfferFactory()}
         mode={OFFER_WIZARD_MODE.CREATION}
+        {...props}
       />
       <Notification />
     </>
@@ -104,7 +108,7 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le stock' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer la date' })[0]
     )
 
     expect(deleteSpy).toHaveBeenCalledOnce()
@@ -211,5 +215,33 @@ describe('StocksCalendar', () => {
     })
 
     expect(screen.queryByText(/ dates/)).not.toBeInTheDocument()
+  })
+
+  it('should update a specific stock', async () => {
+    renderStocksCalendar(
+      [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+        }),
+      ],
+      {
+        mode: OFFER_WIZARD_MODE.EDITION,
+      }
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    )
+
+    const updateStockSpy = vi.spyOn(api, 'upsertStocks')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
+
+    expect(updateStockSpy).toHaveBeenCalled()
   })
 })
