@@ -1,5 +1,6 @@
 import { StocksOrderedBy } from 'apiClient/v1'
 import { PriceCategoryResponseModel } from 'apiClient/v1/models/PriceCategoryResponseModel'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -12,34 +13,68 @@ import { StocksTableFilters, StocksTableSort } from '../../form/types'
 
 import styles from './StocksCalendarFilters.module.scss'
 
-const stockTableSortTypes: {
+export type StocksCalendarFiltersProps = {
+  priceCategories?: Array<PriceCategoryResponseModel> | null
+  filters: StocksTableFilters
+  sortType: StocksTableSort
+  onUpdateFilters: (filters: StocksTableFilters) => void
+  onUpdateSort: (sort?: StocksTableSort['sort'], orderByDesc?: boolean) => void
+  mode: OFFER_WIZARD_MODE
+}
+
+function getStockTableSortTypes(mode: OFFER_WIZARD_MODE): {
   name: string
   sort: StocksOrderedBy
   orderByDesc: boolean
-}[] = [
-  { name: 'Date décroissante', sort: StocksOrderedBy.DATE, orderByDesc: true },
-  { name: 'Date croissante', sort: StocksOrderedBy.DATE, orderByDesc: false },
-  {
-    name: 'Place décroissante',
-    sort: StocksOrderedBy.DN_BOOKED_QUANTITY,
-    orderByDesc: true,
-  },
-  {
-    name: 'Place croissante',
-    sort: StocksOrderedBy.DN_BOOKED_QUANTITY,
-    orderByDesc: false,
-  },
-  {
-    name: 'Date limite de réservation décroissante',
-    sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
-    orderByDesc: true,
-  },
-  {
-    name: 'Date limite de réservation croissante',
-    sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
-    orderByDesc: false,
-  },
-]
+}[] {
+  return [
+    {
+      name: 'Date décroissante',
+      sort: StocksOrderedBy.DATE,
+      orderByDesc: true,
+    },
+    { name: 'Date croissante', sort: StocksOrderedBy.DATE, orderByDesc: false },
+  ]
+    .concat(
+      mode === OFFER_WIZARD_MODE.EDITION
+        ? [
+            {
+              name: 'Quantité décroissante',
+              sort: StocksOrderedBy.REMAINING_QUANTITY,
+              orderByDesc: true,
+            },
+            {
+              name: 'Quantité croissante',
+              sort: StocksOrderedBy.REMAINING_QUANTITY,
+              orderByDesc: false,
+            },
+          ]
+        : [
+            {
+              name: 'Place décroissante',
+              sort: StocksOrderedBy.DN_BOOKED_QUANTITY,
+              orderByDesc: true,
+            },
+            {
+              name: 'Place croissante',
+              sort: StocksOrderedBy.DN_BOOKED_QUANTITY,
+              orderByDesc: false,
+            },
+          ]
+    )
+    .concat([
+      {
+        name: 'Date limite de réservation décroissante',
+        sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+        orderByDesc: true,
+      },
+      {
+        name: 'Date limite de réservation croissante',
+        sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+        orderByDesc: false,
+      },
+    ])
+}
 
 export const StocksCalendarFilters = ({
   priceCategories,
@@ -47,20 +82,15 @@ export const StocksCalendarFilters = ({
   sortType,
   onUpdateFilters,
   onUpdateSort,
-}: {
-  priceCategories?: Array<PriceCategoryResponseModel> | null
-  filters: StocksTableFilters
-  sortType: StocksTableSort
-  onUpdateFilters: (filters: StocksTableFilters) => void
-  onUpdateSort: (sort?: StocksTableSort['sort'], orderByDesc?: boolean) => void
-}) => {
+  mode,
+}: StocksCalendarFiltersProps) => {
   const hasFiltersApplied = Object.values(filters).some(Boolean)
   return (
     <div className={styles['container']}>
       <Select
         label="Trier par"
         name="sort"
-        options={stockTableSortTypes.map((type) => ({
+        options={getStockTableSortTypes(mode).map((type) => ({
           label: type.name,
           value: `${type.sort}${type.orderByDesc ? ' desc' : ''}`,
         }))}
