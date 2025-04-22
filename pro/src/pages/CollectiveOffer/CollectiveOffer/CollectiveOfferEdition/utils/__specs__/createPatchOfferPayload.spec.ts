@@ -28,7 +28,7 @@ describe('createPatchOfferPayload', () => {
       none: false,
     },
     notificationEmails: ['test1@email.com', 'test2@email.com'],
-    venueId: 'KM',
+    venueId: venueId.toString(),
     eventAddress: {
       addressType: OfferAddressType.OFFERER_VENUE,
       otherAddress: 'TestOtherAddress',
@@ -104,7 +104,6 @@ describe('createPatchOfferPayload', () => {
     audioDisabilityCompliant: false,
     visualDisabilityCompliant: true,
     bookingEmails: ['test3@email.com', 'test4@email.com'],
-    venueId: venueId,
     offerVenue: {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
@@ -120,12 +119,15 @@ describe('createPatchOfferPayload', () => {
   }
 
   it('should return the correct patch offer payload for a non-template offer', () => {
-    const payload = createPatchOfferPayload({ ...offer }, initialValues, false)
+    const payload = createPatchOfferPayload(offer, initialValues, false)
 
-    expect(payload).toMatchObject({
-      ...patchOfferPayload,
-      venueId: venueId,
-    })
+    expect(payload).toMatchObject(patchOfferPayload)
+  })
+
+  it('should return the correct patch offer payload for a non-template offer when no change', () => {
+    const payload = createPatchOfferPayload(initialValues, initialValues, false)
+
+    expect(payload).toMatchObject({})
   })
 
   it('should return the correct patch offer payload for a template offer', () => {
@@ -134,11 +136,9 @@ describe('createPatchOfferPayload', () => {
       initialValues, false
     )
 
-    expect(payload).toMatchObject({
-      venueId: venueId,
-      priceDetail: '123',
-    })
+    expect(payload).toMatchObject({priceDetail: '123'})
   })
+
   it('should return the correct patch offer payload for a template offer when dates are empty', () => {
     const payload = createPatchOfferTemplatePayload(
       {
@@ -153,9 +153,18 @@ describe('createPatchOfferPayload', () => {
     )
 
     expect(payload).toMatchObject({
-      venueId: venueId,
       priceDetail: '123',
-      dates: null,
+      dates: null
     })
+  })
+
+  it('should return the correct patch offer payload for a template offer when no change', () => {
+    const payload = createPatchOfferTemplatePayload(
+      initialValues,
+      initialValues,
+      false
+    )
+
+    expect(payload).toMatchObject({})
   })
 })
