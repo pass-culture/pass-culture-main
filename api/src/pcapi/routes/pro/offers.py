@@ -543,7 +543,7 @@ def delete_thumbnail(offer_id: int) -> None:
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    offers_api.delete_mediation(offer=offer)
+    offers_api.delete_mediations([offer_id])
 
 
 @private_api.route("/offers/categories", methods=["GET"])

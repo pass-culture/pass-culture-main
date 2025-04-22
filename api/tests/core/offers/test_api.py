@@ -21,6 +21,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
+import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
@@ -44,6 +45,8 @@ from pcapi.core.providers.allocine import get_allocine_products_provider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.factories as reactions_factories
+import pcapi.core.reactions.models as reactions_models
+import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -5218,3 +5221,217 @@ class MoveOfferTest:
         assert offer.venue == new_venue
         assert db.session.query(bookings_models.Booking).count() == 1
         assert db.session.query(bookings_models.Booking).all()[0].venue == new_venue
+
+
+@pytest.mark.usefixtures("db_session")
+class DeleteOffersStocksRelatedObjectsTest:
+    def test_delete_one_offer_with_one_stock_without_any_related_objects(self):
+        stock = factories.StockFactory()
+
+        api.delete_offers_stocks_related_objects([stock.offerId])
+        self.assert_no_more_stocks_related_objects()
+
+    def test_delete_one_offer_with_many_stocks_with_many_related_objects(self):
+        offer = factories.OfferFactory()
+        for stock in factories.StockFactory.create_batch(3, offer=offer):
+            factories.ActivationCodeFactory.create_batch(2, stock=stock)
+
+        api.delete_offers_stocks_related_objects([offer.id])
+        self.assert_no_more_stocks_related_objects()
+
+    def test_delete_many_offers_with_many_stock_with_many_related_objects(self):
+        offers = factories.OfferFactory.create_batch(3)
+        for offer in offers:
+            for stock in factories.StockFactory.create_batch(3, offer=offer):
+                factories.ActivationCodeFactory.create_batch(2, stock=stock)
+
+        api.delete_offers_stocks_related_objects([offer.id for offer in offers])
+        self.assert_no_more_stocks_related_objects()
+
+    @pytest.mark.parametrize("offer_ids", ([0], []))
+    def test_delete_unknown_offers_does_not_delete_anything(self, offer_ids):
+        stock = factories.StockFactory()
+        factories.ActivationCodeFactory(stock=stock)
+
+        api.delete_offers_stocks_related_objects(offer_ids)
+        assert models.Stock.query.count() == 1
+        assert models.ActivationCode.query.count() == 1
+
+    def assert_no_more_stocks_related_objects(self):
+        db.session.commit()
+        assert models.ActivationCode.query.count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class DeleteOffersRelatedObjectsTest:
+    def test_delete_one_offer_without_any_related_objects_works_but_does_nothing(self):
+        offer = factories.OfferFactory()
+        api.delete_offers_related_objects([offer.id])
+
+    def test_one_offers_related_objects_are_deleted(self):
+        offer = self.build_offer_with_related_objects()
+
+        api.delete_offers_related_objects([offer.id])
+        self.assert_offer_related_objects_are_deleted([offer.id])
+
+    def test_only_objects_related_to_target_offer_are_deleted(self):
+        target_offer = self.build_offer_with_related_objects()
+        other_offer = self.build_offer_with_related_objects()
+
+        api.delete_offers_related_objects([target_offer.id])
+
+        self.assert_offer_related_objects_are_deleted([target_offer.id])
+        self.assert_offer_related_objects_have_not_been_deleted([other_offer.id])
+
+    @pytest.mark.parametrize("offer_ids", ([0], []))
+    def test_nothing_deleted_if_offer_ids_are_unknown(self, offer_ids):
+        api.delete_offers_related_objects(offer_ids)
+        self.assert_offer_related_objects_are_deleted(offer_ids)
+
+    def build_offer_with_related_objects(self):
+        offer = factories.OfferFactory()
+        factories.StockFactory.create_batch(2, offer=offer)
+        users_factories.FavoriteFactory(offer=offer)
+        factories.MediationFactory.create_batch(2, offer=offer)
+        factories.OfferReportFactory(offer=offer)
+        criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criteria_factories.CriterionFactory().id)
+
+        return offer
+
+    def assert_offer_related_objects_are_deleted(self, offer_ids):
+        db.session.commit()
+
+        # not efficient but will be fine for testing
+        for offer_id in offer_ids:
+            assert models.Stock.query.filter_by(offerId=offer_id).count() == 0
+            assert users_models.Favorite.query.filter_by(offerId=offer_id).count() == 0
+            assert models.Mediation.query.filter_by(offerId=offer_id).count() == 0
+            assert models.OfferReport.query.filter_by(offerId=offer_id).count() == 0
+
+    def assert_offer_related_objects_have_not_been_deleted(self, offer_ids):
+        db.session.commit()
+
+        # not efficient but will be fine for testing
+        for offer_id in offer_ids:
+            assert models.Stock.query.filter_by(offerId=offer_id).count() > 0
+            assert users_models.Favorite.query.filter_by(offerId=offer_id).count() > 0
+            assert criteria_models.OfferCriterion.query.filter_by(offerId=offer_id).count() > 0
+            assert models.Mediation.query.filter_by(offerId=offer_id).count() > 0
+            assert models.OfferReport.query.filter_by(offerId=offer_id).count() > 0
+
+
+def assert_offers_have_been_completely_cleaned(offer_ids):
+    # should not be necessary but testing sessions sometimes comes with
+    # unexpected behaviour.
+    db.session.commit()
+
+    assert models.Offer.query.filter(models.Offer.id.in_(offer_ids)).count() == 0
+
+    # not efficient but will be fine for testing
+    for offer_id in offer_ids:
+        assert offer_id not in search_testing.search_store["offers"]
+
+        assert models.Stock.query.filter_by(offerId=offer_id).count() == 0
+        assert finance_models.CustomReimbursementRule.query.filter_by(offerId=offer_id).count() == 0
+        assert models.EventOpeningHours.query.filter_by(offerId=offer_id).count() == 0
+        assert users_models.Favorite.query.filter_by(offerId=offer_id).count() == 0
+        assert models.FutureOffer.query.filter_by(offerId=offer_id).count() == 0
+        assert models.HeadlineOffer.query.filter_by(offerId=offer_id).count() == 0
+        assert models.Mediation.query.filter_by(offerId=offer_id).count() == 0
+        assert chronicles_models.OfferChronicle.query.filter_by(offerId=offer_id).count() == 0
+        assert models.OfferCompliance.query.filter_by(offerId=offer_id).count() == 0
+        assert criteria_models.OfferCriterion.query.filter_by(offerId=offer_id).count() == 0
+        assert models.OfferReport.query.filter_by(offerId=offer_id).count() == 0
+        assert models.PriceCategory.query.filter_by(offerId=offer_id).count() == 0
+        assert reactions_models.Reaction.query.filter_by(offerId=offer_id).count() == 0
+        assert models.Stock.query.filter_by(offerId=offer_id).count() == 0
+        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_id).count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class DeleteOffersAndAllRelatedObjectsTest:
+    def test_one_unindexed_offer_without_related_object_is_deleted(self):
+        offer_id = factories.OfferFactory().id
+        api.delete_offers_and_all_related_objects([offer_id])
+        assert_offers_have_been_completely_cleaned([offer_id])
+
+    def test_many_offers_are_deleted_with_their_related_objects_and_unindexed(self):
+        offers = self.build_many_eligible_for_search_offers_with_related_objects()
+        offer_ids = [offer.id for offer in offers]
+
+        api.delete_offers_and_all_related_objects(offer_ids)
+        assert_offers_have_been_completely_cleaned(offer_ids)
+
+    def test_only_targetted_offers_are_deleted_with_their_related_objects_and_unindexed(self):
+        offers = self.build_many_eligible_for_search_offers_with_related_objects()
+        offer_ids = [offer.id for offer in offers]
+
+        other_offer_id = factories.StockFactory().offerId
+        search.reindex_offer_ids([other_offer_id])
+
+        api.delete_offers_and_all_related_objects(offer_ids)
+        assert_offers_have_been_completely_cleaned(offer_ids)
+
+        assert models.Offer.query.get(other_offer_id) is not None
+        assert models.Stock.query.filter_by(offerId=other_offer_id).one()
+        assert other_offer_id in search_testing.search_store["offers"]
+
+    def test_offer_is_deleted_and_unindexed_with_chunk_size_set(self):
+        offers = self.build_many_eligible_for_search_offers_with_related_objects()
+        offer_ids = [offer.id for offer in offers]
+
+        api.delete_offers_and_all_related_objects(offer_ids, offer_chunk_size=1)
+        assert_offers_have_been_completely_cleaned(offer_ids)
+
+    def build_many_eligible_for_search_offers_with_related_objects(self, count=3):
+        offers = []
+        for _ in range(count):
+            offer = factories.StockFactory().offer
+            offers.append(offer)
+            search.reindex_offer_ids([offer.id])
+
+            factories.StockFactory.create_batch(2, offer=offer)
+            users_factories.FavoriteFactory(offer=offer)
+        return offers
+
+
+@pytest.mark.usefixtures("db_session")
+class DeleteUnbookableUnusedOldOffersTest:
+    @property
+    def a_year_ago(self):
+        return date.today() - timedelta(days=366)
+
+    def test_old_offer_without_any_stock_id_deleted(self):
+        offer_id = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago).id
+
+        api.delete_unbookable_unbooked_old_offers()
+        assert_offers_have_been_completely_cleaned([offer_id])
+
+    def test_old_offer_with_unbookable_stocks_and_more_is_deleted(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+        offer_id = offer.id
+
+        factories.StockFactory.create_batch(2, offer=offer, isSoftDeleted=True)
+        users_factories.FavoriteFactory(offer=offer)
+        factories.OfferReportFactory(offer=offer)
+
+        api.delete_unbookable_unbooked_old_offers()
+        assert_offers_have_been_completely_cleaned([offer_id])
+
+    def test_recent_or_still_bookable_old_offers_are_ignored(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+        offer_id = offer.id
+
+        # old but still bookable -> should be ignored
+        old_bookable_offer = factories.StockFactory(
+            offer__dateCreated=self.a_year_ago,
+            offer__dateUpdated=self.a_year_ago,
+        ).offer
+        # recent -> should be ignored (event if it is not bookable, eg. it has no stocks)
+        recent_offer = factories.OfferFactory()
+
+        api.delete_unbookable_unbooked_old_offers()
+        assert_offers_have_been_completely_cleaned([offer_id])
+
+        assert models.Offer.query.get(old_bookable_offer.id) is not None
+        assert models.Offer.query.get(recent_offer.id) is not None

@@ -1582,3 +1582,70 @@ def offer_has_timestamped_stocks(offer_id: int) -> bool:
         )
         .exists()
     ).scalar()
+
+
+def get_unbookable_unbooked_old_offer_ids(
+    min_id: int = 0, max_id: int | None = None, batch_size: int = 10_000
+) -> typing.Generator[int, None, None]:
+    """Find unbookable unbooked old offer ids.
+
+    * An unbookable offer is an offer without any stock OR with only soft
+    deleted stocks OR whose stocks have all passed their booking limit date.
+    * An unbooked offer is an offer without any known booking (not event
+    cancelled).
+    * An old offer is an offer that has been created more than a year ago.
+    """
+    today = datetime.date.today()
+    a_year_ago = today - datetime.timedelta(days=365)
+
+    # find offer that MIGHT match: the outer join will also return
+    # some bookable stocks or even bookings. This query needs to be
+    # filtered.
+    old_offer_base_query = (
+        models.Offer.query.outerjoin(models.Offer.stocks)
+        .outerjoin(models.Stock.bookings)
+        .filter(models.Offer.dateUpdated < a_year_ago)
+        .filter(
+            sa.or_(
+                models.Stock.bookingLimitDatetime.is_(None),
+                models.Stock.isExpired.is_(True),  # type: ignore[attr-defined]
+                models.Stock.isSoldOut.is_(True),  # type: ignore[attr-defined]
+                models.Stock.id == None,
+            )
+        )
+        .filter(bookings_models.Booking.id == None)
+        .with_entities(models.Offer.id)
+    )
+
+    # reverse query: find offer ids that have bookable stock or even
+    # a booking to filter `old_offer_base_query` results.
+    old_bookable_or_booked_offers_base_query = (
+        models.Offer.query.outerjoin(models.Offer.stocks)
+        .outerjoin(models.Stock.bookings)
+        .filter(models.Offer.dateUpdated < a_year_ago)
+        .filter(
+            sa.or_(
+                models.Stock.isExpired.is_(False),  # type: ignore[attr-defined]
+                models.Stock.isSoldOut.is_(False),  # type: ignore[attr-defined]
+                bookings_models.Booking.id.is_not(None),
+            )
+        )
+        .filter(models.Stock.isSoftDeleted.is_not(True))
+        .filter(models.Stock.id.is_not(None))
+        .with_entities(models.Offer.id)
+    )
+
+    if max_id is None:
+        max_id = models.Offer.query.order_by(models.Offer.id).first().id
+
+    while min_id < max_id:
+        _filter = [models.Offer.id >= min_id, models.Offer.id < min_id + batch_size]
+
+        filtering_query = old_bookable_or_booked_offers_base_query.filter(*_filter)
+        offer_ids_to_filter = {row[0] for row in filtering_query}
+
+        query = old_offer_base_query.filter(*_filter)
+        query = query.filter(models.Offer.id.notin_(offer_ids_to_filter))
+
+        yield from {row[0] for row in query}
+        min_id += batch_size

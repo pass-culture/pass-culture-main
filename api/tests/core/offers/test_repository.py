@@ -2254,3 +2254,74 @@ def test_handles_offer_creation_while_product_merging(delete_mock):
 
     assert delete_mock.call_count == 2
     assert kept_product == to_keep
+
+
+@pytest.mark.usefixtures("db_session")
+class GetUnbookableUnbookedOldOfferIdsTest:
+    @property
+    def a_year_ago(self):
+        return datetime.date.today() - datetime.timedelta(days=366)
+
+    def test_get_unbookable_unbooked_old_offer_id(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert ids == [offer.id]
+
+    def test_get_old_offer_with_an_ongoing_stock_is_ignored(self):
+        factories.StockFactory(offer__dateCreated=self.a_year_ago, offer__dateUpdated=self.a_year_ago)
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+
+    def test_get_old_offer_with_ongoing_and_unbookable_stocks_is_ignored(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+
+        factories.StockFactory(offer=offer)
+        factories.StockFactory(offer=offer, isSoftDeleted=True)
+
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+
+    def test_get_old_offer_with_unbookable_and_bookable_stocks_and_a_booking_is_ignored(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+
+        # unbookable stock with an old booking
+        bookings_factories.UsedBookingFactory(stock__isSoftDeleted=True, stock__offer=offer)
+
+        # bookable stock
+        factories.StockFactory(offer=offer)
+
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+
+    def test_get_old_offer_with_a_booking_is_ignored(self):
+        bookings_factories.BookingFactory(
+            stock__offer__dateCreated=self.a_year_ago, stock__offer__dateUpdated=self.a_year_ago
+        )
+
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+
+    def test_get_old_offer_with_a_cancelled_booking_is_ignored(self):
+        bookings_factories.CancelledBookingFactory(
+            stock__offer__dateCreated=self.a_year_ago, stock__offer__dateUpdated=self.a_year_ago
+        )
+
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+
+    def test_get_recent_offer_without_stocks_nor_bookings_is_ignored(self):
+        factories.OfferFactory()
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+
+    def test_recent_or_booked_offers_are_filtered(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+
+        factories.OfferFactory()
+        bookings_factories.BookingFactory(
+            stock__offer__dateCreated=self.a_year_ago, stock__offer__dateUpdated=self.a_year_ago
+        )
+
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert ids == [offer.id]
+
+    def test_legit_offer_with_id_outside_of_asked_range_is_ignored(self):
+        offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
+
+        ids = repository.get_unbookable_unbooked_old_offer_ids(offer.id + 1, offer.id + 10)
+        assert not list(ids)
