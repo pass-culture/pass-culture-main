@@ -9,12 +9,14 @@ import { ActionBar, ActionBarProps } from './ActionBar'
 const renderActionBar = ({
   props,
   url = '/creation/testUrl',
+  features = [],
 }: {
   props: ActionBarProps
   url?: string
+  features?: string[]
 }) => {
   return renderWithProviders(<ActionBar {...props} />, {
-    storeOverrides: {},
+    features: features,
     initialRouterEntries: [url],
   })
 }
@@ -115,6 +117,22 @@ describe('IndividualOffer::ActionBar', () => {
 
       const buttonBack = screen.getByText('Retour à la liste des offres')
       expect(buttonBack).toHaveAttribute('href', '/offres')
+    })
+
+    it('should show a button to go back read only when editing stocks with the WIP_ENABLE_EVENT_WITH_OPENING_HOUR FF enabled', async () => {
+      props.step = OFFER_WIZARD_STEP_IDS.STOCKS
+
+      renderActionBar({
+        props,
+        url: '/edition/url',
+        features: ['WIP_ENABLE_EVENT_WITH_OPENING_HOUR'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Quitter le mode édition' })
+      )
+
+      expect(onClickPreviousMock).toHaveBeenCalled()
     })
   })
 })
