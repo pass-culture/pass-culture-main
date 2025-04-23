@@ -7,7 +7,7 @@ import wtforms
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
@@ -167,7 +167,7 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         endpoint="backoffice_web.autocomplete_institutions",
     )
     formats = fields.PCSelectMultipleField(
-        "Formats", choices=utils.choices_from_enum(subcategories.EacFormat), field_list_compatibility=True
+        "Formats", choices=utils.choices_from_enum(EacFormat), field_list_compatibility=True
     )
 
 

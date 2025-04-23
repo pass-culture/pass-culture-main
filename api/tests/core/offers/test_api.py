@@ -22,6 +22,7 @@ from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
@@ -3385,17 +3386,17 @@ class ResolveOfferValidationRuleTest:
         "formats, excluded_formats, expected_status",
         [
             (
-                [subcategories.EacFormat.VISITE_LIBRE],
-                [subcategories.EacFormat.CONCERT, subcategories.EacFormat.REPRESENTATION],
+                [EacFormat.VISITE_LIBRE],
+                [EacFormat.CONCERT, EacFormat.REPRESENTATION],
                 models.OfferValidationStatus.PENDING,
             ),
             (
                 [
-                    subcategories.EacFormat.CONCERT,
-                    subcategories.EacFormat.VISITE_LIBRE,
-                    subcategories.EacFormat.REPRESENTATION,
+                    EacFormat.CONCERT,
+                    EacFormat.VISITE_LIBRE,
+                    EacFormat.REPRESENTATION,
                 ],
-                [subcategories.EacFormat.CONCERT, subcategories.EacFormat.VISITE_LIBRE],
+                [EacFormat.CONCERT, EacFormat.VISITE_LIBRE],
                 models.OfferValidationStatus.APPROVED,
             ),
         ],
@@ -3415,13 +3416,13 @@ class ResolveOfferValidationRuleTest:
         "formats, excluded_formats, expected_status",
         [
             (
-                [subcategories.EacFormat.VISITE_LIBRE],
-                [subcategories.EacFormat.CONCERT],
+                [EacFormat.VISITE_LIBRE],
+                [EacFormat.CONCERT],
                 models.OfferValidationStatus.APPROVED,
             ),
             (
-                [subcategories.EacFormat.CONCERT, subcategories.EacFormat.VISITE_LIBRE],
-                [subcategories.EacFormat.CONCERT],
+                [EacFormat.CONCERT, EacFormat.VISITE_LIBRE],
+                [EacFormat.CONCERT],
                 models.OfferValidationStatus.PENDING,
             ),
         ],

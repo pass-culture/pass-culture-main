@@ -15,8 +15,8 @@ from sqlalchemy.sql import or_
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as DisplayedStatus
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_model
@@ -432,7 +432,7 @@ def get_collective_offers_by_filters(
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-    formats: list[subcategories.EacFormat] | None = None,
+    formats: list[EacFormat] | None = None,
 ) -> BaseQuery:
     query = educational_models.CollectiveOffer.query
 
@@ -528,7 +528,7 @@ def get_collective_offers_template_by_filters(
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-    formats: list[subcategories.EacFormat] | None = None,
+    formats: list[EacFormat] | None = None,
 ) -> BaseQuery:
     query = educational_models.CollectiveOfferTemplate.query
 
@@ -614,10 +614,10 @@ def _filter_collective_offers_by_statuses(
 
     offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
 
-    if DisplayedStatus.ARCHIVED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.ARCHIVED in statuses:
         on_collective_offer_filters.append(educational_models.CollectiveOffer.isArchived == True)
 
-    if DisplayedStatus.DRAFT in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.DRAFT in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.DRAFT,
@@ -625,7 +625,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.PENDING in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.PENDING in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
@@ -633,7 +633,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.REJECTED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.REJECTED in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED,
@@ -641,12 +641,12 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.INACTIVE in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.INACTIVE in statuses:
         # If the filter is only on INACTIVE, we need to return no collective_offer
         # otherwise we return offers for others filtered statuses
         on_collective_offer_filters.append(sa.false())
 
-    if DisplayedStatus.ACTIVE in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.ACTIVE in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -656,7 +656,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.PREBOOKED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.PREBOOKED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -666,7 +666,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.BOOKED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.BOOKED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -676,7 +676,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.ENDED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.ENDED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -690,7 +690,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.REIMBURSED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.REIMBURSED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
@@ -699,7 +699,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.EXPIRED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.EXPIRED in statuses:
         # expired with a pending booking or no booking
         on_booking_status_filter.append(
             and_(
@@ -727,7 +727,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if DisplayedStatus.CANCELLED in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.CANCELLED in statuses:
         # Cancelled due to expired booking
         on_booking_status_filter.append(
             and_(
