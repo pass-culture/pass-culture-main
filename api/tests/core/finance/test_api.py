@@ -36,6 +36,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.reference import models as reference_models
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
@@ -43,6 +44,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
+from pcapi.repository import transaction
 from pcapi.routes.backoffice.finance import validation
 from pcapi.utils import db as db_utils
 from pcapi.utils import human_ids
@@ -3588,6 +3590,11 @@ class GenerateInvoiceTest:
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+
+        with transaction():
+            current_year = datetime.date.today().year
+            scheme = reference_models.ReferenceScheme.get_and_lock("invoice.reference", current_year)
+            scheme.reset_next_number()
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
