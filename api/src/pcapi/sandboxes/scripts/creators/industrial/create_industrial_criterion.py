@@ -11,15 +11,15 @@ logger = logging.getLogger(__name__)
 def create_industrial_criteria() -> dict[str, Criterion]:
     logger.info("create_industrial_criteria")
 
-    criterion1 = criteria_factories.CriterionFactory(
+    criterion1 = criteria_factories.CriterionFactory.create(
         name="Bonne offre d’appel",
         description="Offre déjà beaucoup réservée par les autres jeunes",
     )
-    criterion2 = criteria_factories.CriterionFactory(
+    criterion2 = criteria_factories.CriterionFactory.create(
         name="Mauvaise accroche",
         description="Offre ne possédant pas une accroche de qualité suffisante",
     )
-    criterion3 = criteria_factories.CriterionFactory(
+    criterion3 = criteria_factories.CriterionFactory.create(
         name="Offre de médiation spécifique",
         description="Offre possédant une médiation orientée pour les jeunes de 18 ans",
     )

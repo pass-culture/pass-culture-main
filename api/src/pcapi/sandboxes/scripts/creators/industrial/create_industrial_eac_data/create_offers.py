@@ -39,7 +39,7 @@ class LocationOption(typing.TypedDict):
 
 
 def get_location_options(venue: offerers_models.Venue) -> list[LocationOption]:
-    other_venue = offerers_factories.VenueFactory(
+    other_venue = offerers_factories.VenueFactory.create(
         name="Autre lieu",
         managingOfferer=venue.managingOfferer,
         street="1 rue du Chat qui Pêche",
@@ -129,7 +129,7 @@ def _get_offerer_address_id(
         else geography_factories.AddressFactory
     )
     address = factory(street=location_option["street"])
-    offerer_address = offerers_factories.OffererAddressFactory(
+    offerer_address = offerers_factories.OffererAddressFactory.create(
         label=oa_label, address=address, offerer=managing_offerer
     )
     return offerer_address.id
@@ -296,14 +296,14 @@ def create_offers_base_list(
     templates = []
     if basic_offers:
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
+                collectiveOffer__author=user_factory.ProFactory.create(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
                 startDatetime=datetime.utcnow() + timedelta(days=60),
             )
@@ -315,14 +315,14 @@ def create_offers_base_list(
                 educational_models.EducationalInstitution.institutionId == "0131251P"
             ).one()
 
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} 🍕",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=institution,
                 collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
+                collectiveOffer__author=user_factory.ProFactory.create(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
                 startDatetime=datetime.utcnow() + timedelta(days=60),
             )
@@ -330,7 +330,7 @@ def create_offers_base_list(
 
     if image_offers:
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -350,14 +350,14 @@ def create_offers_base_list(
             educational_models.EducationalRedactor.email == "Marianne.Calvayrac@ac-versailles.fr"
         ).one_or_none()
         if not redactor:
-            redactor = educational_factories.EducationalRedactorFactory(
+            redactor = educational_factories.EducationalRedactorFactory.create(
                 email="Marianne.Calvayrac@ac-versailles.fr",
                 firstName="CALVAYRAC",
                 lastName="MARIANNE",
                 civility="Mme",
             )
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} to teacher",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -370,7 +370,7 @@ def create_offers_base_list(
 
     if public_api_offers:
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} public api",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -385,7 +385,7 @@ def create_offers_base_list(
 
     if expired_offers:
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} expired",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -398,7 +398,7 @@ def create_offers_base_list(
 
     if pending_offers:
         for _ in range(size):
-            educational_factories.CollectiveStockFactory(
+            educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} pending",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -413,7 +413,7 @@ def create_offers_base_list(
         current_year = datetime.utcnow().year
         target_year = current_year + 2 if datetime.utcnow().month >= 9 else current_year + 1
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -426,7 +426,7 @@ def create_offers_base_list(
 
     if offers_intervention_56:
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} interventionArea 56",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -439,7 +439,7 @@ def create_offers_base_list(
 
     if offers_intervention_91:
         for _ in range(size):
-            stock = educational_factories.CollectiveStockFactory(
+            stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} interventionArea 91",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
@@ -452,13 +452,13 @@ def create_offers_base_list(
 
     if basic_templates:
         for _ in range(5):
-            template = educational_factories.CollectiveOfferTemplateFactory(
+            template = educational_factories.CollectiveOfferTemplateFactory.create(
                 name=f"offer {next(number_iterator)} pour {offerer.name} basic template",
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
                 bookingEmails=["toto@totoland.com"],
                 nationalProgram=next(national_program_iterator),
-                author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
+                author=user_factory.ProFactory.create(email="eac_1_lieu@example.com"),
                 formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
                 # set the offer in school to fill the CLASSROOM adage playlist
                 offerVenue={
@@ -472,7 +472,7 @@ def create_offers_base_list(
 
         if from_templates_offers:
             for template in 4 * [templates[0]] + 1 * [templates[1]]:
-                educational_factories.CollectiveStockFactory(
+                educational_factories.CollectiveStockFactory.create(
                     collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} from template to school",
                     collectiveOffer__educational_domains=[next(domains_iterator)],
                     collectiveOffer__venue=next(venue_iterator),
@@ -485,7 +485,7 @@ def create_offers_base_list(
 
     if image_template:
         for _ in range(5):
-            template = educational_factories.CollectiveOfferTemplateFactory(
+            template = educational_factories.CollectiveOfferTemplateFactory.create(
                 name=f"offer {next(number_iterator)} pour {offerer.name} template image",
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
@@ -497,13 +497,13 @@ def create_offers_base_list(
     if offers_with_request:
         for i in range(size):
             number = next(number_iterator)
-            template = educational_factories.CollectiveOfferTemplateFactory(
+            template = educational_factories.CollectiveOfferTemplateFactory.create(
                 name=f"offer {number} pour {offerer.name} template request",
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
                 bookingEmails=["toto@totoland.com"],
             )
-            educational_factories.CollectiveOfferRequestFactory(
+            educational_factories.CollectiveOfferRequestFactory.create(
                 collectiveOfferTemplate=template,
                 educationalInstitution=next(institution_iterator),
                 educationalRedactor__lastName=f"last name {number} {offerer.name}",
@@ -720,7 +720,7 @@ def create_offers_booking_with_different_displayed_status(
         booking_limit_datetime = attributes["bookingLimitDatetime"]
         institution = next(institution_iterator)
 
-        stock = educational_factories.CollectiveStockFactory(
+        stock = educational_factories.CollectiveStockFactory.create(
             collectiveOffer__name=f"La culture à {city}{' (public api)' if provider is not None else ''}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=venue,
@@ -783,7 +783,7 @@ def create_offers_templates_with_different_displayed_status(
     }
 
     for state, attributes in options.items():
-        educational_factories.CollectiveOfferTemplateFactory(
+        educational_factories.CollectiveOfferTemplateFactory.create(
             name=f"The culture in {state}",
             validation=attributes["validation"],
             rejectionReason=attributes.get("rejectionReason"),
@@ -832,7 +832,7 @@ def create_offers_booking_with_different_offer_venues(
 
         offer_venue = location_option["offerVenue"]
 
-        collective_stock = educational_factories.CollectiveStockFactory(
+        collective_stock = educational_factories.CollectiveStockFactory.create(
             collectiveOffer__name=name,
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=venue,
@@ -863,7 +863,7 @@ def create_offers_templates_with_different_offer_venues(
         name = f"{name}{' (avec OA)' if with_new_format else ''}"
 
         offer_venue = location_option["offerVenue"]
-        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.create(
             name=name,
             venue=venue,
             educational_domains=[next(domains_iterator)],
@@ -904,7 +904,7 @@ def create_booking_base_list(
     size = 5 if not settings.CREATE_ADAGE_TESTING_DATA else len(institutions)
     if pending_booking:
         for _i in range(size):
-            educational_factories.CollectiveBookingFactory(
+            educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"PENDING offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -921,7 +921,7 @@ def create_booking_base_list(
 
     if booked_booking:
         for _i in range(size):
-            educational_factories.CollectiveBookingFactory(
+            educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"BOOKED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -937,7 +937,7 @@ def create_booking_base_list(
             )
     if confirmed_booking:
         for _i in range(size):
-            educational_factories.CollectiveBookingFactory(
+            educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"CONFIRMED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -953,7 +953,7 @@ def create_booking_base_list(
             )
     if used_booking:
         for i in range(size):
-            booking = educational_factories.CollectiveBookingFactory(
+            booking = educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"USED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -969,10 +969,10 @@ def create_booking_base_list(
                 confirmationLimitDate=datetime.utcnow() - timedelta(days=3),
                 dateCreated=datetime.utcnow() - timedelta(days=30),
             )
-            finance_factories.UsedBookingFinanceEventFactory(collectiveBooking=booking)
+            finance_factories.UsedBookingFinanceEventFactory.create(collectiveBooking=booking)
     if reimbursed_booking:
         for _i in range(size):
-            booking = educational_factories.CollectiveBookingFactory(
+            booking = educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"REIMBURSED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -989,12 +989,12 @@ def create_booking_base_list(
                 reimbursementDate=datetime.utcnow() - timedelta(days=12),
             )
 
-            finance_factories.CollectivePricingFactory(
+            finance_factories.CollectivePricingFactory.create(
                 status=finance_models.PricingStatus.INVOICED, collectiveBooking=booking
             )
     if cancelled_ac:
         for _i in range(size):
-            educational_factories.CollectiveBookingFactory(
+            educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY AC offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -1012,7 +1012,7 @@ def create_booking_base_list(
             )
     if cancelled_institution:
         for _i in range(size):
-            educational_factories.CollectiveBookingFactory(
+            educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY EPLE offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -1031,7 +1031,7 @@ def create_booking_base_list(
 
     if cancelled_expired:
         for _i in range(size):
-            educational_factories.CollectiveBookingFactory(
+            educational_factories.CollectiveBookingFactory.create(
                 collectiveStock__collectiveOffer__name=f"CANCELLED AUTOMATICALLY offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -1058,60 +1058,70 @@ def create_domains(
     jeunes_en_librairie = [np for np in national_programs if np.name == "Jeunes en librairie"]
 
     return [
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Architecture", id=1, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Arts du cirque et arts de la rue", id=2, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Arts numériques", id=4, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Arts visuels, arts plastiques, arts appliqués", id=5, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Cinéma, audiovisuel",
             id=6,
             nationalPrograms=college_au_cinema + lyceens_apprentis_au_cinema,
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Culture scientifique, technique et industrielle", id=7, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(name="Danse", id=8, nationalPrograms=olympiade_culturelle),
-        educational_factories.EducationalDomainFactory(name="Design", id=9, nationalPrograms=olympiade_culturelle),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
+            name="Danse", id=8, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory.create(
+            name="Design", id=9, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory.create(
             name="Développement durable", id=10, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Univers du livre, de la lecture et des écritures",
             id=11,
             nationalPrograms=jeunes_en_librairie,
         ),
-        educational_factories.EducationalDomainFactory(name="Musique", id=12, nationalPrograms=olympiade_culturelle),
-        educational_factories.EducationalDomainFactory(name="Patrimoine", id=13, nationalPrograms=olympiade_culturelle),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
+            name="Musique", id=12, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory.create(
+            name="Patrimoine", id=13, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory.create(
             name="Photographie", id=14, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Théâtre, expression dramatique, marionnettes", id=15, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Bande dessinée", id=16, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(
+        educational_factories.EducationalDomainFactory.create(
             name="Média et information", id=17, nationalPrograms=olympiade_culturelle
         ),
-        educational_factories.EducationalDomainFactory(name="Mémoire", id=18, nationalPrograms=olympiade_culturelle),
+        educational_factories.EducationalDomainFactory.create(
+            name="Mémoire", id=18, nationalPrograms=olympiade_culturelle
+        ),
     ]
 
 
 def create_national_programs() -> list[educational_models.NationalProgram]:
     return [
-        educational_factories.NationalProgramFactory(name="Collège au cinéma"),
-        educational_factories.NationalProgramFactory(name="Lycéens et apprentis au cinéma"),
-        educational_factories.NationalProgramFactory(name="Jeunes en librairie"),
-        educational_factories.NationalProgramFactory(name="Olympiade culturelle de PARIS 2024", isActive=False),
+        educational_factories.NationalProgramFactory.create(name="Collège au cinéma"),
+        educational_factories.NationalProgramFactory.create(name="Lycéens et apprentis au cinéma"),
+        educational_factories.NationalProgramFactory.create(name="Jeunes en librairie"),
+        educational_factories.NationalProgramFactory.create(name="Olympiade culturelle de PARIS 2024", isActive=False),
     ]
 
 

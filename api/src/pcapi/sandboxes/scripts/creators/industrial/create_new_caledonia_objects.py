@@ -41,20 +41,20 @@ def create_new_caledonia_objects() -> None:
 
 
 def _create_nc_beneficiaries() -> users_models.User:
-    users_factories.CaledonianUserFactory(
+    users_factories.CaledonianUserFactory.create(
         email="jeune.nc@example.com",
         firstName="Jeune",
         lastName="Calédonien",
         age=18,
     )
 
-    users_factories.CaledonianUnderageBeneficiaryFactory(
+    users_factories.CaledonianUnderageBeneficiaryFactory.create(
         email="mineur.nc@example.com",
         firstName="Mineur",
         lastName="Calédonien",
     )
 
-    return users_factories.CaledonianBeneficiaryFactory(
+    return users_factories.CaledonianBeneficiaryFactory.create(
         email="beneficiaire.nc@example.com",
         firstName="Bénéficiaire",
         lastName="Calédonien",
@@ -62,7 +62,7 @@ def _create_nc_beneficiaries() -> users_models.User:
 
 
 def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
-    address = geography_factories.AddressFactory(
+    address = geography_factories.AddressFactory.create(
         street="11 Avenue James Cook",
         postalCode="98800",
         city="Nouméa",
@@ -72,14 +72,14 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         banId="98818_w65mkd_00011",
         timezone="Pacific/Noumea",
     )
-    offerer = offerers_factories.CaledonianOffererFactory(
+    offerer = offerers_factories.CaledonianOffererFactory.create(
         name="Structure calédonienne à Nouméa",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
         siren=siren_utils.rid7_to_siren("1230001"),
     )
-    venue = offerers_factories.CaledonianVenueFactory(
+    venue = offerers_factories.CaledonianVenueFactory.create(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Nouméa",
@@ -100,7 +100,7 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         contact__social_medias={"instagram": "https://instagram.com/@noumea.nc"},
         offererAddress__address=address,
     )
-    second_venue = offerers_factories.CaledonianVenueFactory(
+    second_venue = offerers_factories.CaledonianVenueFactory.create(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Dumbéa",
@@ -121,7 +121,7 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         contact__social_medias={"instagram": "https://instagram.com/@dumbea.nc"},
     )
 
-    offerers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory.create(
         offerer=offerer,
         user__firstName="Mâ",
         user__lastName="Calédonien",
@@ -131,23 +131,23 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         user__departementCode="988",
     )
 
-    bank_account = finance_factories.CaledonianBankAccountFactory(
+    bank_account = finance_factories.CaledonianBankAccountFactory.create(
         label="Compte courant Banque de Nouvelle-Calédonie",
         offerer=offerer,
         dsApplicationId="988001",
     )
-    offerers_factories.VenueBankAccountLinkFactory(
+    offerers_factories.VenueBankAccountLinkFactory.create(
         venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
     )
-    offerers_factories.VenueBankAccountLinkFactory(
+    offerers_factories.VenueBankAccountLinkFactory.create(
         venue=second_venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
     )
 
-    event_offer = offers_factories.EventOfferFactory(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
+    event_offer = offers_factories.EventOfferFactory.create(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
     # 22:00 UTC = 11:00 Noumea time on the day after
     ref_date = datetime.datetime.utcnow().replace(hour=22, minute=0, second=0, microsecond=0)
     event_stocks = [
-        offers_factories.EventStockFactory(
+        offers_factories.EventStockFactory.create(
             offer=event_offer,
             beginningDatetime=ref_date + datetime.timedelta(days=days),
             bookingLimitDatetime=ref_date + datetime.timedelta(days=days - 2),
@@ -157,21 +157,21 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         for days in range(8, 15)
     ]
 
-    bookings_factories.BookingFactory(stock=event_stocks[0], user=beneficiary)
+    bookings_factories.BookingFactory.create(stock=event_stocks[0], user=beneficiary)
 
-    thing_stock = offers_factories.ThingStockFactory(
+    thing_stock = offers_factories.ThingStockFactory.create(
         offer__name="Offre physique en Nouvelle-Calédonie",
         offer__venue=venue,
         price=finance_utils.xpf_to_euros(12_000),
         quantity=10,
     )
 
-    bookings_factories.UsedBookingFactory(stock=thing_stock, user=beneficiary)
+    bookings_factories.UsedBookingFactory.create(stock=thing_stock, user=beneficiary)
 
 
 def _create_nc_new_offerer() -> None:
     # No address referenced in Thio, in Base d'Adresses Nationale
-    address = geography_factories.ManualAddressFactory(
+    address = geography_factories.ManualAddressFactory.create(
         street="Village de Thio Rue rapadzi",
         postalCode="98829",
         city="Thio",
@@ -179,14 +179,14 @@ def _create_nc_new_offerer() -> None:
         longitude=166.214720,
         timezone="Pacific/Noumea",
     )
-    offerer = offerers_factories.NotValidatedCaledonianOffererFactory(
+    offerer = offerers_factories.NotValidatedCaledonianOffererFactory.create(
         name="Structure calédonienne à Thio",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
         siren=siren_utils.rid7_to_siren("1230002"),
     )
-    offerers_factories.CaledonianVenueFactory(
+    offerers_factories.CaledonianVenueFactory.create(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Thio",
@@ -208,7 +208,7 @@ def _create_nc_new_offerer() -> None:
         contact__social_medias={"instagram": "https://instagram.com/@thio.nc"},
         offererAddress__address=address,
     )
-    offerers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory.create(
         offerer=offerer,
         user__firstName="Méréï",
         user__lastName="Calédonien",
@@ -220,7 +220,7 @@ def _create_nc_new_offerer() -> None:
 
 
 def _create_nc_cinema() -> None:
-    address = geography_factories.AddressFactory(
+    address = geography_factories.AddressFactory.create(
         street="27 Avenue de la VICTOIRE-HENRI LAFLEUR",
         postalCode="98800",
         city="Nouméa",
@@ -230,14 +230,14 @@ def _create_nc_cinema() -> None:
         banId="98818_18etss_00027",
         timezone="Pacific/Noumea",
     )
-    offerer = offerers_factories.CaledonianOffererFactory(
+    offerer = offerers_factories.CaledonianOffererFactory.create(
         name="Le Rex calédonien",
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
         siren=siren_utils.rid7_to_siren("1230003"),
     )
-    venue = offerers_factories.CaledonianVenueFactory(
+    venue = offerers_factories.CaledonianVenueFactory.create(
         managingOfferer=offerer,
         pricing_point="self",
         name=offerer.name,
@@ -264,11 +264,11 @@ def _create_nc_cinema() -> None:
 
 def _create_nc_invoice() -> None:
     logger.info("_create_nc_invoice")
-    offerer = offerers_factories.CaledonianOffererFactory(name="Structure calédonienne avec remboursement")
-    bank_account = finance_factories.CaledonianBankAccountFactory(
+    offerer = offerers_factories.CaledonianOffererFactory.create(name="Structure calédonienne avec remboursement")
+    bank_account = finance_factories.CaledonianBankAccountFactory.create(
         label="Coordonnées bancaires calédoniennes avec remboursement", offerer=offerer
     )
-    offerers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory.create(
         offerer=offerer,
         user__firstName="Jean-Michel",
         user__lastName="Nouvelle-Calédonie",
@@ -276,45 +276,49 @@ def _create_nc_invoice() -> None:
         user__postalCode="98800",
         user__departementCode="988",
     )
-    venue = offerers_factories.CaledonianVenueFactory(
+    venue = offerers_factories.CaledonianVenueFactory.create(
         name="Lieu calédonien avec justificatif",
         managingOfferer=offerer,
         pricing_point="self",
         bank_account=bank_account,
     )
-    virtual_venue = offerers_factories.VirtualVenueFactory(
+    virtual_venue = offerers_factories.VirtualVenueFactory.create(
         managingOfferer=offerer,
         name=f"{venue.name} (Offre numérique)",
         pricing_point=venue,
         bank_account=bank_account,
     )
 
-    thing_offer1 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 1", venue=venue)
-    thing_offer2 = offers_factories.ThingOfferFactory(name="Offre calédonienne remboursée 2", venue=venue)
-    book_offer1 = offers_factories.OfferFactory(
+    thing_offer1 = offers_factories.ThingOfferFactory.create(name="Offre calédonienne remboursée 1", venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory.create(name="Offre calédonienne remboursée 2", venue=venue)
+    book_offer1 = offers_factories.OfferFactory.create(
         name="Livre calédonien remboursé 1", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
     )
-    book_offer2 = offers_factories.OfferFactory(
+    book_offer2 = offers_factories.OfferFactory.create(
         name="Livre calédonien remboursé 2", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
     )
-    digital_offer1 = offers_factories.DigitalOfferFactory(name="Calédonien numérique remboursé 1", venue=virtual_venue)
-    digital_offer2 = offers_factories.DigitalOfferFactory(name="Calédonien numérique remboursé 2", venue=virtual_venue)
-    custom_rule_offer = offers_factories.ThingOfferFactory(name="Calédonien dérogatoire remboursé", venue=venue)
-    finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer)
+    digital_offer1 = offers_factories.DigitalOfferFactory.create(
+        name="Calédonien numérique remboursé 1", venue=virtual_venue
+    )
+    digital_offer2 = offers_factories.DigitalOfferFactory.create(
+        name="Calédonien numérique remboursé 2", venue=virtual_venue
+    )
+    custom_rule_offer = offers_factories.ThingOfferFactory.create(name="Calédonien dérogatoire remboursé", venue=venue)
+    finance_factories.CustomReimbursementRuleFactory.create(rate=0.94, offer=custom_rule_offer)
 
     stocks = [
-        offers_factories.StockFactory(offer=thing_offer1, price=30),
-        offers_factories.StockFactory(offer=thing_offer2, price=83.8),
-        offers_factories.StockFactory(offer=book_offer1, price=20),
-        offers_factories.StockFactory(offer=book_offer2, price=40),
-        offers_factories.StockFactory(offer=digital_offer1, price=27),
-        offers_factories.StockFactory(offer=digital_offer2, price=31),
-        offers_factories.StockFactory(offer=custom_rule_offer, price=20),
+        offers_factories.StockFactory.create(offer=thing_offer1, price=30),
+        offers_factories.StockFactory.create(offer=thing_offer2, price=83.8),
+        offers_factories.StockFactory.create(offer=book_offer1, price=20),
+        offers_factories.StockFactory.create(offer=book_offer2, price=40),
+        offers_factories.StockFactory.create(offer=digital_offer1, price=27),
+        offers_factories.StockFactory.create(offer=digital_offer2, price=31),
+        offers_factories.StockFactory.create(offer=custom_rule_offer, price=20),
     ]
     # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule,
     # without generating 60+ Bookings in bulk
-    special_stock = offers_factories.StockFactory(offer=thing_offer2, price=19_950)
-    rich_user = users_factories.CaledonianBeneficiaryFactory(
+    special_stock = offers_factories.StockFactory.create(offer=thing_offer2, price=19_950)
+    rich_user = users_factories.CaledonianBeneficiaryFactory.create(
         firstName="Jeune avec un énorme crédit",
         lastName="Calédonien",
         email="riche.nc@example.com",
@@ -325,27 +329,27 @@ def _create_nc_invoice() -> None:
     db.session.commit()
 
     # Add finance incidents to invoice
-    booking_with_total_incident = bookings_factories.ReimbursedBookingFactory(
-        stock=offers_factories.StockFactory(offer=thing_offer1, price=30), quantity=1, amount=30, user=rich_user
+    booking_with_total_incident = bookings_factories.ReimbursedBookingFactory.create(
+        stock=offers_factories.StockFactory.create(offer=thing_offer1, price=30), quantity=1, amount=30, user=rich_user
     )
-    booking_with_partial_incident = bookings_factories.ReimbursedBookingFactory(
-        stock=offers_factories.StockFactory(offer=book_offer1, price=30), quantity=1, amount=30, user=rich_user
+    booking_with_partial_incident = bookings_factories.ReimbursedBookingFactory.create(
+        stock=offers_factories.StockFactory.create(offer=book_offer1, price=30), quantity=1, amount=30, user=rich_user
     )
     bookings_with_incident = [booking_with_total_incident, booking_with_partial_incident]
 
     for booking in bookings_with_incident:
-        event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        event = finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
         pricing = finance_api.price_event(event)
         if pricing:
             pricing.status = finance_models.PricingStatus.INVOICED
 
-    total_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+    total_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory.create(
         booking=booking_with_total_incident,
         newTotalAmount=0,
         incident__venue=venue,
         incident__status=finance_models.IncidentStatus.VALIDATED,
     )
-    partial_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+    partial_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory.create(
         booking=booking_with_partial_incident,
         newTotalAmount=2000,
         incident__venue=venue,
@@ -363,47 +367,47 @@ def _create_nc_invoice() -> None:
         finance_api.price_event(event)
 
     # Add non NC data for more realistic down payment and invoice csv files
-    metropolitan_offerer = offerers_factories.OffererFactory(name="Structure métropolitaine avec remboursement")
-    metropolitan_bank_account = finance_factories.BankAccountFactory(
+    metropolitan_offerer = offerers_factories.OffererFactory.create(name="Structure métropolitaine avec remboursement")
+    metropolitan_bank_account = finance_factories.BankAccountFactory.create(
         label="Coordonnées bancaires métropolitaines avec remboursement", offerer=metropolitan_offerer
     )
-    offerers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory.create(
         offerer=offerer,
         user__firstName="Jean-Marc",
         user__lastName="Métropole",
         user__email="pro2.fr@example.com",
     )
-    metropolitan_venue = offerers_factories.CaledonianVenueFactory(
+    metropolitan_venue = offerers_factories.CaledonianVenueFactory.create(
         name="Lieu métropolitain avec justificatif",
         managingOfferer=metropolitan_offerer,
         pricing_point="self",
         bank_account=metropolitan_bank_account,
     )
 
-    metropolitan_offer1 = offers_factories.ThingOfferFactory(
+    metropolitan_offer1 = offers_factories.ThingOfferFactory.create(
         name="Offre métropolitaine remboursée 1", venue=metropolitan_venue
     )
-    metropolitan_offer2 = offers_factories.ThingOfferFactory(
+    metropolitan_offer2 = offers_factories.ThingOfferFactory.create(
         name="Offre métropolitaine remboursée 2", venue=metropolitan_venue
     )
 
     metropolitan_stocks = [
-        offers_factories.StockFactory(offer=metropolitan_offer1, price=30),
-        offers_factories.StockFactory(offer=metropolitan_offer2, price=83.8),
+        offers_factories.StockFactory.create(offer=metropolitan_offer1, price=30),
+        offers_factories.StockFactory.create(offer=metropolitan_offer2, price=83.8),
     ]
 
     bookings = [
-        bookings_factories.UsedBookingFactory(
+        bookings_factories.UsedBookingFactory.create(
             stock=special_stock,
             user=rich_user,
         ),
     ]
 
     for stock in stocks + metropolitan_stocks:
-        booking = bookings_factories.UsedBookingFactory(stock=stock, user=rich_user)
+        booking = bookings_factories.UsedBookingFactory.create(stock=stock, user=rich_user)
         bookings.append(booking)
     for booking in bookings:
-        finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
     for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
@@ -415,19 +419,19 @@ def _create_nc_invoice() -> None:
 
 
 def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
-    offerer = offerers_factories.CaledonianOffererFactory(name="Structure calédonienne avec note de débit")
-    pro = offerers_factories.UserOffererFactory(offerer=offerer).user
-    bank_account = finance_factories.CaledonianBankAccountFactory(
+    offerer = offerers_factories.CaledonianOffererFactory.create(name="Structure calédonienne avec note de débit")
+    pro = offerers_factories.UserOffererFactory.create(offerer=offerer).user
+    bank_account = finance_factories.CaledonianBankAccountFactory.create(
         label="Coordonnées bancaires calédoniennes avec note de débit", offerer=offerer
     )
-    venue = offerers_factories.CaledonianVenueFactory(
+    venue = offerers_factories.CaledonianVenueFactory.create(
         name="Lieu calédonien avec note de débit",
         managingOfferer=offerer,
         pricing_point="self",
         bank_account=bank_account,
     )
 
-    incident_booking = bookings_factories.BookingFactory(
+    incident_booking = bookings_factories.BookingFactory.create(
         stock__offer__name="Offre pour note de débit en Nouvelle-Calédonie",
         stock__offer__venue=venue,
         stock__price=decimal.Decimal("30"),

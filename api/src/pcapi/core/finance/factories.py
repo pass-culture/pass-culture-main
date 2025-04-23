@@ -63,7 +63,7 @@ class _BaseFinanceEventFactory(BaseFactory):
     class Meta:
         model = models.FinanceEvent
 
-    pricingPointId = None  # see `_create()` below
+    pricingPointId: int | None = None  # see `_create()` below
 
     @classmethod
     def _create(
@@ -122,8 +122,8 @@ class _BasePricingFactory(BaseFactory):
     class Meta:
         model = models.Pricing
 
-    event = None  # see `_create()` below
-    pricingPoint = None  # see `_create()` below
+    event: FinanceEventFactory | None = None  # see `_create()` below
+    pricingPoint: offerers_factories.VenueFactory | None = None  # see `_create()` below
 
     @classmethod
     def _create(
@@ -288,13 +288,13 @@ class PaymentFactory(BaseFactory):
 
     author = "batch"
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
-    collectiveBooking = None
+    collectiveBooking: educational_factories.CollectiveBookingFactory | None = None
     amount = factory.LazyAttribute(
         lambda payment: payment.booking.total_amount * decimal.Decimal(payment.reimbursementRate)
     )
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
-    reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
-    reimbursementRate = factory.LazyAttribute(
+    reimbursementRule: str | factory.Iterator | None = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
+    reimbursementRate: decimal.Decimal | factory.LazyAttribute | None = factory.LazyAttribute(
         lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore[attr-defined]
             payment.collectiveBooking or payment.booking, reimbursement.CustomRuleFinder(), 0
         ).rate
@@ -302,7 +302,7 @@ class PaymentFactory(BaseFactory):
     recipientName = "Récipiendaire"
     iban = "CF13QSDFGH456789"
     bic = "QSDFGH8Z555"
-    transactionLabel = None
+    transactionLabel: str | None = None
 
     @factory.post_generation
     def statuses(  # pylint: disable=no-self-argument

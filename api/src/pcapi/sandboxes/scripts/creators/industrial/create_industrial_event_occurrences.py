@@ -64,7 +64,7 @@ def create_industrial_event_occurrences(
             if price in price_categories:
                 price_category = price_categories[price]
             else:
-                price_category = offers_factories.PriceCategoryFactory(
+                price_category = offers_factories.PriceCategoryFactory.create(
                     offer=event_offer_with_occurrences,
                     price=price,
                     priceCategoryLabel=offers_api.get_or_create_label(

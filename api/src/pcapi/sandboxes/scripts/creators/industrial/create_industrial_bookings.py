@@ -103,7 +103,7 @@ def _create_bookings_for_other_beneficiaries(
             else:
                 booking_amount = None
 
-            booking = bookings_factories.BookingFactory(
+            booking = bookings_factories.BookingFactory.create(
                 user=user,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
@@ -113,7 +113,7 @@ def _create_bookings_for_other_beneficiaries(
                 offerer=offer.venue.managingOfferer,
             )
             if is_used:
-                finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+                finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
             bookings_by_name[booking_name] = booking
 
             token = token + 1
@@ -148,30 +148,30 @@ def _create_has_booked_some_bookings(
             stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
             repository.save(stock)
 
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
             stock=stock,
             dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
         )
         if is_used:
-            finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+            finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
         booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
         bookings_by_name[booking_name] = booking
 
 
 def create_fraudulent_bookings() -> None:
     logger.info("create_fraudulent_bookings")
-    offerer = offerers_factories.OffererFactory(name="Entité avec des réservations frauduleuses")
-    good_venue = offerers_factories.VenueFactory(
+    offerer = offerers_factories.OffererFactory.create(name="Entité avec des réservations frauduleuses")
+    good_venue = offerers_factories.VenueFactory.create(
         name="Structure sans réservations frauduleuses", managingOfferer=offerer
     )
-    bad_venue = offerers_factories.VenueFactory(
+    bad_venue = offerers_factories.VenueFactory.create(
         name="Structure avec des réservations frauduleuses", managingOfferer=offerer
     )
-    bookings_factories.BookingFactory(stock__offer__venue=good_venue)
-    bookings_factories.BookingFactory(stock__offer__venue=good_venue)
-    bookings_factories.FraudulentBookingTagFactory(
+    bookings_factories.BookingFactory.create(stock__offer__venue=good_venue)
+    bookings_factories.BookingFactory.create(stock__offer__venue=good_venue)
+    bookings_factories.FraudulentBookingTagFactory.create(
         booking__stock__offer__venue=bad_venue, booking__stock__offer__name="Offre avec réservation frauduleuse"
     )
-    bookings_factories.BookingFactory(stock__offer__venue=bad_venue)
+    bookings_factories.BookingFactory.create(stock__offer__venue=bad_venue)

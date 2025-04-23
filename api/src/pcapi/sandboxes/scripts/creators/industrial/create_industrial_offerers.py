@@ -57,7 +57,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
     if not check_if_siren_already_exists(real_siren):
         print("creating offerer 1")
         offerer_name = "784340093 lat:48.8 lon:1.48"
-        offerer = offerers_factories.OffererFactory(
+        offerer = offerers_factories.OffererFactory.create(
             street="LIEU DIT CARTOUCHERIE",
             city="Paris 12",
             name="THEATRE DU SOLEIL",
@@ -77,7 +77,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
 
         offerer_name = "{} lat:{} lon:{}".format(incremented_siren, location.latitude, location.longitude)
 
-        offerer = offerers_factories.OffererFactory(
+        offerer = offerers_factories.OffererFactory.create(
             street=location.address.upper(),
             city=location.city,
             name=MOCK_NAMES[mock_index],
@@ -87,7 +87,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
 
         if create_educational_offerer:
             offerer.siren = str(MOCK_ADAGE_ELIGIBLE_SIREN)
-            offerers_factories.VenueFactory(
+            offerers_factories.VenueFactory.create(
                 managingOfferer=offerer,
                 street=offerer.street,
                 bookingEmail="fake@email.com",

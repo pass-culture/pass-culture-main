@@ -28,7 +28,7 @@ def create_offerer_provider(
     provider_name: str | None = None,
     with_charlie_url: bool = False,
 ) -> tuple[offerers_models.Offerer, providers_models.Provider]:
-    offerer = offerers_factories.OffererFactory(name=name)
+    offerer = offerers_factories.OffererFactory.create(name=name)
     if provider_name is None:
         provider_name = name
     booking_url = None
@@ -36,7 +36,7 @@ def create_offerer_provider(
     if with_charlie_url:
         booking_url = settings.CHARLIE_BOOKING_URL
         cancel_booking_url = settings.CHARLIE_CANCEL_BOOKING_URL
-    provider = providers_factories.PublicApiProviderFactory(
+    provider = providers_factories.PublicApiProviderFactory.create(
         name=provider_name,
         isActive=isActive,
         enabledForPro=enabledForPro,
@@ -46,14 +46,14 @@ def create_offerer_provider(
         hmacKey="S3cr3tK3y",
     )
 
-    offerers_factories.ApiKeyFactory(
+    offerers_factories.ApiKeyFactory.create(
         offererId=offerer.id,
         prefix=f"{settings.ENV}_{offerer.id}",
         secret=f"clearSecret{offerer.id}",
         providerId=provider.id,
     )
 
-    providers_factories.OffererProviderFactory(
+    providers_factories.OffererProviderFactory.create(
         offerer=offerer,
         provider=provider,
     )
@@ -65,20 +65,20 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     in_five_days = now + datetime.timedelta(days=5)
     in_ten_days = now + datetime.timedelta(days=10)
     offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_charlie_url=True)
-    user = users_factories.ProFactory(
+    user = users_factories.ProFactory.create(
         email=user_email,
         firstName="Pro",
         lastName="Api",
         phoneNumber="+33100000000",
     )
-    offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-    first_venue = offerers_factories.VenueFactory(name="Zénith de Lisieux", managingOfferer=offerer)
-    second_venue = offerers_factories.VenueFactory(name="Olympia de Besançon", managingOfferer=offerer)
-    providers_factories.VenueProviderFactory(venue=first_venue, provider=provider)
-    providers_factories.VenueProviderFactory(venue=second_venue, provider=provider)
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
+    first_venue = offerers_factories.VenueFactory.create(name="Zénith de Lisieux", managingOfferer=offerer)
+    second_venue = offerers_factories.VenueFactory.create(name="Olympia de Besançon", managingOfferer=offerer)
+    providers_factories.VenueProviderFactory.create(venue=first_venue, provider=provider)
+    providers_factories.VenueProviderFactory.create(venue=second_venue, provider=provider)
     offers = []
     for i in range(10):
-        offer = offers_factories.EventOfferFactory(
+        offer = offers_factories.EventOfferFactory.create(
             name=f"Taylor à Lisieux {i}",
             venue=first_venue,
             subcategoryId=subcategories.CONCERT.id,
@@ -86,12 +86,12 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             isDuo=bool(i % 3),
         )
-        price_category = offers_factories.PriceCategoryFactory(offer=offer)
+        price_category = offers_factories.PriceCategoryFactory.create(offer=offer)
 
         stocks = []
         for _ in range(5):
             stocks.append(
-                offers_factories.EventStockFactory(
+                offers_factories.EventStockFactory.create(
                     offer=offer,
                     beginningDatetime=in_ten_days + datetime.timedelta(days=random.randint(0, 10)),
                     priceCategory=price_category,
@@ -100,7 +100,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
 
         for _ in range(15):
             stock = random.choice(stocks)
-            booking = bookings_factories.BookingFactory(
+            booking = bookings_factories.BookingFactory.create(
                 quantity=random.randint(1, 2 if stock.offer.isDuo else 1),
                 stock=stock,
                 dateCreated=now
@@ -108,7 +108,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
                     days=random.randint(0, 10), hours=random.randint(0, 23), minutes=random.randint(0, 59)
                 ),
             )
-            external_bookings_factories.ExternalBookingFactory(booking=booking)
+            external_bookings_factories.ExternalBookingFactory.create(booking=booking)
 
         offers.append(offer)
 
@@ -122,7 +122,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
         number_of_views += date.day
         daily_views.append(offerers_models.OffererViewsModel(eventDate=date, numberOfViews=number_of_views))
 
-    offerers_factories.OffererStatsFactory(
+    offerers_factories.OffererStatsFactory.create(
         offerer=offerer,
         syncDate=datetime.datetime.utcnow(),
         table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
@@ -134,7 +134,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     total_views_last_30_days = sum((today - datetime.timedelta(days=i)).day for i in range(90))
 
     top_offer = offers[0]
-    offerers_factories.OffererStatsFactory(
+    offerers_factories.OffererStatsFactory.create(
         offerer=offerer,
         syncDate=datetime.datetime.utcnow(),
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
@@ -143,9 +143,9 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             total_views_last_30_days=total_views_last_30_days,
         ),
     )
-    offers_factories.HeadlineOfferFactory(offer=top_offer)
+    offers_factories.HeadlineOfferFactory.create(offer=top_offer)
 
-    offers_factories.EventStockFactory(
+    offers_factories.EventStockFactory.create(
         offer__name="Taylor à Besançon !",
         offer__venue=second_venue,
         offer__subcategoryId=subcategories.CONCERT.id,
@@ -153,13 +153,13 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
         beginningDatetime=in_five_days + datetime.timedelta(days=3),
         offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
     )
-    educational_factories.CollectiveStockFactory(
+    educational_factories.CollectiveStockFactory.create(
         collectiveOffer__name="Taylor à l'école",
         collectiveOffer__venue=first_venue,
         collectiveOffer__provider=provider,
         startDatetime=in_five_days,
     )
-    educational_factories.CollectiveStockFactory(
+    educational_factories.CollectiveStockFactory.create(
         collectiveOffer__name="Taylor au lycée",
         collectiveOffer__venue=second_venue,
         collectiveOffer__provider=provider,

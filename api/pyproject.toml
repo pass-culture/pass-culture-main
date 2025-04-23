@@ -25,7 +25,7 @@ dependencies = [
   "cryptography==44.0.2",
   "ecdsa==0.19.1",                     # <0.20.0
   "email-validator==2.2.0",
-  "factory-boy==3.3.2",
+  "factory-boy==3.3.3",
   "fiona>=1.10.1",
   "flask-cors==5.0.1",
   "flask-jwt-extended==4.7.1",

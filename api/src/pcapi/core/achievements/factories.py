@@ -16,5 +16,5 @@ class AchievementFactory(BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryFactory)
     name = models.AchievementEnum.FIRST_BOOK_BOOKING
     unlockedDate = factory.LazyFunction(datetime.datetime.utcnow)
-    seenDate = None
+    seenDate: datetime.datetime | None = None
     booking = factory.SubFactory(booking_factories.BookingFactory)

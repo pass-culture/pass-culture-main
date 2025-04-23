@@ -72,7 +72,7 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
 
         email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
-        user = users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory.create(
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
@@ -83,7 +83,7 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             deposit__source="sandbox",
             deposit__version=deposit_version,
         )
-        users_factories.DepositGrantFactory(
+        users_factories.DepositGrantFactory.create(
             user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
         )
 
@@ -114,13 +114,15 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
 
         if age >= ELIGIBILITY_AGE_18:
             if "ubble" in tag:
-                factory = users_factories.ExUnderageBeneficiaryWithUbbleFactory
+                factory: type[users_factories.UnderageBeneficiaryFactory] = (
+                    users_factories.ExUnderageBeneficiaryWithUbbleFactory
+                )
             else:
                 factory = users_factories.ExUnderageBeneficiaryFactory
         else:
             factory = users_factories.UnderageBeneficiaryFactory
 
-        user = factory(
+        user = factory.create(
             subscription_age=age,
             departementCode=str(departement_code),
             email=email,
@@ -133,14 +135,14 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
         )
 
         # EDUCONNECT or UBBLE already created in factory, make subscription steps consistent with granted deposit
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
             dateCreated=user.dateCreated,
             type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
             dateCreated=user.dateCreated,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
@@ -170,7 +172,7 @@ def create_industrial_app_other_users() -> dict[str, User]:
 
         email = f"pctest.autre{departement_code}.{tag}@example.com"
 
-        user = users_factories.UserFactory(
+        user = users_factories.UserFactory.create(
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
@@ -208,7 +210,7 @@ def create_industrial_app_general_public_users() -> dict[str, User]:
         if age == "age-less-than-18yo":
             date_of_birth = today - timedelta(16 * 366)
 
-        user = users_factories.UserFactory(
+        user = users_factories.UserFactory.create(
             departementCode=str(departement_code),
             email=email,
             phoneNumber=f"+336{index:0>8}",
@@ -233,7 +235,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
 
     for age in [15, 16, 17]:
         users.append(
-            users_factories.UnderageBeneficiaryFactory(
+            users_factories.UnderageBeneficiaryFactory.create(
                 email=f"bene_{age}@example.com",
                 subscription_age=age,
                 firstName=fake.first_name(),
@@ -243,7 +245,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         )
     for age in [15, 16, 17, 18]:
         users.append(
-            users_factories.UserFactory(
+            users_factories.UserFactory.create(
                 email=f"eli_{age}@example.com",
                 address=None,
                 city=None,
@@ -257,7 +259,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         )
 
     users.append(
-        users_factories.BeneficiaryGrant18Factory(
+        users_factories.BeneficiaryGrant18Factory.create(
             email="bene_18@example.com",
             firstName=fake.first_name(),
             lastName=fake.last_name(),
@@ -266,7 +268,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
     )
     with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
         users.append(
-            users_factories.UnderageBeneficiaryFactory(
+            users_factories.UnderageBeneficiaryFactory.create(
                 email="exunderage_18@example.com",
                 dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
                 subscription_age=15,
@@ -276,7 +278,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             )
         )
 
-        beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
+        beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory.create(
             email="bene_18_exunderage@example.com",
             dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
             subscription_age=15,
@@ -289,14 +291,14 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             db.session.execute(sa.text("SELECT disable_booking_update_trigger();"))
         else:
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
-        bookings_factory.BookingFactory(user=beneficiary_and_exunderage)
+        bookings_factory.BookingFactory.create(user=beneficiary_and_exunderage)
         if settings.DATABASE_HAS_SPECIFIC_ROLES:
             db.session.execute(sa.text("SELECT enable_booking_update_trigger();"))
         else:
             db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
-        fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
-    users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
+        fraud_factories.BeneficiaryFraudCheckFactory.create(user=beneficiary_and_exunderage)
+    users_factories.DepositGrantFactory.create(user=beneficiary_and_exunderage)
     beneficiary_and_exunderage.add_beneficiary_role()
     users.append(beneficiary_and_exunderage)
 
@@ -304,7 +306,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
     ):
         users.append(
-            users_factories.BeneficiaryGrant18Factory(
+            users_factories.BeneficiaryGrant18Factory.create(
                 email="exbene_20@example.com",
                 dateOfBirth=datetime.combine(date.today(), time(0, 0))
                 - relativedelta(years=ELIGIBILITY_AGE_18, months=5),

@@ -23,10 +23,14 @@ class AddressFactory(BaseFactory):
         sqlalchemy_get_or_create = ("street", "inseeCode")
 
     banId: str | None = "75102_7560_00001"
-    inseeCode = factory.LazyAttribute(lambda address: address.banId.split("_")[0] if address.banId else None)
-    street = factory.Sequence("1{} boulevard Poissonnière".format)  # sequence avoids UniqueViolation (street+inseeCode)
-    postalCode = "75002"
-    city = "Paris"
+    inseeCode: str | factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda address: address.banId.split("_")[0] if address.banId else None
+    )
+    street: str | factory.declarations.BaseDeclaration | None = factory.Sequence(
+        "1{} boulevard Poissonnière".format
+    )  # sequence avoids UniqueViolation (street+inseeCode)
+    postalCode: str = "75002"
+    city: str = "Paris"
     latitude: float | None = DEFAULT_LATITUDE
     longitude: float | None = DEFAULT_LONGITUDE
     departmentCode = factory.LazyAttribute(

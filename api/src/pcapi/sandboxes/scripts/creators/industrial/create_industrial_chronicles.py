@@ -33,7 +33,7 @@ def create_industrial_chronicles() -> None:
     logger.info("create chronicles with all fields")
     for user, product, i in zip(itertools.cycle(users), itertools.cycle(products), range(30)):
         ean = product.ean or "1234567890123"
-        chronicles_factories.ChronicleFactory(
+        chronicles_factories.ChronicleFactory.create(
             age=(15 + (i % 5)),
             city=user.city,
             content=f"Chronique sur le produit {product.name} écrite par l'utilisateur {user.full_name} ({user.id}).",
@@ -51,7 +51,7 @@ def create_industrial_chronicles() -> None:
     logger.info("create chronicles without user")
     for product, i in zip(itertools.cycle(products), range(5)):
         ean = product.ean or "1234567890123"
-        chronicles_factories.ChronicleFactory(
+        chronicles_factories.ChronicleFactory.create(
             age=(15 + (i % 5)),
             city=["Paris", None][i % 2],
             content=f"Chronique sur le produit {product.name} mais sans utilisateur.",
@@ -67,7 +67,7 @@ def create_industrial_chronicles() -> None:
     logger.info("create chronicles without products")
     for user, i in zip(itertools.cycle(users), range(5)):
         ean = ean_generator(i)
-        chronicles_factories.ChronicleFactory(
+        chronicles_factories.ChronicleFactory.create(
             age=(15 + (i % 5)),
             city=user.city,
             content=f"Chronique sans produit mais écrite par l'utilisateur {user.full_name} ({user.id}).",
@@ -81,10 +81,10 @@ def create_industrial_chronicles() -> None:
             user=user,
         )
 
-    chronicles_factories.ChronicleFactory(
+    chronicles_factories.ChronicleFactory.create(
         content="minimal chronicle",
     )
-    chronicles_factories.ChronicleFactory(
+    chronicles_factories.ChronicleFactory.create(
         ean=ean_generator(123),
         content="""
 Une chronique avec un très long contenu en Français mais comme je n'ai pas d'idées voici à la place un extrait quelconque du Discours de la servitude volontaire d'Étienne de La Boétie:

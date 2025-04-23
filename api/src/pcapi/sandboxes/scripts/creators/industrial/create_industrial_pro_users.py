@@ -18,17 +18,17 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     offerers = list(offerers_by_name.values())
     adage_eligible_offerers = [offerer for offerer in offerers if offerer.siren == str(MOCK_ADAGE_ELIGIBLE_SIREN)]
 
-    pro_retention = users_factories.ProFactory(
+    pro_retention = users_factories.ProFactory.create(
         lastName="PRO",
         firstName="Retention",
         email="retention@example.com",
     )
-    pro_retention_structures = users_factories.ProFactory(
+    pro_retention_structures = users_factories.ProFactory.create(
         lastName="PRO",
         firstName="Retention Structures",
         email="retention_structures@example.com",
     )
-    pro_adage_eligible = users_factories.ProFactory(
+    pro_adage_eligible = users_factories.ProFactory.create(
         lastName="PC Test Pro",
         firstName="97 0",
         departementCode="97",
@@ -37,11 +37,11 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     )
     # Attach all structures to the retention_structures user
     for offerer in offerers:
-        UserOffererFactory(offerer=offerer, user=pro_retention_structures)
+        UserOffererFactory.create(offerer=offerer, user=pro_retention_structures)
     # Pro retention user for only 1 structure
-    UserOffererFactory(offerer=offerers[-1], user=pro_retention)
+    UserOffererFactory.create(offerer=offerers[-1], user=pro_retention)
     # Pro user with adage eligible structure
-    UserOffererFactory(offerer=adage_eligible_offerers[0], user=pro_adage_eligible)
+    UserOffererFactory.create(offerer=adage_eligible_offerers[0], user=pro_adage_eligible)
 
     users_by_name["pro retention"] = pro_retention
     users_by_name["pro retention structures"] = pro_retention_structures

@@ -21,8 +21,8 @@ def _create_event_with_opening_hours(
     isSoftDeleted: bool = False,
 ) -> None:
     subcategoryId = subcategoryId or subcategories.VISITE.id
-    offer = offers_factories.OfferFactory(isActive=isActive, subcategoryId=subcategoryId, venue=venue)
-    offers_factories.EventWithOpeningHoursStockFactory(
+    offer = offers_factories.OfferFactory.create(isActive=isActive, subcategoryId=subcategoryId, venue=venue)
+    offers_factories.EventWithOpeningHoursStockFactory.create(
         offer=offer,
         isSoftDeleted=isSoftDeleted,
         eventOpeningHours__startDatetime=startDatetime,
@@ -33,15 +33,15 @@ def _create_event_with_opening_hours(
 
 def create_offerer_with_event_with_opening_hours() -> None:
     # FESTIVAL
-    offerer = offerers_factories.OffererFactory(name="Festival du Midi")
-    user = users_factories.ProFactory(
+    offerer = offerers_factories.OffererFactory.create(name="Festival du Midi")
+    user = users_factories.ProFactory.create(
         email="festival@midi.fr",
         firstName="Pro",
         lastName="Api",
         phoneNumber="+33100000000",
     )
-    offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-    festival_venue = offerers_factories.VenueFactory(
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
+    festival_venue = offerers_factories.VenueFactory.create(
         name="La guinguette du camping", managingOfferer=offerer, venueTypeCode=VenueTypeCode.FESTIVAL
     )
 
@@ -54,15 +54,15 @@ def create_offerer_with_event_with_opening_hours() -> None:
     )
 
     # MUSEUM
-    offerer = offerers_factories.OffererFactory(name="Ville Chalon-sur-Saône")
-    user = users_factories.ProFactory(
+    offerer = offerers_factories.OffererFactory.create(name="Ville Chalon-sur-Saône")
+    user = users_factories.ProFactory.create(
         email="contact@museeniepce.com",
         firstName="Pro",
         lastName="Api",
         phoneNumber="+33100000000",
     )
-    offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-    museum_venue = offerers_factories.VenueFactory(
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
+    museum_venue = offerers_factories.VenueFactory.create(
         name="Musée Nicéphore Niépce", managingOfferer=offerer, venueTypeCode=VenueTypeCode.MUSEUM
     )
 

@@ -86,7 +86,7 @@ class CinemaProviderPivotFactory(BaseFactory):
         model = models.CinemaProviderPivot
 
     venue = factory.SubFactory(offerers_factories.VenueFactory)
-    provider = factory.SubFactory(ProviderFactory)
+    provider: factory.declarations.BaseDeclaration = factory.SubFactory(ProviderFactory)
     idAtProvider = factory.Sequence("idProvider{}".format)
 
 

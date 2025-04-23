@@ -12,6 +12,7 @@ from factory.declarations import LazyAttribute
 import factory.fuzzy
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core import factories
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -43,7 +44,7 @@ class UserEligibleAtIdentityCheckStepFactory(users_factories.UserFactory):
         if not create:
             return None
 
-        return BeneficiaryFraudCheckFactory(
+        return BeneficiaryFraudCheckFactory.create(
             user=self, type=models.FraudCheckType.PROFILE_COMPLETION, status=models.FraudCheckStatus.OK
         )
 
@@ -57,7 +58,7 @@ class UserEligibleAtIdentityCheckStepFactory(users_factories.UserFactory):
         if not create:
             return None
 
-        return BeneficiaryFraudCheckFactory(
+        return BeneficiaryFraudCheckFactory.create(
             user=self, type=models.FraudCheckType.PHONE_VALIDATION, status=models.FraudCheckStatus.OK
         )
 
@@ -68,7 +69,7 @@ class DMSContentFactory(factory.Factory):
 
     activity = "Étudiant"
     address = factory.Faker("address")
-    annotation = None
+    annotation: models.DmsAnnotation | None = None
     application_number = factory.Faker("pyint")
     birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
     city = "Funky Town"
@@ -88,21 +89,21 @@ class UbbleContentFactory(factory.Factory):
     class Meta:
         model = models.UbbleContent
 
-    status = None
+    status: ubble_serializers.UbbleIdentificationStatus | None = None
     birth_date = (date.today() - relativedelta(years=18, months=4)).isoformat()
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
-    document_type = None
-    id_document_number = None
-    score = None
-    ove_score = None
-    reason_codes = None
-    comment = None
-    reference_data_check_score = None
-    expiry_date_score = None
-    supported = None
-    identification_id = None
-    identification_url = None
+    document_type: str | None = None
+    id_document_number: str | None = None
+    score: float | None = None
+    ove_score: float | None = None
+    reason_codes: list[models.FraudReasonCode] | None = None
+    comment: str | None = None
+    reference_data_check_score: float | None = None
+    expiry_date_score: float | None = None
+    supported: float | None = None
+    identification_id: str | None = None
+    identification_url: str | None = None
     registration_datetime = factory.LazyFunction(datetime.utcnow)
 
 
@@ -133,10 +134,10 @@ class ProfileCompletionContentFactory(factory.Factory):
     last_name = factory.Faker("last_name")
     origin = "In app"
     postal_code = factory.Faker("postcode", locale="fr_FR")
-    school_type = None
+    school_type: users_models.SchoolTypeEnum | None = None
 
 
-FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[models.FraudCheckType, factory.Factory | None] = {
+FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[models.FraudCheckType, type[factory.Factory] | None] = {
     models.FraudCheckType.DMS: DMSContentFactory,
     models.FraudCheckType.UBBLE: UbbleContentFactory,
     models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
@@ -156,12 +157,14 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     dateCreated = factory.LazyFunction(datetime.utcnow)
 
     @factory.lazy_attribute
-    def eligibilityType(self) -> users_models.EligibilityType:
-        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and self.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
-            if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and self.user.age in [15, 16]:
+    def eligibilityType(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.BeneficiaryFraudCheck,
+    ) -> users_models.EligibilityType:
+        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and obj.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
+            if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and obj.user.age in [15, 16]:
                 return users_models.EligibilityType.FREE
             return users_models.EligibilityType.AGE17_18
-        if self.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
+        if obj.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             return users_models.EligibilityType.UNDERAGE
         return users_models.EligibilityType.AGE18
 
@@ -183,7 +186,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
             kwargs.update(birth_date=user.birth_date.isoformat())
         if date_created:
             kwargs.update(registration_datetime=date_created.isoformat())
-        return factory_class(**kwargs).dict(by_alias=True)
+        return factory_class.create(**kwargs).dict(by_alias=True)
 
     @classmethod
     def _create(
@@ -211,10 +214,10 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
             content = (
                 cls.generate_content_from_user(factory_class, kwargs["user"], first_registration_datetime)
                 if "user" in kwargs
-                else factory_class().dict(by_alias=True)
+                else factory_class.create().dict(by_alias=True)
             )
         elif isinstance(kwargs.get("resultContent"), dict):
-            content = factory_class(**kwargs["resultContent"]).dict(by_alias=True)
+            content = factory_class.create(**kwargs["resultContent"]).dict(by_alias=True)
         elif isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
             content = kwargs["resultContent"].dict(by_alias=True)
 

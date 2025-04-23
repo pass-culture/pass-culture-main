@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 def create_future_beneficiaries() -> None:
     coming_saturday = datetime.utcnow() + relativedelta(weekday=SA)
     eighteen_on_saturday = coming_saturday + relativedelta(years=-18)
-    users_factories.UserFactory(
+    users_factories.UserFactory.create(
         email="pctest.non-beneficiary.17-going-on-18.v1@example.com",
         dateOfBirth=eighteen_on_saturday,
         needsToFillCulturalSurvey=False,
     )
-    users_factories.UserFactory(
+    users_factories.UserFactory.create(
         email="pctest.non-beneficiary.17-going-on-18.v2@example.com",
         dateOfBirth=eighteen_on_saturday,
         needsToFillCulturalSurvey=False,
@@ -30,7 +30,7 @@ def create_future_beneficiaries() -> None:
 
 def create_expiring_beneficiary() -> None:
     coming_saturday = datetime.utcnow() + relativedelta(weekday=SA)
-    users_factories.BeneficiaryGrant18Factory(
+    users_factories.BeneficiaryGrant18Factory.create(
         email="pctest.beneficiary.deposit-expires-soon@example.com",
         deposit__expirationDate=coming_saturday,
         deposit__source="sandbox",
@@ -41,12 +41,12 @@ def create_expiring_beneficiary() -> None:
 
 
 def create_beneficiary_with_empty_deposit() -> None:
-    beneficiary_user = users_factories.BeneficiaryGrant18Factory(
+    beneficiary_user = users_factories.BeneficiaryGrant18Factory.create(
         email="pctest.beneficiary.no-more-deposit@example.com",
         deposit__source="sandbox",
         needsToFillCulturalSurvey=False,
     )
-    bookings_factories.BookingFactory(
+    bookings_factories.BookingFactory.create(
         amount=beneficiary_user.deposit.amount,
         user=beneficiary_user,
         # OffererFactory and VenueFactory would set the siren and
@@ -62,7 +62,7 @@ def create_beneficiary_with_empty_deposit() -> None:
 
 
 def create_beneficiary_with_specific_address() -> None:
-    users_factories.BeneficiaryGrant18Factory(
+    users_factories.BeneficiaryGrant18Factory.create(
         email="pctest.beneficiary.adress-specified@example.com",
         address="182 rue Saint-Honoré",
         city="Paris",
@@ -76,7 +76,7 @@ def create_beneficiary_with_specific_address() -> None:
 
 
 def create_underage_beneficiary() -> None:
-    users_factories.UnderageBeneficiaryFactory(
+    users_factories.UnderageBeneficiaryFactory.create(
         email="pctest.underage-beneficiary@example.com",
         deposit__source="sandbox",
     )
@@ -84,9 +84,9 @@ def create_underage_beneficiary() -> None:
 
 
 def create_eligible_activable_beneficiary() -> None:
-    users_factories.EligibleActivableUnderageFactory(email="pctest.underage-eligible-not-credited@example.com")
+    users_factories.EligibleActivableUnderageFactory.create(email="pctest.underage-eligible-not-credited@example.com")
     logger.info("created 1 underage eligible with all steps completed")
-    users_factories.EligibleActivableFactory(email="pctest.eligible-not-credited@example.com")
+    users_factories.EligibleActivableFactory.create(email="pctest.eligible-not-credited@example.com")
     logger.info("created 1 eligible with all steps completed")
 
 

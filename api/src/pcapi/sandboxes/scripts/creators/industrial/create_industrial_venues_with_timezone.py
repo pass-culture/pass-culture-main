@@ -8,14 +8,14 @@ logger = logging.getLogger(__name__)
 
 def create_industrial_venues_with_timezone() -> None:
     logger.info("create_industrial_venues_with_timezone")
-    offerer = offerers_factories.OffererFactory(name="Structure avec différentes timezones")
-    offerers_factories.UserOffererFactory(offerer=offerer, user__email="offerer_with_timezone@exemple.com")
+    offerer = offerers_factories.OffererFactory.create(name="Structure avec différentes timezones")
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user__email="offerer_with_timezone@exemple.com")
 
     # The virtual venue (so it will be on Europe/Paris)
-    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
 
     # America/Cayenne
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         publicName="America/Cayenne",
         managingOfferer=offerer,
         timezone="America/Cayenne",
@@ -24,7 +24,7 @@ def create_industrial_venues_with_timezone() -> None:
     )
 
     # Indian/Reunion
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         publicName="Indian/Reunion",
         managingOfferer=offerer,
         timezone="Indian/Reunion",
@@ -33,7 +33,7 @@ def create_industrial_venues_with_timezone() -> None:
     )
 
     # Pacific/Noumea
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         publicName="Pacific/Noumea",
         managingOfferer=offerer,
         timezone="Pacific/Noumea",
@@ -43,7 +43,7 @@ def create_industrial_venues_with_timezone() -> None:
 
     # Timezone with winter & summer time
     # Europe/Paris
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         publicName="Europe/Paris",
         managingOfferer=offerer,
         timezone="Europe/Paris",
@@ -52,7 +52,7 @@ def create_industrial_venues_with_timezone() -> None:
     )
 
     # America/Miquelon
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         publicName="America/Miquelon",
         managingOfferer=offerer,
         timezone="America/Miquelon",

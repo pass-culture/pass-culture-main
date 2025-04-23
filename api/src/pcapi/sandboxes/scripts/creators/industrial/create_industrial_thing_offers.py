@@ -56,7 +56,7 @@ def create_industrial_thing_offers(
                 is_active = False
             else:
                 is_active = True
-            thing_offers_by_name[name] = offers_factories.OfferFactory(
+            thing_offers_by_name[name] = offers_factories.OfferFactory.create(
                 venue=thing_venue,
                 subcategoryId=subcategory.id,
                 isActive=is_active,

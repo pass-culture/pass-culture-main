@@ -50,7 +50,7 @@ def ubble_identification(user: users_models.User, body: E2EUbbleIdCheck) -> None
 def make_identification_response(user: users_models.User, errors: list[UbbleError] | None) -> fraud_models.UbbleContent:
     identification_id = str(uuid.uuid4())
     identification_url = urllib.parse.urljoin(settings.UBBLE_API_URL, f"/identifications/{identification_id}")
-    return fraud_factories.UbbleContentFactory(
+    return fraud_factories.UbbleContentFactory.create(
         first_name=user.firstName,
         last_name=user.lastName,
         birth_date=user.birth_date.isoformat(),

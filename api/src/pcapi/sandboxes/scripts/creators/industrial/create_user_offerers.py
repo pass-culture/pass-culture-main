@@ -21,11 +21,11 @@ def create_user_offerers() -> None:
     )
     for offerer in query:
         if user is None:
-            user = users_factories.ProFactory(
+            user = users_factories.ProFactory.create(
                 email="user.offerer@example.com", firstName="Compte pro", lastName="Rattaché"
             )
 
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+        offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
         count += 1
 
     logger.info("created %d user offerers", count)

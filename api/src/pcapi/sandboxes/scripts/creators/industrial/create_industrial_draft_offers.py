@@ -18,12 +18,14 @@ def create_industrial_draft_offers(offerers_by_name: dict[str, offerers_models.O
             continue
         venue = venues[0]
 
-        offers_factories.OfferFactory(venue=venue, name="Mon offre brouillon", validation=OfferValidationStatus.DRAFT)
+        offers_factories.OfferFactory.create(
+            venue=venue, name="Mon offre brouillon", validation=OfferValidationStatus.DRAFT
+        )
 
-        draft_with_stocks = offers_factories.OfferFactory(
+        draft_with_stocks = offers_factories.OfferFactory.create(
             venue=venue, name="Mon offre brouillon avec stock", validation=OfferValidationStatus.DRAFT
         )
-        offers_factories.StockFactory(offer=draft_with_stocks)
+        offers_factories.StockFactory.create(offer=draft_with_stocks)
         index += 2
     db.session.commit()
     logger.info("created %d draft offers", index)

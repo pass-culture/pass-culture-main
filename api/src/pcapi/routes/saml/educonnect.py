@@ -73,7 +73,7 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
     key = educonnect_connector.build_saml_request_id_key(mocked_saml_request_id)
     app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
-    educonnect_user = users_factories.EduconnectUserFactory(
+    educonnect_user = users_factories.EduconnectUserFactory.create(
         birth_date=body.birthDate,
         civility=users_models.GenderEnum.F,
         connection_datetime=datetime.datetime.utcnow(),

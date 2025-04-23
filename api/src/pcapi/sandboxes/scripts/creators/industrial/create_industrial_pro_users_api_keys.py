@@ -13,7 +13,7 @@ def create_industrial_pro_users_api_keys(offerers_by_name: dict[str, Offerer]) -
     logger.info("create_industrial_pro_users_api_keys")
 
     for offerer in offerers_by_name.items():
-        ApiKeyFactory(
+        ApiKeyFactory.create(
             offerer=offerer[1], prefix=f"{settings.ENV}_{offerer[1].id}", secret=f"clearSecret{offerer[1].id}"
         )
 

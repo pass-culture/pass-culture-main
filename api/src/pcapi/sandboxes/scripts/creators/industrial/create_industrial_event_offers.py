@@ -50,7 +50,7 @@ def create_industrial_event_offers(
                 is_duo = False
             else:
                 is_duo = True
-            event_offers_by_name[name] = offers_factories.OfferFactory(
+            event_offers_by_name[name] = offers_factories.OfferFactory.create(
                 venue=event_venue,
                 subcategoryId=event_subcategory.id,
                 extraData=offers_factories.build_extra_data_from_subcategory(

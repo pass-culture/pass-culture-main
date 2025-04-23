@@ -24,9 +24,9 @@ def create_gdpr_user_extract_data() -> None:
         .first()
     )
 
-    users_factories.GdprUserDataExtractBeneficiaryFactory(user=list_beneficiary[0], authorUser=author)
-    users_factories.GdprUserDataExtractBeneficiaryFactory(user=list_underage_beneficiary, authorUser=author)
-    users_factories.GdprUserDataExtractBeneficiaryFactory(
+    users_factories.GdprUserDataExtractBeneficiaryFactory.create(user=list_beneficiary[0], authorUser=author)
+    users_factories.GdprUserDataExtractBeneficiaryFactory.create(user=list_underage_beneficiary, authorUser=author)
+    users_factories.GdprUserDataExtractBeneficiaryFactory.create(
         user=list_beneficiary[1], authorUser=author, dateProcessed=datetime.utcnow()
     )
 

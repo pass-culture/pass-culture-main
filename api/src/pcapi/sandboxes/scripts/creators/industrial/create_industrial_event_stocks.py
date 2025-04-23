@@ -29,7 +29,7 @@ def create_industrial_event_stocks(event_occurrences_by_name: dict[str, EventOcc
             event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(event_occurrence_with_stocks.price)
         )
 
-        event_stocks_by_name[name] = offers_factories.EventStockFactory(
+        event_stocks_by_name[name] = offers_factories.EventStockFactory.create(
             offer=event_occurrence_with_stocks.offer,
             price=event_occurrence_with_stocks.price,
             quantity=available,

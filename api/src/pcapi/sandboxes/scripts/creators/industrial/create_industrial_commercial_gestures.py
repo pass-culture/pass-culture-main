@@ -36,7 +36,7 @@ def _create_total_commercial_gesture_individual_offer(
 
     # Empty the balances
     for user in users:
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             quantity=10,
             stock__price=decimal.Decimal("5.0"),
@@ -51,7 +51,7 @@ def _create_total_commercial_gesture_individual_offer(
     # Create the bookings and cancel them
     bookings = []
     for i, user in enumerate(users):
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             stock__offer__venue=venue,
             stock__price=decimal.Decimal("10.1") + decimal.Decimal(i),
@@ -71,7 +71,7 @@ def _create_total_commercial_gesture_individual_offer(
 
     # Empty the remaining credits leaving only 10 cents in each balance
     for user in users:
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             quantity=1,
             stock__price=decimal.Decimal("99.9"),
@@ -111,38 +111,41 @@ def _create_total_commercial_gesture_collective_offer(
     venue: offerers_models.Venue,
     users_count: int,
 ) -> None:
-    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory()
+    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory.create()
     institution = (
-        educational_models.EducationalInstitution.query.first() or educational_factories.EducationalInstitutionFactory()
+        educational_models.EducationalInstitution.query.first()
+        or educational_factories.EducationalInstitutionFactory.create()
     )
     deposit = (
         institution.deposits[0]
         if institution.deposits
-        else educational_factories.EducationalDepositFactory(educationalInstitution=institution, educationalYear=year)
+        else educational_factories.EducationalDepositFactory.create(
+            educationalInstitution=institution, educationalYear=year
+        )
     )
 
     for i in range(users_count):
         # Create a regular "used" collective booking for the venue
-        booking = educational_factories.UsedCollectiveBookingFactory(
+        booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
             collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
-        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
             venue=venue,
             collectiveBooking=booking,
         )
         _price_event(finance_event)
 
         # Create collective bookings
-        booking = educational_factories.UsedCollectiveBookingFactory(
+        booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("30") + decimal.Decimal(i),
             educationalInstitution=institution,
         )
-        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
             venue=venue,
             collectiveBooking=booking,
         )
@@ -180,7 +183,7 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
     users = users_factories.BeneficiaryGrant18Factory.create_batch(users_count)
     # Empty the balances
     for user in users:
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             quantity=10,
             stock__price=decimal.Decimal("5.0"),
@@ -198,7 +201,7 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
     bookings = []
 
     for i, user in enumerate(users):
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             stock__offer__venue=venue,
             stock__price=decimal.Decimal("10.1") + decimal.Decimal(i),
@@ -220,7 +223,7 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
 
     # Empty the remaining credits leaving only 10 cents in each balance
     for user in users:
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             quantity=1,
             stock__price=decimal.Decimal("99.9"),
@@ -262,7 +265,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
     users = users_factories.BeneficiaryGrant18Factory.create_batch(users_count)
     # Empty the balances
     for user in users:
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             quantity=10,
             stock__price=decimal.Decimal("5.0"),
@@ -278,7 +281,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
 
     # Create the bookings to cancel
     for i, user in enumerate(users):
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             stock__offer__venue=venue,
             stock__price=decimal.Decimal("10.1") + decimal.Decimal(i),
@@ -298,7 +301,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
 
     # Empty the remaining credits leaving only 10 cents in each balance
     for user in users:
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.BookingFactory.create(
             user=user,
             quantity=1,
             stock__price=decimal.Decimal("99.9"),
@@ -314,38 +317,41 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
     ################################
     # Generate collective bookings #
     ################################
-    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory()
+    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory.create()
     institution = (
-        educational_models.EducationalInstitution.query.first() or educational_factories.EducationalInstitutionFactory()
+        educational_models.EducationalInstitution.query.first()
+        or educational_factories.EducationalInstitutionFactory.create()
     )
     deposit = (
         institution.deposits[0]
         if institution.deposits
-        else educational_factories.EducationalDepositFactory(educationalInstitution=institution, educationalYear=year)
+        else educational_factories.EducationalDepositFactory.create(
+            educationalInstitution=institution, educationalYear=year
+        )
     )
 
     for i in range(users_count):
         # Create a regular "used" collective booking for the venue
-        booking = educational_factories.UsedCollectiveBookingFactory(
+        booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
             collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
-        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
             venue=venue,
             collectiveBooking=booking,
         )
         _price_event(finance_event)
 
         # Create collective bookings
-        booking = educational_factories.UsedCollectiveBookingFactory(
+        booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("30") + decimal.Decimal(i),
             educationalInstitution=institution,
         )
-        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
             venue=venue,
             collectiveBooking=booking,
         )
@@ -359,12 +365,12 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
 
 
 def create_industrial_commercial_gestures() -> None:
-    author_user = users_factories.UserFactory()
-    offerer = offerers_factories.OffererFactory(name="Structure pour geste commerciaux")
+    author_user = users_factories.UserFactory.create()
+    offerer = offerers_factories.OffererFactory.create(name="Structure pour geste commerciaux")
 
     for i in range(2):
-        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(
+        bank_account = finance_factories.BankAccountFactory.create(offerer=offerer)
+        venue = offerers_factories.VenueFactory.create(
             name="Lieu avec gestes commerciaux totaux pour réservations individuelles",
             managingOfferer=offerer,
             pricing_point="self",
@@ -377,8 +383,8 @@ def create_industrial_commercial_gestures() -> None:
         )
 
     for i in range(2):
-        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(
+        bank_account = finance_factories.BankAccountFactory.create(offerer=offerer)
+        venue = offerers_factories.VenueFactory.create(
             name="Lieu avec gestes commerciaux totaux pour réservations collectives",
             managingOfferer=offerer,
             pricing_point="self",
@@ -391,8 +397,8 @@ def create_industrial_commercial_gestures() -> None:
         )
 
     for i in range(2):
-        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(
+        bank_account = finance_factories.BankAccountFactory.create(offerer=offerer)
+        venue = offerers_factories.VenueFactory.create(
             name="Lieu avec gestes commerciaux partiels sur plusieurs réservations individuelles",
             managingOfferer=offerer,
             pricing_point="self",
@@ -409,8 +415,8 @@ def create_industrial_commercial_gestures() -> None:
     db.session.flush()
 
     for i in range(2):
-        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(
+        bank_account = finance_factories.BankAccountFactory.create(offerer=offerer)
+        venue = offerers_factories.VenueFactory.create(
             name="Lieu avec réservations individuelles et collectives pour création de gestes commerciaux",
             managingOfferer=offerer,
             pricing_point="self",

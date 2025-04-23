@@ -275,7 +275,7 @@ class DigitalOfferFactory(OfferFactory):
     )
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
-    offererAddress = None
+    offererAddress: factory.declarations.BaseDeclaration | None = None
 
 
 class HeadlineOfferFactory(BaseFactory):
@@ -363,8 +363,8 @@ class EventOpeningHoursFactory(BaseFactory):
     )
 
     @factory.post_generation
-    def weekday_opening_hours(
-        self: models.EventOpeningHours,
+    def weekday_opening_hours(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.EventOpeningHours,
         create: bool,
         extracted: list[models.EventWeekDayOpeningHours] | None,
         **kwargs: typing.Any,
@@ -378,8 +378,8 @@ class EventOpeningHoursFactory(BaseFactory):
         last_more_than_a_week = True
         days_count = 0
 
-        if self.endDatetime:
-            days_count = (self.endDatetime - self.startDatetime).days + 1
+        if obj.endDatetime:
+            days_count = (obj.endDatetime - obj.startDatetime).days + 1
             last_more_than_a_week = days_count > 7
 
         if last_more_than_a_week:
@@ -391,15 +391,15 @@ class EventOpeningHoursFactory(BaseFactory):
                 else:
                     time_span = None
                 week_day_opening_hours.append(
-                    EventWeekDayOpeningHoursFactory(eventOpeningHours=self, weekday=weekday, timeSpans=time_span)
+                    EventWeekDayOpeningHoursFactory.create(eventOpeningHours=obj, weekday=weekday, timeSpans=time_span)
                 )
         else:
             for i in range(0, days_count):
-                assert self.endDatetime  # to make mypy happy
-                current_date = self.endDatetime + datetime.timedelta(days=i)
+                assert obj.endDatetime  # to make mypy happy
+                current_date = obj.endDatetime + datetime.timedelta(days=i)
                 week_day_opening_hours.append(
-                    EventWeekDayOpeningHoursFactory(
-                        eventOpeningHours=self,
+                    EventWeekDayOpeningHoursFactory.create(
+                        eventOpeningHours=obj,
                         weekday=_DAY_TO_WEEKDAY[current_date.weekday()],
                         timeSpans=timespan_str_to_numrange(OPENING_HOURS),
                     )
@@ -425,14 +425,14 @@ class StockFactory(BaseFactory):
     price = decimal.Decimal("10.1")
     quantity = 1000
 
-    beginningDatetime = factory.Maybe(
+    beginningDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
         "offer.isEvent",
         factory.LazyFunction(
             lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         ),
         None,
     )
-    bookingLimitDatetime = factory.Maybe(
+    bookingLimitDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
         "stock.beginningDatetime and offer.isEvent",
         factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60)),
         None,
@@ -497,11 +497,11 @@ class StockWithActivationCodesFactory(StockFactory):
     ) -> None:
         if extracted:
             for code in extracted:
-                ActivationCodeFactory(stockId=self.id, code=code)
+                ActivationCodeFactory.create(stockId=self.id, code=code)  # type: ignore[attr-defined]
         else:
             available_activation_counts = 5
             self.quantity = available_activation_counts
-            ActivationCodeFactory.create_batch(size=available_activation_counts, stockId=self.id, **kwargs)
+            ActivationCodeFactory.create_batch(size=available_activation_counts, stockId=self.id, **kwargs)  # type: ignore[attr-defined]
 
 
 class ActivationCodeFactory(BaseFactory):

@@ -16,14 +16,14 @@ def _create_future_offer_factory(
     name: str = "Offre Coming Soon",
     description: str | None = None,
 ) -> None:
-    offer = offer_factories.OfferFactory(
+    offer = offer_factories.OfferFactory.create(
         isActive=is_active, isDuo=True, subcategoryId=subcategory.id, name=name, description=description
     )
-    offer_factories.EventStockFactory(
+    offer_factories.EventStockFactory.create(
         offer=offer, beginningDatetime=publication_date - datetime.timedelta(days=1), price=12.25
     )
 
-    offer_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+    offer_factories.FutureOfferFactory.create(offer=offer, publicationDate=publication_date)
 
 
 def create_future_offers() -> None:

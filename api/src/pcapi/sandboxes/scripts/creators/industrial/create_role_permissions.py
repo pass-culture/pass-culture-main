@@ -256,6 +256,6 @@ def create_roles_with_permissions() -> None:
 
     for role_name, perms in ROLE_PERMISSIONS.items():
         for perm in perms:
-            perm_factories.RolePermissionFactory(
+            perm_factories.RolePermissionFactory.create(
                 roleId=roles_ids_in_db[role_name], permissionId=perm_ids_in_db[perm.name]
             )
