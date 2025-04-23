@@ -121,4 +121,20 @@ describe('StocksCalendarFormTimeAndPrice', () => {
       screen.queryByLabelText('Le public doit se présenter :')
     ).not.toBeInTheDocument()
   })
+
+  it('should show an error callout when trying to add opening hours while the offer already has stocks', () => {
+    renderStocksCalendarFormTimeAndPrice(
+      {
+        durationType: DurationTypeOption.ONE_DAY,
+        timeSlotType: TimeSlotTypeOption.OPENING_HOURS,
+      },
+      getIndividualOfferFactory({ hasStocks: true })
+    )
+
+    expect(
+      screen.getByText(
+        'Pour ajouter des horaires d’ouverture, vous devez supprimer toutes les dates que vous avez déjà ajoutées.'
+      )
+    ).toBeInTheDocument()
+  })
 })

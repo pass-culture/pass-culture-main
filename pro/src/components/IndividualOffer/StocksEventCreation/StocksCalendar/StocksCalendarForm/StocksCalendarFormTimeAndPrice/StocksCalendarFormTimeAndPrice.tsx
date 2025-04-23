@@ -48,6 +48,13 @@ export function StocksCalendarFormTimeAndPrice({
       </>
     )
   }
+  const cannotAddOpeningHoursBecauseOfferHasStocks =
+    offer.hasStocks &&
+    form.watch('timeSlotType') === TimeSlotTypeOption.OPENING_HOURS
+
+  const showErrorCallout =
+    multipleDaysNoEndDateSpecificTime ||
+    cannotAddOpeningHoursBecauseOfferHasStocks
 
   return (
     <>
@@ -78,13 +85,14 @@ export function StocksCalendarFormTimeAndPrice({
           },
         ]}
       />
-      {multipleDaysNoEndDateSpecificTime ? (
+      {showErrorCallout ? (
         <Callout
           variant={CalloutVariant.ERROR}
           className={styles['error-callout']}
         >
-          En n’indiquant pas de date de fin, vous ne pouvez pas choisir l’option
-          horaires précis.
+          {cannotAddOpeningHoursBecauseOfferHasStocks
+            ? 'Pour ajouter des horaires d’ouverture, vous devez supprimer toutes les dates que vous avez déjà ajoutées.'
+            : 'En n’indiquant pas de date de fin, vous ne pouvez pas choisir l’option horaires précis.'}
         </Callout>
       ) : (
         <>
