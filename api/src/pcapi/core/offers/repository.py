@@ -632,7 +632,7 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if educational_models.CollectiveOfferDisplayedStatus.PENDING in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW in statuses:
         on_collective_offer_filters.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
@@ -648,12 +648,12 @@ def _filter_collective_offers_by_statuses(
             )
         )
 
-    if educational_models.CollectiveOfferDisplayedStatus.INACTIVE in statuses:
-        # If the filter is only on INACTIVE, we need to return no collective_offer
-        # otherwise we return offers for others filtered statuses
+    if educational_models.CollectiveOfferDisplayedStatus.HIDDEN in statuses:
+        # if the statuses filter contains HIDDEN only, we need to return no collective_offer
+        # otherwise we return offers depending on the other statuses in the filter
         on_collective_offer_filters.append(sa.false())
 
-    if educational_models.CollectiveOfferDisplayedStatus.ACTIVE in statuses:
+    if educational_models.CollectiveOfferDisplayedStatus.PUBLISHED in statuses:
         on_booking_status_filter.append(
             and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,

@@ -45,8 +45,8 @@ const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
 
 const toggleCollectiveOffersActiveInactiveStatus = async (
   newStatus:
-    | CollectiveOfferDisplayedStatus.ACTIVE
-    | CollectiveOfferDisplayedStatus.INACTIVE,
+    | CollectiveOfferDisplayedStatus.PUBLISHED
+    | CollectiveOfferDisplayedStatus.HIDDEN,
   selectedOffers: CollectiveOfferResponseModel[],
   notify: ReturnType<typeof useNotification>
 ) => {
@@ -61,7 +61,7 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
     )
   ) {
     notify.error(
-      `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.ACTIVE ? 'la publication' : 'la désactivation'} des offres sélectionnées`
+      `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.PUBLISHED ? 'la publication' : 'la désactivation'} des offres sélectionnées`
     )
     return
   }
@@ -77,14 +77,14 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
   if (collectiveOfferIds.length > 0) {
     await api.patchCollectiveOffersActiveStatus({
       ids: collectiveOfferIds.map((id) => Number(id)),
-      isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
+      isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
     })
   }
 
   if (collectiveOfferTemplateIds.length > 0) {
     await api.patchCollectiveOffersTemplateActiveStatus({
       ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
-      isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
+      isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
     })
   }
 }
@@ -120,16 +120,16 @@ export function CollectiveOffersActionsBar({
   async function updateOfferStatus(
     newSatus:
       | CollectiveOfferDisplayedStatus.ARCHIVED
-      | CollectiveOfferDisplayedStatus.INACTIVE
-      | CollectiveOfferDisplayedStatus.ACTIVE
+      | CollectiveOfferDisplayedStatus.HIDDEN
+      | CollectiveOfferDisplayedStatus.PUBLISHED
   ) {
     switch (newSatus) {
-      case CollectiveOfferDisplayedStatus.ACTIVE: {
+      case CollectiveOfferDisplayedStatus.PUBLISHED: {
         const updateOfferStatusMessage = getPublishOffersErrorMessage()
         if (!updateOfferStatusMessage) {
           try {
             await toggleCollectiveOffersActiveInactiveStatus(
-              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.PUBLISHED,
               selectedOffers,
               notify
             )
@@ -146,10 +146,10 @@ export function CollectiveOffersActionsBar({
         }
         break
       }
-      case CollectiveOfferDisplayedStatus.INACTIVE: {
+      case CollectiveOfferDisplayedStatus.HIDDEN: {
         try {
           await toggleCollectiveOffersActiveInactiveStatus(
-            CollectiveOfferDisplayedStatus.INACTIVE,
+            CollectiveOfferDisplayedStatus.HIDDEN,
             selectedOffers,
             notify
           )
@@ -316,7 +316,7 @@ export function CollectiveOffersActionsBar({
         areAllOffersSelected={areAllOffersSelected}
         nbSelectedOffers={selectedOffers.length}
         onConfirm={() =>
-          updateOfferStatus(CollectiveOfferDisplayedStatus.INACTIVE)
+          updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
         }
         onCancel={() => setIsDeactivationDialogOpen(false)}
         isDialogOpen={isDeactivationDialogOpen}

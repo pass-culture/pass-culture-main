@@ -26,11 +26,11 @@ export type CollectiveOfferRowProps = {
   isFirstRow: boolean
 }
 
-function isCollectiveOfferActiveOrPreBooked(
+function isCollectiveOfferPublishedOrPreBooked(
   offer: CollectiveOfferResponseModel
 ) {
   return (
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.ACTIVE ||
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
     offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
   )
 }
@@ -57,7 +57,7 @@ export const CollectiveOfferRow = ({
 
   const hasExpirationRow =
     !offer.isShowcase &&
-    isCollectiveOfferActiveOrPreBooked(offer) &&
+    isCollectiveOfferPublishedOrPreBooked(offer) &&
     !!bookingLimitDate
 
   return (

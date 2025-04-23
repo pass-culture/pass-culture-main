@@ -39,16 +39,16 @@ interface CollectiveOffersSearchFiltersProps {
 const collectiveFilterStatus = [
   {
     label: 'En instruction',
-    value: CollectiveOfferDisplayedStatus.PENDING,
+    value: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
   },
   {
     label: 'Non conforme',
     value: CollectiveOfferDisplayedStatus.REJECTED,
   },
-  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
+  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.PUBLISHED },
   {
     label: 'En pause',
-    value: CollectiveOfferDisplayedStatus.INACTIVE,
+    value: CollectiveOfferDisplayedStatus.HIDDEN,
   },
   { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
   {
@@ -180,7 +180,7 @@ export const CollectiveOffersSearchFilters = ({
     ...collectiveFilterStatus.filter(
       (status) =>
         !isNewOffersAndBookingsActive ||
-        status.value !== CollectiveOfferDisplayedStatus.INACTIVE
+        status.value !== CollectiveOfferDisplayedStatus.HIDDEN
     ),
   ]
 

@@ -24,7 +24,7 @@ export const CollectiveStatusLabel = ({
   offerDisplayedStatus,
 }: CollectiveStatusLabelProps) => {
   switch (offerDisplayedStatus) {
-    case CollectiveOfferDisplayedStatus.PENDING:
+    case CollectiveOfferDisplayedStatus.UNDER_REVIEW:
       return (
         <StatusLabel
           className={style['status-pending']}
@@ -52,7 +52,7 @@ export const CollectiveStatusLabel = ({
           label="non conforme"
         />
       )
-    case CollectiveOfferDisplayedStatus.INACTIVE:
+    case CollectiveOfferDisplayedStatus.HIDDEN:
       return (
         <StatusLabel
           className={style['status-inactive']}
@@ -66,7 +66,7 @@ export const CollectiveStatusLabel = ({
           label="en pause"
         />
       )
-    case CollectiveOfferDisplayedStatus.ACTIVE:
+    case CollectiveOfferDisplayedStatus.PUBLISHED:
       return (
         <StatusLabel
           className={style['status-active']}

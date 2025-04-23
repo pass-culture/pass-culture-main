@@ -104,8 +104,8 @@ describe('CollectiveOfferConfirmation', () => {
       'Le nom de l’offre 3',
       undefined,
       [
-        CollectiveOfferDisplayedStatus.ACTIVE,
-        CollectiveOfferDisplayedStatus.INACTIVE,
+        CollectiveOfferDisplayedStatus.PUBLISHED,
+        CollectiveOfferDisplayedStatus.HIDDEN,
         CollectiveOfferDisplayedStatus.ENDED,
       ],
       undefined,

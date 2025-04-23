@@ -34,16 +34,16 @@ interface TemplateOffersSearchFiltersProps {
 const collectiveFilterStatus = [
   {
     label: 'En instruction',
-    value: CollectiveOfferDisplayedStatus.PENDING,
+    value: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
   },
   {
     label: 'Non conforme',
     value: CollectiveOfferDisplayedStatus.REJECTED,
   },
-  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
+  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.PUBLISHED },
   {
     label: 'En pause',
-    value: CollectiveOfferDisplayedStatus.INACTIVE,
+    value: CollectiveOfferDisplayedStatus.HIDDEN,
   },
   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
   {

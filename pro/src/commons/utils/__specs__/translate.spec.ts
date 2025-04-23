@@ -32,7 +32,7 @@ describe('translate', () => {
         format: 'Concert',
         periodBeginningDate: '2024-08-08',
         periodEndingDate: '2024-08-24',
-        status: ['PENDING', 'ACTIVE'],
+        status: ['UNDER_REVIEW', 'PUBLISHED'],
       })
     )
 
@@ -46,8 +46,8 @@ describe('translate', () => {
           periodBeginningDate: '2024-08-08',
           periodEndingDate: '2024-08-24',
           status: [
-            CollectiveOfferDisplayedStatus.PENDING,
-            CollectiveOfferDisplayedStatus.ACTIVE,
+            CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+            CollectiveOfferDisplayedStatus.PUBLISHED,
           ],
         },
         Audience.COLLECTIVE

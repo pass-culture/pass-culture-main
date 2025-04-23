@@ -13,7 +13,7 @@ STATUSES_ALLOWING_EDIT_INSTITUTION = (models.CollectiveOfferDisplayedStatus.DRAF
 
 STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
     set(models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_ALLOWING_EDIT_INSTITUTION, models.CollectiveOfferDisplayedStatus.INACTIVE}
+    - {*STATUSES_ALLOWING_EDIT_INSTITUTION, models.CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 

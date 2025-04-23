@@ -145,7 +145,7 @@ describe('CollectiveEditionOfferNavigation', () => {
         offererId: '1',
         offerId: 1,
         offerType: 'collective',
-        offerStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       }
     )
   })

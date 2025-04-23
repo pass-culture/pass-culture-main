@@ -348,7 +348,7 @@ describe('CollectiveActionsCells', () => {
         {
           from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
           offerId: 200,
-          offerStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           offerType: 'collective',
         }
       )
@@ -523,7 +523,7 @@ describe('CollectiveActionsCells', () => {
         isShowcase: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
         isActive: false,
-        displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+        displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
       }),
     })
 

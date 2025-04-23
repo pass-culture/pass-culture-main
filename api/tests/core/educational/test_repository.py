@@ -450,12 +450,12 @@ class FilterCollectiveOfferByStatusesTest:
         CollectiveOfferDisplayedStatus.REIMBURSED,
     }
 
-    # The INACTIVE filter is not relevant with new statuses for CollectiveOffer.
-    ALL_STATUS_WITHOUT_INACTIVE = ALL_STATUS - {CollectiveOfferDisplayedStatus.INACTIVE}
+    # The HIDDEN filter is not relevant for a CollectiveOffer
+    ALL_STATUS_WITHOUT_INACTIVE = ALL_STATUS - {CollectiveOfferDisplayedStatus.HIDDEN}
 
     def test_filter_by_booked_status(self):
         booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.BOOKED)
-        pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+        pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
         base_query = db.session.query(CollectiveOffer)
         filtered_booked_query = _filter_collective_offers_by_statuses(
@@ -465,16 +465,16 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_booked_query.one() == booked_offer
 
         filtered_pending_query = _filter_collective_offers_by_statuses(
-            base_query, [CollectiveOfferDisplayedStatus.PENDING]
+            base_query, [CollectiveOfferDisplayedStatus.UNDER_REVIEW]
         )
 
         assert filtered_pending_query.count() == 1
         assert filtered_pending_query.first() == pending_offer
 
-    @pytest.mark.parametrize("status", ALL_STATUS - set([CollectiveOfferDisplayedStatus.PENDING]))
+    @pytest.mark.parametrize("status", ALL_STATUS - set([CollectiveOfferDisplayedStatus.UNDER_REVIEW]))
     def test_filter_by_multiple_status(self, status):
         booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.BOOKED)
-        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
         filtered_booked_query = _filter_collective_offers_by_statuses(
             db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.BOOKED, status]
@@ -482,34 +482,34 @@ class FilterCollectiveOfferByStatusesTest:
 
         assert filtered_booked_query.one() == booked_offer
 
-    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.PENDING]))
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.UNDER_REVIEW]))
     def test_filter_by_status(self, status):
         offer = create_collective_offer_by_status(status)
-        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
         filtered_booked_query = _filter_collective_offers_by_statuses(db.session.query(CollectiveOffer), [status])
 
         assert filtered_booked_query.one() == offer
 
-    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.PENDING]))
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.UNDER_REVIEW]))
     def test_filter_pending(self, status):
         _other_offer = create_collective_offer_by_status(status)
-        pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+        pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
         filtered_booked_query = _filter_collective_offers_by_statuses(
-            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.PENDING]
+            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.UNDER_REVIEW]
         )
 
         assert filtered_booked_query.one() == pending_offer
 
-    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.ACTIVE]))
+    @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE - set([CollectiveOfferDisplayedStatus.PUBLISHED]))
     def test_filter_active(self, status):
         other_offer = create_collective_offer_by_status(status)
-        active_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ACTIVE)
+        published_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PUBLISHED)
 
         base_query = db.session.query(CollectiveOffer)
-        filtered_query = _filter_collective_offers_by_statuses(base_query, [CollectiveOfferDisplayedStatus.ACTIVE])
-        assert filtered_query.one() == active_offer
+        filtered_query = _filter_collective_offers_by_statuses(base_query, [CollectiveOfferDisplayedStatus.PUBLISHED])
+        assert filtered_query.one() == published_offer
 
         filtered_out_query = _filter_collective_offers_by_statuses(base_query, [status])
         assert filtered_out_query.one() == other_offer
@@ -602,7 +602,7 @@ class FilterCollectiveOfferByStatusesTest:
         )
 
         filtered_active_query = _filter_collective_offers_by_statuses(
-            base_query, [CollectiveOfferDisplayedStatus.ACTIVE]
+            base_query, [CollectiveOfferDisplayedStatus.PUBLISHED]
         )
 
         assert filtered_inactive_query.one() == offer
@@ -619,14 +619,14 @@ class FilterCollectiveOfferByStatusesTest:
         )
 
         filtered_active_query = _filter_collective_offers_by_statuses(
-            base_query, [CollectiveOfferDisplayedStatus.ACTIVE]
+            base_query, [CollectiveOfferDisplayedStatus.PUBLISHED]
         )
 
         assert filtered_inactive_query.count() == 0
         assert filtered_active_query.one() == offer
 
-    def test_reimbursed_statuseses(self):
-        _booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
+    def test_reimbursed_status(self):
+        create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
 
         filtered_query = _filter_collective_offers_by_statuses(
             db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.ENDED]
@@ -634,16 +634,15 @@ class FilterCollectiveOfferByStatusesTest:
 
         assert filtered_query.count() == 0
 
-    def test_inactive_statuseses(self):
-        _inactive_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.INACTIVE)
-        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+    def test_hidden_status(self):
+        create_collective_offer_by_status(CollectiveOfferDisplayedStatus.HIDDEN)
+        create_collective_offer_by_status(CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
         filtered_query = _filter_collective_offers_by_statuses(
-            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.INACTIVE]
+            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.HIDDEN]
         )
 
-        # The INACTIVE filter is not relevant with new statuses for CollectiveOffer.
-        # It is only used for CollectiveOfferTemplate.
+        # The HIDDEN filter is not relevant for a CollectiveOffer, it is only used for CollectiveOfferTemplate
         assert filtered_query.count() == 0
 
     @pytest.mark.parametrize("status", ALL_STATUS_WITHOUT_INACTIVE)

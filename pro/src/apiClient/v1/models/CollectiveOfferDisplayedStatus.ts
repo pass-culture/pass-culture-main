@@ -6,12 +6,12 @@
  * An enumeration.
  */
 export enum CollectiveOfferDisplayedStatus {
-  ACTIVE = 'ACTIVE',
-  PENDING = 'PENDING',
+  PUBLISHED = 'PUBLISHED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
   REJECTED = 'REJECTED',
   PREBOOKED = 'PREBOOKED',
   BOOKED = 'BOOKED',
-  INACTIVE = 'INACTIVE',
+  HIDDEN = 'HIDDEN',
   EXPIRED = 'EXPIRED',
   ENDED = 'ENDED',
   CANCELLED = 'CANCELLED',
