@@ -166,7 +166,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         other_venue = other_venue_provider.venue
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
 
         payload = {
             "venueId": other_venue.id,
@@ -201,7 +201,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         other_venue = other_venue_provider.venue
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
 
         payload = {"venueId": other_venue.id}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -731,7 +731,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, provider=venue_provider.provider, domains=[domain]
         )
 
@@ -751,7 +751,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
 
         payload = {"domains": []}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -767,7 +767,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
 
         payload = {"domains": None}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -784,7 +784,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, provider=venue_provider.provider, institution=educational_institution
         )
 
@@ -826,7 +826,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, provider=venue_provider.provider, nationalProgramId=None
         )
 

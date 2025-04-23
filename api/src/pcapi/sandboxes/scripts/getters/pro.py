@@ -289,7 +289,7 @@ def create_pro_user_with_collective_offers() -> dict:
         formats=[EacFormat.REPRESENTATION],
     )
 
-    offerInInstruction = educational_factories.PendingCollectiveOfferFactory.create(
+    offerInInstruction = educational_factories.UnderReviewCollectiveOfferFactory.create(
         name="Mon offre collective en instruction réservable",
         venue=venue2,
         formats=[EacFormat.REPRESENTATION],
@@ -360,7 +360,7 @@ def create_pro_user_with_active_collective_offer() -> dict:
 
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue = offerers_factories.CollectiveVenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offer = educational_factories.ActiveCollectiveOfferFactory.create(
+    offer = educational_factories.PublishedCollectiveOfferFactory.create(
         name="Mon offre collective",
         institution=educational_institution,
         venue=venue,

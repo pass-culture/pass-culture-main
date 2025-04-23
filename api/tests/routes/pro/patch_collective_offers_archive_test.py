@@ -8,7 +8,7 @@ from pcapi.models import db
 
 
 STATUSES_NOT_ALLOWING_ARCHIVE = (
-    models.CollectiveOfferDisplayedStatus.PENDING,
+    models.CollectiveOfferDisplayedStatus.UNDER_REVIEW,
     models.CollectiveOfferDisplayedStatus.PREBOOKED,
     models.CollectiveOfferDisplayedStatus.BOOKED,
     models.CollectiveOfferDisplayedStatus.ENDED,
@@ -17,7 +17,7 @@ STATUSES_NOT_ALLOWING_ARCHIVE = (
 
 STATUSES_ALLOWING_ARCHIVE = tuple(
     set(models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_NOT_ALLOWING_ARCHIVE, models.CollectiveOfferDisplayedStatus.INACTIVE}
+    - {*STATUSES_NOT_ALLOWING_ARCHIVE, models.CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 

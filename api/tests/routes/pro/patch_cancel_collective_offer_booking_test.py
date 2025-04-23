@@ -17,7 +17,7 @@ STATUSES_ALLOWING_CANCEL = (
 
 STATUSES_NOT_ALLOWING_CANCEL = tuple(
     set(models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_ALLOWING_CANCEL, models.CollectiveOfferDisplayedStatus.INACTIVE}
+    - {*STATUSES_ALLOWING_CANCEL, models.CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 pytestmark = pytest.mark.usefixtures("db_session")

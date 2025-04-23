@@ -49,7 +49,7 @@ class Returns200Test:
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
-        assert response_json[0]["displayedStatus"] == "ACTIVE"
+        assert response_json[0]["displayedStatus"] == "PUBLISHED"
         assert response_json[0]["isActive"] is True
         assert response_json[0]["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
@@ -638,8 +638,8 @@ class Return400Test:
         assert response.json == {
             "status": [
                 "value is not a valid list",
-                "value is not a valid enumeration member; permitted: 'ACTIVE', "
-                "'PENDING', 'REJECTED', 'PREBOOKED', 'BOOKED', 'INACTIVE', "
+                "value is not a valid enumeration member; permitted: 'PUBLISHED', "
+                "'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', 'BOOKED', 'HIDDEN', "
                 "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED', "
                 "'DRAFT'",
             ]

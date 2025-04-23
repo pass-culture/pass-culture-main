@@ -26,7 +26,7 @@ STATUSES_NOT_ALLOWING_DUPLIATE = (educational_models.CollectiveOfferDisplayedSta
 
 STATUSES_ALLOWING_DUPLIATE = tuple(
     set(educational_models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_NOT_ALLOWING_DUPLIATE, educational_models.CollectiveOfferDisplayedStatus.INACTIVE}
+    - {*STATUSES_NOT_ALLOWING_DUPLIATE, educational_models.CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 
@@ -290,7 +290,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         national_program = educational_factories.NationalProgramFactory(isActive=False)
         domain = educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, nationalProgram=national_program, domains=[domain]
         )
 
@@ -307,7 +307,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         national_program = educational_factories.NationalProgramFactory()
         domain = educational_factories.EducationalDomainFactory()
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, nationalProgram=national_program, domains=[domain]
         )
 
@@ -323,7 +323,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         national_program = educational_factories.NationalProgramFactory()
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, nationalProgram=national_program)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, nationalProgram=national_program)
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 

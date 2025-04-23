@@ -271,7 +271,7 @@ describe('CollectiveCreationOfferNavigation', () => {
       isTemplate: true,
       offer: {
         ...offer,
-        displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
+        displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
       },
     })
 

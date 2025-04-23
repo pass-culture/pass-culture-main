@@ -88,7 +88,7 @@ class Returns200Test:
         assert response_json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert response_json["formats"] == [fmt.value for fmt in offer.formats]
         assert response_json["provider"]["name"] == provider.name
-        assert response_json["displayedStatus"] == "ACTIVE"
+        assert response_json["displayedStatus"] == "PUBLISHED"
         assert response_json["isTemplate"] is False
         assert response_json["isActive"] is True
 

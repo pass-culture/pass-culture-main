@@ -75,8 +75,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           offererId: queryOffererId ? queryOffererId.toString() : 'all',
           venueId: queryVenueId ? queryVenueId : 'all',
           status: [
-            CollectiveOfferDisplayedStatus.ACTIVE,
-            CollectiveOfferDisplayedStatus.INACTIVE,
+            CollectiveOfferDisplayedStatus.PUBLISHED,
+            CollectiveOfferDisplayedStatus.HIDDEN,
             CollectiveOfferDisplayedStatus.ENDED,
           ],
         },

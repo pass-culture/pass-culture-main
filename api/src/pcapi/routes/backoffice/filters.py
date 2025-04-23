@@ -582,9 +582,9 @@ def format_collective_offer_displayed_status(
     displayed_status: educational_models.CollectiveOfferDisplayedStatus,
 ) -> str:
     match displayed_status:
-        case educational_models.CollectiveOfferDisplayedStatus.ACTIVE:
+        case educational_models.CollectiveOfferDisplayedStatus.PUBLISHED:
             return "Publiée"
-        case educational_models.CollectiveOfferDisplayedStatus.PENDING:
+        case educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW:
             return "En instruction"
         case educational_models.CollectiveOfferDisplayedStatus.REJECTED:
             return "Non conforme"
@@ -592,7 +592,7 @@ def format_collective_offer_displayed_status(
             return "Préréservée"
         case educational_models.CollectiveOfferDisplayedStatus.BOOKED:
             return "Réservée"
-        case educational_models.CollectiveOfferDisplayedStatus.INACTIVE:
+        case educational_models.CollectiveOfferDisplayedStatus.HIDDEN:
             return "En pause"
         case educational_models.CollectiveOfferDisplayedStatus.EXPIRED:
             return "Expirée"

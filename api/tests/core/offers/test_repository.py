@@ -1571,7 +1571,7 @@ class GetFilteredCollectiveOffersTest:
     @pytest.mark.parametrize(
         "offer_status",
         set(educational_models.CollectiveOfferDisplayedStatus)
-        - {educational_models.CollectiveOfferDisplayedStatus.INACTIVE},
+        - {educational_models.CollectiveOfferDisplayedStatus.HIDDEN},
     )
     def test_filter_each_status(self, admin_user, offer_status):
         offer = educational_factories.create_collective_offer_by_status(offer_status)
@@ -1587,15 +1587,15 @@ class GetFilteredCollectiveOffersTest:
         )
         assert result.count() == 0
 
-    def test_filter_inactive(self, admin_user):
+    def test_filter_hidden(self, admin_user):
         for status in educational_models.CollectiveOfferDisplayedStatus:
             educational_factories.create_collective_offer_by_status(status)
 
-        # The INACTIVE filter does not correspond to any collective offer (only templates)
+        # The HIDDEN filter does not correspond to any collective offer (only templates)
         result = repository.get_collective_offers_by_filters(
             user_id=admin_user.id,
             user_is_admin=True,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.INACTIVE],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.HIDDEN],
         )
         assert result.count() == 0
 

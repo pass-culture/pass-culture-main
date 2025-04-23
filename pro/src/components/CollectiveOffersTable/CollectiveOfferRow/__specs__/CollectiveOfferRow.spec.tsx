@@ -451,9 +451,9 @@ describe('ollectiveOfferRow', () => {
   })
 
   describe('expiration row', () => {
-    it('should display a expiration row if the bookable offer is active', () => {
+    it('should display a expiration row if the bookable offer is published', () => {
       props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         stocks: [
           {
             hasBookingLimitDatetimePassed: false,
@@ -516,7 +516,7 @@ describe('ollectiveOfferRow', () => {
 
     it('should not display a expiration row if the offer has no booking limit', () => {
       props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         stocks: [
           {
             hasBookingLimitDatetimePassed: false,

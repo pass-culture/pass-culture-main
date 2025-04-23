@@ -129,12 +129,12 @@ class CollectiveBookingStatus(enum.Enum):
 
 
 class CollectiveOfferDisplayedStatus(enum.Enum):
-    ACTIVE = "ACTIVE"
-    PENDING = "PENDING"
+    PUBLISHED = "PUBLISHED"
+    UNDER_REVIEW = "UNDER_REVIEW"
     REJECTED = "REJECTED"
     PREBOOKED = "PREBOOKED"
     BOOKED = "BOOKED"
-    INACTIVE = "INACTIVE"
+    HIDDEN = "HIDDEN"
     EXPIRED = "EXPIRED"
     ENDED = "ENDED"
     CANCELLED = "CANCELLED"
@@ -146,10 +146,10 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
 COLLECTIVE_OFFER_TEMPLATE_STATUSES: typing.Final = (
     CollectiveOfferDisplayedStatus.ARCHIVED,
     CollectiveOfferDisplayedStatus.REJECTED,
-    CollectiveOfferDisplayedStatus.PENDING,
+    CollectiveOfferDisplayedStatus.UNDER_REVIEW,
     CollectiveOfferDisplayedStatus.DRAFT,
-    CollectiveOfferDisplayedStatus.INACTIVE,
-    CollectiveOfferDisplayedStatus.ACTIVE,
+    CollectiveOfferDisplayedStatus.HIDDEN,
+    CollectiveOfferDisplayedStatus.PUBLISHED,
     CollectiveOfferDisplayedStatus.ENDED,
 )
 
@@ -183,8 +183,8 @@ ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
         CollectiveOfferAllowedAction.CAN_ARCHIVE,
     ),
-    CollectiveOfferDisplayedStatus.PENDING: (CollectiveOfferAllowedAction.CAN_DUPLICATE,),
-    CollectiveOfferDisplayedStatus.ACTIVE: (
+    CollectiveOfferDisplayedStatus.UNDER_REVIEW: (CollectiveOfferAllowedAction.CAN_DUPLICATE,),
+    CollectiveOfferDisplayedStatus.PUBLISHED: (
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferAllowedAction.CAN_EDIT_DATES,
         CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
@@ -226,7 +226,7 @@ ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferAllowedAction.CAN_ARCHIVE,
     ),
     CollectiveOfferDisplayedStatus.ARCHIVED: (CollectiveOfferAllowedAction.CAN_DUPLICATE,),
-    CollectiveOfferDisplayedStatus.INACTIVE: (),
+    CollectiveOfferDisplayedStatus.HIDDEN: (),
 }
 
 TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
@@ -236,8 +236,8 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
     ),
-    CollectiveOfferDisplayedStatus.PENDING: (),
-    CollectiveOfferDisplayedStatus.ACTIVE: (
+    CollectiveOfferDisplayedStatus.UNDER_REVIEW: (),
+    CollectiveOfferDisplayedStatus.PUBLISHED: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
@@ -245,7 +245,7 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
     ),
     CollectiveOfferDisplayedStatus.REJECTED: (CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,),
     CollectiveOfferDisplayedStatus.ARCHIVED: (),
-    CollectiveOfferDisplayedStatus.INACTIVE: (
+    CollectiveOfferDisplayedStatus.HIDDEN: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
@@ -904,12 +904,12 @@ class CollectiveOffer(
             case offer_mixin.OfferValidationStatus.DRAFT:
                 return CollectiveOfferDisplayedStatus.DRAFT
             case offer_mixin.OfferValidationStatus.PENDING:
-                return CollectiveOfferDisplayedStatus.PENDING
+                return CollectiveOfferDisplayedStatus.UNDER_REVIEW
             case offer_mixin.OfferValidationStatus.REJECTED:
                 return CollectiveOfferDisplayedStatus.REJECTED
             case offer_mixin.OfferValidationStatus.APPROVED:
                 if not self.isActive:
-                    return CollectiveOfferDisplayedStatus.INACTIVE
+                    return CollectiveOfferDisplayedStatus.HIDDEN
 
                 last_booking_status = self.lastBookingStatus
                 has_booking_limit_passed = self.hasBookingLimitDatetimesPassed
@@ -925,7 +925,7 @@ class CollectiveOffer(
                         if has_booking_limit_passed:
                             return CollectiveOfferDisplayedStatus.EXPIRED
 
-                        return CollectiveOfferDisplayedStatus.ACTIVE
+                        return CollectiveOfferDisplayedStatus.PUBLISHED
 
                     case CollectiveBookingStatus.PENDING:
                         # pylint: disable=using-constant-test
@@ -957,7 +957,7 @@ class CollectiveOffer(
                         return CollectiveOfferDisplayedStatus.CANCELLED
 
         logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
-        return CollectiveOfferDisplayedStatus.ACTIVE
+        return CollectiveOfferDisplayedStatus.PUBLISHED
 
     @property
     def allowedActions(self) -> list[CollectiveOfferAllowedAction]:
@@ -1236,7 +1236,7 @@ class CollectiveOfferTemplate(
             return CollectiveOfferDisplayedStatus.REJECTED
 
         if self.validation == offer_mixin.OfferValidationStatus.PENDING:
-            return CollectiveOfferDisplayedStatus.PENDING
+            return CollectiveOfferDisplayedStatus.UNDER_REVIEW
 
         if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
             return CollectiveOfferDisplayedStatus.DRAFT
@@ -1245,9 +1245,9 @@ class CollectiveOfferTemplate(
             return CollectiveOfferDisplayedStatus.ENDED
 
         if not self.isActive:
-            return CollectiveOfferDisplayedStatus.INACTIVE
+            return CollectiveOfferDisplayedStatus.HIDDEN
 
-        return CollectiveOfferDisplayedStatus.ACTIVE
+        return CollectiveOfferDisplayedStatus.PUBLISHED
 
     @displayedStatus.expression  # type: ignore[no-redef]
     def displayedStatus(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
@@ -1262,15 +1262,15 @@ class CollectiveOfferTemplate(
             ),
             (
                 cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
-                CollectiveOfferDisplayedStatus.PENDING.name,
+                CollectiveOfferDisplayedStatus.UNDER_REVIEW.name,
             ),
             (
                 cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
                 CollectiveOfferDisplayedStatus.DRAFT.name,
             ),
             (cls.hasEndDatePassed, CollectiveOfferDisplayedStatus.ENDED.name),
-            (cls.isActive.is_(False), CollectiveOfferDisplayedStatus.INACTIVE.name),
-            else_=CollectiveOfferDisplayedStatus.ACTIVE.name,
+            (cls.isActive.is_(False), CollectiveOfferDisplayedStatus.HIDDEN.name),
+            else_=CollectiveOfferDisplayedStatus.PUBLISHED.name,
         )
 
     @property

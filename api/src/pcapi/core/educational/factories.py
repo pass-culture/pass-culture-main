@@ -432,13 +432,13 @@ class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         )
 
 
-class PendingCollectiveOfferFactory(CollectiveOfferBaseFactory):
+class UnderReviewCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.PENDING
     isActive = False
 
     @factory.post_generation
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        # a pending offer has a stock because it completed the creation process
+        # an offer under review has a stock because it completed the creation process
         CollectiveStockFactory.create(
             startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
         )
@@ -449,16 +449,16 @@ class DraftCollectiveOfferFactory(CollectiveOfferBaseFactory):
     isActive = False
 
 
-class ActiveCollectiveOfferFactory(CollectiveOfferBaseFactory):
+class PublishedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.APPROVED
 
     @factory.post_generation
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
-        _stock = CollectiveStockFactory.create(startDatetime=future, collectiveOffer=self)
+        CollectiveStockFactory.create(startDatetime=future, collectiveOffer=self)
 
 
-class InactiveCollectiveOfferFactory(CollectiveOfferBaseFactory):
+class HiddenCollectiveOfferFactory(CollectiveOfferBaseFactory):
     isActive = False
 
 
@@ -557,12 +557,12 @@ def create_collective_offer_by_status(
             return ArchivedCollectiveOfferFactory.create(**kwargs)
         case models.CollectiveOfferDisplayedStatus.REJECTED:
             return RejectedCollectiveOfferFactory.create(**kwargs)
-        case models.CollectiveOfferDisplayedStatus.PENDING:
-            return PendingCollectiveOfferFactory.create(**kwargs)
-        case models.CollectiveOfferDisplayedStatus.ACTIVE:
-            return ActiveCollectiveOfferFactory.create(**kwargs)
-        case models.CollectiveOfferDisplayedStatus.INACTIVE:
-            return InactiveCollectiveOfferFactory.create(**kwargs)
+        case models.CollectiveOfferDisplayedStatus.UNDER_REVIEW:
+            return UnderReviewCollectiveOfferFactory.create(**kwargs)
+        case models.CollectiveOfferDisplayedStatus.PUBLISHED:
+            return PublishedCollectiveOfferFactory.create(**kwargs)
+        case models.CollectiveOfferDisplayedStatus.HIDDEN:
+            return HiddenCollectiveOfferFactory.create(**kwargs)
         case models.CollectiveOfferDisplayedStatus.EXPIRED:
             return ExpiredWithBookingCollectiveOfferFactory.create(**kwargs)
         case models.CollectiveOfferDisplayedStatus.PREBOOKED:
@@ -585,32 +585,32 @@ def create_collective_offer_template_by_status(
     status: models.CollectiveOfferDisplayedStatus,
     **kwargs: typing.Any,
 ) -> models.CollectiveOfferTemplate:
-    match status.value:
-        case models.CollectiveOfferDisplayedStatus.ARCHIVED.value:
+    match status:
+        case models.CollectiveOfferDisplayedStatus.ARCHIVED:
             kwargs.update({"isActive": False, "dateArchived": datetime.datetime.utcnow()})
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
-        case models.CollectiveOfferDisplayedStatus.REJECTED.value:
+        case models.CollectiveOfferDisplayedStatus.REJECTED:
             kwargs["validation"] = OfferValidationStatus.REJECTED
             kwargs["rejectionReason"] = models.CollectiveOfferRejectionReason.MISSING_PRICE
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
-        case models.CollectiveOfferDisplayedStatus.PENDING.value:
+        case models.CollectiveOfferDisplayedStatus.UNDER_REVIEW:
             kwargs["validation"] = OfferValidationStatus.PENDING
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
-        case models.CollectiveOfferDisplayedStatus.DRAFT.value:
+        case models.CollectiveOfferDisplayedStatus.DRAFT:
             kwargs["validation"] = OfferValidationStatus.DRAFT
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
-        case models.CollectiveOfferDisplayedStatus.INACTIVE.value:
+        case models.CollectiveOfferDisplayedStatus.HIDDEN:
             kwargs["isActive"] = False
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
-        case models.CollectiveOfferDisplayedStatus.ACTIVE.value:
+        case models.CollectiveOfferDisplayedStatus.PUBLISHED:
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
-        case models.CollectiveOfferDisplayedStatus.ENDED.value:
+        case models.CollectiveOfferDisplayedStatus.ENDED:
             now = datetime.datetime.utcnow()
             start = now - datetime.timedelta(days=14)
             date_range = db_utils.make_timerange(start=start, end=now - datetime.timedelta(days=7))

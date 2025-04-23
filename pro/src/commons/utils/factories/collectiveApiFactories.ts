@@ -45,7 +45,7 @@ export const collectiveOfferFactory = (
   return {
     id: currentId,
     status: CollectiveOfferStatus.ACTIVE,
-    displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+    displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
     isActive: true,
     hasBookingLimitDatetimesPassed: true,
     isEducational: true,
@@ -81,7 +81,7 @@ export const listOffersVenueFactory = (
 const sharedCollectiveOfferData = {
   isActive: true,
   status: CollectiveOfferStatus.ACTIVE,
-  displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+  displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
   isCancellable: true,
   isTemplate: true,
   name: 'Offre de test',

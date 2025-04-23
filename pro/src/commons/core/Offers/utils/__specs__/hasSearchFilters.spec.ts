@@ -43,7 +43,7 @@ describe('hasSearchFilters', () => {
         searchFilters: defaultCollectiveFilters,
         defaultFilters: {
           ...defaultCollectiveFilters,
-          status: [CollectiveOfferDisplayedStatus.ACTIVE],
+          status: [CollectiveOfferDisplayedStatus.PUBLISHED],
         }
       })
     ).toBeTruthy()

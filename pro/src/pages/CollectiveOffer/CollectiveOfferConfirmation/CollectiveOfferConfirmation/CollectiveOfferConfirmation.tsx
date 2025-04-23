@@ -99,7 +99,7 @@ const mapOfferStatusToData = (
   isShowcase?: boolean,
   institutionName?: string
 ) => {
-  if (displayedStatus === CollectiveOfferDisplayedStatus.PENDING) {
+  if (displayedStatus === CollectiveOfferDisplayedStatus.UNDER_REVIEW) {
     return pendingOffer
   }
 

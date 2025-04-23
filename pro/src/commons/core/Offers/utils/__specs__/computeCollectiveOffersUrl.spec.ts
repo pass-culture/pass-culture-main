@@ -11,7 +11,7 @@ describe('computeCollectiveOffersUrl', () => {
       venueId: 'EQ',
       format: EacFormat.CONCERT,
       status: [
-        CollectiveOfferDisplayedStatus.ACTIVE,
+        CollectiveOfferDisplayedStatus.PUBLISHED,
         CollectiveOfferDisplayedStatus.EXPIRED,
       ],
       creationMode: 'manual',
@@ -33,7 +33,7 @@ describe('computeCollectiveOffersUrl', () => {
       offererId: 'AY',
       venueId: 'EQ',
       format: EacFormat.CONCERT,
-      status: [CollectiveOfferDisplayedStatus.ACTIVE],
+      status: [CollectiveOfferDisplayedStatus.PUBLISHED],
       creationMode: 'manual',
       periodBeginningDate: '2020-11-30T00:00:00+01:00',
       periodEndingDate: '2021-01-07T23:59:59+01:00',

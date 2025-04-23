@@ -737,7 +737,7 @@ class CollectiveOfferTemplateDisplayedStatusTest:
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
 
         offer.dateRange = None
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.HIDDEN
 
 
 class CollectiveOfferAllowedActionsTest:

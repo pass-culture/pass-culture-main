@@ -951,7 +951,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_validated(self, legit_user, authenticated_client):
-        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+        collective_offer_to_validate = educational_factories.UnderReviewCollectiveOfferFactory()
 
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
@@ -980,7 +980,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
     def test_validate_collective_offer_with_institution_invalid_email_validated(
         self, legit_user, authenticated_client, requests_mock
     ):
-        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+        collective_offer_to_validate = educational_factories.UnderReviewCollectiveOfferFactory()
 
         adage_json = {
             "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
@@ -1017,7 +1017,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
     def test_validate_collective_offer_with_institution_500_not_validated(
         self, legit_user, authenticated_client, requests_mock
     ):
-        collective_offer_to_validate = educational_factories.PendingCollectiveOfferFactory()
+        collective_offer_to_validate = educational_factories.UnderReviewCollectiveOfferFactory()
 
         adage_json = {
             "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
@@ -1054,7 +1054,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
     def test_validate_collective_offer_adage_timeout_not_validated(
         self, legit_user, authenticated_client, requests_mock
     ):
-        collective_offer = educational_factories.PendingCollectiveOfferFactory()
+        collective_offer = educational_factories.UnderReviewCollectiveOfferFactory()
 
         endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests_exceptions.ReadTimeout)
 

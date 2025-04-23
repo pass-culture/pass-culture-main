@@ -41,13 +41,13 @@ const mapBrowserCollectiveStatusToApi: Record<
   string,
   CollectiveOfferDisplayedStatus
 > = {
-  active: CollectiveOfferDisplayedStatus.ACTIVE,
-  inactive: CollectiveOfferDisplayedStatus.INACTIVE,
+  active: CollectiveOfferDisplayedStatus.PUBLISHED,
+  inactive: CollectiveOfferDisplayedStatus.HIDDEN,
   prereservee: CollectiveOfferDisplayedStatus.PREBOOKED,
   reservee: CollectiveOfferDisplayedStatus.BOOKED,
   expiree: CollectiveOfferDisplayedStatus.EXPIRED,
   terminee: CollectiveOfferDisplayedStatus.ENDED,
-  'en-attente': CollectiveOfferDisplayedStatus.PENDING,
+  'en-attente': CollectiveOfferDisplayedStatus.UNDER_REVIEW,
   refusee: CollectiveOfferDisplayedStatus.REJECTED,
   archivee: CollectiveOfferDisplayedStatus.ARCHIVED,
   brouillon: CollectiveOfferDisplayedStatus.DRAFT,

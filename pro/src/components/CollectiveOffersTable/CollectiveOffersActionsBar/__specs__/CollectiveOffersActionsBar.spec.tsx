@@ -128,12 +128,12 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
         }),
       ],
@@ -178,7 +178,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
       ],
@@ -202,11 +202,11 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         }),
       ],
     })
@@ -232,12 +232,12 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           isShowcase: true,
         }),
       ],
@@ -264,17 +264,17 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 3,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         }),
       ],
     })
@@ -302,13 +302,13 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
           stocks,
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
           stocks,
           isShowcase: true,
@@ -330,8 +330,8 @@ describe('ActionsBar', () => {
         from: '/offres/collectives',
         offerType: 'collective',
         selected_offers: JSON.stringify([
-          { offerId: '1', offerStatus: CollectiveOfferDisplayedStatus.ACTIVE },
-          { offerId: '2', offerStatus: CollectiveOfferDisplayedStatus.ACTIVE },
+          { offerId: '1', offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED },
+          { offerId: '2', offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED },
         ]),
       }
     )
@@ -343,13 +343,13 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           stocks,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           stocks,
           isShowcase: true,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
@@ -383,13 +383,13 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           stocks,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
         collectiveOfferFactory({
           id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
+          displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
           stocks,
           allowedActions: [],
         }),
@@ -412,7 +412,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           isShowcase: false,
-          displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           hasBookingLimitDatetimesPassed: false,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
@@ -436,7 +436,7 @@ describe('ActionsBar', () => {
         selectedOffers: [
           collectiveOfferFactory({
             isShowcase: true,
-            displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+            displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
             hasBookingLimitDatetimesPassed: false,
             allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
           }),
@@ -459,7 +459,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           isShowcase: true,
-          displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
           hasBookingLimitDatetimesPassed: false,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
         }),
@@ -482,7 +482,7 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           isShowcase: false,
-          displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+          displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
           hasBookingLimitDatetimesPassed: false,
           allowedActions: [],
         }),

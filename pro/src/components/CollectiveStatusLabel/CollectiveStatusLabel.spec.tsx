@@ -13,7 +13,7 @@ interface TestCaseProps {
 describe('CollectiveStatusLabel', () => {
   const testCases: TestCaseProps[] = [
     {
-      displayedStatus: CollectiveOfferDisplayedStatus.PENDING,
+      displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
       expectedLabel: 'en instruction',
     },
     {
@@ -21,11 +21,11 @@ describe('CollectiveStatusLabel', () => {
       expectedLabel: 'non conforme',
     },
     {
-      displayedStatus: CollectiveOfferDisplayedStatus.INACTIVE,
+      displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
       expectedLabel: 'en pause',
     },
     {
-      displayedStatus: CollectiveOfferDisplayedStatus.ACTIVE,
+      displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       expectedLabel: 'publiée',
     },
     {

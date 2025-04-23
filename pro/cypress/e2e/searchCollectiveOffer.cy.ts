@@ -256,7 +256,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I search with status "En instruction"' })
     cy.get('#search-status').click()
-    cy.get('#list-status').find('#option-display-PENDING').click()
+    cy.get('#list-status').find('#option-display-UNDER_REVIEW').click()
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
 

@@ -137,7 +137,7 @@ class CollectiveOfferTest:
 
     def test_location_address_venue(self, eac_client):
         venue = offerers_factories.VenueFactory()
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,

@@ -10,7 +10,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={CollectiveOfferDisplayedStatus.PENDING}
+        offerStatus={CollectiveOfferDisplayedStatus.UNDER_REVIEW}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
       />
@@ -25,7 +25,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
       />
@@ -43,7 +43,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         isShowcase={false}
         institutionDisplayName=""
       />
@@ -66,7 +66,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={null}
-        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         isShowcase={true}
         institutionDisplayName=""
       />
@@ -81,7 +81,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={null}
-        offerStatus={CollectiveOfferDisplayedStatus.ACTIVE}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         isShowcase={true}
         institutionDisplayName=""
       />

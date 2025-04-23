@@ -19,24 +19,24 @@ from pcapi.routes.serialization import collective_stock_serialize
 
 STATUSES_ALLOWING_EDIT_DATES = (
     CollectiveOfferDisplayedStatus.DRAFT,
-    CollectiveOfferDisplayedStatus.ACTIVE,
+    CollectiveOfferDisplayedStatus.PUBLISHED,
     CollectiveOfferDisplayedStatus.PREBOOKED,
     CollectiveOfferDisplayedStatus.EXPIRED,
 )
 
 STATUSES_NOT_ALLOWING_EDIT_DATES = tuple(
-    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DATES, CollectiveOfferDisplayedStatus.INACTIVE}
+    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DATES, CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 STATUSES_ALLOWING_EDIT_DISCOUNT = (
     CollectiveOfferDisplayedStatus.DRAFT,
-    CollectiveOfferDisplayedStatus.ACTIVE,
+    CollectiveOfferDisplayedStatus.PUBLISHED,
     CollectiveOfferDisplayedStatus.PREBOOKED,
     CollectiveOfferDisplayedStatus.BOOKED,
 )
 
 STATUSES_NOT_ALLOWING_EDIT_DISCOUNT = tuple(
-    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DISCOUNT, CollectiveOfferDisplayedStatus.INACTIVE}
+    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DISCOUNT, CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 

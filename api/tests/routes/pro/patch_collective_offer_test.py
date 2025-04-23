@@ -791,7 +791,7 @@ class Returns400Test:
         }
 
     def test_patch_collective_offer_replacing_by_venue_with_no_pricing_point(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
 
@@ -801,7 +801,7 @@ class Returns400Test:
             assert response.json == {"venueId": ["No venue with a pricing point found for the destination venue."]}
 
     def test_patch_collective_offer_replacing_by_venue_not_eligible(self, auth_client, venue, other_related_venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
 
@@ -811,7 +811,7 @@ class Returns400Test:
             assert response.json == {"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}
 
     def test_patch_collective_offer_description_invalid(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = auth_client.patch(f"/collective/offers/{offer.id}", json={"description": "too_long" * 200})
@@ -821,7 +821,7 @@ class Returns400Test:
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_patch_collective_offer_cannot_receive_offer_venue(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "offerVenue": {"addressType": models.OfferAddressType.SCHOOL.value, "venueId": None, "otherAddress": ""},
@@ -834,7 +834,7 @@ class Returns400Test:
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
     def test_patch_collective_offer_cannot_receive_location(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "location": {
@@ -853,7 +853,7 @@ class Returns400Test:
     def test_patch_collective_offer_with_location_type_school_must_not_receive_location_comment(
         self, auth_client, venue
     ):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "location": {
@@ -874,7 +874,7 @@ class Returns400Test:
     def test_patch_collective_offer_with_location_type_address_must_not_receive_location_comment(
         self, auth_client, venue
     ):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "location": {
@@ -893,7 +893,7 @@ class Returns400Test:
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_patch_collective_offer_with_location_type_school_must_provide_intervention_area(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "interventionArea": None,
@@ -913,7 +913,7 @@ class Returns400Test:
     def test_patch_collective_offer_with_location_type_address_must_not_provide_intervention_area(
         self, auth_client, venue
     ):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "interventionArea": ["75", "91"],
@@ -933,7 +933,7 @@ class Returns400Test:
     def test_patch_collective_offer_with_location_type_school_must_provide_correct_intervention_area(
         self, auth_client, venue
     ):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         payload = {
             "interventionArea": ["75", "1234"],
@@ -951,7 +951,7 @@ class Returns400Test:
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_patch_collective_offer_with_location_type_address_must_provide_address(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
 
         data = {
             "location": {
@@ -969,7 +969,7 @@ class Returns400Test:
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_patch_collective_offer_with_change_location_type(self, auth_client, venue):
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue,
         )
 
@@ -998,7 +998,7 @@ class Returns400Test:
     def test_update_collective_offer_template_with_location_type_when_address_must_not_be_provided(
         self, auth_client, venue, location_type
     ):
-        offer = educational_factories.ActiveCollectiveOfferFactory(
+        offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue,
         )
         venue = offerers_factories.VenueFactory()
