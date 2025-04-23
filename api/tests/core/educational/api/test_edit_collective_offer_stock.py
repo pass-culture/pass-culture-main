@@ -165,32 +165,6 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == initial_event_date
 
-    # FIXME (rpaoloni, 2022-03-09) -> None: Uncomment for when pc-13428 is merged
-    # @mock.patch("pcapi.core.search.async_index_offer_ids")
-    # def test_should_reindex_offer_on_algolia(self, mocked_async_index_offer_ids) -> None:
-    #     # Given
-    #     initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-    #     initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
-    #     stock_to_be_updated = educational_factories.CollectiveStockFactory(
-    #         beginningDatetime=initial_event_date,
-    #         price=1200,
-    #         numberOfTickets=30,
-    #         bookingLimitDatetime=initial_booking_limit_date,
-    #     )
-    #     new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-    #         beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7, hours=5),
-    #         numberOfTickets=35,
-    #     )
-
-    #     # When
-    #     edit_collective_stock(
-    #         stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
-    #     )
-
-    #     # Then
-    #     stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-    #     mocked_async_index_offer_ids.assert_called_once_with([stock.collectiveOfferId])
-
     @time_machine.travel("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_event_postponed(self) -> None:
         # Given

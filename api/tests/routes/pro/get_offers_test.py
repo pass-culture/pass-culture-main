@@ -744,13 +744,7 @@ class Returns200Test:
 
         assert response.json == []
 
-
-class Returns404Test:
-    number_of_queries = testing.AUTHENTICATION_QUERIES
-    number_of_queries += 1  # search offers
-
     def should_return_no_offers_when_user_offerer_is_not_validated(self, client, db_session):
-        # TODO : maybe move this test to another class due to status code
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
