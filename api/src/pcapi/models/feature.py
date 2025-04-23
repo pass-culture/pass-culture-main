@@ -115,19 +115,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
     MOVE_OFFER_TEST = "Test le déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
+    WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
     WIP_ASYNCHRONOUS_CELERY_TASKS = "Activer le backend de tâches asynchrone Celery pour les tâches qui le supporte"
-    WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
-    WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
-        "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
-    )
-    WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
-    WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_COLLAPSED_MEMORIZED_FILTERS = "Activer la fonction de masquage et de mémorisation des filtres en sessionStorage"
-    WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
-    WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
-        "Activer la nouvelle structure des offres et réservations collectives"
-    )
-    WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
     )
@@ -140,22 +130,32 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
+    WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE = (
         "Exposer la route utilisée par Brevo pour récupérer les recommandations d'un utilisateur"
     )
+    WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
+    WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
+    WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
+        "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
+    )
+    WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
+        "Activer la nouvelle structure des offres et réservations collectives"
+    )
+    WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
+    WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST = "Activer l'A/B test du parcours d'onboarding didactique"
-    WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
-    WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
-    WIP_2025_SIGN_UP = "Activer le nouveau parcours d’inscription au portail pro"
-    WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     )
+    WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
+    WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY = "Autoriser le rattachement seulement pour les collectivités"
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
-    WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY = "Autoriser le rattachement seulement pour les collectivités"
+    WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
+    WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -225,14 +225,13 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
     FeatureToggle.WIP_ENABLE_EVENT_WITH_OPENING_HOUR,
-    FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
+    FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
-    FeatureToggle.WIP_UBBLE_V2,
     # Please keep alphabetic order
 )
 
