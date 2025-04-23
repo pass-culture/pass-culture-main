@@ -337,13 +337,14 @@ class PcTableManager extends PcAddOn {
         } else {
           $cell = $line.children[oldConfigurationMap[columnConfiguration.id]]
         }
-
-        // apply configuration
-        if(columnConfiguration.display){
-          $cell.classList.remove('d-none')
-          $line.appendChild($cell)
-        } else {
-          $cell.classList.add('d-none')
+        if ($cell){
+          // apply configuration
+          if(columnConfiguration.display){
+            $cell.classList.remove('d-none')
+            $line.appendChild($cell)
+          } else {
+            $cell.classList.add('d-none')
+          }
         }
       })
     })

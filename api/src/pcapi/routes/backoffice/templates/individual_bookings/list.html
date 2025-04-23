@@ -1,4 +1,4 @@
-{% extends "layouts/connected.html" %}
+{% extends "layouts/list.html" %}
 {% from "components/badges.html" import build_fraudulent_booking_badge with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_individual_booking_extra_row with context %}
@@ -9,237 +9,230 @@
 {% from "components/connect_as.html" import build_connect_as_link %}
 {% set validate_booking_aria_described_by_id = random_hash() %}
 {% set cancel_booking_aria_described_by_id = random_hash() %}
-{% block page %}
-  <div class="pt-3 px-5">
-    <h1>Réservations individuelles</h1>
-    <div class="filters">{{ forms.build_filters_form(form, dst) }}</div>
-    <div>
-      {% if rows %}
-        <div class="d-flex">
-          <p class="lead num-results d-inline">{{ rows|length }} résultat{{ rows | length | pluralize }}</p>
-          {% if form.is_single_venue_with_optional_dates %}
-            <span class="mx-2 fs-3">
-              {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
-              <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking_csv_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
-                 class="mx-2"><i class="bi bi-filetype-csv"
+{% set rows_count = rows|length %}
+{% block title %}Réservations individuelles{% endblock %}
+{% block search_block %}{{ forms.build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  {% if form.is_single_venue_with_optional_dates %}
+    <span class="mx-2 fs-3">
+      {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
+      <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking_csv_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
+         class="mx-2"><i class="bi bi-filetype-csv"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Télécharger en CSV."></i></a>
-              <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking_xlsx_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
-                 class="mx-2"><i class="bi bi-filetype-xlsx"
+      <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking_xlsx_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
+         class="mx-2"><i class="bi bi-filetype-xlsx"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Télécharger en Excel."></i></a>
-              <span class="mx-2">{{ clipboard.copy_to_clipboard(pro_visualisation_link, "Copier l'url pour PC pro") }}</span>
-            </span>
-          {% endif %}
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-          {% if has_permission("MANAGE_BOOKINGS") %}
-            <div class="btn-group btn-group-sm"
-                 data-toggle="pc-batch-confirm-btn-group"
-                 data-toggle-id="table-container-individual-booking-btn-group"
-                 data-pc-table-multi-select-id="table-individual-bookings-multiselect"
-                 data-input-ids-name="object_ids">
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-validate-booking-modal">Valider</button>
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-use-confirmation-modal="true"
-                      data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
-            </div>
-          {% endif %}
-          {% if has_permission("CREATE_INCIDENTS") %}
-            <div class="btn-group btn-group-sm"
-                 data-toggle="pc-batch-confirm-btn-group"
-                 data-toggle-id="table-container-individual-booking-btn-group"
-                 data-pc-table-multi-select-id="table-individual-bookings-multiselect"
-                 data-input-ids-name="object_ids">
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-modal-selector="#overpayment-creation-modal"
-                      data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
-                      data-use-confirmation-modal="true">Créer un incident</button>
-              <button disabled
-                      type="button"
-                      class="btn btn-outline-primary"
-                      data-modal-selector="#commercial-gesture-creation-modal"
-                      data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
-                      data-use-confirmation-modal="true">Créer un geste commercial</button>
-            </div>
-          {% endif %}
-        </div>
-        <table class="table mb-4"
-               data-table-multi-select-id="table-individual-bookings-multiselect">
-          <thead>
-            <tr>
-              <th scope="col">
-                <input type="checkbox"
-                       class="form-check-input"
-                       name="pc-table-multi-select-check-all" />
-              </th>
-              <th scope="col"></th>
-              <th scope="col">ID résa</th>
-              <th scope="col">Contremarque</th>
-              <th scope="col">Bénéficiaire</th>
-              <th scope="col">Nom de l'offre</th>
-              <th scope="col">ID offre</th>
-              <th scope="col">Résa duo</th>
-              <th scope="col">Stock</th>
-              <th scope="col">Montant</th>
-              <th scope="col">Statut</th>
-              {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
-              <th scope="col">Crédit actif</th>
-              <th scope="col">Auteur de la validation</th>
-              <th scope="col">Évènement comptable</th>
-              <th scope="col">Date de réservation</th>
-              <th scope="col">Date de l'évènement</th>
-              <th scope="col">Entité juridique</th>
-              <th scope="col">Partenaire culturel</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for booking in rows %}
-              {% set offer = booking.stock.offer %}
-              <tr>
-                <td>
-                  <input type="checkbox"
-                         class="form-check-input"
-                         name="pc-table-multi-select-check-{{ booking.id }}"
-                         data-id="{{ booking.id }}" />
-                </td>
-                <td>
-                  <div class="d-flex">
-                    {{ build_booking_toggle_extra_row_button(booking) }}
-                    <div class="mx-2 dropdown">
-                      {% if has_permission("MANAGE_BOOKINGS") %}
-                        <button type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                class="btn p-0"
-                                {% if booking.isReimbursed %}disabled{% endif %}>
-                          <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          {% if booking.isCancelled %}
-                            <li class="dropdown-item p-0">
-                              <a class="btn btn-sm d-block w-100 text-start px-3"
-                                 data-bs-toggle="modal"
-                                 data-bs-target=".pc-validate-booking-modal-{{ booking.id }}">Valider la réservation</a>
-                            </li>
-                          {% elif not booking.isReimbursed %}
-                            <li class="dropdown-item p-0">
-                              <a class="btn btn-sm d-block w-100 text-start px-3"
-                                 data-bs-toggle="modal"
-                                 data-bs-target=".pc-cancel-booking-modal-{{ booking.id }}">Annuler la réservation</a>
-                            </li>
-                          {% endif %}
-                        </ul>
-                        {% if booking.isCancelled %}
-                          <div class="modal modal-lg fade pc-validate-booking-modal-{{ booking.id }}"
-                               tabindex="-1"
-                               aria-labelledby="{{ validate_booking_aria_described_by_id }}"
-                               aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                              <div class="modal-content">
-                                <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) }}"
-                                      name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) | action_to_name }}"
-                                      method="post"
-                                      data-turbo="false">
-                                  <div class="modal-header"
-                                       id="{{ validate_booking_aria_described_by_id }}">
-                                    <h5 class="modal-title">Valider la réservation {{ booking.token }}</h5>
-                                  </div>
-                                  <div class="modal-body row">{{ forms.build_form_fields_group(mark_as_used_booking_form) }}</div>
-                                  <div class="modal-footer">
-                                    <button type="button"
-                                            class="btn btn-outline-primary-subtle-bg"
-                                            data-bs-dismiss="modal">Annuler</button>
-                                    <button type="submit"
-                                            class="btn btn-primary">Confirmer</button>
-                                  </div>
-                                </form>
-                              </div>
-                            </div>
-                          </div>
-                        {% elif not booking.isReimbursed %}
-                          <div class="modal modal-lg fade pc-cancel-booking-modal-{{ booking.id }}"
-                               tabindex="-1"
-                               aria-labelledby="{{ cancel_booking_aria_described_by_id }}"
-                               aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                              <div class="modal-content">
-                                <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) }}"
-                                      name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) | action_to_name }}"
-                                      method="post"
-                                      data-turbo="false">
-                                  <div class="modal-header"
-                                       id="{{ cancel_booking_aria_described_by_id }}">
-                                    <h5 class="modal-title">Annuler la réservation {{ booking.token }}</h5>
-                                  </div>
-                                  <div class="modal-body row">{{ forms.build_form_fields_group(cancel_booking_form) }}</div>
-                                  <div class="modal-footer">
-                                    <button type="button"
-                                            class="btn btn-outline-primary-subtle-bg"
-                                            data-bs-dismiss="modal">Annuler</button>
-                                    <button type="submit"
-                                            class="btn btn-primary">Confirmer</button>
-                                  </div>
-                                </form>
-                              </div>
-                            </div>
-                          </div>
-                        {% endif %}
-                      {% endif %}
+      <span class="mx-2">{{ clipboard.copy_to_clipboard(pro_visualisation_link, "Copier l'url pour PC pro") }}</span>
+    </span>
+  {% endif %}
+{% endblock before_table %}
+{% block table_header %}
+  <th data-pc-column-name="Checkbox">
+    <input type="checkbox"
+           class="form-check-input fs-6"
+           name="pc-table-multi-select-check-all" />
+  </th>
+  <th>Actions</th>
+  <th>ID résa</th>
+  <th>Contremarque</th>
+  <th>Bénéficiaire</th>
+  <th>Nom de l'offre</th>
+  <th>ID offre</th>
+  <th>Résa duo</th>
+  <th>Stock</th>
+  <th>Montant</th>
+  <th>Statut</th>
+  {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th>Fraude</th>{% endif %}
+  <th>Crédit actif</th>
+  <th>Auteur de la validation</th>
+  <th>Évènement comptable</th>
+  <th>Date de réservation</th>
+  <th>Date de l'évènement</th>
+  <th>Entité juridique</th>
+  <th>Partenaire culturel</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for booking in rows %}
+    {% set offer = booking.stock.offer %}
+    <tr>
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ booking.id }}"
+               data-id="{{ booking.id }}" />
+      </td>
+      <td>
+        <div class="d-flex">
+          {{ build_booking_toggle_extra_row_button(booking) }}
+          <div class="mx-2 dropdown">
+            {% if has_permission("MANAGE_BOOKINGS") %}
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0"
+                      {% if booking.isReimbursed %}disabled{% endif %}>
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
+                {% if booking.isCancelled %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target=".pc-validate-booking-modal-{{ booking.id }}">Valider la réservation</a>
+                  </li>
+                {% elif not booking.isReimbursed %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target=".pc-cancel-booking-modal-{{ booking.id }}">Annuler la réservation</a>
+                  </li>
+                {% endif %}
+              </ul>
+              {% if booking.isCancelled %}
+                <div class="modal modal-lg fade pc-validate-booking-modal-{{ booking.id }}"
+                     tabindex="-1"
+                     aria-labelledby="{{ validate_booking_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) }}"
+                            name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) | action_to_name }}"
+                            method="post"
+                            data-turbo="false">
+                        <div class="modal-header"
+                             id="{{ validate_booking_aria_described_by_id }}">
+                          <h5 class="modal-title">Valider la réservation {{ booking.token }}</h5>
+                        </div>
+                        <div class="modal-body row">{{ forms.build_form_fields_group(mark_as_used_booking_form) }}</div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary-subtle-bg"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
-                </td>
-                <td>{{ booking.id }}</td>
-                <td>{{ booking.token }}</td>
-                <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
-                <td>{{ build_connect_as_link(connect_as[booking.id], offer.name, "link-primary") }}</td>
-                <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
-                <td>{{ (booking.quantity == 2) | format_bool }}</td>
-                <td>{{ booking.stock.quantity }}</td>
-                <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
-                <td>{{ booking | format_booking_status(with_badge=True) }}</td>
-                {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
-                  <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
-                {% endif %}
-                <td>{{ booking.deposit | format_active_deposit }}</td>
-                <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
-                <td class="text-center">
-                  {% if booking.validated_incident_id %}
-                    <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking.validated_incident_id) }}"
-                       class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+                </div>
+              {% elif not booking.isReimbursed %}
+                <div class="modal modal-lg fade pc-cancel-booking-modal-{{ booking.id }}"
+                     tabindex="-1"
+                     aria-labelledby="{{ cancel_booking_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) }}"
+                            name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) | action_to_name }}"
+                            method="post"
+                            data-turbo="false">
+                        <div class="modal-header"
+                             id="{{ cancel_booking_aria_described_by_id }}">
+                          <h5 class="modal-title">Annuler la réservation {{ booking.token }}</h5>
+                        </div>
+                        <div class="modal-body row">{{ forms.build_form_fields_group(cancel_booking_form) }}</div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary-subtle-bg"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </td>
+      <td>{{ booking.id }}</td>
+      <td>{{ booking.token }}</td>
+      <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
+      <td>{{ build_connect_as_link(connect_as[booking.id], offer.name, "link-primary") }}</td>
+      <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
+      <td>{{ (booking.quantity == 2) | format_bool }}</td>
+      <td>{{ booking.stock.quantity }}</td>
+      <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
+      <td>{{ booking | format_booking_status(with_badge=True) }}</td>
+      {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+        <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
+      {% endif %}
+      <td>{{ booking.deposit | format_active_deposit }}</td>
+      <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
+      <td class="text-center">
+        {% if booking.validated_incident_id %}
+          <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking.validated_incident_id) }}"
+             class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Visualiser l'incident"></i></a>
-                  {% endif %}
-                </td>
-                <td>{{ booking.dateCreated | format_date_time }}</td>
-                <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
-                <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
-              </tr>
-              {{ build_individual_booking_extra_row(booking, booking.stock, offer) }}
-            {% endfor %}
-          </tbody>
-        </table>
-        {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "eager") }}
-        {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "eager") }}
-        {% if has_permission("CREATE_INCIDENTS") %}
-          {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") , "overpayment-creation-modal", "eager") }}
-          {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") , "commercial-gesture-creation-modal", "eager") }}
         {% endif %}
-      {% endif %}
-    </div>
+      </td>
+      <td>{{ booking.dateCreated | format_date_time }}</td>
+      <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
+      <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
+      <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
+    </tr>
+    {{ build_individual_booking_extra_row(booking, booking.stock, offer) }}
+  {% endfor %}
+{% endblock table_body %}
+{% block multi_select_menu %}
+  <div class="counter-container text-nowrap">
+    <span class="counter">0</span> réservation(s) individuelle(s) sélectionnée(s)
   </div>
-{% endblock page %}
+  {% if has_permission("MANAGE_BOOKINGS") %}
+    <div data-toggle="pc-batch-confirm-btn-group"
+         data-toggle-id="table-container-individual-booking-btn-group"
+         data-pc-table-multi-select-id="{{ table_name }}"
+         data-input-ids-name="object_ids"
+         class="d-flex">
+      <button disabled
+              type="button"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+              data-use-confirmation-modal="true"
+              data-modal-selector="#batch-validate-booking-modal">Valider</button>
+      <button disabled
+              type="button"
+              class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap {% if has_permission("CREATE_INCIDENTS") %}border-end{% endif %}"
+              data-use-confirmation-modal="true"
+              data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
+    </div>
+  {% endif %}
+  {% if has_permission("CREATE_INCIDENTS") %}
+    <div data-toggle="pc-batch-confirm-btn-group"
+         data-toggle-id="table-container-individual-booking-btn-group"
+         data-pc-table-multi-select-id="{{ table_name }}"
+         data-input-ids-name="object_ids"
+         class="d-flex">
+      <button disabled
+              type="button"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+              data-modal-selector="#overpayment-creation-modal"
+              data-mode="fetch"
+              data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
+              data-use-confirmation-modal="true">Créer un incident</button>
+      <button disabled
+              type="button"
+              class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+              data-modal-selector="#commercial-gesture-creation-modal"
+              data-mode="fetch"
+              data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
+              data-use-confirmation-modal="true">Créer un geste commercial</button>
+    </div>
+  {% endif %}
+{% endblock multi_select_menu %}
+{% block after_table %}
+  {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "eager") }}
+  {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "eager") }}
+  {% if has_permission("CREATE_INCIDENTS") %}
+    {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") , "overpayment-creation-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") , "commercial-gesture-creation-modal", "eager") }}
+  {% endif %}
+{% endblock after_table %}

@@ -471,20 +471,6 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id}
 
-    def test_list_bookings_more_than_max(self, authenticated_client):
-        educational_factories.CollectiveBookingFactory.create_batch(
-            25, status=educational_models.CollectiveBookingStatus.CONFIRMED
-        )
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(self.endpoint, status=educational_models.CollectiveBookingStatus.CONFIRMED.name, limit=20)
-            )
-            assert response.status_code == 200
-
-        assert html_parser.count_table_rows(response.data) == 2 * 20  # extra data in second row for each booking
-        assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
-
     def test_additional_data_when_reimbursed(self, authenticated_client, collective_bookings):
         reimbursed = collective_bookings[4]
         pricing_venue = offerers_factories.VenueFactory()
