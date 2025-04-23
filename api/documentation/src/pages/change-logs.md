@@ -14,11 +14,18 @@ title: Pass Culture API change logs
 :::
 
 :::warning
-💡 Important notice regarding location for collective offers.
+💡 Important notice concerning the **collective offers**.
 
-- The field `offerVenue` must not be used anymore. In order to locate a collective offer, you must now use the `location` attribute in the [**create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and the [**update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
-
-**You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#-offers-location).**
+- Offers location
+  - The field `offerVenue` must not be used anymore. In order to locate a collective offer, you must now use the `location` attribute in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic).
+  - **You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#-offers-location).**
+- Offers status
+  - A new `offerStatus` has been added which will replace the current `status` field in the coming months. Both status fields are available for a period of time to allow the transition.
+  - The new status will determine which actions are allowed on the collective offer (which fields can be updated, whether the booking can be cancelled...).
+  - Note that the `status` field of the collective **booking** will not change.
+  - The `isActive` and `isSoldOut` fields will be removed at the same time, as they are not relevant with the new status.
+  - Collective offers that are currently `isActive = false` and do not have a related booking will be archived. This does not apply to offers that are under review or rejected by the validation process.
+  - **You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).**
 :::
 
 ## June 2025
