@@ -65,7 +65,7 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         factory = users_factories.Transition1718Factory
 
     id_provider = user_data.id_provider.value
-    return factory(
+    return factory.create(
         age=user_data.age,
         beneficiaryFraudChecks__type=id_provider,
         beneficiaryFraudChecks__dateCreated=user_data.date_created,

@@ -12,31 +12,31 @@ logger = logging.getLogger(__name__)
 
 
 def create_offers_with_price_categories(offerer: Offerer) -> None:
-    venue = VenueFactory(
+    venue = VenueFactory.create(
         name="Lieu avec tarif",
         managingOfferer=offerer,
     )
 
-    offer_event = EventOfferFactory(
+    offer_event = EventOfferFactory.create(
         name="Offre à tarifs",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
     )
-    price_gold = PriceCategoryFactory(
+    price_gold = PriceCategoryFactory.create(
         offer=offer_event, priceCategoryLabel__label="OR", price=66.6, priceCategoryLabel__venue=venue
     )
-    price_silver = PriceCategoryFactory(
+    price_silver = PriceCategoryFactory.create(
         offer=offer_event, priceCategoryLabel__label="ARGENT", price=42, priceCategoryLabel__venue=venue
     )
-    price_bronze = PriceCategoryFactory(
+    price_bronze = PriceCategoryFactory.create(
         offer=offer_event, priceCategoryLabel__label="BRONZE", price=13, priceCategoryLabel__venue=venue
     )
-    price_free = PriceCategoryFactory(
+    price_free = PriceCategoryFactory.create(
         offer=offer_event, priceCategoryLabel__label="GRATUIT", price=0, priceCategoryLabel__venue=venue
     )
 
-    EventStockFactory(offer=offer_event, priceCategory=price_gold, price=price_gold.price)
-    EventStockFactory(offer=offer_event, priceCategory=price_silver, price=price_silver.price)
-    EventStockFactory(offer=offer_event, priceCategory=price_bronze, price=price_bronze.price)
-    EventStockFactory(offer=offer_event, priceCategory=price_free, price=price_free.price)
+    EventStockFactory.create(offer=offer_event, priceCategory=price_gold, price=price_gold.price)
+    EventStockFactory.create(offer=offer_event, priceCategory=price_silver, price=price_silver.price)
+    EventStockFactory.create(offer=offer_event, priceCategory=price_bronze, price=price_bronze.price)
+    EventStockFactory.create(offer=offer_event, priceCategory=price_free, price=price_free.price)
     logger.info("create_offers with price categories")

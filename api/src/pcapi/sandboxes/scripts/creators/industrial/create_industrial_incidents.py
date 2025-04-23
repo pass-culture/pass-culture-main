@@ -113,9 +113,9 @@ def _create_one_individual_incident(
     is_partial: bool,
     comment: str,
 ) -> None:
-    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    bank_account = finance_factories.BankAccountFactory.create(offerer=offerer)
     name_suffix = " - note de débit" if force_debit_note else ""
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory.create(
         name=f"{iteration} - Lieu avec beaucoup d'incidents{name_suffix}",
         managingOfferer=offerer,
         pricing_point="self",
@@ -136,7 +136,7 @@ def _create_one_individual_incident(
 
     other_venue = None
     if with_other_venue:
-        other_venue = offerers_factories.VenueFactory(
+        other_venue = offerers_factories.VenueFactory.create(
             name=f"{iteration} - Autre lieu avec beaucoup d'incidents",
             managingOfferer=offerer,
             pricing_point=venue,
@@ -220,25 +220,28 @@ def _create_one_collective_incident(
     force_debit_note: bool,
     comment: str,
 ) -> None:
-    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-    venue = offerers_factories.VenueFactory(
+    bank_account = finance_factories.BankAccountFactory.create(offerer=offerer)
+    venue = offerers_factories.VenueFactory.create(
         name=f"{iteration} - Lieu avec beaucoup d'incidents collectifs",
         managingOfferer=offerer,
         pricing_point="self",
         bank_account=bank_account,
     )
     institution = (
-        educational_models.EducationalInstitution.query.first() or educational_factories.EducationalInstitutionFactory()
+        educational_models.EducationalInstitution.query.first()
+        or educational_factories.EducationalInstitutionFactory.create()
     )
-    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory()
+    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory.create()
     deposit = (
         institution.deposits[0]
         if institution.deposits
-        else educational_factories.EducationalDepositFactory(educationalInstitution=institution, educationalYear=year)
+        else educational_factories.EducationalDepositFactory.create(
+            educationalInstitution=institution, educationalYear=year
+        )
     )
     other_venue = None
     if with_other_venue:
-        other_venue = offerers_factories.VenueFactory(
+        other_venue = offerers_factories.VenueFactory.create(
             name=f"{iteration} - Autre lieu avec beaucoup d'incidents collectifs",
             managingOfferer=offerer,
             pricing_point=venue,
@@ -268,7 +271,7 @@ def _create_one_collective_incident(
 
     bookings = special_bookings + incident_bookings
     for booking in bookings:
-        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
             venue=venue,
             collectiveBooking=booking,
         )
@@ -284,14 +287,14 @@ def _create_one_collective_incident(
 
     # Generate new "used" booking to be visible on the invoice/payment files
     for i in range(3):
-        new_booking = educational_factories.UsedCollectiveBookingFactory(
+        new_booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=other_venue or venue,
             collectiveStock__price=decimal.Decimal("20") + decimal.Decimal(i),
             collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
-        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory.create(
             venue=venue,
             collectiveBooking=new_booking,
         )
@@ -319,9 +322,9 @@ def _create_one_collective_incident(
 
 
 def create_industrial_incidents() -> None:
-    offerer = offerers_factories.OffererFactory(name="Structure avec beaucoup d'incidents")
-    pro = users_factories.ProFactory(email="pctest.pro.incidents@example.com")
-    offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
+    offerer = offerers_factories.OffererFactory.create(name="Structure avec beaucoup d'incidents")
+    pro = users_factories.ProFactory.create(email="pctest.pro.incidents@example.com")
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user=pro)
 
     for i, params in enumerate(INDIVIDUAL_INCIDENT_PARAMS):
         _create_one_individual_incident(

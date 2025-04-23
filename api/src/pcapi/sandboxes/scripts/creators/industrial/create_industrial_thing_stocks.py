@@ -36,7 +36,7 @@ def create_industrial_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> No
         short_names_to_increase_price.append(short_name)
 
         name = offer_name + " / " + str(quantity) + " / " + str(price)
-        thing_stocks_by_name[name] = offers_factories.ThingStockFactory(
+        thing_stocks_by_name[name] = offers_factories.ThingStockFactory.create(
             offer=offer,
             quantity=quantity,
             price=price,

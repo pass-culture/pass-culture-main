@@ -115,7 +115,7 @@ def create_users_for_credit_v3_tests() -> None:
     ### 'static' users
 
     ## 18yo user, beneficiary, started before decree
-    users_factories.BeneficiaryFactory(
+    users_factories.BeneficiaryFactory.create(
         firstName="User18",
         lastName="Inscriptionavantdecret",
         email="user18avantdecret@test.com",
@@ -124,7 +124,7 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 18yo user, beneficiary, started after decree
-    users_factories.BeneficiaryFactory(
+    users_factories.BeneficiaryFactory.create(
         firstName="User18",
         lastName="Inscriptionapresdecret",
         email="user18apresdecret@test.com",
@@ -133,7 +133,7 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 17yo user, beneficiary, started before decree
-    users_factories.BeneficiaryFactory(
+    users_factories.BeneficiaryFactory.create(
         firstName="User17",
         lastName="Inscriptionavantdecret",
         email="user17avantdecret@test.com",
@@ -142,7 +142,7 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 17yo user, beneficiary, started after decree
-    users_factories.BeneficiaryFactory(
+    users_factories.BeneficiaryFactory.create(
         firstName="User17",
         lastName="Inscriptionapresdecret",
         email="user17apresdecret@test.com",
@@ -151,7 +151,7 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 16yo user, beneficiary, started before decree
-    users_factories.BeneficiaryFactory(
+    users_factories.BeneficiaryFactory.create(
         firstName="User16",
         lastName="Inscriptionavantdecret",
         email="user16avantdecret@test.com",
@@ -160,12 +160,12 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 16yo user, started after decree
-    users_factories.BaseUserFactory(
+    users_factories.BaseUserFactory.create(
         firstName="User16", lastName="Inscriptionapresdecret", email="user16apresdecret@test.com", age=16
     )
 
     ## 15yo user, beneficiary, started before decree
-    users_factories.BeneficiaryFactory(
+    users_factories.BeneficiaryFactory.create(
         firstName="User15",
         lastName="Inscriptionavantdecret",
         email="user15avantdecret@test.com",
@@ -174,7 +174,7 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     ## 15yo user, beneficiary, started after decree
-    users_factories.BaseUserFactory(
+    users_factories.BaseUserFactory.create(
         firstName="User15", lastName="Inscriptionapresdecret", email="user15apresdecret@test.com", age=15
     )
 
@@ -185,7 +185,7 @@ def create_users_for_credit_v3_tests() -> None:
     user_birthdate = one_day_before_decree - relativedelta(years=18)
     first_activation_date = one_day_before_decree - relativedelta(years=3)  # User created at 15 yo
 
-    user18_redepotavantdecret = users_factories.BeneficiaryFactory(
+    user18_redepotavantdecret = users_factories.BeneficiaryFactory.create(
         firstName="User18",
         lastName="Redepotavantdecret",
         email="user18redepotavantdecret@test.com",
@@ -194,17 +194,17 @@ def create_users_for_credit_v3_tests() -> None:
         dateCreated=first_activation_date,
     )
     # then add the previous deposit they would have had at 15
-    user18_redepotavantdecret_underage_deposit = users_factories.DepositGrantFactory(
+    user18_redepotavantdecret_underage_deposit = users_factories.DepositGrantFactory.create(
         user=user18_redepotavantdecret,
         dateCreated=first_activation_date,
         type=DepositType.GRANT_15_17,
         amount=20 + 30 + 30,
         expirationDate=user_birthdate + relativedelta(years=18),
     )
-    RecreditFactory(
+    RecreditFactory.create(
         deposit=user18_redepotavantdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_16
     )
-    RecreditFactory(
+    RecreditFactory.create(
         deposit=user18_redepotavantdecret_underage_deposit, amount=30, recreditType=RecreditType.RECREDIT_17
     )
 
@@ -213,7 +213,7 @@ def create_users_for_credit_v3_tests() -> None:
     user_birthdate = one_day_after_decree - relativedelta(years=18)
     first_activation_date = one_day_after_decree - relativedelta(years=3)  # User created at 15 yo
 
-    user18_redepotapresdecret = users_factories.BeneficiaryFactory(
+    user18_redepotapresdecret = users_factories.BeneficiaryFactory.create(
         firstName="User18",
         lastName="Redepotavantdecret",
         email="user18redepotapresdecret@test.com",
@@ -222,32 +222,32 @@ def create_users_for_credit_v3_tests() -> None:
         validatedBirthDate=one_day_after_decree.date() - relativedelta(years=17),
     )
     # then update the deposit they would have had at 15
-    RecreditFactory(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
-    RecreditFactory(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_17)
+    RecreditFactory.create(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    RecreditFactory.create(deposit=user18_redepotapresdecret.deposit, amount=30, recreditType=RecreditType.RECREDIT_17)
     user18_redepotapresdecret.deposit.expirationDate = user_birthdate + relativedelta(years=21)
     user18_redepotapresdecret.deposit.amount = 20 + 30 + 30  # 20 initial amount + 2 recredits above
 
     # add a reimbursed booking to old deposit
-    bookings_factories.ReimbursedBookingFactory(user=user18_redepotapresdecret, quantity=1, amount=15)
+    bookings_factories.ReimbursedBookingFactory.create(user=user18_redepotapresdecret, quantity=1, amount=15)
 
     # Set real age to 18 via admin action
     users_api.update_user_info(
         user18_redepotapresdecret,
-        author=users_factories.AdminFactory(),
+        author=users_factories.AdminFactory.create(),
         validated_birth_date=user_birthdate.date(),
     )
 
     # finish missing steps
-    fraud_factories.BeneficiaryFraudCheckFactory(user=user18_redepotapresdecret, type=FraudCheckType.UBBLE)
-    fraud_factories.PhoneValidationFraudCheckFactory(user=user18_redepotapresdecret)
+    fraud_factories.BeneficiaryFraudCheckFactory.create(user=user18_redepotapresdecret, type=FraudCheckType.UBBLE)
+    fraud_factories.PhoneValidationFraudCheckFactory.create(user=user18_redepotapresdecret)
     user18_redepotapresdecret.phoneNumber = "+33612345678"
-    fraud_factories.ProfileCompletionFraudCheckFactory(user=user18_redepotapresdecret)
-    fraud_factories.HonorStatementFraudCheckFactory(user=user18_redepotapresdecret)
+    fraud_factories.ProfileCompletionFraudCheckFactory.create(user=user18_redepotapresdecret)
+    fraud_factories.HonorStatementFraudCheckFactory.create(user=user18_redepotapresdecret)
 
     ## 17yo user, beneficiary, with birthday before decree
     first_activation_date = one_day_before_decree - relativedelta(years=2)  # User created at 15 yo
     user_birthdate = one_day_before_decree - relativedelta(years=17)
-    user_17_bday_before_decree = users_factories.BeneficiaryFactory(
+    user_17_bday_before_decree = users_factories.BeneficiaryFactory.create(
         firstName="User17",
         lastName="Anniversaireavantreforme",
         email="user17anniversaireavantdecret@test.com",
@@ -255,12 +255,12 @@ def create_users_for_credit_v3_tests() -> None:
         deposit__amount=20 + 30 + 30,
         validatedBirthDate=user_birthdate,
     )
-    RecreditFactory(deposit=user_17_bday_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
-    RecreditFactory(deposit=user_17_bday_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_17)
+    RecreditFactory.create(deposit=user_17_bday_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    RecreditFactory.create(deposit=user_17_bday_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_17)
 
     ## 17yo user, beneficiary, with birthday after decree
     first_activation_date = one_day_after_decree - relativedelta(years=2)  # User created at 15 yo
-    user_17_after_decree = users_factories.BeneficiaryFactory(
+    user_17_after_decree = users_factories.BeneficiaryFactory.create(
         firstName="User17",
         lastName="Anniversaireaprèsréforme",
         email="user17anniversaireapresdecret@test.com",
@@ -270,12 +270,12 @@ def create_users_for_credit_v3_tests() -> None:
         deposit__amount=20 + 30,
     )
     # Add recredit 16
-    RecreditFactory(deposit=user_17_after_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    RecreditFactory.create(deposit=user_17_after_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
     # Set real age to 17
     user_17_after_decree.validatedBirthDate = (one_day_after_decree - relativedelta(years=17)).date()
 
     ## 16yo user, beneficiary, with birthday before decree
-    user_16_before_decree = users_factories.BeneficiaryFactory(
+    user_16_before_decree = users_factories.BeneficiaryFactory.create(
         firstName="User16",
         lastName="Anniversaireavantreforme",
         email="user16anniversaireavantdecret@test.com",
@@ -284,10 +284,10 @@ def create_users_for_credit_v3_tests() -> None:
         deposit__amount=20 + 30,
     )
     # Set Recredits that happened before the decree
-    RecreditFactory(deposit=user_16_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
+    RecreditFactory.create(deposit=user_16_before_decree.deposit, amount=30, recreditType=RecreditType.RECREDIT_16)
 
     ## 16yo user, beneficiary, with birthday after decree
-    user_16_after_decree = users_factories.BeneficiaryFactory(
+    user_16_after_decree = users_factories.BeneficiaryFactory.create(
         firstName="User16",
         lastName="Anniversaireaprèsréforme",
         email="user16anniversaireapresdecret@test.com",
@@ -300,12 +300,12 @@ def create_users_for_credit_v3_tests() -> None:
 
 @log_func_duration
 def create_artists() -> None:
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory.create(
         name="Lieu avec artistes", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
 
     # Artist 1 : writer
-    artist_1 = artist_factories.ArtistFactory(
+    artist_1 = artist_factories.ArtistFactory.create(
         name="Virginie Despentes",
         description="écrivaine et réalisatrice française",
         image="http://commons.wikimedia.org/wiki/Special:FilePath/Virginie%20Despentes%202012.jpg",
@@ -313,15 +313,15 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.OfferFactory(product=product, venue=venue)
-        offers_factories.ArtistProductLinkFactory(
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
         )
-    artist_factories.ArtistAliasFactory(artist_id=artist_1.id, artist_alias_name="Virginie Despente")
+    artist_factories.ArtistAliasFactory.create(artist_id=artist_1.id, artist_alias_name="Virginie Despente")
 
     # Artist 2 : singer
-    artist_2 = artist_factories.ArtistFactory(
+    artist_2 = artist_factories.ArtistFactory.create(
         name="Avril Lavigne",
         description="chanteuse canadienne",
         image="http://commons.wikimedia.org/wiki/Special:FilePath/Glaston2024%202806%20300624%20%28129%20of%20173%29%20%28cropped%29.jpg",
@@ -329,15 +329,15 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory(product=product, venue=venue)
-        offers_factories.ArtistProductLinkFactory(
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
-    artist_factories.ArtistAliasFactory(artist_id=artist_2.id, artist_alias_name="Lavigne Avril")
+    artist_factories.ArtistAliasFactory.create(artist_id=artist_2.id, artist_alias_name="Lavigne Avril")
 
     # Artist 3 : other
-    artist_3 = artist_factories.ArtistFactory(
+    artist_3 = artist_factories.ArtistFactory.create(
         name="Marina Rollman",
         description="humoriste suisse",
         image="http://commons.wikimedia.org/wiki/Special:FilePath/Marina-Rollman-20150710-023%20%2819415372158%29.jpg",
@@ -345,73 +345,73 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
-        offers_factories.OfferFactory(product=product, venue=venue)
-        offers_factories.ArtistProductLinkFactory(
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
-    artist_factories.ArtistAliasFactory(artist_id=artist_3.id, artist_alias_name="Rollman Marina")
+    artist_factories.ArtistAliasFactory.create(artist_id=artist_3.id, artist_alias_name="Rollman Marina")
 
     _create_library_with_writers()
 
 
 def _create_library_with_writers() -> None:
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory.create(
         name="Librairie des artistes", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
     artists = [
-        artist_factories.ArtistFactory(
+        artist_factories.ArtistFactory.create(
             name="Annie Ernaux",
             description="Professeure de lettres et écrivaine française",
             image="https://upload.wikimedia.org/wikipedia/commons/a/a6/Annie_Ernaux_in_2022_%289_av_11%29.jpg",
             image_license="Creative Commons Attribution-Share Alike 4.0",
             image_license_url="https://creativecommons.org/licenses/by-sa/4.0/",
         ),
-        artist_factories.ArtistFactory(
+        artist_factories.ArtistFactory.create(
             name="George Sand",
             description="Romancière, dramaturge, épistolière, critique littéraire et journaliste française",
             image="https://upload.wikimedia.org/wikipedia/commons/e/ee/George_Sand.PNG",
         ),
-        artist_factories.ArtistFactory(
+        artist_factories.ArtistFactory.create(
             name="Miguel de Cervantes",
             description="Romancier, poète et dramaturge espagnol",
             image="https://upload.wikimedia.org/wikipedia/commons/4/47/Miguel_de_Cervantes_2.jpg",
         ),
-        artist_factories.ArtistFactory(
+        artist_factories.ArtistFactory.create(
             name="Jane Austen",
             description="Romancière et femme de lettres anglaise",
         ),
-        artist_factories.ArtistFactory(
+        artist_factories.ArtistFactory.create(
             name="Ernest Hemingway",
             description="Écrivain, journaliste et correspondant de guerre américain",
             image="https://upload.wikimedia.org/wikipedia/commons/2/28/ErnestHemingway.jpg",
         ),
-        artist_factories.ArtistFactory(),
-        artist_factories.ArtistFactory(),
-        artist_factories.ArtistFactory(),
-        artist_factories.ArtistFactory(),
-        artist_factories.ArtistFactory(),
+        artist_factories.ArtistFactory.create(),
+        artist_factories.ArtistFactory.create(),
+        artist_factories.ArtistFactory.create(),
+        artist_factories.ArtistFactory.create(),
+        artist_factories.ArtistFactory.create(),
     ]
 
     image_paths = itertools.cycle(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
     for artist in artists:
         for num in range(5):
-            product = offers_factories.ProductFactory(
+            product = offers_factories.ProductFactory.create(
                 name=f"Livre - {artist.name} - {num + 1}", subcategoryId=subcategories.LIVRE_PAPIER.id
             )
             image_path = next(image_paths)
-            mediation = offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+            mediation = offers_factories.ProductMediationFactory.create(product=product, imageType=ImageType.RECTO)
             thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True, object_id=mediation.uuid)
-            offers_factories.ArtistProductLinkFactory(
+            offers_factories.ArtistProductLinkFactory.create(
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
             )
-            offer = offers_factories.OfferFactory(product=product, venue=venue)
-            offers_factories.StockFactory(offer=offer)
+            offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+            offers_factories.StockFactory.create(offer=offer)
 
 
 @log_func_duration
 def create_offers_with_gtls() -> None:
-    librairie_gtl = offerers_factories.VenueFactory(
+    librairie_gtl = offerers_factories.VenueFactory.create(
         name="Librairie des GTls",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         latitude=45.91967,
@@ -431,7 +431,7 @@ def create_offers_with_gtls() -> None:
 
     # un librairie que pour des mangas
 
-    librairie_manga = offerers_factories.VenueFactory(
+    librairie_manga = offerers_factories.VenueFactory.create(
         name="Librairie des mangas",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         latitude=46.66979,
@@ -457,9 +457,9 @@ def _create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offere
 
 def _create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
     ean = Fake.ean13()
-    product = offers_factories.ProductFactory(
+    product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
+        lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
         idAtProviders=ean,
         extraData={"gtl_id": gtl_id, "author": Fake.name()},
         ean=ean,
@@ -470,23 +470,23 @@ def _create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_m
         venue=venue,
     )
     for offer in offers:
-        offers_factories.StockFactory(offer=offer)
+        offers_factories.StockFactory.create(offer=offer)
 
 
 @log_func_duration
 def create_offers_with_same_ean() -> None:
     offers = []
-    product = offers_factories.ProductFactory(
+    product = offers_factories.ProductFactory.create(
         name="Le livre du pass Culture",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
+        lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
     )
     for venue_data in venues_mock.venues:
         offers.append(
-            offers_factories.OfferFactory(
+            offers_factories.OfferFactory.create(
                 product=product,
                 subcategoryId=subcategories.LIVRE_PAPIER.id,
-                venue=offerers_factories.VenueFactory(
+                venue=offerers_factories.VenueFactory.create(
                     name=venue_data["name"],
                     venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
                     latitude=venue_data["latitude"],
@@ -500,7 +500,7 @@ def create_offers_with_same_ean() -> None:
             )
         )
         for offer in offers:
-            offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+            offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
     for _ in range(10):
         ean = Fake.ean13()
         author = Fake.name()
@@ -508,20 +508,20 @@ def create_offers_with_same_ean() -> None:
 
 
 def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -> None:
-    product = offers_factories.ProductFactory(
+    product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
+        lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
         idAtProviders=ean,
         ean=ean,
         extraData={"author": author},
     )
-    offer = offers_factories.OfferFactory(
+    offer = offers_factories.OfferFactory.create(
         product=product,
         name=product.name,
         subcategoryId=product.subcategoryId,
         venue=venue,
     )
-    offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+    offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
 
 def create_offer_and_stocks_for_cinemas(
@@ -529,14 +529,14 @@ def create_offer_and_stocks_for_cinemas(
 ) -> None:
     for venue in venues:
         for idx, product in enumerate(products):
-            movie_offer = offers_factories.OfferFactory(
+            movie_offer = offers_factories.OfferFactory.create(
                 name=product.name,
                 product=product,
                 subcategoryId=subcategories.SEANCE_CINE.id,
                 venue=venue,
                 extraData=product.extraData,
             )
-            mediation = offers_factories.MediationFactory(offer=movie_offer)
+            mediation = offers_factories.MediationFactory.create(offer=movie_offer)
             store_public_object_from_sandbox_assets("thumbs", mediation, movie_offer.subcategoryId)
 
             product_stocks = []
@@ -546,7 +546,7 @@ def create_offer_and_stocks_for_cinemas(
                     beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
                     is_full = hour == 5
                     quantity = daydelta * hour + 1 if not is_full else 0
-                    stock = offers_factories.StockFactory(
+                    stock = offers_factories.StockFactory.create(
                         offer=movie_offer,
                         beginningDatetime=beginning_datetime,
                         bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
@@ -561,7 +561,7 @@ def create_offer_and_stocks_for_cinemas(
                 product_bookings -= 1
 
             for stock_idx in range(product_bookings):
-                bookings_factories.BookingFactory(stock=product_stocks[stock_idx % len(product_stocks)])
+                bookings_factories.BookingFactory.create(stock=product_stocks[stock_idx % len(product_stocks)])
 
 
 @log_func_duration
@@ -573,7 +573,7 @@ def create_cinema_data() -> None:
 
 def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
     return [
-        offers_factories.ProductFactory(
+        offers_factories.ProductFactory.create(
             subcategoryId=subcategories.SEANCE_CINE.id,
             description=f"Description du film {i}",
             name=f"Film {i}",
@@ -587,9 +587,11 @@ def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
 def _create_allocine_venues() -> list[offerers_models.Venue]:
     venues = []
     for venue_data in venues_mock.cinemas_venues:
-        allocine_offerer = offerers_factories.OffererFactory(name=f"Structure du lieu allocine {venue_data['name']}")
-        offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
-        allocine_synchonized_venue = offerers_factories.VenueFactory(
+        allocine_offerer = offerers_factories.OffererFactory.create(
+            name=f"Structure du lieu allocine {venue_data['name']}"
+        )
+        offerers_factories.UserOffererFactory.create(offerer=allocine_offerer, user__email="api@example.com")
+        allocine_synchonized_venue = offerers_factories.VenueFactory.create(
             name=venue_data["name"],
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             latitude=venue_data["latitude"],
@@ -601,16 +603,16 @@ def _create_allocine_venues() -> list[offerers_models.Venue]:
             banId=venue_data["banId"],
             managingOfferer=allocine_offerer,
         )
-        allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
-        theater = providers_factories.AllocineTheaterFactory(
+        allocine_provider = providers_factories.AllocineProviderFactory.create(isActive=True)
+        theater = providers_factories.AllocineTheaterFactory.create(
             siret=allocine_synchonized_venue.siret,
             theaterId=venue_data["theaterId"],
             internalId=venue_data["internalId"],
         )
-        pivot = providers_factories.AllocinePivotFactory(
+        pivot = providers_factories.AllocinePivotFactory.create(
             venue=allocine_synchonized_venue, theaterId=theater.theaterId, internalId=theater.internalId
         )
-        providers_factories.AllocineVenueProviderFactory(
+        providers_factories.AllocineVenueProviderFactory.create(
             internalId=theater.internalId,
             provider=allocine_provider,
             venue=allocine_synchonized_venue,
@@ -623,59 +625,59 @@ def _create_allocine_venues() -> list[offerers_models.Venue]:
 
 @log_func_duration
 def create_offers_interactions() -> None:
-    venue_with_headlined_and_liked_books_1 = offerers_factories.VenueFactory(
+    venue_with_headlined_and_liked_books_1 = offerers_factories.VenueFactory.create(
         name="Librairie des interactions 1", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
-    venue_with_headlined_and_liked_books_2 = offerers_factories.VenueFactory(
+    venue_with_headlined_and_liked_books_2 = offerers_factories.VenueFactory.create(
         name="Librairie des interactions 2", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
-    venue_with_headlined_and_liked_books_3 = offerers_factories.VenueFactory(
+    venue_with_headlined_and_liked_books_3 = offerers_factories.VenueFactory.create(
         name="Librairie des interactions 3", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
-    venue_with_headlined_and_liked_books_4 = offerers_factories.VenueFactory(
+    venue_with_headlined_and_liked_books_4 = offerers_factories.VenueFactory.create(
         name="Librairie des interactions 4", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
 
-    product_1_likes_1_headline = offers_factories.ProductFactory(
+    product_1_likes_1_headline = offers_factories.ProductFactory.create(
         name="Livre 1 headline 1 like dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
-    product_2_likes_2_headline_1_chronicle = offers_factories.ProductFactory(
+    product_2_likes_2_headline_1_chronicle = offers_factories.ProductFactory.create(
         name="Livre 2 headline 1 chronique 2 likes dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
-    product_5_likes_1_headline_1_chronicle = offers_factories.ProductFactory(
+    product_5_likes_1_headline_1_chronicle = offers_factories.ProductFactory.create(
         name="Livre 1 headline 1 chronique 5 likes dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
 
-    offer_1_likes_headline = offers_factories.OfferFactory(
+    offer_1_likes_headline = offers_factories.OfferFactory.create(
         product=product_1_likes_1_headline, venue=venue_with_headlined_and_liked_books_1
     )
-    offer_1_likes_no_headline = offers_factories.OfferFactory(
+    offer_1_likes_no_headline = offers_factories.OfferFactory.create(
         product=product_1_likes_1_headline, venue=venue_with_headlined_and_liked_books_4
     )
 
-    offer_2_likes_headline_1 = offers_factories.OfferFactory(
+    offer_2_likes_headline_1 = offers_factories.OfferFactory.create(
         product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_2
     )
-    offer_2_likes_headline_2 = offers_factories.OfferFactory(
+    offer_2_likes_headline_2 = offers_factories.OfferFactory.create(
         product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_3
     )
 
-    offer_5_likes_headline = offers_factories.OfferFactory(
+    offer_5_likes_headline = offers_factories.OfferFactory.create(
         product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_4
     )
-    offer_5_likes_no_headline = offers_factories.OfferFactory(
+    offer_5_likes_no_headline = offers_factories.OfferFactory.create(
         product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_1
     )
 
-    offers_factories.StockFactory(offer=offer_1_likes_headline)
-    offers_factories.StockFactory(offer=offer_1_likes_no_headline)
-    offers_factories.StockFactory(offer=offer_2_likes_headline_1)
-    offers_factories.StockFactory(offer=offer_2_likes_headline_2)
-    offers_factories.StockFactory(offer=offer_5_likes_headline)
-    offers_factories.StockFactory(offer=offer_5_likes_no_headline)
+    offers_factories.StockFactory.create(offer=offer_1_likes_headline)
+    offers_factories.StockFactory.create(offer=offer_1_likes_no_headline)
+    offers_factories.StockFactory.create(offer=offer_2_likes_headline_1)
+    offers_factories.StockFactory.create(offer=offer_2_likes_headline_2)
+    offers_factories.StockFactory.create(offer=offer_5_likes_headline)
+    offers_factories.StockFactory.create(offer=offer_5_likes_no_headline)
 
     ReactionFactory.create_batch(1, offer=offer_1_likes_headline, reactionType=ReactionTypeEnum.LIKE)
     ReactionFactory.create_batch(1, offer=offer_1_likes_no_headline, reactionType=ReactionTypeEnum.LIKE)
@@ -684,13 +686,13 @@ def create_offers_interactions() -> None:
     ReactionFactory.create_batch(5, offer=offer_5_likes_headline, reactionType=ReactionTypeEnum.LIKE)
     ReactionFactory.create_batch(5, offer=offer_5_likes_no_headline, reactionType=ReactionTypeEnum.LIKE)
 
-    chronicles_factories.ChronicleFactory(products=[product_2_likes_2_headline_1_chronicle])
-    chronicles_factories.ChronicleFactory(products=[product_5_likes_1_headline_1_chronicle])
+    chronicles_factories.ChronicleFactory.create(products=[product_2_likes_2_headline_1_chronicle])
+    chronicles_factories.ChronicleFactory.create(products=[product_5_likes_1_headline_1_chronicle])
 
-    offers_factories.HeadlineOfferFactory(offer=offer_1_likes_headline)
-    offers_factories.HeadlineOfferFactory(offer=offer_2_likes_headline_1)
-    offers_factories.HeadlineOfferFactory(offer=offer_2_likes_headline_2)
-    offers_factories.HeadlineOfferFactory(offer=offer_5_likes_headline)
+    offers_factories.HeadlineOfferFactory.create(offer=offer_1_likes_headline)
+    offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_1)
+    offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_2)
+    offers_factories.HeadlineOfferFactory.create(offer=offer_5_likes_headline)
 
 
 @log_func_duration
@@ -698,7 +700,7 @@ def create_venues_across_cities() -> None:
     venues_by_city = [venues_mock.paris_venues, venues_mock.lyon_venues, venues_mock.mayotte_venues]
     for venues_list in venues_by_city:
         for venue, venue_type_code in zip(venues_list, offerers_models.VenueTypeCode):
-            venue = offerers_factories.VenueFactory(
+            venue = offerers_factories.VenueFactory.create(
                 name=venue["city"] + "-" + venue["name"],
                 venueTypeCode=venue_type_code,
                 latitude=venue["latitude"],
@@ -710,7 +712,7 @@ def create_venues_across_cities() -> None:
                 banId=venue["banId"],
             )
             for _ in range(7):
-                offer = offers_factories.OfferFactory(
+                offer = offers_factories.OfferFactory.create(
                     venue=venue,
                     product=None,
                     subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
@@ -719,10 +721,10 @@ def create_venues_across_cities() -> None:
                     url=None,
                 )
                 for _ in range(random.randint(1, 10)):
-                    offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+                    offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
             for _ in range(3):
-                event_offer = offers_factories.EventOfferFactory(
+                event_offer = offers_factories.EventOfferFactory.create(
                     venue=venue,
                     product=None,
                     subcategoryId=random.choice(list(subcategories.EVENT_SUBCATEGORIES)),
@@ -731,7 +733,7 @@ def create_venues_across_cities() -> None:
                     url=None,
                 )
                 for _ in range(random.randint(1, 10)):
-                    offers_factories.EventStockFactory(
+                    offers_factories.EventStockFactory.create(
                         quantity=random.randint(10, 100),
                         offer=event_offer,
                         beginningDatetime=datetime.datetime.utcnow()
@@ -751,7 +753,7 @@ def create_offers_for_each_subcategory() -> None:
             is_free = i % 2
             is_in_Paris = i < 6  # else it will be Marseille
             if subcategory.id in subcategories.EVENT_SUBCATEGORIES:
-                stock = offers_factories.EventStockFactory(
+                stock = offers_factories.EventStockFactory.create(
                     offer__product=None,
                     offer__subcategoryId=subcategory.id,
                     offer__venue__latitude=48.87004 if is_in_Paris else 43.29542,
@@ -766,20 +768,20 @@ def create_offers_for_each_subcategory() -> None:
                     ),
                 )
             else:
-                stock = offers_factories.StockFactory(
+                stock = offers_factories.StockFactory.create(
                     offer__product=None,
                     offer__subcategoryId=subcategory.id,
                     price=0 if is_free else 10,
                     quantity=i * 10,
                 )
-            mediation = offers_factories.MediationFactory(offer=stock.offer)
+            mediation = offers_factories.MediationFactory.create(offer=stock.offer)
             store_public_object_from_sandbox_assets("thumbs", mediation, subcategory.id)
 
 
 @log_func_duration
 def create_offers_with_same_author() -> None:
     venues = [
-        offerers_factories.VenueFactory(
+        offerers_factories.VenueFactory.create(
             name="same author " + str(venue["name"]),
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
             latitude=venue["latitude"],
@@ -814,15 +816,15 @@ def _create_single_book_author(venues: list[offerers_models.Venue]) -> None:
 
 def _create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with 1 book in multiple venues
-    product = offers_factories.ProductFactory(
+    product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
     for venue in venues[:3]:
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.OfferFactory.create(
             product=product,
             venue=venue,
         )
-        offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+        offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
 
 def _create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
@@ -830,49 +832,49 @@ def _create_books_with_the_same_author_duplicated_in_multiple_venues(venues: lis
     author = Fake.name()
     for tome in range(1, 11):
         ean = Fake.ean13()
-        product = offers_factories.ProductFactory(
+        product = offers_factories.ProductFactory.create(
             name="One Piece tome " + str(tome),
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             extraData={"author": author},
         )
         for venue in venues:
-            offer = offers_factories.OfferFactory(
+            offer = offers_factories.OfferFactory.create(
                 product=product,
                 venue=venue,
             )
-            offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+            offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
     for tome in range(11, 16):
         ean = Fake.ean13()
-        product = offers_factories.ProductFactory(
+        product = offers_factories.ProductFactory.create(
             name="One Piece tome " + str(tome),
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             extraData={"author": author},
         )
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.OfferFactory.create(
             product=product,
             venue=venues[3],
         )
-        offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+        offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
 
 def _create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     # multiple authors
     authors = [Fake.name() for _ in range(4)]
     ean = Fake.ean13()
-    product = offers_factories.ProductFactory(
+    product = offers_factories.ProductFactory.create(
         name="multiauth",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         ean=ean,
         extraData={"author": ", ".join(authors)},
     )
-    offer = offers_factories.OfferFactory(
+    offer = offers_factories.OfferFactory.create(
         product=product,
         venue=venues[0],
     )
-    offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+    offers_factories.StockFactory.create(quantity=random.randint(10, 100), offer=offer)
 
     for author in authors:
         for _ in range(4):
@@ -885,34 +887,34 @@ def _create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
 
 @log_func_duration
 def create_venues_with_gmaps_image() -> None:
-    venue_with_user_image_and_gmaps_image = offerers_factories.VenueFactory(
+    venue_with_user_image_and_gmaps_image = offerers_factories.VenueFactory.create(
         isPermanent=True,
         name="venue_with_user_image_and_gmaps_image",
         _bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/offerers/FY",
     )
-    offerers_factories.GooglePlacesInfoFactory(
+    offerers_factories.GooglePlacesInfoFactory.create(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_with_user_image_and_gmaps_image,
         bannerMeta={"html_attributions": ['<a href="http://parhumans.wordpress.com">JC mc Crae</a>']},
     )
 
-    venue_without_user_image_and_with_gmaps_image = offerers_factories.VenueFactory(
+    venue_without_user_image_and_with_gmaps_image = offerers_factories.VenueFactory.create(
         isPermanent=True,
         name="venue_without_user_image_and_with_gmaps_image",
         _bannerUrl=None,
     )
-    offerers_factories.GooglePlacesInfoFactory(
+    offerers_factories.GooglePlacesInfoFactory.create(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_without_user_image_and_with_gmaps_image,
         bannerMeta={"html_attributions": ['<a href="http://python.com">Average python enjoyer</a>']},
     )
-    venue_with_no_images = offerers_factories.VenueFactory(
+    venue_with_no_images = offerers_factories.VenueFactory.create(
         name="Lieu sans image",
         _bannerUrl=None,
         isPermanent=True,
     )
-    offers_factories.StockFactory(
-        offer=offers_factories.OfferFactory(
+    offers_factories.StockFactory.create(
+        offer=offers_factories.OfferFactory.create(
             venue=venue_with_user_image_and_gmaps_image,
             product=None,
             subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
@@ -921,8 +923,8 @@ def create_venues_with_gmaps_image() -> None:
             url=None,
         )
     )
-    offers_factories.StockFactory(
-        offer=offers_factories.OfferFactory(
+    offers_factories.StockFactory.create(
+        offer=offers_factories.OfferFactory.create(
             venue=venue_without_user_image_and_with_gmaps_image,
             product=None,
             subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
@@ -931,8 +933,8 @@ def create_venues_with_gmaps_image() -> None:
             url=None,
         )
     )
-    offers_factories.StockFactory(
-        offer=offers_factories.OfferFactory(
+    offers_factories.StockFactory.create(
+        offer=offers_factories.OfferFactory.create(
             venue=venue_with_no_images,
             product=None,
             subcategoryId=random.choice(subcategories.ALL_SUBCATEGORIES).id,
@@ -945,31 +947,31 @@ def create_venues_with_gmaps_image() -> None:
 
 @log_func_duration
 def create_app_beneficiaries() -> None:
-    users_factories.BeneficiaryGrant18Factory(
+    users_factories.BeneficiaryGrant18Factory.create(
         email="dev-tests-e2e@passculture.team",
         firstName=Fake.first_name(),
         lastName=Fake.last_name(),
         needsToFillCulturalSurvey=False,
     )
 
-    user_with_achievements = users_factories.BeneficiaryGrant18Factory(
+    user_with_achievements = users_factories.BeneficiaryGrant18Factory.create(
         email="achievement@example.com",
         firstName=Fake.first_name(),
         lastName=Fake.last_name(),
         needsToFillCulturalSurvey=False,
     )
-    achievements_factories.AchievementFactory(
+    achievements_factories.AchievementFactory.create(
         user=user_with_achievements,
         name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING,
         unlockedDate=datetime.datetime.utcnow(),
     )
-    achievements_factories.AchievementFactory(
+    achievements_factories.AchievementFactory.create(
         user=user_with_achievements,
         name=achievements_models.AchievementEnum.FIRST_SHOW_BOOKING,
         unlockedDate=datetime.datetime.utcnow(),
         seenDate=datetime.datetime.utcnow(),
     )
-    achievements_factories.AchievementFactory(
+    achievements_factories.AchievementFactory.create(
         user=user_with_achievements,
         name=achievements_models.AchievementEnum.FIRST_ART_LESSON_BOOKING,
         unlockedDate=datetime.datetime.utcnow(),
@@ -979,11 +981,11 @@ def create_app_beneficiaries() -> None:
 
 @log_func_duration
 def create_venues_with_practical_info_graphical_edge_cases() -> None:
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec un nom très long, qui atteint presque la limite de caractères en base de données et qui prend vraiment toute la place sur l'écran",
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec une adresse trop longue",
         street=(
             "50 rue de l'adresse la plus longue qui a presque atteint la limite de caractères en base de données, "
@@ -991,7 +993,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         ),
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec toutes les informations pratiques bien remplies",
         description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
         audioDisabilityCompliant=True,
@@ -1001,7 +1003,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         withdrawalDetails="Venir récupérer l'offre sur place",
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec aucune information pratique",
         description=None,
         audioDisabilityCompliant=None,
@@ -1011,7 +1013,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         contact=None,
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec aucun critère d’accessibilité rempli",
         audioDisabilityCompliant=None,
         mentalDisabilityCompliant=None,
@@ -1019,7 +1021,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         visualDisabilityCompliant=None,
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec tous les critères d’accessibilité remplis",
         audioDisabilityCompliant=True,
         mentalDisabilityCompliant=True,
@@ -1027,7 +1029,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         visualDisabilityCompliant=True,
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec seulement une description dans les informations pratiques",
         description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
         audioDisabilityCompliant=None,
@@ -1037,16 +1039,16 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         contact=None,
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu qui a renseigné une adresse mail, un numéro de téléphone et un site web",
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu qui n’a renseigné aucun moyen de le contacter",
         contact=None,
         isPermanent=True,
     )
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         name="Lieu avec seulement les modalités de retrait dans les informations pratiques",
         audioDisabilityCompliant=None,
         mentalDisabilityCompliant=None,
@@ -1057,7 +1059,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         withdrawalDetails="Venir récupérer l'offre sur place",
         isPermanent=True,
     )
-    partial_contact_venue = offerers_factories.VenueFactory(
+    partial_contact_venue = offerers_factories.VenueFactory.create(
         name="Lieu qui a renseigné seulement un site internet",
         description=None,
         audioDisabilityCompliant=None,
@@ -1067,7 +1069,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
         contact=None,
         isPermanent=True,
     )
-    offerers_factories.VenueContactFactory(
+    offerers_factories.VenueContactFactory.create(
         venue=partial_contact_venue, email=None, website="https://example.com", phone_number=None
     )
 
@@ -1075,14 +1077,14 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
 @log_func_duration
 @atomic()
 def create_institutional_website_offer_playlist() -> None:
-    criterion = criteria_factories.CriterionFactory(name="home_site_instit")
+    criterion = criteria_factories.CriterionFactory.create(name="home_site_instit")
     image_paths = sorted(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
     portrait_image_paths = image_paths[13:18]
 
     for i, image_path in zip(range(1, 11), itertools.cycle(portrait_image_paths)):
-        offer = offers_factories.OfferFactory(name=f"Offre {i} de la playlist du site institutionnel")
-        offers_factories.StockFactory(offer=offer)
-        criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criterion.id)
+        offer = offers_factories.OfferFactory.create(name=f"Offre {i} de la playlist du site institutionnel")
+        offers_factories.StockFactory.create(offer=offer)
+        criteria_factories.OfferCriterionFactory.create(offerId=offer.id, criterionId=criterion.id)
 
         offers_api.create_mediation(
             user=None,
@@ -1094,19 +1096,21 @@ def create_institutional_website_offer_playlist() -> None:
 
 @log_func_duration
 def create_product_with_multiple_images() -> None:
-    product = offers_factories.ProductFactory(
+    product = offers_factories.ProductFactory.create(
         name="multiple thumbs",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         ean="9999999999999",
     )
-    offer = offers_factories.OfferFactory(product=product, name=product.name, subcategoryId=product.subcategoryId)
-    offers_factories.StockFactory(offer=offer)
-    offers_factories.ProductMediationFactory(
+    offer = offers_factories.OfferFactory.create(
+        product=product, name=product.name, subcategoryId=product.subcategoryId
+    )
+    offers_factories.StockFactory.create(offer=offer)
+    offers_factories.ProductMediationFactory.create(
         product=product,
         uuid="222A",
         imageType=ImageType.RECTO,
     )
-    offers_factories.ProductMediationFactory(
+    offers_factories.ProductMediationFactory.create(
         product=product,
         uuid="222A_1",
         imageType=ImageType.VERSO,
@@ -1116,10 +1120,10 @@ def create_product_with_multiple_images() -> None:
 @log_func_duration
 def create_discord_users() -> None:
     for i in range(10, 20):
-        user = users_factories.BeneficiaryFactory(
+        user = users_factories.BeneficiaryFactory.create(
             email=f"discordUser{i}@test.com", firstName=f"discord{i}", lastName=f"user{i}"
         )
-        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True)
+        users_factories.DiscordUserFactory.create(user=user, discordId=None, hasAccess=True)
 
 
 @log_func_duration
@@ -1127,32 +1131,32 @@ def create_users_with_reactions() -> None:
     # Test case 1 : a user booked an offer and reacted to it
     #   - user_1 booked and reacted to offers linked to a product
     #   - user_2 booked and reacted to offers not linked to a product
-    user_1 = users_factories.BeneficiaryFactory(email="catherine.foundling@example.com")
-    user_2 = users_factories.BeneficiaryFactory(email="hakram.ofthehowlingwolves@example.com")
+    user_1 = users_factories.BeneficiaryFactory.create(email="catherine.foundling@example.com")
+    user_2 = users_factories.BeneficiaryFactory.create(email="hakram.ofthehowlingwolves@example.com")
 
     reactions_to_add = [ReactionTypeEnum.LIKE, ReactionTypeEnum.DISLIKE, ReactionTypeEnum.NO_REACTION, None]
     for reaction_type in reactions_to_add:
         # USER 1
-        product = offers_factories.ProductFactory()
-        stock = offers_factories.StockFactory(offer__product=product)
-        bookings_factories.UsedBookingFactory(stock=stock, user=user_1)
+        product = offers_factories.ProductFactory.create()
+        stock = offers_factories.StockFactory.create(offer__product=product)
+        bookings_factories.UsedBookingFactory.create(stock=stock, user=user_1)
         if reaction_type is not None:
-            ReactionFactory(user=user_1, product=product, reactionType=reaction_type)
+            ReactionFactory.create(user=user_1, product=product, reactionType=reaction_type)
 
         # USER 2
-        stock = offers_factories.StockFactory()
-        bookings_factories.UsedBookingFactory(stock=stock, user=user_2)
+        stock = offers_factories.StockFactory.create()
+        bookings_factories.UsedBookingFactory.create(stock=stock, user=user_2)
         if reaction_type is not None:
-            ReactionFactory(user=user_2, offer=stock.offer, reactionType=reaction_type)
+            ReactionFactory.create(user=user_2, offer=stock.offer, reactionType=reaction_type)
 
 
 @log_func_duration
 def create_user_that_booked_some_cinema() -> None:
     seance_cine_start = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
-    stock = offers_factories.StockFactory(
+    stock = offers_factories.StockFactory.create(
         beginningDatetime=seance_cine_start, quantity=100, offer__subcategoryId=subcategories.SEANCE_CINE.id
     )
     for i in range(10):
         user_email = f"ella-reserveducine-{i}@example.com"
-        user = users_factories.BeneficiaryFactory(email=user_email)
-        bookings_factories.UsedBookingFactory(user=user, stock=stock, dateUsed=seance_cine_start)
+        user = users_factories.BeneficiaryFactory.create(email=user_email)
+        bookings_factories.UsedBookingFactory.create(user=user, stock=stock, dateUsed=seance_cine_start)

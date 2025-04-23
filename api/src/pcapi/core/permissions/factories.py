@@ -10,14 +10,14 @@ class PermissionFactory(BaseFactory):
         model = perm_models.Permission
 
     name = factory.Sequence(lambda n: f"permission #{n:04}")
-    category = None
+    category: str | None = None
 
 
 class RoleFactory(BaseFactory):
     class Meta:
         model = perm_models.Role
 
-    name: str = factory.Sequence(lambda n: f"role #{n:04}")
+    name = factory.Sequence(lambda n: f"role #{n:04}")
     permissions: list[Permission] = []
 
 

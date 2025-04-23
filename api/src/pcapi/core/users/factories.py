@@ -114,8 +114,8 @@ class BaseUserFactory(BaseFactory):
         return []
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -154,15 +154,15 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
                 obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(
-                fraud_factories.PhoneValidationFraudCheckFactory(
+                fraud_factories.PhoneValidationFraudCheckFactory.create(
                     user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
                 )
             )
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -184,13 +184,15 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     hasSeenProTutorials = True
     hasSeenProRgs = True
 
-    address = factory.Faker("street_address", locale="fr_FR")
-    city = factory.Faker("city", locale="fr_FR")
+    address: str | factory.declarations.BaseDeclaration = factory.Faker("street_address", locale="fr_FR")
+    city: str | factory.declarations.BaseDeclaration = factory.Faker("city", locale="fr_FR")
     # locale is set to "en_UK" not to have accents, 'ç' or other french fantaisies
     # An easy way to generate email from names without any conversion
     firstName = factory.Faker("first_name", locale="en_UK")
     lastName = factory.Faker("last_name", locale="en_UK")
-    postalCode = factory.LazyAttribute(lambda o: f"{random.randint(10, 959) * 100:05}")
+    postalCode: str | factory.declarations.BaseDeclaration = factory.LazyAttribute(
+        lambda o: f"{random.randint(10, 959) * 100:05}"
+    )
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
@@ -209,7 +211,7 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
         if "eligibilityType" in kwargs:
             profile_completion_kwargs["eligibilityType"] = kwargs["eligibilityType"]
         fraud_checks.append(
-            fraud_factories.ProfileCompletionFraudCheckFactory(
+            fraud_factories.ProfileCompletionFraudCheckFactory.create(
                 user=obj,
                 resultContent__address=obj.address,
                 resultContent__city=obj.city,
@@ -222,8 +224,8 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -254,15 +256,15 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if not kwargs.get("type"):
             kwargs["type"] = fraud_models.FraudCheckType.UBBLE
-        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj, status=fraud_models.FraudCheckStatus.OK, **kwargs
         )
         fraud_checks.append(identity_fraud_check)
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -273,17 +275,17 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
         return IdentityValidatedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
 
     @factory.post_generation
-    def id_piece_number(
-        self,
+    def id_piece_number(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: str | None,
         **kwargs: typing.Any,
     ) -> None:
         if not create or not extracted:
-            self.idPieceNumber = f"{self.id:012}"
+            obj.idPieceNumber = f"{obj.id:012}"
 
         if extracted:
-            self.idPieceNumber = extracted
+            obj.idPieceNumber = extracted
 
 
 class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
@@ -304,15 +306,15 @@ class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         fraud_checks.append(
-            fraud_factories.HonorStatementFraudCheckFactory(
+            fraud_factories.HonorStatementFraudCheckFactory.create(
                 user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
             )
         )
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -339,7 +341,7 @@ class BeneficiaryFactory(HonorStatementValidatedUserFactory):
         age = 18
 
     # Deposit activation : see below with deposit function
-    roles = factory.LazyAttribute(
+    roles: list[models.UserRole] | factory.LazyAttribute = factory.LazyAttribute(
         lambda o: (
             [models.UserRole.UNDERAGE_BENEFICIARY]
             if o.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
@@ -360,7 +362,7 @@ class BeneficiaryFactory(HonorStatementValidatedUserFactory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(user=obj, **kwargs)
+        return DepositGrantFactory.create(user=obj, **kwargs)
 
 
 class CaledonianBeneficiaryFactory(BeneficiaryFactory):
@@ -375,8 +377,8 @@ class Transition1718Factory(BeneficiaryFactory):
     roles = [models.UserRole.UNDERAGE_BENEFICIARY]
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -405,7 +407,7 @@ class Transition1718Factory(BeneficiaryFactory):
             if "expirationDate" not in kwargs:
                 kwargs["expirationDate"] = datetime.today()
 
-            deposit = DepositGrantFactory(user=obj, **kwargs)
+            deposit = DepositGrantFactory.create(user=obj, **kwargs)
 
         return deposit
 
@@ -423,15 +425,15 @@ class UserFactory(BaseFactory):
         age = 40
 
     email = factory.Sequence("jean.neige{}@example.com".format)
-    address: str | None = factory.Sequence("{} place des noces rouges".format)
+    address: str | factory.declarations.BaseDeclaration | None = factory.Sequence("{} place des noces rouges".format)
     city: str | None = "La Rochelle"
     dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
-    firstName = "Jean"
-    lastName = "Neige"
+    firstName: str | factory.declarations.BaseDeclaration | None = "Jean"
+    lastName: str | factory.declarations.BaseDeclaration | None = "Neige"
     isEmailValidated = True
     roles: list[models.UserRole] = []
     hasSeenProTutorials = True
-    postalCode: str | None = factory.Faker("postcode")
+    postalCode: str | factory.declarations.BaseDeclaration | None = factory.Faker("postcode")
 
     @classmethod
     def _create(
@@ -603,8 +605,8 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @factory.post_generation
-    def beneficiaryImports(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryImports(  # type: ignore[misc]  # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: BeneficiaryImport | None,
         **kwargs: typing.Any,
@@ -615,7 +617,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         if extracted is not None:
             return extracted
 
-        beneficiary_import = BeneficiaryImportFactory(
+        beneficiary_import = BeneficiaryImportFactory.create(
             beneficiary=obj,
             source=(
                 BeneficiaryImportSources.educonnect.value
@@ -624,12 +626,12 @@ class BeneficiaryGrant18Factory(BaseFactory):
             ),
             eligibilityType=obj.eligibility,
         )
-        BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
+        BeneficiaryImportStatusFactory.create(beneficiaryImport=beneficiary_import, author=None)
         return beneficiary_import
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -648,12 +650,14 @@ class BeneficiaryGrant18Factory(BaseFactory):
             ),
         )
 
-        return fraud_factories.BeneficiaryFraudCheckFactory(
+        assert obj.dateOfBirth  # helps mypy
+
+        return fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             status=fraud_models.FraudCheckStatus.OK,
             type=type_,
             resultContent=(
-                fraud_factories.EduconnectContentFactory(
+                fraud_factories.EduconnectContentFactory.create(
                     first_name=obj.firstName,
                     last_name=obj.lastName,
                     birth_date=obj.dateOfBirth.date(),
@@ -661,7 +665,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
                     registration_datetime=obj.dateCreated,
                 )
                 if obj.eligibility == models.EligibilityType.UNDERAGE
-                else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName)
+                else fraud_factories.UbbleContentFactory.create(first_name=obj.firstName, last_name=obj.lastName)
             ),
             eligibilityType=obj.eligibility,
         )
@@ -679,14 +683,14 @@ class BeneficiaryGrant18Factory(BaseFactory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(user=obj, **kwargs)
+        return DepositGrantFactory.create(user=obj, **kwargs)
 
 
 def RichBeneficiaryFactory() -> models.User:
     # Create a rich beneficiary who can book expensive stocks. Useful
     # when we want to simulate a large amount of (booked) money
     # without having to create many bookings.
-    user = BeneficiaryGrant18Factory()
+    user = BeneficiaryGrant18Factory.create()
     user.deposits[0].amount = 100_000
     db.session.add(user.deposits[0])
     db.session.commit()
@@ -717,7 +721,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(user=obj, **kwargs, type=finance_models.DepositType.GRANT_15_17)
+        return DepositGrantFactory.create(user=obj, **kwargs, type=finance_models.DepositType.GRANT_15_17)
 
 
 class CaledonianUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
@@ -737,8 +741,8 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
     )
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -748,12 +752,14 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
         if not create:
             return None
 
-        return fraud_factories.BeneficiaryFraudCheckFactory(
+        assert obj.dateOfBirth  # helps mypy
+
+        return fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             dateCreated=obj.dateCreated,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(
+            resultContent=fraud_factories.EduconnectContentFactory.create(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
                 birth_date=obj.dateOfBirth.date(),
@@ -764,8 +770,8 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
         )
 
     @factory.post_generation
-    def deposit(  # pylint: disable=no-self-argument
-        obj,
+    def deposit(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: finance_models.Deposit | None,
         **kwargs: typing.Any,
@@ -776,11 +782,11 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(
+        return DepositGrantFactory.create(
             user=obj,
-            **kwargs,
             type=finance_models.DepositType.GRANT_15_17,
             expirationDate=obj.dateCreated + relativedelta(days=1),
+            **kwargs,
         )
 
 
@@ -789,8 +795,8 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
         subscription_age = 18
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
@@ -800,12 +806,14 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
         if not create:
             return None
 
-        return fraud_factories.BeneficiaryFraudCheckFactory(
+        assert obj.dateOfBirth  # helps mypy
+
+        return fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             dateCreated=obj.dateCreated,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.UBBLE,
-            resultContent=fraud_factories.UbbleContentFactory(
+            resultContent=fraud_factories.UbbleContentFactory.create(
                 status=ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 first_name=obj.firstName,
                 last_name=obj.lastName,
@@ -833,67 +841,71 @@ class EligibleUnderageFactory(UserFactory):
 
 class EligibleActivableFactory(EligibleGrant18Factory):
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
     ) -> None:
         import pcapi.core.fraud.factories as fraud_factories
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.AGE18,
-            resultContent=fraud_factories.UbbleContentFactory(
+            resultContent=fraud_factories.UbbleContentFactory.create(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
             ),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.AGE18,
         )
         obj.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.AGE18,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=obj, eligibilityType=models.EligibilityType.AGE18)
+        fraud_factories.ProfileCompletionFraudCheckFactory.create(
+            user=obj, eligibilityType=models.EligibilityType.AGE18
+        )
 
 
 class EligibleActivableUnderageFactory(EligibleUnderageFactory):
     @factory.post_generation
-    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
-        obj,
+    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+        obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
     ) -> None:
         import pcapi.core.fraud.factories as fraud_factories
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(
+            resultContent=fraud_factories.EduconnectContentFactory.create(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
             ),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=obj, eligibilityType=models.EligibilityType.UNDERAGE)
+        fraud_factories.ProfileCompletionFraudCheckFactory.create(
+            user=obj, eligibilityType=models.EligibilityType.UNDERAGE
+        )
 
 
 class ProFactory(BaseFactory):
@@ -1020,8 +1032,8 @@ class DepositGrantFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
     @factory.post_generation
-    def recredits(
-        self,
+    def recredits(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: finance_models.Deposit,
         create: bool,
         extracted: finance_models.Recredit | None,
         **kwargs: typing.Any,
@@ -1030,23 +1042,23 @@ class DepositGrantFactory(BaseFactory):
 
         if not create:
             return []
-        if getattr(self, "recredits", None):
+        if getattr(obj, "recredits", None):
             # do not create new recredits if they already exist
-            return getattr(self, "recredits", [])
+            return getattr(obj, "recredits", [])
         # Immediately create the recredit that gives the first credit to the user
-        user = self.user
+        user = obj.user
         if not user.age:
             return []
 
-        if self.type in (finance_models.DepositType.GRANT_15_17, finance_models.DepositType.GRANT_18):
+        if obj.type in (finance_models.DepositType.GRANT_15_17, finance_models.DepositType.GRANT_18):
             return []
         # Immediately create the recredit that gives the first credit to the user.
         # Only for deposits of type GRANT_17_18 for now
-        immediate_recredit = RecreditFactory(
-            deposit=self,
-            amount=self.amount,
+        immediate_recredit = RecreditFactory.create(
+            deposit=obj,
+            amount=obj.amount,
             recreditType=RECREDIT_TYPE_AGE_MAPPING.get(user.age, finance_models.RecreditType.RECREDIT_18),
-            dateCreated=self.dateCreated,
+            dateCreated=obj.dateCreated,
         )
 
         return [immediate_recredit]
@@ -1066,7 +1078,7 @@ class EduconnectUserFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     civility = models.GenderEnum.F
     logout_url = "https://educonnect.education.gouv.fr/Logout"
-    user_type = None
+    user_type: str | None = None
     saml_request_id = factory.Faker("lexify", text="id-?????????????????")
     ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
     student_level = "2212"
@@ -1156,8 +1168,8 @@ class UserAccountUpdateRequestFactory(BaseFactory):
         dateOfBirth=factory.SelfAttribute("..birthDate"),
     )
     updateTypes: list[models.UserAccountUpdateType] = []
-    oldEmail: str | None = None
-    newEmail: str | None = None
+    oldEmail: str | factory.declarations.BaseDeclaration | None = None
+    newEmail: str | factory.declarations.BaseDeclaration | None = None
     newPhoneNumber: str | None = None
     newFirstName: str | None = None
     newLastName: str | None = None

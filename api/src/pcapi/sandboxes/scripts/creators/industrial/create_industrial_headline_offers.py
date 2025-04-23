@@ -26,7 +26,7 @@ def create_industrial_headline_offers(offers_by_name: dict[str, Offer]) -> None:
             and offer.status == OfferStatus.ACTIVE
             and not offer.venue.has_headline_offer
         ):
-            headline_offers_by_name[offer_name] = offers_factories.HeadlineOfferFactory(
+            headline_offers_by_name[offer_name] = offers_factories.HeadlineOfferFactory.create(
                 offer=offer, venue=offer.venue, without_mediation=True
             )
 

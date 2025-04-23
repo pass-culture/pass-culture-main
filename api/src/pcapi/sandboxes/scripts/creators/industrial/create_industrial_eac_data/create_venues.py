@@ -70,7 +70,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     )
     # eac_pending_bank_informations
     offerer = next(offerer_iterator)
-    offerers_factories.VenueFactory(
+    offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name}",
         adageId="789456",
@@ -119,7 +119,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -140,7 +140,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -161,7 +161,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -182,7 +182,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -203,7 +203,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -226,7 +226,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageId="98762",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -249,7 +249,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageId="98763",
         adageInscriptionDate=datetime.utcnow(),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
@@ -270,7 +270,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue_with_accepted_dms_status,
         application=next(application_id_generator),
         procedure=57189,
@@ -289,7 +289,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue_with_rejected_dms_status,
         application=next(application_id_generator),
         procedure=57189,
@@ -322,7 +322,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
-    educational_factories.CollectiveDmsApplicationFactory(
+    educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue_with_accepted_dms_status,
         application=next(application_id_generator),
         procedure=57189,
@@ -334,7 +334,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
         state="accepte",
     )
-    educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
+    educational_factories.CollectiveDmsApplicationWithNoVenueFactory.create(
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         application=next(application_id_generator),
         procedure=57189,
@@ -421,13 +421,13 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
-    venue = offerers_factories.VenueFactory(**kwargs)
+    venue = offerers_factories.VenueFactory.create(**kwargs)
     if reimbursement:
-        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+        bank_account = finance_factories.BankAccountFactory.create(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
     return venue
 
 
 def create_venue_educational_status() -> None:
     for ident, name in VENUE_EDUCATIONAL_STATUS.items():
-        offerers_factories.VenueEducationalStatusFactory(id=ident, name=name)
+        offerers_factories.VenueEducationalStatusFactory.create(id=ident, name=name)

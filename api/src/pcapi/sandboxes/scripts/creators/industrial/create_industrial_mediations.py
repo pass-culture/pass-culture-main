@@ -51,7 +51,7 @@ def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     offer_items = list(offers_by_name.items())
     offer_items_with_mediation = remove_every(offer_items, OFFERS_WITH_MEDIATION_REMOVE_MODULO)
     for offer_name, offer in offer_items_with_mediation:
-        mediations_by_name[offer_name] = offers_factories.MediationFactory(offer=offer)
+        mediations_by_name[offer_name] = offers_factories.MediationFactory.create(offer=offer)
 
     repository.save(*mediations_by_name.values())
 

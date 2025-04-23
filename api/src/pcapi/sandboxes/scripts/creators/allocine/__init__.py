@@ -20,7 +20,7 @@ def save_allocine_sandbox() -> None:
 
     create_industrial_admin_users()
 
-    offerer = offerers_factories.OffererFactory(
+    offerer = offerers_factories.OffererFactory.create(
         address="145, rue Chaplin",
         city="Paris 17",
         name="Le Royal - Cinéma d'essai",
@@ -28,9 +28,9 @@ def save_allocine_sandbox() -> None:
         siren=sirene.siren,
     )
 
-    offerers_factories.UserOffererFactory(offerer=offerer, user__email="api@example.com")
+    offerers_factories.UserOffererFactory.create(offerer=offerer, user__email="api@example.com")
 
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         address=offerer.address,
         bookingEmail="fake@email.com",
@@ -43,11 +43,11 @@ def save_allocine_sandbox() -> None:
 
     provider = get_provider_by_local_class("AllocineStocks")
 
-    venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+    venue_provider = providers_factories.VenueProviderFactory.create(venue=venue, provider=provider)
 
     repository.save(offerer, venue, provider, venue_provider)
 
-    offer = offers_factories.OfferFactory(
+    offer = offers_factories.OfferFactory.create(
         venue=venue,
         product__subcategoryId=subcategories.SEANCE_CINE.id,
         lastProviderId=provider.id,

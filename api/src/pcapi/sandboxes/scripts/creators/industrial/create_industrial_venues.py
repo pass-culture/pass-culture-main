@@ -70,11 +70,11 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
             bank_account = None
             if siret:
-                bank_account = finance_factories.BankAccountFactory(
+                bank_account = finance_factories.BankAccountFactory.create(
                     offerer=offerer, dsApplicationId=application_id_prefix + str(offerer_index)
                 )
 
-            venue = offerers_factories.VenueFactory(
+            venue = offerers_factories.VenueFactory.create(
                 managingOfferer=offerer,
                 bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
                 latitude=latitude,
@@ -86,10 +86,12 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 pricing_point="self" if siret else None,
                 bank_account=bank_account,
             )
-            offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityData=venue_accessibility)
+            offerers_factories.AccessibilityProviderFactory.create(
+                venue=venue, externalAccessibilityData=venue_accessibility
+            )
 
             if offerer.validationStatus == ValidationStatus.NEW:
-                offerers_factories.VenueRegistrationFactory(venue=venue)
+                offerers_factories.VenueRegistrationFactory.create(venue=venue)
 
             if image_venue_counter < DEFAULT_VENUE_IMAGES:
                 add_default_image_to_venue(image_venue_counter, offerer, venue)
@@ -100,7 +102,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             # Create a second physical venue to enable removing SIRET on the first one
             if offerer_index % OFFERERS_WITH_A_SECOND_VENUE_WITH_SIRET_MODULO == 0:
                 second_venue_name = f"{venue_name} Bis"
-                second_venue = offerers_factories.VenueFactory(
+                second_venue = offerers_factories.VenueFactory.create(
                     managingOfferer=offerer,
                     bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
                     latitude=latitude,
@@ -111,15 +113,17 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                     venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                     pricing_point="self",
                 )
-                second_bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-                offerers_factories.VenueBankAccountLinkFactory(bankAccount=second_bank_account, venue=second_venue)
+                second_bank_account = finance_factories.BankAccountFactory.create(offerer=venue.managingOfferer)
+                offerers_factories.VenueBankAccountLinkFactory.create(
+                    bankAccount=second_bank_account, venue=second_venue
+                )
                 venue_by_name[second_venue_name] = second_venue
             mock_accessibility_index += 1
 
         mock_index += 1
 
         virtual_venue_name = "{} (Offre numérique)"
-        venue_by_name[virtual_venue_name] = offerers_factories.VirtualVenueFactory(
+        venue_by_name[virtual_venue_name] = offerers_factories.VirtualVenueFactory.create(
             managingOfferer=offerer,
             name=virtual_venue_name.format(venue_name),
             pricing_point=venue,
@@ -127,23 +131,25 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
     # Venue Allocine
 
-    allocine_offerer = offerers_factories.OffererFactory(name="Structure du lieu synchro allociné")
-    offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
-    venue_synchronized_with_allocine = offerers_factories.VenueFactory(
+    allocine_offerer = offerers_factories.OffererFactory.create(name="Structure du lieu synchro allociné")
+    offerers_factories.UserOffererFactory.create(offerer=allocine_offerer, user__email="api@example.com")
+    venue_synchronized_with_allocine = offerers_factories.VenueFactory.create(
         name="Lieu synchro allociné",
         siret="21070034000016",
         pricing_point="self",
         managingOfferer=allocine_offerer,
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
     )
-    bank_account = finance_factories.BankAccountFactory(offerer=venue_synchronized_with_allocine.managingOfferer)
-    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue_synchronized_with_allocine)
-    allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
-    theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)
-    pivot = providers_factories.AllocinePivotFactory(
+    bank_account = finance_factories.BankAccountFactory.create(offerer=venue_synchronized_with_allocine.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory.create(
+        bankAccount=bank_account, venue=venue_synchronized_with_allocine
+    )
+    allocine_provider = providers_factories.AllocineProviderFactory.create(isActive=True)
+    theater = providers_factories.AllocineTheaterFactory.create(siret=venue_synchronized_with_allocine.siret)
+    pivot = providers_factories.AllocinePivotFactory.create(
         venue=venue_synchronized_with_allocine, theaterId=theater.theaterId, internalId=theater.internalId
     )
-    providers_factories.AllocineVenueProviderFactory(
+    providers_factories.AllocineVenueProviderFactory.create(
         venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
     )
     venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine

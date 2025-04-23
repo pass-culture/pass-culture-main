@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def create_closed_offerers() -> None:
     logger.info("create_closed_offerers")
 
-    beneficiary = users_factories.BeneficiaryGrant18Factory(
+    beneficiary = users_factories.BeneficiaryGrant18Factory.create(
         firstName="Jeune",
         lastName="Réservant sur structure fermée",
         email="jeune.structure.fermee@example.com",
@@ -49,8 +49,10 @@ def _create_closed_offerer(
     now = datetime.datetime.utcnow()
     siren_caduc_tag = offerers_models.OffererTag.query.filter_by(name="siren-caduc").one()
 
-    offerer = offerers_factories.ClosedOffererFactory(name=name.upper(), tags=[siren_caduc_tag], allowedOnAdage=True)
-    history_factories.ActionHistoryFactory(
+    offerer = offerers_factories.ClosedOffererFactory.create(
+        name=name.upper(), tags=[siren_caduc_tag], allowedOnAdage=True
+    )
+    history_factories.ActionHistoryFactory.create(
         actionType=history_models.ActionType.OFFERER_CLOSED,
         actionDate=now - datetime.timedelta(days=2),
         authorUser=None,
@@ -59,7 +61,7 @@ def _create_closed_offerer(
         extraData={"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}},
     )
 
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         name=offerer.name,
         publicName=name,
@@ -69,8 +71,8 @@ def _create_closed_offerer(
         pricing_point="self",
     )
 
-    offerers_factories.UserOffererFactory(
-        user=users_factories.NonAttachedProFactory(
+    offerers_factories.UserOffererFactory.create(
+        user=users_factories.NonAttachedProFactory.create(
             firstName="Acteur",
             lastName="Structure-Fermée",
             email=f"pro.{email}",
@@ -78,31 +80,31 @@ def _create_closed_offerer(
         offerer=offerer,
     )
 
-    thing_stock = offers_factories.ThingStockFactory(
+    thing_stock = offers_factories.ThingStockFactory.create(
         offer__venue=venue,
         offer__name="Offre physique d'une structure fermée",
         offer__subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
         price=30,
         quantity=50,
     )
-    used_1 = bookings_factories.UsedBookingFactory(
+    used_1 = bookings_factories.UsedBookingFactory.create(
         user=beneficiary,
         stock=thing_stock,
         dateCreated=now - datetime.timedelta(days=8),  # booked before closure date
         dateUsed=now - datetime.timedelta(days=1),  # validated after closure date
     )
-    bookings_factories.BookingFactory(
+    bookings_factories.BookingFactory.create(
         user=beneficiary,
         stock=thing_stock,
         dateCreated=now - datetime.timedelta(days=3),  # booked before closure date, not used yet
     )
 
-    event_offer = offers_factories.EventOfferFactory(
+    event_offer = offers_factories.EventOfferFactory.create(
         venue=venue,
         name="Offre d'événement d'une structure fermée",
         subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
     )
-    used_2 = bookings_factories.UsedBookingFactory(
+    used_2 = bookings_factories.UsedBookingFactory.create(
         user=beneficiary,
         stock__offer=event_offer,
         stock__price=7.50,
@@ -111,7 +113,7 @@ def _create_closed_offerer(
         dateCreated=now - datetime.timedelta(days=7),  # booked before closure date
         dateUsed=now - datetime.timedelta(days=1),  # validated after closure date
     )
-    bookings_factories.BookingFactory(
+    bookings_factories.BookingFactory.create(
         user=beneficiary,
         stock__offer=event_offer,
         stock__price=8,
@@ -121,11 +123,11 @@ def _create_closed_offerer(
     )
 
     if with_bank_account:
-        bank_account = finance_factories.BankAccountFactory(offerer=offerer, label=f"Compte de {name}")
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+        bank_account = finance_factories.BankAccountFactory.create(offerer=offerer, label=f"Compte de {name}")
+        offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
 
         for booking in (used_1, used_2):
-            finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+            finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
             event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
             finance_api.price_event(event)
         finance_api.generate_cashflows_and_payment_files(cutoff=now)

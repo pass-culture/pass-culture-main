@@ -13,13 +13,15 @@ from pcapi.core.providers.models import Provider
 def create_collective_api_provider(venues: Sequence[Venue]) -> Provider:
     "Create api_keys with shape : collective_{offererId}_clear{offererId}"
 
-    provider = PublicApiProviderFactory(name=factory.Sequence("Collective API Provider {}".format))
+    provider = PublicApiProviderFactory.create(name=factory.Sequence("Collective API Provider {}".format))
 
     for venue in venues:
-        VenueProviderFactory(venue=venue, provider=provider)
+        VenueProviderFactory.create(venue=venue, provider=provider)
 
     offerer = venues[0].managingOfferer
-    OffererProviderFactory(offerer=offerer, provider=provider)
-    ApiKeyFactory(offerer=offerer, provider=provider, prefix=f"collective_{offerer.id}", secret=f"clear{offerer.id}")
+    OffererProviderFactory.create(offerer=offerer, provider=provider)
+    ApiKeyFactory.create(
+        offerer=offerer, provider=provider, prefix=f"collective_{offerer.id}", secret=f"clear{offerer.id}"
+    )
 
     return provider

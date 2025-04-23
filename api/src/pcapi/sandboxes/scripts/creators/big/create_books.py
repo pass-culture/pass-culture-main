@@ -14,7 +14,7 @@ Fake = faker.Faker(locale="fr_FR")
 def create_books(size: int) -> None:
     # not executed with sandbox - To be manually launched when needed
     venues = [
-        offerers_factories.VenueFactory(
+        offerers_factories.VenueFactory.create(
             name="Librairie,  " + str(venue["name"]),
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
             latitude=venue["latitude"],

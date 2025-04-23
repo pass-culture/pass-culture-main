@@ -14,15 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 def create_offers_with_ean() -> None:
-    ean_criteria = criteria_factories.CriterionFactory(name="Livre avec EAN")
-    odd_criteria = criteria_factories.CriterionFactory(name="Librairie impaire")
-    even_criteria = criteria_factories.CriterionFactory(name="Librairie paire")
+    ean_criteria = criteria_factories.CriterionFactory.create(name="Livre avec EAN")
+    odd_criteria = criteria_factories.CriterionFactory.create(name="Librairie impaire")
+    even_criteria = criteria_factories.CriterionFactory.create(name="Librairie paire")
     products = [offers_models.Product.query.filter(offers_models.Product.name == "multiple thumbs").one()]
-    provider = providers_factories.PublicApiProviderFactory(name="BookProvider")
+    provider = providers_factories.PublicApiProviderFactory.create(name="BookProvider")
     for i in range(1, 5):
         ean = f"9780000000{i:03}"
         products.append(
-            offers_factories.ThingProductFactory(
+            offers_factories.ThingProductFactory.create(
                 name=f"Livre {i} avec EAN",
                 idAtProviders=ean,
                 subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -31,7 +31,7 @@ def create_offers_with_ean() -> None:
             )
         )
 
-    user_offerer = offerers_factories.UserOffererFactory(
+    user_offerer = offerers_factories.UserOffererFactory.create(
         user__firstName="Super",
         user__lastName="Libraire",
         offerer__name="Réseau de librairies",
@@ -39,14 +39,14 @@ def create_offers_with_ean() -> None:
     )
 
     for i in range(1, 11):
-        venue = offerers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory.create(
             name=f"Librairie {i}",
             managingOfferer=user_offerer.offerer,
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         )
 
         for j, product in enumerate(products):
-            offer_thing = offers_factories.ThingOfferFactory(
+            offer_thing = offers_factories.ThingOfferFactory.create(
                 name=product.name,
                 venue=venue,
                 product=product,
@@ -56,6 +56,6 @@ def create_offers_with_ean() -> None:
                 validation=OfferValidationStatus.PENDING if i % 6 == 0 else OfferValidationStatus.APPROVED,
                 criteria=[ean_criteria, even_criteria] if i % 2 == 0 else [ean_criteria, odd_criteria],
             )
-            offers_factories.ThingStockFactory(offer=offer_thing, quantity=10, price=5 + j)
+            offers_factories.ThingStockFactory.create(offer=offer_thing, quantity=10, price=5 + j)
 
     logger.info("create_offers_with_ean")

@@ -19,7 +19,7 @@ def create_industrial_admin_users() -> dict[str, User]:
     for departement_code in departement_codes:
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
-            user = users_factories.AdminFactory(
+            user = users_factories.AdminFactory.create(
                 departementCode=str(departement_code),
                 email=email,
                 firstName="PC Test Admin",

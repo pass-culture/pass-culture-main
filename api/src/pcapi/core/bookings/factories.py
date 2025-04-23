@@ -32,28 +32,31 @@ class BookingFactory(BaseFactory):
     )
 
     @factory.lazy_attribute
-    def usedRecreditType(self) -> models.BookingRecreditType | None:
-        if self.deposit.type in (DepositType.GRANT_15_17, DepositType.GRANT_18):
+    def usedRecreditType(  # type: ignore[misc] # pylint: disable=no-self-argument
+        obj: models.Booking,
+    ) -> models.BookingRecreditType | None:
+        assert (deposit := obj.deposit)  # helps mypy
+        if deposit.type in (DepositType.GRANT_15_17, DepositType.GRANT_18):
             return None
-        sorted_recredits = sorted(self.deposit.recredits, key=lambda r: r.dateCreated, reverse=True)
+        sorted_recredits = sorted(deposit.recredits, key=lambda r: r.dateCreated, reverse=True)
         if sorted_recredits:
             return models.BookingRecreditType[sorted_recredits[0].recreditType.name]
         return None
 
     @factory.post_generation
-    def cancellation_limit_date(
-        self,
+    def cancellation_limit_date(  # type: ignore[misc]  # pylint: disable=no-self-argument
+        obj: models.Booking,
         create: bool,
         extracted: datetime.datetime | None,
         **kwargs: typing.Any,
     ) -> None:
         if extracted:
-            self.cancellationLimitDate = extracted
+            obj.cancellationLimitDate = extracted
         else:
-            self.cancellationLimitDate = api.compute_booking_cancellation_limit_date(
-                self.stock.beginningDatetime, self.dateCreated
-            )  # type: ignore[assignment]
-        db.session.add(self)
+            obj.cancellationLimitDate = api.compute_booking_cancellation_limit_date(
+                obj.stock.beginningDatetime, obj.dateCreated
+            )
+        db.session.add(obj)
         db.session.commit()
 
     @factory.post_generation
@@ -98,7 +101,7 @@ class UsedBookingFactory(BookingFactory):
 
 class CancelledBookingFactory(BookingFactory):
     status = models.BookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)
+    cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)  # type: ignore[assignment]
     cancellationReason = models.BookingCancellationReasons.BENEFICIARY
 
 

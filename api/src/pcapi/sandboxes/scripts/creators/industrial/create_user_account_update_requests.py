@@ -17,17 +17,17 @@ logger = logging.getLogger(__name__)
 def create_user_account_update_requests() -> None:
     logger.info("create_user_account_update_requests")
 
-    instructor = users_factories.AdminFactory(firstName="Support", lastName="Jeune")
-    users_factories.UserAccountUpdateRequestFactory()
+    instructor = users_factories.AdminFactory.create(firstName="Support", lastName="Jeune")
+    users_factories.UserAccountUpdateRequestFactory.create()
 
-    accepted_request = users_factories.FirstNameUpdateRequestFactory(
+    accepted_request = users_factories.FirstNameUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.accepted,
         firstName="Nouveau-Prénom",
         lastName="Accepté",
         newFirstName="Nouveau-Prénom",
         lastInstructor=instructor,
     )
-    history_factories.ActionHistoryFactory(
+    history_factories.ActionHistoryFactory.create(
         actionType=history_models.ActionType.INFO_MODIFIED,
         actionDate=datetime.datetime.utcnow(),
         user=accepted_request.user,
@@ -40,13 +40,13 @@ def create_user_account_update_requests() -> None:
         },
     )
 
-    email_accepted_request = users_factories.EmailUpdateRequestFactory(
+    email_accepted_request = users_factories.EmailUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.accepted,
         lastName="A changé d'Email",
         newEmail=factory.SelfAttribute("email"),
         lastInstructor=instructor,
     )
-    users_factories.EmailAdminUpdateEntryFactory(
+    users_factories.EmailAdminUpdateEntryFactory.create(
         user=email_accepted_request.user,
         oldUserEmail=email_accepted_request.oldEmail.split("@")[0],
         oldDomainEmail=email_accepted_request.oldEmail.split("@")[1],
@@ -54,7 +54,7 @@ def create_user_account_update_requests() -> None:
         newDomainEmail=email_accepted_request.user.email.split("@")[1],
     )
 
-    users_factories.FirstNameUpdateRequestFactory(
+    users_factories.FirstNameUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.draft,
         user__firstName="Jeune",
         firstName="Vieux",
@@ -65,7 +65,7 @@ def create_user_account_update_requests() -> None:
         dateLastInstructorMessage=None,
     )
 
-    users_factories.UserAccountUpdateRequestFactory(
+    users_factories.UserAccountUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.draft,
         lastName="Changeant de Nom et Email",
         email="nouveau@example.com",
@@ -80,7 +80,7 @@ def create_user_account_update_requests() -> None:
         dateLastUserMessage=None,
     )
 
-    users_factories.PhoneNumberUpdateRequestFactory(
+    users_factories.PhoneNumberUpdateRequestFactory.create(
         lastName="Changeant de Numéro",
         email="change_telephone@example.com",
         user__phoneNumber="+33799886677",
@@ -88,7 +88,7 @@ def create_user_account_update_requests() -> None:
         lastInstructor=instructor,
     )
 
-    users_factories.LastNameUpdateRequestFactory(
+    users_factories.LastNameUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.draft,
         lastName="Changeant de Nom",
         email="inconnu@example.com",
@@ -98,20 +98,20 @@ def create_user_account_update_requests() -> None:
         flags=[users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED],
     )
 
-    users_factories.FirstNameUpdateRequestFactory(
+    users_factories.FirstNameUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.refused,
         lastName="Refusé",
         newFirstName="Pseudo",
         lastInstructor=instructor,
     )
 
-    duplicate = users_factories.UserFactory(
+    duplicate = users_factories.UserFactory.create(
         firstName="Jeune",
         lastName="Doublon",
         email="bene_18_bis@example.com",
     )
 
-    users_factories.EmailUpdateRequestFactory(
+    users_factories.EmailUpdateRequestFactory.create(
         lastName="Doublon",
         email=duplicate.email,
         user=find_user_by_email("bene_18@example.com"),
@@ -122,7 +122,7 @@ def create_user_account_update_requests() -> None:
         flags=[users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL],
     )
 
-    users_factories.PhoneNumberUpdateRequestFactory(
+    users_factories.PhoneNumberUpdateRequestFactory.create(
         status=dms_models.GraphQLApplicationStates.draft,
         lastName="Erreur",
         email="erreur@example.com",

@@ -35,9 +35,9 @@ class SpecialEventResponseFactory(BaseFactory):
     event = factory.SubFactory(SpecialEventFactory)
     externalId = factory.Sequence("ExtIdRes{:04}".format)
     dateSubmitted = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
-    user = factory.SubFactory(users_factories.BeneficiaryFactory)
-    phoneNumber = factory.SelfAttribute("user.phoneNumber")
-    email = factory.SelfAttribute("user.email")
+    user: factory.declarations.BaseDeclaration | None = factory.SubFactory(users_factories.BeneficiaryFactory)
+    phoneNumber: factory.declarations.BaseDeclaration | str | None = factory.SelfAttribute("user.phoneNumber")
+    email: factory.declarations.BaseDeclaration = factory.SelfAttribute("user.email")
     status = models.SpecialEventResponseStatus.NEW
 
 

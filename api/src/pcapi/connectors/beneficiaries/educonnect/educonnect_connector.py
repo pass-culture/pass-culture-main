@@ -149,7 +149,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
     key = build_saml_request_id_key(mocked_saml_request_id)
     app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
-    return users_factories.EduconnectUserFactory(
+    return users_factories.EduconnectUserFactory.create(
         birth_date=user.dateOfBirth.date(),
         connection_datetime=datetime.utcnow(),
         educonnect_id=f"educonnect-id_perf-test_{user.id}",

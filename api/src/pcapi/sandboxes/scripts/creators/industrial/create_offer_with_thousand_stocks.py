@@ -13,19 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 def create_offer_with_thousand_stocks(offerer: Offerer) -> None:
-    venue = VenueFactory(
+    venue = VenueFactory.create(
         name="Lieu avec offre pleine de stocks",
         managingOfferer=offerer,
     )
 
-    offer_event = EventOfferFactory(
+    offer_event = EventOfferFactory.create(
         name="1000 stocks",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
     )
-    price_category = PriceCategoryFactory(offer=offer_event)
+    price_category = PriceCategoryFactory.create(offer=offer_event)
     for i in range(0, 1000):
-        EventStockFactory(
+        EventStockFactory.create(
             offer=offer_event,
             quantity=1,
             beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)

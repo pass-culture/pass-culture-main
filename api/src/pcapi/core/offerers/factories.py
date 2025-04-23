@@ -82,17 +82,29 @@ class VenueFactory(BaseFactory):
     latitude: float | None = 48.87004
     longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    street = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
-    banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
-    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75002")
-    departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
-    city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
+    street: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda o: None if o.isVirtual else "1 boulevard Poissonnière"
+    )
+    banId: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda o: None if o.isVirtual else "75102_7560_00001"
+    )
+    postalCode: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda o: None if o.isVirtual else "75002"
+    )
+    departementCode: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda o: None if o.isVirtual else _get_department_code(o.postalCode)
+    )
+    city: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda o: None if o.isVirtual else "Paris"
+    )
     publicName = factory.SelfAttribute("name")
-    siret = factory.LazyAttributeSequence(
+    siret: factory.declarations.BaseDeclaration | None = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.complete_siren_or_siret(f"{o.managingOfferer.siren}{n:04}")
     )
     isVirtual = False
-    isPermanent = factory.LazyAttribute(lambda o: o.venueTypeCode in models.PERMENANT_VENUE_TYPES)
+    isPermanent: bool | factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda o: o.venueTypeCode in models.PERMENANT_VENUE_TYPES
+    )
     isOpenToPublic = factory.LazyAttribute(lambda o: o.isPermanent is True)
     venueTypeCode = models.VenueTypeCode.OTHER
     description = factory.Faker("text", max_nb_chars=64)
@@ -104,8 +116,10 @@ class VenueFactory(BaseFactory):
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
     timezone = factory.LazyAttribute(lambda venue: get_department_timezone(venue.departementCode))
-    _bannerUrl = None
-    offererAddress = factory.SubFactory(
+    _bannerUrl: str | None = None
+    adageId: str | factory.declarations.BaseDeclaration | None = None
+
+    offererAddress: factory.declarations.BaseDeclaration | None = factory.SubFactory(
         "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
         address=factory.SubFactory(
             "pcapi.core.geography.factories.AddressFactory",
@@ -122,35 +136,35 @@ class VenueFactory(BaseFactory):
     )
 
     @factory.post_generation
-    def pricing_point(  # pylint: disable=no-self-argument
-        venue: models.Venue,
+    def pricing_point(
+        self,
         create: bool,
         extracted: typing.Callable | None,
         **kwargs: typing.Any,
     ) -> models.VenuePricingPointLink | None:
         if not create:
             return None
-        pricing_point = extracted
+        pricing_point: "VenueFactory | typing.Callable | None" = extracted
         if not pricing_point:
             return None
         if pricing_point == "self":
-            pricing_point = venue
-        return VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point)
+            pricing_point = self
+        return VenuePricingPointLinkFactory.create(venue=self, pricingPoint=pricing_point)
 
     @factory.post_generation
     def bank_account(
-        self: models.Venue, create: bool, extracted: "BankAccount | None", **kwargs: typing.Any
+        self, create: bool, extracted: "BankAccount | None", **kwargs: typing.Any
     ) -> models.VenueBankAccountLink | None:
         if not create:
             return None
         bank_account = extracted
         if not bank_account:
             return None
-        return VenueBankAccountLinkFactory(venue=self, bankAccount=bank_account)
+        return VenueBankAccountLinkFactory.create(venue=self, bankAccount=bank_account)
 
     @factory.post_generation
     def opening_hours(
-        self: models.Venue, create: bool, extracted: list[models.OpeningHours] | None, **kwargs: typing.Any
+        self, create: bool, extracted: list[models.OpeningHours] | None, **kwargs: typing.Any
     ) -> list[models.OpeningHours] | None:
         if not create:
             return None
@@ -165,21 +179,21 @@ class VenueFactory(BaseFactory):
                     timespan = timespan_str_to_numrange(OPENING_HOURS)
                 else:
                     timespan = None
-                opening_hours.append(OpeningHoursFactory(venue=self, weekday=weekday, timespan=timespan))
+                opening_hours.append(OpeningHoursFactory.create(venue=self, weekday=weekday, timespan=timespan))
         return opening_hours
 
     @factory.post_generation
-    def adage_venue_addresses(  # pylint: disable=no-self-argument
-        venue: models.Venue,
+    def adage_venue_addresses(
+        self,
         create: bool,
         extracted: typing.Any,
         **kwargs: typing.Any,
     ) -> typing.Sequence["AdageVenueAddress"]:
         from pcapi.core.educational.factories import AdageVenueAddressFactory
 
-        if not create or not venue.adageId:
+        if not create or not self.adageId:
             return []
-        return [AdageVenueAddressFactory(venue=venue)]
+        return [AdageVenueAddressFactory.create(venue=self)]
 
 
 def _get_department_code(postal_code: str | None) -> str | None:
@@ -232,7 +246,7 @@ class GooglePlacesInfoFactory(BaseFactory):
     bannerUrl = factory.Sequence(
         "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={}".format
     )
-    bannerMeta = None
+    bannerMeta: dict | None = None
 
 
 class VirtualVenueFactory(VenueFactory):
@@ -432,7 +446,7 @@ class IndividualOffererSubscriptionFactory(BaseFactory):
     offerer = factory.SubFactory(NotValidatedOffererFactory)
     isEmailSent = True
     dateEmailSent = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))
-    dateReminderEmailSent = None
+    dateReminderEmailSent: datetime.datetime | None = None
 
 
 class OffererStatsFactory(BaseFactory):
@@ -470,7 +484,7 @@ class OffererAddressFactory(BaseFactory):
     class Meta:
         model = models.OffererAddress
 
-    label = factory.Sequence("Address label {}".format)
+    label: factory.declarations.BaseDeclaration | None = factory.Sequence("Address label {}".format)
     address = factory.SubFactory(geography_factories.AddressFactory)
     offerer = factory.SubFactory(OffererFactory)
 
@@ -484,8 +498,8 @@ class OffererConfidenceRuleFactory(BaseFactory):
         model = models.OffererConfidenceRule
 
     # One (and only one) must be set
-    offerer = None
-    venue = None
+    offerer: factory.SubFactory | None = None
+    venue: factory.SubFactory | None = None
 
 
 class ManualReviewOffererConfidenceRuleFactory(OffererConfidenceRuleFactory):
