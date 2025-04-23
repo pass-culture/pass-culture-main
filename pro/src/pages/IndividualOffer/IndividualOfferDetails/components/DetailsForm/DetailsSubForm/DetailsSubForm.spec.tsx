@@ -56,11 +56,9 @@ const DetailsSubFormWrappedWithFormik = ({
 
 const renderDetailsSubForm = ({
   props,
-  enableEANSearch = false,
   mode = OFFER_WIZARD_MODE.CREATION,
 }: {
   props?: DetailsSubFormTestProps
-  enableEANSearch?: boolean
   mode?: OFFER_WIZARD_MODE
 } = {}) => {
   const path = getIndividualOfferPath({
@@ -84,7 +82,7 @@ const renderDetailsSubForm = ({
         />
       </Routes>
     </>,
-    enableEANSearch ? { ...options, features: ['WIP_EAN_CREATION'] } : options
+    options
   )
 }
 
@@ -130,7 +128,6 @@ describe('DetailsSubForm', () => {
             isEanSearchDisplayed: true,
             isProductBased: true,
           },
-          enableEANSearch: true,
           mode: OFFER_WIZARD_MODE.CREATION,
         })
 
@@ -144,7 +141,6 @@ describe('DetailsSubForm', () => {
             isEanSearchDisplayed: true,
             isProductBased: true,
           },
-          enableEANSearch: true,
           mode: OFFER_WIZARD_MODE.EDITION,
         })
 
@@ -162,7 +158,6 @@ describe('DetailsSubForm', () => {
               isProductBased: false,
               isOfferCD: true,
             },
-            enableEANSearch: true,
           })
 
           const calloutWrapper = screen.getByRole('alert')

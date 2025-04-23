@@ -214,8 +214,7 @@ def create_draft_offer(
     body_ean = body.extra_data.pop("ean", None)
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
 
-    if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
-        validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+    validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
     fields.update({"ean": body_ean})

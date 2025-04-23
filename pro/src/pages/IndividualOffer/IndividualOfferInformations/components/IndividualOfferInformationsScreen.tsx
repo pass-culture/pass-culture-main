@@ -18,7 +18,6 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
@@ -62,7 +61,6 @@ export const IndividualOfferInformationsScreen = ({
   const { mutate } = useSWRConfig()
   const { subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
-  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const [isUpdatesWarningDialogOpen, setIsUpdatesWarningDialogOpen] =
     useState(false)
@@ -130,7 +128,7 @@ export const IndividualOfferInformationsScreen = ({
     }
 
     try {
-      const shouldNotSendExtraData = isSearchByEanEnabled && !!offer.productId
+      const shouldNotSendExtraData = !!offer.productId
       const requestBody = serializePatchOffer({
         offer,
         formValues,

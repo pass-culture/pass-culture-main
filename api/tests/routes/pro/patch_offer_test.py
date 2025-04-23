@@ -287,7 +287,6 @@ class Returns200Test:
         assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert not updated_offer.product
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_offer_with_product_with_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -309,7 +308,6 @@ class Returns200Test:
         assert updated_offer.extraData == {}
         assert updated_offer.ean == "1111111111111"
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_offer_with_product_with_same_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -1067,7 +1065,6 @@ class Returns400Test:
             "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"
         ]
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def should_fail_when_trying_to_update_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)

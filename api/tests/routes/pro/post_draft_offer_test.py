@@ -74,22 +74,6 @@ class Returns201Test:
         assert response_dict["isDuo"] == True
         assert not offer.product
 
-    @pytest.mark.features(WIP_EAN_CREATION=False)
-    def test_create_offer_cd_without_product_venue_record_store_should_succeed(self, client):
-        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "Celeste",
-            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            "venueId": venue.id,
-            "extraData": {"gtl_id": "07000000"},
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 201
-
     def test_created_offer_from_product_should_return_product_id(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -349,7 +333,6 @@ class Returns400Test:
         assert response.status_code == expected_status_code
         assert response.json == expected_json
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_without_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
@@ -366,7 +349,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_with_unknown_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer

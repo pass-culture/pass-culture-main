@@ -48,7 +48,6 @@ class Returns200Test:
         assert updated_offer.description == "New description"
         assert not updated_offer.product
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -70,7 +69,6 @@ class Returns200Test:
         assert updated_offer.ean == "2222222222222"
         assert updated_offer.extraData == {}
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def test_patch_draft_offer_without_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -170,34 +168,6 @@ class Returns200Test:
             "stageDirector": "",
             "visa": "",
         }
-
-    @pytest.mark.features(WIP_EAN_CREATION=False)
-    def test_patch_draft_offer_linked_to_product_with_same_extra_data(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        product = offers_factories.ProductFactory(
-            name="Name",
-            description="description",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            ean="1111111111111",
-            extraData={"gtl_id": "07000000"},
-        )
-        offer = offers_factories.OfferFactory(
-            venue=venue,
-            url="http://example.com/offer",
-            product=product,
-        )
-
-        data = {
-            "extraData": {"gtl_id": "07000000", "ean": "1111111111111"},
-        }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
-        assert response.status_code == 200
-        assert response.json["id"] == offer.id
-
-        updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.ean == "1111111111111"
-        assert updated_offer.extraData == {"gtl_id": "07000000"}
 
     def test_patch_draft_offer_with_existing_extra_data_with_new_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -503,7 +473,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
 
-    @pytest.mark.features(WIP_EAN_CREATION=True)
     def when_trying_to_patch_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(
