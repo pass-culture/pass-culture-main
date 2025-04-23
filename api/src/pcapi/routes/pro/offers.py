@@ -516,6 +516,8 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
         credit=form.credit,
         image_as_bytes=image_as_bytes,
         crop_params=form.crop_params,
+        min_width=None,
+        min_height=None,
     )
 
     return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore[arg-type]
