@@ -6,7 +6,6 @@ import { isErrorAPIError } from 'apiClient/helpers'
 import { GetBookingResponse } from 'apiClient/v2'
 import { Layout } from 'app/App/layout/Layout'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { HeadlineOfferBanner } from 'components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { Button } from 'ui-kit/Button/Button'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
@@ -135,7 +134,7 @@ export const Desk = (): JSX.Element => {
 
   return (
     <HeadlineOfferContextProvider>
-      <Layout mainHeading="Guichet" mainTopElement={<HeadlineOfferBanner />}>
+      <Layout mainHeading="Guichet">
         <p className={styles.advice}>
           Saisissez les contremarques présentées par les bénéficiaires afin de
           les valider ou de les invalider.

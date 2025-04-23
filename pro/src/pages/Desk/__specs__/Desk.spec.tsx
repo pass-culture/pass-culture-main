@@ -6,10 +6,7 @@ import { api, apiContremarque } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import {
-  defaultGetBookingResponse,
-  venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
+import { defaultGetBookingResponse } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Desk } from '../Desk'
@@ -222,31 +219,6 @@ describe('Desk', () => {
       )
 
       expect(errorMessage).toBeInTheDocument()
-    })
-  })
-
-  describe('Display headline offer', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [
-          venueListItemFactory({
-            id: 1,
-            isVirtual: false,
-            isPermanent: true,
-          }),
-        ],
-      })
-    })
-
-    it('should display headline offer banner', async () => {
-      renderDesk()
-
-      await waitFor(async () => {
-        const banner = await screen.findByText(
-          new RegExp('Nouvelle fonctionnalité : l’offre à la une')
-        )
-        expect(banner).toBeInTheDocument()
-      })
     })
   })
 })

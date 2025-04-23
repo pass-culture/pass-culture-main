@@ -2,13 +2,9 @@ import { useFormikContext } from 'formik'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import {
-  CATEGORY_STATUS,
-  INDIVIDUAL_OFFER_SUBTYPE,
-} from 'commons/core/Offers/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { HeadlineOfferVideoBanner } from 'components/HeadlineOfferVideoBanner/HeadlineOfferVideoBanner'
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
 import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -59,12 +55,6 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
   const showAddVenueBanner = venuesOptions.length === 0
-
-  const queryParams = new URLSearchParams(location.search)
-  const queryOfferType = queryParams.get('offer-type')
-  const shouldDisplayVideoBanner =
-    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT ||
-    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
 
   return (
     <>
@@ -162,7 +152,6 @@ export const DetailsForm = ({
         imageOffer={imageOffer}
         hideActionButtons={isProductBased}
       />
-      {shouldDisplayVideoBanner && <HeadlineOfferVideoBanner />}
       {!showAddVenueBanner && (
         <Subcategories
           readOnlyFields={readOnlyFields}
