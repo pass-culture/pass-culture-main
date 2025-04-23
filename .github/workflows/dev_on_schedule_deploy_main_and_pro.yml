@@ -147,9 +147,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
         
   deploy-to-testing:
-    permissions:
-      id-token: 'write'
-      contents: 'read'
+    permissions: write-all
     name: "Deploy to testing"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
@@ -167,9 +165,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-to-ops:
-    permissions:
-      id-token: 'write'
-      contents: 'read'
+    permissions: write-all
     name: "Deploy to ops"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi, deploy-to-testing]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
