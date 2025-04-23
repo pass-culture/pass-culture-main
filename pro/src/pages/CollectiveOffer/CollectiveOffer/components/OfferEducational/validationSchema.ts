@@ -70,15 +70,27 @@ export function getOfferEducationalValidationSchema(
       ? yup
           .string()
           .trim()
-          .when(['location.locationType', 'location.id_oa'], {
-            is: (locationType: string, id_oa: string) =>
-              locationType === CollectiveLocationType.ADDRESS &&
-              id_oa === 'SPECIFIC_ADDRESS',
-            then: (schema) =>
-              schema.required(
-                'Veuillez sélectionner une adresse parmi les suggestions'
-              ),
-          })
+          .when(
+            [
+              'location.locationType',
+              'location.id_oa',
+              'location.address.isManualEdition',
+            ],
+            {
+              is: (
+                locationType: string,
+                id_oa: string,
+                isManualEdition: boolean
+              ) =>
+                locationType === CollectiveLocationType.ADDRESS &&
+                id_oa === 'SPECIFIC_ADDRESS' &&
+                !isManualEdition,
+              then: (schema) =>
+                schema.required(
+                  'Veuillez sélectionner une adresse parmi les suggestions'
+                ),
+            }
+          )
       : yup.mixed(),
     eventAddress: yup.object().shape({
       addressType: yup
