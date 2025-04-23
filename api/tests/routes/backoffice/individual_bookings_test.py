@@ -526,19 +526,6 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data) == 0
 
-    def test_list_bookings_more_than_max(self, authenticated_client):
-        bookings_factories.BookingFactory.create_batch(
-            25,
-            stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        )
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, category=pro_categories.CINEMA.id, limit=20))
-            assert response.status_code == 200
-
-        assert html_parser.count_table_rows(response.data) == 2 * 20  # extra data in second row for each booking
-        assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
-
     def test_additional_data_when_reimbursed(self, authenticated_client, bookings):
         reimbursed = bookings[3]
         pricing_venue = offerers_factories.VenueFactory()
