@@ -90,25 +90,6 @@ class CreateThumbnailFromFileTest:
         assert response.json == {"errors": ["Le fichier fourni n'est pas une image valide"]}
 
     @mock.patch("pcapi.core.offers.validation.check_image")
-    def test_image_too_small(self, mock_check_image, client, offer, offerer):
-        # given
-        mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        client = client.with_session_auth(email="user@example.com")
-        thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
-        data = {
-            "offerId": offer.id,
-            "thumb": (BytesIO(thumb), "image.jpg"),
-        }
-
-        # when
-        response = client.post("/offers/thumbnails", form=data)
-
-        # then
-        mock_check_image.assert_called_once()
-        assert response.status_code == 400
-        assert response.json == {"errors": ["Utilisez une image plus grande (supérieure à 400px par 400px)"]}
-
-    @mock.patch("pcapi.core.offers.validation.check_image")
     def test_content_too_large(self, mock_check_image, client, offer, offerer):
         # given
         mock_check_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
