@@ -108,7 +108,6 @@ jobs:
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
@@ -243,12 +242,27 @@ jobs:
         if: failure()
         run: docker logs pc-api
 
-      - name: "Post to a Slack channel"
-        if: always() && failure() && github.ref == 'refs/heads/master'
+  notify-cypress-failure:
+    name: "Notification of Cypress tests failure"
+    runs-on: ubuntu-24.04
+    needs: cypress-run
+    if: always() && needs.cypress-run.result == 'failure' && github.ref == 'refs/heads/master'
+    steps:
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Slack token secret"
+        id: slack-token-secret
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Post Slack notification"
         uses: slackapi/slack-github-action@v1.27.0
         with:
-          # channel #dev
-          channel-id: "CPZ7U1CNP"
+          channel-id: ${{vars.SLACK_DEV_CHANNEL_ID}}
           payload: |
             {
               "attachments": [
@@ -260,11 +274,11 @@ jobs:
                   "author_icon": "https://github.com/${{github.actor}}.png",
                   "title": "Tests pro E2E",
                   "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Les tests pro E2E échouent sur `master` :boom:"
+                  "text": "Le job des tests E2E a échoué sur `master` :boom:"
                 }
               ],
               "unfurl_links": false,
               "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.slack-token-secret.outputs.SLACK_BOT_TOKEN }}
