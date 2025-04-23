@@ -117,6 +117,7 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+
   ruff-checks:
     name: "Ruff"
     runs-on: ubuntu-22.04
@@ -538,7 +539,6 @@ jobs:
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "OpenID Connect Authentication"
@@ -625,31 +625,6 @@ jobs:
           check_name: "Pytest Report"
           fail_on_failure: false
           skip_success_summary: true
-      - name: "Slack Notification"
-        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          # channel #dev
-          channel-id: "CPZ7U1CNP"
-          payload: |
-            {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Api tests",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Les tests pytest échouent sur `master` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   cache-test-durations:
     name: Cache test durations
@@ -696,3 +671,44 @@ jobs:
         with:
           path: ${{ runner.temp }}/.test_durations
           key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
+
+  notify-pytest-failure:
+    name: "Notification of pytest failure"
+    runs-on: ubuntu-24.04
+    needs: pytest
+    if: always() && needs.pytest.result == 'failure' && github.ref == 'refs/heads/master'
+    steps:
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Slack token secret"
+        id: slack-token-secret
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Post Slack notification"
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{vars.SLACK_DEV_CHANNEL_ID}}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "mrkdwn_in": ["text"],
+                  "color": "#A30002",
+                  "author_name": "${{github.actor}}",
+                  "author_link": "https://github.com/${{github.actor}}",
+                  "author_icon": "https://github.com/${{github.actor}}.png",
+                  "title": "Tests pytest",
+                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                  "text": "Le job `pytest` a échoué sur `master` :boom:"
+                }
+              ],
+              "unfurl_links": false,
+              "unfurl_media": false
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ steps.slack-token-secret.outputs.SLACK_BOT_TOKEN }}
