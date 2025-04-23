@@ -227,8 +227,6 @@ def _create_one_collective_incident(
         pricing_point="self",
         bank_account=bank_account,
     )
-    # TODO(jeremieb): find a better solution to avoid institution creation
-    # from UsedCollectiveBookingFactory
     institution = (
         educational_models.EducationalInstitution.query.first() or educational_factories.EducationalInstitutionFactory()
     )

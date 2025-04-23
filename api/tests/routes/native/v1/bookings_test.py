@@ -707,14 +707,13 @@ class PostBookingTest:
         )
 
         assert response.status_code == 200
-        external_bookings = bookings_models.ExternalBooking.query.one()
-        assert external_bookings.bookingId == response.json["bookingId"]
+        external_booking = bookings_models.ExternalBooking.query.one()
+        assert external_booking.bookingId == response.json["bookingId"]
         assert stock.quantity == 50 + 11  # remainingQuantity + dnBookedQuantity after new booking
         assert stock.dnBookedQuantity == 11
 
-        # Fixme: the order is random which is why we use 'in' instead of ==
-        assert external_bookings.barcode in ["12123932898127", "12123932898117"]
-        assert external_bookings.seat in ["A12", "A13"]
+        assert external_booking.barcode in ["12123932898127", "12123932898117"]
+        assert external_booking.seat in ["A12", "A13"]
 
     @pytest.mark.parametrize(
         "validation_status",

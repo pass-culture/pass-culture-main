@@ -158,55 +158,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == in_ten_minutes
 
-    def test_valid_ean_with_multiple_products(self, client):
-        # FIXME : (mageoffray, 2023-11-07) Delete this test one product database is cleaned
-        product_provider = providers_factories.ProviderFactory()
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            ean="1234567890123",
-            lastProviderId=product_provider.id,
-            idAtProviders="1234567890123",
-        )
-        offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            ean="1234567890124",
-        )
-        offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            ean="1234567890125",
-        )
-        unknown_ean = "1234567897123"
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products/ean",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "products": [
-                    {
-                        "ean": product.ean,
-                        "stock": {
-                            "bookingLimitDatetime": None,
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    },
-                    {
-                        "ean": unknown_ean,
-                        "stock": {
-                            "bookingLimitDatetime": None,
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    },
-                ],
-            },
-        )
-        assert response.status_code == 204
-
-        offer = offers_models.Offer.query.one()
-        assert offer.product == product
-
     def test_update_stock_quantity_with_previous_bookings(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
