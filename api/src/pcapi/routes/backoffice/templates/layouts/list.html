@@ -17,11 +17,11 @@
     <div class="vstack gap-4">
       {% block before_table %}{% endblock %}
       {% if rows_count %}
-        <div class="d-flex justify-content-between mt-5">
+        <div class="d-flex justify-content-between {% if not hide_search_block %}mt-5{% endif %}">
           <p class="num-results hstack text-secondary my-auto gap-2">
             {{ rows_count }}
             résultat{{ rows_count | pluralize }}
-            {% if not pagination %}
+            {% if not pagination and not hide_search_block %}
               affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
