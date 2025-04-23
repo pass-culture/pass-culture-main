@@ -1,4 +1,4 @@
-import re as regex
+import regex
 
 
 def _get_cluster_length(cluster: str) -> tuple[int, int]:
@@ -46,13 +46,12 @@ def batch_length(s: str) -> int:
     Returns:
         int: The computed 'batch' length of the string.
     """
-    return len(s)
-    # graphemes = regex.findall(r"\X", s)
-    # total = 0
-    # for cluster in graphemes:
-    #     emoji_count, char_length = _get_cluster_length(cluster)
-    #     total += (emoji_count * 2) + char_length
-    # return total
+    graphemes = regex.findall(r"\X", s)
+    total = 0
+    for cluster in graphemes:
+        emoji_count, char_length = _get_cluster_length(cluster)
+        total += (emoji_count * 2) + char_length
+    return total
 
 
 def shorten_for_batch(s: str, max_length: int, placeholder: str = "...", preserve_words: bool = False) -> str:
@@ -77,29 +76,28 @@ def shorten_for_batch(s: str, max_length: int, placeholder: str = "...", preserv
     """
     if batch_length(s) <= max_length:
         return s
-    return s[: max_length - 3] + placeholder
 
-    # truncated = ""
-    # current_length = 0
-    # last_space_index = None
-    # clusters = regex.findall(r"\X", s)
-    # truncated_clusters = []  # To keep track of clusters added
+    truncated = ""
+    current_length = 0
+    last_space_index = None
+    clusters = regex.findall(r"\X", s)
+    truncated_clusters = []  # To keep track of clusters added
 
-    # for i, cluster in enumerate(clusters):
-    #     emoji_count, char_length = _get_cluster_length(cluster)
-    #     cluster_length = (emoji_count * 2) + char_length
+    for i, cluster in enumerate(clusters):
+        emoji_count, char_length = _get_cluster_length(cluster)
+        cluster_length = (emoji_count * 2) + char_length
 
-    #     # Check if the current cluster is a whitespace, to mark possible word boundary.
-    #     if preserve_words and cluster.isspace():
-    #         last_space_index = i
+        # Check if the current cluster is a whitespace, to mark possible word boundary.
+        if preserve_words and cluster.isspace():
+            last_space_index = i
 
-    #     if current_length + cluster_length > max_length - batch_length(placeholder):
-    #         # If preserving words and we encountered a space, truncate at that point.
-    #         if preserve_words and last_space_index is not None:
-    #             truncated_clusters = clusters[:last_space_index]
-    #         break
-    #     truncated_clusters.append(cluster)
-    #     current_length += cluster_length
+        if current_length + cluster_length > max_length - batch_length(placeholder):
+            # If preserving words and we encountered a space, truncate at that point.
+            if preserve_words and last_space_index is not None:
+                truncated_clusters = clusters[:last_space_index]
+            break
+        truncated_clusters.append(cluster)
+        current_length += cluster_length
 
-    # truncated = "".join(truncated_clusters)
-    # return truncated + placeholder
+    truncated = "".join(truncated_clusters)
+    return truncated + placeholder
