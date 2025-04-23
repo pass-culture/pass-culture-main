@@ -3,6 +3,7 @@ import datetime
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
@@ -271,13 +272,13 @@ def create_pro_user_with_collective_offers() -> dict:
     offerPublishedTemplate = educational_factories.CollectiveOfferTemplateFactory(
         name="Mon offre collective publiée vitrine",
         venue=venue1,
-        formats=[subcategories.EacFormat.CONCERT],
+        formats=[EacFormat.CONCERT],
     )
 
     offerPublished = educational_factories.CollectiveStockFactory(
         collectiveOffer__name="Mon offre collective publiée réservable",
         collectiveOffer__venue=venue1,
-        collectiveOffer__formats=[subcategories.EacFormat.CONCERT],
+        collectiveOffer__formats=[EacFormat.CONCERT],
         startDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
         endDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
     )
@@ -285,25 +286,25 @@ def create_pro_user_with_collective_offers() -> dict:
     offerDraft = educational_factories.DraftCollectiveOfferFactory(
         name="Mon offre collective en brouillon réservable",
         venue=venue1,
-        formats=[subcategories.EacFormat.REPRESENTATION],
+        formats=[EacFormat.REPRESENTATION],
     )
 
     offerInInstruction = educational_factories.PendingCollectiveOfferFactory(
         name="Mon offre collective en instruction réservable",
         venue=venue2,
-        formats=[subcategories.EacFormat.REPRESENTATION],
+        formats=[EacFormat.REPRESENTATION],
     )
 
     offerNotConform = educational_factories.RejectedCollectiveOfferFactory(
         name="Mon offre collective non conforme réservable",
         venue=venue2,
-        formats=[subcategories.EacFormat.REPRESENTATION],
+        formats=[EacFormat.REPRESENTATION],
     )
 
     offerArchived = educational_factories.ArchivedCollectiveOfferFactory(
         name="Mon offre collective archivée réservable",
         venue=venue2,
-        formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+        formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
     )
 
     educational_factories.EducationalDomainFactory(
@@ -363,7 +364,7 @@ def create_pro_user_with_active_collective_offer() -> dict:
         name="Mon offre collective",
         institution=educational_institution,
         venue=venue,
-        formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+        formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
     )
 
     # Create a provider for the offerer

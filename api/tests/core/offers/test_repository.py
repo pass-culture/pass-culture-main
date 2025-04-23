@@ -9,6 +9,7 @@ import time_machine
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.geography import factories as geography_factories
@@ -1334,12 +1335,12 @@ class GetCollectiveOffersTemplateByFiltersTest:
 
     def test_formats_filter(self, admin_user):
         template = educational_factories.CollectiveOfferTemplateFactory(
-            formats=[subcategories.EacFormat.CONCERT, subcategories.EacFormat.CONFERENCE_RENCONTRE]
+            formats=[EacFormat.CONCERT, EacFormat.CONFERENCE_RENCONTRE]
         )
-        educational_factories.CollectiveOfferTemplateFactory(formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE])
+        educational_factories.CollectiveOfferTemplateFactory(formats=[EacFormat.CONFERENCE_RENCONTRE])
 
         result = repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, formats=[subcategories.EacFormat.CONCERT]
+            user_id=admin_user.id, user_is_admin=True, formats=[EacFormat.CONCERT]
         ).one()
         assert result.id == template.id
 
@@ -1465,16 +1466,16 @@ class GetFilteredCollectiveOffersTest:
     def test_get_collective_offers_with_formats(self):
         user_offerer = offerers_factories.UserOffererFactory()
         collective_offer = educational_factories.CollectiveOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, formats=[subcategories.EacFormat.CONCERT]
+            venue__managingOfferer=user_offerer.offerer, formats=[EacFormat.CONCERT]
         )
         educational_factories.CollectiveOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE]
+            venue__managingOfferer=user_offerer.offerer, formats=[EacFormat.CONFERENCE_RENCONTRE]
         )
 
         offers = repository.get_collective_offers_by_filters(
             user_id=user_offerer.userId,
             user_is_admin=False,
-            formats=[subcategories.EacFormat.CONCERT],
+            formats=[EacFormat.CONCERT],
         )
         assert offers.one() == collective_offer
 
