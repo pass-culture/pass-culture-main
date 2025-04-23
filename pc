@@ -25,6 +25,7 @@ Commands:
   bash                  Open a shell on the given environment
   diff-schema           Create diff ouput between schema in an environment & localhost
   dump-db               Dump pass_culture database into pgdump file
+  deploy-preview        Deploy testing preview env
   install               Install new local environment
   install-hooks         Install pre-push and pre-commit hooks
   logs                  Display logs from the local API
@@ -399,6 +400,47 @@ elif [[ "$CMD" == "python" ]]; then
     fi
     exit
   fi
+
+elif [[ "$CMD" == "deploy-preview" ]]; then
+  REF_ARG=""
+  EXTRA_FLAGS=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --ref)
+        shift
+        if [[ -z "${1:-}" ]]; then
+          echo "Error: --ref requires a branch name"
+          exit 1
+        fi
+        REF_ARG="$1"
+        ;;
+      -f)
+        shift
+        if [[ -z "${1:-}" ]]; then
+          echo "Error: -f requires a value (e.g., sandbox=industrial)"
+          exit 1
+        fi
+        EXTRA_FLAGS="-f $1"
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  # If no branches is specified, use current branch
+  if [[ -z "$REF_ARG" ]]; then
+    if ! REF_ARG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); then
+      echo "Error: could not determine current git branch. Use --ref explicitly."
+      exit 1
+    fi
+  fi
+
+  RUN="gh workflow run dev_on_dispatch_deploy_pullrequests.yml --ref $REF_ARG $EXTRA_FLAGS"
+
+
+
 
 # =============================================
 # Python Scripts commands
