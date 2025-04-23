@@ -1329,41 +1329,6 @@ class CollectiveOfferTemplate(
     def is_cancellable_from_offerer(self) -> bool:
         return False
 
-    @classmethod
-    def create_from_collective_offer(
-        cls, collective_offer: CollectiveOffer, price_detail: str | None = None
-    ) -> "CollectiveOfferTemplate":
-        list_of_common_attributes = [
-            "isActive",
-            "venue",
-            "name",
-            "description",
-            "durationMinutes",
-            "dateCreated",
-            "domains",
-            "dateUpdated",
-            "bookingEmails",
-            "lastValidationDate",
-            "validation",
-            "audioDisabilityCompliant",
-            "mentalDisabilityCompliant",
-            "motorDisabilityCompliant",
-            "visualDisabilityCompliant",
-            "contactEmail",
-            "contactPhone",
-            "offerVenue",
-            "students",
-            "interventionArea",
-            "nationalProgramId",
-            "formats",
-            "author",
-        ]
-        collective_offer_mapping = {x: getattr(collective_offer, x) for x in list_of_common_attributes}
-        return cls(
-            **collective_offer_mapping,
-            priceDetail=price_detail,
-        )
-
     @hybrid_property
     def is_expired(self) -> bool:
         return self.hasStartDatetimePassed

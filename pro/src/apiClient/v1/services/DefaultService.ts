@@ -16,8 +16,6 @@ import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBoo
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
 import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
-import type { CollectiveOfferTemplateBodyModel } from '../models/CollectiveOfferTemplateBodyModel';
-import type { CollectiveOfferTemplateResponseIdModel } from '../models/CollectiveOfferTemplateResponseIdModel';
 import type { CollectiveOfferType } from '../models/CollectiveOfferType';
 import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
@@ -711,33 +709,6 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * create_collective_offer_template_from_collective_offer <POST>
-   * @param offerId
-   * @param requestBody
-   * @returns CollectiveOfferTemplateResponseIdModel Created
-   * @throws ApiError
-   */
-  public createCollectiveOfferTemplateFromCollectiveOffer(
-    offerId: number,
-    requestBody?: CollectiveOfferTemplateBodyModel,
-  ): CancelablePromise<CollectiveOfferTemplateResponseIdModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/collective/offers-template/{offer_id}/',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: `Bad Request`,
-        403: `Forbidden`,
-        404: `Not Found`,
         422: `Unprocessable Entity`,
       },
     });

@@ -61,10 +61,6 @@ class MissingRequiredRedactorInformation(Exception):
     pass
 
 
-class EducationalStockAlreadyExists(Exception):
-    pass
-
-
 class CollectiveStockAlreadyExists(Exception):
     pass
 

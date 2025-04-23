@@ -698,23 +698,6 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
         extra = "forbid"
 
 
-class CollectiveOfferTemplateBodyModel(BaseModel):
-    price_detail: PriceDetail | None = Field(alias="educationalPriceDetail")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class CollectiveOfferTemplateResponseIdModel(BaseModel):
-    id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-
-
 class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmails: list[EmailStr] | None
     description: str | None
