@@ -1484,6 +1484,31 @@ export class DefaultService {
     });
   }
   /**
+   * invite_member_again <POST>
+   * @param offererId
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public inviteMemberAgain(
+    offererId: number,
+    requestBody?: InviteMemberQueryModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offerers/{offerer_id}/invite-again',
+      path: {
+        'offerer_id': offererId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_offerer_members <GET>
    * @param offererId
    * @returns GetOffererMembersResponseModel OK

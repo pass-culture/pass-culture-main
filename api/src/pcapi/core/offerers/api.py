@@ -2527,6 +2527,20 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
     transactional_mails.send_offerer_attachment_invitation([email], offerer, existing_user)
 
 
+def invite_member_again(offerer: models.Offerer, email: str) -> None:
+    existing_invited_email = (
+        db.session.query(models.OffererInvitation)
+        .filter(models.OffererInvitation.offererId == offerer.id)
+        .filter(models.OffererInvitation.email == email)
+        .one_or_none()
+    )
+
+    if not existing_invited_email or existing_invited_email.status == models.InvitationStatus.ACCEPTED:
+        raise exceptions.InviteAgainImpossibleException()
+
+    transactional_mails.send_offerer_attachment_invitation([email], offerer)
+
+
 def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
     users_offerers = (
         db.session.query(models.UserOfferer)

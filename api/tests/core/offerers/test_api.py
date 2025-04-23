@@ -3171,6 +3171,37 @@ class InviteMembersTest:
         }
 
 
+class InviteMembersAgainTest:
+    def test_offerer_invitation_send_when_invite_again(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.OffererInvitationFactory(user=pro_user, offerer=offerer, email="new.user@example.com")
+
+        offerers_api.invite_member_again(offerer=offerer, email="new.user@example.com")
+
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0]["template"]["id_not_prod"]
+            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.id
+        )
+
+    def test_raise_error_when_invitation_does_not_already_exist(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+        with pytest.raises(offerers_exceptions.InviteAgainImpossibleException) as exception:
+            offerers_api.invite_member_again(offerer=offerer, email="new.user@example.com")
+
+        assert exception.value.errors["InviteAgainImpossibleException"] == [
+            "Impossible de renvoyer une invitation pour ce collaborateur"
+        ]
+        offerer_invitations = db.session.query(offerers_models.OffererInvitation).all()
+        assert len(offerer_invitations) == 0
+        assert len(mails_testing.outbox) == 0
+
+
 class AcceptOffererInvitationTest:
     def test_accept_offerer_invitation_when_invitation_exist(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
