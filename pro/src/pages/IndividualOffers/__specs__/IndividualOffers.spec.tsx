@@ -14,7 +14,6 @@ import {
   ListOffersOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   ALL_CREATION_MODES,
   CREATION_MODES_OPTIONS,
@@ -968,41 +967,6 @@ describe('route Offers', () => {
         undefined,
         offererAddress[1].id.toString()
       )
-    })
-  })
-
-  describe('when headline offer feature is available', () => {
-    it('should render an awesome headline offer banner', async () => {
-      await renderOffers(undefined)
-
-      const bannerTitle = await screen.findByText(
-        /Nouvelle fonctionnalité : l’offre à la une !/
-      )
-      expect(bannerTitle).toBeInTheDocument()
-    })
-
-    it('should not render the headline offer banner anymore when the user closes it', async () => {
-      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-        PRO_EXPERIMENT_GTM_HEADLINE_OFFER: 'true',
-      })
-
-      await renderOffers(undefined)
-
-      let bannerTitle = await screen.findByText(
-        /Nouvelle fonctionnalité : l’offre à la une !/
-      )
-      expect(bannerTitle).toBeInTheDocument()
-
-      const closeButton = screen.getByRole('button', {
-        name: 'Fermer la bannière',
-      })
-      await userEvent.click(closeButton)
-
-      // If the user refreshes the page, the banner should not be displayed anymore.
-      await renderOffers(undefined)
-      expect(
-        screen.queryByText(/Nouvelle fonctionnalité : l’offre à la une !/)
-      ).not.toBeInTheDocument()
     })
   })
 })

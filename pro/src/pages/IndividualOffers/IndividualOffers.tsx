@@ -19,7 +19,6 @@ import { useOffererAddresses } from 'commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
-import { HeadlineOfferBanner } from 'components/HeadlineOfferBanner/HeadlineOfferBanner'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderAddresses } from 'repository/venuesService'
 
@@ -108,10 +107,7 @@ export const IndividualOffers = (): JSX.Element => {
 
   return (
     <HeadlineOfferContextProvider>
-      <Layout
-        mainHeading="Offres individuelles"
-        mainTopElement={<HeadlineOfferBanner />}
-      >
+      <Layout mainHeading="Offres individuelles">
         <IndividualOffersContainer
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
