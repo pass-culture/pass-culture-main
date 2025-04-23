@@ -146,6 +146,13 @@ class EmailAlreadyInvitedException(ClientError):
         super().__init__("EmailAlreadyInvitedException", "Une invitation a déjà été envoyée à ce collaborateur")
 
 
+class InviteAgainImpossibleException(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "InviteAgainImpossibleException", "Impossible de renvoyer une invitation pour ce collaborateur"
+        )
+
+
 class UserAlreadyAttachedToOffererException(ClientError):
     def __init__(self) -> None:
         super().__init__("UserAlreadyAttachedToOffererException", "Ce collaborateur est déjà membre de votre structure")

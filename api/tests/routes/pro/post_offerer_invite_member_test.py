@@ -26,7 +26,7 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_inivitation_already_exists(self, client):
+    def test_invitation_already_exists(self, client):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)

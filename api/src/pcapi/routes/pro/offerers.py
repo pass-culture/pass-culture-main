@@ -117,6 +117,19 @@ def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryMod
         raise ApiErrors({"email": "Ce collaborateur est déjà membre de votre structure"})
 
 
+@private_api.route("/offerers/<int:offerer_id>/invite-again", methods=["POST"])
+@atomic()
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def invite_member_again(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    try:
+        api.invite_member_again(offerer, body.email)
+    except offerers_exceptions.InviteAgainImpossibleException:
+        raise ApiErrors({"email": "Impossible de renvoyer une invitation pour ce collaborateur"})
+
+
 @private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])
 @atomic()
 @login_required
