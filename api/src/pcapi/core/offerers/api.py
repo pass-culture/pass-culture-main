@@ -74,7 +74,6 @@ from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
-from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
 from pcapi.utils import siren as siren_utils
@@ -1886,12 +1885,8 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
 
     filters = []
 
-    try:
-        dehumanized_id = human_ids.dehumanize(search_query)
-    except human_ids.NonDehumanizableId:
-        pass
-    else:
-        filters.append(finance_models.BankAccount.id == dehumanized_id)
+    if search_query.isnumeric():
+        filters.append(finance_models.BankAccount.id == search_query)
 
     try:
         iban = schwifty.IBAN(search_query)

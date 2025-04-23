@@ -27,7 +27,6 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import urls
-from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -759,9 +758,9 @@ class SearchBankAccountTest:
             "backoffice_web.bank_account.get", bank_account_id=expected_id, q=str(search_query), _external=True
         )
 
-    def test_search_bank_account_by_humanized_id(self, authenticated_client):
+    def test_search_bank_account_by_id(self, authenticated_client):
         bank_accounts = finance_factories.BankAccountFactory.create_batch(3)
-        self._search_for_one(authenticated_client, humanize(bank_accounts[2].id), bank_accounts[2].id)
+        self._search_for_one(authenticated_client, bank_accounts[2].id, bank_accounts[2].id)
 
     @pytest.mark.parametrize("search_query", ["FR7612345000000123456789008", "FR76 1234 5000 0001 2345 6789 008"])
     def test_search_bank_account_by_iban(self, authenticated_client, search_query):
