@@ -4500,7 +4500,7 @@
                                 "$ref": "#/components/schemas/OfferVenueModel"
                             }
                         ],
-                        "description": "[\u26a0\ufe0f DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.",
+                        "description": "[\u26a0\ufe0f DEPRECATED] Use the `location` attribute instead of `offerVenue`.",
                         "title": "Offervenue"
                     },
                     "startDatetime": {
@@ -6107,7 +6107,7 @@
                                 "$ref": "#/components/schemas/OfferVenueModel"
                             }
                         ],
-                        "description": "[\u26a0\ufe0f DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.",
+                        "description": "[\u26a0\ufe0f DEPRECATED] Use the `location` attribute instead of `offerVenue`.",
                         "nullable": true,
                         "title": "Offervenue"
                     },
@@ -6368,7 +6368,7 @@
                                 "$ref": "#/components/schemas/OfferVenueModel"
                             }
                         ],
-                        "description": "[\u26a0\ufe0f DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.",
+                        "description": "[\u26a0\ufe0f DEPRECATED] Use the `location` attribute instead of `offerVenue`.",
                         "nullable": true,
                         "title": "Offervenue"
                     },
