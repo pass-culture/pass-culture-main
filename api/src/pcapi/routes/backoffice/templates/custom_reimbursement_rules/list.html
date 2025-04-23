@@ -1,114 +1,91 @@
-{% import "components/forms.html" as forms with context %}
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5"
-       data-toggle="filters"
-       data-toggle-id="custom-reimbursement-rules">
-    <h1>Tarifs dérogatoires</h1>
-    <div class="col-2">
-      <div class="py-2">
-        <button type="submit"
-                class="btn btn-primary filters-toggle-button"
-                disabled>
-          <span class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"></span>
-          <span class="visually-hidden">Chargement...</span>
-        </button>
-      </div>
-    </div>
-    <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
-    <div class="row">
-      <div class="col-md-11 mb-4">
-        <turbo-frame id="reimbursement_stats" src="{{ url_for('backoffice_web.reimbursement_rules.get_stats') }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
-      </div>
-    </div>
-    <div>
-      {% if has_permission("CREATE_REIMBURSEMENT_RULES") %}
-        <button class="btn btn-outline-primary lead fw-bold mt-2"
-                data-bs-toggle="modal"
-                data-bs-target="#create-custom-reimbursement-rule"
-                type="button">Créer un tarif dérogatoire</button>
-        {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form") , "create-custom-reimbursement-rule") }}
-      {% endif %}
-      {% if rows %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows|length }} résultat{{ rows | length | pluralize }}</p>
-        </div>
-        <table class="table mb-4">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">ID règle</th>
-              <th scope="col">Entité juridique</th>
-              <th scope="col">SIREN</th>
-              <th scope="col">Partenaire culturel</th>
-              <th scope="col">Offre</th>
-              <th scope="col">Taux de remboursement</th>
-              <th scope="col">Montant remboursé</th>
-              <th scope="col">Sous-catégories</th>
-              <th scope="col">Date d'application</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for reimbursement_rule in rows %}
-              <tr>
-                <td>
-                  {% if not reimbursement_rule.timespan.upper %}
-                    <div class="dropdown">
-                      <button type="button"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                              class="btn p-0">
-                        <i class="bi bi-three-dots-vertical"></i>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li class="dropdown-item p-0">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#edit-custom-reimbursement-rule-{{ reimbursement_rule.id }}">Modifier</a>
-                        </li>
-                      </ul>
-                    </div>
-                  {% endif %}
-                </td>
-                <td>{{ reimbursement_rule.id }}</td>
-                {% if reimbursement_rule.offerer %}
-                  <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offerer) }}</td>
-                  <td>{{ reimbursement_rule.offerer.siren }}</td>
-                  <td></td>
-                  <td></td>
-                {% elif reimbursement_rule.venue %}
-                  <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.venue.managingOfferer) }}</td>
-                  <td>{{ reimbursement_rule.venue.managingOfferer.siren }}</td>
-                  <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.venue) }}</td>
-                  <td></td>
-                {% else %}
-                  <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
-                  <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
-                  <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.offer.venue) }}</td>
-                  <td>{{ links.build_offer_name_to_details_link(reimbursement_rule.offer) }}</td>
-                {% endif %}
-                <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
-                <td>{{ reimbursement_rule.amount | format_cents if reimbursement_rule.amount else "" }}</td>
-                <td>{{ reimbursement_rule.subcategories | format_subcategories }}</td>
-                <td>{{ reimbursement_rule.timespan | format_timespan }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% for reimbursement_rule in rows %}
-          {% if not reimbursement_rule.timespan.upper %}
-            {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id) ,
-            "edit-custom-reimbursement-rule-" + reimbursement_rule.id|string) }}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-    </div>
+{% block title %}
+  Tarifs dérogatoires
+{% endblock title %}
+{% set rows_count = rows|length %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  <div class="col-md-12 mt-4">
+    <turbo-frame id="reimbursement_stats" src="{{ url_for('backoffice_web.reimbursement_rules.get_stats') }}">
+    {{ build_loading_spinner() }}
+    </turbo-frame>
   </div>
-{% endblock page %}
+  {% if has_permission("CREATE_REIMBURSEMENT_RULES") %}
+    <button class="btn btn-outline-primary lead fw-bold col-2"
+            data-bs-toggle="modal"
+            data-bs-target="#create-custom-reimbursement-rule"
+            type="button">Créer un tarif dérogatoire</button>
+    {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form") , "create-custom-reimbursement-rule") }}
+  {% endif %}
+{% endblock before_table %}
+{% block table_header %}
+  <th>Actions</th>
+  <th>ID règle</th>
+  <th>Entité juridique</th>
+  <th>SIREN</th>
+  <th>Partenaire culturel</th>
+  <th>Offre</th>
+  <th>Taux de remboursement</th>
+  <th>Montant remboursé</th>
+  <th>Sous-catégories</th>
+  <th>Date d'application</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for reimbursement_rule in rows %}
+    <tr>
+      <td>
+        {% if not reimbursement_rule.timespan.upper %}
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#edit-custom-reimbursement-rule-{{ reimbursement_rule.id }}">Modifier</a>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+      <td>{{ reimbursement_rule.id }}</td>
+      {% if reimbursement_rule.offerer %}
+        <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offerer) }}</td>
+        <td>{{ reimbursement_rule.offerer.siren }}</td>
+        <td></td>
+        <td></td>
+      {% elif reimbursement_rule.venue %}
+        <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.venue.managingOfferer) }}</td>
+        <td>{{ reimbursement_rule.venue.managingOfferer.siren }}</td>
+        <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.venue) }}</td>
+        <td></td>
+      {% else %}
+        <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
+        <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
+        <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.offer.venue) }}</td>
+        <td>{{ links.build_offer_name_to_details_link(reimbursement_rule.offer) }}</td>
+      {% endif %}
+      <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
+      <td>{{ reimbursement_rule.amount | format_cents if reimbursement_rule.amount else "" }}</td>
+      <td>{{ reimbursement_rule.subcategories | format_subcategories }}</td>
+      <td>{{ reimbursement_rule.timespan | format_timespan }}</td>
+    </tr>
+  {% endfor %}
+{% endblock table_body %}
+{% block after_table %}
+  {% for reimbursement_rule in rows %}
+    {% if not reimbursement_rule.timespan.upper %}
+      {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id) ,
+      "edit-custom-reimbursement-rule-" + reimbursement_rule.id|string) }}
+    {% endif %}
+  {% endfor %}
+{% endblock %}
