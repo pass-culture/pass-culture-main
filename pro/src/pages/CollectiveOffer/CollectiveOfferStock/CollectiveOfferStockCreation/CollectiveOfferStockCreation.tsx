@@ -81,56 +81,45 @@ export const CollectiveOfferStockCreation = ({
     offer: GetCollectiveOfferResponseModel,
     values: OfferEducationalStockFormValues
   ) => {
-    let createdOfferTemplateId: number | null = null
     const isTemplate =
       values.educationalOfferType === EducationalOfferType.SHOWCASE
     try {
-      if (isTemplate) {
-        const { id } =
-          await api.createCollectiveOfferTemplateFromCollectiveOffer(offer.id, {
-            educationalPriceDetail: values.priceDetail,
-          })
-        createdOfferTemplateId = id
-      } else {
-        let response: CollectiveStockResponseModel | null = null
-        if (offer.collectiveStock) {
-          const patchPayload = createPatchStockDataPayload(
-            values,
-            offer.venue.departementCode ?? '',
-            initialValues
-          )
-          response = await api.editCollectiveStock(
-            offer.collectiveStock.id,
-            patchPayload
-          )
-        } else {
-          const stockPayload = createStockDataPayload(
-            values,
-            offer.venue.departementCode ?? '',
-            offer.id
-          )
-          response = await api.createCollectiveStock(stockPayload)
-        }
-
-        await mutate<GetCollectiveOfferResponseModel>(
-          [GET_COLLECTIVE_OFFER_QUERY_KEY],
-          {
-            ...offer,
-            collectiveStock: {
-              ...offer.collectiveStock,
-              ...response,
-              isBooked: false,
-              isCancellable: offer.isCancellable,
-            },
-          },
-          { revalidate: false }
+      let response: CollectiveStockResponseModel | null = null
+      if (offer.collectiveStock) {
+        const patchPayload = createPatchStockDataPayload(
+          values,
+          offer.venue.departementCode ?? '',
+          initialValues
         )
+        response = await api.editCollectiveStock(
+          offer.collectiveStock.id,
+          patchPayload
+        )
+      } else {
+        const stockPayload = createStockDataPayload(
+          values,
+          offer.venue.departementCode ?? '',
+          offer.id
+        )
+        response = await api.createCollectiveStock(stockPayload)
       }
 
+      await mutate<GetCollectiveOfferResponseModel>(
+        [GET_COLLECTIVE_OFFER_QUERY_KEY],
+        {
+          ...offer,
+          collectiveStock: {
+            ...offer.collectiveStock,
+            ...response,
+            isBooked: false,
+            isCancellable: offer.isCancellable,
+          },
+        },
+        { revalidate: false }
+      )
+
       let url = `/offre/${computeURLCollectiveOfferId(
-        isTemplate && createdOfferTemplateId !== null
-          ? createdOfferTemplateId
-          : offer.id,
+        offer.id,
         isTemplate
       )}/collectif`
 

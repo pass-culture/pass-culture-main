@@ -467,30 +467,6 @@ def get_venue_and_check_access_for_offer_creation(
     return venue
 
 
-def create_collective_offer_template_from_collective_offer(
-    price_detail: str | None, user: User, offer_id: int
-) -> educational_models.CollectiveOfferTemplate:
-    offer = educational_repository.get_collective_offer_by_id(offer_id)
-    if offer.collectiveStock is not None:
-        raise exceptions.EducationalStockAlreadyExists()
-
-    collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_collective_offer(
-        offer, price_detail=price_detail
-    )
-    db.session.delete(offer)
-    db.session.add(collective_offer_template)
-    db.session.flush()
-
-    logger.info(
-        "Collective offer template has been created and regular collective offer deleted",
-        extra={
-            "collectiveOfferTemplate": collective_offer_template.id,
-            "CollectiveOffer": offer.id,
-        },
-    )
-    return collective_offer_template
-
-
 def get_collective_offer_request_by_id(request_id: int) -> educational_models.CollectiveOfferRequest:
     return educational_repository.get_collective_offer_request_by_id(request_id)
 

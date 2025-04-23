@@ -293,36 +293,6 @@ def edit_collective_offer(
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>/", methods=["POST"])
-@atomic()
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    on_error_statuses=[400, 403, 404],
-    api=blueprint.pro_private_schema,
-    response_model=collective_offers_serialize.CollectiveOfferTemplateResponseIdModel,
-)
-def create_collective_offer_template_from_collective_offer(
-    offer_id: int, body: collective_offers_serialize.CollectiveOfferTemplateBodyModel
-) -> collective_offers_serialize.CollectiveOfferTemplateResponseIdModel:
-    try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    try:
-        collective_offer_template = educational_api_offer.create_collective_offer_template_from_collective_offer(
-            price_detail=body.price_detail, user=current_user, offer_id=offer_id
-        )
-    except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
-    except educational_exceptions.EducationalStockAlreadyExists:
-        raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=400)
-
-    return collective_offers_serialize.CollectiveOfferTemplateResponseIdModel.from_orm(collective_offer_template)
-
-
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
 @atomic()
 @login_required
