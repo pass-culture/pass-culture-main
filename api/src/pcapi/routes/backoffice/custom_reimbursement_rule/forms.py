@@ -30,9 +30,14 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
     )
-    limit = fields.PCSelectField(
-        "Nombre maximum",
-        choices=((25, "25"), (50, "50"), (100, "100")),
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (10, "Afficher 10 résultats maximum"),
+            (25, "Afficher 25 résultats maximum"),
+            (50, "Afficher 50 résultats maximum"),
+            (100, "Afficher 100 résultats maximum"),
+        ),
         default="100",
         coerce=int,
         validators=(wtforms.validators.Optional(),),
