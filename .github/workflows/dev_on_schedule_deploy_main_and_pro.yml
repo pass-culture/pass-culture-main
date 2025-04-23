@@ -12,6 +12,7 @@ on:
     # Cron jobs might be delayed or even completely skipped.
     - cron: "28 6-17 * * 1-5"
 
+permissions: write-all
 
 env:
   docker_registry: "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
@@ -20,9 +21,6 @@ env:
 
 jobs:
   pcapi-init-job:
-    permissions:
-      contents: 'read'
-      id-token: 'write'
     runs-on: ubuntu-latest
     outputs: 
         checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
@@ -147,7 +145,6 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
         
   deploy-to-testing:
-    permissions: write-all
     name: "Deploy to testing"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
@@ -165,7 +162,6 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-to-ops:
-    permissions: write-all
     name: "Deploy to ops"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi, deploy-to-testing]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
