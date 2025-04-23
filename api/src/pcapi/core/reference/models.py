@@ -4,6 +4,7 @@ import psycopg2.errors
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 
+from pcapi import settings
 from pcapi.core.logging import log_elapsed
 from pcapi.models import Base
 from pcapi.models import Model
@@ -93,6 +94,17 @@ class ReferenceScheme(Base, Model):
             self.query.with_for_update(nowait=True).filter_by(id=self.id).update(
                 {"nextNumber": ReferenceScheme.nextNumber + 1}
             )
+        except sa_exc.OperationalError as exc:
+            if isinstance(exc.orig, psycopg2.errors.LockNotAvailable):
+                msg = f"Could not acquire lock on reference {self.id}"
+                raise exceptions.ReferenceIncrementWithoutLock(msg) from exc
+            raise exc
+
+    def reset_next_number(self) -> None:
+        if not settings.IS_RUNNING_TESTS:
+            raise ValueError("Reference next number sequence can only be reset in tests")
+        try:
+            self.query.with_for_update(nowait=True).filter_by(id=self.id).update({"nextNumber": 1})
         except sa_exc.OperationalError as exc:
             if isinstance(exc.orig, psycopg2.errors.LockNotAvailable):
                 msg = f"Could not acquire lock on reference {self.id}"
