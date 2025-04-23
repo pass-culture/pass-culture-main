@@ -20,7 +20,6 @@ import {
   isOfferProductBased,
   isOfferSynchronized,
 } from 'commons/core/Offers/utils/typology'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -81,8 +80,6 @@ export const IndividualOfferDetailsScreen = ({
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
 
-  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
-
   const { categories, subCategories, offer, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
   const isDirtyDraftOffer = !offer
@@ -121,8 +118,7 @@ export const IndividualOfferDetailsScreen = ({
       // and synchronized / provider offers since neither of the inputs displayed in
       // DetailsScreen can be edited at all
       const shouldNotPatchData =
-        isOfferSynchronized(offer) ||
-        (isSearchByEanEnabled && isOfferProductBased(offer))
+        isOfferSynchronized(offer) || isOfferProductBased(offer)
       let receivedOfferId = offer?.id
       let response
       if (isDirtyDraftOffer) {
@@ -221,7 +217,6 @@ export const IndividualOfferDetailsScreen = ({
     ? Object.keys(DEFAULT_DETAILS_FORM_VALUES)
     : setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchAvailable =
-    isSearchByEanEnabled &&
     isRecordStore(venues) &&
     queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
   const isEanSearchDisplayed =

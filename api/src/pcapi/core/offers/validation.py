@@ -26,7 +26,6 @@ from pcapi.core.offers import repository
 from pcapi.core.offers import schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import stock_serialize as serialization
@@ -674,7 +673,7 @@ def check_offer_name_does_not_contain_ean(offer_name: str) -> None:
 
 
 def _check_offer_has_product(offer: models.Offer | None) -> None:
-    if FeatureToggle.WIP_EAN_CREATION.is_active() and offer and offer.product is not None:
+    if offer and offer.product is not None:
         raise exceptions.OfferWithProductShouldNotUpdateExtraData()
 
 

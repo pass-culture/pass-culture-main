@@ -565,7 +565,6 @@ describe('IndividualOfferDetails', () => {
             ],
           },
           contextValue: context,
-          options: { features: ['WIP_EAN_CREATION'] },
           initialRoute:
             getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -590,7 +589,6 @@ describe('IndividualOfferDetails', () => {
             ],
           },
           contextValue: context,
-          options: { features: ['WIP_EAN_CREATION'] },
           initialRoute:
             getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -630,7 +628,6 @@ describe('IndividualOfferDetails', () => {
               ],
             },
             contextValue: context,
-            options: { features: ['WIP_EAN_CREATION'] },
             initialRoute:
               getIndividualOfferPath({
                 step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -689,7 +686,6 @@ describe('IndividualOfferDetails', () => {
               ],
             },
             contextValue: context,
-            options: { features: ['WIP_EAN_CREATION'] },
             initialRoute:
               getIndividualOfferPath({
                 step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -746,7 +742,6 @@ describe('IndividualOfferDetails', () => {
               ],
             },
             contextValue: context,
-            options: { features: ['WIP_EAN_CREATION'] },
             initialRoute:
               getIndividualOfferPath({
                 step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -784,7 +779,6 @@ describe('IndividualOfferDetails', () => {
               ],
             },
             contextValue: context,
-            options: { features: ['WIP_EAN_CREATION'] },
             initialRoute:
               getIndividualOfferPath({
                 step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -813,7 +807,6 @@ describe('IndividualOfferDetails', () => {
               ],
             },
             contextValue: context,
-            options: { features: ['WIP_EAN_CREATION'] },
             initialRoute:
               getIndividualOfferPath({
                 step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -838,7 +831,6 @@ describe('IndividualOfferDetails', () => {
 
       renderDetailsScreen({
         contextValue: context,
-        options: { features: ['WIP_EAN_CREATION'] },
         mode: OFFER_WIZARD_MODE.EDITION,
       })
 
