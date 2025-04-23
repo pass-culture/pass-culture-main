@@ -278,6 +278,7 @@ export const subcategoryFactory = (
   reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
   isSelectable: true,
   canExpire: true,
+  canHaveOpeningHours: false,
   isDigitalDeposit: false,
   isPhysicalDeposit: true,
   ...customSubcategory,

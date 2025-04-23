@@ -7,6 +7,7 @@ export type SubcategoryResponseModel = {
   canBeDuo: boolean;
   canBeWithdrawable: boolean;
   canExpire: boolean;
+  canHaveOpeningHours: boolean;
   categoryId: string;
   conditionalFields: Array<string>;
   id: string;
