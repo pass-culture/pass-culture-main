@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "^1.18.1",
-    "@algolia/autocomplete-plugin-recent-searches": "^1.18.1",
+    "@algolia/autocomplete-plugin-recent-searches": "^1.19.0",
     "@firebase/analytics": "^0.10.12",
     "@firebase/app": "^0.11.4",
     "@firebase/remote-config": "0.6.0",
