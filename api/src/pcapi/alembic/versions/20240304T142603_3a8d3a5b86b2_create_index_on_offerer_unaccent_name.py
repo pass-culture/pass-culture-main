@@ -1,5 +1,4 @@
-"""Create unaccented index on offerer.name
-"""
+"""Create unaccented index on offerer.name"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Drop unique index on Address.inseeCode
-"""
+"""Drop unique index on Address.inseeCode"""
 
 from alembic import op
 

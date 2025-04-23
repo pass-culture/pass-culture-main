@@ -1,5 +1,4 @@
-"""Validate ondelete cascade on offerer offerer_address
-"""
+"""Validate ondelete cascade on offerer offerer_address"""
 
 from alembic import op
 

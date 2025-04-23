@@ -1,5 +1,4 @@
-"""Delete table user_pro_new_nav_state used for beta and A/B testing during new pro frontend deployment
-"""
+"""Delete table user_pro_new_nav_state used for beta and A/B testing during new pro frontend deployment"""
 
 from alembic import op
 

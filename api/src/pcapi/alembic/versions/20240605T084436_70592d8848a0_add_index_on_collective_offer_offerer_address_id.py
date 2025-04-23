@@ -1,5 +1,4 @@
-"""Add concurrent index on CollectiveOffer.offererAddressId
-"""
+"""Add concurrent index on CollectiveOffer.offererAddressId"""
 
 from alembic import op
 

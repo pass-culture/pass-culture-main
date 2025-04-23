@@ -29,7 +29,7 @@ EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
 
 def create_industrial_event_occurrences(
-    event_offers_by_name: dict[str, offers_models.Offer]
+    event_offers_by_name: dict[str, offers_models.Offer],
 ) -> dict[str, EventOccurrence]:
     logger.info("create_industrial_event_occurrences")
 

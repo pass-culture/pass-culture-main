@@ -1,5 +1,4 @@
-"""Unique program for an educational institution
-"""
+"""Unique program for an educational institution"""
 
 from alembic import op
 

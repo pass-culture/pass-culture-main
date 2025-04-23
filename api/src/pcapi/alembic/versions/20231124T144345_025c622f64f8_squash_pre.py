@@ -1,5 +1,4 @@
-"""Squashing migrations - PRE
-"""
+"""Squashing migrations - PRE"""
 
 # pre/post deployment: pre
 # revision identifiers, used by Alembic.

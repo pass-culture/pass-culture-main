@@ -1,4 +1,4 @@
-""" deactivable mixin """
+"""deactivable mixin"""
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column

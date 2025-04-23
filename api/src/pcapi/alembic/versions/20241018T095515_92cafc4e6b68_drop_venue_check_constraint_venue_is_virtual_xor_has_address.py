@@ -1,5 +1,4 @@
-"""Drop useless Venue check constraint
-"""
+"""Drop useless Venue check constraint"""
 
 from alembic import op
 

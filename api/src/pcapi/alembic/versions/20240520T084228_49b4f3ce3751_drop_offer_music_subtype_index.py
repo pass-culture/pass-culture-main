@@ -1,5 +1,4 @@
-"""Drop offer_music_sub_type_idx index
-"""
+"""Drop offer_music_sub_type_idx index"""
 
 from alembic import op
 

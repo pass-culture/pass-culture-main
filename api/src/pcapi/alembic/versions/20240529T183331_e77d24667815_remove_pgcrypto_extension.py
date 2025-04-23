@@ -1,5 +1,4 @@
-"""Drop pgcrypto extension
-"""
+"""Drop pgcrypto extension"""
 
 from alembic import op
 

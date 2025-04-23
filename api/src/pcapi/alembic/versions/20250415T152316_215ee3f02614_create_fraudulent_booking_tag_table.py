@@ -1,5 +1,4 @@
-"""Create FraudulentBookingTag table
-"""
+"""Create FraudulentBookingTag table"""
 
 from alembic import op
 import sqlalchemy as sa

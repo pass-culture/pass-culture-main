@@ -1,5 +1,4 @@
-"""Create titelive gtl mapping table
-"""
+"""Create titelive gtl mapping table"""
 
 from alembic import op
 import sqlalchemy as sa

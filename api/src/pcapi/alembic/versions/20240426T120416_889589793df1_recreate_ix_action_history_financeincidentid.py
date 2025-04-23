@@ -1,5 +1,4 @@
-"""Recreate index: ix_action_history_financeIncidentId, with condition: not null
-"""
+"""Recreate index: ix_action_history_financeIncidentId, with condition: not null"""
 
 from alembic import op
 import sqlalchemy as sa

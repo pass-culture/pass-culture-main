@@ -1,5 +1,4 @@
-"""Add index on EducationalInstitution (type name city) concat
-"""
+"""Add index on EducationalInstitution (type name city) concat"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Drop index: ix_action_history_venueId, replaced with conditional index
-"""
+"""Drop index: ix_action_history_venueId, replaced with conditional index"""
 
 from alembic import op
 

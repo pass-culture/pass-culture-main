@@ -1,5 +1,4 @@
-"""Add idAtProvider in `price_category`
-"""
+"""Add idAtProvider in `price_category`"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Add index on offer.authorId column
-"""
+"""Add index on offer.authorId column"""
 
 from alembic import op
 

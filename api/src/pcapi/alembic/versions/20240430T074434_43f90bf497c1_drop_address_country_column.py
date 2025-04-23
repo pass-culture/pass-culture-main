@@ -1,5 +1,4 @@
-"""Drop Address.country column
-"""
+"""Drop Address.country column"""
 
 from alembic import op
 

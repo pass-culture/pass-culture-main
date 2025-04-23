@@ -1,5 +1,4 @@
-"""Validate constraint on special_event.venueId
-"""
+"""Validate constraint on special_event.venueId"""
 
 from alembic import op
 

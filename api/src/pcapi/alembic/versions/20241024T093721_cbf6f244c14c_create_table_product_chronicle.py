@@ -1,5 +1,4 @@
-"""create product_chronicle table
-"""
+"""create product_chronicle table"""
 
 from alembic import op
 import sqlalchemy as sa

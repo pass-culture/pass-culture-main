@@ -1,5 +1,4 @@
-"""Add new ValidationStatus.CLOSED
-"""
+"""Add new ValidationStatus.CLOSED"""
 
 from alembic import op
 

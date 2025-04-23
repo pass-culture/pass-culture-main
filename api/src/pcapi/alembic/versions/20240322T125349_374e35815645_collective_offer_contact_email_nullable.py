@@ -1,5 +1,4 @@
-"""Make collective offer's contact email nullable
-"""
+"""Make collective offer's contact email nullable"""
 
 from alembic import op
 import sqlalchemy as sa

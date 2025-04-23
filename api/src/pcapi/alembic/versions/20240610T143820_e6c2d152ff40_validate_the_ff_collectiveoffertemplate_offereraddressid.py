@@ -1,5 +1,4 @@
-"""Validate the foreign key constraint on collective_offer_template.offererAddressId
-"""
+"""Validate the foreign key constraint on collective_offer_template.offererAddressId"""
 
 from alembic import op
 import sqlalchemy as sa

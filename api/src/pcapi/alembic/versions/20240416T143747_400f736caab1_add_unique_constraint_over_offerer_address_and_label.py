@@ -1,5 +1,4 @@
-"""Add OffererAddress unique constraint on offererId, addressId and label
-"""
+"""Add OffererAddress unique constraint on offererId, addressId and label"""
 
 from alembic import op
 

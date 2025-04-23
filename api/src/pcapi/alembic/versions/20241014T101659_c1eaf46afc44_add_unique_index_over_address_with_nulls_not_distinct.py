@@ -1,5 +1,4 @@
-"""Add unique index with nulls not distinct on Address table
-"""
+"""Add unique index with nulls not distinct on Address table"""
 
 from alembic import op
 

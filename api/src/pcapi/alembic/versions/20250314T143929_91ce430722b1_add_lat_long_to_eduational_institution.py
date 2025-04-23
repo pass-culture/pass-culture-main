@@ -1,5 +1,4 @@
-"""Add latitude and longitude to educational institution table.
-"""
+"""Add latitude and longitude to educational institution table."""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Assign new READ_SPECIAL_EVENTS permission to backoffice roles
-"""
+"""Assign new READ_SPECIAL_EVENTS permission to backoffice roles"""
 
 from alembic import op
 

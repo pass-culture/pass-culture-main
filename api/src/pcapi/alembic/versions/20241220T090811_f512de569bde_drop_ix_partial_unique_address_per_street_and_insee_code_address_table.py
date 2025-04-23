@@ -1,5 +1,4 @@
-"""Drop ix_partial_unique_address_per_street_and_insee_code index on Address table
-"""
+"""Drop ix_partial_unique_address_per_street_and_insee_code index on Address table"""
 
 from alembic import op
 

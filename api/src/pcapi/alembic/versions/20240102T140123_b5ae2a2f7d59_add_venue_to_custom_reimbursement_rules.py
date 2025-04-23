@@ -1,5 +1,4 @@
-"""Add venue to CustomReimbursementRule
-"""
+"""Add venue to CustomReimbursementRule"""
 
 from alembic import op
 import sqlalchemy as sa

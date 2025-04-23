@@ -1,5 +1,4 @@
-"""Make Address.inseeCode nullable
-"""
+"""Make Address.inseeCode nullable"""
 
 from alembic import op
 import sqlalchemy as sa

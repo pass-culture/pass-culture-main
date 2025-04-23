@@ -1,5 +1,4 @@
-"""Create tables for special events
-"""
+"""Create tables for special events"""
 
 from alembic import op
 import sqlalchemy as sa

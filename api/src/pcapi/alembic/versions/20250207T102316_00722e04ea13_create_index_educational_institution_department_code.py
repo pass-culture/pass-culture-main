@@ -1,5 +1,4 @@
-"""Create index on educational_institution department code
-"""
+"""Create index on educational_institution department code"""
 
 from alembic import op
 

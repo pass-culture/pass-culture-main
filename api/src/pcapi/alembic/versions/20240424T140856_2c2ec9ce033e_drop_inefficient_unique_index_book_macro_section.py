@@ -1,5 +1,4 @@
-"""Drop inefficient index on "book_macro_section"."section"
-"""
+"""Drop inefficient index on "book_macro_section"."section" """
 
 from alembic import op
 

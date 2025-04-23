@@ -1,5 +1,4 @@
-"""Drop Address.banId unique constraint
-"""
+"""Drop Address.banId unique constraint"""
 
 from alembic import op
 

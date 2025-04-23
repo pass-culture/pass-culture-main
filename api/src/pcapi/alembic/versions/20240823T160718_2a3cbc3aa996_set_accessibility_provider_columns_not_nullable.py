@@ -1,5 +1,4 @@
-"""Set accessibility_provider.externalAccessibilityId and externalAccessibilityUrl not nullable
-"""
+"""Set accessibility_provider.externalAccessibilityId and externalAccessibilityUrl not nullable"""
 
 from alembic import op
 import sqlalchemy as sa

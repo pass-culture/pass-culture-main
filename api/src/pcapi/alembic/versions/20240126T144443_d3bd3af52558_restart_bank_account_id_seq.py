@@ -1,5 +1,4 @@
-"""Restart bank_account_id_seq at 200_000
-"""
+"""Restart bank_account_id_seq at 200_000"""
 
 from alembic import op
 

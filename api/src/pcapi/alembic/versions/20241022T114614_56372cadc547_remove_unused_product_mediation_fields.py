@@ -1,5 +1,4 @@
-"""Alter table productMediation delete columns fieldsUpdated and idAtProviders
-"""
+"""Alter table productMediation delete columns fieldsUpdated and idAtProviders"""
 
 from alembic import op
 import sqlalchemy as sa

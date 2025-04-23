@@ -1,5 +1,4 @@
-"""Drop unused index on offer.jsonData['musicType']
-"""
+"""Drop unused index on offer.jsonData['musicType']"""
 
 from alembic import op
 

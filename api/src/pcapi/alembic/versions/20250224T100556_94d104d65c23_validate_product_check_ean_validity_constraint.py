@@ -1,5 +1,4 @@
-"""Validate check_ean_validity constraint on product table
-"""
+"""Validate check_ean_validity constraint on product table"""
 
 from alembic import op
 from sqlalchemy import text

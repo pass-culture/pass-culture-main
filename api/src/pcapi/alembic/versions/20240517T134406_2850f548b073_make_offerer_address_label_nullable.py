@@ -1,5 +1,4 @@
-"""Make OffererAddress.label nullable
-"""
+"""Make OffererAddress.label nullable"""
 
 from alembic import op
 import sqlalchemy as sa

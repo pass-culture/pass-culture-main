@@ -1,5 +1,4 @@
-"""Add `venue_provider_permission` table
-"""
+"""Add `venue_provider_permission` table"""
 
 from alembic import op
 import sqlalchemy as sa

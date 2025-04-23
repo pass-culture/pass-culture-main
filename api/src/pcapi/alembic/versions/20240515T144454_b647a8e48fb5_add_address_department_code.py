@@ -1,5 +1,4 @@
-"""Add Address.departmentCode column
-"""
+"""Add Address.departmentCode column"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Add future_offer table
-"""
+"""Add future_offer table"""
 
 from alembic import op
 import sqlalchemy as sa

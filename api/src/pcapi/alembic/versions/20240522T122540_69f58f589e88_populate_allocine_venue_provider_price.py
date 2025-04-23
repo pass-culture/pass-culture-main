@@ -1,5 +1,4 @@
-"""Populate AllocineVenueProvider.price (2/2)
-"""
+"""Populate AllocineVenueProvider.price (2/2)"""
 
 from alembic import op
 

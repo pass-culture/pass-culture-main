@@ -1,5 +1,4 @@
-"""Create function postal_code_to_department_code
-"""
+"""Create function postal_code_to_department_code"""
 
 from alembic import op
 

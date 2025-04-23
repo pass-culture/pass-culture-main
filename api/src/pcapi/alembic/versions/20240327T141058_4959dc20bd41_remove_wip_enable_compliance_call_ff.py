@@ -1,5 +1,4 @@
-"""Remove WIP_ENABLE_COMPLIANCE_CALL Feature Flag
-"""
+"""Remove WIP_ENABLE_COMPLIANCE_CALL Feature Flag"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

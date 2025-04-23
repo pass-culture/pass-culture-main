@@ -1,5 +1,4 @@
-"""Create unaccented index on user.firstName + user.lastName
-"""
+"""Create unaccented index on user.firstName + user.lastName"""
 
 from alembic import op
 

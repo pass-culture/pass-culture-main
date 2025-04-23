@@ -1,5 +1,4 @@
-"""Drop unused index: ix_user_email_history_newUserEmail
-"""
+"""Drop unused index: ix_user_email_history_newUserEmail"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Create index on validation_rule_offer_link."offerId"
-"""
+"""Create index on validation_rule_offer_link."offerId" """
 
 from alembic import op
 

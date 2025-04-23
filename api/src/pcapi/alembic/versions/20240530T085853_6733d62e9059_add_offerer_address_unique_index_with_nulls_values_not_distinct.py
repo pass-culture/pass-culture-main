@@ -1,5 +1,4 @@
-"""Add unique index on OffererAddress that supports not distinct nulls label values
-"""
+"""Add unique index on OffererAddress that supports not distinct nulls label values"""
 
 from alembic import op
 

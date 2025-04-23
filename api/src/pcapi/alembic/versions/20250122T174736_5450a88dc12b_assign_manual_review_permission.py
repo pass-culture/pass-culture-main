@@ -1,5 +1,4 @@
-"""Assign new BENEFICIARY_MANUAL_REVIEW permission to backoffice roles
-"""
+"""Assign new BENEFICIARY_MANUAL_REVIEW permission to backoffice roles"""
 
 from alembic import op
 

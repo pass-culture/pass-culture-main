@@ -1,5 +1,4 @@
-"""remove WIP_ENABLE_PRO_WITHOUT_FRAME
-"""
+"""remove WIP_ENABLE_PRO_WITHOUT_FRAME"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

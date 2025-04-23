@@ -1,5 +1,4 @@
-"""Drop BankInformation and VenueReimbursementPointLink
-"""
+"""Drop BankInformation and VenueReimbursementPointLink"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Create table: offerer_confidence_rule
-"""
+"""Create table: offerer_confidence_rule"""
 
 from alembic import op
 import sqlalchemy as sa

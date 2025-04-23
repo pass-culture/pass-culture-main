@@ -1,5 +1,4 @@
-"""Make Address.street column nullable
-"""
+"""Make Address.street column nullable"""
 
 from alembic import op
 import sqlalchemy as sa

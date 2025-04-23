@@ -1,5 +1,4 @@
-"""Add columns to user_account_update_request table
-"""
+"""Add columns to user_account_update_request table"""
 
 from alembic import op
 import sqlalchemy as sa

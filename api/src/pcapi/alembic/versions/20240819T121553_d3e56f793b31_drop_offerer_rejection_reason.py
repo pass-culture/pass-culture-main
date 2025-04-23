@@ -1,5 +1,4 @@
-"""drop column: offerer.rejectionReason
-"""
+"""drop column: offerer.rejectionReason"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Drop deprecated index: idx_offerer_trgm_name
-"""
+"""Drop deprecated index: idx_offerer_trgm_name"""
 
 from alembic import op
 

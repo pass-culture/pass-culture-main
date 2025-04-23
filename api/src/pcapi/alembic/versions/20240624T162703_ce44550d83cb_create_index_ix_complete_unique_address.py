@@ -1,5 +1,4 @@
-"""Create index on address: ix_complete_unique_address
-"""
+"""Create index on address: ix_complete_unique_address"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""create SQL function: email_domain
-"""
+"""create SQL function: email_domain"""
 
 from alembic import op
 

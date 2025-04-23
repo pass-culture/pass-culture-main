@@ -1,5 +1,4 @@
-"""Drop subcategoryId in CollectiveOffer
-"""
+"""Drop subcategoryId in CollectiveOffer"""
 
 from alembic import op
 import sqlalchemy as sa

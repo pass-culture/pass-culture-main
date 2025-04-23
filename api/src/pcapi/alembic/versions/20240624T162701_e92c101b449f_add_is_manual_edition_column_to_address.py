@@ -1,5 +1,4 @@
-"""add column: address."isManualEdition"
-"""
+"""add column: address."isManualEdition" """
 
 from alembic import op
 import sqlalchemy as sa

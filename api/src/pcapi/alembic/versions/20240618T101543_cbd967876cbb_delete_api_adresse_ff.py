@@ -1,5 +1,4 @@
-"""Delete unused Api Adresse FF
-"""
+"""Delete unused Api Adresse FF"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

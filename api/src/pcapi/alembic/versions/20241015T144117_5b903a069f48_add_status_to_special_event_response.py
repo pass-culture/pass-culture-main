@@ -1,5 +1,4 @@
-"""Add status column to SpecialEventResponse
-"""
+"""Add status column to SpecialEventResponse"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Validate constraint on user_account_update_request.userId and user_account_update_request.lastInstructorId
-"""
+"""Validate constraint on user_account_update_request.userId and user_account_update_request.lastInstructorId"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Remove GENERATE_INVOICES permission
-"""
+"""Remove GENERATE_INVOICES permission"""
 
 from alembic import op
 

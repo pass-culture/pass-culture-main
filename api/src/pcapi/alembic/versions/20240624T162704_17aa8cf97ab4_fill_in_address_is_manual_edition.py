@@ -1,5 +1,4 @@
-"""Set default value for address."isManualEdition"
-"""
+"""Set default value for address."isManualEdition" """
 
 from alembic import op
 import sqlalchemy as sa

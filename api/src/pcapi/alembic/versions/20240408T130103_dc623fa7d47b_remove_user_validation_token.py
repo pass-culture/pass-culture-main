@@ -1,4 +1,4 @@
-""" Drop "validationToken" from "user" table"""
+"""Drop "validationToken" from "user" table"""
 
 from alembic import op
 
