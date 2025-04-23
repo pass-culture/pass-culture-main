@@ -25,10 +25,12 @@ export interface AddressFormValues {
 
 interface AddressManualProps {
   readOnlyFields?: string[]
+  gpsCalloutMessage?: string
 }
 
 export const AddressManual = ({
   readOnlyFields = [],
+  gpsCalloutMessage,
 }: AddressManualProps): JSX.Element => {
   const [coords, coordsMeta] = useField<string>('coords')
 
@@ -109,9 +111,8 @@ export const AddressManual = ({
       )}
 
       <Callout variant={CalloutVariant.WARNING} className={styles['callout']}>
-        Les coordonnées GPS sont des informations à ne pas négliger. Elles vont
-        permettre aux jeunes de pouvoir géolocaliser votre offre sur leur
-        application.
+        {gpsCalloutMessage ??
+          'Les coordonnées GPS sont des informations à ne pas négliger. Elles vont permettre aux jeunes de pouvoir géolocaliser votre offre sur leur application.'}
       </Callout>
     </div>
   )

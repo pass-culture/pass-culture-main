@@ -1,5 +1,5 @@
 import { FieldInputProps, useFormikContext } from 'formik'
-import { useId } from 'react'
+import { useId, useState } from 'react'
 
 import {
   CollectiveLocationType,
@@ -10,16 +10,35 @@ import {
   AddressSelect,
   AutocompleteItemProps,
 } from 'components/Address/Address'
+import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import fullBackIcon from 'icons/full-back.svg'
+import fullNextIcon from 'icons/full-next.svg'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from '../OfferEducationalForm.module.scss'
-
 export interface FormLocationProps {
   disableForm: boolean
   venues: VenueListItemResponseModel[]
+}
+
+const resetAddressFields = async (
+  setFieldValue: (field: string, value: string | number | boolean) => void
+) => {
+  await Promise.all([
+    setFieldValue('location.address.street', ''),
+    setFieldValue('location.address.city', ''),
+    setFieldValue('location.address.postalCode', ''),
+    setFieldValue('location.address.longitude', ''),
+    setFieldValue('location.address.latitude', ''),
+    setFieldValue('location.address.banId', ''),
+    setFieldValue('addressAutocomplete', ''),
+    setFieldValue('search-addressAutocomplete', ''),
+  ])
 }
 
 export const FormLocation = ({
@@ -29,10 +48,20 @@ export const FormLocation = ({
   const specificAddressId = useId()
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalFormValues>()
+  const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
+    useState(false)
 
   const selectedVenue = venues.find(
     (v) => v.id.toString() === values.venueId.toString()
   )
+
+  const toggleManualAddressForm = async () => {
+    setShouldShowManualAddressForm(!shouldShowManualAddressForm)
+    if (!shouldShowManualAddressForm) {
+      await setFieldValue('location.address.isManualEdition', true)
+      await resetAddressFields(setFieldValue)
+    }
+  }
 
   const handleAddressSelect = (
     setFieldValue: (field: string, value: string | number | boolean) => void,
@@ -60,17 +89,8 @@ export const FormLocation = ({
     const isSpecificAddress = event.target.value === 'SPECIFIC_ADDRESS'
 
     if (isSpecificAddress) {
-      await Promise.all([
-        setFieldValue('location.address.label', ''),
-        setFieldValue('location.address.street', ''),
-        setFieldValue('location.address.city', ''),
-        setFieldValue('location.address.postalCode', ''),
-        setFieldValue('location.address.longitude', ''),
-        setFieldValue('location.address.latitude', ''),
-        setFieldValue('location.address.banId', ''),
-        setFieldValue('addressAutocomplete', ''),
-        setFieldValue('search-addressAutocomplete', ''),
-      ])
+      await setFieldValue('location.address.label', '')
+      await resetAddressFields(setFieldValue)
     } else {
       // If here, the user chose to use the venue address
       const { address } = selectedVenue || {}
@@ -121,7 +141,29 @@ export const FormLocation = ({
                   />
                   <AddressSelect
                     customHandleAddressSelect={handleAddressSelect}
+                    disabled={disableForm || shouldShowManualAddressForm}
                   />
+                  <Button
+                    variant={ButtonVariant.QUATERNARY}
+                    icon={
+                      shouldShowManualAddressForm ? fullBackIcon : fullNextIcon
+                    }
+                    onClick={toggleManualAddressForm}
+                    disabled={disableForm}
+                  >
+                    {shouldShowManualAddressForm ? (
+                      <>Revenir à la sélection automatique</>
+                    ) : (
+                      <>Vous ne trouvez pas votre adresse ?</>
+                    )}
+                  </Button>
+                  {shouldShowManualAddressForm && (
+                    <AddressManual
+                      gpsCalloutMessage={
+                        'Les coordonnées GPS sont des informations à ne pas négliger. Elles permettent aux enseignants de trouver votre offre sur ADAGE.'
+                      }
+                    />
+                  )}
                 </>
               ),
             },
