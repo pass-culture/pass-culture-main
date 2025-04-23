@@ -49,6 +49,15 @@ class RecommendationBackend:
     async def get_similar_offers(self, offer_id: int, user_id: int | None, params: dict) -> dict:
         path = f"/similar_offers/{offer_id}"
         params["userId"] = user_id
+
+        # FIXME (jmontagnat, 2025-04-22) Remove this block of code once the frontend has fixed their call to the endpoint with the correct inputs
+        if params.get("categories"):
+            if params.get("search_group_names"):
+                params["search_group_names"].extend(params["categories"])
+            else:
+                params["search_group_names"] = params["categories"]
+            params["categories"] = None
+
         return await self._request("get", path, params=params)
 
     async def get_playlist(self, user_id: int, params: dict, body: dict) -> dict:

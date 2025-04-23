@@ -58,6 +58,7 @@ class SimilarOffersTest:
                     "latitude": None,
                     "longitude": None,
                     "subcategories": None,
+                    "search_group_names": None,
                 },
                 user_id=None,
             )
@@ -99,6 +100,7 @@ class SimilarOffersTest:
             "latitude": 12.3456,
             "longitude": 65.4321,
             "subcategories": "ZYX,WVU",
+            "search_group_names": "JKL,MNO,PQR",
         }
         with patch("pcproxy.routes.recommendation.RecommendationBackend", BackendMock):
             response = client.get(
@@ -114,6 +116,7 @@ class SimilarOffersTest:
                     "latitude": 12.3456,
                     "longitude": 65.4321,
                     "subcategories": ["ZYX", "WVU"],
+                    "search_group_names": ["JKL", "MNO", "PQR"],
                 },
                 user_id=123,
             )
