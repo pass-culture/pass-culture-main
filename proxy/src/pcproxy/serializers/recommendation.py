@@ -9,8 +9,9 @@ class SimilarOffersRequestQuery(BaseModel):
     latitude: float | None = None
     categories: list[str] | None = None
     subcategories: list[str] | None = None
+    search_group_names: list[str] | None = None
 
-    @field_validator("categories", "subcategories", mode="before")
+    @field_validator("categories", "subcategories", "search_group_names", mode="before")
     def split_list(cls, v: str | None) -> list[str] | None:
         if v and isinstance(v, list):
             return v[0].split(",")

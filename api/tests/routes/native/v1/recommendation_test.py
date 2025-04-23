@@ -52,7 +52,11 @@ class SimilarOffersTest:
             )
             assert response.status_code == 200
         query = urllib.parse.parse_qsl(mocked.last_request.query)
-        assert query == [("categories", "TEST_CATEGORY"), ("categories", "TEST_CATEGORY2")]
+
+        # FIXME (jmontagnat, 2025-04-23) Replace "search_group_names" with "categories" once the frontend call is fixed
+        #  The frontend sends the "search_group_names" value under the "categories" field.
+        #  To match the expected format of the data API, we transform the JSON payload before sending the request.
+        assert query == [("search_group_names", "TEST_CATEGORY"), ("search_group_names", "TEST_CATEGORY2")]
 
     @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",

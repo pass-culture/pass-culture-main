@@ -9,8 +9,9 @@ class SimilarOffersRequestQuery(BaseModel):
     latitude: float | None
     categories: list[str] | None
     subcategories: list[str] | None
+    search_group_names: list[str] | None
 
-    @pydantic_v1.validator("categories", "subcategories", pre=True)
+    @pydantic_v1.validator("categories", "subcategories", "search_group_names", pre=True)
     def validate_categories(cls, v: list[str] | str | None) -> list[str] | None:
         if isinstance(v, list):
             return v
