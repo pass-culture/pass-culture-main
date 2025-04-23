@@ -5,13 +5,14 @@ import pytest
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.subcategories import ABO_BIBLIOTHEQUE
 from pcapi.core.categories.subcategories import CINE_PLEIN_AIR
+from pcapi.core.categories.subcategories import VISITE
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
 @patch(
     "pcapi.core.categories.subcategories.ALL_SUBCATEGORIES",
-    (ABO_BIBLIOTHEQUE, CINE_PLEIN_AIR),
+    (ABO_BIBLIOTHEQUE, CINE_PLEIN_AIR, VISITE),
 )
 @patch(
     "pcapi.core.categories.pro_categories.ALL_CATEGORIES",
@@ -59,6 +60,7 @@ class Returns200Test:
                     "isPhysicalDeposit": True,
                     "reimbursementRule": "STANDARD",
                     "isSelectable": True,
+                    "canHaveOpeningHours": False,
                 },
                 {
                     "id": "CINE_PLEIN_AIR",
@@ -75,6 +77,24 @@ class Returns200Test:
                     "isPhysicalDeposit": False,
                     "reimbursementRule": "STANDARD",
                     "isSelectable": True,
+                    "canHaveOpeningHours": False,
+                },
+                {
+                    "id": "VISITE",
+                    "categoryId": "MUSEE",
+                    "proLabel": "Visite",
+                    "appLabel": "Visite",
+                    "isEvent": True,
+                    "conditionalFields": [],
+                    "canExpire": False,
+                    "canBeDuo": True,
+                    "canBeWithdrawable": False,
+                    "onlineOfflinePlatform": "OFFLINE",
+                    "isDigitalDeposit": False,
+                    "isPhysicalDeposit": False,
+                    "reimbursementRule": "STANDARD",
+                    "isSelectable": True,
+                    "canHaveOpeningHours": True,
                 },
             ],
         }

@@ -54,6 +54,7 @@ class SubcategoryResponseModel(BaseModel):
     reimbursement_rule: str
     is_selectable: bool
     can_be_withdrawable: bool
+    can_have_opening_hours: bool
 
     class Config:
         alias_generator = to_camel
