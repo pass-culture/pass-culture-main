@@ -1,5 +1,4 @@
-"""Add a timespan for educational_institution_program_association table.
-"""
+"""Add a timespan for educational_institution_program_association table."""
 
 from alembic import op
 import sqlalchemy as sa

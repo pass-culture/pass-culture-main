@@ -1,5 +1,4 @@
-"""Fill CollectiveStock's startDatetime and endDatetime
-"""
+"""Fill CollectiveStock's startDatetime and endDatetime"""
 
 from alembic import op
 

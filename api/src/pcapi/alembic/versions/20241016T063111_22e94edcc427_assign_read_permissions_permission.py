@@ -1,5 +1,4 @@
-"""Assign new READ_PERMISSIONS permission to backoffice roles which already manage permissions
-"""
+"""Assign new READ_PERMISSIONS permission to backoffice roles which already manage permissions"""
 
 from alembic import op
 

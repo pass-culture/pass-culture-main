@@ -1,5 +1,4 @@
-"""Validate FraudulentBookingTag user foreign key constraint
-"""
+"""Validate FraudulentBookingTag user foreign key constraint"""
 
 from alembic import op
 

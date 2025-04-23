@@ -1,5 +1,4 @@
-"""Drop unused index on collective_offer.lastValidationDate
-"""
+"""Drop unused index on collective_offer.lastValidationDate"""
 
 from alembic import op
 

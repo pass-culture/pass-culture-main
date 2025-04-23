@@ -1,5 +1,4 @@
-"""Validate venue.offererAddressId constraint
-"""
+"""Validate venue.offererAddressId constraint"""
 
 from alembic import op
 

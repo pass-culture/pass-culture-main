@@ -1,5 +1,4 @@
-"""Add rejectionReason to collectiveOffer and collectiveOfferTemplate
-"""
+"""Add rejectionReason to collectiveOffer and collectiveOfferTemplate"""
 
 from alembic import op
 import sqlalchemy as sa

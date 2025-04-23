@@ -1,5 +1,4 @@
-"""Add check_physical_venue_has_offerer_address constraint on venue
-"""
+"""Add check_physical_venue_has_offerer_address constraint on venue"""
 
 from alembic import op
 

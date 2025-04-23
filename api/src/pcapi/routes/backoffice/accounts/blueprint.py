@@ -437,7 +437,7 @@ def _get_fraud_reviews_desc(
 
 
 def _get_id_check_histories_desc(
-    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel]
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
 ) -> list[serialization.IdCheckItemModel]:
     return sorted(
         sum([history.idCheckHistory for history in eligibility_history.values()], []),
@@ -1630,7 +1630,7 @@ def _get_tunnel(
 
 
 def _get_subscription_item_status_by_eligibility(
-    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel]
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
 ) -> dict[str, dict]:
     subscription_item_status: dict[str, dict] = {
         users_models.EligibilityType.UNDERAGE.value: {},

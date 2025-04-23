@@ -1,5 +1,4 @@
-"""Add on_delete cascade on offerer offerer_address
-"""
+"""Add on_delete cascade on offerer offerer_address"""
 
 from alembic import op
 

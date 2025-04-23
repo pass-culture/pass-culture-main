@@ -1,5 +1,4 @@
-"""Creation of index for CollectiveOfferTemplate.OffererAddressId
-"""
+"""Creation of index for CollectiveOfferTemplate.OffererAddressId"""
 
 from alembic import op
 

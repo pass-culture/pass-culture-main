@@ -1,5 +1,4 @@
-"""Fix archived collective offers
-"""
+"""Fix archived collective offers"""
 
 from alembic import op
 

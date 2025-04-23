@@ -1,5 +1,4 @@
-"""Drop ix_booking_reimbursementDate index
-"""
+"""Drop ix_booking_reimbursementDate index"""
 
 from alembic import op
 

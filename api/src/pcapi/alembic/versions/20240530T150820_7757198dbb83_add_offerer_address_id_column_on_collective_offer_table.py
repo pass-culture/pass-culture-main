@@ -1,5 +1,4 @@
-"""Add CollectiveOffer.offererAddressId column
-"""
+"""Add CollectiveOffer.offererAddressId column"""
 
 from alembic import op
 

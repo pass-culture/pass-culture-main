@@ -1,5 +1,4 @@
-"""Remove FF WIP_ENABLE_DOUBLE_MODEL_WRITING
-"""
+"""Remove FF WIP_ENABLE_DOUBLE_MODEL_WRITING"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

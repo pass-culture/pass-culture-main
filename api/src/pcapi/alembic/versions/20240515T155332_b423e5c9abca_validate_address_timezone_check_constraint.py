@@ -1,5 +1,4 @@
-"""Validate Address.timezone check length constraint
-"""
+"""Validate Address.timezone check length constraint"""
 
 from alembic import op
 

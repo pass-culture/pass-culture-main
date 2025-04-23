@@ -1,5 +1,4 @@
-"""Add NOT NULL constraint on "collective_offer.formats" (step 1 of 4)
-"""
+"""Add NOT NULL constraint on "collective_offer.formats" (step 1 of 4)"""
 
 from alembic import op
 

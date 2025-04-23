@@ -1,4 +1,4 @@
-""" has address mixin """
+"""has address mixin"""
 
 from sqlalchemy import Column
 from sqlalchemy import String

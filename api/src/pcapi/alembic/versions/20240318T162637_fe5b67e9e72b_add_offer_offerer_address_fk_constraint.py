@@ -1,5 +1,4 @@
-"""Add offer.offererAddressId FK constraint
-"""
+"""Add offer.offererAddressId FK constraint"""
 
 from alembic import op
 

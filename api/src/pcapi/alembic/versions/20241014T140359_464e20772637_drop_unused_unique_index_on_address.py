@@ -1,5 +1,4 @@
-"""Drop unused Addres.ix_complete_unique_address index
-"""
+"""Drop unused Addres.ix_complete_unique_address index"""
 
 from alembic import op
 

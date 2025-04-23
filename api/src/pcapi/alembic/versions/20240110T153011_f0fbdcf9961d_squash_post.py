@@ -1,5 +1,4 @@
-"""Squashing migrations - POST
-"""
+"""Squashing migrations - POST"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

@@ -1,5 +1,4 @@
-"""create unique venue provider index if venue id at provider is null
-"""
+"""create unique venue provider index if venue id at provider is null"""
 
 from alembic import op
 import sqlalchemy as sa

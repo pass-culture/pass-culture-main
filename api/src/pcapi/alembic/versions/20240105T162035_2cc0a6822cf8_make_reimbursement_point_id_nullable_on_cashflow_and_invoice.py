@@ -1,5 +1,4 @@
-"""Make "reimbursementPointId" nullable in "cashflow" and "invoice" tables
-"""
+"""Make "reimbursementPointId" nullable in "cashflow" and "invoice" tables"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Add unique index on (`idAProvider`, `offerId`) in `price_category` table
-"""
+"""Add unique index on (`idAProvider`, `offerId`) in `price_category` table"""
 
 from alembic import op
 

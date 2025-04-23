@@ -1,5 +1,4 @@
-"""Create unaccented index on venue.publicName
-"""
+"""Create unaccented index on venue.publicName"""
 
 from alembic import op
 

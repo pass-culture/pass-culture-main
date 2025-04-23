@@ -1,5 +1,4 @@
-"""Assign new CONNECT_AS_PRO permission to backoffice roles which can already "connect-as"
-"""
+"""Assign new CONNECT_AS_PRO permission to backoffice roles which can already "connect-as" """
 
 from alembic import op
 

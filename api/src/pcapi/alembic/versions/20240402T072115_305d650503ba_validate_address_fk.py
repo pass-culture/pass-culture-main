@@ -1,5 +1,4 @@
-"""Validate address related foreign keys
-"""
+"""Validate address related foreign keys"""
 
 from alembic import op
 

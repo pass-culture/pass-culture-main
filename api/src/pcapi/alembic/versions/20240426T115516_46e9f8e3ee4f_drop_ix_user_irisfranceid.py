@@ -1,5 +1,4 @@
-"""Drop unused index: ix_user_irisFranceId
-"""
+"""Drop unused index: ix_user_irisFranceId"""
 
 from alembic import op
 

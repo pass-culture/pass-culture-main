@@ -1,5 +1,4 @@
-"""Remove useless `ix_unique_offerer_address_per_label` index
-"""
+"""Remove useless `ix_unique_offerer_address_per_label` index"""
 
 from alembic import op
 

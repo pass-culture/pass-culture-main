@@ -1,5 +1,4 @@
-"""Create index: email_domain(user.email)
-"""
+"""Create index: email_domain(user.email)"""
 
 from alembic import op
 

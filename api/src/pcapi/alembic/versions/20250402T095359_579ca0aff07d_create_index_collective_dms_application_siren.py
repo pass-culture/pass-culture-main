@@ -1,5 +1,4 @@
-"""Create index on the SIREN from collective_dms_application.siret
-"""
+"""Create index on the SIREN from collective_dms_application.siret"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Add unique constraint on (`idAtProvider`,`offerId`) in `price_category` table.
-"""
+"""Add unique constraint on (`idAtProvider`,`offerId`) in `price_category` table."""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Add usedRecreditType column to Booking
-"""
+"""Add usedRecreditType column to Booking"""
 
 from alembic import op
 import sqlalchemy as sa

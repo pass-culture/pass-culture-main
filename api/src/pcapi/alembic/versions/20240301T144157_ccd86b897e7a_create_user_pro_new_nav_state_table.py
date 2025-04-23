@@ -1,4 +1,4 @@
-""" Create user_pro_new_nav_state table for the new pro navbar ab testing and beta testing """
+"""Create user_pro_new_nav_state table for the new pro navbar ab testing and beta testing"""
 
 from alembic import op
 

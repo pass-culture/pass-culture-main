@@ -1,5 +1,4 @@
-"""Add dateReminderEmailSent to IndivdualOffererSubscription
-"""
+"""Add dateReminderEmailSent to IndivdualOffererSubscription"""
 
 from alembic import op
 import sqlalchemy as sa

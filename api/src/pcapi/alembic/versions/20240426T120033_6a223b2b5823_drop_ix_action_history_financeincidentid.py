@@ -1,5 +1,4 @@
-"""Drop index: ix_action_history_financeIncidentId, not yet used, replaced with conditional index
-"""
+"""Drop index: ix_action_history_financeIncidentId, not yet used, replaced with conditional index"""
 
 from alembic import op
 

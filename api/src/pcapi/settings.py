@@ -1,4 +1,4 @@
-""" config """
+"""config"""
 
 import base64
 from datetime import datetime

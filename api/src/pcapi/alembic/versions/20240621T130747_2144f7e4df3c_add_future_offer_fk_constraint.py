@@ -1,5 +1,4 @@
-"""Add future_offer foreign key constraint
-"""
+"""Add future_offer foreign key constraint"""
 
 from alembic import op
 

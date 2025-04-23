@@ -1,5 +1,4 @@
-"""Delete WIP_ENABLE_OFFER_PRICE_LIMITATION FF
-"""
+"""Delete WIP_ENABLE_OFFER_PRICE_LIMITATION FF"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

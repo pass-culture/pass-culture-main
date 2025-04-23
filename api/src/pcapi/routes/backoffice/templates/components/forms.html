@@ -23,9 +23,7 @@
           {% for form_field in row1_fields %}{{ form_field }}{% endfor %}
         </div>
         <div class="input-group mb-1 ">
-          {% for form_field in select_multiple %}
-            <div class="col-2 p-1">{{ form_field }}</div>
-          {% endfor %}
+          {% for form_field in select_multiple %}<div class="col-2 p-1">{{ form_field }}</div>{% endfor %}
         </div>
         <div class="input-group mb-1">
           {% for form_field in switches %}<div class="col-2 p-1">{{ form_field }}</div>{% endfor %}

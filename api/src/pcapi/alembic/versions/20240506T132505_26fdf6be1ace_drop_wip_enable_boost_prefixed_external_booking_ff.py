@@ -1,5 +1,4 @@
-"""Drop wip_enable_boost_prefixed_external_booking FF
-"""
+"""Drop wip_enable_boost_prefixed_external_booking FF"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

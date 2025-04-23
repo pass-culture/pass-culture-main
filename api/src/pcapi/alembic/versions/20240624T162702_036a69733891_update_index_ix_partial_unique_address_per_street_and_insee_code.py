@@ -1,5 +1,4 @@
-"""Update index on address: ix_partial_unique_address_per_street_and_insee_code
-"""
+"""Update index on address: ix_partial_unique_address_per_street_and_insee_code"""
 
 from alembic import op
 import sqlalchemy as sa

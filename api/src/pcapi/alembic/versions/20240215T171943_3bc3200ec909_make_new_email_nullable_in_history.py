@@ -1,5 +1,4 @@
-"""Make user email history new email nullable.
-"""
+"""Make user email history new email nullable."""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,4 +1,4 @@
-""" Drop WIP_ENABLE_BOOST_SHOWTIMES_FILTER FF """
+"""Drop WIP_ENABLE_BOOST_SHOWTIMES_FILTER FF"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

@@ -1,5 +1,4 @@
-"""Create index on offer_criterion."criterionId"
-"""
+"""Create index on offer_criterion."criterionId" """
 
 from alembic import op
 

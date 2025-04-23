@@ -1,5 +1,4 @@
-"""Remove `WIP_ENABLE_PRO_SIDE_NAV` FF
-"""
+"""Remove `WIP_ENABLE_PRO_SIDE_NAV` FF"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

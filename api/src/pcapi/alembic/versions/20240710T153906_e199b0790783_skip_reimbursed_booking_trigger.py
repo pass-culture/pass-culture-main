@@ -1,5 +1,4 @@
-"""Skip check_booking function trigger when setting the status field's value to REIMBURSED
-"""
+"""Skip check_booking function trigger when setting the status field's value to REIMBURSED"""
 
 from alembic import op
 

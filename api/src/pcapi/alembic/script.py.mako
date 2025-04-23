@@ -4,9 +4,10 @@ FIXME et faire en sorte que le message ci-dessous soit en anglais,
 clair, en une seule ligne et lisible (un peu comme un message de
 commit). Exemple : Add "blob" column to "offer" table.
 
-${message}
-"""
+${message}"""
+
 from alembic import op
+
 import sqlalchemy as sa
 ${imports if imports else ""}
 

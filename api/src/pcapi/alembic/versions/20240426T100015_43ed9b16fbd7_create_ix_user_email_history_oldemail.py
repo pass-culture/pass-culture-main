@@ -1,5 +1,4 @@
-"""Create index: ix_user_email_history_oldEmail, replacing unused indexes
-"""
+"""Create index: ix_user_email_history_oldEmail, replacing unused indexes"""
 
 from alembic import op
 

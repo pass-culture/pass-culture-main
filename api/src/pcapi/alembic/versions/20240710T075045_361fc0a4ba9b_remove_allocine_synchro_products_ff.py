@@ -1,5 +1,4 @@
-"""remove WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS
-"""
+"""remove WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

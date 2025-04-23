@@ -1,5 +1,4 @@
-"""Create index on stock.idAtProviders
-"""
+"""Create index on stock.idAtProviders"""
 
 from alembic import op
 

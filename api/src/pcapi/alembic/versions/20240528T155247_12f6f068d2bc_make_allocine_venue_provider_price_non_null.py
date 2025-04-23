@@ -1,5 +1,4 @@
-"""Make AllocineVenueProvider.price non-null
-"""
+"""Make AllocineVenueProvider.price non-null"""
 
 from alembic import op
 import sqlalchemy as sa

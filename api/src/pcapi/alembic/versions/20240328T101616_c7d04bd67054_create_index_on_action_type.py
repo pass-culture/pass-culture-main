@@ -1,5 +1,4 @@
-"""Create index on action_history."actionType"
-"""
+"""Create index on action_history."actionType" """
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""update collective offer template's contact's constraints
-"""
+"""update collective offer template's contact's constraints"""
 
 from alembic import op
 import sqlalchemy as sa

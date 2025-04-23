@@ -1,5 +1,4 @@
-"""Create unique index on Address.inseeCode where it's not null
-"""
+"""Create unique index on Address.inseeCode where it's not null"""
 
 from alembic import op
 import sqlalchemy as sa

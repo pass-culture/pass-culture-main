@@ -1,5 +1,4 @@
-"""Create index: ix_user_email_domain_and_id
-"""
+"""Create index: ix_user_email_domain_and_id"""
 
 from alembic import op
 

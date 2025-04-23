@@ -1,5 +1,4 @@
-"""create index for 2 first characters of offer gtl id
-"""
+"""create index for 2 first characters of offer gtl id"""
 
 from alembic import op
 

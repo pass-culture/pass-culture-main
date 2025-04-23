@@ -1,5 +1,4 @@
-"""Validate Address.departmentCode check length constraint
-"""
+"""Validate Address.departmentCode check length constraint"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Validate CollectiveOffer.offererAddressId FK constraint
-"""
+"""Validate CollectiveOffer.offererAddressId FK constraint"""
 
 from alembic import op
 from sqlalchemy import text

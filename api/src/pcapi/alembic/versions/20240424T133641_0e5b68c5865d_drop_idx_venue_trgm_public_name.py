@@ -1,5 +1,4 @@
-"""Drop deprecated index: idx_venue_trgm_public_name
-"""
+"""Drop deprecated index: idx_venue_trgm_public_name"""
 
 from alembic import op
 

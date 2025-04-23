@@ -1,5 +1,4 @@
-"""Create new tag: non-diffusible (applied from the code)
-"""
+"""Create new tag: non-diffusible (applied from the code)"""
 
 from alembic import op
 

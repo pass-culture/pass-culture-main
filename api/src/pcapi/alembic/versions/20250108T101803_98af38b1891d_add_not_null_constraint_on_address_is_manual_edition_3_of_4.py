@@ -1,5 +1,4 @@
-"""Add NOT NULL constraint on address."isManualEdition" (step 3 of 4)
-"""
+"""Add NOT NULL constraint on address."isManualEdition" (step 3 of 4)"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Add gcuCompatibilityType to Product table
-"""
+"""Add gcuCompatibilityType to Product table"""
 
 from alembic import op
 import sqlalchemy as sa

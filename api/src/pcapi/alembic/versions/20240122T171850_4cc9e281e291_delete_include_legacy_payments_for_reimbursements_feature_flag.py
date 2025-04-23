@@ -1,5 +1,4 @@
-"""Delete INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS feature flag
-"""
+"""Delete INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS feature flag"""
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

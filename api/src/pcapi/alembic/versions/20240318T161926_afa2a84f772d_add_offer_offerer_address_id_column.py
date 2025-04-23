@@ -1,5 +1,4 @@
-"""Add offer.offererAddressId column
-"""
+"""Add offer.offererAddressId column"""
 
 from alembic import op
 import sqlalchemy as sa

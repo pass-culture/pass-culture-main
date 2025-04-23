@@ -1,5 +1,4 @@
-"""Add NOT NULL constraint on "venue.isOpenToPublic" (step 2 of 5)
-"""
+"""Add NOT NULL constraint on "venue.isOpenToPublic" (step 2 of 5)"""
 
 from alembic import op
 

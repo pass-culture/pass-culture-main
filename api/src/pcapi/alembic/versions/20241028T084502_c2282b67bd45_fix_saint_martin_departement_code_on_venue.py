@@ -1,5 +1,4 @@
-"""Fix venue.departementCode for venues in Saint-Martin
-"""
+"""Fix venue.departementCode for venues in Saint-Martin"""
 
 from alembic import op
 

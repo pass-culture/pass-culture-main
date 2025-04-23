@@ -26,4 +26,4 @@ def is_numeric(value: str) -> bool:
     return re.fullmatch(r"[0-9]+", value) is not None
 
 
-u_nbsp = "\u00A0"
+u_nbsp = "\u00a0"

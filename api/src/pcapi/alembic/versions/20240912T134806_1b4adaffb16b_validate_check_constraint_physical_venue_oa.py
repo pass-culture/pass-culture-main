@@ -1,5 +1,4 @@
-"""Validate check_physical_venue_has_offerer_address
-"""
+"""Validate check_physical_venue_has_offerer_address"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Create index on venue.departementCode
-"""
+"""Create index on venue.departementCode"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Add new OFFERER_CLOSED reason in BookingCancellationReasons and CollectiveBookingCancellationReasons
-"""
+"""Add new OFFERER_CLOSED reason in BookingCancellationReasons and CollectiveBookingCancellationReasons"""
 
 from alembic import op
 

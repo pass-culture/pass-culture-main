@@ -1,5 +1,4 @@
-"""Add not valid check constraint on product ean column
-"""
+"""Add not valid check constraint on product ean column"""
 
 from alembic import op
 

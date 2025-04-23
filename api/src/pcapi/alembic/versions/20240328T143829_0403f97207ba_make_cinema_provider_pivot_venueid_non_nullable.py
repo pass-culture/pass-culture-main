@@ -1,5 +1,4 @@
-"""Make CinemaProviderPivot venueId column non nullable
-"""
+"""Make CinemaProviderPivot venueId column non nullable"""
 
 from alembic import op
 import sqlalchemy as sa

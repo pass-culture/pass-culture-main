@@ -1,5 +1,4 @@
-"""Add NOT VALID foreign key constraint on CollectiveOffer.offererAddressId
-"""
+"""Add NOT VALID foreign key constraint on CollectiveOffer.offererAddressId"""
 
 from alembic import op
 

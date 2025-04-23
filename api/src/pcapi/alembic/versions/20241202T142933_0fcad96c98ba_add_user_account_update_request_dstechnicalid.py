@@ -1,5 +1,4 @@
-"""Add user_account_update_request.dsTechnicalId
-"""
+"""Add user_account_update_request.dsTechnicalId"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Add new fraud themed reasons to CollectiveBookingCancellationReasons and BookingCancellationReasons
-"""
+"""Add new fraud themed reasons to CollectiveBookingCancellationReasons and BookingCancellationReasons"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Add index on cancellationReason column of Booking table
-"""
+"""Add index on cancellationReason column of Booking table"""
 
 from alembic import op
 import sqlalchemy as sa

@@ -1,5 +1,4 @@
-"""Create indexes for special events models (new tables)
-"""
+"""Create indexes for special events models (new tables)"""
 
 from alembic import op
 

@@ -1,5 +1,4 @@
-"""Update rural level on EducationalInstitution
-"""
+"""Update rural level on EducationalInstitution"""
 
 from alembic import op
 

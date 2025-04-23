@@ -1,5 +1,4 @@
-"""Create efficient unique index on "book_macro_section"."section"
-"""
+"""Create efficient unique index on "book_macro_section"."section" """
 
 from alembic import op
 

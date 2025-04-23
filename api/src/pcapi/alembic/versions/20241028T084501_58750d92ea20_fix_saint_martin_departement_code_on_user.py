@@ -1,5 +1,4 @@
-"""Fix user.departementCode for users in Saint-Martin
-"""
+"""Fix user.departementCode for users in Saint-Martin"""
 
 from alembic import op
 

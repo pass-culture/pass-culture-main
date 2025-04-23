@@ -1,5 +1,4 @@
-"""Add index on booking.cancellationUserId
-"""
+"""Add index on booking.cancellationUserId"""
 
 from alembic import op
 import sqlalchemy as sa
