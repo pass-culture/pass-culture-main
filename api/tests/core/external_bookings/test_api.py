@@ -207,7 +207,7 @@ class BookEventTicketTest:
         assert {ticket.barcode for ticket in tickets} == {"1234567AJSQ", "1234567AJSA"}
 
     @patch("pcapi.core.external_bookings.api.requests.post")
-    def test_should_raise_an_error_because_remaining_quantity_is_missing(self, requests_post):
+    def test_should_successfully_book_an_event_ticket_when_remaining_quantity_is_missing(self, requests_post):
         provider = providers_factories.PublicApiProviderFactory()
         booking = bookings_factories.BookingFactory(stock__offer__lastProviderId=provider.id, quantity=2)
 
@@ -219,8 +219,10 @@ class BookEventTicketTest:
             ],
         }
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            book_event_ticket(booking, booking.stock, booking.user)
+        tickets, remaining_quantity = book_event_ticket(booking, booking.stock, booking.user)
+
+        assert not remaining_quantity
+        assert {ticket.barcode for ticket in tickets} == {"1234567AJSQ", "1234567AJSA"}
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_raise_an_error_because_response_cant_be_parsed(self, requests_post):
@@ -520,8 +522,9 @@ class CancelEventTicketTest:
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
 
+    @pytest.mark.parametrize("return_value", [{"remainingQuantity": 10}, {}])
     @patch("pcapi.core.external_bookings.api.requests.post")
-    def test_should_successfully_cancel_an_event_ticket_using_venue_cancel_url(self, requests_post):
+    def test_should_successfully_cancel_an_event_ticket_using_venue_cancel_url(self, requests_post, return_value):
         booking_creation_date = datetime.datetime(2024, 5, 12)
         provider = providers_factories.PublicApiProviderFactory()
         venue = offerers_factories.VenueFactory()
@@ -546,9 +549,7 @@ class CancelEventTicketTest:
 
         # mocks
         requests_post.return_value.status_code = 200
-        requests_post.return_value.json.return_value = {
-            "remainingQuantity": 10,
-        }
+        requests_post.return_value.json.return_value = return_value
 
         # book
         cancel_event_ticket(
