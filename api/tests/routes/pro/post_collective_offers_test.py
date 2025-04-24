@@ -520,6 +520,30 @@ class Returns400Test:
         assert response.json == {"bookingEmails": ["Un email doit etre renseigné."]}
         assert models.CollectiveOffer.query.count() == 0
 
+    def test_create_collective_offer_empty_contact_email(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "contactEmail": ""}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"contactEmail": ["Le format d'email est incorrect."]}
+        assert models.CollectiveOffer.query.count() == 0
+
+    def test_create_collective_offer_invalid_contact_email(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "contactEmail": "test@test."}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"contactEmail": ["Le format d'email est incorrect."]}
+        assert models.CollectiveOffer.query.count() == 0
+
     def test_create_collective_offer_no_intervention_area(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
