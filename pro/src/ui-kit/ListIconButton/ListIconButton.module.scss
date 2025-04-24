@@ -30,11 +30,13 @@
     transition: all 100ms ease-in-out;
     height: rem.torem(24px);
     width: rem.torem(24px);
+    color: var(--color-icon-default);
   }
 
   &:disabled {
     cursor: not-allowed;
-    color: var(--color-grey-semi-dark);
+    color: var(--color-icon-disabled);
+    background-color: var(--color-background-disabled);
   }
 }
 

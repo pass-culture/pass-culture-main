@@ -46,7 +46,7 @@ $venue-image-width: rem.torem(276px);
 }
 
 .venue-image {
-  border: rem.torem(1px) solid var(--color-white);
+  border: rem.torem(1px) solid var(--color-border-inverted);
   width: $venue-image-width;
   height: $venue-image-height;
   border-radius: rem.torem(16px);
@@ -57,7 +57,7 @@ $venue-image-width: rem.torem(276px);
     align-items: center;
     justify-content: center;
     background-color: var(--color-background-subtle);
-    color: var(--color-grey-semi-dark);
+    color: var(--color-icon-subtle);
   }
 }
 

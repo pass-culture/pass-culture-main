@@ -1,6 +1,5 @@
 import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import strokeFraudIcon from 'icons/stroke-fraud.svg'
-import './MaybeAppUserDialog.scss'
 
 export const MaybeAppUserDialog = ({
   onCancel,

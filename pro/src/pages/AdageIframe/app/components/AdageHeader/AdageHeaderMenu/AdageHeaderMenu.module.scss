@@ -26,7 +26,7 @@
 
   &-active {
     position: relative;
-    color: var(--color-primary);
+    color: var(--color-text-brand-primary);
 
     &::after {
       content: "";
@@ -35,7 +35,7 @@
       left: 0;
       width: 100%;
       height: rem.torem(4px);
-      background-color: var(--color-primary);
+      background-color: var(--color-border-brand-primary);
       border-radius: rem.torem(2px) rem.torem(2px) 0 0;
     }
 
@@ -80,8 +80,8 @@
   @include fonts.body-accent;
 
   padding: 0 rem.torem(8px);
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  background-color: var(--color-background-brand-primary);
+  color: var(--color-text-inverted);
   border-radius: rem.torem(22px);
   margin-left: rem.torem(4px);
 }

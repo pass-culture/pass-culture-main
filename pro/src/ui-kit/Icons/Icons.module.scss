@@ -55,7 +55,7 @@
   }
 
   &.copy-to-clipboard {
-    background: var(--color-valid);
+    background: var(--color-background-success);
 
     .icon-container {
       visibility: hidden;
@@ -71,7 +71,7 @@
 .copy-to-clipboard-wrapper {
   display: none;
   position: absolute;
-  color: var(--color-white);
+  color: var(--color-text-default);
 
   .copy-to-clipboard & {
     display: block;
