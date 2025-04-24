@@ -11,7 +11,7 @@ import {
  *
  * @export
  * @param {Array<Array<string>>} expectedResults
- * @example 
+ * @example
  * const expectedResults = [
       ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
       ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places', 'confirmée'],
@@ -83,6 +83,8 @@ export function logInAndGoToPage(
     )
   }
 
+  // Sometimes, the page is loaded with the input disabled
+  cy.get('#email').should('be.enabled')
   cy.get('#email').type(login)
   cy.get('#password').type(password)
   cy.get('button[type=submit]').click()

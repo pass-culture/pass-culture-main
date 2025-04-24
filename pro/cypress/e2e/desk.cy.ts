@@ -3,7 +3,6 @@ import { addDays, format } from 'date-fns'
 import { sessionLogInAndGoToPage } from '../support/helpers.ts'
 
 describe('Desk (Guichet) feature', () => {
-  let login: string
   let tokenConfirmed: string
   let tokenTooSoon: string
   let tokenUsed: string
@@ -11,14 +10,18 @@ describe('Desk (Guichet) feature', () => {
   let tokenReimbursed: string
   let tokenOther: string
 
-  before(() => {
+  beforeEach(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
       (response) => {
-        login = response.body.user.email
+        sessionLogInAndGoToPage(
+          'Session desk',
+          response.body.user.email,
+          '/guichet'
+        )
         tokenConfirmed = response.body.tokenConfirmed
         tokenTooSoon = response.body.tokenTooSoon
         tokenUsed = response.body.tokenUsed
@@ -27,10 +30,6 @@ describe('Desk (Guichet) feature', () => {
         tokenOther = response.body.tokenOther
       }
     )
-  })
-
-  beforeEach(() => {
-    sessionLogInAndGoToPage('Session desk', login, '/guichet')
   })
 
   it('I should see help information on desk page', () => {

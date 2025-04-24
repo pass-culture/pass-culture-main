@@ -2,11 +2,10 @@ import { addDays, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
-  sessionLogInAndGoToPage,
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search individual offers', () => {
-  let login: string
   let venueName: string
   let offerName1: string
   let offerName2: string
@@ -16,14 +15,14 @@ describe('Search individual offers', () => {
   let offerName6: string
   let offerName7: string
 
-  before(() => {
+  beforeEach(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
       (response) => {
-        login = response.body.user.email
+        logInAndGoToPage(response.body.user.email, '/offres')
         venueName = response.body.venue.name
         offerName1 = response.body.offer1.name
         offerName2 = response.body.offer2.name
@@ -34,10 +33,6 @@ describe('Search individual offers', () => {
         offerName7 = response.body.offer7.name
       }
     )
-  })
-
-  beforeEach(() => {
-    sessionLogInAndGoToPage('Session search Individual offer', login, '/offres')
     cy.intercept({
       method: 'GET',
       url: '/offers?**',

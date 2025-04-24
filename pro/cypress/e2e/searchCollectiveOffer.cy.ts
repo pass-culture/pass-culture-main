@@ -2,11 +2,10 @@ import { addWeeks, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
-  sessionLogInAndGoToPage,
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search collective offers', () => {
-  let login: string
   let offerPublishedTemplate: { name: string; venueName: string }
   let offerPublished: { name: string; venueName: string }
   let offerDraft: { name: string; venueName: string }
@@ -16,39 +15,30 @@ describe('Search collective offers', () => {
 
   const formatName = 'Concert'
 
-  before(() => {
-    cy.visit('/connexion')
-    cy.sandboxCall(
-      'GET',
-      'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
-      (response) => {
-        login = response.body.user.email
-        offerPublishedTemplate = response.body.offerPublishedTemplate
-        offerPublished = response.body.offerPublished
-        offerDraft = response.body.offerDraft
-        offerInInstruction = response.body.offerInInstruction
-        offerNotConform = response.body.offerNotConform
-        offerArchived = response.body.offerArchived
-      }
-    )
-  })
-
   beforeEach(() => {
-    sessionLogInAndGoToPage(
-      'Session search collective offer',
-      login,
-      '/accueil'
-    )
-
     cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
       'collectiveOffers'
     )
     cy.intercept({ method: 'GET', url: '/venues?offererId*' }).as(
       'venuesOffererId'
     )
-    cy.visit('/offres/collectives')
-    cy.wait(['@collectiveOffers', '@venuesOffererId'])
-    cy.findAllByTestId('spinner').should('not.exist')
+    cy.visit('/connexion')
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
+      (response) => {
+        logInAndGoToPage(response.body.user.email, '/accueil')
+        offerPublishedTemplate = response.body.offerPublishedTemplate
+        offerPublished = response.body.offerPublished
+        offerDraft = response.body.offerDraft
+        offerInInstruction = response.body.offerInInstruction
+        offerNotConform = response.body.offerNotConform
+        offerArchived = response.body.offerArchived
+        cy.visit('/offres/collectives')
+        cy.wait(['@collectiveOffers', '@venuesOffererId'])
+        cy.findAllByTestId('spinner').should('not.exist')
+      }
+    )
   })
 
   it(`I should be able to search with a name and see expected results`, () => {

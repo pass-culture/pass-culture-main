@@ -13,25 +13,20 @@ export function attachmentModificationsDone() {
 
 describe('Financial Management - messages, links to external help page, reimbursement details, unattach', () => {
   describe('Data contains 2 offerers, one with 0 venue, one with 1 venue', () => {
-    let login1: string
-    before(() => {
+    it('I should be redirected to the homepage when offerer selection change', () => {
+      cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
+      cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
+        'patchBankAccount'
+      )
+
       cy.visit('/connexion')
       cy.sandboxCall(
         'GET',
         'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
         (response) => {
-          login1 = response.body.user.email
-          cy.log('login1: ' + login1)
+          logInAndGoToPage(response.body.user.email, '/remboursements')
         }
       )
-      cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
-      cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
-        'patchBankAccount'
-      )
-    })
-
-    it('I should be redirected to the homepage when offerer selection change', () => {
-      logInAndGoToPage(login1, '/remboursements')
 
       cy.stepLog({
         message: 'I can see information message about reimbursement',

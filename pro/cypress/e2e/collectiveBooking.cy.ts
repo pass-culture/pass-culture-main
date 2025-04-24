@@ -2,32 +2,24 @@ import { addDays, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
-  sessionLogInAndGoToPage,
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Search for collective bookings', () => {
-  let login: string
-
+describe('Search for collective bookings', { testIsolation: false }, () => {
   before(() => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
+  })
+
+  it('I should be able to find collective bookings by offers', () => {
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_bookings',
       (response) => {
-        login = response.body.user.email
+        logInAndGoToPage(response.body.user.email, '/reservations/collectives')
       }
     )
-  })
 
-  beforeEach(() => {
-    sessionLogInAndGoToPage(
-      'Session Collective Booking',
-      login,
-      '/reservations/collectives'
-    )
-  })
-
-  it('I should be able to find collective bookings by offers', () => {
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
@@ -52,6 +44,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('I should be able to find collective bookings by establishments', () => {
+    cy.visit('/reservations/collectives')
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
@@ -83,6 +76,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('I should be able to find collective bookings by booking number', () => {
+    cy.visit('/reservations/collectives')
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
@@ -116,6 +110,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('I should be able to find collective bookings by date and by establishment', () => {
+    cy.visit('/reservations/collectives')
     const dateSearch = format(addDays(new Date(), 10), 'yyyy-MM-dd')
     cy.findByLabelText('Date de l’évènement').type(dateSearch)
 
