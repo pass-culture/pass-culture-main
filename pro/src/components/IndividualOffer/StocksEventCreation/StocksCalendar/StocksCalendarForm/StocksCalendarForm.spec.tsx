@@ -1,11 +1,16 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
 import { api } from 'apiClient/api'
+import { SubcategoryIdEnum } from 'apiClient/v1'
+import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import * as useNotification from 'commons/hooks/useNotification'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  subcategoryFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
@@ -16,14 +21,17 @@ import {
 vi.mock('apiClient/api', () => ({
   api: {
     upsertStocks: vi.fn(),
+    getCategories: vi.fn(),
   },
 }))
 
 function renderStocksCalendarForm(props: StocksCalendarFormProps) {
   return renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <StocksCalendarForm {...props} />
-    </Dialog.Root>
+    <IndividualOfferContextProvider>
+      <Dialog.Root defaultOpen>
+        <StocksCalendarForm {...props} />
+      </Dialog.Root>
+    </IndividualOfferContextProvider>
   )
 }
 
@@ -40,6 +48,16 @@ describe('StocksCalendarForm', () => {
       error: notifyError,
       success: notifySuccess,
     }))
+
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [
+        subcategoryFactory({
+          id: SubcategoryIdEnum.SALON,
+          canHaveOpeningHours: true,
+        }),
+      ],
+    })
   })
 
   it('should sumbit the form when clicking on "Valider" and close the dialog', async () => {
@@ -51,8 +69,13 @@ describe('StocksCalendarForm', () => {
     renderStocksCalendarForm({
       offer: getIndividualOfferFactory({
         priceCategories: [{ id: 1, price: 10, label: 'Price category' }],
+        subcategoryId: SubcategoryIdEnum.SALON,
       }),
       onAfterValidate: afterValidate,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     await userEvent.type(
@@ -80,8 +103,13 @@ describe('StocksCalendarForm', () => {
     renderStocksCalendarForm({
       offer: getIndividualOfferFactory({
         priceCategories: [{ id: 1, price: 10, label: 'Price category' }],
+        subcategoryId: SubcategoryIdEnum.SALON,
       }),
       onAfterValidate: afterValidate,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     await userEvent.click(screen.getByLabelText(/Plusieurs jours, semaines/))
@@ -114,8 +142,13 @@ describe('StocksCalendarForm', () => {
     renderStocksCalendarForm({
       offer: getIndividualOfferFactory({
         priceCategories: [{ id: 1, price: 10, label: 'Price category' }],
+        subcategoryId: SubcategoryIdEnum.SALON,
       }),
       onAfterValidate: afterValidate,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     await userEvent.type(
@@ -137,8 +170,14 @@ describe('StocksCalendarForm', () => {
 
   it('should not display the the one day form until a specific day has been chosen', async () => {
     renderStocksCalendarForm({
-      offer: getIndividualOfferFactory(),
+      offer: getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.SALON,
+      }),
       onAfterValidate: () => {},
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     expect(screen.queryByLabelText('Horaire 1 *')).not.toBeInTheDocument()
@@ -153,8 +192,14 @@ describe('StocksCalendarForm', () => {
 
   it('should not display the the one day form if multiple the option days/weeks is chosen', async () => {
     renderStocksCalendarForm({
-      offer: getIndividualOfferFactory(),
+      offer: getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.SALON,
+      }),
       onAfterValidate: () => {},
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     expect(screen.getByLabelText('Date *')).toBeInTheDocument()
@@ -168,9 +213,15 @@ describe('StocksCalendarForm', () => {
     renderStocksCalendarForm({
       offer: getIndividualOfferFactory({
         priceCategories: [{ id: 1, label: 'Only price category', price: 0 }],
+        subcategoryId: SubcategoryIdEnum.SALON,
       }),
       onAfterValidate: () => {},
     })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
     await userEvent.type(
       screen.getByLabelText('Date *'),
       addDays(new Date(), 1).toISOString().split('T')[0]
@@ -186,9 +237,15 @@ describe('StocksCalendarForm', () => {
           { id: 1, label: 'First price category', price: 0 },
           { id: 2, label: 'Second price category', price: 0 },
         ],
+        subcategoryId: SubcategoryIdEnum.SALON,
       }),
       onAfterValidate: () => {},
     })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
     await userEvent.type(
       screen.getByLabelText('Date *'),
       addDays(new Date(), 1).toISOString().split('T')[0]

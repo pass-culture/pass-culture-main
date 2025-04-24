@@ -1,6 +1,7 @@
 import { UseFormReturn } from 'react-hook-form'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   DurationTypeOption,
   StocksCalendarFormValues,
@@ -27,6 +28,26 @@ export function StocksCalendarFormTimeAndPrice({
     form.watch('durationType') === DurationTypeOption.MULTIPLE_DAYS_WEEKS &&
     form.watch('timeSlotType') === TimeSlotTypeOption.SPECIFIC_TIME &&
     form.watch('multipleDaysHasNoEndDate')
+
+  const { subCategories } = useIndividualOfferContext()
+
+  const isOfferEligibleToOpeningHours = subCategories.find(
+    (cat) => cat.id === offer.subcategoryId
+  )?.canHaveOpeningHours
+
+  if (!isOfferEligibleToOpeningHours) {
+    return (
+      <>
+        <div className={styles['time-slots']}>
+          <StocksCalendarFormSpecificTimeSlots form={form} />
+        </div>
+        <StocksCalendarFormPriceCategoryAndLimitDates
+          form={form}
+          offer={offer}
+        />
+      </>
+    )
+  }
 
   return (
     <>
@@ -74,18 +95,34 @@ export function StocksCalendarFormTimeAndPrice({
             )}
           </div>
 
-          <div className={styles['pricing-categories']}>
-            <StocksCalendarPriceCategories
-              form={form}
-              priceCategories={offer.priceCategories}
-            />
-          </div>
-
-          <div className={styles['limit-dates']}>
-            <StocksCalendarLimitDates form={form} />
-          </div>
+          <StocksCalendarFormPriceCategoryAndLimitDates
+            form={form}
+            offer={offer}
+          />
         </>
       )}
+    </>
+  )
+}
+
+function StocksCalendarFormPriceCategoryAndLimitDates({
+  form,
+  offer,
+}: {
+  form: UseFormReturn<StocksCalendarFormValues>
+  offer: GetIndividualOfferWithAddressResponseModel
+}) {
+  return (
+    <>
+      <div className={styles['pricing-categories']}>
+        <StocksCalendarPriceCategories
+          form={form}
+          priceCategories={offer.priceCategories}
+        />
+      </div>
+      <div className={styles['limit-dates']}>
+        <StocksCalendarLimitDates form={form} />
+      </div>
     </>
   )
 }
