@@ -102,27 +102,45 @@ describe('Cookie management with no login', () => {
     cy.stepLog({ message: 'the Beamer cookie should be checked' })
     cy.get('#orejime-app-item-beamer').should('be.checked')
   })
+
+  it('I should be able to choose a specific cookie, clear my cookies, and check that specific cookie not checked', () => {
+    cy.stepLog({ message: 'I open the cookie management option' })
+    cy.findByText('Gestion des cookies').click()
+
+    cy.stepLog({ message: 'I select the "Beamer" cookie' })
+    cy.findByText('Beamer').click()
+
+    cy.stepLog({ message: 'I save my choices' })
+    cy.findByText('Enregistrer mes choix').click()
+
+    cy.stepLog({ message: 'I clear all cookies and storage' })
+    cy.clearAllCookies()
+    cy.clearAllLocalStorage()
+    cy.clearAllSessionStorage()
+
+    cy.visit('/connexion')
+
+    cy.stepLog({ message: 'I open the cookie management option' })
+    cy.findByText('Gestion des cookies').click()
+
+    cy.stepLog({ message: 'the Beamer cookie should not be checked' })
+    cy.get('#orejime-app-item-beamer').should('not.be.checked')
+  })
 })
 
 describe('Cookie management with login', () => {
-  let login1: string
+  it('I should be able to choose a specific cookie, log in with another account and check that specific cookie is checked', () => {
+    cy.stepLog({ message: 'I clear all cookies in Browser' })
+    cy.clearCookies()
 
-  before(() => {
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
-        login1 = response.body.user.email
+        logInAndGoToPage(response.body.user.email, '/accueil', false)
       }
     )
-  })
-
-  it('I should be able to choose a specific cookie, log in with another account and check that specific cookie is checked', () => {
-    cy.stepLog({ message: 'I clear all cookies in Browser' })
-    cy.clearCookies()
-
-    logInAndGoToPage(login1, '/accueil', false)
 
     cy.stepLog({ message: 'I close the collective budget information modal' })
     cy.findAllByText('Fermer').click()
@@ -146,8 +164,7 @@ describe('Cookie management with login', () => {
       'GET',
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
-        const login2 = response.body.user.email
-        logInAndGoToPage(login2, '/accueil', false)
+        logInAndGoToPage(response.body.user.email, '/accueil', false)
       }
     )
 
@@ -156,60 +173,5 @@ describe('Cookie management with login', () => {
 
     cy.stepLog({ message: 'the Beamer cookie should be checked' })
     cy.get('#orejime-app-item-beamer').should('be.checked')
-  })
-
-  it('I should be able to log in, choose a specific cookie, open another browser, log in again and check that specific cookie not checked', () => {
-    // Cypress cannot deal with 2 browsers or a tab. So we log out, and log in again with a clean browser
-    // See https://docs.cypress.io/guides/references/trade-offs#Multiple-browsers-open-at-the-same-time
-    cy.stepLog({ message: 'I clear all cookies in Browser' })
-    cy.clearCookies()
-
-    cy.sandboxCall(
-      'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
-      (response) => {
-        cy.wrap(response.body.user.email).as('login')
-      }
-    )
-
-    cy.get('@login').then((login) =>
-      logInAndGoToPage(login.toString(), '/accueil', false)
-    )
-
-    cy.stepLog({ message: 'I close the collective budget information modal' })
-    cy.findAllByText('Fermer').click()
-
-    cy.stepLog({ message: 'I open the cookie management option' })
-    cy.findByText('Gestion des cookies').click()
-
-    cy.stepLog({ message: 'I select the "Beamer" cookie' })
-    cy.findByText('Beamer').click()
-
-    cy.stepLog({ message: 'I save my choices' })
-    cy.findByText('Enregistrer mes choix').click()
-
-    cy.stepLog({ message: 'I disconnect of my account' })
-    cy.findByTestId('offerer-select').click()
-    cy.findByTestId('header-dropdown-menu-div').should('exist')
-    cy.contains('Se déconnecter').click()
-    cy.url().should('contain', '/connexion')
-
-    cy.stepLog({ message: 'I clear all cookies and storage' })
-    cy.clearAllCookies()
-    cy.clearAllLocalStorage()
-    cy.clearAllSessionStorage()
-
-    cy.get('@login').then((login) =>
-      logInAndGoToPage(login.toString(), '/accueil', false)
-    )
-
-    cy.stepLog({ message: 'I close the collective budget information modal' })
-    cy.findAllByText('Fermer').click()
-
-    cy.stepLog({ message: 'I open the cookie management option' })
-    cy.findByText('Gestion des cookies').click()
-
-    cy.stepLog({ message: 'the Beamer cookie should not be checked' })
-    cy.get('#orejime-app-item-beamer').should('not.be.checked')
   })
 })

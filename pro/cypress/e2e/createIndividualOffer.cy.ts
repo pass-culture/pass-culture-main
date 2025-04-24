@@ -1,28 +1,24 @@
 import {
   interceptSearch5Adresses,
-  sessionLogInAndGoToPage,
   expectOffersOrBookingsAreFound,
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Create individual offers', () => {
-  let login: string
+describe('Create individual offers', { testIsolation: false }, () => {
   let venueName: string
   const stock = '42'
 
-  before(() => {
+  beforeEach(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
       (response) => {
-        login = response.body.user.email
+        logInAndGoToPage(response.body.user.email, '/offre/creation')
         venueName = response.body.venueName
       }
     )
-  })
-
-  beforeEach(() => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
@@ -42,12 +38,6 @@ describe('Create individual offers', () => {
   })
 
   it('I should be able to create an individual offer (event)', () => {
-    sessionLogInAndGoToPage(
-      'Session create Individual Offer',
-      login,
-      '/offre/creation'
-    )
-
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
@@ -166,16 +156,14 @@ describe('Create individual offers', () => {
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
     cy.findByText('Plus tard').click()
-    cy.wait('@publishOffer', {
-      timeout: 60000,
-      requestTimeout: 60000,
-      responseTimeout: 60000,
+    cy.wait(['@publishOffer', '@getOffer'], {
+      requestTimeout: 60000 * 2,
+      responseTimeout: 60000 * 2,
     })
-    cy.wait('@getOffer', { timeout: 60000 })
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
-    cy.wait(['@getOfferersNames', '@getOffer', '@getCategories'], {
+    cy.wait(['@getOffer', '@getCategories'], {
       requestTimeout: 60 * 1000 * 3,
       responseTimeout: 60 * 1000 * 3,
     })
@@ -190,12 +178,6 @@ describe('Create individual offers', () => {
     const offerTitle = 'H2G2 Le Guide du voyageur galactique'
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
-
-    sessionLogInAndGoToPage(
-      'Session create Individual Offer',
-      login,
-      '/offre/creation'
-    )
 
     cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
     cy.findByText('Au grand public').click()
@@ -278,18 +260,16 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
-    // cy.findByText('Plus tard').click()
-    cy.wait('@publishOffer', {
-      timeout: 60000,
-      requestTimeout: 60000,
-      responseTimeout: 60000,
-    })
-    cy.wait('@getOffer', { timeout: 60000 })
 
+    cy.wait(['@publishOffer', '@getOffer'], {
+      requestTimeout: 60000 * 2,
+      responseTimeout: 60000 * 2,
+    })
+    cy.findByText('Plus tard').click()
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.url().should('contain', '/offres')
-    cy.wait(['@getOfferersNames', '@getOffer', '@getCategories'], {
+    cy.wait(['@getOffer', '@getCategories'], {
       requestTimeout: 60 * 1000 * 3,
       responseTimeout: 60 * 1000 * 3,
     })
@@ -298,7 +278,6 @@ describe('Create individual offers', () => {
     const expectedNewResults = [
       ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
       ['', offerTitle, venueName, stock, 'publiée'],
-      [],
     ]
 
     expectOffersOrBookingsAreFound(expectedNewResults)

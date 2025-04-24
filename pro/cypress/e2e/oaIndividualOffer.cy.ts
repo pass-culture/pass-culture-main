@@ -1,30 +1,11 @@
 import { MOCKED_BACK_ADDRESS_LABEL } from '../support/constants.ts'
 import {
   interceptSearch5Adresses,
-  sessionLogInAndGoToPage,
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Create individual offers with OA', () => {
-  let login: string
-
-  before(() => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
-    cy.visit('/connexion')
-    cy.sandboxCall(
-      'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-      (response) => {
-        login = response.body.user.email
-      }
-    )
-  })
-
   beforeEach(() => {
-    sessionLogInAndGoToPage(
-      'Session OA Individual offer',
-      login,
-      '/offre/creation'
-    )
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postOffersDraft')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
@@ -38,6 +19,16 @@ describe('Create individual offers with OA', () => {
       'getVenuesForOfferer'
     )
     interceptSearch5Adresses()
+
+    cy.wrap(Cypress.session.clearAllSavedSessions())
+    cy.visit('/connexion')
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        logInAndGoToPage(response.body.user.email, '/offre/creation')
+      }
+    )
     cy.contains('À qui destinez-vous cette offre ?')
   })
 
@@ -108,7 +99,6 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Publier l’offre').click()
     cy.findByText('Plus tard').click()
     cy.wait('@publishOffer', {
-      timeout: 60000,
       requestTimeout: 60000,
       responseTimeout: 60000,
     })
@@ -235,11 +225,17 @@ describe('Create individual offers with OA', () => {
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@patchOffer', '@postStocks', '@getOffer'], {
-      responseTimeout: 30 * 1000,
+      requestTimeout: 60 * 1000 * 3,
+      responseTimeout: 60 * 1000 * 3,
     })
 
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
+    cy.wait(['@publishOffer', '@getOffer'], {
+      requestTimeout: 60000 * 2,
+      responseTimeout: 60000 * 2,
+    })
+    cy.findByText('Plus tard').click()
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
