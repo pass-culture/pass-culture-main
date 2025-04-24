@@ -150,9 +150,9 @@ export function StocksCalendarTable({
             <th className={styles['thead-th']}>Tarif</th>
             <th className={styles['thead-th']}>Date limite de réservation</th>
             <th className={styles['thead-th']}>
-              {mode === OFFER_WIZARD_MODE.EDITION
-                ? 'Quantité restante'
-                : 'Place'}
+              {mode === OFFER_WIZARD_MODE.CREATION
+                ? 'Place'
+                : 'Quantité restante'}
             </th>
             {mode !== OFFER_WIZARD_MODE.CREATION && (
               <th className={styles['thead-th']}>Réservations</th>
@@ -231,9 +231,9 @@ export function StocksCalendarTable({
                 <td className={styles['tbody-td']}>
                   {stock.quantity === null
                     ? 'Illimité'
-                    : mode === OFFER_WIZARD_MODE.EDITION
-                      ? (stock.quantity || 0) - stock.bookingsQuantity
-                      : stock.quantity}
+                    : mode === OFFER_WIZARD_MODE.CREATION
+                      ? stock.quantity
+                      : (stock.quantity || 0) - stock.bookingsQuantity}
                 </td>
                 {mode !== OFFER_WIZARD_MODE.CREATION && (
                   <td className={styles['tbody-td']}>
@@ -241,32 +241,34 @@ export function StocksCalendarTable({
                   </td>
                 )}
 
-                <td className={styles['tbody-td']}>
-                  <div className={styles['tbody-td-actions']}>
-                    {canEditStock && (
-                      <ListIconButton
-                        icon={fullEditIcon}
-                        tooltipContent="Modifier la date"
-                        ref={
-                          stock.id === stockOpenedInDialog?.id
-                            ? openedStockTriggerRef
-                            : undefined
-                        }
-                        onClick={() => {
-                          setStockOpenedInDialog(stock)
-                          setIsEditStockDialogOpen(true)
-                        }}
-                      />
-                    )}
-                    {canDeleteStock && (
-                      <ListIconButton
-                        icon={fullTrashIcon}
-                        tooltipContent="Supprimer la date"
-                        onClick={() => onDeleteStocks([stock.id])}
-                      />
-                    )}
-                  </div>
-                </td>
+                {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+                  <td className={styles['tbody-td']}>
+                    <div className={styles['tbody-td-actions']}>
+                      {canEditStock && (
+                        <ListIconButton
+                          icon={fullEditIcon}
+                          tooltipContent="Modifier la date"
+                          ref={
+                            stock.id === stockOpenedInDialog?.id
+                              ? openedStockTriggerRef
+                              : undefined
+                          }
+                          onClick={() => {
+                            setStockOpenedInDialog(stock)
+                            setIsEditStockDialogOpen(true)
+                          }}
+                        />
+                      )}
+                      {canDeleteStock && (
+                        <ListIconButton
+                          icon={fullTrashIcon}
+                          tooltipContent="Supprimer la date"
+                          onClick={() => onDeleteStocks([stock.id])}
+                        />
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             )
           })}
