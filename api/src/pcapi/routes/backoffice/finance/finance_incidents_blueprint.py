@@ -58,49 +58,49 @@ finance_incidents_blueprint = utils.child_backoffice_blueprint(
 def _get_incidents(
     form: forms.GetIncidentsSearchForm,
 ) -> list[finance_models.FinanceIncident]:
-    query = (
-        db.session.query(finance_models.FinanceIncident)
-        .join(finance_models.FinanceIncident.venue)
-        .outerjoin(finance_models.FinanceIncident.booking_finance_incidents)
-        .outerjoin(finance_models.BookingFinanceIncident.booking)
-        .outerjoin(bookings_models.Booking.stock)
-        .outerjoin(finance_models.BookingFinanceIncident.collectiveBooking)
-        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-    )
+    ids_query = sa.select(finance_models.FinanceIncident.id)
 
     if form.incident_type.data and len(form.incident_type.data) == 1:
-        query = query.filter(
+        ids_query = ids_query.filter(
             finance_models.FinanceIncident.kind == finance_models.IncidentType[form.incident_type.data[0]]
         )
 
-    if form.is_collective.data and len(form.is_collective.data) == 1:
-        if form.is_collective.data[0] == "true":
-            query = query.filter(finance_models.FinanceIncident.relates_to_collective_bookings)
-        else:
-            query = query.filter(sa.not_(finance_models.FinanceIncident.relates_to_collective_bookings))
+    if form.is_collective.data or form.q.data:
+        ids_query = ids_query.outerjoin(finance_models.FinanceIncident.booking_finance_incidents).outerjoin(
+            finance_models.BookingFinanceIncident.collectiveBooking
+        )
+
+        if form.is_collective.data and len(form.is_collective.data) == 1:
+            if form.is_collective.data[0] == "true":
+                ids_query = ids_query.filter(finance_models.FinanceIncident.relates_to_collective_bookings)
+            else:
+                ids_query = ids_query.filter(sa.not_(finance_models.FinanceIncident.relates_to_collective_bookings))
 
     if form.status.data:
         # When filtering on status, always exclude closed incidents
-        query = query.filter(
+        ids_query = ids_query.filter(
             finance_models.FinanceIncident.status.in_(form.status.data),
             sa.not_(finance_models.FinanceIncident.isClosed),
         )
 
     if form.origin.data:
-        query = query.filter(
+        ids_query = ids_query.filter(
             finance_models.FinanceIncident.origin.in_(
                 [finance_models.FinanceIncidentRequestOrigin[origin] for origin in form.origin.data]
             )
         )
 
-    if form.offerer.data:
-        query = query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
+    if form.offerer.data or form.venue.data:
+        ids_query = ids_query.join(finance_models.FinanceIncident.venue)
 
-    if form.venue.data:
-        query = query.filter(offerers_models.Venue.id.in_(form.venue.data))
+        if form.offerer.data:
+            ids_query = ids_query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
+
+        if form.venue.data:
+            ids_query = ids_query.filter(offerers_models.Venue.id.in_(form.venue.data))
 
     if form.from_date.data or form.to_date.data:
-        query = query.join(
+        ids_query = ids_query.join(
             history_models.ActionHistory,
             sa.and_(
                 history_models.ActionHistory.financeIncidentId == finance_models.FinanceIncident.id,
@@ -110,13 +110,19 @@ def _get_incidents(
 
         if form.from_date.data:
             from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.min.time())
-            query = query.filter(history_models.ActionHistory.actionDate >= from_datetime)
+            ids_query = ids_query.filter(history_models.ActionHistory.actionDate >= from_datetime)
 
         if form.to_date.data:
             to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.max.time())
-            query = query.filter(history_models.ActionHistory.actionDate <= to_datetime)
+            ids_query = ids_query.filter(history_models.ActionHistory.actionDate <= to_datetime)
 
     if form.q.data:
+        ids_query = (
+            ids_query.outerjoin(finance_models.BookingFinanceIncident.booking)
+            .outerjoin(bookings_models.Booking.stock)
+            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+        )
+
         search_query = form.q.data
         or_filters = []
 
@@ -137,41 +143,53 @@ def _get_incidents(
             or_filters.append(bookings_models.Booking.token == search_query)
 
         if or_filters:
-            query = query.filter(sa.or_(*or_filters))
+            ids_query = ids_query.filter(sa.or_(*or_filters))
         else:
             flash("Le format de la recherche ne correspond ni à un ID ni à une contremarque", "info")
-            query = query.filter(sa.false)
+            ids_query = ids_query.filter(sa.false)
 
-    query = query.options(
-        sa_orm.contains_eager(finance_models.FinanceIncident.venue)
-        .load_only(
-            offerers_models.Venue.id,
-            offerers_models.Venue.name,
-            offerers_models.Venue.publicName,
-            offerers_models.Venue.managingOffererId,
+        ids_query = ids_query.distinct().order_by(sa.desc(finance_models.FinanceIncident.id)).limit(form.limit.data + 1)
+
+    incidents_query = (
+        db.session.query(finance_models.FinanceIncident)
+        .filter(finance_models.FinanceIncident.id.in_(ids_query))
+        .options(
+            sa_orm.joinedload(finance_models.FinanceIncident.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+                offerers_models.Offerer.postalCode,
+            ),
+            sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).options(
+                sa_orm.load_only(
+                    finance_models.BookingFinanceIncident.id,
+                    finance_models.BookingFinanceIncident.newTotalAmount,
+                ),
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.booking).load_only(
+                    bookings_models.Booking.amount, bookings_models.Booking.quantity
+                ),
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
+                .load_only(educational_models.CollectiveBooking.id)
+                .joinedload(educational_models.CollectiveBooking.collectiveStock)
+                .load_only(educational_models.CollectiveStock.price),
+                sa_orm.joinedload(
+                    finance_models.BookingFinanceIncident.finance_events
+                ).load_only(  # because of: isClosed
+                    finance_models.FinanceEvent.id
+                ),
+            ),
         )
-        .joinedload(offerers_models.Venue.managingOfferer)
-        .load_only(
-            offerers_models.Offerer.id,
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.siren,
-            offerers_models.Offerer.postalCode,
-        ),
-        sa_orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
-        .load_only(finance_models.BookingFinanceIncident.id, finance_models.BookingFinanceIncident.newTotalAmount)
-        .contains_eager(finance_models.BookingFinanceIncident.booking)
-        .load_only(bookings_models.Booking.amount, bookings_models.Booking.quantity),
-        sa_orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
-        .contains_eager(finance_models.BookingFinanceIncident.collectiveBooking)
-        .load_only(educational_models.CollectiveBooking.id)
-        .contains_eager(educational_models.CollectiveBooking.collectiveStock)
-        .load_only(educational_models.CollectiveStock.price),
-        sa_orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
-        .joinedload(finance_models.BookingFinanceIncident.finance_events)  # because of: isClosed
-        .load_only(finance_models.FinanceEvent.id),
+        .order_by(sa.desc(finance_models.FinanceIncident.id))
     )
 
-    incidents = query.order_by(sa.desc(finance_models.FinanceIncident.id)).limit(form.limit.data + 1).all()
+    incidents = incidents_query.all()
     return utils.limit_rows(incidents, form.limit.data)
 
 
