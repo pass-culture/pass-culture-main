@@ -64,7 +64,7 @@ $number-size: rem.torem(30px);
 
       :hover {
         .label {
-          text-decoration: underline var(--color-black);
+          text-decoration: underline var(--color-text-default);
         }
 
         .number {

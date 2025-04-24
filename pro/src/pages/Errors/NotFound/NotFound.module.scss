@@ -3,11 +3,11 @@
 
 .not-found {
   align-items: center;
-  background-color: var(--color-secondary);
+  background-color: var(--color-background-default);
   height: 100%;
   min-height: 100vh;
   position: relative;
-  color: var(--color-white);
+  color: var(--color-text-default);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,12 +26,13 @@
     margin: rem.torem(40px) auto;
 
     &:focus-visible {
-      outline-color: var(--color-white);
+      outline-color: var(--color-default);
     }
   }
 
   &-icon {
     max-width: 100%;
+    color: var(--color-icon-brand-primary);
   }
 
   &-gradient-container {

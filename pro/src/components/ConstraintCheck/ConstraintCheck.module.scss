@@ -10,16 +10,4 @@
   @include fonts.body-accent-xs;
 
   color: var(--color-text-subtle);
-
-  &-failing-constraint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-error-light);
-
-    img {
-      margin: rem.torem(3px);
-      width: rem.torem(14px);
-    }
-  }
 }

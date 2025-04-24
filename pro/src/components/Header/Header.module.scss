@@ -33,12 +33,6 @@
     align-items: center;
     gap: 24px;
     flex-shrink: 0;
-
-    &-open {
-      background: var(--color-grey-semi-dark);
-      color: var(--color-white);
-      padding: rem.torem(12.5px);
-    }
   }
 
   @media (min-width: size.$laptop) {
