@@ -555,7 +555,7 @@ class EventWeekDayOpeningHours(PcObject, Base, Model):
     )
 
 
-class FutureOffer(PcObject, Base, Model):
+class FutureOffer(PcObject, Base, Model, SoftDeletableMixin):
     __tablename__ = "future_offer"
 
     offerId: int = sa.Column(
