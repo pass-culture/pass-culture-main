@@ -13,9 +13,9 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import {
-  ModalImageEdit,
   OnImageUploadArgs,
-} from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
+  ModalImageUpsertOrEdit,
+} from 'components/ImageUploader/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
@@ -127,7 +127,7 @@ export const HeadlineOfferImageDialogs = ({
         onOpenChange={() => setIsImageUploaderOpen(false)}
         variant="drawer"
       >
-        <ModalImageEdit
+        <ModalImageUpsertOrEdit
           mode={UploaderModeEnum.OFFER}
           onImageUpload={onImageUpload}
         />

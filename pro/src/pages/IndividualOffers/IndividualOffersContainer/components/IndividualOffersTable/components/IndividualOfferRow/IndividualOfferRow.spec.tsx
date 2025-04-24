@@ -339,14 +339,10 @@ describe('IndividualOfferRow', () => {
 
         await userEvent.click(screen.getByText('Ajouter une image'))
 
-        // dialog: import img
-        const inputField = screen.getByLabelText(
-          'Importer une image depuis l’ordinateur'
-        )
-        await userEvent.upload(inputField, mockFile)
-
-        // dialog: crop img
+        // dialog: import & crop img
         expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+        const inputField = screen.getByLabelText('Importez une image')
+        await userEvent.upload(inputField, mockFile)
 
         await userEvent.click(screen.getByText('Enregistrer'))
         expect(api.createThumbnail).toHaveBeenCalled()
@@ -393,15 +389,10 @@ describe('IndividualOfferRow', () => {
 
         await userEvent.click(screen.getByText('Ajouter une image'))
 
-        // dialog: import img
-        const inputField = screen.getByLabelText(
-          'Importer une image depuis l’ordinateur'
-        )
+        // dialog: import & crop img
+        expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+        const inputField = screen.getByLabelText('Importez une image')
         await userEvent.upload(inputField, mockFile)
-
-        await waitFor(() => {
-          expect(screen.getByText(/Modifier une image/)).toBeInTheDocument()
-        })
 
         await userEvent.click(screen.getByText('Enregistrer'))
         expect(api.createThumbnail).toHaveBeenCalled()
