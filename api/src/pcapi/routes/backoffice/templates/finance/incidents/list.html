@@ -1,101 +1,90 @@
-{% from "components/forms.html" import build_filters_form with context %}
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5 table-container-finance-incident-validation">
-    <h1>Liste des incidents</h1>
-    {{ build_filters_form(form, dst) }}
-    <div>
-      {% if rows %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">
-            {{ rows | length }}
-            résultat{{ rows | length | pluralize }}
-          </p>
-          <div class="btn-group btn-group-sm"
-               data-toggle="pc-batch-confirm-btn-group"
-               data-toggle-id="table-container-finance-incident-validation-btn-group"
-               data-pc-table-multi-select-id="table-container-finance-incident-validation"
-               data-input-ids-name="object_ids">
-            <button disabled
-                    type="button"
-                    class="btn btn-outline-primary"
-                    data-use-confirmation-modal="true"
-                    data-mode="fetch"
-                    data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form') }}"
-                    data-modal-selector="#batch-validate-modal">Valider</button>
-            <button disabled
-                    type="button"
-                    class="btn btn-outline-primary"
-                    data-use-confirmation-modal="true"
-                    data-mode="fetch"
-                    data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form') }}"
-                    data-modal-selector="#batch-reject-modal">Annuler</button>
-          </div>
-        </div>
-        <table class="table mb-4"
-               data-table-multi-select-id="table-container-finance-incident-validation">
-          <thead>
-            <tr>
-              <th scope="col">
-                <input type="checkbox"
-                       class="form-check-input"
-                       name="pc-table-multi-select-check-all" />
-              </th>
-              <th scope="col">ID</th>
-              <th scope="col">Statut de l'incident</th>
-              <th scope="col">Type d'incident</th>
-              <th scope="col">Nature</th>
-              <th scope="col">Type de résa</th>
-              <th scope="col">Nb. Réservation(s)</th>
-              <th scope="col">Montant total</th>
-              <th scope="col">Entité juridique</th>
-              <th scope="col">Partenaire culturel</th>
-              <th scope="col">Origine de la demande</th>
-              <th scope="col">Ticket Zendesk</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for incident in rows %}
-              {% set venue = incident.venue %}
-              <tr>
-                <td>
-                  <input type="checkbox"
-                         class="form-check-input"
-                         name="pc-table-multi-select-check-{{ incident.id }}"
-                         data-id="{{ incident.id }}" />
-                </td>
-                <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
-                <td>
-                  {% if incident.isClosed %}
-                    {{ "Terminé" | format_badge("secondary") }}
-                  {% else %}
-                    {{ incident.status | format_finance_incident_status_badge }}
-                  {% endif %}
-                </td>
-                <td>{{ incident.kind | format_finance_incident_type }}</td>
-                <td>{{ incident.is_partial | format_finance_incident_nature_badge }}</td>
-                <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
-                <td>{{ incident.booking_finance_incidents | length }}</td>
-                <td>{{ incident.due_amount_by_offerer | format_cents(target=incident.venue) }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
-                <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
-                <td>
-                  {% if incident.origin %}{{ incident.origin.value }}{% endif %}
-                </td>
-                <td>
-                  {% if incident.zendeskId %}{{ links.build_zendesk_ticket_external_link(incident.zendeskId) }}{% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form") , "batch-validate-modal", "true") }}
-        {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form") , "batch-reject-modal", "true") }}
-      </div>
-    </div>
-  {% else %}
-    <div class="lead">Aucun incident en cours n'est enregistré.</div>
-  {% endif %}
-{% endblock page %}
+{% set rows_count = rows|length %}
+{% block title %}Liste des incidents{% endblock %}
+{% block search_block %}
+  {{ build_filters_form_ng(form, dst) }}
+{% endblock search_block %}
+{% block table_header %}
+  <th data-pc-column-name="Checkbox">
+    <input type="checkbox"
+           class="form-check-input fs-6"
+           name="pc-table-multi-select-check-all" />
+  </th>
+  <th>ID</th>
+  <th>Statut de l'incident</th>
+  <th>Type d'incident</th>
+  <th>Nature</th>
+  <th>Type de résa</th>
+  <th>Nb. Réservation(s)</th>
+  <th>Montant total</th>
+  <th>Entité juridique</th>
+  <th>Partenaire culturel</th>
+  <th>Origine de la demande</th>
+  <th>Ticket Zendesk</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for incident in rows %}
+    {% set venue = incident.venue %}
+    <tr>
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ incident.id }}"
+               data-id="{{ incident.id }}" />
+      </td>
+      <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
+      <td>
+        {% if incident.isClosed %}
+          {{ "Terminé" | format_badge("secondary") }}
+        {% else %}
+          {{ incident.status | format_finance_incident_status_badge }}
+        {% endif %}
+      </td>
+      <td>{{ incident.kind | format_finance_incident_type }}</td>
+      <td>{{ incident.is_partial | format_finance_incident_nature_badge }}</td>
+      <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
+      <td>{{ incident.booking_finance_incidents | length }}</td>
+      <td>{{ incident.due_amount_by_offerer | format_cents(target=incident.venue) }}</td>
+      <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
+      <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
+      <td>
+        {% if incident.origin %}{{ incident.origin.value }}{% endif %}
+      </td>
+      <td>
+        {% if incident.zendeskId %}{{ links.build_zendesk_ticket_external_link(incident.zendeskId) }}{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+{% endblock table_body %}
+{% block multi_select_menu %}
+  <div class="counter-container text-nowrap">
+    <span class="counter">0</span> incident(s) sélectionné(s)
+  </div>
+  <div data-toggle="pc-batch-confirm-btn-group"
+       data-toggle-id="table-container-offerer-validation-btn-group"
+       data-pc-table-multi-select-id="{{ table_name }}"
+       data-input-ids-name="object_ids"
+       class="d-flex">
+    <button disabled
+            type="button"
+            class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-confirmation-modal="true"
+            data-mode="fetch"
+            data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form') }}"
+            data-modal-selector="#batch-validate-modal">Valider</button>
+    <button disabled
+            type="button"
+            class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
+            data-use-confirmation-modal="true"
+            data-mode="fetch"
+            data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form') }}"
+            data-modal-selector="#batch-reject-modal">Annuler</button>
+  </div>
+{% endblock multi_select_menu %}
+{% block after_table %}
+  {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form") , "batch-validate-modal", "true") }}
+  {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form") , "batch-reject-modal", "true") }}
+{% endblock after_table %}

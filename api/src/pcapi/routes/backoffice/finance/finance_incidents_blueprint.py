@@ -144,7 +144,12 @@ def _get_incidents(
 
     query = query.options(
         sa_orm.contains_eager(finance_models.FinanceIncident.venue)
-        .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName)
+        .load_only(
+            offerers_models.Venue.id,
+            offerers_models.Venue.name,
+            offerers_models.Venue.publicName,
+            offerers_models.Venue.managingOffererId,
+        )
         .joinedload(offerers_models.Venue.managingOfferer)
         .load_only(
             offerers_models.Offerer.id,
@@ -166,7 +171,8 @@ def _get_incidents(
         .load_only(finance_models.FinanceEvent.id),
     )
 
-    return query.order_by(sa.desc(finance_models.FinanceIncident.id)).all()
+    incidents = query.order_by(sa.desc(finance_models.FinanceIncident.id)).limit(form.limit.data + 1).all()
+    return utils.limit_rows(incidents, form.limit.data)
 
 
 @finance_incidents_blueprint.route("", methods=["GET"])
