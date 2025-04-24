@@ -481,12 +481,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
         return shared_offers.validate_students(students)
 
-    @validator("domains")
-    def validate_domains(cls, domains: list[int]) -> list[int]:  # TODO (jcicurel): check these validators
-        if len(domains) == 0:
-            raise ValueError("domains must have at least one value")
-        return domains
-
     @validator("formats")
     def validate_formats(cls, formats: list[EacFormat] | None) -> list[EacFormat]:
         if formats is None or len(formats) == 0:
@@ -506,10 +500,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return description
 
     @validator("domains")
-    def validate_domains_collective_offer_edition(
-        cls, domains: list[int] | None
-    ) -> list[int] | None:  # TODO (jcicurel): check these validators
-        if domains is None or (domains is not None and len(domains) == 0):
+    def validate_domains(cls, domains: list[int] | None) -> list[int]:
+        if domains is None or len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
         return domains
