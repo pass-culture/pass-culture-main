@@ -169,7 +169,6 @@ export function sessionLogInAndGoToPage(
 export function homePageLoaded() {
   cy.findByText('Bienvenue sur votre espace partenaire')
   cy.findAllByText(/Votre page partenaire|Vos pages partenaire/)
-  cy.findByText('Ajouter une structure')
   cy.findAllByTestId('spinner').should('not.exist')
 }
 

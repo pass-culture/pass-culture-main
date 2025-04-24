@@ -14,7 +14,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { OffererCreationLinks } from './components/OffererCreationLinks/OffererCreationLinks'
 import { PartnerPages } from './components/PartnerPages/PartnerPages'
-import { VenueCreationLinks } from './components/VenueCreationLinks/VenueCreationLinks'
 import { VenueList } from './components/VenueList/VenueList'
 import styles from './Offerers.module.scss'
 
@@ -120,8 +119,6 @@ export const Offerers = ({
       }
 
       {!userHasOfferers && <OffererCreationLinks />}
-
-      <VenueCreationLinks offerer={selectedOfferer} />
     </>
   )
 }
