@@ -9,8 +9,6 @@ import os
 import pathlib
 import re
 from unittest import mock
-from unittest.mock import call
-from unittest.mock import patch
 
 from factory.faker import faker
 import pytest
@@ -2300,22 +2298,62 @@ class ActivateFutureOffersTest:
     def test_activate_future_offers_empty(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=False)  # Offer not in the future, i.e. no publication_date
 
-        api.activate_future_offers()
+        offers_ids = api.activate_future_offers()
 
         assert not models.Offer.query.get(offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
+        assert offers_ids == []
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+        future_offer = factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
 
-        api.activate_future_offers(publication_date=publication_date)
+        offers_ids = api.activate_future_offers(publication_date=publication_date)
 
+        assert offers_ids == [offer.id]
         assert models.Offer.query.get(offer.id).isActive
+        assert models.FutureOffer.query.get(future_offer.id).isSoftDeleted
+
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
+
+
+@pytest.mark.usefixtures("db_session")
+class ActivateFutureOffersAndRemindUsersTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated")
+    def test_activate_future_offers_and_remind_users(
+        self, notify_users_future_offer_activated_mock, mocked_async_index_offer_ids
+    ):
+        offer_1 = factories.OfferFactory(isActive=False)
+        publication_date = datetime.utcnow() - timedelta(minutes=14)
+        future_offer_1 = factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
+
+        offer_2 = factories.OfferFactory(isActive=False)
+        publication_date_2 = datetime.utcnow() - timedelta(minutes=10)
+        future_offer_2 = factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date_2)
+
+        offer_3 = factories.OfferFactory(isActive=False)
+        publication_date_3 = datetime.utcnow() - timedelta(minutes=15)
+        future_offer_3 = factories.FutureOfferFactory(offer=offer_3, publicationDate=publication_date_3)
+
+        api.activate_future_offers_and_remind_users()
+        notify_users_future_offer_activated_mock.assert_has_calls(
+            [mock.call(offer=offer_1), mock.call(offer=offer_2)], any_order=True
+        )
+
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
+
+        assert models.Offer.query.get(offer_1.id).isActive
+        assert models.Offer.query.get(offer_2.id).isActive
+        assert not models.Offer.query.get(offer_3.id).isActive
+
+        assert models.FutureOffer.query.get(future_offer_1.id).isSoftDeleted
+        assert models.FutureOffer.query.get(future_offer_2.id).isSoftDeleted
+        assert not models.FutureOffer.query.get(future_offer_3.id).isSoftDeleted
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2684,8 +2722,8 @@ class HeadlineOfferTest:
         assert new_headline_offer.timespan.upper is None
 
         expected_reindexation_calls = [
-            call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
-            call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
         ]
         mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
 
@@ -3737,8 +3775,8 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
-    @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
     def test_cds(
         self,
         mocked_get_shows_stock,
@@ -3865,8 +3903,8 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
-    @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
     def test_boost(
         self,
         mocked_get_movie_shows_stock,
@@ -3993,8 +4031,8 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
-    @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
     def test_cgr(
         self,
         mocked_get_movie_shows_stock,
@@ -4103,7 +4141,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert post_adapter.call_count == 2
 
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
-    @patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_ems(
         self,
         mocked_async_index_offer_ids,
@@ -4194,7 +4232,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.quantity != stock.dnBookedQuantity
 
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
-    @patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_ems_no_remaining_places_case(
         self,
         mocked_async_index_offer_ids,
@@ -4239,7 +4277,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         )
 
     @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
-    @patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_cgr_no_remaining_places_case(
         self,
         mocked_async_index_offer_ids,
@@ -4287,8 +4325,8 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         )
 
     @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
-    @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
     def test_should_retry_when_inconsistent_stock(self, mocked_get_movie_shows_stock, mocked_async_index_offer_ids):
         boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
@@ -4321,7 +4359,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             log_extra={"sold_out": True},
         )
 
-    @patch("pcapi.core.offers.api.external_bookings_api.get_active_cinema_venue_provider")
+    @mock.patch("pcapi.core.offers.api.external_bookings_api.get_active_cinema_venue_provider")
     def test_should_not_deactivate_manual_offers(self, mocked_get_active_cinema_venue_provider):
         offer = factories.EventOfferFactory()
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
@@ -4506,7 +4544,7 @@ class ApproveProductAndRejectedOffersTest:
 
         # When
         with pytest.raises(NotUpdateProductOrOffers):
-            with patch("pcapi.models.db.session.commit", side_effect=Exception):
+            with mock.patch("pcapi.models.db.session.commit", side_effect=Exception):
                 api.approves_provider_product_and_rejected_offers(ean)
 
 
