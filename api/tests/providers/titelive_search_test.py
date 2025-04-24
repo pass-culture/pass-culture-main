@@ -334,6 +334,31 @@ class TiteliveSearchTest:
             == 0
         )
 
+    def test_sync_thumbnails_truncated_failure_is_silent(self, requests_mock, settings):
+        _configure_login_and_images(requests_mock, settings)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
+        requests_mock.get("https://images.epagine.fr/323/3700187679324.jpg", exc=OSError)
+
+        sync_date = datetime.date(2022, 12, 1)
+        TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
+
+        synced_products = offers_models.Product.query.all()
+        assert len(synced_products) == 3
+        assert offers_models.ProductMediation.query.count() == 4
+        no_thumbnail_product = next(
+            (product for product in synced_products if product.idAtProviders == "3700187679324"), None
+        )
+        assert no_thumbnail_product is not None
+        assert (
+            offers_models.ProductMediation.query.filter(
+                offers_models.ProductMediation.productId == no_thumbnail_product.id
+            ).count()
+            == 0
+        )
+
     def test_sync_skips_unallowed_format(self, requests_mock, settings):
         _configure_login_and_images(requests_mock, settings)
         not_fully_allowed_response = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)

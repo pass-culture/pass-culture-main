@@ -27,7 +27,9 @@ logger = logging.getLogger(__name__)
 
 def insert_local_provider_event_on_error(method: typing.Callable) -> typing.Callable:
     @functools.wraps(method)
-    def method_with_local_provider_event(self: "TiteliveSearch", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    def method_with_local_provider_event(
+        self: "TiteliveSearchTemplate", *args: typing.Any, **kwargs: typing.Any
+    ) -> typing.Any:
         try:
             return method(self, *args, **kwargs)
         except Exception as e:
@@ -42,7 +44,7 @@ def insert_local_provider_event_on_error(method: typing.Callable) -> typing.Call
     return method_with_local_provider_event
 
 
-class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
+class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
     titelive_base: titelive.TiteliveBase
 
     def __init__(self) -> None:
@@ -237,9 +239,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
                             object_id=image_id,
                         )
                 db.session.commit()
-            except (requests.ExternalAPIException, PIL.UnidentifiedImageError) as e:
+            except (requests.ExternalAPIException, PIL.UnidentifiedImageError, OSError) as e:
                 db.session.rollback()
-                print("Error while downloading Titelive imageÔ")
                 logger.error(
                     "Error while downloading Titelive image",
                     extra={
