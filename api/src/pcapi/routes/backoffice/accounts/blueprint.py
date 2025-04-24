@@ -21,7 +21,7 @@ from werkzeug.exceptions import NotFound
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import deposit_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import api as fraud_api
@@ -1900,7 +1900,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 
     try:
         if eligibility == users_models.EligibilityType.AGE18 and user.has_underage_beneficiary_role:
-            finance_api.expire_current_deposit_for_user(user=user)
+            deposit_api.expire_current_deposit_for_user(user=user)
         fraud_api.validate_beneficiary(
             user=user,
             reviewer=current_user,
