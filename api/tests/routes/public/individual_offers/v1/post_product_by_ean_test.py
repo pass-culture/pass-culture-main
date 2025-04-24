@@ -366,8 +366,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             "exc": "RejectedOrPendingOfferNotEditable",
         }
         assert response.status_code == 204
-        assert cd_stock.quantity == 0
-        assert cd_stock.price == decimal.Decimal("12.34")
+
+        assert cd_stock.isSoftDeleted
+
         assert book_stock.quantity == 10
         assert book_stock.price == decimal.Decimal("100.00")
 
@@ -806,3 +807,106 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         updated_stock = db.session.query(offers_models.Stock).get(stock.id)
         assert updated_stock.price == 0
         assert updated_stock.quantity == 3
+
+    def test_empty_stock_is_a_valid_input_but_it_wont_be_created(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        ean, _ = self._get_base_product("1234567890123")
+        other_ean, _ = self._get_base_product("0987654321098")
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "products": [
+                    {
+                        "ean": ean,
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 0,
+                        },
+                    },
+                    {
+                        "ean": other_ean,
+                        "stock": {
+                            "price": 5678,
+                            "quantity": 10,
+                        },
+                    },
+                ],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 204
+        assert offers_models.Stock.query.count() == 1
+
+        created_stock = db.session.query(offers_models.Stock).first()
+        assert int(created_stock.price * 100) == 5678
+        assert created_stock.quantity == 10
+        assert created_stock.offer.product.ean == other_ean
+
+    def test_empty_stock_is_a_valid_input_but_it_wont_be_updated(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+
+        ean = "1234567890123"
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean=ean,
+            lastProviderId=api_key.provider.id,
+            idAtProviders=ean,
+        )
+
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue, lastProvider=api_key.provider)
+        stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
+
+        other_ean = "0987654321098"
+        other_product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean=other_ean,
+            lastProviderId=api_key.provider.id,
+            idAtProviders=other_ean,
+        )
+
+        other_offer = offers_factories.ThingOfferFactory(
+            product=other_product, venue=venue, lastProvider=api_key.provider
+        )
+        other_stock = offers_factories.ThingStockFactory(offer=other_offer, quantity=10, price=100)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": ean,
+                        "stock": {
+                            "bookingLimitDatetime": date_utils.format_into_utc_date(
+                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                            ),
+                            "price": 1234,
+                            "quantity": 100,
+                        },
+                    },
+                    {
+                        "ean": other_ean,
+                        "stock": {
+                            "bookingLimitDatetime": date_utils.format_into_utc_date(
+                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                            ),
+                            "price": 5678,
+                            "quantity": 0,
+                        },
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 204
+
+        assert db.session.query(offers_models.Stock).count() == 2
+        assert db.session.query(offers_models.Stock).filter(offers_models.Stock.isSoftDeleted == True).count() == 1
+
+        db.session.refresh(stock)
+        assert stock.quantity == 100
+
+        db.session.refresh(other_stock)
+        assert other_stock.isSoftDeleted

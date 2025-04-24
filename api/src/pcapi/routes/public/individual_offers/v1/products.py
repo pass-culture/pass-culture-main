@@ -248,6 +248,9 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
     if not body.stock:
         return
 
+    if body.stock.quantity == 0:
+        return
+
     try:
         offers_api.create_stock(
             offer=product,
@@ -451,6 +454,11 @@ def _create_or_update_ean_offers(
                 try:
                     ean = offer.ean
                     stock_data = serialized_products_stocks[ean]
+
+                    # No need to create empty stock
+                    if stock_data["quantity"] == 0:
+                        continue
+
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
                     # It will be done before the release of this API
@@ -512,6 +520,16 @@ def _create_or_update_ean_offers(
                 logger.info(
                     "Error while creating offer by ean",
                     extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
+                )
+            except offers_exceptions.TooLateToDeleteStock:
+                logger.info(
+                    "Could not update stock: too late",
+                    extra={
+                        "ean": ean,
+                        "venue_id": venue_id,
+                        "provider_id": provider_id,
+                        "stock_data": stock_data,
+                    },
                 )
 
     search.async_index_offer_ids(
@@ -892,6 +910,8 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
+    except offers_exceptions.TooLateToDeleteStock as e:
+        raise api_errors.ApiErrors(e.errors, status_code=400)
 
     # TODO(jeremieb): this should not be needed. BUT since datetime from
     # db are not timezone aware and those from the request are...
@@ -913,6 +933,10 @@ def _upsert_product_stock(
             offers_api.delete_stock(existing_stock)
         return
 
+    # no need to create an empty stock
+    if not existing_stock and stock_body.quantity == 0:
+        return
+
     if not existing_stock:
         if stock_body.price is None:
             raise api_errors.ApiErrors({"stock.price": ["Required"]})
@@ -927,10 +951,18 @@ def _upsert_product_stock(
 
     stock_update_body = stock_body.dict(exclude_unset=True)
     price = stock_update_body.get("price", offers_api.UNCHANGED)
+
     quantity = serialization.deserialize_quantity(stock_update_body.get("quantity", offers_api.UNCHANGED))
+    new_quantity = quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity
+
+    # do not keep empty stocks
+    if new_quantity == 0:
+        offers_api.delete_stock(existing_stock)
+        return
+
     offers_api.edit_stock(
         existing_stock,
-        quantity=quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity,
+        quantity=new_quantity,
         price=finance_utils.cents_to_full_unit(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
