@@ -28,6 +28,7 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
     getter = getattr(cypress_module, getter_name)
 
     try:
+        print("run CI")
         clean_all_database(reset_ids=True)
         obj = getter()
         return jsonify(obj)
