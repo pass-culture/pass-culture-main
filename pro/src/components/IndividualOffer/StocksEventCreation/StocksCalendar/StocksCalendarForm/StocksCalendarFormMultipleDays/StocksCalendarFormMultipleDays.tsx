@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { weekDays } from 'components/IndividualOffer/StocksEventCreation/form/constants'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
 import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
@@ -31,6 +32,12 @@ export function StocksCalendarFormMultipleDays({
   const hasAtLEastOneWeekDaySelected = form
     .watch('multipleDaysWeekDays')
     .find((d) => d.checked)
+
+  const { subCategories } = useIndividualOfferContext()
+
+  const canHaveNoEndDate = subCategories.find(
+    (cat) => cat.id === offer.subcategoryId
+  )?.canHaveOpeningHours
 
   useEffect(() => {
     //  When the selected dates change, update the checked weekdays
@@ -96,15 +103,17 @@ export function StocksCalendarFormMultipleDays({
           disabled={form.watch('multipleDaysHasNoEndDate')}
         />
 
-        <Checkbox
-          label="Pas de date de fin"
-          className={styles['checkbox-field-layout']}
-          {...form.register('multipleDaysHasNoEndDate')}
-          onChange={async (e) => {
-            form.setValue('multipleDaysEndDate', undefined)
-            await form.register('multipleDaysHasNoEndDate').onChange(e)
-          }}
-        />
+        {canHaveNoEndDate && (
+          <Checkbox
+            label="Pas de date de fin"
+            className={styles['checkbox-field-layout']}
+            {...form.register('multipleDaysHasNoEndDate')}
+            onChange={async (e) => {
+              form.setValue('multipleDaysEndDate', undefined)
+              await form.register('multipleDaysHasNoEndDate').onChange(e)
+            }}
+          />
+        )}
       </div>
 
       {hasEndDateOrNeverEnds && (

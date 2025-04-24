@@ -1,9 +1,18 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { api } from 'apiClient/api'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
+import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  getIndividualOfferFactory,
+  subcategoryFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { weekDays } from 'components/IndividualOffer/StocksEventCreation/form/constants'
 import {
@@ -14,8 +23,19 @@ import {
 
 import { StocksCalendarFormMultipleDays } from './StocksCalendarFormMultipleDays'
 
+vi.mock('apiClient/api', () => ({
+  api: {
+    getCategories: vi.fn(),
+  },
+}))
+
 function renderStocksCalendarFormMultipleDays(
-  defaultOptions?: Partial<StocksCalendarFormValues>
+  defaultFormValues: Partial<StocksCalendarFormValues> = {},
+  offer: GetIndividualOfferWithAddressResponseModel = getIndividualOfferFactory(
+    {
+      subcategoryId: SubcategoryIdEnum.SALON,
+    }
+  )
 ) {
   function StocksCalendarFormMultipleDaysWrapper() {
     const form = useForm<StocksCalendarFormValues>({
@@ -30,17 +50,16 @@ function renderStocksCalendarFormMultipleDays(
           value: d.value,
           checked: true,
         })),
-        ...defaultOptions,
+        ...defaultFormValues,
       },
     })
 
     return (
-      <FormProvider {...form}>
-        <StocksCalendarFormMultipleDays
-          form={form}
-          offer={getIndividualOfferFactory()}
-        />
-      </FormProvider>
+      <IndividualOfferContextProvider>
+        <FormProvider {...form}>
+          <StocksCalendarFormMultipleDays form={form} offer={offer} />
+        </FormProvider>
+      </IndividualOfferContextProvider>
     )
   }
 
@@ -48,10 +67,26 @@ function renderStocksCalendarFormMultipleDays(
 }
 
 describe('StocksCalendarFormOneDay', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [
+        subcategoryFactory({
+          id: SubcategoryIdEnum.SALON,
+          canHaveOpeningHours: true,
+        }),
+      ],
+    })
+  })
+
   it('should show the time slots form when the specific time option is chosen', async () => {
     renderStocksCalendarFormMultipleDays({
       multipleDaysStartDate: addDays(new Date(), 1).toISOString().split('T')[0],
       multipleDaysEndDate: addDays(new Date(), 3).toISOString().split('T')[0],
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     expect(
@@ -68,6 +103,10 @@ describe('StocksCalendarFormOneDay', () => {
   it('should not display the week day form if the end date is empty, unless the "no end date" checkbox is checked', async () => {
     renderStocksCalendarFormMultipleDays({
       multipleDaysStartDate: addDays(new Date(), 1).toISOString().split('T')[0],
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     expect(
@@ -103,6 +142,10 @@ describe('StocksCalendarFormOneDay', () => {
       })),
     })
 
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
     expect(screen.getByText('Sélectionnez les jours : *')).toBeInTheDocument()
 
     expect(
@@ -116,10 +159,14 @@ describe('StocksCalendarFormOneDay', () => {
     ).toBeInTheDocument()
   })
 
-  it('should have all week days initially selected when the checkbox "no end date" is checked', () => {
+  it('should have all week days initially selected when the checkbox "no end date" is checked', async () => {
     renderStocksCalendarFormMultipleDays({
       multipleDaysStartDate: addDays(new Date(), 1).toISOString().split('T')[0],
       multipleDaysHasNoEndDate: true,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
     expect(screen.queryByLabelText('Lundi')).toBeChecked()
@@ -129,5 +176,20 @@ describe('StocksCalendarFormOneDay', () => {
     expect(screen.getByLabelText('Vendredi')).toBeChecked()
     expect(screen.getByLabelText('Samedi')).toBeChecked()
     expect(screen.getByLabelText('Dimanche')).toBeChecked()
+  })
+
+  it('should hide the "No end date" checkbox if the offer is not eligible to opening hours', async () => {
+    renderStocksCalendarFormMultipleDays(
+      {},
+      getIndividualOfferFactory({ subcategoryId: SubcategoryIdEnum.CONFERENCE })
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.queryByLabelText('Pas de date de fin')
+    ).not.toBeInTheDocument()
   })
 })

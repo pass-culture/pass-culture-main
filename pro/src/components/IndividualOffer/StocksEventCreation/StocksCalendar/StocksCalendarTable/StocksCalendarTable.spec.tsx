@@ -11,6 +11,12 @@ import {
   StocksCalendarTableProps,
 } from './StocksCalendarTable'
 
+vi.mock('apiClient/api', () => ({
+  api: {
+    getCategories: vi.fn(),
+  },
+}))
+
 function renderStocksCalendarTable(
   props: Partial<StocksCalendarTableProps> = {}
 ) {
