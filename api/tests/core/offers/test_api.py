@@ -2300,22 +2300,62 @@ class ActivateFutureOffersTest:
     def test_activate_future_offers_empty(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=False)  # Offer not in the future, i.e. no publication_date
 
-        api.activate_future_offers()
+        offers_ids, future_offers_ids = api.activate_future_offers()
 
         assert not models.Offer.query.get(offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
+        assert offers_ids == []
+        assert future_offers_ids == []
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+        future_offer = factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
 
-        api.activate_future_offers(publication_date=publication_date)
+        offers_ids, future_offers_ids = api.activate_future_offers(publication_date=publication_date)
 
         assert models.Offer.query.get(offer.id).isActive
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
+        assert offers_ids == [offer.id]
+        assert future_offers_ids == [future_offer.id]
+
+
+@pytest.mark.usefixtures("db_session")
+class ActivateFutureOffersAndRemindUsersTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate_future_offers_and_remind_users(self, mocked_async_index_offer_ids):
+        offer_1 = factories.OfferFactory(isActive=False)
+        publication_date = datetime.utcnow() - timedelta(minutes=14)
+        future_offer_1 = factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
+
+        offer_2 = factories.OfferFactory(isActive=False)
+        publication_date_2 = datetime.utcnow() - timedelta(minutes=10)
+        future_offer_2 = factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date_2)
+
+        offer_3 = factories.OfferFactory(isActive=False)
+        publication_date_3 = datetime.utcnow() - timedelta(minutes=15)
+        future_offer_3 = factories.FutureOfferFactory(offer=offer_3, publicationDate=publication_date_3)
+
+        with patch(
+            "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
+        ) as notify_users_future_offer_activated_mock:
+            api.activate_future_offers_and_remind_users()
+            notify_users_future_offer_activated_mock.assert_has_calls(
+                [call(offer=offer_1), call(offer=offer_2)], any_order=True
+            )
+
+            mocked_async_index_offer_ids.assert_called_once()
+            assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
+
+            assert models.Offer.query.get(offer_1.id).isActive
+            assert models.Offer.query.get(offer_2.id).isActive
+            assert not models.Offer.query.get(offer_3.id).isActive
+
+            assert models.FutureOffer.query.get(future_offer_1.id).isSoftDeleted
+            assert models.FutureOffer.query.get(future_offer_2.id).isSoftDeleted
+            assert not models.FutureOffer.query.get(future_offer_3.id).isSoftDeleted
 
 
 @pytest.mark.usefixtures("db_session")

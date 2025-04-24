@@ -1,42 +1,12 @@
-from datetime import datetime
-from datetime import timedelta
 import logging
-from unittest.mock import call
-from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.reminders import factories
-from pcapi.core.reminders.external.reminders_notifications import notify_users_for_future_offers_activations
 from pcapi.core.reminders.external.reminders_notifications import notify_users_future_offer_activated
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing as push_testing
-
-
-@pytest.mark.usefixtures("db_session")
-class NotifyUsersFutureOffersActivationsTest:
-    def test_notify_users_for_future_offers_activations(self):
-
-        offer = offer_factories.OfferFactory(isActive=False)
-        publication_date = datetime.utcnow() - timedelta(minutes=14)
-        offer_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
-
-        offer_2 = offer_factories.OfferFactory(isActive=False)
-        publication_date_2 = datetime.utcnow() - timedelta(minutes=10)
-        offer_factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date_2)
-
-        offer_3 = offer_factories.OfferFactory(isActive=False)
-        publication_date_3 = datetime.utcnow() - timedelta(minutes=15)
-        offer_factories.FutureOfferFactory(offer=offer_3, publicationDate=publication_date_3)
-
-        with patch(
-            "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
-        ) as notify_users_future_offer_activated_mock:
-            notify_users_for_future_offers_activations()
-            notify_users_future_offer_activated_mock.assert_has_calls(
-                [call(offer=offer), call(offer=offer_2)], any_order=True
-            )
 
 
 @pytest.mark.usefixtures("db_session")

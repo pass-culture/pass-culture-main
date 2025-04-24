@@ -1036,19 +1036,30 @@ class GetOffersByPublicationDateTest:
         factories.FutureOfferFactory(offer=offer_before, publicationDate=publication_date_before)
 
         offer_to_publish_1 = factories.OfferFactory()
-        factories.FutureOfferFactory(offer=offer_to_publish_1, publicationDate=publication_date)
+        future_offer_to_publish_1 = factories.FutureOfferFactory(
+            offer=offer_to_publish_1, publicationDate=publication_date
+        )
         offer_to_publish_2 = factories.OfferFactory()
-        factories.FutureOfferFactory(
+        future_offer_to_publish_2 = factories.FutureOfferFactory(
             offer=offer_to_publish_2, publicationDate=publication_date - datetime.timedelta(minutes=13)
+        )
+        # Simulates an Offer manually published then unpublished with a publicationDate within the range of 15 minutes considered, should not be returned by the function
+        offer_manually_published = factories.OfferFactory()
+        factories.FutureOfferFactory(
+            offer=offer_manually_published,
+            publicationDate=publication_date - datetime.timedelta(minutes=13),
+            isSoftDeleted=True,
         )
 
         offer_after = factories.OfferFactory()
         publication_date_after = publication_date + datetime.timedelta(minutes=17)
         factories.FutureOfferFactory(offer=offer_after, publicationDate=publication_date_after)
 
-        query = repository.get_offers_by_publication_date(publication_date=publication_date)
-        assert query.count() == 2
-        assert query.all() == [offer_to_publish_1, offer_to_publish_2]
+        offers_query, future_offers_query = repository.get_offers_by_publication_date(publication_date=publication_date)
+        assert offers_query.count() == 2
+        assert offers_query.all() == [offer_to_publish_1, offer_to_publish_2]
+        assert future_offers_query.count() == 2
+        assert future_offers_query.all() == [future_offer_to_publish_1, future_offer_to_publish_2]
 
 
 @pytest.mark.usefixtures("db_session")

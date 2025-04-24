@@ -181,17 +181,20 @@ def get_capped_offers_for_filters(
     return offers
 
 
-def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> BaseQuery:
+def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> tuple[BaseQuery, BaseQuery]:
     if publication_date is None:
         publication_date = datetime.datetime.utcnow()
 
     upper_bound = publication_date
     lower_bound = upper_bound - datetime.timedelta(minutes=15)
 
-    future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter(
-        models.FutureOffer.publicationDate <= upper_bound, models.FutureOffer.publicationDate > lower_bound
+    future_offers_subquery = db.session.query(models.FutureOffer).filter(
+        models.FutureOffer.publicationDate <= upper_bound,
+        models.FutureOffer.publicationDate > lower_bound,
+        sa.not_(models.FutureOffer.isSoftDeleted),
     )
-    return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
+    offer_ids_future = [future_offer.offerId for future_offer in future_offers_subquery]
+    return db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids_future)), future_offers_subquery
 
 
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> BaseQuery:
