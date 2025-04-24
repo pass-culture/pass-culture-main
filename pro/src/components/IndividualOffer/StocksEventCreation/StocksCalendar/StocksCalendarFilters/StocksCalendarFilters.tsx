@@ -27,6 +27,9 @@ function getStockTableSortTypes(mode: OFFER_WIZARD_MODE): {
   sort: StocksOrderedBy
   orderByDesc: boolean
 }[] {
+  const remainlingQuantityLabel =
+    mode === OFFER_WIZARD_MODE.CREATION ? 'Place' : 'Quantité'
+
   return [
     {
       name: 'Date décroissante',
@@ -34,46 +37,27 @@ function getStockTableSortTypes(mode: OFFER_WIZARD_MODE): {
       orderByDesc: true,
     },
     { name: 'Date croissante', sort: StocksOrderedBy.DATE, orderByDesc: false },
+    {
+      name: `${remainlingQuantityLabel} décroissante`,
+      sort: StocksOrderedBy.REMAINING_QUANTITY,
+      orderByDesc: true,
+    },
+    {
+      name: `${remainlingQuantityLabel} croissante`,
+      sort: StocksOrderedBy.REMAINING_QUANTITY,
+      orderByDesc: false,
+    },
+    {
+      name: 'Date limite de réservation décroissante',
+      sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+      orderByDesc: true,
+    },
+    {
+      name: 'Date limite de réservation croissante',
+      sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+      orderByDesc: false,
+    },
   ]
-    .concat(
-      mode === OFFER_WIZARD_MODE.EDITION
-        ? [
-            {
-              name: 'Quantité décroissante',
-              sort: StocksOrderedBy.REMAINING_QUANTITY,
-              orderByDesc: true,
-            },
-            {
-              name: 'Quantité croissante',
-              sort: StocksOrderedBy.REMAINING_QUANTITY,
-              orderByDesc: false,
-            },
-          ]
-        : [
-            {
-              name: 'Place décroissante',
-              sort: StocksOrderedBy.DN_BOOKED_QUANTITY,
-              orderByDesc: true,
-            },
-            {
-              name: 'Place croissante',
-              sort: StocksOrderedBy.DN_BOOKED_QUANTITY,
-              orderByDesc: false,
-            },
-          ]
-    )
-    .concat([
-      {
-        name: 'Date limite de réservation décroissante',
-        sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
-        orderByDesc: true,
-      },
-      {
-        name: 'Date limite de réservation croissante',
-        sort: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
-        orderByDesc: false,
-      },
-    ])
 }
 
 export const StocksCalendarFilters = ({
