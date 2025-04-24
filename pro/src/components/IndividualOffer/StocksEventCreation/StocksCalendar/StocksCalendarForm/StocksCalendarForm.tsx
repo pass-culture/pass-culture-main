@@ -90,7 +90,11 @@ export function StocksCalendarForm({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       if (e instanceof GetStocksCustomError) {
-        notify.error(e.customMessage)
+        e.stockTimeSlotIndexes.map((index) => {
+          form.setError(`specificTimeSlots.${index}.slot`, {
+            message: e.customMessage,
+          })
+        })
         return
       }
       notify.error(

@@ -244,4 +244,35 @@ describe('StocksCalendar', () => {
 
     expect(updateStockSpy).toHaveBeenCalled()
   })
+
+  it('should show an error message when the added stocks are in the past', async () => {
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif', price: 1 }],
+      }),
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Définir le calendrier' })
+    )
+
+    await userEvent.type(
+      screen.getByLabelText('Date *'),
+      new Date().toISOString().split('T')[0]
+    )
+
+    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '00:00')
+
+    await userEvent.selectOptions(screen.getByLabelText('Tarif *'), '1')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
+
+    expect(
+      screen.getByText('Vous ne pouvez pas ajouter de dates dans le passé.')
+    ).toBeInTheDocument()
+  })
 })
