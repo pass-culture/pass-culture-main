@@ -419,54 +419,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId is None
 
-    @time_machine.travel(time_travel_str)
-    def test_patch_offer_invalid_domain(self, client):
-        educational_factories.EducationalCurrentYearFactory()
-
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
-
-        payload = {
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
-            "domains": [0],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
-            # stock part
-            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
-            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
-            "totalPrice": 21,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
-        }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
-            )
-
-        assert response.status_code == 404
-        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
-
     def test_patch_offer_invalid_api_key(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -756,70 +708,77 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_patch_offer_invalid_domains(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet",
-            imageId="123456789",
-            venue=venue,
-            provider=venue_provider.provider,
-            domains=[domain],
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+        offer = educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider, domains=[domain]
         )
 
-        payload = {
-            "domains": [0],
-        }
-
-        # When
+        payload = {"domains": [0]}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{offer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 404
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
         assert offer.domains[0].id == domain.id
 
+    def test_patch_offer_empty_domains(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+
+        payload = {"domains": []}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"domains": ["domains must have at least one value"]}
+
+    def test_patch_offer_none_domains(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.ActiveCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+
+        payload = {"domains": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"domains": ["domains must have at least one value"]}
+
     def test_patch_offer_bad_institution(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            venue=venue,
-            imageId="123456789",
-            imageCredit="pouet",
-            provider=venue_provider.provider,
-            institution=educational_institution,
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+        offer = educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider, institution=educational_institution
         )
 
-        payload = {
-            "educationalInstitutionId": 0,
-        }
-
-        # When
+        payload = {"educationalInstitutionId": 0}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{offer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 404
-
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert response.json == {"educationalInstitutionId": ["Établissement scolaire non trouvé."]}
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
         assert offer.institutionId == educational_institution.id
 
     @pytest.mark.parametrize("institution_field", ["educationalInstitution", "educationalInstitutionId"])
@@ -847,62 +806,21 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
     def test_unknown_national_program(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        domain = educational_factories.EducationalDomainFactory()
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet",
-            imageId="123456789",
-            venue=venue,
-            provider=venue_provider.provider,
-            nationalProgramId=None,
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+        offer = educational_factories.ActiveCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider, nationalProgramId=None
         )
 
-        payload = {
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "venueId": venue2.id,
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "01 00 99 27.98",
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
-            "isActive": False,
-            "imageCredit": "a great artist",
-            # stock part
-            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
-            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
-            "totalPrice": 96.25,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
-            "nationalProgramId": 0,
-        }
-
+        payload = {"nationalProgramId": 0}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{offer.id}", json=payload
             )
 
         assert response.status_code == 400
         assert response.json == {"nationalProgramId": ["Dispositif inconnu"]}
+        assert offer.nationalProgramId is None
 
     def test_national_program_null(self, client):
         key, venue_provider = self.setup_active_venue_provider()
