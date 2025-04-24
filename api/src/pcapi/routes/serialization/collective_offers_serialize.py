@@ -573,19 +573,6 @@ class DateRangeOnCreateModel(DateRangeModel):
         return start
 
 
-from typing import Union
-
-from pydantic.v1.networks import validate_email
-
-
-class EmailStrOrEmpty(EmailStr):
-    @classmethod
-    def validate(cls, value: Union[str]) -> str | None:  # type: ignore[override]
-        if value == "":
-            return None
-        return validate_email(value)[1]
-
-
 class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
     name: str
@@ -601,7 +588,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # offerVenue will be replaced with location, for now we accept one or the other (but not both)
     offer_venue: CollectiveOfferVenueBodyModel | None
     location: CollectiveOfferLocationModel | None
-    contact_email: EmailStrOrEmpty | None
+    contact_email: EmailStr | None
     contact_phone: str | None
     intervention_area: list[str] | None
     template_id: int | None
@@ -688,7 +675,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: PriceDetail | None
-    contact_email: EmailStr | None  # type: ignore[assignment]
     contact_url: AnyHttpUrl | None
     contact_form: educational_models.OfferContactFormEnum | None
     dates: DateRangeOnCreateModel | None
