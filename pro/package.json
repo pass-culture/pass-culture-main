@@ -109,7 +109,7 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "inquirer": "^12.5.2",
+    "inquirer": "^12.6.0",
     "inquirer-fuzzy-path": "^2.3.0",
     "jsdom": "^25.0.1",
     "mustache": "^4.2.0",
