@@ -1,0 +1,22 @@
+@use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+$dropdown-icon-size: rem.torem(20px);
+
+.dropdown-indicator {
+  cursor: pointer;
+  background: none;
+  border: none;
+  fill: var(--color-grey-light);
+  position: absolute;
+  right: rem.torem(16px);
+  bottom: calc((size.$input-min-height - $dropdown-icon-size) / 2);
+  width: rem.torem($dropdown-icon-size);
+  height: rem.torem($dropdown-icon-size);
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
