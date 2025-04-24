@@ -7,7 +7,7 @@ from sqlalchemy import exc as sqlalchemy_exceptions
 from pcapi import settings
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
-import pcapi.core.finance.api as finance_api
+from pcapi.core.finance import deposit_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.fraud.api as fraud_api
@@ -96,7 +96,7 @@ def activate_beneficiary_for_eligibility(
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
     with pcapi_repository.transaction():
-        deposit = finance_api.upsert_deposit(
+        deposit = deposit_api.upsert_deposit(
             user,
             deposit_source=fraud_check.get_detailed_source(),
             eligibility=eligibility,

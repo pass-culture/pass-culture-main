@@ -7,6 +7,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
+from pcapi.core.finance import deposit_api
 from pcapi.core.finance import ds
 from pcapi.core.finance import external as finance_external
 import pcapi.core.finance.api as finance_api
@@ -199,13 +200,13 @@ def add_custom_offer_reimbursement_rule(
 @blueprint.cli.command("recredit_underage_users")
 @cron_decorators.log_cron_with_transaction
 def recredit_underage_users() -> None:
-    finance_api.recredit_users()
+    deposit_api.recredit_users()
 
 
 @blueprint.cli.command("recredit_users")
 @cron_decorators.log_cron_with_transaction
 def recredit_users() -> None:
-    finance_api.recredit_users()
+    deposit_api.recredit_users()
 
 
 @blueprint.cli.command("import_ds_bank_information_applications")

@@ -16,7 +16,7 @@ from pcapi.core.educational.repository import has_collective_offers_for_program_
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
-from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
@@ -434,7 +434,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     domains_credit = get_domains_credit(user, user_bookings)
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
-    last_recredit = finance_api.get_latest_age_related_user_recredit(user)
+    last_recredit = deposit_api.get_latest_age_related_user_recredit(user)
 
     has_remaining_credit = user.has_active_deposit and domains_credit is not None and bool(domains_credit.all.remaining)
     # A user becomes a former beneficiary only after the last credit is expired or spent or can no longer be claimed

@@ -6,7 +6,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
-from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.subscription import api as subscription_api
@@ -51,7 +51,7 @@ def recredit_users_thread_safely(
         if event_to_wait:
             event_to_wait.wait(2)
 
-        finance_api.recredit_users_by_id([user_id])
+        deposit_api.recredit_users_by_id([user_id])
 
 
 @pytest.mark.usefixtures("clean_database")

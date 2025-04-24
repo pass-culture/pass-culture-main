@@ -25,7 +25,7 @@ from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.finance.api as finance_api
+from pcapi.core.finance import deposit_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -221,7 +221,7 @@ class AccountTest:
         with time_machine.travel(datetime.today() - relativedelta(years=1)):
             user = users_factories.BeneficiaryFactory(email=self.identifier, age=16)
 
-        finance_api.recredit_users()
+        deposit_api.recredit_users()
 
         expected_num_queries = 1  # user
         expected_num_queries += 1  # achievements

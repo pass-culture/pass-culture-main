@@ -12,7 +12,7 @@ import schwifty
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
-from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -77,7 +77,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
         remote_updates=False,
     )
     user.validatedBirthDate = birth_date
-    finance_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE17_18)
+    deposit_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE17_18)
     if role == UserRole.BENEFICIARY:
         user.add_beneficiary_role()
     elif role == UserRole.UNDERAGE_BENEFICIARY:
