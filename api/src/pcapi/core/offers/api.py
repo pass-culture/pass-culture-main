@@ -56,6 +56,7 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.reminders.external import reminders_notifications
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import feature
@@ -550,10 +551,25 @@ def create_event_opening_hours(
     return event_opening_hours
 
 
-def activate_future_offers(publication_date: datetime.datetime | None = None) -> None:
-    query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
-    query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
-    batch_update_offers(query, {"isActive": True})
+def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
+    offer_query, future_offer_query = offers_repository.get_offers_by_publication_date(
+        publication_date=publication_date
+    )
+    offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
+
+    with transaction():
+        batch_update_offers(offer_query, {"isActive": True})
+        future_offer_query.update({"isSoftDeleted": True}, synchronize_session="fetch")
+
+    return [offer.id for offer in offer_query]
+
+
+def activate_future_offers_and_remind_users() -> None:
+    offer_ids = activate_future_offers()
+
+    for offer_id in offer_ids:
+        offer = db.session.query(models.Offer).get(offer_id)
+        reminders_notifications.notify_users_future_offer_activated(offer=offer)
 
 
 def set_upper_timespan_of_inactive_headline_offers() -> None:
