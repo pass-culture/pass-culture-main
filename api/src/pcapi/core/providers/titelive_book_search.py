@@ -13,14 +13,14 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
 from pcapi.utils.csr import get_closest_csr
 
-from .titelive_api import TiteliveSearch
+from .titelive_api import TiteliveSearchTemplate
 from .titelive_api import activate_newly_eligible_product_and_offers
 
 
 logger = logging.getLogger(__name__)
 
 
-class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
+class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
     titelive_base = TiteliveBase.BOOK
 
     def __init__(self) -> None:

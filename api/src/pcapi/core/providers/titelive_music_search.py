@@ -14,7 +14,7 @@ from pcapi.core.offers import models as offers_models
 from .constants import MUSIC_SLUG_BY_GTL_ID
 from .constants import NOT_CD_LIBELLES
 from .constants import TITELIVE_MUSIC_SUPPORTS_BY_CODE
-from .titelive_api import TiteliveSearch
+from .titelive_api import TiteliveSearchTemplate
 from .titelive_api import activate_newly_eligible_product_and_offers
 
 
@@ -28,7 +28,7 @@ class CommonMusicArticleFields(typing.TypedDict):
     label: str | None
 
 
-class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicWork]):
+class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
     titelive_base = TiteliveBase.MUSIC
 
     def deserialize_titelive_product(self, titelive_work: dict) -> TiteliveMusicWork:
