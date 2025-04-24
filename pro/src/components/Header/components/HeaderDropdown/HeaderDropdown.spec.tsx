@@ -149,5 +149,28 @@ describe('App', () => {
 
       sessionStorage.clear()
     })
+
+    it('should display add a venue button when only one offerer', async () => {
+      const options = {
+        storeOverrides: {
+          offerer: currentOffererFactory({
+            offererNames: [
+              {
+                id: 1,
+                name: 'Mon offerer',
+                allowedOnAdage: true,
+              },
+            ],
+          }),
+        },
+      }
+      renderWithProviders(<HeaderDropdown />, options)
+
+      // Opens main menu
+      await userEvent.click(screen.getByTestId('offerer-select'))
+
+      expect(screen.getByText(/Mon offerer/)).toBeInTheDocument()
+      expect(screen.getByText(/Ajouter une structure/)).toBeInTheDocument()
+    })
   })
 })

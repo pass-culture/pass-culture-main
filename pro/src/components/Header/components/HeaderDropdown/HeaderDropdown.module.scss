@@ -277,13 +277,6 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 .sub-popin-header {
   display: block;
 
-  &-text {
-    margin-top: rem.torem(8px);
-    margin-bottom: rem.torem(16px);
-
-    @include fonts.title4;
-  }
-
   @media (min-width: $sub-popin-full-width-breakpoint) {
     display: none;
   }

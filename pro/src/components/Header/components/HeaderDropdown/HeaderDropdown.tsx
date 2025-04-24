@@ -56,7 +56,6 @@ export const HeaderDropdown = () => {
       label: item['name'],
     })) ?? []
   )
-
   const { pathname } = useLocation()
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
     '/parcours-inscription'
@@ -72,7 +71,6 @@ export const HeaderDropdown = () => {
   const selectedOffererName = offererNames?.find(
     (offererOption) => offererOption.id === Number(selectedOffererId)
   )
-
   const handleChangeOfferer = (newOffererId: string): void => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
@@ -146,30 +144,42 @@ export const HeaderDropdown = () => {
                 />
               </button>
             </DropdownMenu.Item>
-            {offererOptions.length > 1 && (
+            {offererOptions.length >= 1 && (
               <>
                 <div className={styles['menu-email']}>
                   {selectedOffererName?.name}
                 </div>
 
                 <DropdownMenu.Sub open={subOpen}>
-                  <DropdownMenu.SubTrigger
-                    asChild
-                    onClick={() => setSubOpen(!subOpen)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === 'Space') {
-                        setSubOpen(!subOpen)
-                      }
-                    }}
-                  >
-                    <Button
-                      variant={ButtonVariant.TERNARY}
-                      icon={fullSwitchIcon}
-                      className={styles['menu-item']}
+                  {offererOptions.length > 1 ? (
+                    <DropdownMenu.SubTrigger
+                      asChild
+                      onClick={() => setSubOpen(!subOpen)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === 'Space') {
+                          setSubOpen(!subOpen)
+                        }
+                      }}
                     >
-                      Changer
-                    </Button>
-                  </DropdownMenu.SubTrigger>
+                      <Button
+                        variant={ButtonVariant.TERNARY}
+                        icon={fullSwitchIcon}
+                        className={styles['menu-item']}
+                      >
+                        Changer
+                      </Button>
+                    </DropdownMenu.SubTrigger>
+                  ) : (
+                    <DropdownMenu.Item className={styles['menu-item']} asChild>
+                      <ButtonLink
+                        icon={fullMoreIcon}
+                        className={styles['menu-item']}
+                        to="/parcours-inscription/structure"
+                      >
+                        Ajouter une structure
+                      </ButtonLink>
+                    </DropdownMenu.Item>
+                  )}
                   <DropdownMenu.Portal>
                     <DropdownMenu.SubContent
                       loop
@@ -185,9 +195,6 @@ export const HeaderDropdown = () => {
                         >
                           Retour
                         </Button>
-                        <div className={styles['sub-popin-header-text']}>
-                          Structure
-                        </div>
                       </div>
                       <div
                         className={styles['sub-menu']}
@@ -234,7 +241,7 @@ export const HeaderDropdown = () => {
                             className={styles['menu-item']}
                             to="/parcours-inscription/structure"
                           >
-                            Ajouter
+                            Ajouter une structure
                           </ButtonLink>
                         </DropdownMenu.Item>
                       </div>
