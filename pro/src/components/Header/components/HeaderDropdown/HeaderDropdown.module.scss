@@ -31,7 +31,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   z-index: zIndex.$profil-pop-in-z-index;
   width: 100dvw;
   height: 100dvh;
-  margin-top: rem.torem(8px);
+  margin-top: rem.torem(1px);
 
   &[data-state="open"] {
     animation: fade-in 150ms ease-out;
