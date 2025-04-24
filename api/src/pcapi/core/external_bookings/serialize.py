@@ -91,12 +91,12 @@ class ExternalEventTicket(pydantic_v1.BaseModel):
 
 class ExternalEventBookingResponse(pydantic_v1.BaseModel):
     tickets: list[ExternalEventTicket]
-    remainingQuantity: int | None = pydantic_v1.Field(...)
+    remainingQuantity: int | None = pydantic_v1.Field(None)
 
 
 class ExternalEventBookingErrorResponse(pydantic_v1.BaseModel):
     error: str
-    remainingQuantity: int | None = pydantic_v1.Field(...)
+    remainingQuantity: int | None = pydantic_v1.Field(None)
 
 
 class ExternalEventCancelBookingRequest(pydantic_v1.BaseModel):
@@ -109,4 +109,4 @@ class ExternalEventCancelBookingRequest(pydantic_v1.BaseModel):
 
 class ExternalEventCancelBookingResponse(pydantic_v1.BaseModel):
     error: str | None
-    remainingQuantity: int | None = pydantic_v1.Field(...)
+    remainingQuantity: int | None = pydantic_v1.Field(None)
