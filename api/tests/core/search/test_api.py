@@ -243,9 +243,9 @@ class ReindexOfferIdsTest:
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
     def test_reindex_artists_after_reindexing_offers(self, app, clear_redis):
-        offer = make_bookable_offer()
+        offer = offers_factories(product=offers_factories.ProductFactory())
+        offers_factories.StockFactory(offerers_factories.VenueFactory())
         artist = artists_factories.ArtistFactory()
-        offer.product = offers_factories.ProductFactory()
         offer.product.artists.append(artist)
 
         assert search_testing.search_store["offers"] == {}
