@@ -168,7 +168,7 @@ export const validationSchema = yup.object().shape({
           'is-future',
           'L’évènement doit être à venir',
           (value) =>
-            isDateValid(value) && new Date(value) > removeTime(getToday())
+            isDateValid(value) && new Date(value) >= removeTime(getToday())
         )
         .test(
           'is-not-more-than-a-year-from-now',

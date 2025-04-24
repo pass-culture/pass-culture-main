@@ -20,9 +20,11 @@ import { StocksCalendarFormValues } from '../form/types'
 
 export class GetStocksCustomError extends Error {
   public customMessage: string = ''
-  constructor(m: string) {
+  public stockTimeSlotIndexes: number[] = []
+  constructor(m: string, indexes?: number[]) {
     super()
     this.customMessage = m
+    this.stockTimeSlotIndexes = indexes || []
   }
 }
 
@@ -62,23 +64,22 @@ export function getStocksForOneDay(
 
   const formattedDate = format(date, FORMAT_ISO_DATE_ONLY)
 
-  const validDateTimes = times
-    .map((t) =>
-      serializeDateTimeToUTCFromLocalDepartment(
-        formattedDate,
-        t,
-        departmentCode
-      )
-    )
-    .filter((dateTime) => isBefore(new Date(), dateTime))
+  const serializedTimes = times.map((t) =>
+    serializeDateTimeToUTCFromLocalDepartment(formattedDate, t, departmentCode)
+  )
 
-  if (validDateTimes.length === 0) {
+  const invalidTimesIndexes = serializedTimes
+    .map((dateTime, i) => (isBefore(new Date(), dateTime) ? null : i))
+    .filter((index) => index !== null)
+
+  if (invalidTimesIndexes.length > 0) {
     throw new GetStocksCustomError(
-      'Vous ne pouvez pas ajouter de dates dans le passé.'
+      'Vous ne pouvez pas ajouter de dates dans le passé.',
+      invalidTimesIndexes
     )
   }
 
-  return validDateTimes.flatMap((dateTime) => {
+  return serializedTimes.flatMap((dateTime) => {
     return formValues.pricingCategoriesQuantities.map(
       (quantityPerPriceCategory) => {
         const quantity = quantityPerPriceCategory.quantity || null
