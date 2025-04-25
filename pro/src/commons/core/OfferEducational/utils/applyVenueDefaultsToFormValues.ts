@@ -29,13 +29,18 @@ export const applyVenueDefaultsToFormValues = (
     locationType: CollectiveLocationType.ADDRESS,
     address: {
       isVenueAddress: true,
-      city: selectedVenue?.address?.city ?? '',
-      latitude: selectedVenue?.address?.latitude ?? '',
-      longitude: selectedVenue?.address?.longitude ?? '',
-      postalCode: selectedVenue?.address?.postalCode ?? '',
-      street: selectedVenue?.address?.street ?? '',
+      id_oa: selectedVenue?.address?.id_oa.toString() ?? '',
+      isManualEdition: false,
+      label: venue.name,
     },
-    id_oa: selectedVenue?.address?.id_oa.toString() ?? '',
+  }
+
+  const selectedVenueAddress = {
+    city: selectedVenue?.address?.city ?? '',
+    latitude: selectedVenue?.address?.latitude.toString() ?? '',
+    longitude: selectedVenue?.address?.longitude.toString() ?? '',
+    postalCode: selectedVenue?.address?.postalCode ?? '',
+    street: selectedVenue?.address?.street ?? '',
   }
 
   if (isOfferCreated) {
@@ -55,9 +60,10 @@ export const applyVenueDefaultsToFormValues = (
         // if offer location was the venue address, we set by default the new selected
         // venue address in offer location otherwise we keep former selected location
         values.location.locationType === CollectiveLocationType.ADDRESS &&
-        values.location.address?.isVenueAddress
+        values.location.address.isVenueAddress
           ? locationFromSelectedVenue
           : { ...values.location },
+      ...selectedVenueAddress,
     }
   }
 
@@ -71,6 +77,7 @@ export const applyVenueDefaultsToFormValues = (
       venueId: Number(values.venueId),
     },
     location: locationFromSelectedVenue,
+    ...selectedVenueAddress,
   }
 
   // Change these fields only if offer is not created yet

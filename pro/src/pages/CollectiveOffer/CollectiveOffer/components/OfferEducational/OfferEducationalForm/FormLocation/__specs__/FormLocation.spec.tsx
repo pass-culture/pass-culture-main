@@ -77,20 +77,27 @@ describe('FormLocation', () => {
     | 'venueId'
     | 'search-addressAutocomplete'
     | 'addressAutocomplete'
+    | 'city'
+    | 'latitude'
+    | 'longitude'
+    | 'postalCode'
+    | 'street'
   > = {
     venueId: '1',
     'search-addressAutocomplete': '',
     addressAutocomplete: '',
+    city: 'Paris',
+    latitude: '48.87004',
+    longitude: '2.3785',
+    postalCode: '75001',
+    street: '1 Rue de Paris',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
-      id_oa: '889',
       address: {
-        city: 'Paris',
+        id_oa: '889',
         isVenueAddress: true,
-        latitude: 48.87004,
-        longitude: 2.3785,
-        postalCode: '75001',
-        street: '1 Rue de Paris',
+        isManualEdition: false,
+        label: '',
       },
     },
   }

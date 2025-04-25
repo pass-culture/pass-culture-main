@@ -185,17 +185,19 @@ describe('createOfferPayload', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
         ...DEFAULT_EAC_FORM_VALUES,
+        city: 'Paris',
+        latitude: '3',
+        longitude: '2',
+        postalCode: '75018',
+        street: 'rue de la paix',
         location: {
           locationType: CollectiveLocationType.ADDRESS,
           address: {
-            city: 'Paris',
-            latitude: 3,
-            longitude: 2,
-            postalCode: '75018',
-            street: 'rue de la paix',
             isVenueAddress: true,
+            id_oa: '123',
+            isManualEdition: false,
+            label: 'théâtre',
           },
-          id_oa: '123',
         },
         eventAddress: {
           addressType: OfferAddressType.OFFERER_VENUE,
@@ -213,11 +215,15 @@ describe('createOfferPayload', () => {
           locationType: CollectiveLocationType.ADDRESS,
           address: {
             city: 'Paris',
-            latitude: 3,
-            longitude: 2,
+            latitude: '3',
+            longitude: '2',
             postalCode: '75018',
             street: 'rue de la paix',
             isVenueAddress: true,
+            isManualEdition: false,
+            label: 'théâtre',
+            banId: '',
+            coords: '',
           },
         },
       })
@@ -231,15 +237,17 @@ describe('createOfferPayload', () => {
         location: {
           locationType: CollectiveLocationType.ADDRESS,
           address: {
-            city: 'Paris',
-            latitude: 3,
-            longitude: 2,
-            postalCode: '75018',
-            street: 'rue de la paix',
             isVenueAddress: true,
+            id_oa: '123',
+            isManualEdition: false,
+            label: '',
           },
-          id_oa: '123',
         },
+        city: 'Paris',
+        latitude: '3',
+        longitude: '2',
+        postalCode: '75018',
+        street: 'rue de la paix',
         eventAddress: {
           addressType: OfferAddressType.OFFERER_VENUE,
           otherAddress: '',

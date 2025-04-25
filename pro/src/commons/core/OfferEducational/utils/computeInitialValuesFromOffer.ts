@@ -93,19 +93,16 @@ export const computeInitialValuesFromOffer = (
   )
 
   const defaultVenue = venues.find((v) => v.id.toString() === initialVenueId)
-
+  const venueAddress = defaultVenue?.address
   const offerLocationFromVenue = defaultVenue
     ? {
         locationType: CollectiveLocationType.ADDRESS,
         address: {
           isVenueAddress: true,
-          city: defaultVenue.address?.city ?? '',
-          latitude: defaultVenue.address?.latitude ?? '',
-          longitude: defaultVenue.address?.longitude ?? '',
-          postalCode: defaultVenue.address?.postalCode ?? '',
-          street: defaultVenue.address?.street ?? '',
+          isManualEdition: false,
+          label: defaultVenue.name,
+          id_oa: defaultVenue.address?.id_oa.toString() ?? '',
         },
-        id_oa: defaultVenue.address?.id_oa.toString() ?? '',
       }
     : DEFAULT_EAC_FORM_VALUES.location
 
@@ -113,6 +110,12 @@ export const computeInitialValuesFromOffer = (
     const today = formatShortDateForInput(getToday())
     return {
       ...DEFAULT_EAC_FORM_VALUES,
+      city: venueAddress?.city,
+      street: venueAddress?.street,
+      postalCode: venueAddress?.postalCode,
+      latitude: venueAddress?.latitude.toString(),
+      longitude: venueAddress?.longitude.toString(),
+      banId: venueAddress?.banId,
       offererId: initialOffererId,
       venueId: initialVenueId,
       location: offerLocationFromVenue,
@@ -127,7 +130,7 @@ export const computeInitialValuesFromOffer = (
         phone: false,
       },
       contactFormType: 'form',
-      contactUrl: isTemplate ? '' : undefined, //  If the field is not given an intial value, a submit would not set it as touched and the error would not appear the first time
+      contactUrl: isTemplate ? '' : undefined, //  If the field is not given an initial value, a submit would not set it as touched and the error would not appear the first time
     }
   }
 
@@ -140,19 +143,15 @@ export const computeInitialValuesFromOffer = (
       DEFAULT_EAC_FORM_VALUES.location.locationType,
     address: {
       isVenueAddress,
-      city: offer.location?.address?.city ?? '',
-      latitude: offer.location?.address?.latitude ?? '',
-      longitude: offer.location?.address?.longitude ?? '',
-      postalCode: offer.location?.address?.postalCode ?? '',
-      street: offer.location?.address?.street ?? '',
       label: offer.location?.address?.label ?? '',
+      id_oa: isVenueAddress
+        ? offer.location?.address?.id_oa.toString()
+        : 'SPECIFIC_ADDRESS',
+      isManualEdition: false,
     },
-    id_oa: isVenueAddress
-      ? offer.location?.address?.id_oa.toString()
-      : 'SPECIFIC_ADDRESS',
   }
 
-  const { address } = offerLocationFromOffer
+  const offerAddress = offer.location?.address
 
   const participants = {
     college: false,
@@ -166,6 +165,8 @@ export const computeInitialValuesFromOffer = (
   const email = offer.contactEmail
   const phone = offer.contactPhone
   const domains = offer.domains.map(({ id }) => id.toString())
+
+  const address = isVenueAddress ? venueAddress : offerAddress
 
   return {
     title: offer.name,
@@ -192,15 +193,20 @@ export const computeInitialValuesFromOffer = (
     interventionArea: offer.interventionArea,
     venueId: initialVenueId,
     offererId: initialOffererId,
-    location:
-      // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
-      // then set this OA id in formik field (so it will be checked by default)
-      // Else, we can assume it's an "other" address
-      isVenueAddress ? offerLocationFromVenue : offerLocationFromOffer,
+    // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
+    // then set this OA id in formik field (so it will be checked by default)
+    // Else, we can assume it's an "other" address
+    location: isVenueAddress ? offerLocationFromVenue : offerLocationFromOffer,
+    city: address?.city,
+    street: address?.street,
+    postalCode: address?.postalCode,
+    latitude: address?.latitude.toString(),
+    longitude: address?.longitude.toString(),
+    banId: address?.banId,
     addressAutocomplete: isVenueAddress
       ? ''
-      : `${address.street} ${address.postalCode} ${address.city}`,
-    'search-addressAutocomplete': `${address.street} ${address.postalCode} ${address.city}`,
+      : `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
+    'search-addressAutocomplete': `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

@@ -73,7 +73,7 @@ export function getOfferEducationalValidationSchema(
           .when(
             [
               'location.locationType',
-              'location.id_oa',
+              'location.address.id_oa',
               'location.address.isManualEdition',
             ],
             {
