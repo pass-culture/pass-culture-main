@@ -63,12 +63,12 @@ const getSiretDataRequest = async (
     const longitude = addressData[0].longitude
     return {
       values: {
-        address: response.address.street,
-        city: response.address.city,
+        address: addressData[0].address,
+        city: addressData[0].city,
         latitude: latitude,
         longitude: longitude,
         name: response.name,
-        postalCode: response.address.postalCode,
+        postalCode: addressData[0].postalCode,
         siret: response.siret,
         apeCode: response.ape_code,
         legalCategoryCode: response.legal_category_code,
