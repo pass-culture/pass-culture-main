@@ -206,6 +206,7 @@ class JsonFormatter(logging.Formatter):
             "message": record.getMessage(),
             "technical_message_id": tech_msg_id,
             "extra": extra,
+            "pid": os.getpid(),
         }
         if impersonator_id:
             json_record["impersonator_id"] = impersonator_id
