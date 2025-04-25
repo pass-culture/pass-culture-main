@@ -38,6 +38,10 @@ def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
 
 @app.login_manager.user_loader  # type: ignore[attr-defined]
 def get_user_with_id(user_id: str) -> users_models.User | None:
+    if flask.request.path.startswith("/static/"):
+        # No DB request to serve static files
+        return None
+
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
     try:
