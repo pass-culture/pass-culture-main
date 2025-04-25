@@ -14,12 +14,15 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { IndividualOfferContextProvider } from '../IndividualOfferContext'
 
+const mockNavigate = vi.fn()
+
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useLocation: vi.fn(),
   useParams: () => ({
     offerId: '1',
   }),
+  useNavigate: () => mockNavigate,
 }))
 
 const apiOffer: GetIndividualOfferWithAddressResponseModel =
@@ -94,5 +97,21 @@ describe('IndividualOfferContextProvider', () => {
     renderIndividualOfferContextProvider()
 
     expect(await screen.findByText('Test inner content')).toBeInTheDocument()
+  })
+
+  it('should redirect to an error page when the offer does not exist', async () => {
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+      status: 404,
+    })
+
+    renderIndividualOfferContextProvider()
+
+    await waitFor(() => {
+      expect(api.getCategories).toHaveBeenCalled()
+    })
+
+    expect(mockNavigate).toHaveBeenLastCalledWith('/404', {
+      state: { from: 'offer' },
+    })
   })
 })

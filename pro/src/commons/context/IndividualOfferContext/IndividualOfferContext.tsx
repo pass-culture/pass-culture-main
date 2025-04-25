@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import useSWR from 'swr'
+import { useNavigate, useParams } from 'react-router-dom'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -51,11 +51,24 @@ export const IndividualOfferContextProvider = ({
     offerId: string
   }>()
 
+  const SWRConfig = useSWRConfig()
+
+  const navigate = useNavigate()
+
   const offerQuery = useSWR(
     offerId && offerId !== 'creation'
       ? [GET_OFFER_QUERY_KEY, Number(offerId)]
       : null,
-    ([, offerIdParam]) => api.getOffer(offerIdParam)
+    ([, offerIdParam]) => api.getOffer(offerIdParam),
+    {
+      onError: (error, key) => {
+        if (error.status === 404) {
+          navigate('/404', { state: { from: 'offer' } })
+          return
+        }
+        SWRConfig.onError(error, key, SWRConfig)
+      },
+    }
   )
   const offer = offerQuery.data
 
