@@ -14,7 +14,7 @@ export function attachmentModificationsDone() {
 describe('Financial Management - messages, links to external help page, reimbursement details, unattach', () => {
   describe('Data contains 2 offerers, one with 0 venue, one with 1 venue', () => {
     let login1: string
-    before(() => {
+    beforeEach(() => {
       cy.visit('/connexion')
       cy.sandboxCall(
         'GET',

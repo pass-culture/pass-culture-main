@@ -8,7 +8,7 @@ import {
 describe('Edit digital individual offers', () => {
   describe('Display and url modification', () => {
     let login1: string
-    before(() => {
+    beforeEach(() => {
       cy.wrap(Cypress.session.clearAllSavedSessions())
       cy.visit('/connexion')
       cy.sandboxCall(
@@ -97,7 +97,7 @@ describe('Edit digital individual offers', () => {
 
   describe('Modification of date event offer with bookings', () => {
     let login2: string
-    before(() => {
+    beforeEach(() => {
       cy.visit('/connexion')
       cy.sandboxCall(
         'GET',
