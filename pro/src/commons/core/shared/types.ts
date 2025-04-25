@@ -18,3 +18,15 @@ export interface AccessibilityFormValues {
   mental: boolean
   none: boolean
 }
+
+export interface AddressFormValues {
+  'search-addressAutocomplete': string
+  addressAutocomplete: string
+  banId: string | null
+  street: string | null
+  postalCode: string
+  city: string
+  coords: string
+  latitude: string
+  longitude: string
+}

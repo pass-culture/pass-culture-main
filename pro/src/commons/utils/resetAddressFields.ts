@@ -1,6 +1,6 @@
 import { type FormikContextType } from 'formik'
 
-import { AddressFormValues } from 'components/AddressManual/AddressManual'
+import { AddressFormValues } from 'commons/core/shared/types'
 
 const fieldsNames: Array<keyof AddressFormValues> = [
   'street',

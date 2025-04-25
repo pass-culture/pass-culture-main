@@ -1,6 +1,8 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'commons/core/shared/types'
-import { type AddressFormValues } from 'components/AddressManual/AddressManual'
+import {
+  AccessibilityFormValues,
+  AddressFormValues,
+} from 'commons/core/shared/types'
 
 // We makes "AddressFormValues" partial because the individual offer form may not have address fields (e.g. if it's a virtual offer)
 export interface IndividualOfferFormValues extends Partial<AddressFormValues> {
