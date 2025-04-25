@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -22,6 +21,7 @@ class IndexAllOffersTest:
         offer_4 = offers_factories.OfferFactory(isActive=False)
         offers_factories.StockFactory(offer=offer_4)
 
-        with patch("pcapi.core.search.reindex_offer_ids") as mock:
+        with patch("pcapi.core.search.reindex_offer_ids") as mock_reindex_offer_ids:
             _index_all_offers()
-            mock.assert_has_calls([call([offer_1.id, offer_2.id, offer_3.id])], any_order=True)
+            mock_reindex_offer_ids.assert_called_once()
+            assert set(mock_reindex_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id, offer_3.id])
