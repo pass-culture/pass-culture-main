@@ -56,20 +56,17 @@ export function expectOffersOrBookingsAreFound(
 }
 
 /**
- * Login then go to a page. This function does not use `session()` so browser
- * session will not be restored when reused in a test unlike the
- * `sessionLogInAndGoToPage()`function
+ * Login
  *
  * @param {string} login email to use for login (password used is a default one)
- * @param {string} path path to the page that will be visited after login
  * @param {boolean} [setDefaultCookieOrejime=true] optional param: close the
  * cookie popup in all pages (default is true)
  */
-export function logInAndGoToPage(
+function doLogin(
   login: string,
-  path: string,
-  setDefaultCookieOrejime: boolean = true
-) {
+  setDefaultCookieOrejime: boolean = true,
+  retry: boolean = true
+): Cypress.Chainable<any> {
   const password = 'user@AZERTY123'
   cy.stepLog({ message: `I am logged in with account ${login}` })
   cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
@@ -88,17 +85,42 @@ export function logInAndGoToPage(
   cy.get('#email').type(login)
   cy.get('#password').type(password)
   cy.get('button[type=submit]').click()
-  cy.wait('@signinUser').its('response.statusCode').should('eq', 200)
-  cy.wait('@offererNames')
 
-  cy.stepLog({ message: `I open the "${path}" page` })
-  cy.visit(path)
-  if (path === '/accueil') {
-    homePageLoaded()
-  } else {
-    cy.url().should('contain', path)
-    cy.findAllByTestId('spinner').should('not.exist')
-  }
+  return cy.wait('@signinUser').then(({ request, response }) => {
+    if (response?.statusCode !== 200 && retry) {
+      return cy.wait(5000).then(() => {
+        return doLogin(login, setDefaultCookieOrejime, false)
+      })
+    }
+    cy.wait('@offererNames')
+  })
+}
+
+/**
+ * Login then go to a page. This function does not use `session()` so browser
+ * session will not be restored when reused in a test unlike the
+ * `sessionLogInAndGoToPage()`function
+ *
+ * @param {string} login email to use for login (password used is a default one)
+ * @param {string} path path to the page that will be visited after login
+ * @param {boolean} [setDefaultCookieOrejime=true] optional param: close the
+ * cookie popup in all pages (default is true)
+ */
+export function logInAndGoToPage(
+  login: string,
+  path: string,
+  setDefaultCookieOrejime: boolean = true
+) {
+  doLogin(login, setDefaultCookieOrejime).then(() => {
+    cy.stepLog({ message: `I open the "${path}" page` })
+    cy.visit(path)
+    if (path === '/accueil') {
+      homePageLoaded()
+    } else {
+      cy.url().should('contain', path)
+      cy.findAllByTestId('spinner').should('not.exist')
+    }
+  })
 }
 
 /**
@@ -112,34 +134,18 @@ export function logInAndSeeDidacticOnboarding(
   login: string,
   setDefaultCookieOrejime = true
 ) {
-  const password = 'user@AZERTY123'
-  cy.stepLog({ message: `I am logged in with account ${login}` })
-  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
-  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
+  doLogin(login, setDefaultCookieOrejime).then(() => {
+    cy.stepLog({ message: `I open the /onboarding page` })
+    cy.visit('/onboarding')
 
-  cy.visit('/connexion')
-  if (setDefaultCookieOrejime) {
-    cy.setCookie(
-      'orejime',
-      '{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}'
-    )
-  }
+    cy.findAllByTestId('spinner').should('not.exist')
 
-  cy.get('#email').type(login)
-  cy.get('#password').type(password)
-  cy.get('button[type=submit]').click()
-  cy.wait(['@signinUser', '@offererNames'])
-
-  cy.stepLog({ message: `I open the /onboarding page` })
-  cy.visit('/onboarding')
-
-  cy.findAllByTestId('spinner').should('not.exist')
-
-  cy.findByText('Bienvenue sur le pass Culture Pro !')
-  cy.findByText('À qui souhaitez-vous proposer votre première offre ?')
-  cy.findByText('Aux jeunes sur l’application mobile pass Culture')
-  cy.findByText('Aux enseignants sur la plateforme ADAGE')
-  cy.findAllByText('Commencer').should('have.length', 2)
+    cy.findByText('Bienvenue sur le pass Culture Pro !')
+    cy.findByText('À qui souhaitez-vous proposer votre première offre ?')
+    cy.findByText('Aux jeunes sur l’application mobile pass Culture')
+    cy.findByText('Aux enseignants sur la plateforme ADAGE')
+    cy.findAllByText('Commencer').should('have.length', 2)
+  })
 }
 
 /**
