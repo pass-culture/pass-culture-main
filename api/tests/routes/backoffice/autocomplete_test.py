@@ -14,6 +14,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 
 pytestmark = [
@@ -268,7 +269,7 @@ class AutocompleteProvidersTest(AutocompleteTestBase):
         ],
     )
     def test_autocomplete_providers(self, authenticated_client, search_query, expected_texts, expected_queries):
-        providers_models.Provider.query.delete()
+        db.session.query(providers_models.Provider).delete()
         providers_factories.ProviderFactory(id=12, name="Bon providér")
         providers_factories.ProviderFactory(id=5, name="provider with number 12")
         providers_factories.ProviderFactory(id=912, name="A good id")

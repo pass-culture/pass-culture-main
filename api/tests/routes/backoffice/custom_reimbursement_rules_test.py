@@ -239,7 +239,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Le nouveau tarif dérogatoire a été créé"
         )
 
-        rule = finance_models.CustomReimbursementRule.query.one()
+        rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.offererId == offerer.id
         assert rule.rate == Decimal("0.1234")
         assert rule.timespan.lower == date_utils.get_day_start(
@@ -266,7 +266,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Must provide offer, venue, or offerer (only one)"
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_invalid_venue(self, authenticated_client):
         response = self.post_to_endpoint(
@@ -284,7 +284,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Must provide offer, venue, or offerer (only one)"
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_not_a_pricing_point(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()
@@ -303,7 +303,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_venue_and_offerer(self, authenticated_client):
         response = self.post_to_endpoint(
@@ -321,7 +321,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Un tarif dérogatoire ne peut pas concerner un partenaire culturel et une entité juridique en même temps"
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_no_end_date(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -341,7 +341,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Le nouveau tarif dérogatoire a été créé"
         )
 
-        rule = finance_models.CustomReimbursementRule.query.one()
+        rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.timespan.lower == date_utils.get_day_start(
             self.tomorrow, finance_utils.ACCOUNTING_TIMEZONE
         ).astimezone(tz=None).replace(tzinfo=None)
@@ -363,7 +363,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client.get(response.location).data
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_end_date_before_start_date(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -382,7 +382,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client.get(response.location).data
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_invalid_rate(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -396,7 +396,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_rate_100(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -416,7 +416,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Le nouveau tarif dérogatoire a été créé"
         )
 
-        rule = finance_models.CustomReimbursementRule.query.one()
+        rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.rate == Decimal(1)
 
     def test_create_with_rate_0(self, authenticated_client):
@@ -437,7 +437,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Must provide rate or amount (but not both)"
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_negative_rate(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -455,7 +455,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client.get(response.location).data
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_greater_rate(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -473,7 +473,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client.get(response.location).data
         )
 
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_create_with_no_subcategory(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -493,7 +493,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             == "Le nouveau tarif dérogatoire a été créé"
         )
 
-        rule = finance_models.CustomReimbursementRule.query.one()
+        rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.offererId == offerer.id
         assert rule.subcategories == []
 
@@ -511,7 +511,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
 
 class GetEditCustomReimbursementRuleFormTest(GetEndpointHelper):

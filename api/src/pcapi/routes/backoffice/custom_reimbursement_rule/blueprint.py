@@ -53,7 +53,8 @@ def _get_custom_reimbursement_rules(
     form: custom_reimbursement_rule_forms.GetCustomReimbursementRulesListForm,
 ) -> list[finance_models.CustomReimbursementRule]:
     base_query = (
-        finance_models.CustomReimbursementRule.query.outerjoin(offers_models.Offer)
+        db.session.query(finance_models.CustomReimbursementRule)
+        .outerjoin(offers_models.Offer)
         .outerjoin(offerers_models.Venue, offers_models.Offer.venue)
         .outerjoin(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .options(
@@ -269,9 +270,9 @@ def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils.BackofficeResponse:
-    custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.filter_by(
-        id=reimbursement_rule_id
-    ).one_or_none()
+    custom_reimbursement_rule = (
+        db.session.query(finance_models.CustomReimbursementRule).filter_by(id=reimbursement_rule_id).one_or_none()
+    )
     if not custom_reimbursement_rule:
         raise NotFound()
 
@@ -302,9 +303,9 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.BackofficeResponse:
-    custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.filter_by(
-        id=reimbursement_rule_id
-    ).one_or_none()
+    custom_reimbursement_rule = (
+        db.session.query(finance_models.CustomReimbursementRule).filter_by(id=reimbursement_rule_id).one_or_none()
+    )
     if not custom_reimbursement_rule:
         raise NotFound()
 

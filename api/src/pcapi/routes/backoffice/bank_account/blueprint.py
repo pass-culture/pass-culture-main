@@ -75,7 +75,8 @@ def render_bank_account_details(
 @bank_blueprint.route("/<int:bank_account_id>", methods=["GET"])
 def get(bank_account_id: int) -> utils.BackofficeResponse:
     bank_account = (
-        finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id)
+        db.session.query(finance_models.BankAccount)
+        .filter(finance_models.BankAccount.id == bank_account_id)
         .options(
             sa_orm.joinedload(finance_models.BankAccount.offerer),
         )
@@ -90,10 +91,12 @@ def get(bank_account_id: int) -> utils.BackofficeResponse:
 @bank_blueprint.route("/<int:bank_account_id>/linked_venues", methods=["GET"])
 def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
     linked_venues = (
-        offerers_models.VenueBankAccountLink.query.filter(
+        db.session.query(offerers_models.VenueBankAccountLink)
+        .filter(
             offerers_models.VenueBankAccountLink.bankAccountId == bank_account_id,
             offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
-        ).options(
+        )
+        .options(
             sa_orm.joinedload(offerers_models.VenueBankAccountLink.venue).load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -123,7 +126,8 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
 @bank_blueprint.route("/<int:bank_account_id>/history", methods=["GET"])
 def get_history(bank_account_id: int) -> utils.BackofficeResponse:
     actions_history = (
-        history_models.ActionHistory.query.filter_by(bankAccountId=bank_account_id)
+        db.session.query(history_models.ActionHistory)
+        .filter_by(bankAccountId=bank_account_id)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
             sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
@@ -147,7 +151,8 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
 @bank_blueprint.route("/<int:bank_account_id>/invoices", methods=["GET"])
 def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
     invoices = (
-        finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_id)
+        db.session.query(finance_models.Invoice)
+        .filter(finance_models.Invoice.bankAccountId == bank_account_id)
         .options(
             sa_orm.joinedload(finance_models.Invoice.cashflows)
             .load_only(finance_models.Cashflow.batchId)
@@ -177,7 +182,9 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
             request.referrer or url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303
         )
 
-    invoices = finance_models.Invoice.query.filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
+    invoices = (
+        db.session.query(finance_models.Invoice).filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
+    )
     reimbursement_details = [
         reimbursement_csv_serialize.ReimbursementDetails(details)
         for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
@@ -196,7 +203,8 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
     bank_account = (
-        finance_models.BankAccount.query.filter_by(id=bank_account_id)
+        db.session.query(finance_models.BankAccount)
+        .filter_by(id=bank_account_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()

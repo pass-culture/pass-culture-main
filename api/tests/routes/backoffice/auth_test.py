@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 from .helpers.post import PostEndpointWithoutPermissionHelper
 
@@ -76,7 +77,7 @@ class AuthorizePageTest:
         assert response.location == url_for("backoffice_web.home", _external=True)
         assert "Successful authentication attempt" in caplog.messages
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert user.has_admin_role
         user_role_names = {role.name for role in user.backoffice_profile.roles}
         expected_role_names = {role.value for role in expected_roles}
@@ -95,7 +96,7 @@ class AuthorizePageTest:
         self, mock_authorize_access_token, mock_parse_id_token, mock_fetch_user_roles, client, caplog
     ):
         email = "email@example.com"
-        user = users_models.User.query.filter(users_models.User.email == email).first()
+        user = db.session.query(users_models.User).filter(users_models.User.email == email).first()
         assert user is None
         expected_roles = [perm_models.Roles.ADMIN]
 
@@ -109,7 +110,7 @@ class AuthorizePageTest:
         with caplog.at_level(logging.INFO):
             response = client.get(url_for("backoffice_web.authorize"))
 
-        user = users_models.User.query.filter(users_models.User.email == email).first()
+        user = db.session.query(users_models.User).filter(users_models.User.email == email).first()
         assert user is not None
         assert user.has_admin_role
         assert response.status_code == 302

@@ -457,10 +457,10 @@ class SuspendOffererTest(DeactivateOffererHelper):
             == f"L'entité juridique {offerer.name} ({offerer.id}) a été suspendue"
         )
 
-        updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
+        updated_offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer.id).one()
         assert not updated_offerer.isActive
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.OFFERER_SUSPENDED
         assert action.authorUser == legit_user
         assert action.comment == "Test suspension"
@@ -480,10 +480,10 @@ class SuspendOffererTest(DeactivateOffererHelper):
             == "Impossible de suspendre une entité juridique pour laquelle il existe des réservations"
         )
 
-        not_updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
+        not_updated_offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer.id).one()
         assert not_updated_offerer.isActive
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class UnsuspendOffererTest(ActivateOffererHelper):
@@ -506,10 +506,10 @@ class UnsuspendOffererTest(ActivateOffererHelper):
             == f"L'entité juridique {offerer.name} ({offerer.id}) a été réactivée"
         )
 
-        updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
+        updated_offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer.id).one()
         assert updated_offerer.isActive
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.OFFERER_UNSUSPENDED
         assert action.authorUser == legit_user
         assert action.comment == "Test réactivation"
@@ -527,7 +527,10 @@ class DeleteOffererTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id)
         assert response.status_code == 303
-        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 0
+        assert (
+            db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.id == offerer_to_delete_id).count()
+            == 0
+        )
 
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
@@ -545,7 +548,10 @@ class DeleteOffererTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id)
         assert response.status_code == 303
-        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 1
+        assert (
+            db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.id == offerer_to_delete_id).count()
+            == 1
+        )
 
         expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_delete.id, _external=True)
         assert response.location == expected_url
@@ -562,7 +568,10 @@ class DeleteOffererTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id, follow_redirects=True)
         assert response.status_code == 200  # after redirect
-        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 1
+        assert (
+            db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.id == offerer_to_delete_id).count()
+            == 1
+        )
 
         assert (
             html_parser.extract_alert(response.data)
@@ -593,7 +602,7 @@ class GenerateOffererAPIKeyTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
         response = authenticated_client.get(response.location)
-        api_key = offerers_models.ApiKey.query.filter_by(offererId=offerer.id).one()
+        api_key = db.session.query(offerers_models.ApiKey).filter_by(offererId=offerer.id).one()
         alert = html_parser.extract_alert(response.data)
         assert alert.startswith(f"Nouvelle clé API pour {offerer.name} ({offerer.id}): {api_key.prefix}")
 
@@ -662,7 +671,7 @@ class UpdateOffererTest(PostEndpointHelper):
         history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
-        offerer_to_edit = offerers_models.Offerer.query.filter_by(id=offerer_to_edit.id).one()
+        offerer_to_edit = db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
         assert offerer_to_edit.name == new_name
         assert offerer_to_edit.city == new_city
         assert offerer_to_edit.postalCode == new_postal_code
@@ -719,7 +728,7 @@ class UpdateOffererTest(PostEndpointHelper):
         history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
-        updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer_to_edit.id).one()
+        updated_offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
         assert updated_offerer.city == "Brest"
         assert updated_offerer.postalCode == "29200"
         assert updated_offerer.street == "Place de la Liberté"
@@ -831,7 +840,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert offerer.confidenceLevel is None
-        assert offerers_models.OffererConfidenceRule.query.count() == 0
+        assert db.session.query(offerers_models.OffererConfidenceRule).count() == 0
         assert len(offerer.action_history) == 1
         action = offerer.action_history[0]
         assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
@@ -1666,11 +1675,11 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        users_offerers = offerers_models.UserOfferer.query.all()
+        users_offerers = db.session.query(offerers_models.UserOfferer).all()
         assert len(users_offerers) == 1
         assert users_offerers[0].validationStatus == ValidationStatus.DELETED
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -2080,9 +2089,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 user__phoneNumber="+33610203040",
             )
             tag = offerers_factories.OffererTagFactory(label="Magic Tag")
-            category = offerers_models.OffererTagCategory.query.filter(
-                offerers_models.OffererTagCategory.name == "homologation"
-            ).one()
+            category = (
+                db.session.query(offerers_models.OffererTagCategory)
+                .filter(offerers_models.OffererTagCategory.name == "homologation")
+                .one()
+            )
             offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
             offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=user_offerer.offerer.id)
 
@@ -2325,7 +2336,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             self, authenticated_client, tag_filter, expected_offerer_names, offerers_to_be_validated
         ):
             tags = (
-                offerers_models.OffererTag.query.filter(offerers_models.OffererTag.label.in_(tag_filter))
+                db.session.query(offerers_models.OffererTag)
+                .filter(offerers_models.OffererTag.label.in_(tag_filter))
                 .with_entities(offerers_models.OffererTag.id)
                 .all()
             )
@@ -2735,8 +2747,10 @@ class GetValidateOffererFormTest(GetEndpointHelper):
 
     def test_get_validate_offerer_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NotValidatedOffererFactory()
-
         url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
         with assert_num_queries(3):  # session + current user + offerer
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
@@ -2771,7 +2785,7 @@ class ValidateOffererTest(ActivateOffererHelper):
         assert user_offerer.user.has_pro_role
         assert not user_offerer.user.has_non_attached_pro_role
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -2823,8 +2837,10 @@ class GetRejectOffererFormTest(GetEndpointHelper):
 
     def test_get_reject_offerer_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NotValidatedOffererFactory()
-
         url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
         with assert_num_queries(3):  # session + current user + offerer
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
@@ -2858,9 +2874,11 @@ class RejectOffererTest(DeactivateOffererHelper):
         assert user.has_non_attached_pro_role
         assert user_offerer.validationStatus == ValidationStatus.REJECTED
 
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.OFFERER_REJECTED
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .one()
+        )
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -2868,9 +2886,11 @@ class RejectOffererTest(DeactivateOffererHelper):
         assert action.venueId is None
         assert action.extraData == {"rejection_reason": offerers_models.OffererRejectionReason.ELIGIBILITY.name}
 
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.USER_OFFERER_REJECTED
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
+            .one()
+        )
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -2947,8 +2967,10 @@ class GetOffererPendingFormTest(GetEndpointHelper):
 
     def test_get_offerer_pending_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NotValidatedOffererFactory()
-
         url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
@@ -2979,7 +3001,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
         assert offerer.isActive
         assert offerer.validationStatus == ValidationStatus.PENDING
         assert set(offerer.tags) == {non_homologation_tag, offerer_tags[0], offerer_tags[2]}
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
 
         assert action.actionType == history_models.ActionType.OFFERER_PENDING
         assert action.actionDate is not None
@@ -3043,7 +3065,7 @@ class ToggleTopActorTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
 
         assert response.status_code == 303
-        offerer_mappings = offerers_models.OffererTagMapping.query.all()
+        offerer_mappings = db.session.query(offerers_models.OffererTagMapping).all()
         assert len(offerer_mappings) == 1
         assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
@@ -3051,7 +3073,7 @@ class ToggleTopActorTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert offerers_models.OffererTagMapping.query.count() == 0
+        assert db.session.query(offerers_models.OffererTagMapping).count() == 0
 
     def test_toggle_is_top_actor_twice_true(self, authenticated_client, top_acteur_tag):
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
@@ -3060,7 +3082,7 @@ class ToggleTopActorTest(PostEndpointHelper):
             response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
             assert response.status_code == 303
 
-        offerer_mappings = offerers_models.OffererTagMapping.query.all()
+        offerer_mappings = db.session.query(offerers_models.OffererTagMapping).all()
         assert len(offerer_mappings) == 1
         assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
@@ -3390,7 +3412,8 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         self, authenticated_client, tag_filter, expected_users_emails, user_offerer_to_be_validated
     ):
         tags = (
-            offerers_models.OffererTag.query.filter(offerers_models.OffererTag.label.in_(tag_filter))
+            db.session.query(offerers_models.OffererTag)
+            .filter(offerers_models.OffererTag.label.in_(tag_filter))
             .with_entities(offerers_models.OffererTag.id)
             .all()
         )
@@ -3481,7 +3504,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         assert user_offerer.user.has_pro_role
         assert not user_offerer.user.has_non_attached_pro_role
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -3543,11 +3566,11 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        users_offerers = offerers_models.UserOfferer.query.all()
+        users_offerers = db.session.query(offerers_models.UserOfferer).all()
         assert len(users_offerers) == 1
         assert users_offerers[0].validationStatus == ValidationStatus.REJECTED
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -3584,7 +3607,7 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         db.session.refresh(user_offerer)
         assert not user_offerer.isValidated
         assert user_offerer.validationStatus == ValidationStatus.PENDING
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -3652,9 +3675,11 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         assert user.UserOfferers[0].isValidated
         assert user.UserOfferers[0].offerer == offerer
 
-        action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_VALIDATED)
+            .one()
+        )
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -3685,8 +3710,8 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
             == "L'ID ne correspond pas à un ancien rattachement à l'entité juridique"
         )
 
-        assert offerers_models.UserOfferer.query.count() == 1  # existing before request
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(offerers_models.UserOfferer).count() == 1  # existing before request
+        assert db.session.query(history_models.ActionHistory).count() == 0
         assert len(mails_testing.outbox) == 0
 
     def test_add_user_not_related(self, legit_user, authenticated_client):
@@ -3750,7 +3775,7 @@ class InviteUserTest(PostEndpointHelper):
         assert response.status_code == 200  # after redirect
         assert html_parser.extract_alert(response.data) == f"L'invitation a été envoyée à {invited_email}"
 
-        invitation = offerers_models.OffererInvitation.query.one()
+        invitation = db.session.query(offerers_models.OffererInvitation).one()
         assert invitation.offererId == offerer.id
         assert invitation.email == invited_email
         assert invitation.user == legit_user
@@ -3771,7 +3796,7 @@ class InviteUserTest(PostEndpointHelper):
 
         assert response.status_code == 200  # after redirect
         assert html_parser.extract_alert(response.data) == "Une invitation a déjà été envoyée à ce collaborateur"
-        assert offerers_models.OffererInvitation.query.count() == 1
+        assert db.session.query(offerers_models.OffererInvitation).count() == 1
 
     def test_invite_user_already_associated(self, authenticated_client, offerer):
         user = offerers_factories.UserOffererFactory(offerer=offerer).user
@@ -3782,7 +3807,7 @@ class InviteUserTest(PostEndpointHelper):
 
         assert response.status_code == 200  # after redirect
         assert html_parser.extract_alert(response.data) == "Ce collaborateur est déjà rattaché à l'entité juridique"
-        assert offerers_models.OffererInvitation.query.count() == 0
+        assert db.session.query(offerers_models.OffererInvitation).count() == 0
 
     def test_invite_user_empty(self, authenticated_client, offerer):
         response = self.post_to_endpoint(
@@ -3794,7 +3819,7 @@ class InviteUserTest(PostEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Les données envoyées comportent des erreurs. Adresse email : Email obligatoire, doit contenir entre 3 et 128 caractères ;"
         )
-        assert offerers_models.OffererInvitation.query.count() == 0
+        assert db.session.query(offerers_models.OffererInvitation).count() == 0
 
 
 class GetBatchOffererValidateFormTest(GetEndpointHelper):
@@ -3832,9 +3857,13 @@ class BatchOffererValidateTest(PostEndpointHelper):
         for offerer in _offerers:
             db.session.refresh(offerer)
             assert offerer.isValidated
-            action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == offerer.id,
-            ).one()
+            action = (
+                db.session.query(history_models.ActionHistory)
+                .filter(
+                    history_models.ActionHistory.offererId == offerer.id,
+                )
+                .one()
+            )
             assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
@@ -3891,9 +3920,13 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
             assert not offerer.isValidated
             assert offerer.validationStatus == ValidationStatus.PENDING
             assert set(offerer.tags) == {offerer_tags[0], offerer_tags[2]}
-            action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == offerer.id,
-            ).one()
+            action = (
+                db.session.query(history_models.ActionHistory)
+                .filter(
+                    history_models.ActionHistory.offererId == offerer.id,
+                )
+                .one()
+            )
 
             assert action.actionType == history_models.ActionType.OFFERER_PENDING
             assert action.actionDate is not None
@@ -3955,9 +3988,13 @@ class BatchOffererRejectTest(PostEndpointHelper):
         assert response.status_code == 303
 
         for offerer in _offerers:
-            action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == offerer.id,
-            ).one()
+            action = (
+                db.session.query(history_models.ActionHistory)
+                .filter(
+                    history_models.ActionHistory.offererId == offerer.id,
+                )
+                .one()
+            )
             assert action.actionType == history_models.ActionType.OFFERER_REJECTED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
@@ -3985,10 +4022,14 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
             assert user_offerer.isValidated
             assert user_offerer.user.has_pro_role
 
-            action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == user_offerer.offererId,
-                history_models.ActionHistory.userId == user_offerer.userId,
-            ).one()
+            action = (
+                db.session.query(history_models.ActionHistory)
+                .filter(
+                    history_models.ActionHistory.offererId == user_offerer.offererId,
+                    history_models.ActionHistory.userId == user_offerer.userId,
+                )
+                .one()
+            )
             assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
@@ -4045,10 +4086,14 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
             db.session.refresh(user_offerer)
             assert not user_offerer.isValidated
             assert user_offerer.validationStatus == ValidationStatus.PENDING
-            action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == user_offerer.offererId,
-                history_models.ActionHistory.userId == user_offerer.userId,
-            ).one()
+            action = (
+                db.session.query(history_models.ActionHistory)
+                .filter(
+                    history_models.ActionHistory.offererId == user_offerer.offererId,
+                    history_models.ActionHistory.userId == user_offerer.userId,
+                )
+                .one()
+            )
             assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
@@ -4085,15 +4130,19 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        users_offerers = offerers_models.UserOfferer.query.all()
+        users_offerers = db.session.query(offerers_models.UserOfferer).all()
         assert len(users_offerers) == 10
         assert all(user_offerer.validationStatus == ValidationStatus.REJECTED for user_offerer in users_offerers)
 
         for user_offerer in user_offerers:
-            action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == user_offerer.offererId,
-                history_models.ActionHistory.userId == user_offerer.userId,
-            ).one()
+            action = (
+                db.session.query(history_models.ActionHistory)
+                .filter(
+                    history_models.ActionHistory.offererId == user_offerer.offererId,
+                    history_models.ActionHistory.userId == user_offerer.userId,
+                )
+                .one()
+            )
             assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
@@ -4290,7 +4339,7 @@ class CreateOffererTagTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.offerer_tag.list_offerer_tags", _external=True)
 
-        created_tag = offerers_models.OffererTag.query.one()
+        created_tag = db.session.query(offerers_models.OffererTag).one()
         assert created_tag.name == name
         assert created_tag.label == label
         assert created_tag.description == description
@@ -4306,7 +4355,7 @@ class CreateOffererTagTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offerers_models.OffererTag.query.count() == 0
+        assert db.session.query(offerers_models.OffererTag).count() == 0
 
     def test_create_with_already_existing_tag(self, authenticated_client):
         offerers_factories.OffererTagFactory(
@@ -4318,7 +4367,7 @@ class CreateOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
         assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Ce tag existe déjà"
-        assert offerers_models.OffererTag.query.count() == 1
+        assert db.session.query(offerers_models.OffererTag).count() == 1
 
 
 class DeleteOffererTagTest(PostEndpointHelper):
@@ -4333,8 +4382,8 @@ class DeleteOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_tag_id=tags[1].id)
 
         assert response.status_code == 303
-        assert set(offerers_models.OffererTag.query.all()) == {tags[0], tags[2]}
-        assert offerers_models.Offerer.query.one().tags == [tags[2]]
+        assert set(db.session.query(offerers_models.OffererTag).all()) == {tags[0], tags[2]}
+        assert db.session.query(offerers_models.Offerer).one().tags == [tags[2]]
 
     def test_delete_non_existing_tag(self, authenticated_client):
         tag = offerers_factories.OffererTagFactory()
@@ -4342,7 +4391,7 @@ class DeleteOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_tag_id=tag.id + 1)
 
         assert response.status_code == 404
-        assert offerers_models.OffererTag.query.count() == 1
+        assert db.session.query(offerers_models.OffererTag).count() == 1
 
 
 class CreateOffererTagCategoryTest(PostEndpointHelper):
@@ -4361,7 +4410,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
             "backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories", _external=True
         )
 
-        created_category = offerers_models.OffererTagCategory.query.one()
+        created_category = db.session.query(offerers_models.OffererTagCategory).one()
         assert created_category.name == form_data["name"]
         assert created_category.label == form_data["label"]
 
@@ -4374,7 +4423,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
             html_parser.extract_alert(authenticated_client.get(response.location).data) == "Cette catégorie existe déjà"
         )
 
-        assert offerers_models.OffererTagCategory.query.count() == 2  # 2 categories in fixture
+        assert db.session.query(offerers_models.OffererTagCategory).count() == 2  # 2 categories in fixture
 
 
 class GetIndividualOffererSubscriptionTest(GetEndpointHelper):

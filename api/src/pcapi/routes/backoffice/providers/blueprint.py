@@ -201,7 +201,8 @@ def _render_provider_details(
 @providers_blueprint.route("/<int:provider_id>", methods=["GET"])
 def get_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = (
-        providers_models.Provider.query.filter(providers_models.Provider.id == provider_id)
+        db.session.query(providers_models.Provider)
+        .filter(providers_models.Provider.id == provider_id)
         .options(
             sa_orm.joinedload(providers_models.Provider.offererProvider)
             .joinedload(offerers_models.OffererProvider.offerer)
@@ -251,7 +252,8 @@ def get_stats(provider_id: int) -> utils.BackofficeResponse:
 @providers_blueprint.route("/<int:provider_id>/venues", methods=["GET"])
 def get_venues(provider_id: int) -> utils.BackofficeResponse:
     venues = (
-        offerers_models.Venue.query.join(
+        db.session.query(offerers_models.Venue)
+        .join(
             providers_models.VenueProvider,
             sa.and_(
                 providers_models.VenueProvider.venueId == offerers_models.Venue.id,
@@ -294,7 +296,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def update_provider(provider_id: int) -> utils.BackofficeResponse:
-    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+    provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one_or_none()
     if not provider:
         raise NotFound()
 

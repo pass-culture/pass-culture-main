@@ -43,7 +43,8 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
         history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
     )
     history = (
-        history_models.ActionHistory.query.filter(history_models.ActionHistory.actionType.in_(fraud_actions))
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.actionType.in_(fraud_actions))
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(50)
         .options(
@@ -53,9 +54,11 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
         )
     )
 
-    blacklist = fraud_models.BlacklistedDomainName.query.order_by(
-        fraud_models.BlacklistedDomainName.dateCreated.desc()
-    ).options(sa_orm.load_only(fraud_models.BlacklistedDomainName.id, fraud_models.BlacklistedDomainName.domain))
+    blacklist = (
+        db.session.query(fraud_models.BlacklistedDomainName)
+        .order_by(fraud_models.BlacklistedDomainName.dateCreated.desc())
+        .options(sa_orm.load_only(fraud_models.BlacklistedDomainName.id, fraud_models.BlacklistedDomainName.domain))
+    )
 
     active_tab = request.args.get("active_tab", "blacklist")
     return render_template(
@@ -69,7 +72,7 @@ def list_blacklisted_domain_names() -> utils.BackofficeResponse:
 
 
 def _filter_non_pro_by_domain_name_query(domain_name: str) -> BaseQuery:
-    return users_models.User.query.filter(
+    return db.session.query(users_models.User).filter(
         sa.not_(users_models.User.isActive.is_(False)),
         sa.not_(users_models.User.has_pro_role),
         sa.not_(users_models.User.has_non_attached_pro_role),
@@ -86,13 +89,17 @@ def _list_non_pro_suspensions(domain_name: str) -> list[str]:
 
 
 def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
-    query = users_models.User.query.filter(
-        sa.or_(  # type: ignore[type-var]
-            users_models.User.has_pro_role,
-            users_models.User.has_non_attached_pro_role,
-        ),
-        sa.func.email_domain(users_models.User.email) == domain_name.lower(),
-    ).options(sa_orm.load_only(users_models.User.id, users_models.User.email))
+    query = (
+        db.session.query(users_models.User)
+        .filter(
+            sa.or_(  # type: ignore[type-var]
+                users_models.User.has_pro_role,
+                users_models.User.has_non_attached_pro_role,
+            ),
+            sa.func.email_domain(users_models.User.email) == domain_name.lower(),
+        )
+        .options(sa_orm.load_only(users_models.User.id, users_models.User.email))
+    )
 
     return sorted(query, key=attrgetter("email"))
 
@@ -153,7 +160,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
 
     # a domain can be blacklisted many times but there can be one entry
     # only
-    domain = fraud_models.BlacklistedDomainName.query.filter_by(domain=form.domain.data).first()
+    domain = db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=form.domain.data).first()
     if not domain:
         domain = fraud_models.BlacklistedDomainName(domain=form.domain.data)
     db.session.add(domain)
@@ -194,7 +201,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
 
 @fraud_blueprint.route("/blacklist-domain-name/remove/<string:domain>", methods=["POST"])
 def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
-    query = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain)
+    query = db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=domain)
 
     row = query.one_or_none()
     if not row:

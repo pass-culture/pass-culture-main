@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.routes.backoffice import menu
 
 
@@ -23,7 +24,7 @@ def disable_menu_settings_fixture(settings):
 @pytest.fixture(name="permissions")
 def permissions_fixture():
     # Roles have already been created from enum in sync_db_permissions()
-    return {perm.name: perm for perm in perm_models.Permission.query.all()}
+    return {perm.name: perm for perm in db.session.query(perm_models.Permission).all()}
 
 
 @pytest.fixture(name="generate_user_with_bo_permissions")

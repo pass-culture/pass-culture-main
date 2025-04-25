@@ -9,6 +9,7 @@ from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 from . import base
 
@@ -47,7 +48,7 @@ class UnauthorizedHelperBase(AuthenticatedHelperBase):
         )
 
         # Create a unique test role which has all permissions but the one required
-        perms_in_db = {perm.name: perm for perm in perm_models.Permission.query.all()}
+        perms_in_db = {perm.name: perm for perm in db.session.query(perm_models.Permission).all()}
         role = perm_factories.RoleFactory(
             permissions=[perms_in_db[perm.name] for perm in perm_models.Permissions if perm not in in_permissions]
         )

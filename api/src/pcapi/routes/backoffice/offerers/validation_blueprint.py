@@ -108,7 +108,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
     form = offerer_forms.OffererValidationForm()
 
@@ -126,7 +126,8 @@ def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -156,7 +157,7 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
     form = offerer_forms.OffererRejectionForm()
 
@@ -174,7 +175,8 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -208,7 +210,8 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(
             sa_orm.joinedload(offerers_models.Offerer.tags)
             .joinedload(offerers_models.OffererTag.categories)
@@ -235,7 +238,8 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -266,7 +270,8 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True, read=True)
         .one_or_none()
@@ -275,7 +280,7 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     try:
-        tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
+        tag = db.session.query(offerers_models.OffererTag).filter(offerers_models.OffererTag.name == "top-acteur").one()
     except sa.exc.NoResultFound:
         mark_transaction_as_invalid()
         flash("Le tag top-acteur n'existe pas", "warning")
@@ -297,7 +302,7 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
             mark_transaction_as_invalid()
     else:
         # Remove the tag from offerer
-        offerers_models.OffererTagMapping.query.filter(
+        db.session.query(offerers_models.OffererTagMapping).filter(
             offerers_models.OffererTagMapping.offererId == offerer.id,
             offerers_models.OffererTagMapping.tagId == tag.id,
         ).delete()
@@ -317,7 +322,8 @@ def _offerer_batch_action(
         return _redirect_after_offerer_validation_action()
 
     offerers = (
-        offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list))
+        db.session.query(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.id.in_(form.object_ids_list))
         .populate_existing()
         .with_for_update(key_share=True)
         .all()
@@ -389,7 +395,8 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
             return _redirect_after_offerer_validation_action()
 
         offerers = (
-            offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list))
+            db.session.query(offerers_models.Offerer)
+            .filter(offerers_models.Offerer.id.in_(form.object_ids_list))
             .options(
                 sa_orm.load_only(offerers_models.Offerer.id),
                 sa_orm.joinedload(offerers_models.Offerer.tags).load_only(
@@ -567,7 +574,8 @@ user_offerer_blueprint = utils.child_backoffice_blueprint(
 
 def _load_user_offerer(user_offerer_id: int) -> offerers_models.UserOfferer:
     user_offerer = (
-        offerers_models.UserOfferer.query.filter_by(id=user_offerer_id)
+        db.session.query(offerers_models.UserOfferer)
+        .filter_by(id=user_offerer_id)
         .options(
             sa_orm.joinedload(offerers_models.UserOfferer.user).load_only(users_models.User.email),
             sa_orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
@@ -724,9 +732,11 @@ def _user_offerer_batch_action(
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_user_offerer_validation_action_list()
 
-    user_offerers = offerers_models.UserOfferer.query.filter(
-        offerers_models.UserOfferer.id.in_(form.object_ids_list)
-    ).all()
+    user_offerers = (
+        db.session.query(offerers_models.UserOfferer)
+        .filter(offerers_models.UserOfferer.id.in_(form.object_ids_list))
+        .all()
+    )
 
     for user_offerer in user_offerers:
         api_function(user_offerer, current_user, form.comment.data)

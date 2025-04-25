@@ -102,7 +102,8 @@ def _load_current_deposit_data(query: BaseQuery, join_needed: bool = True) -> Ba
 @utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
 def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id)
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
         .options(
             sa_orm.joinedload(users_models.User.deposits),
             sa_orm.joinedload(users_models.User.gdprUserDataExtract),
@@ -261,7 +262,8 @@ def render_public_account_details(
     # Note that extra queries are made in methods called by get_eligibility_history()
     # Do not joinedload bookings: combinations would cause too many rows returned by postgresql - fetched in a 2nd query
     user = (
-        users_models.User.query.filter_by(id=user_id)
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
         .options(
             sa_orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
             sa_orm.subqueryload(users_models.User.userBookings).options(
@@ -1664,7 +1666,11 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
     )
     if not user:
         raise NotFound()
@@ -1749,7 +1755,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.filter_by(id=user_id).one_or_none()
+    user = db.session.query(users_models.User).filter_by(id=user_id).one_or_none()
     if not user:
         raise NotFound()
 
@@ -1768,7 +1774,11 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
     )
     if not user:
         raise NotFound()
@@ -1801,7 +1811,11 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
     )
     if not user:
         raise NotFound()
@@ -1845,7 +1859,8 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id)
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .options(sa_orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits))
@@ -1904,7 +1919,8 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def comment_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id)
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
         .populate_existing()
         .with_for_update(key_share=True, read=True)
         .one_or_none()
@@ -2081,7 +2097,8 @@ def get_public_account_history(
 @utils.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
 def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter(
+        db.session.query(users_models.User)
+        .filter(
             users_models.User.id == user_id,
         )
         .options(
@@ -2123,7 +2140,7 @@ def has_gdpr_extract(user: users_models.User) -> bool:
 @public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
     if not user:
         raise NotFound()
     if not (user.is_beneficiary or user.roles == []):
@@ -2140,7 +2157,7 @@ def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse
 @public_accounts_blueprint.route("/<int:user_id>/send-reset-password-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
     if not user:
         raise NotFound()
     if not (user.is_beneficiary or user.roles == []):

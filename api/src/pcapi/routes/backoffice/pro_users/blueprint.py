@@ -102,7 +102,8 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
     actions = history_repository.find_all_actions_by_user(user_id)
     can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     user_offerers = (
-        offerers_models.UserOfferer.query.filter_by(userId=user_id)
+        db.session.query(offerers_models.UserOfferer)
+        .filter_by(userId=user_id)
         .order_by(offerers_models.UserOfferer.dateCreated)
         .options(sa_orm.joinedload(offerers_models.UserOfferer.offerer))
         .all()
@@ -196,7 +197,12 @@ def delete(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     # clear from mailing list
-    if not offerers_models.Venue.query.filter(offerers_models.Venue.bookingEmail == user.email).limit(1).count():
+    if (
+        not db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.bookingEmail == user.email)
+        .limit(1)
+        .count()
+    ):
         on_commit(partial(mails_api.delete_contact, user.email, True))
 
     # clear from push notifications
@@ -204,9 +210,10 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     on_commit(partial(delete_user_attributes_task.delay, payload))
 
     # Delete all related objects if the user has already been created as a beneficiary
-    beneficiary_import_status_models.BeneficiaryImportStatus.query.filter(
+    db.session.query(beneficiary_import_status_models.BeneficiaryImportStatus).filter(
         beneficiary_import_status_models.BeneficiaryImportStatus.id.in_(
-            beneficiary_import_status_models.BeneficiaryImportStatus.query.with_entities(
+            db.session.query(beneficiary_import_status_models.BeneficiaryImportStatus)
+            .with_entities(
                 beneficiary_import_status_models.BeneficiaryImportStatus.id,
             )
             .join(
@@ -220,20 +227,20 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     ).delete(
         synchronize_session=False,
     )
-    user_deposits_query = finance_models.Deposit.query.filter(finance_models.Deposit.userId == user_id)
+    user_deposits_query = db.session.query(finance_models.Deposit).filter(finance_models.Deposit.userId == user_id)
     for deposit in user_deposits_query:
-        finance_models.Recredit.query.filter(finance_models.Recredit.depositId == deposit.id).delete(
+        db.session.query(finance_models.Recredit).filter(finance_models.Recredit.depositId == deposit.id).delete(
             synchronize_session=False
         )
     user_deposits_query.delete(synchronize_session=False)
-    beneficiary_import_models.BeneficiaryImport.query.filter(
+    db.session.query(beneficiary_import_models.BeneficiaryImport).filter(
         beneficiary_import_models.BeneficiaryImport.beneficiaryId == user_id
     ).delete(synchronize_session=False)
-    fraud_models.BeneficiaryFraudCheck.query.filter(fraud_models.BeneficiaryFraudCheck.userId == user_id).delete(
-        synchronize_session=False
-    )
+    db.session.query(fraud_models.BeneficiaryFraudCheck).filter(
+        fraud_models.BeneficiaryFraudCheck.userId == user_id
+    ).delete(synchronize_session=False)
 
-    users_models.User.query.filter(users_models.User.id == user_id).delete(synchronize_session=False)
+    db.session.query(users_models.User).filter(users_models.User.id == user_id).delete(synchronize_session=False)
     db.session.flush()
     flash("Le compte a été supprimé", "success")
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)

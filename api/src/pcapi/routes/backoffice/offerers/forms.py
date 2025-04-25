@@ -7,6 +7,7 @@ import wtforms
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -22,16 +23,21 @@ DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
 def _get_all_tags_query() -> sa_orm.Query:
-    return offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.label).options(
-        sa_orm.load_only(
-            offerers_models.OffererTag.id, offerers_models.OffererTag.name, offerers_models.OffererTag.label
+    return (
+        db.session.query(offerers_models.OffererTag)
+        .order_by(offerers_models.OffererTag.label)
+        .options(
+            sa_orm.load_only(
+                offerers_models.OffererTag.id, offerers_models.OffererTag.name, offerers_models.OffererTag.label
+            )
         )
     )
 
 
 def _get_validation_tags_query() -> sa_orm.Query:
     return (
-        offerers_models.OffererTag.query.join(offerers_models.OffererTagCategoryMapping)
+        db.session.query(offerers_models.OffererTag)
+        .join(offerers_models.OffererTagCategoryMapping)
         .join(offerers_models.OffererTagCategory)
         .filter(offerers_models.OffererTagCategory.name == "homologation")
         .order_by(offerers_models.OffererTag.label)

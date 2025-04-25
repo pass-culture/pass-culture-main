@@ -35,8 +35,8 @@ class GetRolesTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_roles_matrix(self, authenticated_client):
-        count_roles = perm_models.Role.query.count()
-        count_permissions = perm_models.Permission.query.count()
+        count_roles = db.session.query(perm_models.Role).count()
+        count_permissions = db.session.query(perm_models.Permission).count()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
@@ -112,10 +112,10 @@ class UpdateRoleTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.get_roles", active_tab="management", _external=True)
         assert response.location == expected_url
 
-        role_to_edit = perm_models.Role.query.filter_by(id=role_to_edit.id).one()
+        role_to_edit = db.session.query(perm_models.Role).filter_by(id=role_to_edit.id).one()
         assert role_to_edit.permissions == new_perms
 
-        role_not_to_edit = perm_models.Role.query.filter_by(id=role_not_to_edit.id).one()
+        role_not_to_edit = db.session.query(perm_models.Role).filter_by(id=role_not_to_edit.id).one()
         assert role_not_to_edit.permissions == old_perms
 
     def test_update_role_with_empty_permissions(self, authenticated_client):
@@ -124,7 +124,7 @@ class UpdateRoleTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             role_id=role.id,
-            form={perm.name: False for perm in perm_models.Permission.query.all()},
+            form={perm.name: False for perm in db.session.query(perm_models.Permission).all()},
         )
         assert response.status_code == 303
 
@@ -133,7 +133,8 @@ class UpdateRoleTest(PostEndpointHelper):
 
     def test_log_update_role(self, legit_user, authenticated_client):
         permissions = (
-            perm_models.Permission.query.filter(
+            db.session.query(perm_models.Permission)
+            .filter(
                 perm_models.Permission.name.in_(
                     (
                         perm_models.Permissions.FEATURE_FLIPPING.name,
@@ -158,7 +159,7 @@ class UpdateRoleTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.ROLE_PERMISSIONS_CHANGED
         assert action.authorUserId == legit_user.id
         assert action.comment == "Test"
@@ -171,14 +172,18 @@ class UpdateRoleTest(PostEndpointHelper):
         }
 
     def test_log_update_role_no_modification(self, legit_user, authenticated_client):
-        permissions = perm_models.Permission.query.filter(
-            perm_models.Permission.name.in_(
-                (
-                    perm_models.Permissions.MANAGE_PERMISSIONS.name,
-                    perm_models.Permissions.READ_ADMIN_ACCOUNTS.name,
+        permissions = (
+            db.session.query(perm_models.Permission)
+            .filter(
+                perm_models.Permission.name.in_(
+                    (
+                        perm_models.Permissions.MANAGE_PERMISSIONS.name,
+                        perm_models.Permissions.READ_ADMIN_ACCOUNTS.name,
+                    )
                 )
             )
-        ).all()
+            .all()
+        )
 
         role = perm_factories.RoleFactory(permissions=permissions)
 
@@ -192,7 +197,7 @@ class UpdateRoleTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
     def test_comment_is_mandatory_in_production(self, authenticated_client):
@@ -215,7 +220,7 @@ class UpdateRoleTest(PostEndpointHelper):
             "Commentaire obligatoire : raison de la modification : Information obligatoire ;"
         )
         assert len(role_to_edit.permissions) == 0
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class GetRolesHistoryTest(GetEndpointHelper):
@@ -226,10 +231,16 @@ class GetRolesHistoryTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_log_history_admin(self, legit_user, authenticated_client):
-        permission1 = perm_models.Permission.query.filter_by(name=perm_models.Permissions.MANAGE_PERMISSIONS.name).one()
-        permission2 = perm_models.Permission.query.filter_by(
-            name=perm_models.Permissions.READ_ADMIN_ACCOUNTS.name
-        ).one()
+        permission1 = (
+            db.session.query(perm_models.Permission)
+            .filter_by(name=perm_models.Permissions.MANAGE_PERMISSIONS.name)
+            .one()
+        )
+        permission2 = (
+            db.session.query(perm_models.Permission)
+            .filter_by(name=perm_models.Permissions.READ_ADMIN_ACCOUNTS.name)
+            .one()
+        )
 
         role = perm_factories.RoleFactory(permissions=[permission1, permission2])
 
@@ -268,7 +279,7 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
     expected_num_queries = 3
 
     def test_list_feature_flags(self, authenticated_client):
-        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
         db.session.flush()
 
@@ -294,7 +305,7 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
         assert rows[0]["Description"] == first_feature_flag.description
 
     def test_read_only_list_feature_flags(self, client, read_only_bo_user):
-        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
         db.session.flush()
 
@@ -312,7 +323,7 @@ class EnableFeatureFlagTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
     def test_enable_feature_flag(self, authenticated_client):
-        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = False
 
         response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
@@ -323,7 +334,7 @@ class EnableFeatureFlagTest(PostEndpointHelper):
         assert f"Le feature flag {first_feature_flag.name} a été activé" in response.data.decode("utf-8")
 
     def test_enable_already_active_feature_flag(self, authenticated_client):
-        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
 
         response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
@@ -338,7 +349,7 @@ class DisableFeatureFlagTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
     def test_disable_feature_flag(self, authenticated_client):
-        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
 
         response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
@@ -349,7 +360,7 @@ class DisableFeatureFlagTest(PostEndpointHelper):
         assert f"Le feature flag {first_feature_flag.name} a été désactivé" in response.data.decode("utf-8")
 
     def test_disable_already_inactive_feature_flag(self, authenticated_client):
-        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = False
 
         response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
@@ -635,7 +646,7 @@ class UpdateBoUserTest(PostEndpointHelper):
         assert user.full_name == "Sherlock Holmes"
         assert user.email == "sholmes@example.com"
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -661,7 +672,7 @@ class UpdateBoUserTest(PostEndpointHelper):
         assert response.status_code == 400
         assert html_parser.extract_alert(response.data) == "L'email est déjà associé à un autre utilisateur"
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.ProFactory])
     def test_update_non_bo_user(self, authenticated_client, user_factory):
@@ -677,7 +688,7 @@ class UpdateBoUserTest(PostEndpointHelper):
 
         db.session.refresh(user)
         assert "Hacked" not in user.full_name
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):

@@ -243,9 +243,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
 @pytest.fixture(scope="function", name="roles_with_permissions")
 def roles_with_permissions_fixture():
     # Roles have already been created from enum in sync_db_roles()
-    roles = perm_models.Role.query.all()
+    roles = db.session.query(perm_models.Role).all()
     roles_in_db = {role.name: role for role in roles}
-    perms_in_db = {perm.name: perm for perm in perm_models.Permission.query.all()}
+    perms_in_db = {perm.name: perm for perm in db.session.query(perm_models.Permission).all()}
 
     for role_name, perms in ROLE_PERMISSIONS.items():
         role = roles_in_db[role_name]

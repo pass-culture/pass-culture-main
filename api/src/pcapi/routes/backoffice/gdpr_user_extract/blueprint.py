@@ -15,6 +15,7 @@ from pcapi.core import object_storage
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 
@@ -32,7 +33,8 @@ gdpr_extract_blueprint = utils.child_backoffice_blueprint(
 def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
 
     query = (
-        users_models.GdprUserDataExtract.query.options(
+        db.session.query(users_models.GdprUserDataExtract)
+        .options(
             sa_orm.joinedload(users_models.GdprUserDataExtract.user).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
@@ -71,7 +73,8 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
         )
 
     extract = (
-        users_models.GdprUserDataExtract.query.filter(
+        db.session.query(users_models.GdprUserDataExtract)
+        .filter(
             users_models.GdprUserDataExtract.id == extract_id,
             users_models.GdprUserDataExtract.expirationDate > datetime.utcnow(),  # type: ignore [operator]
         )
@@ -115,7 +118,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
 
 @gdpr_extract_blueprint.route("<int:gdpr_id>/extract", methods=["POST"])
 def delete_gdpr_user_data_extract(gdpr_id: int) -> utils.BackofficeResponse:
-    extract = users_models.GdprUserDataExtract.query.filter_by(id=gdpr_id).one_or_none()
+    extract = db.session.query(users_models.GdprUserDataExtract).filter_by(id=gdpr_id).one_or_none()
     if not extract:
         flash("L'extrait demandé n'existe pas.", "warning")
         return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))

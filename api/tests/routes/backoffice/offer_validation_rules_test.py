@@ -11,6 +11,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -514,7 +515,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             == "La nouvelle règle a été créée"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.name == "First rule of robotics"
         assert rule.subRules[0].model == expected_result["model"]
         assert rule.subRules[0].attribute == expected_result["attribute"]
@@ -540,7 +541,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             == "La nouvelle règle a été créée"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.name == "First rule of robotics"
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFERER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.ID
@@ -566,7 +567,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             == "La nouvelle règle a été créée"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.name == "First rule of robotics"
         assert rule.subRules[0].model == offers_models.OfferValidationModel.VENUE
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.ID
@@ -596,7 +597,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             == "La nouvelle règle a été créée"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.name == "First rule of robotics"
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.MAX_PRICE
@@ -607,7 +608,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.NOT_IN
         assert rule.subRules[1].comparated == {"comparated": ["INSTRUMENT"]}
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
         assert action_history.actionType == history_models.ActionType.RULE_CREATED
         assert action_history.rule.name == rule.name
@@ -644,7 +645,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offers_models.OfferValidationRule.query.count() == 0
+        assert db.session.query(offers_models.OfferValidationRule).count() == 0
 
     def test_create_offer_validation_rule_without_chosen_type(self, authenticated_client):
         sub_rule_data = get_empty_sub_rule_data()
@@ -658,7 +659,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offers_models.OfferValidationRule.query.count() == 0
+        assert db.session.query(offers_models.OfferValidationRule).count() == 0
 
     def test_create_offer_validation_rule_without_operator(self, authenticated_client):
         sub_rule_data = get_empty_sub_rule_data() | {
@@ -675,7 +676,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offers_models.OfferValidationRule.query.count() == 0
+        assert db.session.query(offers_models.OfferValidationRule).count() == 0
 
     def test_create_offer_validation_rule_with_empty_comparated_data(self, authenticated_client):
         sub_rule_data = get_empty_sub_rule_data() | {
@@ -693,7 +694,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offers_models.OfferValidationRule.query.count() == 0
+        assert db.session.query(offers_models.OfferValidationRule).count() == 0
 
     def test_create_offer_validation_rule_with_impossible_type_and_operator_combination(self, authenticated_client):
         sub_rule_data = get_empty_sub_rule_data() | {
@@ -711,7 +712,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offers_models.OfferValidationRule.query.count() == 0
+        assert db.session.query(offers_models.OfferValidationRule).count() == 0
 
 
 class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
@@ -779,12 +780,12 @@ class DeleteOfferValidationRuleTest(PostEndpointHelper):
             == f"La règle {rule.name} et ses sous-règles ont été supprimées"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.isActive is False
-        assert offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_1.id).one_or_none() is None
-        assert offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_2.id).one_or_none() is None
+        assert db.session.query(offers_models.OfferValidationSubRule).filter_by(id=sub_rule_1.id).one_or_none() is None
+        assert db.session.query(offers_models.OfferValidationSubRule).filter_by(id=sub_rule_2.id).one_or_none() is None
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
         assert action_history.actionType == history_models.ActionType.RULE_DELETED
         assert action_history.rule.name == rule.name
@@ -865,7 +866,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
             == f"La règle {rule.name} et ses sous-règles ont été modifiées"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.name == "Second rule of robotics"
         assert rule.subRules[0].id == sub_rule.id
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
@@ -904,7 +905,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
             == f"La règle {rule.name} et ses sous-règles ont été modifiées"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
         assert rule.name == "Second rule of robotics"
 
         # sort to avoid flaky test
@@ -920,7 +921,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert sub_rules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
         assert sub_rules[1].comparated == {"comparated": ["interdit", "suspicious", "verboten"]}
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
         assert action_history.actionType == history_models.ActionType.RULE_MODIFIED
         assert action_history.rule.name == rule.name
@@ -986,7 +987,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
             == f"La règle {rule.name} et ses sous-règles ont été modifiées"
         )
 
-        rule = offers_models.OfferValidationRule.query.one()
+        rule = db.session.query(offers_models.OfferValidationRule).one()
 
         assert rule.name == "Second rule of robotics"
 
@@ -1003,9 +1004,9 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert sub_rules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS
         assert sub_rules[1].comparated == {"comparated": ["Fifi", "Loulou", "Riri"]}
 
-        assert not offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_2.id).one_or_none()
+        assert not db.session.query(offers_models.OfferValidationSubRule).filter_by(id=sub_rule_2.id).one_or_none()
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.authorUser == legit_user
         assert action_history.actionType == history_models.ActionType.RULE_MODIFIED
         assert action_history.rule.name == rule.name

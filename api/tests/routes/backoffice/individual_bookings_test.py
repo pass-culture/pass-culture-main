@@ -734,7 +734,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
+        booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
         assert booking.status == bookings_models.BookingStatus.USED
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -748,7 +748,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
+        booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
         assert booking.status == bookings_models.BookingStatus.REIMBURSED
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -768,7 +768,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
+        booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -785,7 +785,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = bookings_models.Booking.query.filter_by(id=booking_id).one()
+        booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -801,7 +801,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = bookings_models.Booking.query.filter_by(id=booking_id).one()
+        booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])

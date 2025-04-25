@@ -876,7 +876,7 @@ class CreateOffererTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
         assert response.status_code == 303
 
-        new_offerer: offerers_models.Offerer = offerers_models.Offerer.query.one()
+        new_offerer: offerers_models.Offerer = db.session.query(offerers_models.Offerer).one()
         assert new_offerer.siren == "900000001"
         assert new_offerer.name == form_data["public_name"]
         assert new_offerer.street == "[ND]"
@@ -886,12 +886,14 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_offerer.isNew
         assert new_offerer.tags == [non_diffusible_tag]
 
-        new_user_offerer: offerers_models.UserOfferer = offerers_models.UserOfferer.query.one()
+        new_user_offerer: offerers_models.UserOfferer = db.session.query(offerers_models.UserOfferer).one()
         assert new_user_offerer.user == user
         assert new_user_offerer.offerer == new_offerer
         assert new_user_offerer.isValidated
 
-        new_venue: offerers_models.Venue = offerers_models.Venue.query.filter_by(siret=form_data["siret"]).one()
+        new_venue: offerers_models.Venue = (
+            db.session.query(offerers_models.Venue).filter_by(siret=form_data["siret"]).one()
+        )
         assert new_venue.name == form_data["public_name"]
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.venueTypeCode == offerers_models.VenueTypeCode.PERFORMING_ARTS
@@ -902,7 +904,7 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_venue.latitude == Decimal("43.55547")  # centroid
         assert new_venue.longitude == Decimal("7.00459")  # centroid
 
-        new_address: geography_models.Address = geography_models.Address.query.one()
+        new_address: geography_models.Address = db.session.query(geography_models.Address).one()
         assert new_address.street == new_venue.street == regions_utils.NON_DIFFUSIBLE_TAG
         assert new_address.city.lower() == new_venue.city.lower()
         assert new_address.postalCode == new_venue.postalCode
@@ -910,20 +912,24 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_address.departmentCode == "06"
         assert new_address.timezone == "Europe/Paris"
 
-        new_offerer_address: offerers_models.OffererAddress = offerers_models.OffererAddress.query.one()
+        new_offerer_address: offerers_models.OffererAddress = db.session.query(offerers_models.OffererAddress).one()
         assert new_offerer_address.addressId == new_address.id
         assert new_venue.offererAddressId == new_offerer_address.id
 
-        venue_registration: offerers_models.VenueRegistration = offerers_models.VenueRegistration.query.one()
+        venue_registration: offerers_models.VenueRegistration = db.session.query(
+            offerers_models.VenueRegistration
+        ).one()
         assert venue_registration.venueId == new_venue.id
         assert venue_registration.target == offerers_models.Target.INDIVIDUAL
         assert venue_registration.webPresence == form_data["web_presence"]
 
-        assert history_models.ActionHistory.query.count() == 2
+        assert db.session.query(history_models.ActionHistory).count() == 2
 
-        new_offerer_action: history_models.ActionHistory = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.OFFERER_NEW
-        ).one()
+        new_offerer_action: history_models.ActionHistory = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.OFFERER_NEW)
+            .one()
+        )
         assert new_offerer_action.offererId == new_offerer.id
         assert new_offerer_action.userId == user.id
         assert new_offerer_action.authorUserId == legit_user.id
@@ -948,9 +954,11 @@ class CreateOffererTest(PostEndpointHelper):
             },
         }
 
-        new_venue_action: history_models.ActionHistory = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.VENUE_CREATED
-        ).one()
+        new_venue_action: history_models.ActionHistory = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.VENUE_CREATED)
+            .one()
+        )
         assert new_venue_action.venueId == new_venue.id
         assert new_venue_action.authorUserId == legit_user.id
 
@@ -1037,10 +1045,10 @@ class CreateOffererTest(PostEndpointHelper):
         assert response.status_code == 400
         assert html_parser.extract_warnings(response.data) == [expected_warning]
 
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.VenueRegistration.query.count() == 0
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(offerers_models.VenueRegistration).count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize("missing_field", ["public_name", "venue_type_code", "target", "ds_id"])
     def test_cant_create_offerer_because_of_missing_field(self, authenticated_client, missing_field):

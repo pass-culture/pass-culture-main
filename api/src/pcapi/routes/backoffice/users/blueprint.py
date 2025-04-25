@@ -20,6 +20,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.models import db
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.users import forms
@@ -81,7 +82,11 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
 )
 def suspend_user(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
     )
     if not user:
         raise NotFound()
@@ -123,7 +128,11 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 )
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = (
-        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
     )
     if not user:
         raise NotFound()
@@ -168,7 +177,8 @@ def get_batch_suspend_users_form() -> utils.BackofficeResponse:
 
 def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User], list[str]]:
     users: list[users_models.User] = (
-        users_models.User.query.filter(users_models.User.id.in_(ids_list))
+        db.session.query(users_models.User)
+        .filter(users_models.User.id.in_(ids_list))
         .options(
             load_only(users_models.User.email, users_models.User.id, users_models.User.roles),
             joinedload(users_models.User.userBookings).load_only(bookings_models.Booking.status),
@@ -266,7 +276,7 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
     ]
 )
 def redirect_to_brevo_user_page(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.filter_by(id=user_id).one_or_none()
+    user = db.session.query(users_models.User).filter_by(id=user_id).one_or_none()
 
     if not user:
         raise NotFound()

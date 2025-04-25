@@ -118,12 +118,12 @@ class CreateEventTest(PostEndpointHelper):
 
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == "L'opération spéciale Jeu concours 1a2b3c4d5 a été importée."
-        special_event = operations_models.SpecialEvent.query.one()
+        special_event = db.session.query(operations_models.SpecialEvent).one()
         assert special_event.eventDate == datetime.date.today()
         assert special_event.externalId == typeform_id
-        assert operations_models.SpecialEventQuestion.query.count() == 3
-        assert operations_models.SpecialEventResponse.query.count() == 1
-        assert operations_models.SpecialEventAnswer.query.count() == 3
+        assert db.session.query(operations_models.SpecialEventQuestion).count() == 3
+        assert db.session.query(operations_models.SpecialEventResponse).count() == 1
+        assert db.session.query(operations_models.SpecialEventAnswer).count() == 3
 
     def test_create_event_already_exists(self, authenticated_client, special_events):
         # Data come from TestingBackend
@@ -140,7 +140,7 @@ class CreateEventTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == "Cette opération spéciale a déjà été importée."
 
-        assert operations_models.SpecialEvent.query.count() == len(special_events)
+        assert db.session.query(operations_models.SpecialEvent).count() == len(special_events)
 
     @patch("pcapi.connectors.typeform.get_form", side_effect=typeform.NotFoundException)
     def test_create_event_not_found(self, mock_get_form, authenticated_client):
@@ -157,7 +157,7 @@ class CreateEventTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == "Le formulaire 1a2b3c4d5e n'a pas été trouvé sur Typeform."
 
-        assert operations_models.SpecialEvent.query.count() == 0
+        assert db.session.query(operations_models.SpecialEvent).count() == 0
 
     def test_create_far_in_the_past(self, authenticated_client):
         # Data come from TestingBackend
@@ -174,7 +174,7 @@ class CreateEventTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert "La date de l'évènement ne peut pas être dans le passé" in html_parser.extract_alert(response.data)
 
-        assert operations_models.SpecialEvent.query.count() == 0
+        assert db.session.query(operations_models.SpecialEvent).count() == 0
 
 
 class GetEventDetailsTest(GetEndpointHelper):

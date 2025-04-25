@@ -12,6 +12,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -79,7 +80,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
         assert expected_alert in html_parser.extract_alert(response.data)
 
         assert source_venue.siret == "12345678900001"
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_move_siret_same_venue(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
@@ -165,7 +166,7 @@ class PostMoveSiretTest(MoveSiretTestHelper):
         assert response.status_code == 200
         assert self.venue1.siret == self.form_data["siret"]
         assert not self.venue2.siret
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize(
         "start_date, end_date",
@@ -210,7 +211,7 @@ class ApplyMoveSiretTest(MoveSiretTestHelper):
         assert self.venue2.siret == self.form_data["siret"]
         assert not self.venue2.comment
 
-        actions = history_models.ActionHistory.query.all()
+        actions = db.session.query(history_models.ActionHistory).all()
         assert len(actions) == 2
         for action in actions:
             assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -236,4 +237,4 @@ class ApplyMoveSiretTest(MoveSiretTestHelper):
         response = self.post_to_endpoint(authenticated_client, form=form)
 
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0

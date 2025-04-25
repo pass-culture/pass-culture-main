@@ -73,7 +73,8 @@ def get_roles_management() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.READ_PERMISSIONS)
 def get_roles_history() -> utils.BackofficeResponse:
     actions_history = (
-        history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED)
+        db.session.query(history_models.ActionHistory)
+        .filter_by(actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
             sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
@@ -117,7 +118,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 @blueprint.backoffice_web.route("/admin/feature-flipping", methods=["GET"])
 @utils.custom_login_required(redirect_to=".home")
 def list_feature_flags() -> utils.BackofficeResponse:
-    feature_flags = feature_models.Feature.query.order_by(feature_models.Feature.name).all()
+    feature_flags = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).all()
     form = empty_forms.EmptyForm()
     return render_template(
         "admin/feature_flipping.html", rows=feature_flags, toggle_feature_flag_form=form, env=settings.ENV
@@ -137,7 +138,7 @@ def disable_feature_flag(feature_flag_id: int) -> utils.BackofficeResponse:
 
 
 def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.BackofficeResponse:
-    feature_flag = feature_models.Feature.query.filter_by(id=feature_flag_id).one_or_none()
+    feature_flag = db.session.query(feature_models.Feature).filter_by(id=feature_flag_id).one_or_none()
     if not feature_flag:
         raise NotFound()
 

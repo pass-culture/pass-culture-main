@@ -59,7 +59,8 @@ def _get_incidents(
     form: forms.GetIncidentsSearchForm,
 ) -> list[finance_models.FinanceIncident]:
     query = (
-        finance_models.FinanceIncident.query.join(finance_models.FinanceIncident.venue)
+        db.session.query(finance_models.FinanceIncident)
+        .join(finance_models.FinanceIncident.venue)
         .outerjoin(finance_models.FinanceIncident.booking_finance_incidents)
         .outerjoin(finance_models.BookingFinanceIncident.booking)
         .outerjoin(bookings_models.Booking.stock)
@@ -203,7 +204,7 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
     if not incident:
         raise NotFound()
 
@@ -232,7 +233,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
 @finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
     if incident is None:
         raise NotFound()
 
@@ -332,7 +333,8 @@ def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     actions = (
-        history_models.ActionHistory.query.filter_by(financeIncidentId=finance_incident_id)
+        db.session.query(history_models.ActionHistory)
+        .filter_by(financeIncidentId=finance_incident_id)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
             sa_orm.joinedload(history_models.ActionHistory.user).load_only(
@@ -362,7 +364,8 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
 
     if form.object_ids.data:
         bookings = (
-            bookings_models.Booking.query.options(
+            db.session.query(bookings_models.Booking)
+            .options(
                 sa_orm.joinedload(bookings_models.Booking.user).load_only(
                     users_models.User.firstName, users_models.User.lastName, users_models.User.email
                 ),
@@ -427,7 +430,8 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
 
     if form.object_ids.data:
         bookings = (
-            bookings_models.Booking.query.options(
+            db.session.query(bookings_models.Booking)
+            .options(
                 sa_orm.joinedload(bookings_models.Booking.user).load_only(
                     users_models.User.firstName, users_models.User.lastName, users_models.User.email
                 ),
@@ -482,7 +486,8 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_collective_booking_overpayment_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
-        educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
+        db.session.query(educational_models.CollectiveBooking)
+        .filter_by(id=collective_booking_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.name
@@ -535,7 +540,8 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_collective_booking_commercial_gesture_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
-        educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
+        db.session.query(educational_models.CollectiveBooking)
+        .filter_by(id=collective_booking_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.name
@@ -594,7 +600,8 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
     amount = form.total_amount.data
 
     bookings = (
-        bookings_models.Booking.query.options(
+        db.session.query(bookings_models.Booking)
+        .options(
             sa_orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
             sa_orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.amount),
             sa_orm.joinedload(bookings_models.Booking.deposit)
@@ -653,7 +660,8 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
     amount = form.total_amount.data
 
     bookings = (
-        bookings_models.Booking.query.options(
+        db.session.query(bookings_models.Booking)
+        .options(
             sa_orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
             sa_orm.joinedload(bookings_models.Booking.deposit)
             .load_only(finance_models.Deposit.amount)
@@ -708,7 +716,9 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
 )
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def create_collective_booking_overpayment(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    collective_booking = (
+        db.session.query(educational_models.CollectiveBooking).filter_by(id=collective_booking_id).one_or_none()
+    )
     if not collective_booking:
         raise NotFound()
 
@@ -747,7 +757,9 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
 )
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def create_collective_booking_commercial_gesture(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    collective_booking = (
+        db.session.query(educational_models.CollectiveBooking).filter_by(id=collective_booking_id).one_or_none()
+    )
     if not collective_booking:
         raise NotFound()
 
@@ -839,7 +851,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
     if not incident:
         raise NotFound()
 
@@ -935,9 +947,13 @@ def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
 
     if form.object_ids.data:
 
-        finance_incidents = finance_models.FinanceIncident.query.filter(
-            finance_models.FinanceIncident.id.in_(form.object_ids_list),
-        ).all()
+        finance_incidents = (
+            db.session.query(finance_models.FinanceIncident)
+            .filter(
+                finance_models.FinanceIncident.id.in_(form.object_ids_list),
+            )
+            .all()
+        )
 
         if not (
             valid := validation.check_validate_or_cancel_finance_incidents(finance_incidents, is_validation_action=True)
@@ -973,9 +989,11 @@ def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
 def batch_validate_finance_incidents() -> utils.BackofficeResponse:
     form = forms.BatchIncidentValidationForm()
 
-    finance_incidents = finance_models.FinanceIncident.query.filter(
-        finance_models.FinanceIncident.id.in_(form.object_ids_list)
-    ).all()
+    finance_incidents = (
+        db.session.query(finance_models.FinanceIncident)
+        .filter(finance_models.FinanceIncident.id.in_(form.object_ids_list))
+        .all()
+    )
 
     if finance_incidents[0].kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
         form = empty_forms.BatchForm()
@@ -1028,9 +1046,13 @@ def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
 
     if form.object_ids.data:
 
-        finance_incidents = finance_models.FinanceIncident.query.filter(
-            finance_models.FinanceIncident.id.in_(form.object_ids_list),
-        ).all()
+        finance_incidents = (
+            db.session.query(finance_models.FinanceIncident)
+            .filter(
+                finance_models.FinanceIncident.id.in_(form.object_ids_list),
+            )
+            .all()
+        )
         incidents_type = finance_incidents[0].kind
 
         if not (
@@ -1069,9 +1091,13 @@ def batch_cancel_finance_incidents() -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
 
-    finance_incidents = finance_models.FinanceIncident.query.filter(
-        finance_models.FinanceIncident.id.in_(form.object_ids_list),
-    ).all()
+    finance_incidents = (
+        db.session.query(finance_models.FinanceIncident)
+        .filter(
+            finance_models.FinanceIncident.id.in_(form.object_ids_list),
+        )
+        .all()
+    )
 
     success_count = 0
     error_dict = defaultdict(list)
@@ -1146,10 +1172,14 @@ def _flash_success_and_error_messages(
 @finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = finance_models.FinanceIncident.query.filter_by(
-        id=finance_incident_id,
-        kind=finance_models.IncidentType.OVERPAYMENT,
-    ).one_or_none()
+    finance_incident = (
+        db.session.query(finance_models.FinanceIncident)
+        .filter_by(
+            id=finance_incident_id,
+            kind=finance_models.IncidentType.OVERPAYMENT,
+        )
+        .one_or_none()
+    )
     if not finance_incident:
         raise NotFound()
     form = forms.IncidentValidationForm()
@@ -1182,10 +1212,14 @@ def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.Bac
 @finance_incidents_blueprint.route("/commercial-gesture/<int:finance_incident_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE)
 def validate_finance_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = finance_models.FinanceIncident.query.filter_by(
-        id=finance_incident_id,
-        kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
-    ).one_or_none()
+    finance_incident = (
+        db.session.query(finance_models.FinanceIncident)
+        .filter_by(
+            id=finance_incident_id,
+            kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+        )
+        .one_or_none()
+    )
     if not finance_incident:
         raise NotFound()
 
@@ -1207,7 +1241,7 @@ def validate_finance_commercial_gesture(finance_incident_id: int) -> utils.Backo
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    finance_incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
 
     if not finance_incident:
         raise NotFound()
@@ -1226,7 +1260,7 @@ def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> util
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    finance_incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
 
     if not finance_incident:
         raise NotFound()
@@ -1261,7 +1295,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    finance_incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
 
     if not finance_incident:
         raise NotFound()
@@ -1280,7 +1314,7 @@ def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> uti
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    finance_incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident_id).one_or_none()
 
     if not finance_incident:
         raise NotFound()
@@ -1315,7 +1349,8 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
 
 def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_models.FinanceIncident:
     incident = (
-        finance_models.FinanceIncident.query.filter_by(id=finance_incident_id, **args)
+        db.session.query(finance_models.FinanceIncident)
+        .filter_by(id=finance_incident_id, **args)
         .join(finance_models.FinanceIncident.venue)
         .outerjoin(
             offerers_models.VenueBankAccountLink,

@@ -348,7 +348,8 @@ def get_stats_data(offerer: offerers_models.Offerer) -> dict:
 @offerer_blueprint.route("/stats", methods=["GET"])
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
         .one_or_none()
     )
@@ -365,7 +366,8 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/revenue-details", methods=["GET"])
 def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
         .one_or_none()
     )
@@ -415,7 +417,7 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-keys", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
     if offerer.isRejected or offerer.isClosed:
         raise BadRequest()  # No need for a user-friendly message since button is not available
     try:
@@ -442,7 +444,8 @@ def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -475,7 +478,8 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -502,7 +506,13 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).populate_existing().with_for_update().one_or_none()
+    offerer = (
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
     if not offerer:
         raise NotFound()
 
@@ -551,7 +561,8 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -593,7 +604,8 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(sa_orm.joinedload(offerers_models.Offerer.confidenceRule))
         .one_or_none()
     )
@@ -631,7 +643,8 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
         )
 
     actions_history = (
-        history_models.ActionHistory.query.filter(*filters)
+        db.session.query(history_models.ActionHistory)
+        .filter(*filters)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(max_actions_count)
         .options(
@@ -711,7 +724,8 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
     )
 
     users_invited = (
-        offerers_models.OffererInvitation.query.options(options)
+        db.session.query(offerers_models.OffererInvitation)
+        .options(options)
         .filter(offerers_models.OffererInvitation.offererId == offerer_id)
         .filter(
             ~sa.exists().where(
@@ -793,7 +807,8 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
-        offerers_models.UserOfferer.query.options(
+        db.session.query(offerers_models.UserOfferer)
+        .options(
             sa_orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
@@ -824,7 +839,8 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
-        offerers_models.UserOfferer.query.join(offerers_models.UserOfferer.offerer)
+        db.session.query(offerers_models.UserOfferer)
+        .join(offerers_models.UserOfferer.offerer)
         .join(offerers_models.UserOfferer.user)
         .options(
             sa_orm.contains_eager(offerers_models.UserOfferer.offerer).load_only(
@@ -864,7 +880,7 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
 @offerer_blueprint.route("/add-user", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
+    offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer_id).one_or_none()
     if not offerer:
         raise NotFound()
 
@@ -879,7 +895,8 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     # - user exists with given id
     # - user_offerer entry does not exist with same ids
     user = (
-        users_models.User.query.join(
+        db.session.query(users_models.User)
+        .join(
             history_models.ActionHistory,
             sa.and_(
                 history_models.ActionHistory.userId == users_models.User.id,
@@ -917,7 +934,7 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/invite-user", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def invite_user(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
+    offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer_id).one_or_none()
     if not offerer:
         raise NotFound()
 
@@ -1059,7 +1076,8 @@ def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/collective-dms-applications", methods=["GET"])
 def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse:
     collective_dms_applications = (
-        educational_models.CollectiveDmsApplication.query.filter(
+        db.session.query(educational_models.CollectiveDmsApplication)
+        .filter(
             educational_models.CollectiveDmsApplication.siren
             == sa.select(offerers_models.Offerer.siren)
             .filter(offerers_models.Offerer.id == offerer_id)
@@ -1093,7 +1111,8 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
 @offerer_blueprint.route("/bank-accounts", methods=["GET"])
 def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
     bank_accounts = (
-        finance_models.BankAccount.query.filter_by(offererId=offerer_id)
+        db.session.query(finance_models.BankAccount)
+        .filter_by(offererId=offerer_id)
         .options(
             sa_orm.load_only(
                 finance_models.BankAccount.id,
@@ -1123,7 +1142,8 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .populate_existing()
         .with_for_update(key_share=True, read=True)
         .one_or_none()
@@ -1146,7 +1166,8 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required_in([perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO])
 def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(
             sa_orm.load_only(offerers_models.Offerer.id),
             sa_orm.joinedload(offerers_models.Offerer.individualSubscription),
@@ -1212,7 +1233,8 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.options(
+        db.session.query(offerers_models.Offerer)
+        .options(
             sa_orm.joinedload(offerers_models.Offerer.UserOfferers)
             .joinedload(offerers_models.UserOfferer.user)
             .load_only(users_models.User.email),
@@ -1245,7 +1267,8 @@ def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(
             sa_orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
@@ -1275,7 +1298,7 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         "isCertificateValid": form.is_certificate_valid.data,
     }
 
-    offerers_models.IndividualOffererSubscription.query.filter_by(offererId=offerer_id).update(
+    db.session.query(offerers_models.IndividualOffererSubscription).filter_by(offererId=offerer_id).update(
         data, synchronize_session=False
     )
     db.session.flush()
@@ -1286,7 +1309,7 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
     if not offerer.siren:
         raise NotFound()
@@ -1325,7 +1348,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
     if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
@@ -1344,7 +1367,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise/urssaf", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
     if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
@@ -1371,7 +1394,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise/dgfip", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
     if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()

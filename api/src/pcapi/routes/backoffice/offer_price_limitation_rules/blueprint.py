@@ -40,7 +40,7 @@ def list_rules() -> utils.BackofficeResponse:
             400,
         )
 
-    query = offers_models.OfferPriceLimitationRule.query
+    query = db.session.query(offers_models.OfferPriceLimitationRule)
     if form.subcategory.data:
         query = query.filter(offers_models.OfferPriceLimitationRule.subcategoryId.in_(form.subcategory.data))
     if form.category.data:
@@ -109,7 +109,7 @@ def create_rule() -> utils.BackofficeResponse:
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
 def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_delete = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_delete = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         raise NotFound()
 
@@ -128,7 +128,7 @@ def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.Backoffic
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/delete", methods=["POST"])
 def delete_rule(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_delete = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_delete = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         raise NotFound()
 
@@ -147,7 +147,7 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
 def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_update = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_update = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         raise NotFound()
 
@@ -166,7 +166,7 @@ def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeR
 
 @offer_price_limitation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
 def edit_rule(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_update = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_update = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         raise NotFound()
 

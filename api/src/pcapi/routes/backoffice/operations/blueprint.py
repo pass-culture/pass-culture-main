@@ -49,7 +49,7 @@ def list_events() -> utils.BackofficeResponse:
             400,
         )
 
-    query = operations_models.SpecialEvent.query
+    query = db.session.query(operations_models.SpecialEvent)
     if form.q.data:
         search_query = f"%{clean_accents(form.q.data.replace(' ', '%').replace('-', '%'))}%"
         query_filter = sa.func.immutable_unaccent(operations_models.SpecialEvent.title).ilike(search_query)
@@ -131,13 +131,15 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
     if response_status_data := response_form.response_status.data:
         response_rows_filters.append(operations_models.SpecialEventResponse.status.in_(response_status_data))
 
-    special_event_query = operations_models.SpecialEvent.query.filter(
-        operations_models.SpecialEvent.id == special_event_id
-    ).options(
-        sa_orm.joinedload(operations_models.SpecialEvent.questions).load_only(
-            operations_models.SpecialEventQuestion.id,
-            operations_models.SpecialEventQuestion.externalId,
-            operations_models.SpecialEventQuestion.title,
+    special_event_query = (
+        db.session.query(operations_models.SpecialEvent)
+        .filter(operations_models.SpecialEvent.id == special_event_id)
+        .options(
+            sa_orm.joinedload(operations_models.SpecialEvent.questions).load_only(
+                operations_models.SpecialEventQuestion.id,
+                operations_models.SpecialEventQuestion.externalId,
+                operations_models.SpecialEventQuestion.title,
+            )
         )
     )
     special_event = special_event_query.one_or_none()
@@ -201,7 +203,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def validate_response(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
-    response = operations_models.SpecialEventResponse.query.filter_by(id=response_id).one_or_none()
+    response = db.session.query(operations_models.SpecialEventResponse).filter_by(id=response_id).one_or_none()
     if not response:
         raise NotFound()
 
@@ -217,7 +219,7 @@ def validate_response(special_event_id: int, response_id: int) -> utils.Backoffi
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/preselect", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def preselect_response(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
-    response = operations_models.SpecialEventResponse.query.filter_by(id=response_id).one_or_none()
+    response = db.session.query(operations_models.SpecialEventResponse).filter_by(id=response_id).one_or_none()
     if not response:
         raise NotFound()
 
@@ -233,7 +235,7 @@ def preselect_response(special_event_id: int, response_id: int) -> utils.Backoff
 @operations_blueprint.route("/<int:special_event_id>/responses/<int:response_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def reject_response(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
-    response = operations_models.SpecialEventResponse.query.filter_by(id=response_id).one_or_none()
+    response = db.session.query(operations_models.SpecialEventResponse).filter_by(id=response_id).one_or_none()
     if not response:
         raise NotFound()
 
@@ -250,7 +252,8 @@ def reject_response(special_event_id: int, response_id: int) -> utils.Backoffice
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_validate_responses_form(special_event_id: int) -> utils.BackofficeResponse:
     event = (
-        operations_models.SpecialEvent.query.filter_by(id=special_event_id)
+        db.session.query(operations_models.SpecialEvent)
+        .filter_by(id=special_event_id)
         .with_entities(operations_models.SpecialEvent.id)
         .one_or_none()
     )
@@ -261,7 +264,8 @@ def get_batch_validate_responses_form(special_event_id: int) -> utils.Backoffice
     form: empty_forms.BatchForm | None = empty_forms.BatchForm()
     if form and (response_ids := form.object_ids_list):
         responses = (
-            operations_models.SpecialEventResponse.query.filter(
+            db.session.query(operations_models.SpecialEventResponse)
+            .filter(
                 operations_models.SpecialEventResponse.id.in_(response_ids),
             )
             .with_entities(operations_models.SpecialEventResponse.id, operations_models.SpecialEventResponse.status)
@@ -294,9 +298,11 @@ def batch_validate_responses(special_event_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
-    responses = operations_models.SpecialEventResponse.query.filter(
-        operations_models.SpecialEventResponse.id.in_(form.object_ids_list)
-    ).all()
+    responses = (
+        db.session.query(operations_models.SpecialEventResponse)
+        .filter(operations_models.SpecialEventResponse.id.in_(form.object_ids_list))
+        .all()
+    )
     for response in responses:
         response.status = operations_models.SpecialEventResponseStatus.VALIDATED
         db.session.add(response)
@@ -310,16 +316,18 @@ def batch_validate_responses(special_event_id: int) -> utils.BackofficeResponse:
 @operations_blueprint.route("/<int:special_event_id>/responses/batch/preselect", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_preselect_responses_form(special_event_id: int) -> utils.BackofficeResponse:
-    event = operations_models.SpecialEvent.query.filter_by(id=special_event_id).one_or_none()
+    event = db.session.query(operations_models.SpecialEvent).filter_by(id=special_event_id).one_or_none()
     if not event:
         raise NotFound()
 
     alert = None
     form: empty_forms.BatchForm | None = empty_forms.BatchForm()
     if form and (response_ids := form.object_ids_list):
-        responses = operations_models.SpecialEventResponse.query.filter(
-            operations_models.SpecialEventResponse.id.in_(response_ids)
-        ).all()
+        responses = (
+            db.session.query(operations_models.SpecialEventResponse)
+            .filter(operations_models.SpecialEventResponse.id.in_(response_ids))
+            .all()
+        )
         if len(responses) != len(response_ids) or len(responses) == 0:
             alert = "Certaines candidatures selectionnées sont introuvables."
             form = None
@@ -350,10 +358,14 @@ def batch_preselect_responses(special_event_id: int) -> utils.BackofficeResponse
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
-    responses = operations_models.SpecialEventResponse.query.filter(
-        operations_models.SpecialEventResponse.id.in_(form.object_ids_list),
-        operations_models.SpecialEventResponse.status != operations_models.SpecialEventResponseStatus.PRESELECTED,
-    ).all()
+    responses = (
+        db.session.query(operations_models.SpecialEventResponse)
+        .filter(
+            operations_models.SpecialEventResponse.id.in_(form.object_ids_list),
+            operations_models.SpecialEventResponse.status != operations_models.SpecialEventResponseStatus.PRESELECTED,
+        )
+        .all()
+    )
     for response in responses:
         response.status = operations_models.SpecialEventResponseStatus.PRESELECTED
         db.session.add(response)
@@ -367,16 +379,18 @@ def batch_preselect_responses(special_event_id: int) -> utils.BackofficeResponse
 @operations_blueprint.route("/<int:special_event_id>/responses/batch/reject", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_reject_responses_form(special_event_id: int) -> utils.BackofficeResponse:
-    event = operations_models.SpecialEvent.query.filter_by(id=special_event_id).one_or_none()
+    event = db.session.query(operations_models.SpecialEvent).filter_by(id=special_event_id).one_or_none()
     if not event:
         raise NotFound()
 
     alert = None
     form: empty_forms.BatchForm | None = empty_forms.BatchForm()
     if form and (response_ids := form.object_ids_list):
-        responses = operations_models.SpecialEventResponse.query.filter(
-            operations_models.SpecialEventResponse.id.in_(response_ids)
-        ).all()
+        responses = (
+            db.session.query(operations_models.SpecialEventResponse)
+            .filter(operations_models.SpecialEventResponse.id.in_(response_ids))
+            .all()
+        )
         if len(responses) != len(response_ids) or len(responses) == 0:
             alert = "Certaines candidatures selectionnées sont introuvables."
             form = None
@@ -404,9 +418,11 @@ def batch_reject_responses(special_event_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
-    responses = operations_models.SpecialEventResponse.query.filter(
-        operations_models.SpecialEventResponse.id.in_(form.object_ids_list)
-    ).all()
+    responses = (
+        db.session.query(operations_models.SpecialEventResponse)
+        .filter(operations_models.SpecialEventResponse.id.in_(form.object_ids_list))
+        .all()
+    )
     for response in responses:
         response.status = operations_models.SpecialEventResponseStatus.REJECTED
         db.session.add(response)

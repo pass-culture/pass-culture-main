@@ -76,7 +76,7 @@ def _can_edit_siret() -> bool:
 
 
 def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
-    base_query = offerers_models.Venue.query.options(
+    base_query = db.session.query(offerers_models.Venue).options(
         sa_orm.load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
@@ -389,7 +389,8 @@ def get_stats_data(venue_id: int) -> dict:
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
     venue_query = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .options(
             sa_orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
                 offerers_models.VenuePricingPointLink.pricingPoint
@@ -431,7 +432,8 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/revenue-details", methods=["GET"])
 def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     venue = (
-        offerers_models.Venue.query.filter_by(id=venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=venue_id)
         .options(
             sa_orm.load_only(offerers_models.Venue.id),
             sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
@@ -483,7 +485,8 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
 
 def _fetch_venue_provider(venue_id: int, provider_id: int) -> providers_models.VenueProvider:
     venue_provider = (
-        providers_models.VenueProvider.query.filter(
+        db.session.query(providers_models.VenueProvider)
+        .filter(
             providers_models.VenueProvider.providerId == provider_id,
             providers_models.VenueProvider.venueId == venue_id,
         )
@@ -545,7 +548,8 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
         )
 
     venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .outerjoin(history_models.ActionHistory, history_filter)
         .options(
             sa_orm.contains_eager(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.user),
@@ -582,7 +586,7 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.get_or_404(venue_id)
+    venue = db.session.query(offerers_models.Venue).get_or_404(venue_id)
 
     if not venue.siret:
         raise NotFound()
@@ -610,7 +614,8 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
 def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
 
     collective_dms_applications = (
-        educational_models.CollectiveDmsApplication.query.filter(
+        db.session.query(educational_models.CollectiveDmsApplication)
+        .filter(
             educational_models.CollectiveDmsApplication.siret
             == sa.select(offerers_models.Venue.siret).filter(offerers_models.Venue.id == venue_id).scalar_subquery()
         )
@@ -635,7 +640,13 @@ def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).populate_existing().with_for_update().one_or_none()
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=venue_id)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
     if not venue:
         raise NotFound()
 
@@ -785,7 +796,9 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             for field, value in update_location_attrs.items()
             if venue.offererAddress.address.field_exists_and_has_changed(field, value)
         }
-    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
+    criteria = (
+        db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
+    )
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
     try:
@@ -836,7 +849,8 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
     venue = (
-        offerers_models.Venue.query.filter_by(id=venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=venue_id)
         .options(sa_orm.joinedload(offerers_models.Venue.confidenceRule))
         .one_or_none()
     )
@@ -863,7 +877,12 @@ def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).with_for_update(key_share=True, read=True).one_or_none()
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=venue_id)
+        .with_for_update(key_share=True, read=True)
+        .one_or_none()
+    )
     if not venue:
         raise NotFound()
 
@@ -889,7 +908,8 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
             return redirect(request.referrer or url_for(".list_venues"), code=303)
 
         venues = (
-            offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list))
+            db.session.query(offerers_models.Venue)
+            .filter(offerers_models.Venue.id.in_(form.object_ids_list))
             .options(
                 sa_orm.load_only(offerers_models.Venue.id),
                 sa_orm.joinedload(offerers_models.Venue.criteria).load_only(
@@ -923,7 +943,8 @@ def batch_edit_venues() -> utils.BackofficeResponse:
         return redirect(request.referrer or url_for(".list_venues"), code=303)
 
     venues = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list))
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id.in_(form.object_ids_list))
         .populate_existing()
         .with_for_update(key_share=True)
         .all()
@@ -956,7 +977,9 @@ def batch_edit_venues() -> utils.BackofficeResponse:
 def _update_venues_criteria(
     venues: list[offerers_models.Venue], criteria_ids: list[int]
 ) -> list[offerers_models.Venue]:
-    new_criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(criteria_ids)).all()
+    new_criteria = (
+        db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(criteria_ids)).all()
+    )
 
     previous_criteria = set.intersection(*(set(venue.criteria) for venue in venues))
     deleted_criteria = previous_criteria.difference(new_criteria)
@@ -996,7 +1019,8 @@ def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: 
 
 def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Venue:
     venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .options(
             sa_orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
             sa_orm.joinedload(offerers_models.Venue.pricing_point_links)
@@ -1096,7 +1120,8 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
 def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     aliased_venue = sa_orm.aliased(offerers_models.Venue)
     venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .join(offerers_models.Venue.managingOfferer)
         .outerjoin(
             aliased_venue,
@@ -1137,7 +1162,8 @@ def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
     aliased_venue = sa_orm.aliased(offerers_models.Venue)
     venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .join(offerers_models.Venue.managingOfferer)
         .outerjoin(
             aliased_venue,
@@ -1186,7 +1212,8 @@ REMOVE_SIRET_TITLE = "Supprimer le SIRET d'un partenaire culturel"
 
 def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
     venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .options(
             sa_orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
             sa_orm.joinedload(offerers_models.Venue.managingOfferer)
@@ -1238,13 +1265,15 @@ def _render_remove_siret_content(
     )
 
     active_custom_reimbursement_rule_exists = db.session.query(
-        finance_models.CustomReimbursementRule.query.filter(
+        db.session.query(finance_models.CustomReimbursementRule)
+        .filter(
             finance_models.CustomReimbursementRule.venueId == venue.id,
             sa.or_(
                 sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
                 sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
             ),
-        ).exists()
+        )
+        .exists()
     ).scalar()
     if active_custom_reimbursement_rule_exists:
         info = "Ce partenaire culturel est associé à au moins un tarif dérogatoire actif ou futur. Confirmer l'action mettra automatiquement fin à ce tarif dérogatoire."

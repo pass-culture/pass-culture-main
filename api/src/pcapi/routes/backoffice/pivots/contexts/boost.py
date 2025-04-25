@@ -37,7 +37,7 @@ class BoostContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditBoostForm:
-        pivot = providers_models.BoostCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.BoostCinemaDetails).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
         form = forms.EditBoostForm(
@@ -59,11 +59,11 @@ class BoostContext(PivotContext):
         cinema_id = form.cinema_id.data
         cinema_url = form.cinema_url.data + "/" if not form.cinema_url.data.endswith("/") else form.cinema_url.data
 
-        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
-        pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
+        pivot = db.session.query(providers_models.CinemaProviderPivot).filter_by(venueId=venue_id).one_or_none()
         if pivot:
             flash(
                 Markup("Des identifiants cinéma existent déjà pour ce partenaire culturel id={venue_id}").format(
@@ -88,7 +88,7 @@ class BoostContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditBoostForm, pivot_id: int) -> bool:
-        pivot = providers_models.BoostCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.BoostCinemaDetails).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
         assert pivot.cinemaProviderPivot
@@ -119,7 +119,7 @@ class BoostContext(PivotContext):
     @classmethod
     def delete_pivot(cls, pivot_id: int) -> bool:
         pivot_model = cls.pivot_class()
-        pivot = pivot_model.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(pivot_model).filter_by(id=pivot_id).one_or_none()
 
         if not pivot:
             raise NotFound()

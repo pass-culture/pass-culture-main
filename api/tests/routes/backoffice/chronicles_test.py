@@ -255,6 +255,8 @@ class GetUpdateChronicleContentFormTest(GetEndpointHelper):
         chronicle = chronicles_factories.ChronicleFactory(content="Blabla bla blabla blablabla")
         chronicle_id = chronicle.id
 
+        db.session.expire(chronicle)
+
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, chronicle_id=chronicle_id),
@@ -323,7 +325,7 @@ class PublishChronicleTest(PostEndpointHelper):
 
         assert response.status_code == 200
         assert chronicle.isActive
-        action_log = history_models.ActionHistory.query.one()
+        action_log = db.session.query(history_models.ActionHistory).one()
         assert action_log.actionType == history_models.ActionType.CHRONICLE_PUBLISHED
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
@@ -365,7 +367,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
 
         assert response.status_code == 200
         assert not chronicle.isActive
-        action_log = history_models.ActionHistory.query.one()
+        action_log = db.session.query(history_models.ActionHistory).one()
         assert action_log.actionType == history_models.ActionType.CHRONICLE_UNPUBLISHED
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
@@ -556,7 +558,7 @@ class CommentChronicleTest(PostEndpointHelper):
         content_as_text = html_parser.content_as_text(response.data)
         assert comment in content_as_text
         assert html_parser.extract_alerts(response.data) == ["Le commentaire a été enregistré"]
-        action_log = history_models.ActionHistory.query.one()
+        action_log = db.session.query(history_models.ActionHistory).one()
         assert action_log.actionType == history_models.ActionType.COMMENT
         assert action_log.chronicle is chronicle
         assert action_log.comment == comment

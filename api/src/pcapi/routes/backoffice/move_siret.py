@@ -41,7 +41,8 @@ def _validate_move_siret_form() -> (
         return form, None, None
 
     source_venue = (
-        offerers_models.Venue.query.filter_by(id=form.source_venue.data)
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=form.source_venue.data)
         .options(
             sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
@@ -59,7 +60,8 @@ def _validate_move_siret_form() -> (
         return form, None, None
 
     target_venue = (
-        offerers_models.Venue.query.filter_by(id=form.target_venue.data)
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=form.target_venue.data)
         .options(
             sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
@@ -108,13 +110,15 @@ def _render_confirmation_page(
     code: int = 200,
 ) -> utils.BackofficeResponse:
     has_active_or_future_custom_reimbursement_rule = db.session.query(
-        finance_models.CustomReimbursementRule.query.filter(
+        db.session.query(finance_models.CustomReimbursementRule)
+        .filter(
             finance_models.CustomReimbursementRule.venueId == source_venue.id,
             sa.or_(
                 sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
                 sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
             ),
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
     return (

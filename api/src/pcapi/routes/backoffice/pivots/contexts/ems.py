@@ -33,9 +33,9 @@ class EMSContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditPivotForm:
-        pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.filter_by(
-            id=pivot_id
-        ).one_or_none()
+        pivot: providers_models.EMSCinemaDetails = (
+            db.session.query(providers_models.EMSCinemaDetails).filter_by(id=pivot_id).one_or_none()
+        )
         if not pivot:
             raise NotFound()
 
@@ -61,12 +61,12 @@ class EMSContext(PivotContext):
         venue_id = form.venue_id.data[0]
         cinema_id = form.cinema_id.data
 
-        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
 
-        pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue.id).one_or_none()
+        pivot = db.session.query(providers_models.CinemaProviderPivot).filter_by(venueId=venue.id).one_or_none()
         if pivot:
             flash(
                 Markup("Des identifiants cinéma existent déjà pour ce partenaire culturel id={venue_id}").format(
@@ -98,9 +98,9 @@ class EMSContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditEMSForm, pivot_id: int) -> bool:
-        pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.filter_by(
-            id=pivot_id
-        ).one_or_none()
+        pivot: providers_models.EMSCinemaDetails = (
+            db.session.query(providers_models.EMSCinemaDetails).filter_by(id=pivot_id).one_or_none()
+        )
         if not pivot:
             raise NotFound()
 

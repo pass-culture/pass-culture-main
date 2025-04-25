@@ -2219,7 +2219,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert gold_label.venue == source_venue
         assert silver_stock.priceCategory.priceCategoryLabel.venue == destination_venue
         assert silver_stock.priceCategory.priceCategoryLabel == destination_silver_label
-        assert offers_models.PriceCategoryLabel.query.count() == 4
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 4
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_sould_move_event_offerer_address(
@@ -2521,7 +2521,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert stock_to_edit.price == decimal.Decimal("50.1")
         assert booking_to_edit.amount == decimal.Decimal("50.1")
         assert later_event.status == finance_models.FinanceEventStatus.READY
-        assert finance_models.Pricing.query.filter_by(id=later_pricing_id).count() == 0
+        assert db.session.query(finance_models.Pricing).filter_by(id=later_pricing_id).count() == 0
 
     def test_offer_stock_edit_with_french_decimal(self, authenticated_client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
@@ -3323,8 +3323,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     def test_get_detail_offer_display_modify_offer_button(self, client):
         offer = offers_factories.OfferFactory()
-        manage_offers = perm_models.Permission.query.filter_by(name=perm_models.Permissions.MANAGE_OFFERS.name).one()
-        read_offers = perm_models.Permission.query.filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        manage_offers = (
+            db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.MANAGE_OFFERS.name).one()
+        )
+        read_offers = (
+            db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        )
         role = perm_factories.RoleFactory(permissions=[read_offers, manage_offers])
         user = users_factories.UserFactory()
         user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
@@ -3342,10 +3346,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     def test_get_detail_offer_display_validation_buttons_fraud(self, client):
         offer = offers_factories.OfferFactory()
-        pro_fraud_actions = perm_models.Permission.query.filter_by(
-            name=perm_models.Permissions.PRO_FRAUD_ACTIONS.name
-        ).one()
-        read_offers = perm_models.Permission.query.filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        pro_fraud_actions = (
+            db.session.query(perm_models.Permission)
+            .filter_by(name=perm_models.Permissions.PRO_FRAUD_ACTIONS.name)
+            .one()
+        )
+        read_offers = (
+            db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        )
         role = perm_factories.RoleFactory(permissions=[read_offers, pro_fraud_actions])
         user = users_factories.UserFactory()
         user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
