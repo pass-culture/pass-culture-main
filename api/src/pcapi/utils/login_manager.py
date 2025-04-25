@@ -1,5 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
+import os
+import signal
 import uuid
 
 import flask
@@ -16,6 +19,8 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.blueprint import backoffice_web
 from pcapi.routes.pro.blueprint import pro_private_api
 
+
+logger = logging.getLogger(__name__)
 
 PRO_APIS = {pro_private_api.name, private_api.name}
 PRO_SESSION_GRACE_TIME = timedelta(hours=1)
@@ -42,9 +47,16 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
     session_uuid = flask.session.get("session_uuid")
     try:
         user_session = users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none()
-    except InternalError:
-        db.session.rollback()
-        raise
+    except InternalError as exception:
+        logger.error(
+            "The connection seems corrupted, killing the worker (SIGINT)",
+            extra={
+                "exc": str(exception),
+            },
+            exc_info=True,
+        )
+        os.kill(os.getpid(), signal.SIGINT)
+
     if not user_session:
         return None
 
