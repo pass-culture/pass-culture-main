@@ -757,7 +757,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: models.User) -> N
         raise ValueError("Trying to update underage beneficiary deposit expiration date but user has no deposit")
 
     current_deposit_expiration_datetime = user.deposit.expirationDate
-    new_deposit_expiration_datetime = deposit_api.compute_underage_deposit_expiration_datetime(user.birth_date)
+    new_deposit_expiration_datetime = deposit_api.compute_deposit_expiration_date(user.birth_date)
 
     if current_deposit_expiration_datetime == new_deposit_expiration_datetime:
         return
@@ -919,7 +919,7 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
         eighteen_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=366 * 18)
         new_pro_user.dateOfBirth = eighteen_years_ago
         new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth.date()
-        deposit = deposit_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
+        deposit = deposit_api.upsert_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
     db.session.add(new_pro_user)

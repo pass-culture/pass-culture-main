@@ -77,7 +77,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
         remote_updates=False,
     )
     user.validatedBirthDate = birth_date
-    deposit_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE17_18)
+    deposit_api.upsert_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE17_18)
     if role == UserRole.BENEFICIARY:
         user.add_beneficiary_role()
     elif role == UserRole.UNDERAGE_BENEFICIARY:
