@@ -28,193 +28,6 @@ logger = logging.getLogger(__name__)
 RECREDIT_UNDERAGE_USERS_BATCH_SIZE = 500
 
 
-def compute_deposit_expiration_date(beneficiary: users_models.User) -> datetime.datetime:
-    if not beneficiary.birth_date:
-        raise ValueError(f"Beneficiary {beneficiary.id} has no birth date")
-
-    # We add here an 11h buffer for the french territories overseas.
-    # TODO: use the actual department code of the user
-    return beneficiary.birth_date + relativedelta(years=21, hours=11)
-
-
-def _get_granted_deposit(
-    beneficiary: users_models.User,
-    eligibility: users_models.EligibilityType,
-    age_at_registration: int | None = None,
-) -> models.GrantedDeposit | None:
-    if eligibility == users_models.EligibilityType.UNDERAGE:
-        if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
-            raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
-
-        return models.GrantedDeposit(
-            amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[age_at_registration],
-            expiration_date=compute_deposit_expiration_date(beneficiary),
-            type=models.DepositType.GRANT_15_17,
-            version=1,
-        )
-
-    if eligibility == users_models.EligibilityType.AGE18:
-        return models.GrantedDeposit(
-            amount=conf.GRANTED_DEPOSIT_AMOUNT_18_v2,
-            expiration_date=compute_deposit_expiration_date(beneficiary),
-            type=models.DepositType.GRANT_18,
-            version=2,
-        )
-
-    return None
-
-
-def _recredit_user(user: users_models.User) -> models.Recredit | None:
-    if not user.deposit or not user.age:
-        return None
-    if not (user_eligibility := user.eligibility):
-        return None
-
-    if user.deposit.type == models.DepositType.GRANT_17_18:
-        return _recredit_grant_17_18_deposit_using_age(user)
-
-    new_deposit = _create_new_deposit_and_transfer_funds(user, user_eligibility)
-    latest_age_related_recredit = next(
-        (
-            recredit
-            for recredit in new_deposit.recredits
-            if recredit.recreditType != models.RecreditType.PREVIOUS_DEPOSIT
-        ),
-        None,
-    )
-
-    return latest_age_related_recredit
-
-
-def _create_new_deposit_and_transfer_funds(
-    user: users_models.User, user_eligibility: users_models.EligibilityType
-) -> models.Deposit:
-    from pcapi.core.users.api import get_domains_credit
-
-    if not user.deposit or not user.age:
-        raise ValueError("User must have a deposit and age. This function should not be called.")
-
-    # Extract what needs to be transfered from current active deposit
-    domains_credit = get_domains_credit(user)
-    if not domains_credit:
-        amount_to_transfer = decimal.Decimal(0)
-    else:
-        amount_to_transfer = decimal.Decimal(domains_credit.all.remaining)
-    booking_that_can_be_cancelled = [
-        booking
-        for booking in user.deposit.bookings
-        if booking.status in [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]
-        # Ignore non-reimbursed bookings. Thay are not cancelled by the user nor the cultural partners.
-        and not booking.stock.offer.subcategory.reimbursement_rule == ReimbursementRuleChoices.NOT_REIMBURSED
-    ]
-
-    # create new deposit
-    expire_current_deposit_for_user(user)
-    new_deposit = _create_deposit(
-        user,
-        deposit_source="Transfer deposit to age_17_18 type",
-        eligibility=user_eligibility,
-    )
-
-    # Transfer bookings and update deposit amount
-    for booking in booking_that_can_be_cancelled:
-        amount_to_transfer += booking.total_amount
-        booking.depositId = new_deposit.id
-
-    if amount_to_transfer:
-        _recredit_deposit(
-            new_deposit, user.age, recredit_type=models.RecreditType.PREVIOUS_DEPOSIT, amount=amount_to_transfer
-        )
-    return new_deposit
-
-
-def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.Recredit | None:
-    from pcapi.core.users import eligibility_api
-
-    current_age = user.age
-    if not current_age or not user.deposit:
-        return None
-
-    age_at_first_registration = eligibility_api.get_age_at_first_registration(
-        user, users_models.EligibilityType.AGE17_18
-    )
-    latest_age_related_recredit: models.Recredit | None = None
-    starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
-    for age_to_recredit in range(starting_age, end_age + 1):
-        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING.get(age_to_recredit)
-        if not recredit_type_to_create:
-            continue
-
-        recredit_amount = conf.get_credit_amount_per_age(age_to_recredit)
-        if not recredit_amount:
-            continue
-
-        has_been_recredited = any(
-            recredit.recreditType == recredit_type_to_create for recredit in user.deposit.recredits
-        )
-        if has_been_recredited:
-            continue
-
-        latest_age_related_recredit = _recredit_deposit(user.deposit, age_to_recredit, recredit_type_to_create)
-
-    return latest_age_related_recredit
-
-
-def _recredit_deposit(
-    deposit: models.Deposit, age: int, recredit_type: models.RecreditType, amount: decimal.Decimal | None = None
-) -> models.Recredit:
-    if amount is None:
-        amount = conf.get_credit_amount_per_age(age)
-    if amount is None:
-        raise ValueError(f"Could not create recredit with unknown amount. Deposit: {deposit.id}, user {deposit.userId}")
-    recredit = models.Recredit(
-        deposit=deposit,
-        amount=amount,
-        recreditType=recredit_type,
-    )
-    deposit.amount += recredit.amount
-
-    db.session.add(recredit)
-    db.session.flush()
-
-    return recredit
-
-
-def recredit_new_deposit_after_validation_of_incident_on_expired_deposit(
-    booking_incident: models.BookingFinanceIncident,
-) -> models.Recredit | None:
-    """
-    During the transition from v2 deposits to v3 deposits, some 15-17 deposits will be prematurely expired
-    and a new 17-18 will start, cumulating the remaining deposit amount.
-    To adapt this cumulation to incidents concerning a booking made with a 15-17 expired deposit,
-    we add the incident amount on the 17-18 deposit, via a specific Recredit object.
-    """
-    if booking := booking_incident.booking:
-        # helps mypy
-        if booking.deposit is None:  # in the case of a finance incident, the deposit is never None
-            return None
-        if booking.deposit.expirationDate is None:  # expirationDate is never None
-            return None
-        if booking.user.deposit is None:  # can't be None if booking.deposit isn't
-            return None
-
-        if (
-            booking.deposit.expirationDate < datetime.datetime.utcnow()
-            and booking.deposit != booking.user.deposit
-            and booking.user.deposit.type == models.DepositType.GRANT_17_18
-        ):
-            recredit = models.Recredit(
-                deposit=booking.user.deposit,
-                amount=utils.cents_to_full_unit(booking_incident.due_amount_by_offerer),
-                recreditType=models.RecreditType.FINANCE_INCIDENT_RECREDIT,
-                comment="Suite à la validation d'un incident finance, recrédit du crédit 17-18 après l'expiration prématurée du crédit 15-17 due à la transition vers la v3",
-            )
-            booking.user.deposit.amount += recredit.amount
-            db.session.add(recredit)
-            return recredit
-    return None
-
-
 def upsert_deposit(
     user: users_models.User,
     deposit_source: str,
@@ -257,161 +70,6 @@ def upsert_deposit(
     user.recreditAmountToShow = recredit.amount
 
     return user.deposit
-
-
-def _create_deposit(
-    beneficiary: users_models.User,
-    deposit_source: str,
-    eligibility: users_models.EligibilityType,
-) -> models.Deposit:
-    if eligibility in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]:
-        return _create_pre_decree_deposit(beneficiary, deposit_source, eligibility)
-
-    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, models.DepositType.GRANT_17_18):
-        raise exceptions.DepositTypeAlreadyGrantedException(models.DepositType.GRANT_17_18)
-
-    if beneficiary.has_active_deposit:
-        raise exceptions.UserHasAlreadyActiveDeposit()
-
-    deposit = models.Deposit(
-        version=1,
-        type=models.DepositType.GRANT_17_18,
-        amount=decimal.Decimal(0),
-        source=deposit_source,
-        user=beneficiary,
-        expirationDate=compute_deposit_expiration_date(beneficiary),
-    )
-    db.session.add(deposit)
-    db.session.flush()
-
-    latest_recredit = _recredit_user(beneficiary)
-    if latest_recredit:
-        return latest_recredit.deposit
-
-    return deposit
-
-
-def _create_pre_decree_deposit(
-    beneficiary: users_models.User,
-    deposit_source: str,
-    eligibility: users_models.EligibilityType,
-) -> models.Deposit:
-    from pcapi.core.users import eligibility_api
-
-    age_at_registration = eligibility_api.get_age_at_first_registration(beneficiary, eligibility)
-    granted_deposit = _get_granted_deposit(beneficiary, eligibility, age_at_registration)
-    if not granted_deposit:
-        raise exceptions.UserNotGrantable()
-
-    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, granted_deposit.type):
-        raise exceptions.DepositTypeAlreadyGrantedException(granted_deposit.type)
-
-    if beneficiary.has_active_deposit:
-        raise exceptions.UserHasAlreadyActiveDeposit()
-
-    deposit = models.Deposit(
-        version=granted_deposit.version,
-        type=granted_deposit.type,
-        amount=granted_deposit.amount,
-        source=deposit_source,
-        user=beneficiary,
-        expirationDate=granted_deposit.expiration_date,
-    )
-    db.session.add(deposit)
-    db.session.flush()
-
-    # Edge-case: Validation of the registration occurred over one or two birthdays
-    # Then we need to add recredit to compensate
-    if eligibility == users_models.EligibilityType.UNDERAGE and _can_be_recredited(beneficiary) and age_at_registration:
-        latest_recredit = _recredit_user(beneficiary)
-        if latest_recredit:
-            return latest_recredit.deposit
-
-    return deposit
-
-
-def expire_current_deposit_for_user(user: users_models.User) -> None:
-    models.Deposit.query.filter(
-        models.Deposit.user == user,
-        models.Deposit.expirationDate > datetime.datetime.utcnow(),
-    ).update(
-        {
-            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
-            models.Deposit.dateUpdated: datetime.datetime.utcnow(),
-        },
-    )
-    db.session.flush()
-
-
-def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
-    if age is None:
-        age = user.age
-    if age is None:
-        return False
-    if age <= 16:
-        return False
-    if age not in conf.RECREDIT_TYPE_AGE_MAPPING:
-        return False
-
-    if not user.has_active_deposit:
-        return False
-    assert user.deposit is not None  # always True after the check above. Helps mypy.
-
-    if user.deposit.type == models.DepositType.GRANT_18:
-        return False
-
-    # Handle old-new deposits transition
-    if user.deposit.type == models.DepositType.GRANT_15_17:
-        return not _has_pre_decree_deposit_been_recredited(user, age)
-
-    has_been_recredited = any(
-        recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user.deposit.recredits
-    )
-    return not has_been_recredited
-
-
-def _has_pre_decree_deposit_been_recredited(user: users_models.User, age: int | None = None) -> bool:
-    if age is None:
-        age = user.age
-
-    if age is None:
-        logger.error("Trying to check recredit for user that has no age", extra={"user_id": user.id})
-        return False
-
-    if user.deposit is None:
-        return False
-
-    # pre decree deposits were created without the initial recredit
-    known_age_at_deposit = _get_known_age_at_deposit(user)
-    if known_age_at_deposit == age:
-        return True
-
-    if len(user.deposit.recredits) == 0:
-        return False
-
-    has_been_recredited = conf.RECREDIT_TYPE_AGE_MAPPING[age] in [
-        recredit.recreditType for recredit in user.deposit.recredits
-    ]
-    return has_been_recredited
-
-
-def _get_known_age_at_deposit(user: users_models.User) -> int | None:
-    from pcapi.core.users import eligibility_api
-
-    if user.deposit is None:
-        return None
-
-    known_birthday_at_deposit = eligibility_api.get_known_birthday_at_date(user, user.deposit.dateCreated)
-    if known_birthday_at_deposit is None:
-        return None
-
-    first_registration_date = eligibility_api.get_first_eligible_registration_date(
-        user, known_birthday_at_deposit, users_models.EligibilityType.UNDERAGE
-    )
-    if first_registration_date is not None:
-        return users_utils.get_age_at_date(known_birthday_at_deposit, first_registration_date, user.departementCode)
-
-    return users_utils.get_age_at_date(known_birthday_at_deposit, user.deposit.dateCreated, user.departementCode)
 
 
 def recredit_users() -> None:
@@ -490,6 +148,348 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
     push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
     if user.age and user.age >= users_constants.ELIGIBILITY_AGE_18 and recredit.amount > 0:
         transactional_mails.send_recredit_email_to_18_years_old(user)
+
+
+def _recredit_user(user: users_models.User) -> models.Recredit | None:
+    if not user.deposit or not user.age:
+        return None
+    if not (user_eligibility := user.eligibility):
+        return None
+
+    if user.deposit.type == models.DepositType.GRANT_17_18:
+        return _recredit_grant_17_18_deposit_using_age(user)
+
+    new_deposit = _create_new_deposit_and_transfer_funds(user, user_eligibility)
+    latest_age_related_recredit = next(
+        (
+            recredit
+            for recredit in new_deposit.recredits
+            if recredit.recreditType != models.RecreditType.PREVIOUS_DEPOSIT
+        ),
+        None,
+    )
+
+    return latest_age_related_recredit
+
+
+def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.Recredit | None:
+    from pcapi.core.users import eligibility_api
+
+    current_age = user.age
+    if not current_age or not user.deposit:
+        return None
+
+    age_at_first_registration = eligibility_api.get_age_at_first_registration(
+        user, users_models.EligibilityType.AGE17_18
+    )
+    latest_age_related_recredit: models.Recredit | None = None
+    starting_age, end_age = sorted([age_at_first_registration or current_age, current_age])
+    for age_to_recredit in range(starting_age, end_age + 1):
+        recredit_type_to_create = conf.RECREDIT_TYPE_AGE_MAPPING.get(age_to_recredit)
+        if not recredit_type_to_create:
+            continue
+
+        recredit_amount = conf.get_credit_amount_per_age(age_to_recredit)
+        if not recredit_amount:
+            continue
+
+        has_been_recredited = any(
+            recredit.recreditType == recredit_type_to_create for recredit in user.deposit.recredits
+        )
+        if has_been_recredited:
+            continue
+
+        latest_age_related_recredit = _recredit_deposit(user.deposit, age_to_recredit, recredit_type_to_create)
+
+    return latest_age_related_recredit
+
+
+def _create_new_deposit_and_transfer_funds(
+    user: users_models.User, user_eligibility: users_models.EligibilityType
+) -> models.Deposit:
+    from pcapi.core.users.api import get_domains_credit
+
+    if not user.deposit or not user.age:
+        raise ValueError("User must have a deposit and age. This function should not be called.")
+
+    # Extract what needs to be transfered from current active deposit
+    domains_credit = get_domains_credit(user)
+    if not domains_credit:
+        amount_to_transfer = decimal.Decimal(0)
+    else:
+        amount_to_transfer = decimal.Decimal(domains_credit.all.remaining)
+    booking_that_can_be_cancelled = [
+        booking
+        for booking in user.deposit.bookings
+        if booking.status in [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]
+        # Ignore non-reimbursed bookings. Thay are not cancelled by the user nor the cultural partners.
+        and not booking.stock.offer.subcategory.reimbursement_rule == ReimbursementRuleChoices.NOT_REIMBURSED
+    ]
+
+    # create new deposit
+    expire_current_deposit_for_user(user)
+    new_deposit = _create_deposit(
+        user,
+        deposit_source="Transfer deposit to age_17_18 type",
+        eligibility=user_eligibility,
+    )
+
+    # Transfer bookings and update deposit amount
+    for booking in booking_that_can_be_cancelled:
+        amount_to_transfer += booking.total_amount
+        booking.depositId = new_deposit.id
+
+    if amount_to_transfer:
+        _recredit_deposit(
+            new_deposit, user.age, recredit_type=models.RecreditType.PREVIOUS_DEPOSIT, amount=amount_to_transfer
+        )
+    return new_deposit
+
+
+def expire_current_deposit_for_user(user: users_models.User) -> None:
+    models.Deposit.query.filter(
+        models.Deposit.user == user,
+        models.Deposit.expirationDate > datetime.datetime.utcnow(),
+    ).update(
+        {
+            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            models.Deposit.dateUpdated: datetime.datetime.utcnow(),
+        },
+    )
+    db.session.flush()
+
+
+def _create_deposit(
+    beneficiary: users_models.User,
+    deposit_source: str,
+    eligibility: users_models.EligibilityType,
+) -> models.Deposit:
+    if eligibility in [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]:
+        return _create_pre_decree_deposit(beneficiary, deposit_source, eligibility)
+
+    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, models.DepositType.GRANT_17_18):
+        raise exceptions.DepositTypeAlreadyGrantedException(models.DepositType.GRANT_17_18)
+
+    if beneficiary.has_active_deposit:
+        raise exceptions.UserHasAlreadyActiveDeposit()
+
+    deposit = models.Deposit(
+        version=1,
+        type=models.DepositType.GRANT_17_18,
+        amount=decimal.Decimal(0),
+        source=deposit_source,
+        user=beneficiary,
+        expirationDate=compute_deposit_expiration_date(beneficiary),
+    )
+    db.session.add(deposit)
+    db.session.flush()
+
+    latest_recredit = _recredit_user(beneficiary)
+    if latest_recredit:
+        return latest_recredit.deposit
+
+    return deposit
+
+
+def _create_pre_decree_deposit(
+    beneficiary: users_models.User,
+    deposit_source: str,
+    eligibility: users_models.EligibilityType,
+) -> models.Deposit:
+    from pcapi.core.users import eligibility_api
+
+    age_at_registration = eligibility_api.get_age_at_first_registration(beneficiary, eligibility)
+    granted_deposit = _get_granted_deposit(beneficiary, eligibility, age_at_registration)
+    if not granted_deposit:
+        raise exceptions.UserNotGrantable()
+
+    if repository.deposit_exists_for_beneficiary_and_type(beneficiary, granted_deposit.type):
+        raise exceptions.DepositTypeAlreadyGrantedException(granted_deposit.type)
+
+    if beneficiary.has_active_deposit:
+        raise exceptions.UserHasAlreadyActiveDeposit()
+
+    deposit = models.Deposit(
+        version=granted_deposit.version,
+        type=granted_deposit.type,
+        amount=granted_deposit.amount,
+        source=deposit_source,
+        user=beneficiary,
+        expirationDate=granted_deposit.expiration_date,
+    )
+    db.session.add(deposit)
+    db.session.flush()
+
+    # Edge-case: Validation of the registration occurred over one or two birthdays
+    # Then we need to add recredit to compensate
+    if eligibility == users_models.EligibilityType.UNDERAGE and _can_be_recredited(beneficiary) and age_at_registration:
+        latest_recredit = _recredit_user(beneficiary)
+        if latest_recredit:
+            return latest_recredit.deposit
+
+    return deposit
+
+
+def _get_granted_deposit(
+    beneficiary: users_models.User,
+    eligibility: users_models.EligibilityType,
+    age_at_registration: int | None = None,
+) -> models.GrantedDeposit | None:
+    if eligibility == users_models.EligibilityType.UNDERAGE:
+        if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
+            raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
+
+        return models.GrantedDeposit(
+            amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[age_at_registration],
+            expiration_date=compute_deposit_expiration_date(beneficiary),
+            type=models.DepositType.GRANT_15_17,
+            version=1,
+        )
+
+    if eligibility == users_models.EligibilityType.AGE18:
+        return models.GrantedDeposit(
+            amount=conf.GRANTED_DEPOSIT_AMOUNT_18_v2,
+            expiration_date=compute_deposit_expiration_date(beneficiary),
+            type=models.DepositType.GRANT_18,
+            version=2,
+        )
+
+    return None
+
+
+def compute_deposit_expiration_date(beneficiary: users_models.User) -> datetime.datetime:
+    if not beneficiary.birth_date:
+        raise ValueError(f"Beneficiary {beneficiary.id} has no birth date")
+
+    # We add here an 11h buffer for the french territories overseas.
+    # TODO: use the actual department code of the user
+    return beneficiary.birth_date + relativedelta(years=21, hours=11)
+
+
+def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
+    if age is None:
+        age = user.age
+    if age is None:
+        return False
+    if age <= 16:
+        return False
+    if age not in conf.RECREDIT_TYPE_AGE_MAPPING:
+        return False
+
+    if not user.has_active_deposit:
+        return False
+    assert user.deposit is not None  # always True after the check above. Helps mypy.
+
+    if user.deposit.type == models.DepositType.GRANT_18:
+        return False
+
+    # Handle old-new deposits transition
+    if user.deposit.type == models.DepositType.GRANT_15_17:
+        return not _has_pre_decree_deposit_been_recredited(user, age)
+
+    has_been_recredited = any(
+        recredit.recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[age] for recredit in user.deposit.recredits
+    )
+    return not has_been_recredited
+
+
+def _has_pre_decree_deposit_been_recredited(user: users_models.User, age: int | None = None) -> bool:
+    if age is None:
+        age = user.age
+
+    if age is None:
+        logger.error("Trying to check recredit for user that has no age", extra={"user_id": user.id})
+        return False
+
+    if user.deposit is None:
+        return False
+
+    # pre decree deposits were created without the initial recredit
+    known_age_at_deposit = _get_known_age_at_deposit(user)
+    if known_age_at_deposit == age:
+        return True
+
+    if len(user.deposit.recredits) == 0:
+        return False
+
+    has_been_recredited = conf.RECREDIT_TYPE_AGE_MAPPING[age] in [
+        recredit.recreditType for recredit in user.deposit.recredits
+    ]
+    return has_been_recredited
+
+
+def _get_known_age_at_deposit(user: users_models.User) -> int | None:
+    from pcapi.core.users import eligibility_api
+
+    if user.deposit is None:
+        return None
+
+    known_birthday_at_deposit = eligibility_api.get_known_birthday_at_date(user, user.deposit.dateCreated)
+    if known_birthday_at_deposit is None:
+        return None
+
+    first_registration_date = eligibility_api.get_first_eligible_registration_date(
+        user, known_birthday_at_deposit, users_models.EligibilityType.UNDERAGE
+    )
+    if first_registration_date is not None:
+        return users_utils.get_age_at_date(known_birthday_at_deposit, first_registration_date, user.departementCode)
+
+    return users_utils.get_age_at_date(known_birthday_at_deposit, user.deposit.dateCreated, user.departementCode)
+
+
+def _recredit_deposit(
+    deposit: models.Deposit, age: int, recredit_type: models.RecreditType, amount: decimal.Decimal | None = None
+) -> models.Recredit:
+    if amount is None:
+        amount = conf.get_credit_amount_per_age(age)
+    if amount is None:
+        raise ValueError(f"Could not create recredit with unknown amount. Deposit: {deposit.id}, user {deposit.userId}")
+    recredit = models.Recredit(
+        deposit=deposit,
+        amount=amount,
+        recreditType=recredit_type,
+    )
+    deposit.amount += recredit.amount
+
+    db.session.add(recredit)
+    db.session.flush()
+
+    return recredit
+
+
+def recredit_new_deposit_after_validation_of_incident_on_expired_deposit(
+    booking_incident: models.BookingFinanceIncident,
+) -> models.Recredit | None:
+    """
+    During the transition from v2 deposits to v3 deposits, some 15-17 deposits will be prematurely expired
+    and a new 17-18 will start, cumulating the remaining deposit amount.
+    To adapt this cumulation to incidents concerning a booking made with a 15-17 expired deposit,
+    we add the incident amount on the 17-18 deposit, via a specific Recredit object.
+    """
+    if booking := booking_incident.booking:
+        # helps mypy
+        if booking.deposit is None:  # in the case of a finance incident, the deposit is never None
+            return None
+        if booking.deposit.expirationDate is None:  # expirationDate is never None
+            return None
+        if booking.user.deposit is None:  # can't be None if booking.deposit isn't
+            return None
+
+        if (
+            booking.deposit.expirationDate < datetime.datetime.utcnow()
+            and booking.deposit != booking.user.deposit
+            and booking.user.deposit.type == models.DepositType.GRANT_17_18
+        ):
+            recredit = models.Recredit(
+                deposit=booking.user.deposit,
+                amount=utils.cents_to_full_unit(booking_incident.due_amount_by_offerer),
+                recreditType=models.RecreditType.FINANCE_INCIDENT_RECREDIT,
+                comment="Suite à la validation d'un incident finance, recrédit du crédit 17-18 après l'expiration prématurée du crédit 15-17 due à la transition vers la v3",
+            )
+            booking.user.deposit.amount += recredit.amount
+            db.session.add(recredit)
+            return recredit
+    return None
 
 
 def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recredit | None:
