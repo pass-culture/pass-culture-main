@@ -244,41 +244,13 @@ jobs:
 
   notify-cypress-failure:
     name: "Notification of Cypress tests failure"
-    runs-on: ubuntu-24.04
     needs: cypress-run
     if: always() && needs.cypress-run.result == 'failure' && github.ref == 'refs/heads/master'
-    steps:
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Slack token secret"
-        id: slack-token-secret
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Post Slack notification"
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          channel-id: ${{vars.SLACK_DEV_CHANNEL_ID}}
-          payload: |
-            {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Tests pro E2E",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Le job des tests E2E a échoué sur `master` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.slack-token-secret.outputs.SLACK_BOT_TOKEN }}
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel_id: ${{vars.SLACK_DEV_CHANNEL_ID}}
+      color: "#A30002"
+      message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro E2E Tests> a échoué sur `master`"
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}

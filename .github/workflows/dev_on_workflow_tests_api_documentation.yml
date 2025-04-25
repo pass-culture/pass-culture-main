@@ -54,26 +54,23 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.27.0
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          # channel #dev
-          channel-id: "CPZ7U1CNP"
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Api tests",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests api-documentation-build-checks échouent sur `master` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+            channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
+            attachments:
+              - color: "#A30002"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "*${{github.actor}}*"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: ":github-failure: Les tests api-documentation-build-checks échouent sur `master`"

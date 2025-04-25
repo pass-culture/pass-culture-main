@@ -31,26 +31,23 @@ jobs:
         id: "pr"
         uses: pass-culture-github-actions/pull-request@v1.0.0
       - name: "Slack Notification"
-        uses: slackapi/slack-github-action@v1.27.0
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          # channel #db-changes
-          channel-id: "C02THUWQR89"
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{ github.actor }}",
-                  "author_link": "https://github.com/${{ github.actor }}",
-                  "author_icon": "https://github.com/${{ github.actor }}.png",
-                  "title": "Pull Request base de données",
-                  "title_link": "${{ steps.pr.outputs.url }}",
-                  "text": "${{ steps.pr.outputs.title }}"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+            channel_id: ${{ vars.SLACK_DB_CHANGES_CHANNEL_ID }}
+            attachments:
+              - color: "#008080"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "*${{github.actor}}*"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: "<${{ steps.pr.outputs.url }}|Pull Request base de données> : ${{ steps.pr.outputs.title }}"
