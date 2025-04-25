@@ -1,6 +1,7 @@
 import { useField, useFormikContext } from 'formik'
 import React from 'react'
 
+import { AddressFormValues } from 'commons/core/shared/types'
 import { getCoordsType, parseDms } from 'commons/utils/coords'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -10,18 +11,6 @@ import { CalloutVariant } from 'ui-kit/Callout/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './AddressManual.module.scss'
-
-export interface AddressFormValues {
-  'search-addressAutocomplete': string
-  addressAutocomplete: string
-  banId: string | null
-  street: string | null
-  postalCode: string
-  city: string
-  coords: string
-  latitude: string
-  longitude: string
-}
 
 interface AddressManualProps {
   readOnlyFields?: string[]
