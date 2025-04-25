@@ -7,7 +7,10 @@ import {
   StockEditionBodyModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
-import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import {
+  GET_OFFER_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { pluralize } from 'commons/utils/pluralize'
@@ -92,6 +95,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
         : `${ids.length} dates ont été supprimées`
     )
     await mutate(queryKeys)
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
   }
 
   async function updateStock(stock: StockEditionBodyModel) {
@@ -117,6 +121,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
         await mutate(queryKeys, data, {
           revalidate: true,
         })
+        await mutate([GET_OFFER_QUERY_KEY, offer.id])
       }}
     >
       <div className={styles['container']}>

@@ -1,4 +1,4 @@
-import { addMonths, isValid } from 'date-fns'
+import { addMonths, isBefore, isValid } from 'date-fns'
 import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -27,7 +27,9 @@ export function StocksCalendarFormMultipleDays({
 
   const hasEndDateOrNeverEnds =
     isValid(new Date(startDate)) &&
-    (form.watch('multipleDaysHasNoEndDate') || isValid(new Date(endDate)))
+    (form.watch('multipleDaysHasNoEndDate') ||
+      (isValid(new Date(endDate)) &&
+        !isBefore(new Date(endDate), new Date(startDate))))
 
   const hasAtLEastOneWeekDaySelected = form
     .watch('multipleDaysWeekDays')
