@@ -88,7 +88,8 @@ export function logInAndGoToPage(
   cy.get('#email').type(login)
   cy.get('#password').type(password)
   cy.get('button[type=submit]').click()
-  cy.wait(['@signinUser', '@offererNames'])
+  cy.wait('@signinUser').its('response.statusCode').should('eq', 200)
+  cy.wait('@offererNames')
 
   cy.stepLog({ message: `I open the "${path}" page` })
   cy.visit(path)
