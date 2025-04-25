@@ -207,7 +207,6 @@ jobs:
         with:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
       - name: SonarCloud scan
         uses: SonarSource/sonarqube-scan-action@master
@@ -219,27 +218,15 @@ jobs:
           projectBaseDir: pro
           args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
 
-      - name: "Post failure message to slack"
-        if: ${{ failure() && github.ref == 'refs/heads/master' }}
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          channel-id: "CPZ7U1CNP"
-          payload: |
-            {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Pro tests",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Les tests unitaires de pro échouent sur `master` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+  notify-failure:
+    name: "Notification of any check failure"
+    needs: [type-check, pro-run-tests]
+    if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel_id: ${{vars.SLACK_DEV_CHANNEL_ID}}
+      color: "#A30002"
+      message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro Unit Tests> a échoué sur `master`"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

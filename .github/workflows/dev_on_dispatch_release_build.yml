@@ -127,39 +127,23 @@ jobs:
           fi
       - name: "Post on #shérif"
         if: always()
-        uses: slackapi/slack-github-action@v1.27.0
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          channel-id: CU0SQ8Y58
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            {
-              "attachments": [
-                {
-                  "color": "${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}",
-                  "blocks": [
-                    {
-                      "type": "context",
-                      "elements": [
-                        {
-                          "type": "image",
-                          "image_url": "https://github.com/${{github.actor}}.png",
-                          "alt_text": "${{github.actor}}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "${{ steps.slack-text.outputs.text }}"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
+            channel_id: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
+            attachments:
+              - color: ${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: ${{ steps.slack-text.outputs.text }}

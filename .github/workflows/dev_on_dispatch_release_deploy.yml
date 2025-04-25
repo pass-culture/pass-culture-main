@@ -17,11 +17,11 @@ on:
 permissions: write-all
 
 jobs:
-  check-worflow-ref:
-    name: "Check worflow ref"
+  check-workflow-ref:
+    name: "Check workflow ref"
     runs-on: ubuntu-22.04
     steps:
-      - name: "Check worflow ref"
+      - name: "Check workflow ref"
         run: |
           echo "Deploying to ${{ github.event.inputs.target_environment }} from ref: ${{ github.ref }}"
           if ! [[ ${{ github.ref }} == refs\/tags\/v* ]]; then
@@ -31,45 +31,20 @@ jobs:
 
   ask-for-review-on-slack:
     name: "Ask for deployment review on Slack"
-    runs-on: ubuntu-22.04
-    needs: check-worflow-ref
+    needs: check-workflow-ref
     continue-on-error: true
-    steps:
-      - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Slackbot token Secret"
-        id: 'slackbot-token-secret'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Post a link to Slack for the deployment review"
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          channel-id: "CU0SQ8Y58"
-          payload: |
-            {
-                "blocks": [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}` par ${{ github.actor }}"
-                        }
-                    }
-                ]
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.slackbot-token-secret.outputs.SLACK_BOT_TOKEN }}
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel_id: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
+      color: "#D4AD3B"
+      message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}`"
+
 
   version:
     name: "Version"
-    needs: check-worflow-ref
+    needs: check-workflow-ref
     # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
-    environment:  ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
+    environment: ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
     runs-on: ubuntu-22.04
     outputs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
@@ -162,44 +137,47 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Post outcome on #alertes-deploiement"
         if: always()
-        uses: slackapi/slack-github-action@v1.27.0
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          channel-id: "CQAMNFVPS"
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            {
-              "attachments": [
-                  {
-                    "mrkdwn_in": ["text"],
-                    "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
-                    "author_name": "${{github.actor}}",
-                    "author_link": "https://github.com/${{github.actor}}",
-                    "author_icon": "https://github.com/${{github.actor}}.png",
-                    "title": "PCAPI Deployment",
-                    "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                    "text": "Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION != 'success'] }}"
-                  }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+            channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+            attachments:
+              - color: ${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}
+                  blocks:
+                      - type: "context"
+                        elements:
+                          - type: "image"
+                            image_url: "https://github.com/${{github.actor}}.png"
+                            alt_text: "image de profil Github de ${{github.actor}}"
+                          - type: "mrkdwn"
+                            text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                          - type: "section"
+                        text:
+                          type: "mrkdwn"
+                          text: " Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
       - name: "Post success on #shérif"
         if: env.WORKFLOW_CONCLUSION == 'success'
-        uses: slackapi/slack-github-action@v1.27.0
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          channel-id: "CU0SQ8Y58"
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            {
-                "blocks": [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": ":white_check_mark: La version `v${{ needs.version.outputs.APP_VERSION }}` a été déployée sur `${{ github.event.inputs.target_environment }}`"
-                        }
-                    }
-                ]
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+            channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
+            attachments:
+              -  color: "#36A64F"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "*${{github.actor}}*"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: "La version `v${{ needs.version.outputs.APP_VERSION }}` a été déployée sur `${{ github.event.inputs.target_environment }}"
+
+
