@@ -246,6 +246,8 @@ describe('StocksCalendar', () => {
   })
 
   it('should show an error message when the added stocks are in the past', async () => {
+    Element.prototype.scrollIntoView = vi.fn()
+
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
         priceCategories: [{ id: 1, label: 'Tarif', price: 1 }],
@@ -272,7 +274,7 @@ describe('StocksCalendar', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
     expect(
-      screen.getByText('Vous ne pouvez pas ajouter de dates dans le passé.')
+      screen.getByText("Vous ne pouvez pas ajouter d'horaires dans le passé")
     ).toBeInTheDocument()
   })
 })

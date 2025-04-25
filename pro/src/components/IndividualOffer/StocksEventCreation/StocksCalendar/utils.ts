@@ -74,7 +74,7 @@ export function getStocksForOneDay(
 
   if (invalidTimesIndexes.length > 0) {
     throw new GetStocksCustomError(
-      'Vous ne pouvez pas ajouter de dates dans le passé.',
+      "Vous ne pouvez pas ajouter d'horaires dans le passé",
       invalidTimesIndexes
     )
   }

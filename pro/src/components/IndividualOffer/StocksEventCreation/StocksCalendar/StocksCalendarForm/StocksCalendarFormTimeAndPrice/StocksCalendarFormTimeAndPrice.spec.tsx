@@ -122,14 +122,21 @@ describe('StocksCalendarFormTimeAndPrice', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show an error callout when trying to add opening hours while the offer already has stocks', () => {
+  it('should show an error callout when trying to add opening hours while the offer already has stocks', async () => {
     renderStocksCalendarFormTimeAndPrice(
       {
         durationType: DurationTypeOption.ONE_DAY,
         timeSlotType: TimeSlotTypeOption.OPENING_HOURS,
       },
-      getIndividualOfferFactory({ hasStocks: true })
+      getIndividualOfferFactory({
+        hasStocks: true,
+        subcategoryId: SubcategoryIdEnum.SALON,
+      })
     )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
 
     expect(
       screen.getByText(

@@ -58,7 +58,7 @@ export function StocksCalendarForm({
       multipleDaysHasNoEndDate: false,
       multipleDaysWeekDays: [],
     },
-    mode: 'onTouched',
+    mode: 'all',
     resolver: yupResolver(validationSchema),
   })
 

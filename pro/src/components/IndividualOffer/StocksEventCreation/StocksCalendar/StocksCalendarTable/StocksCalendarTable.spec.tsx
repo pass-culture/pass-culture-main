@@ -73,9 +73,24 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not render the delete and edit options when the offer is disabled', () => {
+  it('should not render the delete and edit options when the offer is disabled (because it is rejected)', () => {
     renderStocksCalendarTable({
       offer: getIndividualOfferFactory({ status: OfferStatus.REJECTED }),
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Supprimer la date' })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier la date' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not render the delete and edit options when the offer is disabled (because it is pending)', () => {
+    renderStocksCalendarTable({
+      offer: getIndividualOfferFactory({ status: OfferStatus.PENDING }),
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
