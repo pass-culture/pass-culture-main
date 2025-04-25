@@ -1,4 +1,4 @@
-import { FieldInputProps, useField, useFormikContext } from 'formik'
+import { useField, useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -18,11 +18,7 @@ interface AddressProps {
   onlyTypes?: FeaturePropertyType[]
   disabled?: boolean
   className?: string
-  customHandleAddressSelect?: (
-    setFieldValue: any,
-    selectedItem?: AutocompleteItemProps,
-    searchField?: FieldInputProps<string>
-  ) => void
+  onAddressSelect?: () => void
 }
 
 export interface AutocompleteItemProps {
@@ -38,7 +34,7 @@ export const AddressSelect = ({
   onlyTypes,
   disabled = false,
   className,
-  customHandleAddressSelect,
+  onAddressSelect,
 }: AddressProps) => {
   const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
@@ -50,7 +46,6 @@ export const AddressSelect = ({
   useEffect(() => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
   }, [selectedField.value])
-  const addressSelectHandler = customHandleAddressSelect ?? handleAddressSelect
 
   const onSearchFieldChange = async () => {
     if (searchField.value.length >= 3) {
@@ -72,7 +67,8 @@ export const AddressSelect = ({
       )
     } else if (searchField.value.length === 0 && searchFieldMeta.touched) {
       setOptions([])
-      addressSelectHandler(setFieldValue, undefined, searchField)
+      handleAddressSelect(setFieldValue, undefined, searchField)
+      onAddressSelect?.()
     }
   }
 
@@ -86,11 +82,12 @@ export const AddressSelect = ({
     // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (addressesMap[searchField.value] !== undefined) {
-      addressSelectHandler(
+      handleAddressSelect(
         setFieldValue,
         addressesMap[searchField.value],
         searchField
       )
+      onAddressSelect?.()
     }
   }, [selectedField.value])
 

@@ -16,7 +16,7 @@ type PatchOfferSerializer<T> = {
   ) => T
 }
 
-const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
+const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   title: (payload, offer) => ({ ...payload, name: offer.title }),
   description: (payload, offer) => ({
     ...payload,
@@ -54,15 +54,6 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
       offerVenue: eventAddressPayload,
     }
   },
-  location: (payload, offer) => {
-    const newLocationPayload = {
-      ...payload,
-      location: offer.location,
-    }
-    // remove id_oa key from location object as it useful only on a form matter
-    delete newLocationPayload.location.id_oa
-    return newLocationPayload
-  },
   participants: (payload, offer) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
@@ -93,6 +84,49 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
     ...payload,
     formats: offer.formats,
   }),
+}
+
+const offerLocationSerializer = (
+  payload: PatchCollectiveOfferBodyModel,
+  offer: OfferEducationalFormValues
+) => {
+  const newLocationPayload = {
+    ...payload,
+    location: {
+      ...offer.location,
+      address: {
+        ...offer.location.address,
+        city: offer.city ?? '',
+        street: offer.street ?? '',
+        latitude: offer.latitude ?? '',
+        longitude: offer.longitude ?? '',
+        postalCode: offer.postalCode ?? '',
+        banId: offer.banId ?? '',
+        coords: offer.coords ?? '',
+      },
+    },
+  }
+  // remove id_oa key from location object as it useful only on a form matter
+  delete newLocationPayload.location.address.id_oa
+  return newLocationPayload
+}
+
+const locationFields: (keyof OfferEducationalFormValues)[] = [
+  'location',
+  'city',
+  'street',
+  'latitude',
+  'longitude',
+  'postalCode',
+  'banId',
+  'coords',
+]
+
+const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
+  ...baseSerializer,
+  ...Object.fromEntries(
+    locationFields.map((field) => [field, offerLocationSerializer])
+  ),
 }
 
 const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyModel> =

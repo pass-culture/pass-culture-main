@@ -57,7 +57,7 @@ function getCommonOfferPayload(
   isCollectiveOaActive: boolean
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
   // remove id_oa key from location object as it useful only on a form matter
-  delete offer.location.id_oa
+  delete offer.location.address.id_oa
 
   return {
     venueId: Number(offer.venueId),
@@ -68,7 +68,21 @@ function getCommonOfferPayload(
     ...disabilityCompliances(offer.accessibility),
     students: serializeParticipants(offer.participants),
     ...(isCollectiveOaActive
-      ? { location: offer.location }
+      ? {
+          location: {
+            ...offer.location,
+            address: {
+              ...offer.location.address,
+              banId: offer.banId,
+              street: offer.street ?? '',
+              postalCode: offer.postalCode ?? '',
+              latitude: offer.latitude ?? '',
+              longitude: offer.longitude ?? '',
+              city: offer.city ?? '',
+              coords: offer.coords ?? '',
+            },
+          },
+        }
       : {
           offerVenue: {
             ...offer.eventAddress,

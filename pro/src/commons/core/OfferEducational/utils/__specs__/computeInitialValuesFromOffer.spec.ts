@@ -16,6 +16,7 @@ const venueAddress = {
   isManualEdition: false,
   postalCode: '75018',
   street: 'rue de la paix',
+  banId: '',
 }
 
 const venues = [
@@ -47,17 +48,19 @@ describe('computeInitialValuesFromOffer', () => {
       ...DEFAULT_EAC_FORM_VALUES,
       offererId: '1',
       venueId: '2',
+      city: 'Paris',
+      latitude: '3',
+      longitude: '2',
+      postalCode: '75018',
+      street: 'rue de la paix',
       location: {
         locationType: CollectiveLocationType.ADDRESS,
         address: {
-          city: 'Paris',
-          latitude: 3,
-          longitude: 2,
-          postalCode: '75018',
-          street: 'rue de la paix',
+          isManualEdition: false,
           isVenueAddress: true,
+          id_oa: venue.address?.id_oa.toString(),
+          label: 'Le nom du lieu 1',
         },
-        id_oa: venue.address?.id_oa.toString(),
       },
       contactUrl: undefined,
     })
@@ -215,20 +218,25 @@ describe('computeInitialValuesFromOffer', () => {
         }),
         undefined,
         false
-      ).location
-    ).toEqual({
-      address: {
+      )
+    ).toEqual(
+      expect.objectContaining({
         city: 'Chambéry',
-        isVenueAddress: false,
-        latitude: 12,
-        longitude: 3,
+        latitude: '12',
+        longitude: '3',
         postalCode: '31000',
         street: "rue de l'espoir",
-        label: 'théâtre de savoie',
-      },
-      id_oa: 'SPECIFIC_ADDRESS',
-      locationType: 'ADDRESS',
-    })
+        location: {
+          address: {
+            isVenueAddress: false,
+            isManualEdition: false,
+            id_oa: 'SPECIFIC_ADDRESS',
+            label: 'théâtre de savoie',
+          },
+          locationType: 'ADDRESS',
+        },
+      })
+    )
   })
 
   it('should set location to venue address when offer is located in its venue', () => {
@@ -246,18 +254,24 @@ describe('computeInitialValuesFromOffer', () => {
         }),
         undefined,
         false
-      ).location
-    ).toEqual({
-      address: {
+      )
+    ).toEqual(
+      expect.objectContaining({
         city: 'Paris',
-        isVenueAddress: true,
-        latitude: 3,
-        longitude: 2,
+        latitude: '3',
+        longitude: '2',
         postalCode: '75018',
         street: 'rue de la paix',
-      },
-      id_oa: '1994',
-      locationType: 'ADDRESS',
-    })
+        location: {
+          address: {
+            isVenueAddress: true,
+            isManualEdition: false,
+            id_oa: '1994',
+            label: 'Le nom du lieu 1',
+          },
+          locationType: 'ADDRESS',
+        },
+      })
+    )
   })
 })

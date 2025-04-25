@@ -1,4 +1,4 @@
-import { EacFormat } from 'apiClient/adage'
+import { CollectiveLocationType, EacFormat } from 'apiClient/adage'
 import {
   OfferAddressType,
   StudentLevels,
@@ -6,14 +6,16 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
-  CollectiveOfferLocationModel,
 } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'commons/core/shared/types'
+import {
+  AccessibilityFormValues,
+  AddressFormValues,
+} from 'commons/core/shared/types'
 import { hasProperty } from 'commons/utils/types'
 
 export type OfferDatesType = 'permanent' | 'specific_dates'
 
-export type OfferEducationalFormValues = {
+export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   title: string
   description: string
   duration: string
@@ -24,9 +26,15 @@ export type OfferEducationalFormValues = {
     otherAddress: string
     venueId: number | null
   }
-  location: CollectiveOfferLocationModel & { id_oa?: string }
-  'search-addressAutocomplete': string
-  addressAutocomplete: string
+  location: {
+    locationType: CollectiveLocationType
+    address: {
+      id_oa?: string
+      isManualEdition: boolean
+      isVenueAddress: boolean
+      label: string
+    }
+  }
   interventionArea: string[]
   participants: {
     college: boolean

@@ -42,6 +42,12 @@ const defaultValues: OfferEducationalFormValues = {
   },
   location: {
     locationType: CollectiveLocationType.ADDRESS,
+    address: {
+      id_oa: undefined,
+      isManualEdition: false,
+      isVenueAddress: false,
+      label: '',
+    },
   },
   formats: [EacFormat.CONCERT],
   contactOptions: {
@@ -153,7 +159,12 @@ describe('validationSchema OfferEducational', () => {
           ...defaultValues,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            id_oa: 'SPECIFIC_ADDRESS',
+            address: {
+              id_oa: 'SPECIFIC_ADDRESS',
+              isManualEdition: false,
+              isVenueAddress: false,
+              label: '',
+            },
           },
           addressAutocomplete: '',
         },

@@ -1,4 +1,4 @@
-import { FieldInputProps, useFormikContext } from 'formik'
+import { useFormikContext } from 'formik'
 import { useId, useState } from 'react'
 
 import {
@@ -6,10 +6,8 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import {
-  AddressSelect,
-  AutocompleteItemProps,
-} from 'components/Address/Address'
+import { resetAddressFields } from 'commons/utils/resetAddressFields'
+import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullBackIcon from 'icons/full-back.svg'
@@ -26,61 +24,26 @@ export interface FormLocationProps {
   venues: VenueListItemResponseModel[]
 }
 
-const resetAddressFields = async (
-  setFieldValue: (field: string, value: string | number | boolean) => void
-) => {
-  await Promise.all([
-    setFieldValue('location.address.street', ''),
-    setFieldValue('location.address.city', ''),
-    setFieldValue('location.address.postalCode', ''),
-    setFieldValue('location.address.longitude', ''),
-    setFieldValue('location.address.latitude', ''),
-    setFieldValue('location.address.banId', ''),
-    setFieldValue('addressAutocomplete', ''),
-    setFieldValue('search-addressAutocomplete', ''),
-  ])
-}
-
 export const FormLocation = ({
   venues,
   disableForm,
 }: FormLocationProps): JSX.Element => {
   const specificAddressId = useId()
-  const { values, setFieldValue } =
-    useFormikContext<OfferEducationalFormValues>()
+  const formik = useFormikContext<OfferEducationalFormValues>()
+  const setFieldValue = formik.setFieldValue
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
     useState(false)
 
   const selectedVenue = venues.find(
-    (v) => v.id.toString() === values.venueId.toString()
+    (v) => v.id.toString() === formik.values.venueId.toString()
   )
 
   const toggleManualAddressForm = async () => {
     setShouldShowManualAddressForm(!shouldShowManualAddressForm)
     if (!shouldShowManualAddressForm) {
       await setFieldValue('location.address.isManualEdition', true)
-      await resetAddressFields(setFieldValue)
+      await resetAddressFields({ formik })
     }
-  }
-
-  const handleAddressSelect = (
-    setFieldValue: (field: string, value: string | number | boolean) => void,
-    selectedItem?: AutocompleteItemProps,
-    searchField?: FieldInputProps<string>
-  ) => {
-    const { address, postalCode, city, latitude, longitude } =
-      selectedItem?.extraData || {}
-
-    setFieldValue('location.address.street', address ?? '')
-    if (searchField) {
-      setFieldValue('addressAutocomplete', searchField.value)
-    }
-    setFieldValue('location.address.postalCode', postalCode ?? '')
-    setFieldValue('location.address.city', city ?? '')
-    setFieldValue('location.address.latitude', latitude ?? '')
-    setFieldValue('location.address.longitude', longitude ?? '')
-    setFieldValue('location.address.banId', selectedItem?.value ?? '')
-    setFieldValue('location.address.isVenueAddress', false)
   }
 
   const handleAddressLocationChange = async (
@@ -90,19 +53,19 @@ export const FormLocation = ({
 
     if (isSpecificAddress) {
       await setFieldValue('location.address.label', '')
-      await resetAddressFields(setFieldValue)
+      await resetAddressFields({ formik })
     } else {
       // If here, the user chose to use the venue address
       const { address } = selectedVenue || {}
       await Promise.all([
-        setFieldValue('location.address.banId', address?.banId),
+        setFieldValue('banId', address?.banId),
+        setFieldValue('city', address?.city),
+        setFieldValue('longitude', address?.longitude),
+        setFieldValue('latitude', address?.latitude),
+        setFieldValue('postalCode', address?.postalCode),
+        setFieldValue('street', address?.street),
         setFieldValue('location.address.isVenueAddress', true),
-        setFieldValue('location.address.city', address?.city),
         setFieldValue('location.address.label', address?.label),
-        setFieldValue('location.address.longitude', address?.longitude),
-        setFieldValue('location.address.latitude', address?.latitude),
-        setFieldValue('location.address.postalCode', address?.postalCode),
-        setFieldValue('location.address.street', address?.street),
       ])
     }
   }
@@ -140,8 +103,10 @@ export const FormLocation = ({
                     disabled={disableForm}
                   />
                   <AddressSelect
-                    customHandleAddressSelect={handleAddressSelect}
                     disabled={disableForm || shouldShowManualAddressForm}
+                    onAddressSelect={() =>
+                      setFieldValue('location.address.isVenueAddress', false)
+                    }
                   />
                   <Button
                     variant={ButtonVariant.QUATERNARY}
@@ -168,7 +133,7 @@ export const FormLocation = ({
               ),
             },
           ]}
-          name={'location.id_oa'}
+          name={'location.address.id_oa'}
         />
       ),
     },
