@@ -834,8 +834,10 @@ class DeleteVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
-        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
-        assert educational_models.AdageVenueAddress.query.filter_by(venueId=venue_to_delete_id).count() == 0
+        assert (
+            db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
+        )
+        assert db.session.query(educational_models.AdageVenueAddress).filter_by(venueId=venue_to_delete_id).count() == 0
 
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
@@ -852,7 +854,9 @@ class DeleteVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
-        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+        assert (
+            db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+        )
 
         expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id, _external=True)
         assert response.location == expected_url
@@ -869,7 +873,9 @@ class DeleteVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
-        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+        assert (
+            db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+        )
 
         expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id, _external=True)
         assert response.location == expected_url
@@ -886,7 +892,9 @@ class DeleteVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id, follow_redirects=True)
         assert response.status_code == 200  # after redirect
-        assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+        assert (
+            db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
+        )
 
         assert (
             html_parser.extract_alert(response.data)
@@ -985,7 +993,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id.desc())
+        offerer_addresses = db.session.query(offerers_models.OffererAddress).order_by(
+            offerers_models.OffererAddress.id.desc()
+        )
         offerer_address, old_oa = offerer_addresses
         address = offerer_address.address
 
@@ -1130,8 +1140,15 @@ class UpdateVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=venue_data)
         assert response.status_code == 303
-        offerers_models.Venue.query.one()
-        assert len(offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id.desc()).all()) == 2
+        db.session.query(offerers_models.Venue).one()
+        assert (
+            len(
+                db.session.query(offerers_models.OffererAddress)
+                .order_by(offerers_models.OffererAddress.id.desc())
+                .all()
+            )
+            == 2
+        )
 
         venue_data = {
             **self._get_current_data(venue),
@@ -1143,10 +1160,10 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=venue_data)
         assert response.status_code == 303
 
-        venue = offerers_models.Venue.query.one()
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).all()
+        venue = db.session.query(offerers_models.Venue).one()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
+        )
         # We should still have only 2 offerer_addresses:
         #   - The first one created along side the venue
         #   - The second one created manually along side an edition
@@ -1235,9 +1252,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).all()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
+        )
         offerer_address = offerer_addresses[0]
         assert (len(offerer_addresses)) == 2
         assert venue.offererAddressId == offerer_address.id
@@ -1324,9 +1341,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        offerer_address = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).first()
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).first()
+        )
         address = offerer_address.address
 
         assert venue.timezone == "America/Guadeloupe"
@@ -1392,10 +1409,10 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).all()
+        address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
+        )
         offerer_address = offerer_addresses[0]
 
         assert len(offerer_addresses) == 2
@@ -2367,7 +2384,7 @@ class UpdateForFraudTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue.confidenceLevel is None
-        assert offerers_models.OffererConfidenceRule.query.count() == 0
+        assert db.session.query(offerers_models.OffererConfidenceRule).count() == 0
         assert len(venue.action_history) == 1
         action = venue.action_history[0]
         assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
@@ -2762,7 +2779,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
 
         mock_async_index_venue_ids.assert_called_once()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUserId == legit_user.id
         assert action.venue == venues[1]
@@ -2831,7 +2848,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
 
         mock_async_index_venue_ids.assert_called_once()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUserId == legit_user.id
         assert action.venue == venue
@@ -3053,7 +3070,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert venue_with_no_siret.current_pricing_point is None
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -3258,7 +3275,7 @@ class RemoveSiretTest(PostEndpointHelper):
         assert venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
         assert venue.current_pricing_point == target_venue
 
-        action = history_models.ActionHistory.query.filter_by(venueId=venue.id).one()
+        action = db.session.query(history_models.ActionHistory).filter_by(venueId=venue.id).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -3272,7 +3289,7 @@ class RemoveSiretTest(PostEndpointHelper):
         assert other_venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
         assert other_venue.current_pricing_point is None
 
-        other_action = history_models.ActionHistory.query.filter_by(venueId=other_venue.id).one()
+        other_action = db.session.query(history_models.ActionHistory).filter_by(venueId=other_venue.id).one()
         assert other_action.actionType == history_models.ActionType.INFO_MODIFIED
         assert other_action.actionDate is not None
         assert other_action.authorUserId == legit_user.id
@@ -3309,7 +3326,7 @@ class RemoveSiretTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        rules = finance_models.CustomReimbursementRule.query.all()
+        rules = db.session.query(finance_models.CustomReimbursementRule).all()
         assert bool(rules) == update
         if update:
             assert len(rules) == 1
@@ -3417,7 +3434,7 @@ class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
         db.session.refresh(venue_provider)
         assert venue_provider.isActive is not is_active
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
         assert action.authorUserId == legit_user.id
         assert action.venueId == venue_provider.venue.id
@@ -3440,8 +3457,12 @@ class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
             provider_id=0,
         )
         assert response.status_code == 404
-        assert providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).one()
-        assert history_models.ActionHistory.query.count() == 0
+        assert (
+            db.session.query(providers_models.VenueProvider)
+            .filter(providers_models.VenueProvider.id == venue_provider.id)
+            .one()
+        )
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class PostDeleteVenueProviderTest(PostEndpointHelper):
@@ -3461,10 +3482,12 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
         assert response.status_code == 303
         assert (
-            providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).count()
+            db.session.query(providers_models.VenueProvider)
+            .filter(providers_models.VenueProvider.id == venue_provider.id)
+            .count()
             == 0
         )
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
         assert action.authorUserId == legit_user.id
         assert action.venueId == venue_id
@@ -3490,10 +3513,12 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
         assert response.status_code == 404
         assert (
-            providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).count()
+            db.session.query(providers_models.VenueProvider)
+            .filter(providers_models.VenueProvider.id == venue_provider.id)
+            .count()
             == 1
         )
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_delete_venue_allocine_provider(self, authenticated_client):
         venue_provider = providers_factories.AllocineVenueProviderFactory()
@@ -3505,10 +3530,12 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
         assert response.status_code == 303
         assert (
-            providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).count()
+            db.session.query(providers_models.VenueProvider)
+            .filter(providers_models.VenueProvider.id == venue_provider.id)
+            .count()
             == 1
         )
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
         assert response.location == url_for(
             "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
         )

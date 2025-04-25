@@ -31,7 +31,7 @@ tags_blueprint = utils.child_backoffice_blueprint(
 
 
 def get_tags_categories() -> list[criteria_models.CriterionCategory]:
-    return criteria_models.CriterionCategory.query.order_by(criteria_models.CriterionCategory.label).all()
+    return db.session.query(criteria_models.CriterionCategory).order_by(criteria_models.CriterionCategory.label).all()
 
 
 @tags_blueprint.route("", methods=["GET"])
@@ -43,7 +43,7 @@ def list_tags() -> utils.BackofficeResponse:
         else None
     )
 
-    query = criteria_models.Criterion.query.options(sa_orm.joinedload(criteria_models.Criterion.categories))
+    query = db.session.query(criteria_models.Criterion).options(sa_orm.joinedload(criteria_models.Criterion.categories))
 
     if not form.validate():
         code = 400
@@ -132,7 +132,7 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def update_tag(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
 
@@ -164,7 +164,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
 
@@ -190,7 +190,7 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_tag(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
 
@@ -208,7 +208,7 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    tag = db.session.query(criteria_models.Criterion).filter_by(id=tag_id).one_or_none()
     if not tag:
         raise NotFound()
 

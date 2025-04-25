@@ -28,14 +28,15 @@ offerer_tag_blueprint = utils.child_backoffice_blueprint(
 
 
 def get_offerer_tag_categories() -> list[offerers_models.OffererTagCategory]:
-    return offerers_models.OffererTagCategory.query.order_by(offerers_models.OffererTagCategory.label).all()
+    return db.session.query(offerers_models.OffererTagCategory).order_by(offerers_models.OffererTagCategory.label).all()
 
 
 @offerer_tag_blueprint.route("", methods=["GET"])
 def list_offerer_tags() -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     offerer_tags = (
-        offerers_models.OffererTag.query.options(sa_orm.joinedload(offerers_models.OffererTag.categories))
+        db.session.query(offerers_models.OffererTag)
+        .options(sa_orm.joinedload(offerers_models.OffererTag.categories))
         .order_by(offerers_models.OffererTag.name)
         .all()
     )
@@ -108,7 +109,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
-    offerer_tag_to_update = offerers_models.OffererTag.query.filter_by(id=offerer_tag_id).one_or_none()
+    offerer_tag_to_update = db.session.query(offerers_models.OffererTag).filter_by(id=offerer_tag_id).one_or_none()
     if not offerer_tag_to_update:
         raise NotFound()
 
@@ -142,7 +143,7 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
-    offerer_tag_to_delete = offerers_models.OffererTag.query.filter_by(id=offerer_tag_id).one_or_none()
+    offerer_tag_to_delete = db.session.query(offerers_models.OffererTag).filter_by(id=offerer_tag_id).one_or_none()
     if not offerer_tag_to_delete:
         raise NotFound()
 

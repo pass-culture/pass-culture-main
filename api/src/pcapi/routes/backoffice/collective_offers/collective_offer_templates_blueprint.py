@@ -47,7 +47,8 @@ def _get_collective_offer_templates(
     form: collective_offer_forms.GetCollectiveOfferTemplatesListForm,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     base_query = (
-        educational_models.CollectiveOfferTemplate.query.join(offerers_models.Venue)
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .join(offerers_models.Venue)
         .join(offerers_models.Offerer)
         .options(
             sa_orm.load_only(
@@ -174,9 +175,11 @@ def list_collective_offer_templates() -> utils.BackofficeResponse:
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_template_form(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
-        id=collective_offer_template_id
-    ).one_or_none()
+    collective_offer_template = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter_by(id=collective_offer_template_id)
+        .one_or_none()
+    )
     if not collective_offer_template:
         raise NotFound()
 
@@ -208,9 +211,11 @@ def validate_collective_offer_template(collective_offer_template_id: int) -> uti
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_collective_offer_template_form(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
-        id=collective_offer_template_id
-    ).one_or_none()
+    collective_offer_template = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter_by(id=collective_offer_template_id)
+        .one_or_none()
+    )
     if not collective_offer_template:
         raise NotFound()
 
@@ -255,10 +260,14 @@ def _batch_validate_or_reject_collective_offer_templates(
     collective_offer_template_ids: list[int],
     reason: educational_models.CollectiveOfferRejectionReason | None = None,
 ) -> bool:
-    collective_offer_templates = educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids),
-        educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.PENDING,
-    ).all()
+    collective_offer_templates = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(
+            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids),
+            educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.PENDING,
+        )
+        .all()
+    )
 
     if len(collective_offer_template_ids) != len(collective_offer_templates):
         flash(
@@ -419,21 +428,23 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/details", methods=["GET"])
 def get_collective_offer_template_details(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.id == collective_offer_template_id
-    ).options(
-        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
-            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-                offerers_models.OffererConfidenceRule.confidenceLevel
-            ),
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
-                sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+    collective_offer_template_query = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(educational_models.CollectiveOfferTemplate.id == collective_offer_template_id)
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
-                sa_orm.with_expression(
-                    offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                        offerers_models.OffererConfidenceRule.confidenceLevel
+                    ),
+                    sa_orm.with_expression(
+                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                    ),
                 ),
-            ),
+            )
         )
     )
     collective_offer_template = collective_offer_template_query.one_or_none()

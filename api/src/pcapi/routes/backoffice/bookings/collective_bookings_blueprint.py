@@ -22,6 +22,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
@@ -44,7 +45,8 @@ def _get_collective_bookings(
     form: booking_forms.GetCollectiveBookingListForm,
 ) -> list[educational_models.CollectiveBooking]:
     base_query = (
-        educational_models.CollectiveBooking.query.join(educational_models.CollectiveStock)
+        db.session.query(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveStock)
         .join(educational_models.CollectiveOffer)
         .join(educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution)
         .options(
@@ -215,7 +217,9 @@ def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    collective_booking = (
+        db.session.query(educational_models.CollectiveBooking).filter_by(id=collective_booking_id).one_or_none()
+    )
     if not collective_booking:
         raise NotFound()
 
@@ -237,7 +241,9 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    collective_booking = (
+        db.session.query(educational_models.CollectiveBooking).filter_by(id=collective_booking_id).one_or_none()
+    )
     if not collective_booking:
         raise NotFound()
 

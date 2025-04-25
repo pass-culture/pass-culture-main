@@ -32,6 +32,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
@@ -63,7 +64,8 @@ def _get_individual_bookings(
     form: booking_forms.GetIndividualBookingListForm,
 ) -> list[bookings_models.Booking]:
     base_query = (
-        bookings_models.Booking.query.join(offers_models.Stock)
+        db.session.query(bookings_models.Booking)
+        .join(offers_models.Stock)
         .join(offers_models.Offer)
         .join(users_models.User, bookings_models.Booking.user)
         .options(
@@ -273,9 +275,11 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
 
 
 def _get_booking_query_for_validation() -> sa_orm.Query:
-    return bookings_models.Booking.query.options(
-        sa_orm.joinedload(bookings_models.Booking.user).selectinload(users_models.User.achievements)
-    ).options(sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer))
+    return (
+        db.session.query(bookings_models.Booking)
+        .options(sa_orm.joinedload(bookings_models.Booking.user).selectinload(users_models.User.achievements))
+        .options(sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer))
+    )
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
@@ -293,7 +297,8 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = (
-        bookings_models.Booking.query.filter_by(id=booking_id)
+        db.session.query(bookings_models.Booking)
+        .filter_by(id=booking_id)
         .options(
             sa_orm.joinedload(bookings_models.Booking.stock)
             .load_only(offers_models.Stock.id)
@@ -371,7 +376,9 @@ def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_individual_booking_action()
 
-    bookings = bookings_models.Booking.query.filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
+    bookings = (
+        db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
+    )
     _batch_cancel_bookings(bookings, bookings_models.BookingCancellationReasons(form.reason.data))
 
     return _redirect_after_individual_booking_action()

@@ -341,11 +341,11 @@ class CreatePivotTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, name="allocine", form=form)
         assert response.status_code == 303
 
-        created = providers_models.AllocinePivot.query.one()
+        created = db.session.query(providers_models.AllocinePivot).one()
         assert created.venueId == venue.id
         assert created.theaterId == form["theater_id"]
         assert created.internalId == form["internal_id"]
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue.id
@@ -372,11 +372,11 @@ class CreatePivotTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, name="boost", form=form, follow_redirects=True)
         assert response.status_code == 200
 
-        created = providers_models.BoostCinemaDetails.query.one()
+        created = db.session.query(providers_models.BoostCinemaDetails).one()
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
@@ -398,12 +398,12 @@ class CreatePivotTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="cgr", form=form)
 
-        created = providers_models.CGRCinemaDetails.query.one()
+        created = db.session.query(providers_models.CGRCinemaDetails).one()
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
         assert decrypt(created.password) == form["password"]
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
@@ -421,12 +421,12 @@ class CreatePivotTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="cineoffice", form=form)
 
-        created = providers_models.CDSCinemaDetails.query.one()
+        created = db.session.query(providers_models.CDSCinemaDetails).one()
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.accountId == form["account_id"]
         assert created.cinemaApiToken == form["api_token"]
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
@@ -444,11 +444,11 @@ class CreatePivotTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="ems", form=form)
 
-        created: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.one()
+        created: providers_models.EMSCinemaDetails = db.session.query(providers_models.EMSCinemaDetails).one()
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.lastVersion == 0
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.PIVOT_CREATED
         assert action.authorUser == legit_user
         assert action.venueId == venue_id
@@ -466,7 +466,7 @@ class CreatePivotTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, name="cineoffice", form=form)
 
-        created = providers_models.CDSCinemaDetails.query.one_or_none()
+        created = db.session.query(providers_models.CDSCinemaDetails).one_or_none()
         assert created is None
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -492,7 +492,7 @@ class CreatePivotTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, name="cineoffice", form=form, follow_redirects=True)
 
         mock_check_if_api_call_is_ok.assert_called_once()
-        assert providers_models.CDSCinemaDetails.query.count() == 0
+        assert db.session.query(providers_models.CDSCinemaDetails).count() == 0
         assert html_parser.extract_alert(response.data) == "Une erreur s'est produite : Test"
 
 
@@ -579,7 +579,7 @@ class UpdatePivotTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, name="allocine", pivot_id=pivot_id, form=form)
         assert response.status_code == 303
 
-        updated = providers_models.AllocinePivot.query.one()
+        updated = db.session.query(providers_models.AllocinePivot).one()
         assert updated.venueId == venue.id
         assert updated.theaterId == form["theater_id"]
         assert updated.internalId == form["internal_id"]
@@ -597,7 +597,7 @@ class UpdatePivotTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id, form=form)
 
-        updated = providers_models.BoostCinemaDetails.query.one()
+        updated = db.session.query(providers_models.BoostCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.cinemaUrl == form["cinema_url"]
 
@@ -617,7 +617,7 @@ class UpdatePivotTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id, form=form)
 
-        updated = providers_models.CGRCinemaDetails.query.one()
+        updated = db.session.query(providers_models.CGRCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.cinemaUrl == form["cinema_url"]
         assert decrypt(updated.password) == form["password"]
@@ -634,7 +634,7 @@ class UpdatePivotTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form)
 
-        updated = providers_models.CDSCinemaDetails.query.one()
+        updated = db.session.query(providers_models.CDSCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.accountId == form["account_id"]
         assert updated.cinemaApiToken == form["api_token"]
@@ -672,7 +672,7 @@ class UpdatePivotTest(PostEndpointHelper):
             authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form
         )
 
-        updated = providers_models.CDSCinemaDetails.query.one()
+        updated = db.session.query(providers_models.CDSCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider != form["cinema_id"]
         assert updated.accountId != form["account_id"]
         assert updated.cinemaApiToken != form["api_token"]
@@ -696,8 +696,12 @@ class DeleteProviderTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="allocine", pivot_id=allocine_pivot.id)
 
-        assert not providers_models.AllocineVenueProvider.query.filter_by(id=allocine_venue_provider.id).first()
-        assert not providers_models.AllocinePivot.query.filter_by(id=allocine_pivot.id).first()
+        assert (
+            not db.session.query(providers_models.AllocineVenueProvider)
+            .filter_by(id=allocine_venue_provider.id)
+            .first()
+        )
+        assert not db.session.query(providers_models.AllocinePivot).filter_by(id=allocine_pivot.id).first()
 
     def test_delete_pivot_boost_with_logout_error(self, authenticated_client, caplog):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()
@@ -706,7 +710,7 @@ class DeleteProviderTest(PostEndpointHelper):
         with caplog.at_level(logging.ERROR):
             self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id)
 
-        assert not providers_models.BoostCinemaDetails.query.filter_by(id=boost_pivot.id).first()
+        assert not db.session.query(providers_models.BoostCinemaDetails).filter_by(id=boost_pivot.id).first()
         assert len(caplog.records) == 1
         assert caplog.records[0].message == "Unexpected error from Boost logout API"
         assert caplog.records[0].cinema_url == cinema_url
@@ -717,28 +721,28 @@ class DeleteProviderTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id)
 
-        assert not providers_models.BoostCinemaDetails.query.filter_by(id=boost_pivot.id).first()
+        assert not db.session.query(providers_models.BoostCinemaDetails).filter_by(id=boost_pivot.id).first()
 
     def test_delete_pivot_cgr(self, authenticated_client):
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
         self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id)
 
-        assert not providers_models.CGRCinemaDetails.query.filter_by(id=cgr_pivot.id).first()
+        assert not db.session.query(providers_models.CGRCinemaDetails).filter_by(id=cgr_pivot.id).first()
 
     def test_delete_pivot_cineoffice(self, authenticated_client):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
         self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id)
 
-        assert not providers_models.CDSCinemaDetails.query.filter_by(id=cineoffice_pivot.id).first()
+        assert not db.session.query(providers_models.CDSCinemaDetails).filter_by(id=cineoffice_pivot.id).first()
 
     def test_delete_pivot_ems(self, authenticated_client):
         ems_pivot = providers_factories.EMSCinemaDetailsFactory()
 
         self.post_to_endpoint(authenticated_client, name="ems", pivot_id=ems_pivot.id)
 
-        assert not providers_models.EMSCinemaDetails.query.filter_by(id=ems_pivot.id).first()
+        assert not db.session.query(providers_models.EMSCinemaDetails).filter_by(id=ems_pivot.id).first()
 
     def test_delete_pivot_history_action(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
@@ -752,8 +756,8 @@ class DeleteProviderTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id)
         assert response.status_code == 303
-        assert not providers_models.CGRCinemaDetails.query.filter_by(id=cgr_pivot.id).first()
-        action = history_models.ActionHistory.query.one()
+        assert not db.session.query(providers_models.CGRCinemaDetails).filter_by(id=cgr_pivot.id).first()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.comment == "Pivot CGR"
         assert action.venueId == venue.id
         assert action.actionType == history_models.ActionType.PIVOT_DELETED
@@ -771,8 +775,8 @@ class DeleteProviderTest(PostEndpointHelper):
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, venue=venue)
         response = self.post_to_endpoint(authenticated_client, follow_redirects=True, name="cgr", pivot_id=cgr_pivot.id)
         assert response.status_code == 200
-        assert providers_models.CGRCinemaDetails.query.filter_by(id=cgr_pivot.id).one()
-        assert providers_models.VenueProvider.query.filter_by(id=venue_provider.id).one()
+        assert db.session.query(providers_models.CGRCinemaDetails).filter_by(id=cgr_pivot.id).one()
+        assert db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider.id).one()
         assert html_parser.extract_alert(response.data) == (
             "Le pivot ne peut pas être supprimé si la synchronisation de ce cinéma est active. "
             "Supprimez la synchronisation et vous pourrez supprimer le pivot."

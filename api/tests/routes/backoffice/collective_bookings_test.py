@@ -639,7 +639,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = educational_models.CollectiveBooking.query.filter_by(id=booking_id).one()
+        booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()
         assert booking.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -661,7 +661,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        booking = educational_models.CollectiveBooking.query.filter_by(id=booking_id).one()
+        booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()
         assert booking.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])

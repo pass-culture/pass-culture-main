@@ -467,16 +467,16 @@ class CancelIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert (
-            finance_models.FinanceIncident.query.filter(
-                finance_models.FinanceIncident.status == finance_models.IncidentStatus.CREATED
-            ).count()
+            db.session.query(finance_models.FinanceIncident)
+            .filter(finance_models.FinanceIncident.status == finance_models.IncidentStatus.CREATED)
+            .count()
             == 0
         )
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Annulé" in badges
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CANCELLED
         assert action_history.authorUser == legit_user
         assert action_history.comment == self.form_data["comment"]
@@ -492,7 +492,7 @@ class CancelIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert "L'incident a déjà été annulé" in html_parser.extract_alert(response.data)
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_cancel_already_validated_incident(self, authenticated_client):
         incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
@@ -505,7 +505,7 @@ class CancelIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(response.data)
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
@@ -527,7 +527,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
             status=finance_models.PricingStatus.INVOICED,
             amount=-1000,
         )
-        used_finance_event = finance_models.FinanceEvent.query.one()
+        used_finance_event = db.session.query(finance_models.FinanceEvent).one()
 
         assert booking_incident.incident.venue.current_bank_account_link
 
@@ -549,16 +549,22 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "L'incident a été validé." in content
 
-        updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
+        updated_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=booking_incident.incidentId).one()
+        )
         assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
         assert updated_incident.forceDebitNote == force_debit_note
 
-        beneficiary_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.user == booking_incident.beneficiary
-        ).first()
-        validation_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.financeIncident == updated_incident
-        ).first()
+        beneficiary_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.user == booking_incident.beneficiary)
+            .first()
+        )
+        validation_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.financeIncident == updated_incident)
+            .first()
+        )
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
@@ -573,9 +579,11 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
             and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
         )
 
-        last_finance_event = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.id != used_finance_event.id
-        ).one()
+        last_finance_event = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.id != used_finance_event.id)
+            .one()
+        )
         assert last_finance_event.motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
 
         assert len(mails_testing.outbox) == 2
@@ -655,9 +663,11 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         assert incident.status == finance_models.IncidentStatus.VALIDATED
         assert incident.forceDebitNote == force_debit_note
 
-        validation_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.financeIncident == incident
-        ).first()
+        validation_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.financeIncident == incident)
+            .first()
+        )
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
@@ -673,16 +683,20 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
 
         # total finance incident
-        total_incident_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_incident.id
-        ).all()
+        total_incident_events = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_incident.id)
+            .all()
+        )
         assert len(total_incident_events) == 1
         assert total_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
 
         # partial finaance incident
-        partial_incident_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_incident.id
-        ).all()
+        partial_incident_events = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_incident.id)
+            .all()
+        )
         assert len(partial_incident_events) == 2
         assert (
             partial_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
@@ -706,9 +720,9 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(response.data) == "L'incident ne peut être validé que s'il est au statut 'créé'."
         )
-        finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
+        finance_incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident.id).one()
         assert finance_incident.status == initial_status
-        assert finance_models.FinanceEvent.query.count() == 0
+        assert db.session.query(finance_models.FinanceEvent).count() == 0
         assert len(mails_testing.outbox) == 0
 
     @pytest.mark.parametrize(
@@ -739,7 +753,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
 
         db.session.refresh(finance_incident)
         assert finance_incident.status == finance_models.IncidentStatus.CREATED
-        assert finance_models.FinanceEvent.query.count() == 0
+        assert db.session.query(finance_models.FinanceEvent).count() == 0
         assert len(mails_testing.outbox) == 0
 
 
@@ -918,7 +932,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
             booking=booking,
             newTotalAmount=5_00,
         )
-        used_finance_event = finance_models.FinanceEvent.query.one()
+        used_finance_event = db.session.query(finance_models.FinanceEvent).one()
 
         assert booking_incident.incident.venue.current_bank_account_link
 
@@ -936,16 +950,22 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "Le geste commercial a été validé." in content
 
-        updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
+        updated_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=booking_incident.incidentId).one()
+        )
         assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
         assert updated_incident.forceDebitNote is False
 
-        beneficiary_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.user == booking_incident.beneficiary
-        ).first()
-        validation_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.financeIncident == updated_incident
-        ).first()
+        beneficiary_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.user == booking_incident.beneficiary)
+            .first()
+        )
+        validation_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.financeIncident == updated_incident)
+            .first()
+        )
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
@@ -956,9 +976,11 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
             and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
         )
 
-        last_finance_event = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.id != used_finance_event.id
-        ).one()
+        last_finance_event = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.id != used_finance_event.id)
+            .one()
+        )
         assert last_finance_event.motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
 
         assert len(mails_testing.outbox) == 1
@@ -1024,9 +1046,11 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         assert incident.status == finance_models.IncidentStatus.VALIDATED
         assert incident.forceDebitNote is False
 
-        validation_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.financeIncident == incident
-        ).first()
+        validation_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.financeIncident == incident)
+            .first()
+        )
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
@@ -1038,16 +1062,20 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         assert cancelled_booking2.status == bookings_models.BookingStatus.CANCELLED
 
         # total finance incident
-        total_incident_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_commercial_gesture.id
-        ).all()
+        total_incident_events = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_commercial_gesture.id)
+            .all()
+        )
         assert len(total_incident_events) == 1
         assert total_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
 
         # partial finaance incident
-        partial_incident_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_commercial_gesture.id
-        ).all()
+        partial_incident_events = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_commercial_gesture.id)
+            .all()
+        )
         assert len(partial_incident_events) == 1
         assert partial_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
 
@@ -1103,14 +1131,18 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
 
-        commercial_gesture1_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident1.id
-        ).all()
+        commercial_gesture1_events = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident1.id)
+            .all()
+        )
         assert len(commercial_gesture1_events) == 1
 
-        commercial_gesture2_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident2.id
-        ).all()
+        commercial_gesture2_events = (
+            db.session.query(finance_models.FinanceEvent)
+            .filter(finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident2.id)
+            .all()
+        )
         assert len(commercial_gesture2_events) == 1
 
         assert len(mails_testing.outbox) == 2
@@ -1147,9 +1179,9 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Le geste commercial ne peut être validé que s'il est au statut 'créé'."
         )
-        finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
+        finance_incident = db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident.id).one()
         assert finance_incident.status == initial_status
-        assert finance_models.FinanceEvent.query.count() == 0
+        assert db.session.query(finance_models.FinanceEvent).count() == 0
         assert len(mails_testing.outbox) == 0
 
 
@@ -1718,17 +1750,17 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        incidents = finance_models.FinanceIncident.query.all()
+        incidents = db.session.query(finance_models.FinanceIncident).all()
         assert len(incidents) == 1
         incident = incidents[0]
-        assert finance_models.BookingFinanceIncident.query.count() == 1
-        booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 1
+        booking_finance_incident = db.session.query(finance_models.BookingFinanceIncident).first()
         assert booking_finance_incident.newTotalAmount == 0
         assert booking_finance_incident.incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
         assert booking_finance_incident.incident.comment == comment
         assert booking_finance_incident.incident.zendeskId == zendesk_id
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
@@ -1760,9 +1792,9 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert finance_models.FinanceIncident.query.count() == 1  # didn't create new incident
+        assert db.session.query(finance_models.FinanceIncident).count() == 1  # didn't create new incident
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
@@ -1796,14 +1828,14 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert finance_models.FinanceIncident.query.count() == 1
-        finance_incident = finance_models.FinanceIncident.query.first()
+        assert db.session.query(finance_models.FinanceIncident).count() == 1
+        finance_incident = db.session.query(finance_models.FinanceIncident).first()
         assert finance_incident.comment == comment
         assert finance_incident.zendeskId == zendesk_id
         assert finance_incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
-        assert finance_models.BookingFinanceIncident.query.count() == 2
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 2
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
@@ -1825,8 +1857,8 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class GetCommercialGestureCreationFormTest(PostEndpointHelper):
@@ -1970,15 +2002,15 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert finance_models.FinanceIncident.query.count() == 1
-        assert finance_models.BookingFinanceIncident.query.count() == 1
-        booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
+        assert db.session.query(finance_models.FinanceIncident).count() == 1
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 1
+        booking_finance_incident = db.session.query(finance_models.BookingFinanceIncident).first()
         assert booking_finance_incident.newTotalAmount == 0
         assert booking_finance_incident.incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
         assert booking_finance_incident.incident.comment == comment
         assert booking_finance_incident.incident.zendeskId == zendesk_id
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
@@ -2003,8 +2035,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert finance_models.FinanceIncident.query.count() == 0
-        assert finance_models.BookingFinanceIncident.query.count() == 0
+        assert db.session.query(finance_models.FinanceIncident).count() == 0
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 0
 
         assert (
             "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation"
@@ -2029,8 +2061,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert finance_models.FinanceIncident.query.count() == 0
-        assert finance_models.BookingFinanceIncident.query.count() == 0
+        assert db.session.query(finance_models.FinanceIncident).count() == 0
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 0
 
         assert (
             'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
@@ -2055,8 +2087,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
+        assert db.session.query(history_models.ActionHistory).count() == 0
         assert (
             html_parser.extract_alert(response.data)
             == 'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
@@ -2093,8 +2125,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
@@ -2122,7 +2154,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        finance_incidents = finance_models.FinanceIncident.query.all()
+        finance_incidents = db.session.query(finance_models.FinanceIncident).all()
         assert len(finance_incidents) == 1
         assert finance_incidents[0].origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
         assert finance_incidents[0].comment == comment
@@ -2164,7 +2196,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert finance_models.FinanceIncident.query.count() == expected_incident_count
+        assert db.session.query(finance_models.FinanceIncident).count() == expected_incident_count
 
 
 class GetIncidentHistoryTest(GetEndpointHelper):
@@ -2230,7 +2262,9 @@ class ForceDebitNoteTest(PostEndpointHelper):
 
         assert response.status_code == 200
         assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(response.data)
-        updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
+        updated_finance_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident.id).one()
+        )
         assert updated_finance_incident.forceDebitNote is True
 
     @pytest.mark.parametrize(
@@ -2254,7 +2288,9 @@ class ForceDebitNoteTest(PostEndpointHelper):
             "Cette action ne peut être effectuée que sur un incident validé non terminé."
             == html_parser.extract_alert(response.data)
         )
-        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
+        finance_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=original_finance_incident.id).one()
+        )
         assert finance_incident.forceDebitNote is False
 
     def test_force_debit_note_on_finished_incident(self, authenticated_client):
@@ -2301,7 +2337,9 @@ class ForceDebitNoteTest(PostEndpointHelper):
             "Cette action ne peut être effectuée que sur un incident validé non terminé."
             == html_parser.extract_alert(response.data)
         )
-        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
+        finance_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=original_finance_incident.id).one()
+        )
         assert finance_incident.forceDebitNote is False
 
 
@@ -2355,7 +2393,9 @@ class CancelDebitNoteTest(PostEndpointHelper):
             "OFFER_NAME": booking.stock.offer.name,
             "TOKEN_LIST": booking.token,
         }
-        updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
+        updated_finance_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=finance_incident.id).one()
+        )
         assert updated_finance_incident.forceDebitNote is False
 
     @pytest.mark.parametrize(
@@ -2381,7 +2421,9 @@ class CancelDebitNoteTest(PostEndpointHelper):
             "Cette action ne peut être effectuée que sur un incident validé non terminé."
             == html_parser.extract_alert(response.data)
         )
-        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
+        finance_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=original_finance_incident.id).one()
+        )
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
 
     def test_cancel_debit_note_on_finished_incident(self, authenticated_client):
@@ -2431,5 +2473,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
             "Cette action ne peut être effectuée que sur un incident validé non terminé."
             == html_parser.extract_alert(response.data)
         )
-        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
+        finance_incident = (
+            db.session.query(finance_models.FinanceIncident).filter_by(id=original_finance_incident.id).one()
+        )
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote

@@ -36,7 +36,7 @@ class CineofficeContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditCineOfficeForm:
-        pivot = providers_models.CDSCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.CDSCinemaDetails).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
         form = forms.EditCineOfficeForm(
@@ -59,11 +59,11 @@ class CineofficeContext(PivotContext):
         cinema_id = form.cinema_id.data
         api_token = form.api_token.data
 
-        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
-        pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
+        pivot = db.session.query(providers_models.CinemaProviderPivot).filter_by(venueId=venue_id).one_or_none()
         if pivot:
             flash(
                 Markup("Des identifiants cinéma existent déjà pour ce partenaire culturel id={venue_id}").format(
@@ -89,7 +89,7 @@ class CineofficeContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditCineOfficeForm, pivot_id: int) -> bool:
-        pivot = providers_models.CDSCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.CDSCinemaDetails).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
         account_id = form.account_id.data

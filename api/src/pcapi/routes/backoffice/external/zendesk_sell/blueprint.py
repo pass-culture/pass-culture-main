@@ -10,6 +10,7 @@ from pcapi.core.external import zendesk_sell
 from pcapi.core.external.zendesk_sell_backends import BaseBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
@@ -65,7 +66,8 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
 @zendesk_sell_blueprint.route("/offerer/<int:offerer_id>/update", methods=["POST"])
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
         .one()
     )
@@ -126,7 +128,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @zendesk_sell_blueprint.route("/venue/<int:venue_id>/update", methods=["POST"])
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+    venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
     if not venue:
         raise NotFound()
 

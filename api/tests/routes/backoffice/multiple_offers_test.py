@@ -330,7 +330,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
 
         initially_rejected = {
             offer.id: {"type": offer.lastValidationType, "date": offer.lastValidationDate}
-            for offer in Offer.query.filter(Offer.validation == OfferValidationStatus.REJECTED)
+            for offer in db.session.query(Offer).filter(Offer.validation == OfferValidationStatus.REJECTED)
         }
 
         response = self.post_to_endpoint(authenticated_client, form={"ean": "9781234567890"})
@@ -340,8 +340,8 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890", _external=True
         )
 
-        product = offers_models.Product.query.one()
-        offers = Offer.query.order_by("id").all()
+        product = db.session.query(offers_models.Product).one()
+        offers = db.session.query(Offer).order_by("id").all()
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         for offer in offers:
@@ -431,13 +431,15 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         db.session.close()
         db.session.begin()
 
-        product = offers_models.Product.query.one()
-        offer = offers_models.Offer.query.one()
+        product = db.session.query(offers_models.Product).one()
+        offer = db.session.query(offers_models.Offer).one()
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
         assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
-        assert bookings_models.Booking.query.filter(bookings_models.Booking.is_used_or_reimbursed).count() == 2
-        assert bookings_models.Booking.query.filter(bookings_models.Booking.isCancelled).count() == 2
+        assert (
+            db.session.query(bookings_models.Booking).filter(bookings_models.Booking.is_used_or_reimbursed).count() == 2
+        )
+        assert db.session.query(bookings_models.Booking).filter(bookings_models.Booking.isCancelled).count() == 2

@@ -13,6 +13,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 
@@ -213,17 +214,21 @@ class AddProductWhitelistTest(PostEndpointHelper):
             ),
         ]
 
-        assert not fraud_models.ProductWhitelist.query.filter(
-            fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
-        ).one_or_none()
+        assert (
+            not db.session.query(fraud_models.ProductWhitelist)
+            .filter(fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"])
+            .one_or_none()
+        )
 
         response = self.post_to_endpoint(authenticated_client, form=form_data, **self.endpoint_kwargs)
         assert response.status_code == 303
         response_redirect = authenticated_client.get(response.location)
         alert = html_parser.extract_alert(response_redirect.data)
-        product_whitelist = fraud_models.ProductWhitelist.query.filter(
-            fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
-        ).one()
+        product_whitelist = (
+            db.session.query(fraud_models.ProductWhitelist)
+            .filter(fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"])
+            .one()
+        )
 
         assert "a été ajouté dans la whitelist" in alert
         assert product_whitelist.comment == form_data["comment"]
@@ -231,13 +236,13 @@ class AddProductWhitelistTest(PostEndpointHelper):
         mock_whitelist_product.assert_called_with(self.endpoint_kwargs["ean"])
 
         for offer in offers_to_restore:
-            offer = offers_models.Offer.query.get_or_404(offer.id)
+            offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
             assert offer.validation == offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
             assert offer.lastValidationType == OfferValidationType.MANUAL
 
         for offer in offers_not_to_restore:
-            offer = offers_models.Offer.query.get_or_404(offer.id)
+            offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
             assert not offer.validation == offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == (
                 datetime.date.today() - datetime.timedelta(days=2)
@@ -272,15 +277,19 @@ class AddProductWhitelistTest(PostEndpointHelper):
             f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{self.endpoint_kwargs['ean']}",
             json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
-        assert not fraud_models.ProductWhitelist.query.filter(
-            fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
-        ).one_or_none()
+        assert (
+            not db.session.query(fraud_models.ProductWhitelist)
+            .filter(fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"])
+            .one_or_none()
+        )
 
         response = self.post_to_endpoint(authenticated_client, form=self.form_data, **self.endpoint_kwargs)
         assert response.status_code == 303
-        assert fraud_models.ProductWhitelist.query.filter(
-            fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
-        ).one()
+        assert (
+            db.session.query(fraud_models.ProductWhitelist)
+            .filter(fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"])
+            .one()
+        )
 
         response_redirect = authenticated_client.get(response.location)
         alert = html_parser.extract_alert(response_redirect.data)
@@ -360,7 +369,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, form=self.form_data, **self.endpoint_kwargs)
 
-        offer = offers_models.Offer.query.get_or_404(offer.id)
+        offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
         assert offer.validation == offers_models.OfferValidationStatus.APPROVED
         assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
         assert offer.lastValidationType == OfferValidationType.MANUAL

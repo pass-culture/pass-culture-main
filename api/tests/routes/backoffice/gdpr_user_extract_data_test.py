@@ -10,6 +10,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
 
 from tests.test_utils import StorageFolderManager
@@ -193,7 +194,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
         expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
         assert response.location == expected_url
 
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
         assert len(os.listdir(self.storage_folder)) == 0
 
         response = authenticated_client.get(response.location)
@@ -229,7 +230,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
         expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
         assert response.location == expected_url
 
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
 
         response = authenticated_client.get(response.location)
         assert "L'extraction de données a bien été effacée." in html_parser.extract_alert(response.data)

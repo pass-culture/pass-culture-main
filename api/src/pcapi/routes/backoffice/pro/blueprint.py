@@ -289,7 +289,8 @@ def create_offerer() -> utils.BackofficeResponse:
 def _get_connect_as_base_query() -> BaseQuery:
     """Returns all user_id to be used as a subquery."""
     return (
-        users_models.User.query.with_entities(users_models.User.id)
+        db.session.query(users_models.User)
+        .with_entities(users_models.User.id)
         .join(users_models.User.UserOfferers)
         .filter(
             users_models.User.isActive.is_(True),
@@ -325,7 +326,7 @@ def _get_best_user_id_for_connect_as(query: BaseQuery) -> int | None:
 
 
 def _check_user_for_user_id(user_id: int) -> int:
-    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
     if not user:
         raise NotFound()
 

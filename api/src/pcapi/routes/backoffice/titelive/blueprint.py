@@ -76,7 +76,8 @@ def search_titelive() -> utils.BackofficeResponse:
         ineligibility_reason = get_ineligibility_reason(data.article[0], data.titre)
 
     product_whitelist = (
-        fraud_models.ProductWhitelist.query.filter(fraud_models.ProductWhitelist.ean == ean)
+        db.session.query(fraud_models.ProductWhitelist)
+        .filter(fraud_models.ProductWhitelist.ean == ean)
         .options(
             sa_orm.load_only(
                 fraud_models.ProductWhitelist.ean,
@@ -152,7 +153,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
             flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
 
             if product:
-                offers_query = offers_models.Offer.query.filter(
+                offers_query = db.session.query(offers_models.Offer).filter(
                     offers_models.Offer.productId == product.id,
                     offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
                     offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
@@ -186,9 +187,11 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
     try:
-        product_whitelist = fraud_models.ProductWhitelist.query.filter(
-            fraud_models.ProductWhitelist.ean == ean
-        ).one_or_none()
+        product_whitelist = (
+            db.session.query(fraud_models.ProductWhitelist)
+            .filter(fraud_models.ProductWhitelist.ean == ean)
+            .one_or_none()
+        )
         if not product_whitelist:
             flash(Markup("L'EAN <b>{ean}</b> n'existe pas dans la whitelist").format(ean=ean), "warning")
         else:

@@ -101,24 +101,30 @@ class BlacklistDomainNameTest(PostEndpointHelper):
         assert not user.isActive
 
         # ensure the suspension action has been logged
-        action = history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.USER_SUSPENDED).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_SUSPENDED)
+            .one()
+        )
         assert action.actionType == history_models.ActionType.USER_SUSPENDED
 
-        fraud_action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.BLACKLIST_DOMAIN_NAME
-        ).one()
+        fraud_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.BLACKLIST_DOMAIN_NAME)
+            .one()
+        )
         assert fraud_action.actionType == history_models.ActionType.BLACKLIST_DOMAIN_NAME
         assert fraud_action.extraData["domain"] == domain
 
         # ensure only those two actions have been logged
-        assert history_models.ActionHistory.query.count() == 2
+        assert db.session.query(history_models.ActionHistory).count() == 2
 
         # all bookings should have been cancelled
         for booking in user.userBookings:
             assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         # ensure the domain has been blacklisted properly
-        domain = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).first()
+        domain = db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=domain).first()
         assert domain is not None
 
 
@@ -139,14 +145,14 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
         assert response.location == expected_url
 
         # domain is not blacklisted anymore
-        assert fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).first() is None
+        assert db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=domain).first() is None
 
         # other domain is still blacklisted
-        assert fraud_models.BlacklistedDomainName.query.filter_by(domain=other_domain).first() is not None
+        assert db.session.query(fraud_models.BlacklistedDomainName).filter_by(domain=other_domain).first() is not None
 
         # action has been logged
         action_type = history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME
-        assert history_models.ActionHistory.query.filter_by(actionType=action_type).one() is not None
+        assert db.session.query(history_models.ActionHistory).filter_by(actionType=action_type).one() is not None
 
     def test_unknown_blacklisted_domain(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, domain="unknown.domain")

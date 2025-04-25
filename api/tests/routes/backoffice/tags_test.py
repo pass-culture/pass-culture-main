@@ -36,7 +36,7 @@ class CreateTagTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
 
-        tag = criteria_models.Criterion.query.first()
+        tag = db.session.query(criteria_models.Criterion).first()
 
         assert tag.name == "my-tag"
         assert tag.description == "description"
@@ -51,7 +51,7 @@ class CreateTagTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
 
-        tag = criteria_models.Criterion.query.first()
+        tag = db.session.query(criteria_models.Criterion).first()
 
         assert tag.name == "my-tag"
         assert tag.description == "description"
@@ -76,7 +76,7 @@ class DeleteTagTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
 
-        assert criteria_models.Criterion.query.count() == 0
+        assert db.session.query(criteria_models.Criterion).count() == 0
 
 
 class UpdateTagTest(PostEndpointHelper):
@@ -249,7 +249,7 @@ class CreateTagCategoryTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.tags.list_tags", active_tab="categories", _external=True)
 
-        assert criteria_models.CriterionCategory.query.filter_by(label=form_data["label"]).one_or_none()
+        assert db.session.query(criteria_models.CriterionCategory).filter_by(label=form_data["label"]).one_or_none()
 
     def test_create_with_already_existing_category(self, authenticated_client):
         criteria_factories.CriterionCategoryFactory(label="Duplicate")

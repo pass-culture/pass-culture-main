@@ -209,7 +209,7 @@ class UpdateProUserTest(PostEndpointHelper):
         assert pro_user.notificationSubscriptions["marketing_email"] is True
         assert pro_user.notificationSubscriptions["marketing_push"] is False
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.user == pro_user
@@ -241,7 +241,7 @@ class UpdateProUserTest(PostEndpointHelper):
         db.session.refresh(pro_user)
         assert pro_user.notificationSubscriptions["marketing_email"] is False
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUser == legit_user
         assert action.user == pro_user
@@ -267,7 +267,7 @@ class UpdateProUserTest(PostEndpointHelper):
         )
         assert response.status_code == 404
         assert "Hacked" not in user.full_name
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class GetProUserHistoryTest(GetEndpointHelper):
@@ -501,8 +501,13 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_called_once_with(user_email, True)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
         delete_user_attributes_task.delay.assert_called_once_with("canary")
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 0
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 0
+        )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
@@ -524,8 +529,13 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
         delete_user_attributes_task.delay.assert_called_once_with("canary")
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 0
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 0
+        )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
@@ -551,8 +561,13 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_not_called()
         delete_user_attributes_task.delay.assert_not_called()
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 1
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 1
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 1
+        )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
@@ -577,8 +592,13 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_not_called()
         delete_user_attributes_task.delay.assert_not_called()
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 1
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 1
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 1
+        )
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
@@ -605,8 +625,13 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_not_called()
         delete_user_attributes_task.delay.assert_not_called()
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 1
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 1
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 1
+        )
 
     def test_delete_pro_user_with_related_objects(self, authenticated_client):
         user = users_factories.NonAttachedProFactory()
@@ -620,9 +645,9 @@ class DeleteProUserTest(PostEndpointHelper):
         # ensure that it does not crash
         assert response.status_code == 303
 
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
-        assert users_models.Favorite.query.filter(users_models.Favorite.userId == user_id).count() == 0
-        assert offers_models.Mediation.query.one().authorId is None
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert db.session.query(users_models.Favorite).filter(users_models.Favorite.userId == user_id).count() == 0
+        assert db.session.query(offers_models.Mediation).one().authorId is None
 
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
@@ -645,12 +670,17 @@ class DeleteProUserTest(PostEndpointHelper):
         mails_api.delete_contact.assert_called_once_with(user_email, True)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
         delete_user_attributes_task.delay.assert_called_once_with("canary")
-        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
-        assert finance_models.Deposit.query.filter(finance_models.Deposit.id == deposit_id).count() == 0
+        assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
+        assert db.session.query(finance_models.Deposit).filter(finance_models.Deposit.id == deposit_id).count() == 0
         assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter(
-                fraud_models.BeneficiaryFraudCheck.id == beneficiary_fraud_check_id
-            ).count()
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(fraud_models.BeneficiaryFraudCheck.id == beneficiary_fraud_check_id)
+            .count()
             == 0
         )
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 0
+        assert (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_id)
+            .count()
+            == 0
+        )

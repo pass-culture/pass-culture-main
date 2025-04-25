@@ -61,9 +61,8 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
     aliased_instructor = sa_orm.aliased(users_models.User)
 
     query = (
-        users_models.UserAccountUpdateRequest.query.outerjoin(
-            users_models.User, users_models.UserAccountUpdateRequest.userId == users_models.User.id
-        )
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .outerjoin(users_models.User, users_models.UserAccountUpdateRequest.userId == users_models.User.id)
         .outerjoin(
             finance_models.Deposit,
             sa.and_(
@@ -248,7 +247,8 @@ def instruct(ds_application_id: int) -> utils.BackofficeResponse:
         raise Forbidden()
 
     update_request = (
-        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -281,7 +281,8 @@ def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> us
         return None
 
     return (
-        users_models.User.query.filter_by(email=update_request.newEmail)
+        db.session.query(users_models.User)
+        .filter_by(email=update_request.newEmail)
         .options(sa_orm.joinedload(users_models.User.deposits))
         .one_or_none()
     )
@@ -293,7 +294,8 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
         raise Forbidden()
 
     update_request = (
-        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
         .outerjoin(users_models.UserAccountUpdateRequest.user)
         .outerjoin(
             finance_models.Deposit,
@@ -348,7 +350,8 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         return _refresh_list()
 
     update_request: users_models.UserAccountUpdateRequest = (
-        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -357,7 +360,8 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     user: users_models.User = (
-        users_models.User.query.filter_by(id=update_request.userId)
+        db.session.query(users_models.User)
+        .filter_by(id=update_request.userId)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()
@@ -461,9 +465,11 @@ def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeRespo
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
-    update_request = users_models.UserAccountUpdateRequest.query.filter_by(
-        dsApplicationId=ds_application_id
-    ).one_or_none()
+    update_request = (
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
+        .one_or_none()
+    )
     if not update_request:
         raise NotFound()
 
@@ -486,7 +492,8 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
         raise Forbidden()
 
     update_request: users_models.UserAccountUpdateRequest = (
-        users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=ds_application_id)
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
         .populate_existing()
         .with_for_update(key_share=True)
         .one_or_none()

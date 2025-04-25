@@ -242,7 +242,7 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
 
 def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearchForm) -> BaseQuery:
     base_query, _, _, warnings = utils.generate_search_query(
-        query=educational_models.CollectiveOffer.query,
+        query=db.session.query(educational_models.CollectiveOffer),
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
         joins_definition=JOIN_DICT,
@@ -425,7 +425,9 @@ def list_collective_offers() -> utils.BackofficeResponse:
 @blueprint.route("/<int:collective_offer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
+    )
     if not collective_offer:
         raise NotFound()
 
@@ -455,10 +457,14 @@ def _batch_validate_or_reject_collective_offers(
     collective_offer_ids: list[int],
     reason: educational_models.CollectiveOfferRejectionReason | None = None,
 ) -> bool:
-    collective_offers = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id.in_(collective_offer_ids),
-        educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
-    ).all()
+    collective_offers = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(
+            educational_models.CollectiveOffer.id.in_(collective_offer_ids),
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
+        )
+        .all()
+    )
 
     if len(collective_offer_ids) != len(collective_offers):
         flash(
@@ -570,7 +576,9 @@ def _batch_validate_or_reject_collective_offers(
 @blueprint.route("/<int:collective_offer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
+    )
     if not collective_offer:
         raise NotFound()
 
@@ -688,39 +696,41 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
 
 @blueprint.route("/<int:collective_offer_id>/details", methods=["GET"])
 def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer_query = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id == collective_offer_id
-    ).options(
-        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
-        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-            educational_models.CollectiveStock.collectiveBookings
-        ),
-        sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
-            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-                offerers_models.OffererConfidenceRule.confidenceLevel
+    collective_offer_query = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == collective_offer_id)
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
             ),
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
-                sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
-                sa_orm.with_expression(
-                    offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                        offerers_models.OffererConfidenceRule.confidenceLevel
+                    ),
+                    sa_orm.with_expression(
+                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                    ),
                 ),
             ),
-        ),
-        sa_orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
-            users_models.User.firstName, users_models.User.lastName
-        ),
-        sa_orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
-            educational_models.EducationalRedactor.firstName,
-            educational_models.EducationalRedactor.lastName,
-        ),
-        sa_orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
-            educational_models.EducationalInstitution.name
-        ),
-        sa_orm.joinedload(educational_models.CollectiveOffer.template).load_only(
-            educational_models.CollectiveOfferTemplate.name,
-        ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
+                users_models.User.firstName, users_models.User.lastName
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
+                educational_models.EducationalInstitution.name
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.template).load_only(
+                educational_models.CollectiveOfferTemplate.name,
+            ),
+        )
     )
     collective_offer = collective_offer_query.one_or_none()
     if not collective_offer:
@@ -750,7 +760,8 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
         "backoffice_web.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
     )
     collective_offer = (
-        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == collective_offer_id)
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == collective_offer_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
             sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
@@ -782,9 +793,8 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
     number_of_tickets = form.numberOfTickets.data
 
     collective_booking = (
-        educational_models.CollectiveBooking.query.join(
-            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
-        )
+        db.session.query(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .filter(
             educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
@@ -828,7 +838,9 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_collective_offer_price_form(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
+    )
     if not collective_offer:
         raise NotFound()
 
@@ -855,7 +867,9 @@ def get_move_collective_offer_form(collective_offer_id: int) -> utils.Backoffice
     if not feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
         raise feature.DisabledFeatureError("MOVE_OFFER_TEST is inactive")
 
-    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
+    )
     if not collective_offer:
         raise NotFound()
 
@@ -882,7 +896,9 @@ def get_move_collective_offer_form(collective_offer_id: int) -> utils.Backoffice
 @atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
+    )
     if not collective_offer:
         raise NotFound()
 
@@ -892,7 +908,8 @@ def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
     destination_venue = (
-        offerers_models.Venue.query.filter_by(id=int(form.venue.data))
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=int(form.venue.data))
         .outerjoin(
             offerers_models.VenuePricingPointLink,
             sa.and_(

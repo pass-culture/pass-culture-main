@@ -8,6 +8,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -118,7 +119,7 @@ class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
             == "La nouvelle règle a été créée"
         )
 
-        rule = offers_models.OfferPriceLimitationRule.query.one()
+        rule = db.session.query(offers_models.OfferPriceLimitationRule).one()
         assert rule.subcategoryId == subcategories.BON_ACHAT_INSTRUMENT.id
         assert rule.rate == Decimal("0.20")
 
@@ -136,7 +137,7 @@ class CreateOfferPriceLimitationRuleTest(PostEndpointHelper):
         assert "Erreur dans la création de la règle" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
-        assert offers_models.OfferPriceLimitationRule.query.count() == len(offer_price_limitation_rules)
+        assert db.session.query(offers_models.OfferPriceLimitationRule).count() == len(offer_price_limitation_rules)
 
 
 class GetDeleteOfferPriceLimitationRuleFormTest(GetEndpointHelper):
@@ -169,7 +170,7 @@ class DeleteOfferPriceLimitationRuleTest(PostEndpointHelper):
             == "La règle sur la sous-catégorie Achat instrument a été supprimée"
         )
 
-        deleted_rule = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule_id).one_or_none()
+        deleted_rule = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule_id).one_or_none()
         assert deleted_rule is None
 
 
@@ -203,7 +204,7 @@ class EditOfferPriceLimitationRuleTest(PostEndpointHelper):
             == "La règle sur la sous-catégorie Achat instrument a été modifiée"
         )
 
-        rule = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule.id).one_or_none()
+        rule = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule.id).one_or_none()
         assert rule.subcategoryId == subcategories.ACHAT_INSTRUMENT.id
         assert rule.rate == Decimal("0.50")
 
@@ -217,6 +218,6 @@ class EditOfferPriceLimitationRuleTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, rule_id=rule.id, form=form)
         assert response.status_code == 303
 
-        rule = offers_models.OfferPriceLimitationRule.query.filter_by(id=rule.id).one_or_none()
+        rule = db.session.query(offers_models.OfferPriceLimitationRule).filter_by(id=rule.id).one_or_none()
         assert rule.subcategoryId == subcategories.ACHAT_INSTRUMENT.id
         assert rule.rate == Decimal("0.30")

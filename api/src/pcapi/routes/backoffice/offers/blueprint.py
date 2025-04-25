@@ -340,7 +340,7 @@ def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
 
 def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
     query, _, _, warnings = utils.generate_search_query(
-        query=offers_models.Offer.query,
+        query=db.session.query(offers_models.Offer),
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
         joins_definition=JOIN_DICT,
@@ -720,7 +720,8 @@ def list_algolia_offers() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = (
-        offers_models.Offer.query.filter_by(id=offer_id)
+        db.session.query(offers_models.Offer)
+        .filter_by(id=offer_id)
         .options(
             sa_orm.joinedload(offers_models.Offer.criteria).load_only(
                 criteria_models.Criterion.id, criteria_models.Criterion.name
@@ -813,7 +814,8 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
             return redirect(request.referrer, 400)
 
         offers = (
-            offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list))
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.id.in_(form.object_ids_list))
             .options(
                 sa_orm.joinedload(offers_models.Offer.criteria).load_only(
                     criteria_models.Criterion.id, criteria_models.Criterion.name
@@ -846,11 +848,14 @@ def batch_edit_offer() -> utils.BackofficeResponse:
         return redirect(request.referrer, 400)
 
     offers = (
-        offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list))
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(form.object_ids_list))
         .options(sa_orm.joinedload(offers_models.Offer.criteria))
         .all()
     )
-    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+    criteria = (
+        db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+    )
 
     previous_criteria = set.intersection(*[set(offer.criteria) for offer in offers])
     deleted_criteria = previous_criteria.difference(criteria)
@@ -885,7 +890,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
     if not offer:
         raise NotFound()
 
@@ -896,7 +901,9 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
         flash("Le formulaire n'est pas valide", "warning")
         return redirect(request.referrer, 400)
 
-    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+    criteria = (
+        db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+    )
 
     offer.criteria = criteria
     offer.rankingWeight = form.rankingWeight.data
@@ -914,7 +921,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
@@ -942,7 +949,7 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
@@ -1034,7 +1041,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
 def _batch_reject_offers(offer_ids: list[int]) -> None:
     new_validation = offers_models.OfferValidationStatus.REJECTED
-    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+    offers = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids)).all()
 
     for offer in offers:
         if offer.validation != new_validation:
@@ -1067,7 +1074,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     if len(offer_ids) > 0:
-        favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
+        favorites = db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
         on_commit(
             functools.partial(
@@ -1102,51 +1109,55 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> Of
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
-    offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
-        sa_orm.joinedload(offers_models.Offer.venue).options(
-            sa_orm.load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.managingOffererId,
-            ),
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+    offer_query = (
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id == offer_id)
+        .options(
+            sa_orm.joinedload(offers_models.Offer.venue).options(
                 sa_orm.load_only(
-                    offerers_models.Offerer.id,
-                    offerers_models.Offerer.name,
-                    offerers_models.Offerer.isActive,
-                    offerers_models.Offerer.validationStatus,
-                    offerers_models.Offerer.siren,
-                    offerers_models.Offerer.postalCode,
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.managingOffererId,
                 ),
-                sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
+                    sa_orm.load_only(
+                        offerers_models.Offerer.id,
+                        offerers_models.Offerer.name,
+                        offerers_models.Offerer.isActive,
+                        offerers_models.Offerer.validationStatus,
+                        offerers_models.Offerer.siren,
+                        offerers_models.Offerer.postalCode,
+                    ),
+                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                        offerers_models.OffererConfidenceRule.confidenceLevel
+                    ),
+                    sa_orm.with_expression(
+                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                    ),
+                ),
+                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
-                sa_orm.with_expression(
-                    offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
-                ),
             ),
-            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-                offerers_models.OffererConfidenceRule.confidenceLevel
+            sa_orm.joinedload(offers_models.Offer.stocks)
+            .joinedload(offers_models.Stock.priceCategory)
+            .load_only(offers_models.PriceCategory.price)
+            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
+            .load_only(offers_models.PriceCategoryLabel.label),
+            sa_orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
+                users_models.User.firstName, users_models.User.lastName
             ),
-        ),
-        sa_orm.joinedload(offers_models.Offer.stocks)
-        .joinedload(offers_models.Stock.priceCategory)
-        .load_only(offers_models.PriceCategory.price)
-        .joinedload(offers_models.PriceCategory.priceCategoryLabel)
-        .load_only(offers_models.PriceCategoryLabel.label),
-        sa_orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
-            users_models.User.firstName, users_models.User.lastName
-        ),
-        sa_orm.joinedload(offers_models.Offer.criteria),
-        sa_orm.joinedload(offers_models.Offer.flaggingValidationRules),
-        sa_orm.joinedload(offers_models.Offer.mediations),
-        sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
-        sa_orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
-        sa_orm.joinedload(offers_models.Offer.offererAddress)
-        .load_only(offerers_models.OffererAddress.label)
-        .joinedload(offerers_models.OffererAddress.address),
-        sa_orm.joinedload(offers_models.Offer.compliance),
+            sa_orm.joinedload(offers_models.Offer.criteria),
+            sa_orm.joinedload(offers_models.Offer.flaggingValidationRules),
+            sa_orm.joinedload(offers_models.Offer.mediations),
+            sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
+            sa_orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
+            sa_orm.joinedload(offers_models.Offer.offererAddress)
+            .load_only(offerers_models.OffererAddress.label)
+            .joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(offers_models.Offer.compliance),
+        )
     )
     offer = offer_query.one_or_none()
 
@@ -1276,7 +1287,8 @@ def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     stock = (
-        offers_models.Stock.query.filter(
+        db.session.query(offers_models.Stock)
+        .filter(
             offers_models.Stock.id == stock_id,
         )
         .options(
@@ -1339,7 +1351,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/confirm", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
-    stock = offers_models.Stock.query.filter_by(id=stock_id).one()
+    stock = db.session.query(offers_models.Stock).filter_by(id=stock_id).one()
 
     if stock.offerId != offer_id:
         alert = "L'offer_id et le stock_id ne sont pas cohérents."
@@ -1423,7 +1435,7 @@ def _generate_offer_stock_edit_form(
     form: forms.EditStockForm | None = None,
     alert: str | None = None,
 ) -> utils.BackofficeResponse:
-    stock = offers_models.Stock.query.filter_by(id=stock_id).one()
+    stock = db.session.query(offers_models.Stock).filter_by(id=stock_id).one()
 
     form = form or forms.EditStockForm(old_price=stock.price)
     return render_template(
@@ -1444,7 +1456,8 @@ def _generate_offer_stock_edit_form(
 
 def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tuple[int, decimal.Decimal]]:
     bookings = (
-        bookings_models.Booking.query.with_entities(
+        db.session.query(bookings_models.Booking)
+        .with_entities(
             bookings_models.Booking.amount,
             sa.func.count(bookings_models.Booking.id).label("quantity"),
         )
@@ -1480,7 +1493,8 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
 
     offer = (
-        offers_models.Offer.query.filter_by(id=offer_id)
+        db.session.query(offers_models.Offer)
+        .filter_by(id=offer_id)
         .options(sa_orm.joinedload(offers_models.Offer.venue))
         .one_or_none()
     )
@@ -1495,7 +1509,8 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
             return redirect(offer_url, 303)
 
         destination_venue = (
-            offerers_models.Venue.query.filter_by(id=int(form.venue.data))
+            db.session.query(offerers_models.Venue)
+            .filter_by(id=int(form.venue.data))
             .outerjoin(
                 offerers_models.VenuePricingPointLink,
                 sa.and_(
@@ -1538,7 +1553,8 @@ def move_offer(offer_id: int) -> utils.BackofficeResponse:
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
 
     offer = (
-        offers_models.Offer.query.filter_by(id=offer_id)
+        db.session.query(offers_models.Offer)
+        .filter_by(id=offer_id)
         .options(sa_orm.joinedload(offers_models.Offer.venue))
         .one_or_none()
     )
@@ -1553,7 +1569,8 @@ def move_offer(offer_id: int) -> utils.BackofficeResponse:
             return redirect(offer_url, 303)
 
         destination_venue = (
-            offerers_models.Venue.query.filter_by(id=int(form.venue.data))
+            db.session.query(offerers_models.Venue)
+            .filter_by(id=int(form.venue.data))
             .outerjoin(
                 offerers_models.VenuePricingPointLink,
                 sa.and_(
@@ -1623,7 +1640,7 @@ def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
@@ -1643,7 +1660,7 @@ def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
@@ -1689,7 +1706,7 @@ def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
 
 
 def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) -> None:
-    query = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+    query = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids))
     offers_api.batch_update_offers(query, {"isActive": is_active})
 
 

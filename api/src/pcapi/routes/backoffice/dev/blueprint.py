@@ -147,7 +147,7 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
     if user_id is None:
         return None
 
-    return users_models.User.query.filter_by(id=int(user_id)).one_or_none()
+    return db.session.query(users_models.User).filter_by(id=int(user_id)).one_or_none()
 
 
 @dev_blueprint.route("/delete", methods=["GET"])
@@ -170,7 +170,7 @@ def delete_user() -> utils.BackofficeResponse:
         return render_template("dev/users_deletion.html", form=form), 400
 
     email = form.email.data
-    user = users_models.User.query.filter_by(email=email).one_or_none()
+    user = db.session.query(users_models.User).filter_by(email=email).one_or_none()
     if not user:
         mark_transaction_as_invalid()
         flash(
@@ -180,7 +180,7 @@ def delete_user() -> utils.BackofficeResponse:
         return render_template("dev/users_deletion.html", form=form), 400
 
     try:
-        users_models.User.query.filter_by(id=user.id).delete()
+        db.session.query(users_models.User).filter_by(id=user.id).delete()
         db.session.flush()
     except IntegrityError as e:
         logger.info(e)

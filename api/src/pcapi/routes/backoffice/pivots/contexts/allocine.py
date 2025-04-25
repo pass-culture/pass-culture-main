@@ -28,7 +28,7 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def list_pivots(cls, query_string: str | None = None) -> list[providers_models.AllocinePivot]:
-        query = providers_models.AllocinePivot.query.options(
+        query = db.session.query(providers_models.AllocinePivot).options(
             sa_orm.joinedload(providers_models.AllocinePivot.venue).load_only(
                 offerers_models.Venue.name,
             )
@@ -53,7 +53,7 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditAllocineForm:
-        pivot = providers_models.AllocinePivot.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.AllocinePivot).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
         return forms.EditAllocineForm(
@@ -74,7 +74,7 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditAllocineForm, pivot_id: int) -> bool:
-        pivot = providers_models.AllocinePivot.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.AllocinePivot).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
         pivot.venueId = form.venue_id.data[0]
@@ -85,14 +85,18 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def delete_pivot(cls, pivot_id: int) -> bool:
-        pivot = providers_models.AllocinePivot.query.filter_by(id=pivot_id).one_or_none()
+        pivot = db.session.query(providers_models.AllocinePivot).filter_by(id=pivot_id).one_or_none()
         if not pivot:
             raise NotFound()
 
-        venue_provider = providers_models.AllocineVenueProvider.query.join(
-            providers_models.AllocinePivot,
-            providers_models.AllocineVenueProvider.internalId == pivot.internalId,
-        ).one_or_none()
+        venue_provider = (
+            db.session.query(providers_models.AllocineVenueProvider)
+            .join(
+                providers_models.AllocinePivot,
+                providers_models.AllocineVenueProvider.internalId == pivot.internalId,
+            )
+            .one_or_none()
+        )
 
         if venue_provider and venue_provider.isActive:
             return False

@@ -28,7 +28,8 @@ class Valid:
 
 def _collective_booking_has_pending_incident(collective_booking: educational_models.CollectiveBooking) -> bool:
     return db.session.query(
-        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
+        db.session.query(finance_models.BookingFinanceIncident)
+        .join(finance_models.FinanceIncident)
         .filter(
             finance_models.BookingFinanceIncident.collectiveBookingId == collective_booking.id,
             finance_models.FinanceIncident.status.in_(
@@ -41,7 +42,8 @@ def _collective_booking_has_pending_incident(collective_booking: educational_mod
 
 def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> bool:
     return db.session.query(
-        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
+        db.session.query(finance_models.BookingFinanceIncident)
+        .join(finance_models.FinanceIncident)
         .filter(
             finance_models.BookingFinanceIncident.bookingId.in_([booking.id for booking in bookings]),
             finance_models.FinanceIncident.status.in_(

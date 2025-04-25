@@ -539,9 +539,11 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     )
     def test_list_offers_by_meg(self, authenticated_client, collective_offers, value, expected_indexes, check_ministry):
         # MEG program created in schema_init.sql
-        meg_program = educational_models.EducationalInstitutionProgram.query.filter_by(
-            name=educational_models.PROGRAM_MARSEILLE_EN_GRAND
-        ).one()
+        meg_program = (
+            db.session.query(educational_models.EducationalInstitutionProgram)
+            .filter_by(name=educational_models.PROGRAM_MARSEILLE_EN_GRAND)
+            .one()
+        )
         other_program = educational_factories.EducationalInstitutionProgramFactory(name="other")
         meg_educational_institution = educational_factories.EducationalInstitutionFactory(
             programAssociations=[
@@ -563,10 +565,14 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             ]
         )
         # current year created in collective_offers_fixture
-        educational_year = educational_models.EducationalYear.query.filter(
-            educational_models.EducationalYear.beginningDate <= datetime.datetime.utcnow(),
-            datetime.datetime.utcnow() <= educational_models.EducationalYear.expirationDate,
-        ).one()
+        educational_year = (
+            db.session.query(educational_models.EducationalYear)
+            .filter(
+                educational_models.EducationalYear.beginningDate <= datetime.datetime.utcnow(),
+                datetime.datetime.utcnow() <= educational_models.EducationalYear.expirationDate,
+            )
+            .one()
+        )
         educational_factories.EducationalDepositFactory(
             educationalInstitution=meg_educational_institution, educationalYear=educational_year
         )
@@ -1230,11 +1236,15 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOffer.query.filter_by(id=collective_offer.id).one()
+        collective_offer_template = (
+            db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
+        )
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
-        non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
-            educational_models.CollectiveOffer.id.in_(fake_offer_ids)
-        ).all()
+        non_existing_collective_offers = (
+            db.session.query(educational_models.CollectiveOffer)
+            .filter(educational_models.CollectiveOffer.id.in_(fake_offer_ids))
+            .all()
+        )
         assert len(non_existing_collective_offers) == 0
 
     def test_batch_validate_collective_offers_adage_exception(self, legit_user, authenticated_client):
@@ -1326,11 +1336,15 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOffer.query.filter_by(id=collective_offer.id).one()
+        collective_offer_template = (
+            db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
+        )
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
-        non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
-            educational_models.CollectiveOffer.id.in_(fake_offer_ids)
-        ).all()
+        non_existing_collective_offers = (
+            db.session.query(educational_models.CollectiveOffer)
+            .filter(educational_models.CollectiveOffer.id.in_(fake_offer_ids))
+            .all()
+        )
         assert len(non_existing_collective_offers) == 0
 
 

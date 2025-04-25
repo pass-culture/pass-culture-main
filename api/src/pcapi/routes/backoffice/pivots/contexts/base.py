@@ -31,7 +31,7 @@ class PivotContext:
         Common implementation, except for Allocine which does not use cinemaProviderPivot
         """
         pivot_class = cls.pivot_class()
-        query = pivot_class.query.options(
+        query = db.session.query(pivot_class).options(
             sa_orm.joinedload(pivot_class.cinemaProviderPivot)
             .load_only(providers_models.CinemaProviderPivot.idAtProvider)
             .joinedload(providers_models.CinemaProviderPivot.venue)
@@ -79,7 +79,8 @@ class PivotContext:
         pivot_name = cls.pivot_name()
         pivot_model = cls.pivot_class()
         pivot = (
-            pivot_model.query.options(
+            db.session.query(pivot_model)
+            .options(
                 sa_orm.joinedload(pivot_model.cinemaProviderPivot).joinedload(
                     providers_models.CinemaProviderPivot.venue
                 )
@@ -92,9 +93,11 @@ class PivotContext:
         cinema_provider_pivot = pivot.cinemaProviderPivot
         assert cinema_provider_pivot  # helps mypy
 
-        venue_provider = providers_models.VenueProvider.query.filter_by(
-            venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
-        ).one_or_none()
+        venue_provider = (
+            db.session.query(providers_models.VenueProvider)
+            .filter_by(venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId)
+            .one_or_none()
+        )
 
         if venue_provider:
             return False

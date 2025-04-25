@@ -63,18 +63,19 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     ean = form.ean.data
 
-    product = offers_models.Product.query.filter(
-        offers_models.Product.ean == ean, offers_models.Product.idAtProviders.is_not(None)
-    ).one_or_none()
+    product = (
+        db.session.query(offers_models.Product)
+        .filter(offers_models.Product.ean == ean, offers_models.Product.idAtProviders.is_not(None))
+        .one_or_none()
+    )
 
     if not product:
         flash("Aucun produit n'a été trouvé avec cet EAN-13", "warning")
         return _render_search(form)
 
     offers = (
-        offers_models.Offer.query.filter(
-            sa.or_(offers_models.Offer.ean == ean, offers_models.Offer.productId == product.id)
-        )
+        db.session.query(offers_models.Offer)
+        .filter(sa.or_(offers_models.Offer.ean == ean, offers_models.Offer.productId == product.id))
         .options(
             sa_orm.load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
             .joinedload(offers_models.Offer.criteria)

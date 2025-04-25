@@ -418,7 +418,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert response.status_code == 200
         assert user.isActive
         assert len(user.action_history) == 1
-        assert users_models.GdprUserAnonymization.query.count() == 0
+        assert db.session.query(users_models.GdprUserAnonymization).count() == 0
 
     def test_unsuspend_pro_user(self, authenticated_client, legit_user):
         user = users_factories.ProFactory(isActive=False)

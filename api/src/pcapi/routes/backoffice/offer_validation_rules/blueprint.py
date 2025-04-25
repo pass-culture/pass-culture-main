@@ -49,7 +49,8 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
         return {}
 
     offerers_from_rules = (
-        offerers_models.Offerer.query.options(
+        db.session.query(offerers_models.Offerer)
+        .options(
             sa_orm.load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
@@ -77,7 +78,8 @@ def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -
         return {}
 
     venues_from_rules = (
-        offerers_models.Venue.query.options(
+        db.session.query(offerers_models.Venue)
+        .options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -97,7 +99,8 @@ def list_rules() -> utils.BackofficeResponse:
     form = forms.SearchRuleForm(formdata=utils.get_query_params())
 
     query = (
-        offers_models.OfferValidationRule.query.outerjoin(offers_models.OfferValidationSubRule)
+        db.session.query(offers_models.OfferValidationRule)
+        .outerjoin(offers_models.OfferValidationSubRule)
         .options(sa_orm.contains_eager(offers_models.OfferValidationRule.subRules))
         .filter(offers_models.OfferValidationRule.isActive.is_(True))
         .order_by(offers_models.OfferValidationRule.name)
@@ -217,7 +220,8 @@ class SubRuleHistorySerializer:
 @offer_validation_rules_blueprint.route("/history", methods=["GET"])
 def get_rules_history() -> utils.BackofficeResponse:
     actions_history = (
-        history_models.ActionHistory.query.filter(history_models.ActionHistory.ruleId.is_not(None))
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.ruleId.is_not(None))
         .order_by(history_models.ActionHistory.actionDate.desc())
         .options(
             sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
@@ -267,7 +271,8 @@ def _get_offerers_data_for_rule_history(rules_history: list[history_models.Actio
         return {}
 
     offerers_from_history = (
-        offerers_models.Offerer.query.options(
+        db.session.query(offerers_models.Offerer)
+        .options(
             sa_orm.load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
@@ -288,7 +293,8 @@ def _get_venues_data_for_rule_history(rules_history: list[history_models.ActionH
         return {}
 
     venues_from_history = (
-        offerers_models.Venue.query.options(
+        db.session.query(offerers_models.Venue)
+        .options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
@@ -370,7 +376,7 @@ def create_rule() -> utils.BackofficeResponse:
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
 def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_delete = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_delete = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         mark_transaction_as_invalid()
         raise NotFound()
@@ -391,12 +397,14 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespo
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["POST"])
 def delete_rule(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_delete = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_delete = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
         mark_transaction_as_invalid()
         raise NotFound()
 
-    subrules_to_delete = offers_models.OfferValidationSubRule.query.filter_by(validationRuleId=rule_id).all()
+    subrules_to_delete = (
+        db.session.query(offers_models.OfferValidationSubRule).filter_by(validationRuleId=rule_id).all()
+    )
 
     if rule_to_delete:
         try:
@@ -426,7 +434,7 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
 def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_update = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_update = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         mark_transaction_as_invalid()
         raise NotFound()
@@ -473,7 +481,7 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespons
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
 def edit_rule(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_update = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
+    rule_to_update = db.session.query(offers_models.OfferValidationRule).filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
         mark_transaction_as_invalid()
         raise NotFound()
@@ -509,9 +517,9 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
 
             # edit existing subrule
             if sub_rule_data["id"]:
-                sub_rule_to_update = offers_models.OfferValidationSubRule.query.filter_by(
-                    id=int(sub_rule_data["id"])
-                ).one()
+                sub_rule_to_update = (
+                    db.session.query(offers_models.OfferValidationSubRule).filter_by(id=int(sub_rule_data["id"])).one()
+                )
                 is_different_sub_rule = any(
                     [
                         sub_rule_to_update.model

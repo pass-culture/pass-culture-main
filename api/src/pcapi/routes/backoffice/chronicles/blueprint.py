@@ -122,7 +122,8 @@ def list_chronicles() -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>", methods=["GET"])
 def details(chronicle_id: int) -> utils.BackofficeResponse:
     chronicle = (
-        chronicles_models.Chronicle.query.filter(
+        db.session.query(chronicles_models.Chronicle)
+        .filter(
             chronicles_models.Chronicle.id == chronicle_id,
         )
         .options(
@@ -139,7 +140,8 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     action_history = (
-        history_models.ActionHistory.query.filter(history_models.ActionHistory.chronicleId == chronicle_id)
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.chronicleId == chronicle_id)
         .order_by(history_models.ActionHistory.id.desc())
         .all()
     )
@@ -167,7 +169,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["GET"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResponse:
-    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
     form = forms.UpdateContentForm(content=chronicle.content)
 
     return render_template(
@@ -191,7 +193,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
         )
 
-    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
     chronicle.content = form.content.data
     db.session.add(chronicle)
     db.session.flush()
@@ -210,7 +212,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/publish", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
     chronicle.isActive = True
     db.session.add(chronicle)
     db.session.flush()
@@ -226,7 +228,7 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
     chronicle.isActive = False
     db.session.add(chronicle)
     db.session.flush()
@@ -248,13 +250,15 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
 
-    selected_chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    selected_chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
     chronicles = [selected_chronicle]
     if selected_chronicle.ean:
-        chronicles = chronicles_models.Chronicle.query.filter(
-            chronicles_models.Chronicle.ean == selected_chronicle.ean
-        ).all()
-    products = offers_models.Product.query.filter(offers_models.Product.ean == form.ean.data).all()
+        chronicles = (
+            db.session.query(chronicles_models.Chronicle)
+            .filter(chronicles_models.Chronicle.ean == selected_chronicle.ean)
+            .all()
+        )
+    products = db.session.query(offers_models.Product).filter(offers_models.Product.ean == form.ean.data).all()
 
     if not products:
         mark_transaction_as_invalid()
@@ -293,20 +297,28 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-product/<int:product_id>", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
-    selected_chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
-    chronicles_subquery = chronicles_models.Chronicle.query.filter(
-        sa.or_(
-            sa.and_(
-                chronicles_models.Chronicle.ean == selected_chronicle.ean,
-                ~chronicles_models.Chronicle.ean.is_(None),
-            ),
-            chronicles_models.Chronicle.id == chronicle_id,
+    selected_chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    chronicles_subquery = (
+        db.session.query(chronicles_models.Chronicle)
+        .filter(
+            sa.or_(
+                sa.and_(
+                    chronicles_models.Chronicle.ean == selected_chronicle.ean,
+                    ~chronicles_models.Chronicle.ean.is_(None),
+                ),
+                chronicles_models.Chronicle.id == chronicle_id,
+            )
         )
-    ).with_entities(chronicles_models.Chronicle.id)
-    deleted = chronicles_models.ProductChronicle.query.filter(
-        chronicles_models.ProductChronicle.productId == product_id,
-        chronicles_models.ProductChronicle.chronicleId.in_(chronicles_subquery),
-    ).delete(synchronize_session=False)
+        .with_entities(chronicles_models.Chronicle.id)
+    )
+    deleted = (
+        db.session.query(chronicles_models.ProductChronicle)
+        .filter(
+            chronicles_models.ProductChronicle.productId == product_id,
+            chronicles_models.ProductChronicle.chronicleId.in_(chronicles_subquery),
+        )
+        .delete(synchronize_session=False)
+    )
     db.session.flush()
 
     if deleted:
@@ -330,7 +342,7 @@ def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
         )
 
-    chronicle = chronicles_models.Chronicle.query.get_or_404(chronicle_id)
+    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
 
     history_api.add_action(
         history_models.ActionType.COMMENT, author=current_user, chronicle=chronicle, comment=form.comment.data

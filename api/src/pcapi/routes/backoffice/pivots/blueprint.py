@@ -80,7 +80,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
-    venue = offerers_models.Venue.query.filter_by(id=form.venue_id.data[0]).one_or_none()
+    venue = db.session.query(offerers_models.Venue).filter_by(id=form.venue_id.data[0]).one_or_none()
     if not venue:
         flash(
             Markup("Le partenaire culturel id={venue_id} n'existe pas").format(venue_id=form.venue_id.data[0]),

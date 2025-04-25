@@ -9,6 +9,7 @@ from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
@@ -191,7 +192,7 @@ class CommentForm(FlaskForm):
 
 
 def _get_all_venue_labels_query() -> sa_orm.Query:
-    return offerers_models.VenueLabel.query.order_by(offerers_models.VenueLabel.label)
+    return db.session.query(offerers_models.VenueLabel).order_by(offerers_models.VenueLabel.label)
 
 
 class GetVenuesListForm(utils.PCForm):

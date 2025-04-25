@@ -1219,7 +1219,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         )
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert user.email == expected_new_email
         assert user.phoneNumber == new_phone_number
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
@@ -1234,7 +1234,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert history.newEmail == expected_new_email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -1289,7 +1289,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         )
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert user.firstName == form_data["first_name"].strip()
         assert user.lastName == form_data["last_name"].strip()
         assert user.email == form_data["email"]
@@ -1307,7 +1307,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert history.newEmail == "mc@example.com"
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
@@ -1358,7 +1358,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
         assert response.status_code == 303
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert user.email == "updated@example.com"
 
         assert len(user.email_history) == 1
@@ -1388,9 +1388,11 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user.isEmailValidated
 
         # check email history
-        email_history: list[users_models.UserEmailHistory] = users_models.UserEmailHistory.query.filter(
-            users_models.UserEmailHistory.userId == user.id
-        ).all()
+        email_history: list[users_models.UserEmailHistory] = (
+            db.session.query(users_models.UserEmailHistory)
+            .filter(users_models.UserEmailHistory.userId == user.id)
+            .all()
+        )
         assert len(email_history) == 1
 
         assert email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
@@ -1419,7 +1421,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 400
         assert html_parser.extract_alert(response.data) == "L'email est déjà associé à un autre utilisateur"
 
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
+        user_to_edit = db.session.query(users_models.User).filter_by(id=user_to_edit.id).one()
         assert user_to_edit.email != other_user.email
 
     def test_invalid_postal_code(self, authenticated_client):
@@ -1461,7 +1463,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         )
 
         assert user.idPieceNumber != other_user.idPieceNumber
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_empty_id_piece_number(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryFactory()
@@ -1476,7 +1478,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
+        user_to_edit = db.session.query(users_models.User).filter_by(id=user_to_edit.id).one()
         assert user_to_edit.idPieceNumber is None
 
     def test_invalid_phone_number(self, authenticated_client):
@@ -1493,7 +1495,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
 
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
+        user_to_edit = db.session.query(users_models.User).filter_by(id=user_to_edit.id).one()
         assert user_to_edit.phoneNumber == old_phone_number
         assert html_parser.extract_alert(response.data) == "Le numéro de téléphone est invalide"
 
@@ -1510,7 +1512,7 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # check that validation is unchanged
-        updated_user: users_models.User = users_models.User.query.filter_by(id=user.id).one()
+        updated_user: users_models.User = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert updated_user.isEmailValidated is False
 
         # check that a new token has been generated
@@ -1558,7 +1560,10 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
 
         assert user.is_phone_validated is True
         assert response.status_code == 303
-        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
+        assert (
+            db.session.query(history_models.ActionHistory).filter(history_models.ActionHistory.user == user).count()
+            == 1
+        )
         assert not token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
 
@@ -1586,7 +1591,7 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
         assert not user.is_phone_validated
         assert not user.roles
         assert not user.deposits
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
         assert token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
 
@@ -1673,7 +1678,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
 
         assert len(user.beneficiaryFraudReviews) == 1
         fraud_review = user.beneficiaryFraudReviews[0]
@@ -1699,7 +1704,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
 
         assert len(user.beneficiaryFraudReviews) == 1
         fraud_review = user.beneficiaryFraudReviews[0]
@@ -1710,7 +1715,8 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         assert user.has_beneficiary_role is True
 
         deposits = (
-            finance_models.Deposit.query.filter(finance_models.Deposit.userId == user.id)
+            db.session.query(finance_models.Deposit)
+            .filter(finance_models.Deposit.userId == user.id)
             .order_by(finance_models.Deposit.dateCreated)
             .all()
         )
@@ -1733,7 +1739,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert not user.deposits
 
     def test_reason_not_compulsory(self, authenticated_client):
@@ -1750,7 +1756,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
 
         assert len(user.deposits) == 1
         assert len(user.beneficiaryFraudReviews) == 1
@@ -1772,7 +1778,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=base_form)
         assert response.status_code == 303
 
-        user = users_models.User.query.filter_by(id=user_id).one()
+        user = db.session.query(users_models.User).filter_by(id=user_id).one()
         assert not user.deposits
 
     def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client, legit_user):
@@ -1789,7 +1795,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert len(user.beneficiaryFraudReviews) == 0
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
@@ -1830,7 +1836,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        user = users_models.User.query.filter_by(id=user.id).one()
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
         assert any(
             recredit.recreditType == finance_models.RecreditType.RECREDIT_18 for recredit in user.deposit.recredits
         )
@@ -4516,7 +4522,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
         assert "Anonymous" in user.firstName
         assert user.roles == [users_models.UserRole.ANONYMIZED]
-        history = history_models.ActionHistory.query.one_or_none()
+        history = db.session.query(history_models.ActionHistory).one_or_none()
         assert history
         assert history.actionType == history_models.ActionType.USER_ANONYMIZED
         assert history.authorUser == legit_user
@@ -4548,7 +4554,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
 
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
         assert len(os.listdir(storage_folder)) == 0
 
         response = authenticated_client.get(response.location)
@@ -4613,7 +4619,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
         db.session.refresh(user)
         assert not user.isActive
-        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+        assert db.session.query(users_models.GdprUserAnonymization).filter_by(userId=user.id).count() == 1
         assert "L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans" in html_parser.extract_alert(
             response.data
         )
@@ -4635,7 +4641,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
     def test_anonymize_public_account_when_user_has_no_deposit(self, authenticated_client):
         user = users_factories.UserFactory()
 
-        finance_models.Deposit.query.filter(finance_models.Deposit.user == user).delete()
+        db.session.query(finance_models.Deposit).filter(finance_models.Deposit.user == user).delete()
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
@@ -4679,7 +4685,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
         db.session.refresh(user)
         assert not user.isActive
-        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+        assert db.session.query(users_models.GdprUserAnonymization).filter_by(userId=user.id).count() == 1
         assert (
             "L'utilisateur sera anonymisé quand il aura plus de 21 ans et 5 ans après sa suspension pour fraude"
             in html_parser.extract_alert(response.data)
@@ -4707,7 +4713,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         mocked_archive_application.assert_called()
         assert mocked_archive_application.call_count == 2
 
-        assert users_models.UserAccountUpdateRequest.query.count() == 0
+        assert db.session.query(users_models.UserAccountUpdateRequest).count() == 0
 
         response = authenticated_client.get(response.location)
         assert "Les informations de l'utilisateur ont été anonymisées" in html_parser.extract_alert(response.data)
@@ -4732,7 +4738,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        extract_data = users_models.GdprUserDataExtract.query.one()
+        extract_data = db.session.query(users_models.GdprUserDataExtract).one()
         assert extract_data.user.id == user.id
         assert extract_data.authorUser == legit_user
 
@@ -4753,7 +4759,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             response.data
         )
 
-        assert 1 == users_models.GdprUserDataExtract.query.count()
+        assert 1 == db.session.query(users_models.GdprUserDataExtract).count()
 
     def test_extract_public_account_with_existing_extract_data_expired(self, authenticated_client, legit_user):
         expired_gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
@@ -4770,7 +4776,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
 
         assert response.status_code == 302
         assert response.location == expected_url
-        extract_data = users_models.GdprUserDataExtract.query.all()
+        extract_data = db.session.query(users_models.GdprUserDataExtract).all()
         assert len(extract_data) == 2
         assert extract_data[1].user.id == expired_gdpr_data_extract.user.id
         assert extract_data[1].authorUser == legit_user
@@ -4811,7 +4817,7 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
 
         assert user_password_before_response != user.password
 
-        action_history = history_models.ActionHistory.query.one()
+        action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.USER_PASSWORD_INVALIDATED
         assert action_history.authorUser == legit_user
         assert action_history.user == user

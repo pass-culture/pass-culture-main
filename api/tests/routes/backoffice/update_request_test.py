@@ -870,9 +870,11 @@ class AcceptTest(PostEndpointHelper):
         assert update_request.dateLastStatusUpdate == datetime.datetime(2024, 12, 5, 11, 17, 10)
         assert update_request.lastInstructor == legit_user
 
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED)
+            .one()
+        )
         assert action.authorUser == legit_user
         assert action.user == update_request.user
         assert action.comment == motivation
@@ -921,7 +923,11 @@ class AcceptTest(PostEndpointHelper):
         assert update_request.user.phoneNumber == update_request.newPhoneNumber
 
         assert len(update_request.user.action_history) == 2
-        action = history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.INFO_MODIFIED).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.INFO_MODIFIED)
+            .one()
+        )
         assert action.authorUser == legit_user
         assert action.user == update_request.user
         assert action.extraData == {
@@ -956,7 +962,11 @@ class AcceptTest(PostEndpointHelper):
         assert update_request.user.lastName == update_request.newLastName
 
         assert len(update_request.user.action_history) == 2
-        action = history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.INFO_MODIFIED).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.INFO_MODIFIED)
+            .one()
+        )
         assert action.authorUser == legit_user
         assert action.user == update_request.user
         assert action.extraData == {

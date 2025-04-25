@@ -12,6 +12,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 
@@ -113,7 +114,9 @@ class CreateProviderTest(PostEndpointHelper):
             rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
         ), "clear api key secret not found"
 
-        created_provider = providers_models.Provider.query.order_by(providers_models.Provider.id.desc()).first()
+        created_provider = (
+            db.session.query(providers_models.Provider).order_by(providers_models.Provider.id.desc()).first()
+        )
         assert created_provider.name == form_data["name"]
         assert created_provider.logoUrl == form_data["logo_url"]
         assert created_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -157,7 +160,9 @@ class CreateProviderTest(PostEndpointHelper):
             rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
         ), "clear api key secret not found"
 
-        created_provider = providers_models.Provider.query.order_by(providers_models.Provider.id.desc()).first()
+        created_provider = (
+            db.session.query(providers_models.Provider).order_by(providers_models.Provider.id.desc()).first()
+        )
         assert created_provider.name == form_data["name"]
         assert created_provider.logoUrl == form_data["logo_url"]
         assert created_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -166,7 +171,7 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.cancelExternalUrl == form_data["cancel_external_url"]
         assert created_provider.notificationExternalUrl == form_data["notification_external_url"]
 
-        assert offerers_models.Offerer.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_provider.offererProvider.offerer == offerer
         assert offerer.name != form_data["name"]
         assert offerer.city != form_data["city"]
@@ -195,7 +200,9 @@ class CreateProviderTest(PostEndpointHelper):
             rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
         ), "clear api key secret not found"
 
-        created_provider = providers_models.Provider.query.order_by(providers_models.Provider.id.desc()).first()
+        created_provider = (
+            db.session.query(providers_models.Provider).order_by(providers_models.Provider.id.desc()).first()
+        )
         assert created_provider.name == form_data["name"]
         assert created_provider.logoUrl is None
         assert created_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -204,7 +211,7 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.cancelExternalUrl is None
         assert created_provider.notificationExternalUrl is None
 
-        assert offerers_models.Offerer.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_provider.offererProvider.offerer == offerer
         assert offerer.name != form_data["name"]
         assert offerer.city != form_data["city"]
@@ -381,7 +388,7 @@ class UpdateProviderTest(PostEndpointHelper):
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
         assert created_provider_alert == "Les informations ont été mises à jour"
 
-        updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
+        updated_provider = db.session.query(providers_models.Provider).filter_by(id=provider.id).one()
         assert updated_provider.name == form_data["name"]
         assert updated_provider.logoUrl == form_data["logo_url"]
         assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -410,7 +417,7 @@ class UpdateProviderTest(PostEndpointHelper):
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
         assert created_provider_alert == "Les informations ont été mises à jour"
 
-        updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
+        updated_provider = db.session.query(providers_models.Provider).filter_by(id=provider.id).one()
         assert updated_provider.name == form_data["name"]
         assert updated_provider.logoUrl is None
         assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -455,7 +462,7 @@ class UpdateProviderTest(PostEndpointHelper):
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
         assert created_provider_alert == "Les informations ont été mises à jour"
 
-        updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
+        updated_provider = db.session.query(providers_models.Provider).filter_by(id=provider.id).one()
         assert updated_provider.isActive == False
         assert venue_provider_1.isActive == False
         assert offer_1_1.isActive == False
