@@ -12,6 +12,7 @@ import time_machine
 from pcapi.connectors.dms import models as dms_models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.finance import deposit_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -409,7 +410,7 @@ class SQLFunctionsTest:
             bookings_factories.BookingFactory(user=user, amount=18)
             db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
-        finance_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
+        deposit_api.upsert_deposit(user, "test", user_models.EligibilityType.AGE18)
 
         bookings_factories.UsedBookingFactory(user=user, amount=10)
         bookings_factories.BookingFactory(user=user, amount=1)
