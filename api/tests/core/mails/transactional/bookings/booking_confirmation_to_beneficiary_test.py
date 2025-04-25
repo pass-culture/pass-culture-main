@@ -448,7 +448,7 @@ class BookingWithWithdrawalTypeTest:
         expected = get_expected_base_sendinblue_email_data(
             booking,
             mediation,
-            OFFER_WITHDRAWAL_TYPE=withdrawal_type,
+            OFFER_WITHDRAWAL_TYPE=withdrawal_type.value,
             OFFER_WITHDRAWAL_DELAY="2 jours",
             **{
                 key: value
