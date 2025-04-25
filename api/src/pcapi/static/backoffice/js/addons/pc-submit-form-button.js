@@ -15,7 +15,8 @@ class PcSubmitFormButton extends PcAddOn {
 
   #onClick = (event) => {
     event.preventDefault();
-    const formName = event.target.dataset.submitForm
+    const $target = event.target.closest(PcSubmitFormButton.SUBMIT_BUTTON_SELECTOR)
+    const formName = $target.dataset.submitForm
     if (!!formName) {
       const forms = document.querySelectorAll(`form[name=${formName}]`)
       if (forms.length === 1) {
