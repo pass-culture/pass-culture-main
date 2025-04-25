@@ -1,0 +1,58 @@
+name: "3 [on_workflow] Post Slack message"
+
+on:
+  workflow_call:
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+    inputs:
+      channel_id:
+        type: string
+        required: true
+      color:
+        type: string
+        required: true
+      message:
+        type: string
+        required: true
+
+
+jobs:
+  post-slack-message:
+    name: "Post Slack message"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Slack token secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Call Slack API"
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ inputs.channel_id }}
+            attachments:
+              - color: "${{ inputs.color }}"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "*${{github.actor}}*"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: "${{ inputs.message }}"
