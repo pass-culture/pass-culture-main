@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import time
-import traceback
 import typing
 
 from authlib.integrations.flask_client import OAuth
@@ -254,11 +253,11 @@ def remove_db_session(exc: BaseException | None = None) -> None:
         db.session.remove()
     except Exception as exception:  # pylint: disable=broad-exception-caught
         logger.error(
-            "An error happened while managing the transaction",
+            "An error happened while removing the transaction",
             extra={
                 "exc": str(exception),
-                "stacktrace": traceback.format_exc(),
             },
+            exc_info=True,
         )
 
 
@@ -271,12 +270,14 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
             repository._manage_session()
             db.session.autoflush = True
         except Exception as exception:  # pylint: disable=broad-exception-caught
+            # this may break the session's internal states but we will detroy it anyway
+            db.session.connection().execute("ROLLBACK")
             logger.error(
                 "An error happened while managing the transaction",
                 extra={
                     "exc": str(exception),
-                    "stacktrace": traceback.format_exc(),
                 },
+                exc_info=True,
             )
 
 
