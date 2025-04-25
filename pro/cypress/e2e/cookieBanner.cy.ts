@@ -1,28 +1,12 @@
 import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Cookie management with no login', () => {
-  let savedCookies: any[] = []
   beforeEach(() => {
     cy.visit('/connexion')
-
-    savedCookies.forEach((cookie) => {
-      cy.setCookie(cookie.name, cookie.value, {
-        domain: cookie.domain,
-        path: cookie.path,
-        secure: cookie.secure,
-        httpOnly: cookie.httpOnly,
-        expiry: cookie.expires,
-      })
-    })
-  })
-
-  afterEach(() => {
-    cy.getCookies().then((cookies) => {
-      savedCookies = cookies
-    })
   })
 
   it('The cookie banner should remain displayed when opening a new page', () => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 
@@ -53,16 +37,26 @@ describe('Cookie management with no login', () => {
       'have.length',
       4
     )
+
+    cy.stepLog({ message: 'I save my choices' })
+    cy.findByText('Enregistrer mes choix').click()
+
+    cy.stepLog({
+      message: 'I click on the "Accessibilité : non conforme" link',
+    })
+    cy.findByText('Accessibilité : non conforme').click()
+
+    cy.stepLog({ message: 'the cookie banner should not be displayed' })
+    cy.contains('Respect de votre vie privée').should('not.exist')
   })
 
   it('I should be able to refuse all cookies, and no cookie is checked in the dialog, except the required', () => {
-    cy.stepLog({ message: 'the cookie banner should not be displayed' })
-    cy.contains('Respect de votre vie privée').should('not.exist')
-
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findAllByText('Gestion des cookies').first().click()
+
+    cy.findAllByText('Tout accepter').last().click()
     cy.stepLog({ message: 'I decline all cookies' })
-    cy.findByText('Tout refuser').click()
+    cy.findAllByText('Tout refuser').last().click()
 
     cy.stepLog({ message: 'I should have 1 item checked' })
     cy.get('.orejime-Purpose-children .orejime-Purpose-input:checked').should(
@@ -75,6 +69,9 @@ describe('Cookie management with no login', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
     cy.findAllByText('Gestion des cookies').first().click()
 
+    cy.stepLog({ message: 'I check the option status' })
+    cy.get('#orejime-purpose-beamer').should('not.be.checked')
+
     cy.stepLog({ message: 'I select the "Beamer" cookie' })
     cy.findByText('Beamer').click()
 
@@ -85,12 +82,15 @@ describe('Cookie management with no login', () => {
     cy.findAllByText('Gestion des cookies').first().click()
 
     cy.stepLog({ message: 'the Beamer cookie should be checked' })
-    cy.get('#orejime-purpose-beamer').should('not.be.checked')
+    cy.get('#orejime-purpose-beamer').should('be.checked')
   })
 
   it('I should be able to choose a specific cookie, reload the page and the status should not have been changed', () => {
     cy.stepLog({ message: 'I open the choose cookies option' })
     cy.findAllByText('Gestion des cookies').first().click()
+
+    cy.stepLog({ message: 'I check the option status' })
+    cy.get('#orejime-purpose-beamer').should('not.be.checked')
 
     cy.stepLog({ message: 'I select the "Beamer" cookie' })
     cy.findByText('Beamer').click()
