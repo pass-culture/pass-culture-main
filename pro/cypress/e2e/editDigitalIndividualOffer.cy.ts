@@ -1,9 +1,6 @@
 import { addDays, format } from 'date-fns'
 
-import {
-  sessionLogInAndGoToPage,
-  logInAndGoToPage,
-} from '../support/helpers.ts'
+import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Edit digital individual offers', () => {
   describe('Display and url modification', () => {
@@ -21,11 +18,7 @@ describe('Edit digital individual offers', () => {
     })
 
     it('An edited offer is displayed with 4 tabs', function () {
-      sessionLogInAndGoToPage(
-        'Session edit digital individual offer',
-        login1,
-        '/offre/individuelle/1/recapitulatif/details'
-      )
+      logInAndGoToPage(login1, '/offre/individuelle/1/recapitulatif/details')
 
       cy.contains('Récapitulatif')
 
@@ -41,11 +34,7 @@ describe('Edit digital individual offers', () => {
     })
 
     it('I should be able to modify the url of a digital offer', function () {
-      sessionLogInAndGoToPage(
-        'Session edit digital individual offer',
-        login1,
-        '/offres'
-      )
+      logInAndGoToPage(login1, '/offres')
 
       cy.stepLog({ message: 'I open the first offer in the list' })
       cy.findAllByTestId('offer-item-row')

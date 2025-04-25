@@ -2,7 +2,7 @@ import { addDays, format } from 'date-fns'
 
 import { sessionLogInAndGoToPage } from '../support/helpers.ts'
 
-describe('Desk (Guichet) feature', () => {
+describe('Desk (Guichet) feature', { testIsolation: false }, () => {
   let tokenConfirmed: string
   let tokenTooSoon: string
   let tokenUsed: string
@@ -10,7 +10,11 @@ describe('Desk (Guichet) feature', () => {
   let tokenReimbursed: string
   let tokenOther: string
 
-  beforeEach(() => {
+  after(() => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
+  })
+
+  it('I should see help information on desk page', () => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
@@ -30,9 +34,6 @@ describe('Desk (Guichet) feature', () => {
         tokenOther = response.body.tokenOther
       }
     )
-  })
-
-  it('I should see help information on desk page', () => {
     cy.stepLog({ message: 'The identity check message is displayed' })
     cy.findByText(
       'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'
@@ -56,6 +57,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should be able to validate a valid countermark', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: `I add a valid countermark ${tokenConfirmed}` })
     cy.findByLabelText('Contremarque').type(tokenConfirmed)
 
@@ -68,6 +70,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline a non-valid countermark', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: 'I add this countermark "XXXXXX"' })
     cy.findByLabelText('Contremarque').type('XXXXXX')
 
@@ -80,6 +83,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline an event countermark more than 48h before', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: `I add this countermark "${tokenTooSoon}"` })
     cy.findByLabelText('Contremarque').type(tokenTooSoon)
 
@@ -95,6 +99,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should be able to invalidate an already used countermark', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: `I add this countermark "${tokenUsed}"` })
     cy.findByLabelText('Contremarque').type(tokenUsed)
     cy.findByText(/Cette contremarque a été validée./)
@@ -108,6 +113,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate another pro countermark', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: `I add this countermark "${tokenOther}"` })
     cy.findByLabelText('Contremarque').type(tokenOther)
 
@@ -119,6 +125,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate a cancelled countermark', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: `I add this countermark "${tokenCanceled}"` })
     cy.findByLabelText('Contremarque').type(tokenCanceled)
 
@@ -128,6 +135,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should not be able to validate a reimbursed countermark', () => {
+    cy.visit('/guichet')
     cy.stepLog({ message: `I add this countermark "${tokenReimbursed}"` })
     cy.findByLabelText('Contremarque').type(tokenReimbursed)
 

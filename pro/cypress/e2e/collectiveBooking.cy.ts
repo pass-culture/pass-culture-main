@@ -6,11 +6,12 @@ import {
 } from '../support/helpers.ts'
 
 describe('Search for collective bookings', { testIsolation: false }, () => {
-  before(() => {
+  after(() => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
   })
 
   it('I should be able to find collective bookings by offers', () => {
+    cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
