@@ -33,7 +33,7 @@ class Address(PcObject, Base, Model):
     city: str = sa.Column(sa.Text(), nullable=False)
     latitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
     longitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
-    departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
+    departmentCode = sa.Column(sa.Text(), nullable=False, index=True)
     timezone: str = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
     isManualEdition: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
