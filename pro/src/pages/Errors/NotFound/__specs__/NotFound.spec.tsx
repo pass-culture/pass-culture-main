@@ -1,8 +1,14 @@
 import { screen } from '@testing-library/react'
+import * as router from 'react-router-dom'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { NotFound } from '../NotFound'
+
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useLocation: () => ({ state: {} }),
+}))
 
 describe('src | components | pages | NotFound', () => {
   it('should display a message notifying the user they are on a wrong path and add a link to home', () => {
@@ -25,5 +31,17 @@ describe('src | components | pages | NotFound', () => {
 
     // then
     expect(screen.getByRole('link')).toHaveAttribute('href', '/mon/autre/url')
+  })
+
+  it('should display a specific error message when an offer was not found', () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      state: { from: 'offer' },
+    } as router.Location)
+
+    renderWithProviders(<NotFound />)
+
+    expect(
+      screen.getByText('Cette offre n’existe pas ou a été supprimée.')
+    ).toBeInTheDocument()
   })
 })
