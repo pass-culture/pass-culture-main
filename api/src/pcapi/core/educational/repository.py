@@ -239,7 +239,7 @@ def _get_bookings_for_adage_base_query() -> "sa_orm.Query[educational_models.Col
             educational_models.CollectiveOffer.locationComment,
         )
         .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
+            sa_orm.selectinload(educational_models.CollectiveOffer.domains).load_only(
                 educational_models.EducationalDomain.id
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
@@ -394,7 +394,7 @@ def get_paginated_collective_bookings_for_educational_year(
             # ... to fetch its offerer.
             .joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
             # and the offer's domains
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
+            sa_orm.selectinload(educational_models.CollectiveOffer.domains).load_only(
                 educational_models.EducationalDomain.id
             ),
         )
@@ -499,14 +499,15 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
 
 def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     return (
-        educational_models.CollectiveStock.query.filter(educational_models.CollectiveStock.id == collective_stock_id)
+        db.session.query(educational_models.CollectiveStock)
+        .filter(educational_models.CollectiveStock.id == collective_stock_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveStock.collectiveOffer).options(
                 # needed to avoid a query when we call stock.collectiveOffer.collectiveStock
                 sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock),
                 sa_orm.joinedload(educational_models.CollectiveOffer.venue),
             ),
-            sa_orm.joinedload(educational_models.CollectiveStock.collectiveBookings),
+            sa_orm.selectinload(educational_models.CollectiveStock.collectiveBookings),
         )
         .one_or_none()
     )
@@ -542,12 +543,10 @@ def get_collective_offers_for_filters(
         query.options(
             sa_orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
                 offerers_models.Venue.managingOfferer
-            )
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).selectinload(
                 educational_models.CollectiveStock.collectiveBookings
-            )
+            ),
         )
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.institution))
         .limit(offers_limit)
@@ -667,7 +666,7 @@ def list_public_collective_offers(
     period_ending_date: str | None = None,
     limit: int = 500,
 ) -> list[educational_models.CollectiveOffer]:
-    query = educational_models.CollectiveOffer.query
+    query = db.session.query(educational_models.CollectiveOffer)
 
     query = query.join(providers_models.Provider, educational_models.CollectiveOffer.provider)
     query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
@@ -692,7 +691,7 @@ def list_public_collective_offers(
             educational_models.CollectiveStock.startDatetime,
             educational_models.CollectiveStock.endDatetime,
         )
-        .joinedload(educational_models.CollectiveStock.collectiveBookings)
+        .selectinload(educational_models.CollectiveStock.collectiveBookings)
         .load_only(
             educational_models.CollectiveBooking.id,
             educational_models.CollectiveBooking.status,
@@ -849,9 +848,9 @@ def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
                 offerers_models.Venue.managingOfferer, innerjoin=True
             )
         )
-        .options(sa_orm.joinedload(educational_models.CollectiveOffer.domains))
+        .options(sa_orm.selectinload(educational_models.CollectiveOffer.domains))
         .options(
-            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).selectinload(
                 educational_models.CollectiveStock.collectiveBookings
             )
         )
@@ -950,7 +949,7 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
                     offerers_models.Venue.managingOfferer, innerjoin=True
                 )
             )
-            .options(sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
+            .options(sa_orm.selectinload(educational_models.CollectiveOfferTemplate.domains))
             .options(sa_orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram))
             .options(*_get_collective_offer_template_address_joinedload_with_expression())
             .one()
@@ -982,7 +981,7 @@ def get_collective_offer_templates_for_playlist_query(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
             ),
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            sa_orm.selectinload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
         ),
         sa_orm.joinedload(educational_models.CollectivePlaylist.venue).joinedload(
@@ -1013,7 +1012,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
                 educational_models.EducationalRedactor.lastName,
                 educational_models.EducationalRedactor.civility,
             ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).selectinload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.institution),
@@ -1025,7 +1024,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
                 ),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
             ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+            sa_orm.selectinload(educational_models.CollectiveOffer.domains),
             *_get_collective_offer_address_joinedload_with_expression(),
         )
     )
@@ -1052,7 +1051,7 @@ def _get_collective_offer_template_by_id_for_adage_base_query() -> (
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
                 offerers_models.Venue.googlePlacesInfo
             ),
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            sa_orm.selectinload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
         )
     )
@@ -1087,7 +1086,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iter
 
     query = query.filter(educational_models.CollectiveOffer.id.in_(ids))
     query = query.options(
-        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).selectinload(
             educational_models.CollectiveStock.collectiveBookings
         )
     )
@@ -1107,16 +1106,18 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: ty
 
 def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[educational_models.EducationalDomain]:
     return (
-        educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids))
-        .options(sa_orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
+        db.session.query(educational_models.EducationalDomain)
+        .filter(educational_models.EducationalDomain.id.in_(ids))
+        .options(sa_orm.selectinload(educational_models.EducationalDomain.nationalPrograms))
         .all()
     )
 
 
 def get_all_educational_domains_ordered_by_name() -> list[educational_models.EducationalDomain]:
     return (
-        educational_models.EducationalDomain.query.order_by(educational_models.EducationalDomain.name)
-        .options(sa_orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
+        db.session.query(educational_models.EducationalDomain)
+        .order_by(educational_models.EducationalDomain.name)
+        .options(sa_orm.selectinload(educational_models.EducationalDomain.nationalPrograms))
         .all()
     )
 
@@ -1290,7 +1291,7 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
             ),
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            sa_orm.selectinload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
         )
         .filter(educational_models.EducationalRedactor.id == redactor_id)
@@ -1374,7 +1375,7 @@ def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.
         db.session.query(educational_models.CollectiveOffer)
         .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
         .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).selectinload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
@@ -1384,7 +1385,7 @@ def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.
             sa_orm.joinedload(educational_models.CollectiveOffer.institution),
             sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
             sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+            sa_orm.selectinload(educational_models.CollectiveOffer.domains),
             *_get_collective_offer_address_joinedload_with_expression(),
         )
         .filter(
