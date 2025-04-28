@@ -22,74 +22,74 @@ env:
 jobs:
   pcapi-init-job:
     runs-on: ubuntu-latest
-    outputs: 
-        checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+    outputs:
+      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
     steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-            fetch-tags: false
-            ref: 'master'
-        - name: "Define pcapi image tags."
-          id: pcapi-tags
-          run: |
-            DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
-            API_CHECKSUM=`tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }'`
-            PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
-            API_TAG="checksum-tag=$API_CHECKSUM"
-            echo "PUSH_TAGS=$PUSH_TAGS"
-            echo "API_TAG=$API_TAG"
-            echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
-            echo $API_TAG >> "$GITHUB_OUTPUT"
-        # Check checksum tag is not working well, we have a 401 during api call
-        - name: "pcapi"
-          id: check-checksum-tag
-          run: ./.github/workflows/scripts/check-image-tag-exists.sh
-          env:
-            image: pcapi
-            tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-            token: ${{ steps.openid-auth.outputs.access_token }}
-        - name: "Authentification to Google"
-          uses: "google-github-actions/auth@v2"
-          with:
-            workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-            service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-        - name: "Get Secret"
-          id: secrets
-          uses: "google-github-actions/get-secretmanager-secrets@v2"
-          with:
-            secrets: |-
-              SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-              ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-              ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-        - name: "OpenID Connect Authentication"
-          id: "openid-auth"
-          uses: "google-github-actions/auth@v2"
-          with:
-            create_credentials_file: false
-            token_format: "access_token"
-            workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-            service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-        - name: "Docker login"
-          id: "docker-login"
-          uses: "docker/login-action@v3"
-          with:
-            registry: "europe-west1-docker.pkg.dev"
-            username: "oauth2accesstoken"
-            password: "${{ steps.openid-auth.outputs.access_token }}"
-        - name: "pcapi-console"
-          id: check-console-checksum-tag
-          run: ./.github/workflows/scripts/check-image-tag-exists.sh
-          env:
-            image: pcapi-console
-            tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-            token: ${{ steps.openid-auth.outputs.access_token }}
-        - name: "Summary"
-          run: |
-            echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
-            echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
-            echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
-            echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: false
+          ref: 'master'
+      - name: "Define pcapi image tags."
+        id: pcapi-tags
+        run: |
+          DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
+          API_CHECKSUM=`tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }'`
+          PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
+          API_TAG="checksum-tag=$API_CHECKSUM"
+          echo "PUSH_TAGS=$PUSH_TAGS"
+          echo "API_TAG=$API_TAG"
+          echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
+          echo $API_TAG >> "$GITHUB_OUTPUT"
+      # Check checksum tag is not working well, we have a 401 during api call
+      - name: "pcapi"
+        id: check-checksum-tag
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: "docker-login"
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "pcapi-console"
+        id: check-console-checksum-tag
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi-console
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: "Summary"
+        run: |
+          echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
+          echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
+          echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
+          echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
   
   # Theses steps builds pcapi and pcapi-console image, tags them with the last commit sha then
   # pushes them to the registry
@@ -143,7 +143,7 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-        
+
   deploy-to-testing:
     name: "Deploy to testing"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi]
