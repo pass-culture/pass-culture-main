@@ -401,6 +401,11 @@ elif [[ "$CMD" == "python" ]]; then
     exit
   fi
 
+# Used to deploy preview environment
+# Usage pc deploy-preview --ref <branch> -f sandbox=empty|industrial -f front-only=true|false
+# -ref <branch> : branch to deploy defaults to current branch
+# -f sandbox : sandbox to use (empty|industrial) defaults to empty
+# -f front-only : if true, only deploys the front-end, defaults to false
 elif [[ "$CMD" == "deploy-preview" ]]; then
   REF_ARG=""
   EXTRA_FLAGS=""
