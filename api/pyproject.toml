@@ -18,7 +18,7 @@ dependencies = [
   "boto3==1.35.99",                    # For compatibility with Outscale, do not upgrade to 1.36 until they solved the issue: https://status.outscale.com/incidents/hcq9vmjkl0k9
   "boussole==2.1.3",
   "brevo-python==1.1.2",
-  "celery[redis]==5.5.1",
+  "celery[redis]==5.5.2",
   "click-option-group==0.5.7",
   "click==8.1.8",
   "clickhouse-sqlalchemy==0.2.7",
@@ -36,7 +36,7 @@ dependencies = [
   "flask==2.0.*",
   "flower==2.0.1",
   "geoalchemy2>=0.17.1",
-  "google-api-python-client==2.167.0",
+  "google-api-python-client==2.168.0",
   "google-auth==2.39.0",
   "google-cloud-bigquery==3.31.0",
   "google-cloud-storage==3.1.0",
@@ -46,12 +46,12 @@ dependencies = [
   "gql[requests]>=3.5.2",
   "gunicorn==23.0.0",
   "html5lib>=1.1",
-  "ipython==9.1.0",
+  "ipython==9.2.0",
   "jinja2>=3.1.6",
   "libsass==0.23.0",
   "markupsafe==3.0.2",
   "openpyxl>=3.1.5",
-  "phonenumberslite==9.0.3",
+  "phonenumberslite==9.0.4",
   "pillow==11.2.1",
   "prometheus-flask-exporter>=0.23.2",
   "psycopg2>=2.9.10",
@@ -73,7 +73,7 @@ dependencies = [
   "rq==2.3.2",
   "schwifty==2025.1.0",
   "semver==3.0.4",
-  "sentry-sdk[flask]==2.26.1",
+  "sentry-sdk[flask]==2.27.0",
   "slack-sdk==3.35.0",
   "spectree==1.2.1",
   # Do not use 1.4.46 that has a new
@@ -98,7 +98,7 @@ black = "^25.1.0"
 commitizen = "^4.6.0"
 debugpy = "^1.8.14"
 djlint = "1.36.4"
-fakeredis = "^2.25.1"
+fakeredis = "^2.28.1"
 isort = "^6.0.1"
 mypy = "1.13.0"
 pgcli = "^4.3.0"
@@ -111,13 +111,13 @@ pytest-mock = "^3.14.0"
 pytest-socket = "^0.7.0"
 pytest-split = "^0.10.0"
 requests-mock = "^1.12.1"
-ruff = "^0.11.6"
-types-protobuf = "^5.29.1.20241207"
+ruff = "^0.11.7"
+types-protobuf = "^5.29.1.20250403"
 types-python-dateutil = "^2.9.0.20241206"
-types-pytz = "^2024.2.0.20241221"
-types-pyyaml = "^6.0.12.20241230"
+types-pytz = "^2025.2.0.20250326"
+types-pyyaml = "^6.0.12.20250402"
 types-redis = "^4.6.0.20241004"
-types-requests = "<2.33.0"
+types-requests = "2.32.0.20250328"
 types-urllib3 = "^1.26.25.14"
 
 [tool.black]
