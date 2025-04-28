@@ -132,7 +132,6 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
-    WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE = (
         "Exposer la route utilisée par Brevo pour récupérer les recommandations d'un utilisateur"
     )
