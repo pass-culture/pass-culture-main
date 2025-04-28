@@ -439,7 +439,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"code": "COLLECTIVE_OFFER_CONTACT_NOT_SET"}
+        assert response.json == {"contact[all]": "All contact information are null"}
 
     def test_both_contact_form_and_url(self, pro_client, payload, venue):
         data = {
@@ -454,7 +454,7 @@ class Returns400Test:
             response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"}
+        assert response.json == {"contact[url,form]": "Url and form can not both be used"}
 
     def test_booking_emails_invalid(self, pro_client, payload):
         data = {**payload, "bookingEmails": ["test@testmail.com", "test@test", "test"]}
