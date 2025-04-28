@@ -28,7 +28,7 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
     data_score, data_reasons = compliance_backend.get_score_from_compliance_api(payload)
 
     if data_score:
-        offer = offers_models.Offer.query.with_for_update().get(payload.offer_id)
+        offer = db.session.query(offers_models.Offer).with_for_update().get(payload.offer_id)
         if offer is None:  # if offer is deleted before the task is run
             return
         statement = insert(offers_models.OfferCompliance).values(
@@ -52,7 +52,8 @@ def _get_payload_for_compliance_api(offer: offers_models.Offer) -> GetCompliance
     rayon = extra_data.get("rayon")
     macro_rayon = (
         (
-            offers_models.BookMacroSection.query.filter(sa.func.lower(offers_models.BookMacroSection.section) == rayon)
+            db.session.query(offers_models.BookMacroSection)
+            .filter(sa.func.lower(offers_models.BookMacroSection.section) == rayon)
             .with_entities(offers_models.BookMacroSection.macroSection)
             .one_or_none()
         )

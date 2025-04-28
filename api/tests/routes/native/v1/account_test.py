@@ -460,7 +460,7 @@ class AccountCreationTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
-        assert users_models.User.query.first() is None
+        assert db.session.query(users_models.User).first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
@@ -484,7 +484,7 @@ class AccountCreationTest:
             response = client.post("/native/v1/account", json=data)
             assert response.status_code == 204, response.json
 
-        user = users_models.User.query.first()
+        user = db.session.query(users_models.User).first()
         assert user is not None
         assert user.email == "john.doe@example.com"
         assert user.get_notification_subscriptions().marketing_email
@@ -509,7 +509,7 @@ class AccountCreationTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client):
-        assert users_models.User.query.first() is None
+        assert db.session.query(users_models.User).first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
@@ -542,7 +542,7 @@ class AccountCreationTest:
 
         client.post("/native/v1/account", json=data)
 
-        trusted_device = users_models.TrustedDevice.query.one()
+        trusted_device = db.session.query(users_models.TrustedDevice).one()
 
         assert trusted_device.deviceId == data["trustedDevice"]["deviceId"]
         assert trusted_device.source == "iPhone 13"
@@ -561,7 +561,7 @@ class AccountCreationTest:
 
         client.post("/native/v1/account", json=data)
 
-        assert users_models.TrustedDevice.query.count() == 0
+        assert db.session.query(users_models.TrustedDevice).count() == 0
 
     def test_account_creation_with_weak_password(self, client):
         data = {
@@ -678,7 +678,7 @@ class AccountCreationWithSSOTest:
         assert "refreshToken" in response.json
         assert response.json["accountState"] == users_models.AccountState.ACTIVE.value
 
-        user = users_models.User.query.one()
+        user = db.session.query(users_models.User).one()
         assert user is not None
         assert user.email == "docteur.cuesta@passculture.app"
         assert user.get_notification_subscriptions().marketing_email
@@ -716,7 +716,12 @@ class AccountCreationWithSSOTest:
 
         assert response.status_code == 400
         assert "email" in response.json
-        assert users_models.User.query.filter(users_models.User.email == "docteur.cuesta@passculture.app").count() == 1
+        assert (
+            db.session.query(users_models.User)
+            .filter(users_models.User.email == "docteur.cuesta@passculture.app")
+            .count()
+            == 1
+        )
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client):
@@ -767,7 +772,7 @@ class AccountCreationWithSSOTest:
 
         assert response.status_code == 200, response.json
 
-        trusted_device = users_models.TrustedDevice.query.one()
+        trusted_device = db.session.query(users_models.TrustedDevice).one()
         assert trusted_device.deviceId == "2E429592-2446-425F-9A62-D6983F375B3B"
         assert trusted_device.source == "iPhone 13"
         assert trusted_device.os == "iOS"
@@ -792,7 +797,7 @@ class AccountCreationWithSSOTest:
         )
 
         assert response.status_code == 200, response.json
-        assert users_models.TrustedDevice.query.count() == 0
+        assert db.session.query(users_models.TrustedDevice).count() == 0
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_token_past_expiration_date(self, mocked_check_recaptcha_token_is_valid, client):
@@ -884,7 +889,7 @@ class AccountCreationWithSSOTest:
             },
         )
 
-        user = users_models.User.query.one()
+        user = db.session.query(users_models.User).one()
 
         assert response.status_code == 200, response.json
         try_dms_orphan_adoption_mock.assert_called_once_with(user)
@@ -907,7 +912,7 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
 
-        user = users_models.User.query.filter_by(email=self.identifier).first()
+        user = db.session.query(users_models.User).filter_by(email=self.identifier).first()
 
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
@@ -925,7 +930,7 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
 
-        user = users_models.User.query.filter_by(email=self.identifier).first()
+        user = db.session.query(users_models.User).filter_by(email=self.identifier).first()
         assert not user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
 
@@ -943,7 +948,7 @@ class UserProfileUpdateTest:
         assert ios_batch_attributes.get("u.marketing_email_subscription") is False
         assert ios_batch_attributes.get("ut.permanent_theme_preference") is None
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUser == user
         assert action.user == user
@@ -1199,7 +1204,7 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 204
 
-        user = users_models.User.query.filter_by(email=self.identifier).first()
+        user = db.session.query(users_models.User).filter_by(email=self.identifier).first()
         assert user.email == self.identifier  # email not updated until validation link is used
         assert len(mails_testing.outbox) == 1  # one confirmation email to the current address
 
@@ -1279,7 +1284,7 @@ class UpdateUserEmailTest:
         if expected_error_message:
             assert response.json["message"] == expected_error_message
 
-        user = users_models.User.query.filter_by(email=self.identifier).first()
+        user = db.session.query(users_models.User).filter_by(email=self.identifier).first()
         assert user.email == self.identifier
         assert mails_testing.outbox == email_sent
 
@@ -1376,7 +1381,7 @@ class UpdateUserEmailTest:
         assert base_url_params_cancellation["token"] == base_url_params_confirmation["token"]
 
         # the email doesn't change yet
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == old_email
 
         # We record the email update request in the user's email history
@@ -1402,7 +1407,7 @@ class UpdateUserEmailTest:
         assert base_url_params_validation["new_email"] == [new_email]
 
         # the email doesn't change yet
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == old_email
 
         # We record the email update request in the user's email history
@@ -1433,7 +1438,7 @@ class UpdateUserEmailTest:
         assert refresh_response.status_code == 200
 
         # the email changes
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == new_email
 
         # The user receives an email on their new email address informing him of the email change
@@ -1477,7 +1482,7 @@ class UpdateUserEmailTest:
         assert base_url_params_cancellation["token"] == base_url_params_confirmation["token"]
 
         # the email doesn't change yet
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == old_email
 
         # We record the email update request in the user's email history
@@ -1494,7 +1499,7 @@ class UpdateUserEmailTest:
         assert response.status_code == 204
 
         # the email doesn't change
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == old_email
 
         # User account is suspended
@@ -1634,7 +1639,7 @@ class ValidateEmailTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == self.new_email
 
     @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
@@ -1680,7 +1685,7 @@ class ValidateEmailTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == self.old_email
 
     def test_expired_token(self, app, client):
@@ -1694,7 +1699,7 @@ class ValidateEmailTest:
                 assert response.status_code == 400
                 assert response.json["code"] == "INVALID_TOKEN"
 
-                user = users_models.User.query.get(user.id)
+                user = db.session.query(users_models.User).get(user.id)
                 assert user.email == self.old_email
 
 
@@ -1938,7 +1943,7 @@ class SendPhoneValidationCodeTest:
         response = client.post("/native/v1/validate_phone_number", json={"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.is_phone_validated
 
     @pytest.mark.settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
@@ -1956,12 +1961,16 @@ class SendPhoneValidationCodeTest:
         assert response.json["code"] == "TOO_MANY_SMS_SENT"
 
         # check that a fraud check has been created
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            thirdPartyId=f"PC-{user.id}",
-            status=fraud_models.FraudCheckStatus.KO,
-        ).one_or_none()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                userId=user.id,
+                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                thirdPartyId=f"PC-{user.id}",
+                status=fraud_models.FraudCheckStatus.KO,
+            )
+            .one_or_none()
+        )
 
         assert fraud_check is not None
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
@@ -2046,12 +2055,16 @@ class SendPhoneValidationCodeTest:
         }
 
         # check that a fraud check has been created
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            thirdPartyId=f"PC-{user.id}",
-            status=fraud_models.FraudCheckStatus.KO,
-        ).one_or_none()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                userId=user.id,
+                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                thirdPartyId=f"PC-{user.id}",
+                status=fraud_models.FraudCheckStatus.KO,
+            )
+            .one_or_none()
+        )
 
         assert fraud_check is not None
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
@@ -2088,7 +2101,7 @@ class SendPhoneValidationCodeTest:
         assert response.json["message"] == "L'indicatif téléphonique n'est pas accepté"
         assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
 
@@ -2109,12 +2122,16 @@ class SendPhoneValidationCodeTest:
         assert user.phoneNumber is None
 
         # check that a fraud check has been created
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            thirdPartyId=f"PC-{user.id}",
-            status=fraud_models.FraudCheckStatus.KO,
-        ).one_or_none()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                userId=user.id,
+                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                thirdPartyId=f"PC-{user.id}",
+                status=fraud_models.FraudCheckStatus.KO,
+            )
+            .one_or_none()
+        )
 
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
@@ -2139,13 +2156,15 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.is_phone_validated
         assert not user.has_beneficiary_role
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.PHONE_VALIDATION
-        ).one()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.PHONE_VALIDATION)
+            .one()
+        )
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
@@ -2164,7 +2183,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": first_token.encoded_token})
 
         assert response.status_code == 400
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert not user.is_phone_validated
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
@@ -2190,7 +2209,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.is_phone_validated
         assert user.has_beneficiary_role
 
@@ -2216,11 +2235,15 @@ class ValidatePhoneNumberTest:
         attempts_count = int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}"))
         assert attempts_count == 1
 
-        fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            thirdPartyId=f"PC-{user.id}",
-        ).all()
+        fraud_checks = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                userId=user.id,
+                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                thirdPartyId=f"PC-{user.id}",
+            )
+            .all()
+        )
         for fraud_check in fraud_checks:
             assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
@@ -2268,18 +2291,18 @@ class ValidatePhoneNumberTest:
             response.json["message"]
             == "Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste 1 tentative."
         )
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).first() is None
+        assert db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).first() is None
 
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_VALIDATION_ATTEMPTS"
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
-        assert not users_models.User.query.get(user.id).is_phone_validated
+        assert not db.session.query(users_models.User).get(user.id).is_phone_validated
         assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_expired_code(self, client):
@@ -2294,7 +2317,7 @@ class ValidatePhoneNumberTest:
             assert response.status_code == 400
             assert response.json["code"] == "INVALID_VALIDATION_CODE"
 
-            assert not users_models.User.query.get(user.id).is_phone_validated
+            assert not db.session.query(users_models.User).get(user.id).is_phone_validated
             assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_validate_phone_number_with_already_validated_phone(self, client):
@@ -2311,7 +2334,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 400
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert not user.is_phone_validated
 
 
@@ -2417,9 +2440,9 @@ class IdentificationSessionTest:
         assert response.status_code == 503
         assert response.json["code"] == "IDCHECK_SERVICE_UNAVAILABLE"
         assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
-                user=user, type=fraud_models.FraudCheckType.UBBLE
-            ).count()
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.UBBLE)
+            .count()
             == 0
         )
         assert ubble_mock_connection_error.call_count == 1
@@ -2435,9 +2458,9 @@ class IdentificationSessionTest:
         assert response.status_code == 500
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR"
         assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
-                user=user, type=fraud_models.FraudCheckType.UBBLE
-            ).count()
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.UBBLE)
+            .count()
             == 0
         )
         assert ubble_mock_http_error_status.call_count == 1
@@ -2608,7 +2631,7 @@ class AccountSecurityTest:
         email someone else registered earlier, before the hacked user clicks on email confirmation link. The hacker can
         change user's password this way.
         """
-        assert users_models.User.query.first() is None
+        assert db.session.query(users_models.User).first() is None
         data = {
             "appsFlyerPlatform": "web",
             "birthdate": "2004-01-01",
@@ -2622,7 +2645,7 @@ class AccountSecurityTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
 
-        user = users_models.User.query.first()
+        user = db.session.query(users_models.User).first()
         assert user is not None
         assert user.email == data["email"]
         assert user.isEmailValidated is False
@@ -2640,8 +2663,8 @@ class AccountSecurityTest:
         hacker_response = client.post("/native/v1/account", json=hacker_data)
         assert hacker_response.status_code == 204, hacker_response.json
 
-        assert users_models.User.query.count() == 1
-        user = users_models.User.query.first()
+        assert db.session.query(users_models.User).count() == 1
+        user = db.session.query(users_models.User).first()
         assert user.password == user_password
 
 
@@ -2919,7 +2942,7 @@ class AnonymizeUserTest:
 
         assert response.status_code == 204
         assert not user.isActive
-        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+        assert db.session.query(users_models.GdprUserAnonymization).filter_by(userId=user.id).count() == 1
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
@@ -2933,7 +2956,7 @@ class AnonymizeUserTest:
 
         assert response.status_code == 204
         assert not user.isActive
-        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+        assert db.session.query(users_models.GdprUserAnonymization).filter_by(userId=user.id).count() == 1
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(

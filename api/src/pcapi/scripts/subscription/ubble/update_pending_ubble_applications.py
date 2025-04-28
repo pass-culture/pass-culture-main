@@ -23,7 +23,8 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
     # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
     TWELVE_HOURS_AGO = datetime.date.today() - datetime.timedelta(hours=12)
     pending_ubble_application_fraud_checks = (
-        fraud_models.BeneficiaryFraudCheck.query.filter(
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.PENDING,
             fraud_models.BeneficiaryFraudCheck.dateCreated < TWELVE_HOURS_AGO,

@@ -3,6 +3,7 @@ import logging
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -72,7 +73,7 @@ def get_venue_by_siret(
     if not is_siret_or_ridet(siret):
         raise api_errors.ApiErrors({"siret": [f'string does not match regex "{SIRET_OR_RIDET_RE}"']})
 
-    venue = offerers_models.Venue.query.filter(offerers_models.Venue.siret == siret).one_or_none()
+    venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.siret == siret).one_or_none()
 
     if not venue:
         raise api_errors.ResourceNotFoundError(errors={"global": "Venue cannot be found"})

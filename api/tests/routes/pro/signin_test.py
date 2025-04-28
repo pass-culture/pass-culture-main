@@ -8,7 +8,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.repository import db
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -75,14 +75,14 @@ class Returns200Test:
         data = {"identifier": user2.email, "password": user2.clearTextPassword, "captchaToken": "token"}
 
         client.with_session_auth(email=user1.email)
-        assert users_models.UserSession.query.filter_by(userId=user1.id).count() == 1
+        assert db.session.query(users_models.UserSession).filter_by(userId=user1.id).count() == 1
 
         # when
         response = client.post("/users/signin", json=data)
 
         # then
         assert response.status_code == 200
-        assert users_models.UserSession.query.filter_by(userId=user1.id).count() == 0
+        assert db.session.query(users_models.UserSession).filter_by(userId=user1.id).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def when_user_has_no_departement_code(self, client):
@@ -96,7 +96,7 @@ class Returns200Test:
         # then
         assert response.status_code == 200
 
-        session = users_models.UserSession.query.filter_by(userId=user.id).first()
+        session = db.session.query(users_models.UserSession).filter_by(userId=user.id).first()
         assert session is not None
 
     @pytest.mark.usefixtures("db_session")

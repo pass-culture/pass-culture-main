@@ -277,9 +277,11 @@ def index_all_collective_offers_and_templates() -> None:
     """Force reindexation of all collective offers and templates."""
     backend = _get_backend()
 
-    collective_offer_templates = educational_models.CollectiveOfferTemplate.query.with_entities(
-        educational_models.CollectiveOfferTemplate.id
-    ).all()
+    collective_offer_templates = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .with_entities(educational_models.CollectiveOfferTemplate.id)
+        .all()
+    )
     _reindex_collective_offer_template_ids(
         backend,
         [template.id for template in collective_offer_templates],
@@ -332,7 +334,8 @@ def _reindex_venue_ids(
 ) -> None:
     logger.info("Starting to index venues", extra={"count": len(venue_ids)})
     venues = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(venue_ids))
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id.in_(venue_ids))
         .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True))
         .options(sa_orm.joinedload(offerers_models.Venue.contact))
         .options(sa_orm.joinedload(offerers_models.Venue.criteria))
@@ -382,12 +385,14 @@ def _reindex_collective_offer_template_ids(
     from_error_queue: bool = False,
 ) -> None:
     logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
-    collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
-    ).options(
-        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
-            offerers_models.Venue.managingOfferer, innerjoin=True
-        ),
+    collective_offers_templates = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids))
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
+                offerers_models.Venue.managingOfferer, innerjoin=True
+            ),
+        )
     )
 
     to_add = [
@@ -448,7 +453,7 @@ def index_offers_of_venues_in_queue() -> None:
 
 
 def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
-    return educational_models.CollectiveOfferTemplate.query.options(
+    return db.session.query(educational_models.CollectiveOfferTemplate).options(
         sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
             offerers_models.Venue.managingOfferer, innerjoin=True
         ),
@@ -463,7 +468,8 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         # return offers that don't have future stocks, which is why
         # the condition is in the _outer_ join, and not in a "where"
         # clause through `filter()`.
-        offers_models.Offer.query.outerjoin(
+        db.session.query(offers_models.Offer)
+        .outerjoin(
             offers_models.Stock,
             (offers_models.Stock.offerId == offers_models.Offer.id) & offers_models.Stock._bookable,
         )
@@ -561,7 +567,8 @@ def get_offers_booking_count_by_id(
     offer_ids: abc.Collection[int], days: int = DEFAULT_DAYS_FOR_LAST_BOOKINGS
 ) -> dict[int, int]:
     offer_booked_since_x_days = (
-        offers_models.Offer.query.join(offers_models.Offer.stocks)
+        db.session.query(offers_models.Offer)
+        .join(offers_models.Offer.stocks)
         .outerjoin(offers_models.Offer.product)
         .join(offers_models.Stock.bookings)
         .filter(
@@ -695,7 +702,8 @@ def _reindex_venues_from_offers(offer_ids: abc.Collection[int]) -> None:
         return
 
     query = (
-        offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(offer_ids))
         .with_entities(offers_models.Offer.venueId)
         .distinct()
     )
@@ -809,9 +817,11 @@ def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
     if not updated_products:
         return
 
-    offer_ids_to_reindex_query = offers_models.Offer.query.filter(
-        offers_models.Offer.productId.in_([product.id for product in updated_products])
-    ).with_entities(offers_models.Offer.id)
+    offer_ids_to_reindex_query = (
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.productId.in_([product.id for product in updated_products]))
+        .with_entities(offers_models.Offer.id)
+    )
 
     logger.info("Starting to reindex offers with product booked recently. Product count: %s", len(updated_products))
 
@@ -866,7 +876,7 @@ def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
     batch_size = 100
     product_ids = list(booking_count_by_product.keys())
     for start in range(0, len(product_ids), batch_size):
-        batch = offers_models.Product.query.filter(
+        batch = db.session.query(offers_models.Product).filter(
             offers_models.Product.id.in_(product_ids[start : start + batch_size])
         )
         for product in batch:

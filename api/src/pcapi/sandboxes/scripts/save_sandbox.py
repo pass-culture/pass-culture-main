@@ -50,7 +50,8 @@ def _index_all_offers() -> None:
 def _index_all_venues() -> None:
     logger.info("Reindexing venues")
     query = (
-        offerer_models.Venue.query.with_entities(offerer_models.Venue.id)
+        db.session.query(offerer_models.Venue)
+        .with_entities(offerer_models.Venue.id)
         .filter(offerer_models.Venue.isPermanent.is_(True))
         .order_by(offerer_models.Venue.id)
     )

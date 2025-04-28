@@ -459,7 +459,7 @@ def get_venue_and_check_access_for_offer_creation(
     if offer_data.template_id is not None:
         template = get_collective_offer_template_by_id(offer_data.template_id)
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
-    venue: offerers_models.Venue = offerers_models.Venue.query.get_or_404(offer_data.venue_id)
+    venue: offerers_models.Venue = db.session.query(offerers_models.Venue).get_or_404(offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
@@ -962,7 +962,7 @@ def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
 
     # the offer takes place in a specific venue
     if address_type == "offererVenue" and offerer_venue_id:
-        venue = offerers_models.Venue.query.get(offerer_venue_id)
+        venue = db.session.query(offerers_models.Venue).get(offerer_venue_id)
     else:
         venue = None
 
@@ -1053,7 +1053,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
         ]
 
-        query_to_update = educational_models.CollectiveOffer.query.filter(
+        query_to_update = db.session.query(educational_models.CollectiveOffer).filter(
             educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
@@ -1084,7 +1084,7 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
         ]
 
-        query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
+        query_to_update = db.session.query(educational_models.CollectiveOfferTemplate).filter(
             educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
@@ -1109,7 +1109,8 @@ def check_can_move_collective_offer_venue(
 ) -> list[offerers_models.Venue]:
     if with_restrictions:
         count_started_stocks = (
-            educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.id)
+            db.session.query(educational_models.CollectiveStock)
+            .with_entities(educational_models.CollectiveStock.id)
             .filter(
                 educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
                 educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
@@ -1120,7 +1121,8 @@ def check_can_move_collective_offer_venue(
             raise offers_exceptions.OfferEventInThePast(count_started_stocks)
 
         count_reimbursed_bookings = (
-            educational_models.CollectiveBooking.query.with_entities(educational_models.CollectiveBooking.id)
+            db.session.query(educational_models.CollectiveBooking)
+            .with_entities(educational_models.CollectiveBooking.id)
             .join(educational_models.CollectiveBooking.collectiveStock)
             .filter(
                 educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
@@ -1172,7 +1174,8 @@ def move_collective_offer_venue(
         )
 
     collective_bookings = (
-        educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.collectiveStock)
+        db.session.query(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveBooking.collectiveStock)
         .outerjoin(
             # max 1 row joined thanks to idx_uniq_collective_booking_id
             finance_models.FinanceEvent,
@@ -1236,9 +1239,11 @@ def update_collective_offer(
 ) -> None:
     new_values = body.dict(exclude_unset=True)
 
-    offer_to_update = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id == offer_id
-    ).first()
+    offer_to_update = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == offer_id)
+        .first()
+    )
 
     validation.check_collective_offer_action_is_allowed(
         offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
@@ -1275,9 +1280,9 @@ def update_collective_offer_template(
     new_values = body.dict(exclude_unset=True)
 
     offer_to_update: educational_models.CollectiveOfferTemplate = (
-        educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
-        ).one()
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(educational_models.CollectiveOfferTemplate.id == offer_id)
+        .one()
     )
 
     validation.check_collective_offer_template_action_is_allowed(

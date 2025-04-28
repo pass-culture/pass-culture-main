@@ -99,7 +99,7 @@ def build_backoffice_app():
 
             from pcapi.core.users.models import User
 
-            user = User.query.filter_by(id=user_id).one()
+            user = db.session.query(User).filter_by(id=user_id).one()
 
             login_user(user, remember=True)
             login_manager.stamp_session(user)
@@ -393,9 +393,9 @@ if os.environ.get("CHECK_DATA_LEAKS"):
     def check_data_leaks(request, app):
         models = {import_string(path.strip()) for path in os.environ["CHECK_DATA_LEAKS"].split(",")}
 
-        counts_before = {model: model.query.count() for model in models}
+        counts_before = {model: db.session.query(model).count() for model in models}
         yield
-        counts_after = {model: model.query.count() for model in models}
+        counts_after = {model: db.session.query(model).count() for model in models}
         leaked_models = ", ".join([model.__name__ for model in models if counts_after[model] != counts_before[model]])
         assert not leaked_models, f"LEAK: {request.function} leaks {leaked_models}"
 

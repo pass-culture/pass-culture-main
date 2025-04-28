@@ -55,7 +55,7 @@ class Returns200Test:
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
@@ -109,9 +109,9 @@ class Returns200Test:
             response = client_session.patch(f"/offers/{offer.id}", json=data)
             assert response.status_code == 200
 
-        offer = offers_models.Offer.query.one()
+        offer = db.session.query(offers_models.Offer).one()
         assert offer.offererAddress.address.city == data["address"]["city"]
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
         assert address.isManualEdition == False
         assert address.city == "Saint-Pierre-des-Corps"
 
@@ -159,9 +159,9 @@ class Returns200Test:
             response = client_session.patch(f"/offers/{offer.id}", json=data)
             assert response.status_code == 200
 
-        offer = offers_models.Offer.query.order_by(Offer.id.desc()).first()
+        offer = db.session.query(offers_models.Offer).order_by(Offer.id.desc()).first()
         assert offer.offererAddress.address.city == data["address"]["city"].title()
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
         assert address.isManualEdition == True
         assert address.city == data["address"]["city"].title()
 
@@ -208,8 +208,11 @@ class Returns200Test:
             response = client_session.patch(f"/offers/{offer.id}", json=data)
             assert response.status_code == 200
 
-        offer = offers_models.Offer.query.order_by(offers_models.Offer.id.desc()).first()
-        assert geography_models.Address.query.filter(geography_models.Address.inseeCode == "37233").count() == 2
+        offer = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id.desc()).first()
+        assert (
+            db.session.query(geography_models.Address).filter(geography_models.Address.inseeCode == "37233").count()
+            == 2
+        )
         assert offer.offererAddress.address.isManualEdition == True
         assert offer.offererAddress.address.city == data["address"]["city"].title()
 
@@ -280,7 +283,7 @@ class Returns200Test:
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.extraData["gtl_id"] == "01010101"
         assert updated_offer.extraData["author"] == "Kewis Larol"
         assert updated_offer.mentalDisabilityCompliant
@@ -304,7 +307,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.extraData == {}
         assert updated_offer.ean == "1111111111111"
 
@@ -325,7 +328,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.ean == "1111111111111"
         assert updated_offer.extraData == {}
 
@@ -397,7 +400,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.extraData == {
             "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
@@ -489,7 +492,7 @@ class Returns200Test:
 
         assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         address = updated_offer.offererAddress.address
         if address_update_exist:
             assert updated_offer.offererAddress == existant_oa
@@ -581,7 +584,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         address = updated_offer.offererAddress.address
         assert updated_offer.offererAddress.label == "Marais Salins de Kô"
         assert address.street == data["address"]["street"]
@@ -624,7 +627,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         address = updated_offer.offererAddress.address
         assert updated_offer.offererAddress.label == "Marais Salins de Kô"
         assert address.street == data["address"]["street"]
@@ -699,7 +702,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         address = updated_offer.offererAddress.address
         if not is_manual:
             assert updated_offer.offererAddress.label is None
@@ -729,7 +732,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = Offer.query.get(offer.id)
+        offer = db.session.query(Offer).get(offer.id)
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 
@@ -1107,7 +1110,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert Offer.query.get(offer.id).name == "Old name"
+        assert db.session.query(Offer).get(offer.id).name == "Old name"
 
 
 class Returns404Test:

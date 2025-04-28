@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -12,7 +13,7 @@ class BookingFactoryTest:
         booking = BookingFactory(stock__beginningDatetime=datetime.datetime.utcnow())
         generated_cancellation_limit_date = booking.cancellationLimitDate
 
-        booking_from_db = Booking.query.first()
+        booking_from_db = db.session.query(Booking).first()
 
         assert booking_from_db.cancellationLimitDate == generated_cancellation_limit_date
 

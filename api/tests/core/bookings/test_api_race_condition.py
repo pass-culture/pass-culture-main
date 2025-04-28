@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class BookingRaceConditionTest:
     def _setup(self, requests_mock, mock_get_venue_movies):
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
+        cds_provider = db.session.query(Provider).filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(
             provider=cds_provider, isDuoOffers=True, venueIdAtOfferProvider="cinema_id_test"
         )
@@ -56,9 +56,9 @@ class BookingRaceConditionTest:
         return venue_provider
 
     def assert_synchronization(self, cds_stocks):
-        created_offers = Offer.query.order_by(Offer.id).all()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
         assert len(created_offers) == 1
-        created_stocks = Stock.query.order_by(Stock.id).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         assert len(created_stocks) == 1
 
         assert created_stocks[0].quantity == 77
@@ -131,7 +131,7 @@ class BookingRaceConditionTest:
         cds_stocks.updateObjects()
 
         self.assert_synchronization(cds_stocks)
-        first_stock_id = Stock.query.first().id
+        first_stock_id = db.session.query(Stock).first().id
 
         synchronization_event = threading.Event()
         booking_event = threading.Event()
@@ -171,7 +171,7 @@ class BookingRaceConditionTest:
             with self.threadsafe_transaction(thread_local_session):
                 logger.warning("synchronization_thread: Starting")
                 app.app_context().push()
-                venue_provider = VenueProvider.query.one()
+                venue_provider = db.session.query(VenueProvider).one()
                 cds_stocks = CDSStocks(venue_provider=venue_provider)
                 decorated_method = self.wait_for_booking_event_decorator(
                     cds_stocks.fill_stock_attributes, synchronization_event, booking_event

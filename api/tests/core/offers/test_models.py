@@ -44,8 +44,8 @@ class ProductModelTest:
         product = factories.ProductFactory(gcuCompatibilityType=gcu_compatible)
 
         assert product.can_be_synchronized == can_be_synchronized
-        assert models.Product.query.filter(models.Product.can_be_synchronized).count() == product_count
-        models.Product.query.delete()
+        assert db.session.query(models.Product).filter(models.Product.can_be_synchronized).count() == product_count
+        db.session.query(models.Product).delete()
 
 
 class OfferIsDigitalTest:
@@ -73,38 +73,48 @@ class OfferHasBookingLimitDatetimesPassedTest:
         stock = factories.StockFactory(bookingLimitDatetime=None)
         offer = stock.offer
 
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [
+            offer
+        ]
 
     def test_expression_with_stock_with_booking_limit_datetime_passed(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         offer = stock.offer
 
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == [offer]
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == []
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == [
+            offer
+        ]
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == []
 
     def test_expression_with_stock_with_booking_limit_datetime_in_the_future(self):
         future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=future)
         offer = stock.offer
 
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [
+            offer
+        ]
 
     def test_expression_with_no_stock(self):
         offer = factories.OfferFactory()
 
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [
+            offer
+        ]
 
     def test_expression_with_soft_deleted_stock(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past, isSoftDeleted=True)
         offer = stock.offer
 
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
-        assert models.Offer.query.filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [
+            offer
+        ]
 
 
 class OfferActiveMediationTest:
@@ -169,12 +179,12 @@ class OfferStatusTest:
         rejected_offer = factories.OfferFactory(validation=models.OfferValidationStatus.REJECTED, isActive=False)
         approved_offer = factories.OfferFactory()
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.REJECTED.name).all() == [
-            rejected_offer
-        ]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.REJECTED.name).all() == [
-            approved_offer
-        ]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.REJECTED.name
+        ).all() == [rejected_offer]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status != offer_mixin.OfferStatus.REJECTED.name
+        ).all() == [approved_offer]
 
     def test_pending(self):
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
@@ -185,12 +195,12 @@ class OfferStatusTest:
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING, isActive=False)
         approved_offer = factories.OfferFactory()
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.PENDING.name).all() == [
-            pending_offer
-        ]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.PENDING.name).all() == [
-            approved_offer
-        ]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.PENDING.name
+        ).all() == [pending_offer]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status != offer_mixin.OfferStatus.PENDING.name
+        ).all() == [approved_offer]
 
     def test_active(self):
         stock = factories.StockFactory()
@@ -202,10 +212,13 @@ class OfferStatusTest:
         stock = factories.StockFactory()
         active_offer = stock.offer
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name).all() == [
-            active_offer
-        ]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE.name).all() == []
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name
+        ).all() == [active_offer]
+        assert (
+            db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE.name).all()
+            == []
+        )
 
     def test_inactive(self):
         inactive_offer = factories.OfferFactory(
@@ -218,12 +231,12 @@ class OfferStatusTest:
         inactive_offer = factories.OfferFactory(validation=models.OfferValidationStatus.APPROVED, isActive=False)
         approved_offer = factories.OfferFactory()
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.INACTIVE.name).all() == [
-            inactive_offer
-        ]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.INACTIVE.name).all() == [
-            approved_offer
-        ]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.INACTIVE.name
+        ).all() == [inactive_offer]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status != offer_mixin.OfferStatus.INACTIVE.name
+        ).all() == [approved_offer]
 
     def test_expired(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
@@ -243,12 +256,12 @@ class OfferStatusTest:
         expired_offer = expired_stock.offer
         approved_offer = factories.OfferFactory()
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.EXPIRED.name).all() == [
-            expired_offer
-        ]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.EXPIRED.name).all() == [
-            approved_offer
-        ]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.EXPIRED.name
+        ).all() == [expired_offer]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status != offer_mixin.OfferStatus.EXPIRED.name
+        ).all() == [approved_offer]
 
     def test_sold_out(self):
         sold_out_offer = factories.OfferFactory(
@@ -264,18 +277,23 @@ class OfferStatusTest:
         not_sold_out_stock = factories.StockFactory(quantity=10)
         not_sold_out_offer = not_sold_out_stock.offer
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name).all() == [
-            sold_out_offer
-        ]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).all() == [
-            not_sold_out_offer
-        ]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name
+        ).all() == [sold_out_offer]
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name
+        ).all() == [not_sold_out_offer]
 
     def test_expression_sold_out_offer_without_stock(self):
         offer = factories.OfferFactory()
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name).all() == [offer]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count() == 0
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name
+        ).all() == [offer]
+        assert (
+            db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count()
+            == 0
+        )
 
     def test_expression_sold_out_offer_with_passed_stock(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
@@ -284,8 +302,13 @@ class OfferStatusTest:
         factories.StockFactory(offer=offer, quantity=10, beginningDatetime=past, bookingLimitDatetime=past)
         factories.StockFactory(offer=offer, quantity=0, beginningDatetime=future, bookingLimitDatetime=future)
 
-        assert models.Offer.query.filter(models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name).all() == [offer]
-        assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count() == 0
+        assert db.session.query(models.Offer).filter(
+            models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name
+        ).all() == [offer]
+        assert (
+            db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count()
+            == 0
+        )
 
 
 class OfferShowSubTypeTest:
@@ -302,15 +325,15 @@ class StockBookingsQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=None)
 
-        assert models.Stock.query.filter(models.Stock.dnBookedQuantity == 0).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.dnBookedQuantity == 0).one() == stock
 
     def test_bookings_quantity_with_booking(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         stock = factories.StockFactory(offer=offer, quantity=5)
         bookings_factories.BookingFactory(stock=stock)
 
-        assert models.Stock.query.filter(models.Stock.dnBookedQuantity == 0).count() == 0
-        assert models.Stock.query.filter(models.Stock.dnBookedQuantity == 1).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.dnBookedQuantity == 0).count() == 0
+        assert db.session.query(models.Stock).filter(models.Stock.dnBookedQuantity == 1).one() == stock
 
     def test_bookings_quantity_with_a_cancelled_booking(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
@@ -318,7 +341,7 @@ class StockBookingsQuantityTest:
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(stock=stock)
 
-        assert models.Stock.query.filter(models.Stock.dnBookedQuantity == 1).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.dnBookedQuantity == 1).one() == stock
 
 
 class OfferIsSoldOutTest:
@@ -327,16 +350,16 @@ class OfferIsSoldOutTest:
         factories.StockFactory(offer=offer, quantity=5)
 
         assert offer.isSoldOut is False
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(True)).count() == 0
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).all() == [offer]
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(True)).count() == 0
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).all() == [offer]
 
     def test_offer_with_unlimited_stock_is_not_sold_out(self):
         offer = factories.OfferFactory()
         factories.StockFactory(offer=offer, quantity=None)
 
         assert not offer.isSoldOut
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(True)).count() == 0
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).one() == offer
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(True)).count() == 0
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).one() == offer
 
     def test_offer_with_fully_booked_stock(self):
         offer = factories.OfferFactory()
@@ -344,15 +367,15 @@ class OfferIsSoldOutTest:
         bookings_factories.BookingFactory(stock=stock)
 
         assert offer.isSoldOut
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(True)).one() == offer
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).count() == 0
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(True)).one() == offer
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).count() == 0
 
     def test_offer_without_stocks(self):
         offer = factories.OfferFactory()
 
         assert offer.isSoldOut
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(True)).one() == offer
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).count() == 0
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(True)).one() == offer
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).count() == 0
 
     def test_offer_with_passed_stock_date(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
@@ -360,16 +383,16 @@ class OfferIsSoldOutTest:
         offer = stock.offer
 
         assert offer.isSoldOut
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(True)).one() == offer
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).count() == 0
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(True)).one() == offer
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).count() == 0
 
     def test_offer_with_soft_deleted_stock(self):
         stock = factories.StockFactory(quantity=10, isSoftDeleted=True)
         offer = stock.offer
 
         assert offer.isSoldOut
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(True)).one() == offer
-        assert models.Offer.query.filter(models.Offer.isSoldOut.is_(False)).count() == 0
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(True)).one() == offer
+        assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).count() == 0
 
 
 class StockRemainingQuantityTest:
@@ -378,7 +401,7 @@ class StockRemainingQuantityTest:
         stock = factories.StockFactory(offer=offer, quantity=None)
 
         assert stock.remainingQuantity == "unlimited"
-        assert models.Stock.query.filter(models.Stock.remainingQuantity.is_(None)).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.remainingQuantity.is_(None)).one() == stock
 
     def test_stock_with_unlimited_remaining_quantity_after_booking(self):
         offer = factories.OfferFactory()
@@ -387,14 +410,14 @@ class StockRemainingQuantityTest:
         bookings_factories.BookingFactory(stock=stock)
 
         assert stock.remainingQuantity == "unlimited"
-        assert models.Stock.query.filter(models.Stock.remainingQuantity.is_(None)).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.remainingQuantity.is_(None)).one() == stock
 
     def test_stock_with_positive_remaining_quantity(self):
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=5)
 
         assert stock.remainingQuantity == 5
-        assert models.Stock.query.filter(models.Stock.remainingQuantity == 5).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.remainingQuantity == 5).one() == stock
 
     def test_stock_with_positive_remaining_quantity_after_some_bookings(self):
         offer = factories.OfferFactory()
@@ -403,7 +426,7 @@ class StockRemainingQuantityTest:
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
         assert stock.remainingQuantity == 3
-        assert models.Stock.query.filter(models.Stock.remainingQuantity == 3).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.remainingQuantity == 3).one() == stock
 
     def test_stock_with_zero_remaining_quantity_after_booking(self):
         offer = factories.OfferFactory()
@@ -412,7 +435,7 @@ class StockRemainingQuantityTest:
         bookings_factories.BookingFactory(stock=stock)
 
         assert stock.remainingQuantity == 0
-        assert models.Stock.query.filter(models.Stock.remainingQuantity == 0).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.remainingQuantity == 0).one() == stock
 
     def test_stock_with_positive_remaining_quantity_after_cancelled_booking(self):
         offer = factories.OfferFactory()
@@ -421,7 +444,7 @@ class StockRemainingQuantityTest:
         bookings_factories.CancelledBookingFactory(stock=stock)
 
         assert stock.remainingQuantity == 5
-        assert models.Stock.query.filter(models.Stock.remainingQuantity == 5).one() == stock
+        assert db.session.query(models.Stock).filter(models.Stock.remainingQuantity == 5).one() == stock
 
 
 class StockDateModifiedTest:
@@ -429,7 +452,7 @@ class StockDateModifiedTest:
         stock = factories.StockFactory(dateModified=datetime.datetime(2018, 2, 12), quantity=1)
         stock.quantity = 10
         repository.save(stock)
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.dateModified.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
 
     def test_do_not_update_dateModified_if_price_changes(self):
@@ -437,7 +460,7 @@ class StockDateModifiedTest:
         stock = factories.StockFactory(dateModified=initial_dt, price=1)
         stock.price = 10
         repository.save(stock)
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.dateModified == initial_dt
 
 
@@ -483,7 +506,7 @@ class StockQuantityTest:
         repository.save(stock)
 
         # Then
-        assert models.Stock.query.get(stock.id).quantity == 3
+        assert db.session.query(models.Stock).get(stock.id).quantity == 3
 
     def test_quantity_update_with_more_than_sum_of_bookings(self):
         # Given
@@ -495,7 +518,7 @@ class StockQuantityTest:
         repository.save(stock)
 
         # Then
-        assert models.Stock.query.get(stock.id).quantity == 3
+        assert db.session.query(models.Stock).get(stock.id).quantity == 3
 
     def test_cannot_update_if_less_than_sum_of_bookings(self):
         # Given
@@ -713,14 +736,20 @@ class HeadlineOfferTest:
     def test_headline_offer_is_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, None))
         assert headline_offer.isActive
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).one() == headline_offer
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).first() == None
+        assert (
+            db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).one()
+            == headline_offer
+        )
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
     def test_headline_offer_with_ending_time_in_the_future_is_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
         assert headline_offer.isActive
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).one() == headline_offer
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).first() == None
+        assert (
+            db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).one()
+            == headline_offer
+        )
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
     def test_headline_offer_is_not_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
@@ -734,8 +763,11 @@ class HeadlineOfferTest:
             timespan=(self.today, self.day_after_tomorrow), without_mediation=True
         )
         assert not headline_offer.isActive
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).first() is None
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).one() == headline_offer
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).first() is None
+        assert (
+            db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).one()
+            == headline_offer
+        )
 
     def test_headline_offer_with_product_mediation_is_active(self):
         product = factories.ProductFactory(
@@ -751,8 +783,11 @@ class HeadlineOfferTest:
         headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
 
         assert headline_offer.isActive
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(True)).one() == headline_offer
-        assert models.HeadlineOffer.query.filter(models.HeadlineOffer.isActive.is_(False)).first() == None
+        assert (
+            db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).one()
+            == headline_offer
+        )
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
     @pytest.mark.parametrize(
         "timespan,overlaping_timespan",
@@ -797,12 +832,12 @@ class OfferIsHeadlineTest:
         assert active_headline_offer.offer.is_headline_offer
         assert not inactive_headline_offer.offer.is_headline_offer
 
-        assert models.Offer.query.filter(models.Offer.is_headline_offer.is_(True)).all() == [
+        assert db.session.query(models.Offer).filter(models.Offer.is_headline_offer.is_(True)).all() == [
             active_headline_offer.offer,
             eternally_active_headline_offer.offer,
             reactivated_headline_offer.offer,
         ]
-        assert models.Offer.query.filter(models.Offer.is_headline_offer.is_(False)).all() == [
+        assert db.session.query(models.Offer).filter(models.Offer.is_headline_offer.is_(False)).all() == [
             inactive_headline_offer.offer
         ]
 

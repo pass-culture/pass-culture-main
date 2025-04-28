@@ -15,6 +15,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -45,9 +46,9 @@ class Returns200Test:
         with assert_num_queries(num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/refuse")
 
-        refused_collective_booking = CollectiveBooking.query.filter(
-            CollectiveBooking.id == collective_booking.id
-        ).first()
+        refused_collective_booking = (
+            db.session.query(CollectiveBooking).filter(CollectiveBooking.id == collective_booking.id).first()
+        )
 
         assert response.status_code == 200
         assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
@@ -103,9 +104,9 @@ class Returns200Test:
         client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
 
-        refused_collective_booking = CollectiveBooking.query.filter(
-            CollectiveBooking.id == collective_booking.id
-        ).first()
+        refused_collective_booking = (
+            db.session.query(CollectiveBooking).filter(CollectiveBooking.id == collective_booking.id).first()
+        )
 
         assert response.status_code == 200
         assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
@@ -125,9 +126,9 @@ class Returns200Test:
         client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
 
-        refused_collective_booking = CollectiveBooking.query.filter(
-            CollectiveBooking.id == collective_booking.id
-        ).first()
+        refused_collective_booking = (
+            db.session.query(CollectiveBooking).filter(CollectiveBooking.id == collective_booking.id).first()
+        )
 
         assert response.status_code == 200
         assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED

@@ -20,7 +20,8 @@ def get_log_message(
 def add_eligibility_to_reviews_based_on_deposit(do_update: bool) -> None:
     # Search for deposits that was created less than one minute after fraud review
     query = (
-        fraud_models.BeneficiaryFraudReview.query.filter_by(eligibilityType=None)
+        db.session.query(fraud_models.BeneficiaryFraudReview)
+        .filter_by(eligibilityType=None)
         .join(
             finance_models.Deposit,
             fraud_models.BeneficiaryFraudReview.userId == finance_models.Deposit.userId,
@@ -54,8 +55,10 @@ def add_eligibility_to_reviews_based_on_deposit(do_update: bool) -> None:
 
 
 def add_eligibility_to_reviews_based_on_beneficiary_age(do_update: bool) -> None:
-    base_query = fraud_models.BeneficiaryFraudReview.query.filter_by(eligibilityType=None).join(
-        users_models.User, fraud_models.BeneficiaryFraudReview.userId == users_models.User.id
+    base_query = (
+        db.session.query(fraud_models.BeneficiaryFraudReview)
+        .filter_by(eligibilityType=None)
+        .join(users_models.User, fraud_models.BeneficiaryFraudReview.userId == users_models.User.id)
     )
     reviews_on_adult_beneficiaries_query = base_query.filter(
         extract("years", func.age(fraud_models.BeneficiaryFraudReview.dateReviewed, users_models.User.dateOfBirth))

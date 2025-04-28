@@ -21,14 +21,19 @@ def get_inactive_venues_emails() -> Iterable[str]:
     # See request conditions in pro_inactive_venues_automation() below
     ninety_days_ago = datetime.combine(date.today() - relativedelta(days=90), datetime.min.time())
 
-    venue_has_approved_offer_subquery = offers_models.Offer.query.filter(
-        offers_models.Offer.venueId == offerers_models.Venue.id,
-        offers_models.Offer.isActive.is_(True),
-        offers_models.Offer.validation == OfferValidationStatus.APPROVED,
-    ).exists()
+    venue_has_approved_offer_subquery = (
+        db.session.query(offers_models.Offer)
+        .filter(
+            offers_models.Offer.venueId == offerers_models.Venue.id,
+            offers_models.Offer.isActive.is_(True),
+            offers_models.Offer.validation == OfferValidationStatus.APPROVED,
+        )
+        .exists()
+    )
 
     venue_has_no_booking_within_the_last_90_days_subquery = sa.not_(
-        offers_models.Offer.query.filter(
+        db.session.query(offers_models.Offer)
+        .filter(
             offers_models.Offer.venueId == offerers_models.Venue.id,
             offers_models.Offer.isActive.is_(True),
             offers_models.Offer.validation == OfferValidationStatus.APPROVED,

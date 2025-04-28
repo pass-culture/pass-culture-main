@@ -87,7 +87,7 @@ def book_cinema_ticket(
 
 
 def disable_external_bookings() -> None:
-    feature.Feature.query.filter(feature.Feature.name.in_([ff.name for ff in EXTERNAL_BOOKINGS_FF])).update(
+    db.session.query(feature.Feature).filter(feature.Feature.name.in_([ff.name for ff in EXTERNAL_BOOKINGS_FF])).update(
         {"isActive": True}, synchronize_session=False
     )
     db.session.commit()

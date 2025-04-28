@@ -14,6 +14,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.repository import _filter_collective_offers_by_statuses
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import db as db_utils
 
@@ -456,7 +457,7 @@ class FilterCollectiveOfferByStatusesTest:
         booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.BOOKED)
         pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
         filtered_booked_query = _filter_collective_offers_by_statuses(
             base_query, [CollectiveOfferDisplayedStatus.BOOKED]
         )
@@ -476,7 +477,7 @@ class FilterCollectiveOfferByStatusesTest:
         _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
 
         filtered_booked_query = _filter_collective_offers_by_statuses(
-            CollectiveOffer.query, [CollectiveOfferDisplayedStatus.BOOKED, status]
+            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.BOOKED, status]
         )
 
         assert filtered_booked_query.one() == booked_offer
@@ -486,7 +487,7 @@ class FilterCollectiveOfferByStatusesTest:
         offer = create_collective_offer_by_status(status)
         _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
 
-        filtered_booked_query = _filter_collective_offers_by_statuses(CollectiveOffer.query, [status])
+        filtered_booked_query = _filter_collective_offers_by_statuses(db.session.query(CollectiveOffer), [status])
 
         assert filtered_booked_query.one() == offer
 
@@ -496,7 +497,7 @@ class FilterCollectiveOfferByStatusesTest:
         pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
 
         filtered_booked_query = _filter_collective_offers_by_statuses(
-            CollectiveOffer.query, [CollectiveOfferDisplayedStatus.PENDING]
+            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.PENDING]
         )
 
         assert filtered_booked_query.one() == pending_offer
@@ -506,7 +507,7 @@ class FilterCollectiveOfferByStatusesTest:
         other_offer = create_collective_offer_by_status(status)
         active_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ACTIVE)
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
         filtered_query = _filter_collective_offers_by_statuses(base_query, [CollectiveOfferDisplayedStatus.ACTIVE])
         assert filtered_query.one() == active_offer
 
@@ -517,7 +518,7 @@ class FilterCollectiveOfferByStatusesTest:
         all_offers = [create_collective_offer_by_status(s) for s in self.ALL_STATUS_WITHOUT_INACTIVE]
 
         filtered_query = _filter_collective_offers_by_statuses(
-            CollectiveOffer.query, list(self.ALL_STATUS_WITHOUT_INACTIVE)
+            db.session.query(CollectiveOffer), list(self.ALL_STATUS_WITHOUT_INACTIVE)
         )
         filtered_query_ids = {offer.id for offer in filtered_query}
 
@@ -528,7 +529,7 @@ class FilterCollectiveOfferByStatusesTest:
         _ended_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ENDED)
         expired_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.EXPIRED)
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
         filtered_query = _filter_collective_offers_by_statuses(base_query, [CollectiveOfferDisplayedStatus.EXPIRED])
 
         assert base_query.count() == 2
@@ -540,7 +541,7 @@ class FilterCollectiveOfferByStatusesTest:
 
         filtered_status = [status_enum for status_enum in self.ALL_STATUS_WITHOUT_INACTIVE if status_enum != status]
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
 
         filtered_query = _filter_collective_offers_by_statuses(base_query, filtered_status)
 
@@ -566,7 +567,7 @@ class FilterCollectiveOfferByStatusesTest:
             validation=offer_mixin.OfferValidationStatus.PENDING
         )
 
-        filtered_nostatus_query = _filter_collective_offers_by_statuses(CollectiveOffer.query, [])
+        filtered_nostatus_query = _filter_collective_offers_by_statuses(db.session.query(CollectiveOffer), [])
 
         assert filtered_nostatus_query.count() == 2
         assert set(filtered_nostatus_query.all()) == {pending_offer, booked_offer}
@@ -584,7 +585,7 @@ class FilterCollectiveOfferByStatusesTest:
             validation=offer_mixin.OfferValidationStatus.PENDING
         )
 
-        filtered_nostatus_query = _filter_collective_offers_by_statuses(CollectiveOffer.query, None)
+        filtered_nostatus_query = _filter_collective_offers_by_statuses(db.session.query(CollectiveOffer), None)
 
         assert filtered_nostatus_query.count() == 2
         assert set(filtered_nostatus_query.all()) == {pending_offer, booked_offer}
@@ -595,7 +596,7 @@ class FilterCollectiveOfferByStatusesTest:
         past = datetime.utcnow() - timedelta(days=2)
         _stock = educational_factories.CollectiveStockFactory(bookingLimitDatetime=past, collectiveOffer=offer)
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
         filtered_inactive_query = _filter_collective_offers_by_statuses(
             base_query, [CollectiveOfferDisplayedStatus.EXPIRED]
         )
@@ -612,7 +613,7 @@ class FilterCollectiveOfferByStatusesTest:
         futur = datetime.utcnow() + timedelta(days=2)
         _stock = educational_factories.CollectiveStockFactory(bookingLimitDatetime=futur, collectiveOffer=offer)
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
         filtered_inactive_query = _filter_collective_offers_by_statuses(
             base_query, [CollectiveOfferDisplayedStatus.EXPIRED]
         )
@@ -628,7 +629,7 @@ class FilterCollectiveOfferByStatusesTest:
         _booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
 
         filtered_query = _filter_collective_offers_by_statuses(
-            CollectiveOffer.query, [CollectiveOfferDisplayedStatus.ENDED]
+            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.ENDED]
         )
 
         assert filtered_query.count() == 0
@@ -638,7 +639,7 @@ class FilterCollectiveOfferByStatusesTest:
         _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
 
         filtered_query = _filter_collective_offers_by_statuses(
-            CollectiveOffer.query, [CollectiveOfferDisplayedStatus.INACTIVE]
+            db.session.query(CollectiveOffer), [CollectiveOfferDisplayedStatus.INACTIVE]
         )
 
         # The INACTIVE filter is not relevant with new statuses for CollectiveOffer.
@@ -649,7 +650,7 @@ class FilterCollectiveOfferByStatusesTest:
     def test_filter_each_statuses(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
 
-        base_query = CollectiveOffer.query
+        base_query = db.session.query(CollectiveOffer)
         filtered_query = _filter_collective_offers_by_statuses(base_query, statuses=[status])
         assert filtered_query.one() == offer
 

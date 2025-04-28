@@ -28,7 +28,7 @@ class LogActionTest:
         )
         db.session.commit()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.OFFERER_REJECTED
         assert action.authorUserId == admin.id
         assert action.authorUser == admin
@@ -51,7 +51,7 @@ class LogActionTest:
             db.session.commit()
 
         assert "No resource" in str(err.value)
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_add_action_do_not_save(self):
         admin = users_factories.AdminFactory()
@@ -104,7 +104,7 @@ class LogActionTest:
         )
         db.session.commit()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.authorUser == admin
 
 
@@ -120,7 +120,7 @@ class ObjectUpdateSnapshotTest:
         snapshot.trace_update({"name": new_name, "siren": new_siren}).add_action()
         db.session.commit()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
 
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.offererId == offerer.id
@@ -141,7 +141,7 @@ class ObjectUpdateSnapshotTest:
 
         offerers_api.update_venue(venue, modifications, locations_modifications, author=author, contact_data=None)
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_log_update_without_saving(self):
         author = users_factories.UserFactory()
@@ -175,7 +175,7 @@ class ObjectUpdateSnapshotTest:
         snapshot.trace_update({"email": new_email}, target=venue.contact, field_name_template="contact.{}").add_action()
         db.session.commit()
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
 
         assert not snapshot.is_empty
         assert action.actionType == history_models.ActionType.INFO_MODIFIED

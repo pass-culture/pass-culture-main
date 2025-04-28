@@ -22,6 +22,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -60,7 +61,7 @@ class EMSStocksTest:
         )
         cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
         synchronize_ems_venue_providers()
 
@@ -86,13 +87,13 @@ class EMSStocksTest:
         )
         providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
         should_apply_movie_festival_rate_mock.return_value = True
 
         synchronize_ems_venue_providers()
 
-        created_offer = offers_models.Offer.query.one()
-        created_stock = offers_models.Stock.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
+        created_stock = db.session.query(offers_models.Stock).one()
 
         should_apply_movie_festival_rate_mock.assert_called_with(
             created_offer.id, created_stock.beginningDatetime.date()
@@ -172,7 +173,9 @@ class EMSStocksTest:
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_WITH_NEW_DATE)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         # targeting specific stock whith idAtprovider
-        stock = offers_models.Stock.query.where(offers_models.Stock.idAtProviders.like("%999700079243")).first()
+        stock = (
+            db.session.query(offers_models.Stock).where(offers_models.Stock.idAtProviders.like("%999700079243")).first()
+        )
         assert stock is not None
         event_created = create_finance_event_to_update(stock=stock, venue_provider=venue_provider)
         last_pricingOrderingDate = event_created.pricingOrderingDate
@@ -203,7 +206,7 @@ class EMSStocksTest:
             site=connector.get_schedules().sites[0],
         ).synchronize()
 
-        created_price_category = offers_models.PriceCategory.query.all()
+        created_price_category = db.session.query(offers_models.PriceCategory).all()
         assert len(created_price_category) == 2
 
     def should_create_offer_with_correct_thumb(self, requests_mock):
@@ -224,7 +227,7 @@ class EMSStocksTest:
         )
         ems_stocks.synchronize()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert (
             created_offer.image.url
             == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
@@ -250,7 +253,7 @@ class EMSStocksTest:
         )
         ems_stocks.synchronize()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert len(created_offer.mediations) == 0
 
     def test_handle_error_on_movie_poster(self, requests_mock):
@@ -268,7 +271,7 @@ class EMSStocksTest:
         )
         ems_stocks.synchronize()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.image is None
 
     def test_successive_version_syncs(self, requests_mock):
@@ -349,21 +352,24 @@ class EMSStocksTest:
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
-        created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        created_offers = (
+            db.session.query(offers_models.Offer).filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        )
         created_stocks = (
-            offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
+            db.session.query(offers_models.Stock)
+            .filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
             .all()
         )
         created_price_categories = (
-            offers_models.PriceCategory.query.filter(
-                offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers)
-            )
+            db.session.query(offers_models.PriceCategory)
+            .filter(offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
         created_price_categories_labels = (
-            offers_models.PriceCategoryLabel.query.filter_by(venueId=venue.id)
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter_by(venueId=venue.id)
             .order_by(offers_models.PriceCategoryLabel.id)
             .all()
         )
@@ -406,21 +412,24 @@ class EMSStocksTest:
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
-        created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        created_offers = (
+            db.session.query(offers_models.Offer).filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        )
         created_stocks = (
-            offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
+            db.session.query(offers_models.Stock)
+            .filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
             .all()
         )
         created_price_categories = (
-            offers_models.PriceCategory.query.filter(
-                offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers)
-            )
+            db.session.query(offers_models.PriceCategory)
+            .filter(offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
         created_price_categories_labels = (
-            offers_models.PriceCategoryLabel.query.filter_by(venueId=venue.id)
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter_by(venueId=venue.id)
             .order_by(offers_models.PriceCategoryLabel.id)
             .all()
         )
@@ -494,21 +503,24 @@ class EMSStocksTest:
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
-        created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        created_offers = (
+            db.session.query(offers_models.Offer).filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        )
         created_stocks = (
-            offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
+            db.session.query(offers_models.Stock)
+            .filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
             .all()
         )
         created_price_categories = (
-            offers_models.PriceCategory.query.filter(
-                offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers)
-            )
+            db.session.query(offers_models.PriceCategory)
+            .filter(offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
         created_price_categories_labels = (
-            offers_models.PriceCategoryLabel.query.filter_by(venueId=venue.id)
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter_by(venueId=venue.id)
             .order_by(offers_models.PriceCategoryLabel.id)
             .all()
         )
@@ -525,7 +537,9 @@ class EMSStocksTest:
         assert created_offers[0].durationMinutes == 111
         assert (
             created_offers[0].product
-            == offers_models.Product.query.filter(offers_models.Product.extraData["allocineId"] == "269975").one()
+            == db.session.query(offers_models.Product)
+            .filter(offers_models.Product.extraData["allocineId"] == "269975")
+            .one()
         )
 
         assert created_offers[1].name == "Produit allociné 2"
@@ -534,7 +548,9 @@ class EMSStocksTest:
         assert created_offers[1].durationMinutes == 222
         assert (
             created_offers[1].product
-            == offers_models.Product.query.filter(offers_models.Product.extraData["allocineId"] == "241065").one()
+            == db.session.query(offers_models.Product)
+            .filter(offers_models.Product.extraData["allocineId"] == "241065")
+            .one()
         )
 
     def _assert_ormeaux_version_sync(
@@ -544,21 +560,24 @@ class EMSStocksTest:
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
-        created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        created_offers = (
+            db.session.query(offers_models.Offer).filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        )
         created_stocks = (
-            offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
+            db.session.query(offers_models.Stock)
+            .filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
             .all()
         )
         created_price_categories = (
-            offers_models.PriceCategory.query.filter(
-                offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers)
-            )
+            db.session.query(offers_models.PriceCategory)
+            .filter(offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
         created_price_categories_labels = (
-            offers_models.PriceCategoryLabel.query.filter_by(venueId=venue.id)
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter_by(venueId=venue.id)
             .order_by(offers_models.PriceCategoryLabel.id)
             .all()
         )
@@ -675,7 +694,7 @@ class EMSSyncSitesTest:
 
         collect_elligible_venues_and_activate_ems_sync()
 
-        venues = Venue.query.all()
+        venues = db.session.query(Venue).all()
         assert len(venues) == 4
 
         for venue in venues:
@@ -683,9 +702,9 @@ class EMSSyncSitesTest:
             assert len(venue.cinemaProviderPivot) == 1
             assert venue.venueProviders[0].providerId == ems_provider.id
 
-        assert providers_models.EMSCinemaDetails.query.count() == 4
+        assert db.session.query(providers_models.EMSCinemaDetails).count() == 4
         job_mocked.assert_not_called()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
@@ -704,10 +723,10 @@ class EMSSyncSitesTest:
 
         collect_elligible_venues_and_activate_ems_sync()
 
-        assert not providers_models.AllocinePivot.query.all()
-        assert not providers_models.AllocineVenueProvider.query.all()
+        assert not db.session.query(providers_models.AllocinePivot).all()
+        assert not db.session.query(providers_models.AllocineVenueProvider).all()
 
-        venues = Venue.query.all()
+        venues = db.session.query(Venue).all()
         assert len(venues) == 1
         venue = venues[0]
 
@@ -720,10 +739,10 @@ class EMSSyncSitesTest:
         assert venue_provider.venueId == venue.id
         assert venue_provider.venueIdAtOfferProvider == "0661"
         assert pivot.idAtProvider == "0661"
-        assert providers_models.EMSCinemaDetails.query.count() == 1
+        assert db.session.query(providers_models.EMSCinemaDetails).count() == 1
 
         job_mocked.assert_called_once_with(allocine_venue_provider.venueId, allocine_venue_provider.providerId, False)
-        assert history_models.ActionHistory.query.count()
+        assert db.session.query(history_models.ActionHistory).count()
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
@@ -742,9 +761,9 @@ class EMSSyncSitesTest:
             assert log.extra["venue_siret"] in ["775670664", "42465026500012", "33069874700160", "21060105000011"]
             assert log.extra["venue_name"] in ["Océanic", "Le Pavillon Bleu", "Ems Cine", "Palace"]
 
-        assert Venue.query.count() == 0
+        assert db.session.query(Venue).count() == 0
         job_mocked.assert_not_called()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
@@ -763,7 +782,7 @@ class EMSSyncSitesTest:
 
         collect_elligible_venues_and_activate_ems_sync()
 
-        venues = Venue.query.all()
+        venues = db.session.query(Venue).all()
         assert len(venues) == 1
         venue = venues[0]
 
@@ -773,7 +792,7 @@ class EMSSyncSitesTest:
         assert deactivated_venue_provider.providerId == ems_provider.id
         assert deactivated_venue_provider.isActive == False
         job_mocked.assert_not_called()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
@@ -787,14 +806,14 @@ class EMSSyncSitesTest:
 
         collect_elligible_venues_and_activate_ems_sync()
 
-        venues = Venue.query.all()
+        venues = db.session.query(Venue).all()
         assert len(venues) == 1
         venue = venues[0]
 
         assert len(venue.venueProviders) == 0
         assert len(venue.cinemaProviderPivot) == 0
         job_mocked.assert_not_called()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
     @pytest.mark.features(LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC=True)
     @pytest.mark.usefixtures("db_session")
@@ -807,9 +826,9 @@ class EMSSyncSitesTest:
 
         collect_elligible_venues_and_activate_ems_sync()
 
-        assert providers_models.EMSCinemaDetails.query.count() == 0
+        assert db.session.query(providers_models.EMSCinemaDetails).count() == 0
         job_mocked.assert_not_called()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(history_models.ActionHistory).count()
         file_name = f"{datetime.datetime.today().date().isoformat()}.csv"
         with open(f"/tmp/{file_name}", "r", encoding="utf-8") as f:
             reader = DictReader(f)

@@ -15,12 +15,12 @@ def raise_error_on_empty_role_name(name: str) -> None:
 
 
 def list_roles() -> list[perm_models.Role]:
-    roles = perm_models.Role.query.options(joinedload(perm_models.Role.permissions)).all()
+    roles = db.session.query(perm_models.Role).options(joinedload(perm_models.Role.permissions)).all()
     return roles
 
 
 def list_permissions() -> list[perm_models.Permission]:
-    permissions = perm_models.Permission.query.all()
+    permissions = db.session.query(perm_models.Permission).all()
     return permissions
 
 
@@ -29,8 +29,8 @@ def update_role(
 ) -> perm_models.Role:
     raise_error_on_empty_role_name(name)
 
-    permissions = perm_models.Permission.query.filter(perm_models.Permission.id.in_(permission_ids)).all()
-    role = perm_models.Role.query.filter_by(id=id_).one()
+    permissions = db.session.query(perm_models.Permission).filter(perm_models.Permission.id.in_(permission_ids)).all()
+    role = db.session.query(perm_models.Role).filter_by(id=id_).one()
 
     added_roles = set(permissions) - set(role.permissions)
     removed_roles = set(role.permissions) - set(permissions)
@@ -60,7 +60,7 @@ def update_role(
 
 def get_concrete_roles(roles: typing.Collection[perm_models.Roles]) -> typing.Collection[perm_models.Role]:
     names = [role.value for role in roles]
-    return perm_models.Role.query.filter(perm_models.Role.name.in_(names)).all()
+    return db.session.query(perm_models.Role).filter(perm_models.Role.name.in_(names)).all()
 
 
 def create_backoffice_profile(user: users_models.User, roles: list[perm_models.Role] | None = None) -> None:

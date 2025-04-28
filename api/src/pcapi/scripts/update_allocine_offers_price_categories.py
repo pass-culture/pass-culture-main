@@ -8,6 +8,7 @@ from sqlalchemy.orm import load_only
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Stock
+from pcapi.models import db
 from pcapi.repository import transaction
 
 
@@ -27,7 +28,8 @@ def re_attach_price_categories_to_new_allocine_offers(dry_run: bool = True) -> N
     before = time.time()
 
     stocks = (
-        Stock.query.join(Stock.priceCategory)
+        db.session.query(Stock)
+        .join(Stock.priceCategory)
         .join(PriceCategory.offer)
         .filter(
             Stock.id > 100_000_000,  # I roughly estimated that no stocks are relevant before that id

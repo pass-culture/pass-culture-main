@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.search import testing as search_testing
+from pcapi.models import db
 from pcapi.repository import repository
 
 from tests.test_utils import run_command
@@ -240,7 +241,7 @@ class StagingIndexationTest:
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
         offer_ids = search.staging_indexation.get_offers_for_each_gtl_level_1(2)
-        offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+        offers = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids)).all()
 
         assert len(offer_ids) == 26
 

@@ -31,6 +31,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 import pcapi.notifications.push.testing as notifications_testing
 from pcapi.routes.native.v1.serialization.offers import MAX_PREVIEW_CHRONICLES
@@ -134,7 +135,7 @@ class OffersTest:
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
 
-        offer = Offer.query.get(offer.id)
+        offer = db.session.query(Offer).get(offer.id)
         assert offer.ean == ean
         assert "ean" not in offer.extraData
         assert response.json["id"] == offer.id
@@ -1988,7 +1989,7 @@ class OffersStocksTest:
         with assert_num_queries(1):
             response = client.post("/native/v1/offers/stocks", json=payload)
 
-        offer = Offer.query.get(offer.id)
+        offer = db.session.query(Offer).get(offer.id)
         assert offer.ean == ean
         assert "ean" not in offer.extraData
 
@@ -2450,6 +2451,8 @@ class ReportOfferTest:
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
 
+        db.session.expire_all()
+
         # expected queries:
         #   * select offer
         #   * get user
@@ -2461,8 +2464,8 @@ class ReportOfferTest:
             response = client.post(f"/native/v1/offer/{offer_id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
-        assert OfferReport.query.count() == 1
-        report = OfferReport.query.first()
+        assert db.session.query(OfferReport).count() == 1
+        report = db.session.query(OfferReport).first()
 
         assert report.user == user
         assert report.offer == offer
@@ -2480,6 +2483,8 @@ class ReportOfferTest:
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
 
+        db.session.expire_all()
+
         # expected queries:
         #   * select offer
         #   * get user
@@ -2492,8 +2497,8 @@ class ReportOfferTest:
             response = client.post(f"/native/v1/offer/{offer_id}/report", json=data)
             assert response.status_code == 204
 
-        assert OfferReport.query.count() == 1
-        report = OfferReport.query.first()
+        assert db.session.query(OfferReport).count() == 1
+        report = db.session.query(OfferReport).first()
 
         assert report.user == user
         assert report.offer == offer
@@ -2519,7 +2524,7 @@ class ReportOfferTest:
             assert response.status_code == 400
             assert response.json["code"] == "OFFER_ALREADY_REPORTED"
 
-        assert OfferReport.query.count() == 1  # no new report
+        assert db.session.query(OfferReport).count() == 1  # no new report
         assert not mails_testing.outbox
 
     def test_report_offer_malformed(self, app, client):
@@ -2538,7 +2543,7 @@ class ReportOfferTest:
             assert response.status_code == 400
             assert response.json["code"] == "REPORT_MALFORMED"
 
-        assert OfferReport.query.count() == 0  # no new report
+        assert db.session.query(OfferReport).count() == 0  # no new report
         assert not mails_testing.outbox
 
     def test_report_offer_custom_reason_too_long(self, app, client):
@@ -2551,7 +2556,7 @@ class ReportOfferTest:
             assert response.status_code == 400
             assert response.json["customReason"] == ["custom reason is too long"]
 
-        assert OfferReport.query.count() == 0  # no new report
+        assert db.session.query(OfferReport).count() == 0  # no new report
         assert not mails_testing.outbox
 
     def test_report_offer_unknown_reason(self, app, client):
@@ -2566,7 +2571,7 @@ class ReportOfferTest:
                 "value is not a valid enumeration member; permitted: 'IMPROPER', 'PRICE_TOO_HIGH', 'INAPPROPRIATE', 'OTHER'"
             ]
 
-        assert OfferReport.query.count() == 0  # no new report
+        assert db.session.query(OfferReport).count() == 0  # no new report
         assert not mails_testing.outbox
 
     @pytest.mark.parametrize(
@@ -2581,7 +2586,7 @@ class ReportOfferTest:
         )
 
         assert response.status_code == 404
-        assert OfferReport.query.count() == 0  # no new report
+        assert db.session.query(OfferReport).count() == 0  # no new report
         assert not mails_testing.outbox
 
 
@@ -2650,6 +2655,10 @@ class ReportedOffersTest:
 
 
 class OfferChroniclesTest:
+    # select offer
+    # select chronicles
+    expected_num_queries = 2
+
     def test_get_offer_chronicles(self, client):
         product = offers_factories.ProductFactory(name="Test Product")
         offer = offers_factories.OfferFactory(product=product)
@@ -2664,9 +2673,8 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
         assert response.status_code == 200
 
@@ -2689,9 +2697,8 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
         assert response.status_code == 200
 
@@ -2710,9 +2717,8 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -2723,9 +2729,8 @@ class OfferChroniclesTest:
     def test_get_offer_chronicles_with_no_chronicles(self, client):
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
         assert response.status_code == 200
         assert response.json["chronicles"] == []
@@ -2754,9 +2759,8 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -2769,9 +2773,8 @@ class OfferChroniclesTest:
         chronicles_factories.ChronicleFactory(products=[product], isActive=True, isSocialMediaDiffusible=False)
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -2789,9 +2792,8 @@ class OfferChroniclesTest:
         )
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200
@@ -2804,9 +2806,8 @@ class OfferChroniclesTest:
         chronicles_factories.ChronicleFactory(id=8888, products=[product], isActive=True, isSocialMediaDiffusible=True)
 
         offer_id = offer.id
-        nb_queries = 1  # select offer
-        nb_queries += 1  # select chronicles
-        with assert_num_queries(nb_queries):
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
 
         assert response.status_code == 200

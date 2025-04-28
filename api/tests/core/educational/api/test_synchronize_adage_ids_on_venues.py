@@ -167,7 +167,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert called_emails == expected_emails
     assert called_venues == expected_venues
 
-    assert history_models.ActionHistory.query.count() == 4
+    assert db.session.query(history_models.ActionHistory).count() == 4
 
 
 @pytest.mark.settings(
@@ -212,7 +212,7 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
     assert venue.adageId == str(adage_id3)
     assert {ava.adageId for ava in venue.adage_addresses} == {str(adage_id1), str(adage_id3)}
 
-    action = history_models.ActionHistory.query.one()
+    action = db.session.query(history_models.ActionHistory).one()
     assert action.actionType == history_models.ActionType.INFO_MODIFIED
     assert action.venue == venue
     assert action.comment == "Synchronisation ADAGE"
@@ -255,7 +255,7 @@ def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplo
     # venue had venue_id
     assert venue.adageId == str(adage_id1)
 
-    action = history_models.ActionHistory.query.one()
+    action = db.session.query(history_models.ActionHistory).one()
     assert action.actionType == history_models.ActionType.INFO_MODIFIED
     assert action.venue == venue
     assert action.comment == "Synchronisation ADAGE"

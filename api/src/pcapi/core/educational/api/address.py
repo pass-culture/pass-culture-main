@@ -20,11 +20,11 @@ def new_venue_address(venue: offerers_models.Venue) -> models.AdageVenueAddress:
 
 
 def delete_venue_address(venue_id: int) -> None:
-    models.AdageVenueAddress.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
+    db.session.query(models.AdageVenueAddress).filter_by(venueId=venue_id).delete(synchronize_session=False)
 
 
 def get_venue_address_by_adage_id(adage_id: str) -> models.AdageVenueAddress | None:
-    return models.AdageVenueAddress.query.filter_by(adageId=adage_id).one_or_none()
+    return db.session.query(models.AdageVenueAddress).filter_by(adageId=adage_id).one_or_none()
 
 
 def unlink_deactivated_venue_addresses(deactivated_adage_venues_ids: typing.Mapping[str, int]) -> int:
@@ -34,22 +34,28 @@ def unlink_deactivated_venue_addresses(deactivated_adage_venues_ids: typing.Mapp
     adage_ids = set(deactivated_adage_venues_ids.keys())
     venue_ids = set(deactivated_adage_venues_ids.values())
 
-    return models.AdageVenueAddress.query.filter(
-        sa.or_(
-            models.AdageVenueAddress.adageId.in_(adage_ids),
-            models.AdageVenueAddress.venueId.in_(venue_ids),
+    return (
+        db.session.query(models.AdageVenueAddress)
+        .filter(
+            sa.or_(
+                models.AdageVenueAddress.adageId.in_(adage_ids),
+                models.AdageVenueAddress.venueId.in_(venue_ids),
+            )
         )
-    ).update({"adageId": None, "adageInscriptionDate": None}, synchronize_session="evaluate")
+        .update({"adageId": None, "adageInscriptionDate": None}, synchronize_session="evaluate")
+    )
 
 
 def upsert_venues_addresses(adage_ids_venues: typing.Mapping[str, int]) -> None:
     """Find existing AdageVenueAddress and update them (venueId).
     Create missing AdageVenueAddress.
     """
-    existing = models.AdageVenueAddress.query.filter(models.AdageVenueAddress.adageId.in_(adage_ids_venues.keys()))
+    existing = db.session.query(models.AdageVenueAddress).filter(
+        models.AdageVenueAddress.adageId.in_(adage_ids_venues.keys())
+    )
     existing_ids = {row.adageId for row in existing}
 
-    query = models.AdageVenueAddress.query.filter(models.AdageVenueAddress.adageId.in_(existing_ids))
+    query = db.session.query(models.AdageVenueAddress).filter(models.AdageVenueAddress.adageId.in_(existing_ids))
     for ava in query:
         ava.venueId = adage_ids_venues[ava.adageId]
         db.session.add(ava)

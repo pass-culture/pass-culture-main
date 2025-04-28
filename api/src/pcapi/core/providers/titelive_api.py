@@ -92,7 +92,8 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
 
     def get_last_sync_date(self) -> datetime.date:
         last_sync_event = (
-            providers_models.LocalProviderEvent.query.filter(
+            db.session.query(providers_models.LocalProviderEvent)
+            .filter(
                 providers_models.LocalProviderEvent.provider == self.provider,
                 providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncEnd,
                 providers_models.LocalProviderEvent.payload == self.titelive_base.value,
@@ -173,10 +174,14 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
     ) -> list[offers_models.Product]:
         titelive_eans = [article.gencod for work in titelive_page for article in work.article]
 
-        products = offers_models.Product.query.filter(
-            offers_models.Product.ean.in_(titelive_eans),
-            offers_models.Product.lastProviderId.is_not(None),
-        ).all()
+        products = (
+            db.session.query(offers_models.Product)
+            .filter(
+                offers_models.Product.ean.in_(titelive_eans),
+                offers_models.Product.lastProviderId.is_not(None),
+            )
+            .all()
+        )
 
         products_by_ean: dict[str, offers_models.Product] = {p.ean: p for p in products}
         for titelive_search_result in titelive_page:
@@ -258,7 +263,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
         """
         warning this function does not automatically commit the transaction
         """
-        product_mediations = offers_models.ProductMediation.query.filter(
+        product_mediations = db.session.query(offers_models.ProductMediation).filter(
             offers_models.ProductMediation.productId == product.id,
             offers_models.ProductMediation.lastProvider == self.provider,
         )

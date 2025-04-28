@@ -80,12 +80,12 @@ def update_offerer_top_views_stats() -> None:
 
 
 def delete_offerer_old_stats() -> None:
-    offerers_ids = offerers_models.Offerer.query.with_entities(offerers_models.Offerer.id).all()
+    offerers_ids = db.session.query(offerers_models.Offerer).with_entities(offerers_models.Offerer.id).all()
     index = 0
     step = 1000
     while offerers_ids_chunk := offerers_ids[index : index + step]:
         offerers_ids_chunk = [offerer_id for offerer_id, in offerers_ids_chunk]
-        offerers_models.OffererStats.query.filter(
+        db.session.query(offerers_models.OffererStats).filter(
             offerers_models.OffererStats.offererId.in_(offerers_ids_chunk),
             offerers_models.OffererStats.syncDate < datetime.utcnow().date(),
         ).delete()

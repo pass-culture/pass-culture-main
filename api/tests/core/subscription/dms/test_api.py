@@ -20,6 +20,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.constants import ELIGIBILITY_END_AGE
+from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 
@@ -49,10 +50,10 @@ class DMSOrphanSubsriptionTest:
 
         dms_subscription_api.try_dms_orphan_adoption(user)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).first()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).first()
         assert fraud_check is not None
 
-        dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+        dms_orphan = db.session.query(fraud_models.OrphanDmsApplication).filter_by(email=user.email).first()
         assert dms_orphan is None
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -72,10 +73,10 @@ class DMSOrphanSubsriptionTest:
 
         dms_subscription_api.try_dms_orphan_adoption(user)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).first()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).first()
         assert fraud_check is not None
 
-        dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+        dms_orphan = db.session.query(fraud_models.OrphanDmsApplication).filter_by(email=user.email).first()
         assert dms_orphan is None
 
 
@@ -172,7 +173,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
+        assert db.session.query(fraud_models.BeneficiaryFraudCheck).first().status == fraud_models.FraudCheckStatus.OK
 
     @patch("pcapi.core.subscription.dms.api._process_in_progress_application")
     def test_multiple_call_for_same_application(self, mock_process_in_progress, db_session):
@@ -221,7 +222,7 @@ class HandleDmsApplicationTest:
         with pytest.raises(Exception):
             dms_subscription_api.handle_dms_application(dms_response)
 
-        assert fraud_models.BeneficiaryFraudCheck.query.first() is None
+        assert db.session.query(fraud_models.BeneficiaryFraudCheck).first() is None
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_field_error_when_draft(self, send_dms_message_mock):
@@ -236,7 +237,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
             user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
@@ -250,7 +251,7 @@ class HandleDmsApplicationTest:
         assert send_dms_message_mock.call_args[0][2] == self.id_piece_number_not_accepted_message
         assert len(mails_testing.outbox) == 0
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
         assert fraud_check.source_data().field_errors == [
@@ -279,7 +280,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
             user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux contacter le support pour plus d’informations.",
@@ -295,7 +296,7 @@ class HandleDmsApplicationTest:
         send_dms_message_mock.assert_not_called()
         assert len(mails_testing.outbox) == 0
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
@@ -318,7 +319,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_models.SubscriptionMessage(
             user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
@@ -335,7 +336,7 @@ class HandleDmsApplicationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"]["id_prod"] == 510
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
@@ -361,7 +362,7 @@ class HandleDmsApplicationTest:
         send_dms_message_mock.assert_not_called()
         assert len(mails_testing.outbox) == 0
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
@@ -389,9 +390,11 @@ class HandleDmsApplicationTest:
         )
         dms_subscription_api.handle_dms_application(dms_response)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.DMS
-        ).first()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.DMS)
+            .first()
+        )
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
         result_content = fraud_check.source_data()
@@ -417,7 +420,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
         dms_subscription_api.handle_dms_application(dms_response)
-        orphan = fraud_models.OrphanDmsApplication.query.filter_by(application_id=1).one()
+        orphan = db.session.query(fraud_models.OrphanDmsApplication).filter_by(application_id=1).one()
 
         mock_send_create_account_after_dms_email.assert_called_once_with("orphan@example.com")
         assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
@@ -433,7 +436,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
         dms_subscription_api.handle_dms_application(dms_response)
-        orphan = fraud_models.OrphanDmsApplication.query.filter_by(application_id=1).one()
+        orphan = db.session.query(fraud_models.OrphanDmsApplication).filter_by(application_id=1).one()
 
         mock_send_user_message.assert_called_once()
         assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
@@ -451,9 +454,11 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.DMS
-        ).first()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.DMS)
+            .first()
+        )
 
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_NOT_VALID]
         assert fraud_check.reason == "Erreur dans les données soumises dans le dossier DMS : 'birth_date' (2000-01-01)"
@@ -490,7 +495,7 @@ class HandleDmsApplicationTest:
         mock_add_label_to_application.assert_called_once_with(
             dms_response.id, settings.DMS_ENROLLMENT_FR_LABEL_ID_URGENT
         )
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).count() == 1
+        assert db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).count() == 1
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
     def test_keep_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
@@ -507,7 +512,7 @@ class HandleDmsApplicationTest:
         dms_subscription_api.handle_dms_application(dms_response)
 
         mock_add_label_to_application.assert_not_called()
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).count() == 1
+        assert db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).count() == 1
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=False)
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
@@ -531,7 +536,7 @@ class HandleDmsApplicationTest:
 
         mock_make_refused.assert_not_called()
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
@@ -574,7 +579,7 @@ class HandleDmsApplicationTest:
             from_draft=True,
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
@@ -604,7 +609,7 @@ class HandleDmsApplicationTest:
             from_draft=False,
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
@@ -657,7 +662,7 @@ class HandleDmsApplicationTest:
             from_draft=False,
         )
 
-        assert fraud_models.BeneficiaryFraudCheck.query.count() == 0
+        assert db.session.query(fraud_models.BeneficiaryFraudCheck).count() == 0
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
@@ -681,7 +686,7 @@ class HandleDmsApplicationTest:
 
         mock_make_refused.assert_not_called()
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
 
 
@@ -1047,9 +1052,11 @@ class ShouldImportDmsApplicationTest:
         )
 
         dms_subscription_api.handle_dms_application(application)
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.DMS
-        ).first()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.DMS)
+            .first()
+        )
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
 
         return user, fraud_check

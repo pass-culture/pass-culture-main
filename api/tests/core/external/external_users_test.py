@@ -40,6 +40,7 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
+from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 
 
@@ -346,7 +347,7 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
         BookingFactory(user=user, amount=finance_conf.GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer)
 
     # Before 18 years old
-    user = User.query.get(user.id)
+    user = db.session.query(User).get(user.id)
     attributes = get_user_attributes(user)
 
     assert attributes.is_beneficiary
@@ -364,7 +365,7 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
         )
 
     # At 18 years old
-    user = User.query.get(user.id)
+    user = db.session.query(User).get(user.id)
     attributes = get_user_attributes(user)
 
     assert attributes.is_beneficiary
@@ -382,7 +383,7 @@ def test_get_user_attributes_double_beneficiary():
         )
 
     # At 18 years old
-    user = User.query.get(user.id)
+    user = db.session.query(User).get(user.id)
     fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.OK)
     user = subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, users_models.EligibilityType.AGE18)
     attributes = get_user_attributes(user)

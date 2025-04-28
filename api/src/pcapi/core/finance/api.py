@@ -233,20 +233,24 @@ def cancel_latest_event(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> models.FinanceEvent | None:
     """Cancel latest used-related finance event, if there is one."""
-    event = models.FinanceEvent.query.filter(
-        (
-            (models.FinanceEvent.booking == booking)
-            if isinstance(booking, bookings_models.Booking)
-            else (models.FinanceEvent.collectiveBooking == booking)
-        ),
-        models.FinanceEvent.motive.in_(
+    event = (
+        db.session.query(models.FinanceEvent)
+        .filter(
             (
-                models.FinanceEventMotive.BOOKING_USED,
-                models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
-            )
-        ),
-        models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
-    ).one_or_none()
+                (models.FinanceEvent.booking == booking)
+                if isinstance(booking, bookings_models.Booking)
+                else (models.FinanceEvent.collectiveBooking == booking)
+            ),
+            models.FinanceEvent.motive.in_(
+                (
+                    models.FinanceEventMotive.BOOKING_USED,
+                    models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+                )
+            ),
+            models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
+        )
+        .one_or_none()
+    )
     if not event:
         # Once we have switched to event pricing, there MUST be an
         # event if a used booking is being cancelled. If no event can
@@ -377,7 +381,8 @@ def get_pricing_point_link(
 
 def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) -> BaseQuery:
     return (
-        models.FinanceEvent.query.filter(
+        db.session.query(models.FinanceEvent)
+        .filter(
             models.FinanceEvent.pricingPointId.is_not(None),
             models.FinanceEvent.status == models.FinanceEventStatus.READY,
             models.FinanceEvent.pricingOrderingDate.between(*window),
@@ -428,7 +433,8 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
         # actually pricing it.
         if event.bookingId:
             event = (
-                models.FinanceEvent.query.filter_by(id=event.id)
+                db.session.query(models.FinanceEvent)
+                .filter_by(id=event.id)
                 .options(
                     sa_orm.joinedload(models.FinanceEvent.booking, innerjoin=True)
                     .joinedload(bookings_models.Booking.stock, innerjoin=True)
@@ -445,7 +451,8 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
             )
         elif event.collectiveBookingId:
             event = (
-                models.FinanceEvent.query.filter_by(id=event.id)
+                db.session.query(models.FinanceEvent)
+                .filter_by(id=event.id)
                 .options(
                     sa_orm.joinedload(models.FinanceEvent.collectiveBooking, innerjoin=True)
                     .joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
@@ -459,7 +466,8 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
             )
         elif event.bookingFinanceIncidentId:
             event = (
-                models.FinanceEvent.query.filter_by(id=event.id)
+                db.session.query(models.FinanceEvent)
+                .filter_by(id=event.id)
                 .options(
                     sa_orm.joinedload(models.FinanceEvent.bookingFinanceIncident, innerjoin=True),
                 )
@@ -478,10 +486,14 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
         # Pricing the same event twice is not allowed (and would be
         # rejected by a database constraint, anyway), unless the
         # existing pricing has been cancelled.
-        pricing = models.Pricing.query.filter(
-            models.Pricing.event == event,
-            models.Pricing.status != models.PricingStatus.CANCELLED,
-        ).one_or_none()
+        pricing = (
+            db.session.query(models.Pricing)
+            .filter(
+                models.Pricing.event == event,
+                models.Pricing.status != models.PricingStatus.CANCELLED,
+            )
+            .one_or_none()
+        )
         if pricing:
             return pricing
 
@@ -521,7 +533,8 @@ def _get_current_revenue(event: models.FinanceEvent) -> int:
     revenue_period = _get_revenue_period(event.valueDate)
     # Collective bookings must not be included in revenue.
     current_revenue = (
-        bookings_models.Booking.query.join(models.Pricing)
+        db.session.query(bookings_models.Booking)
+        .join(models.Pricing)
         .filter(
             models.Pricing.pricingPointId == event.pricingPointId,
             # The following filter is not strictly necessary, because
@@ -691,10 +704,14 @@ def _cancel_event_pricing(
     try:
         lock_pricing_point(event.pricingPointId)
 
-        pricing = models.Pricing.query.filter(
-            models.Pricing.event == event,
-            models.Pricing.status != models.PricingStatus.CANCELLED,
-        ).one_or_none()
+        pricing = (
+            db.session.query(models.Pricing)
+            .filter(
+                models.Pricing.event == event,
+                models.Pricing.status != models.PricingStatus.CANCELLED,
+            )
+            .one_or_none()
+        )
 
         if not pricing:
             return None
@@ -755,7 +772,8 @@ def _delete_dependent_pricings(
     revenue_period_start, revenue_period_end = _get_revenue_period(event.valueDate)
 
     pricings = (
-        models.Pricing.query.filter(
+        db.session.query(models.Pricing)
+        .filter(
             models.Pricing.pricingPoint == event.pricingPoint,
         )
         .join(models.Pricing.event)
@@ -808,14 +826,14 @@ def _delete_dependent_pricings(
     # since the beginning of the function (since we should have an
     # exclusive lock on the pricing point to avoid that)... but let's
     # be defensive.
-    lines = models.PricingLine.query.filter(models.PricingLine.pricingId.in_(pricing_ids))
+    lines = db.session.query(models.PricingLine).filter(models.PricingLine.pricingId.in_(pricing_ids))
     lines.delete(synchronize_session=False)
-    logs = models.PricingLog.query.filter(models.PricingLog.pricingId.in_(pricing_ids))
+    logs = db.session.query(models.PricingLog).filter(models.PricingLog.pricingId.in_(pricing_ids))
     logs.delete(synchronize_session=False)
-    pricings = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
+    pricings = db.session.query(models.Pricing).filter(models.Pricing.id.in_(pricing_ids))
     pricings.delete(synchronize_session=False)
 
-    models.FinanceEvent.query.filter(
+    db.session.query(models.FinanceEvent).filter(
         models.FinanceEvent.id.in_(events_already_priced),
         models.FinanceEvent.status == models.FinanceEventStatus.PRICED,
     ).update(
@@ -840,11 +858,15 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     events must be repriced.
     """
     pricing_point_id = stock.offer.venue.current_pricing_point_id
-    finance_events_from_pricing_point = models.FinanceEvent.query.options(
-        sa_orm.joinedload(models.FinanceEvent.pricings)
-    ).filter(models.FinanceEvent.pricingPointId == pricing_point_id)
-    bookings_of_this_stock = bookings_models.Booking.query.with_entities(bookings_models.Booking.id).filter(
-        bookings_models.Booking.stockId == stock.id
+    finance_events_from_pricing_point = (
+        db.session.query(models.FinanceEvent)
+        .options(sa_orm.joinedload(models.FinanceEvent.pricings))
+        .filter(models.FinanceEvent.pricingPointId == pricing_point_id)
+    )
+    bookings_of_this_stock = (
+        db.session.query(bookings_models.Booking)
+        .with_entities(bookings_models.Booking.id)
+        .filter(bookings_models.Booking.stockId == stock.id)
     )
     finance_events_from_stock = (
         finance_events_from_pricing_point.filter(models.FinanceEvent.bookingId.in_(bookings_of_this_stock))
@@ -860,7 +882,8 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
             oldest_pricing_ordering_date = min(oldest_pricing_ordering_date, finance_event.pricingOrderingDate)
             db.session.add(finance_event)
         first_event = (
-            models.FinanceEvent.query.filter(
+            db.session.query(models.FinanceEvent)
+            .filter(
                 models.FinanceEvent.pricingPointId == pricing_point_id,
                 models.FinanceEvent.pricingOrderingDate >= oldest_pricing_ordering_date,
                 models.FinanceEvent.status.in_([models.FinanceEventStatus.READY, models.FinanceEventStatus.PRICED]),
@@ -879,7 +902,9 @@ def generate_cashflows_and_payment_files(cutoff: datetime.datetime) -> models.Ca
 
 def _get_next_cashflow_batch_label() -> str:
     """Return the label of the next CashflowBatch."""
-    latest_batch = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).limit(1).one_or_none()
+    latest_batch = (
+        db.session.query(models.CashflowBatch).order_by(models.CashflowBatch.cutoff.desc()).limit(1).one_or_none()
+    )
     if latest_batch is None:
         latest_number = 0
     else:
@@ -967,7 +992,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         )
 
     bank_account_infos = (
-        models.Pricing.query.filter(*filters)
+        db.session.query(models.Pricing)
+        .filter(*filters)
         .outerjoin(models.Pricing.booking)
         .outerjoin(bookings_models.Booking.stock)
         .outerjoin(models.Pricing.collectiveBooking)
@@ -999,7 +1025,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         try:
             with transaction():
                 pricings = (
-                    models.Pricing.query.outerjoin(models.Pricing.booking)
+                    db.session.query(models.Pricing)
+                    .outerjoin(models.Pricing.booking)
                     .outerjoin(bookings_models.Booking.stock)
                     .outerjoin(models.Pricing.collectiveBooking)
                     .outerjoin(educational_models.CollectiveBooking.collectiveStock)
@@ -1073,7 +1100,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 if total > 0:
 
                     all_current_incidents = (
-                        models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
+                        db.session.query(models.FinanceIncident)
+                        .join(models.FinanceIncident.booking_finance_incidents)
                         .join(models.BookingFinanceIncident.finance_events)
                         .join(models.FinanceEvent.pricings)
                         .outerjoin(models.Pricing.cashflows)
@@ -1090,7 +1118,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     override_incident_debit_note = any(incident.forceDebitNote for incident in all_current_incidents)
                     # Last cashflow where we effectively paid (successfully or not) the pro
                     last_cashflow = (
-                        models.Cashflow.query.filter(
+                        db.session.query(models.Cashflow)
+                        .filter(
                             models.Cashflow.bankAccountId == bank_account_id,
                             models.Cashflow.status == models.CashflowStatus.ACCEPTED,
                         )
@@ -1151,7 +1180,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 # that are not linked to any `CashflowPricing`. These
                 # pricings would then stay "processed" and never move
                 # to "invoiced".
-                cashflowed_pricings = models.CashflowPricing.query.filter_by(cashflowId=cashflow.id)
+                cashflowed_pricings = db.session.query(models.CashflowPricing).filter_by(cashflowId=cashflow.id)
                 _mark_as_processed(
                     {pricing_id for pricing_id, in cashflowed_pricings.with_entities(models.CashflowPricing.pricingId)}
                 )
@@ -1191,10 +1220,14 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
     """
     logger.info("Generating payment files")
-    not_pending_cashflows = models.Cashflow.query.filter(
-        models.Cashflow.batchId == batch.id,
-        models.Cashflow.status != models.CashflowStatus.PENDING,
-    ).count()
+    not_pending_cashflows = (
+        db.session.query(models.Cashflow)
+        .filter(
+            models.Cashflow.batchId == batch.id,
+            models.Cashflow.status != models.CashflowStatus.PENDING,
+        )
+        .count()
+    )
     if not_pending_cashflows:
         raise ValueError(
             f"Refusing to generate payment files for {batch.id}, "
@@ -1354,11 +1387,12 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         "Zone de taxes",
     )
     query = (
-        models.BankAccount.query.filter(
+        db.session.query(models.BankAccount)
+        .filter(
             models.BankAccount.id.in_(
-                offerers_models.VenueBankAccountLink.query.filter(
-                    offerers_models.VenueBankAccountLink.timespan.contains(cutoff)
-                ).with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
+                db.session.query(offerers_models.VenueBankAccountLink)
+                .filter(offerers_models.VenueBankAccountLink.timespan.contains(cutoff))
+                .with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
             )
         )
         .join(models.BankAccount.offerer)
@@ -1434,11 +1468,12 @@ def _generate_legacy_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Pa
         "BIC",
     )
     query = (
-        models.BankAccount.query.filter(
+        db.session.query(models.BankAccount)
+        .filter(
             models.BankAccount.id.in_(
-                offerers_models.VenueBankAccountLink.query.filter(
-                    offerers_models.VenueBankAccountLink.timespan.contains(cutoff)
-                ).with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
+                db.session.query(offerers_models.VenueBankAccountLink)
+                .filter(offerers_models.VenueBankAccountLink.timespan.contains(cutoff))
+                .with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
             )
         )
         .join(models.BankAccount.offerer)
@@ -1578,11 +1613,12 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
         )
 
     indiv_query = get_individual_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.booking)
+        db.session.query(models.Pricing).filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.booking)
     )
 
     indiv_incident_query = get_individual_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        db.session.query(models.Pricing)
+        .filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.booking)
@@ -1611,11 +1647,14 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     )
 
     collective_query = get_collective_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.collectiveBooking)
+        db.session.query(models.Pricing)
+        .filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.collectiveBooking)
     )
 
     collective_incident_query = get_collective_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        db.session.query(models.Pricing)
+        .filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.collectiveBooking)
@@ -1678,7 +1717,7 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
             if rule_reference == regular_rule.description:
                 return regular_rule
     # CustomReimbursementRule.id
-    return models.CustomReimbursementRule.query.get(rule_reference)
+    return db.session.query(models.CustomReimbursementRule).get(rule_reference)
 
 
 def _make_invoice_lines(
@@ -1764,7 +1803,8 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
 
 def _mark_free_pricings_as_invoiced() -> None:
     free_pricings = (
-        models.Pricing.query.outerjoin(models.CashflowPricing)
+        db.session.query(models.Pricing)
+        .outerjoin(models.CashflowPricing)
         # All the PROCESSED pricings without any Cashflow are free pricings
         .filter(
             models.Pricing.status == models.PricingStatus.PROCESSED,
@@ -2048,7 +2088,8 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         )
 
     bank_accounts_query = (
-        models.Invoice.query.with_entities(models.Invoice.bankAccountId)
+        db.session.query(models.Invoice)
+        .with_entities(models.Invoice.bankAccountId)
         .join(models.Invoice.cashflows)
         .filter(models.Cashflow.batchId == batch.id)
     )
@@ -2060,13 +2101,15 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         bank_accounts_chunk = bank_accounts[i : i + chunk_size]
 
         indiv_query = get_data(
-            models.Invoice.query.join(models.Invoice.cashflows)
+            db.session.query(models.Invoice)
+            .join(models.Invoice.cashflows)
             .join(models.Cashflow.pricings)
             .join(models.Pricing.booking),
             bank_accounts_chunk,
         )
         indiv_incident_query = get_data(
-            models.Invoice.query.join(models.Invoice.cashflows)
+            db.session.query(models.Invoice)
+            .join(models.Invoice.cashflows)
             .join(models.Cashflow.pricings)
             .join(models.Pricing.event)
             .join(models.FinanceEvent.bookingFinanceIncident)
@@ -2097,14 +2140,16 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         )
 
         collective_query = get_collective_data(
-            models.Invoice.query.join(models.Invoice.cashflows)
+            db.session.query(models.Invoice)
+            .join(models.Invoice.cashflows)
             .join(models.Cashflow.pricings)
             .join(models.Pricing.collectiveBooking),
             bank_accounts_chunk,
         )
 
         collective_incident_query = get_collective_data(
-            models.Invoice.query.join(models.Invoice.cashflows)
+            db.session.query(models.Invoice)
+            .join(models.Invoice.cashflows)
             .join(models.Cashflow.pricings)
             .join(models.Pricing.event)
             .join(models.FinanceEvent.bookingFinanceIncident)
@@ -2192,7 +2237,8 @@ def generate_and_store_invoice(bank_account_id: int, cashflow_ids: list[int], is
     # The cashflows all come from the same cashflow batch,
     # so batch_id should be the same for every cashflow
     batch = (
-        models.CashflowBatch.query.join(models.Cashflow.batch)
+        db.session.query(models.CashflowBatch)
+        .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
         .filter(models.Invoice.id == invoice.id)
     ).one()
@@ -2222,7 +2268,8 @@ def generate_and_store_invoice_legacy(
     # The cashflows all come from the same cashflow batch,
     # so batch_id should be the same for every cashflow
     batch = (
-        models.CashflowBatch.query.join(models.Cashflow.batch)
+        db.session.query(models.CashflowBatch)
+        .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
         .filter(models.Invoice.id == invoice.id)
     ).one()
@@ -2252,7 +2299,9 @@ def _generate_invoice_legacy(
         bankAccountId=bank_account_id,
     )
     cashflows = _filter_invoiceable_cashflows(
-        models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
+        db.session.query(models.Cashflow)
+        .filter(models.Cashflow.id.in_(cashflow_ids))
+        .options(
             sa_orm.joinedload(models.Cashflow.pricings)
             .options(sa_orm.joinedload(models.Pricing.lines))
             .options(sa_orm.joinedload(models.Pricing.customRule))
@@ -2362,7 +2411,8 @@ def _generate_invoice_legacy(
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
         booking_ids = (
-            models.Pricing.query.join(models.Pricing.cashflows)
+            db.session.query(models.Pricing)
+            .join(models.Pricing.cashflows)
             .filter(
                 models.Cashflow.id.in_(cashflow_ids),
             )
@@ -2439,7 +2489,9 @@ def _generate_invoice(
         bankAccountId=bank_account_id,
     )
     cashflows = _filter_invoiceable_cashflows(
-        models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
+        db.session.query(models.Cashflow)
+        .filter(models.Cashflow.id.in_(cashflow_ids))
+        .options(
             sa_orm.joinedload(models.Cashflow.pricings)
             .options(sa_orm.joinedload(models.Pricing.lines))
             .options(sa_orm.joinedload(models.Pricing.customRule))
@@ -2613,7 +2665,8 @@ def get_reimbursements_by_venue(
     common_columns: tuple = (offerers_models.Venue.id.label("venue_id"), offerers_models.Venue.common_name)
 
     pricing_query = (
-        models.Invoice.query.join(models.Invoice.cashflows)
+        db.session.query(models.Invoice)
+        .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .filter(models.Invoice.id == invoice.id)
     )
@@ -2801,29 +2854,35 @@ def merge_cashflow_batches(
     batch_ids_to_remove = [batch.id for batch in batches_to_remove]
     bank_account_ids = [
         id_
-        for id_, in models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
+        for id_, in db.session.query(models.Cashflow)
+        .filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
         .with_entities(models.Cashflow.bankAccountId)
         .distinct()
     ]
 
     with transaction():
         initial_sum = (
-            models.Cashflow.query.filter(
+            db.session.query(models.Cashflow)
+            .filter(
                 models.Cashflow.batchId.in_([b.id for b in batches_to_remove + [target_batch]]),
             )
             .with_entities(sa_func.sum(models.Cashflow.amount))
             .scalar()
         )
         for bank_account_id in bank_account_ids:
-            cashflows = models.Cashflow.query.filter(
-                models.Cashflow.bankAccountId == bank_account_id,
-                models.Cashflow.batchId.in_(
-                    batch_ids_to_remove + [target_batch.id],
-                ),
-            ).all()
+            cashflows = (
+                db.session.query(models.Cashflow)
+                .filter(
+                    models.Cashflow.bankAccountId == bank_account_id,
+                    models.Cashflow.batchId.in_(
+                        batch_ids_to_remove + [target_batch.id],
+                    ),
+                )
+                .all()
+            )
             # One cashflow, wrong batch. Just change the batchId.
             if len(cashflows) == 1:
-                models.Cashflow.query.filter_by(id=cashflows[0].id).update(
+                db.session.query(models.Cashflow).filter_by(id=cashflows[0].id).update(
                     {
                         "batchId": target_batch.id,
                         "creationDate": target_batch.creationDate,
@@ -2841,32 +2900,36 @@ def merge_cashflow_batches(
                 cashflow_to_keep = cashflows[0]
             cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
             sum_to_add = (
-                models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
+                db.session.query(models.Cashflow)
+                .filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
                 .with_entities(sa_func.sum(models.Cashflow.amount))
                 .scalar()
             )
-            models.CashflowPricing.query.filter(models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)).update(
+            db.session.query(models.CashflowPricing).filter(
+                models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)
+            ).update(
                 {"cashflowId": cashflow_to_keep.id},
                 synchronize_session=False,
             )
-            models.Cashflow.query.filter_by(id=cashflow_to_keep.id).update(
+            db.session.query(models.Cashflow).filter_by(id=cashflow_to_keep.id).update(
                 {
                     "batchId": target_batch.id,
                     "amount": cashflow_to_keep.amount + sum_to_add,
                 },
                 synchronize_session=False,
             )
-            models.CashflowLog.query.filter(
+            db.session.query(models.CashflowLog).filter(
                 models.CashflowLog.cashflowId.in_(cashflow_ids_to_remove),
             ).delete(synchronize_session=False)
-            models.Cashflow.query.filter(
+            db.session.query(models.Cashflow).filter(
                 models.Cashflow.id.in_(cashflow_ids_to_remove),
             ).delete(synchronize_session=False)
-        models.CashflowBatch.query.filter(models.CashflowBatch.id.in_(batch_ids_to_remove)).delete(
+        db.session.query(models.CashflowBatch).filter(models.CashflowBatch.id.in_(batch_ids_to_remove)).delete(
             synchronize_session=False,
         )
         final_sum = (
-            models.Cashflow.query.filter(
+            db.session.query(models.Cashflow)
+            .filter(
                 models.Cashflow.batchId.in_(batch_ids_to_remove + [target_batch.id]),
             )
             .with_entities(sa_func.sum(models.Cashflow.amount))
@@ -3368,7 +3431,7 @@ def create_deposit_v2(
 
 
 def expire_current_deposit_for_user(user: users_models.User) -> None:
-    models.Deposit.query.filter(
+    db.session.query(models.Deposit).filter(
         models.Deposit.user == user,
         models.Deposit.expirationDate > datetime.datetime.utcnow(),
     ).update(
@@ -3512,7 +3575,8 @@ def recredit_users() -> None:
     user_ids = [
         result
         for result, in (
-            users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
+            db.session.query(users_models.User)
+            .filter(users_models.User.has_underage_beneficiary_role)
             .filter(users_models.User.validatedBirthDate > lower_date)
             .filter(users_models.User.validatedBirthDate <= upper_date)
             .with_entities(users_models.User.id)
@@ -3531,7 +3595,8 @@ def recredit_users_by_id(user_ids: list[int]) -> None:
 
     with transaction():
         users = (
-            users_models.User.query.filter(users_models.User.id.in_(user_ids))
+            db.session.query(users_models.User)
+            .filter(users_models.User.id.in_(user_ids))
             .options(sa_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
             .populate_existing()
             .with_for_update()
@@ -3597,7 +3662,7 @@ def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recr
     """
     This function assumes that the user.deposits and the deposit.recredits relationships are already loaded.
 
-    Example: User.query.options(selectinload(User.deposits).selectinload(Deposit.recredits))
+    Example: db.session.query(User).options(selectinload(User.deposits).selectinload(Deposit.recredits))
     """
     if not user.deposit:
         return None
@@ -4150,7 +4215,8 @@ def mark_bank_account_without_continuation(ds_application_id: int) -> None:
     now = datetime.datetime.utcnow()
 
     bank_account = (
-        models.BankAccount.query.filter_by(dsApplicationId=ds_application_id)
+        db.session.query(models.BankAccount)
+        .filter_by(dsApplicationId=ds_application_id)
         .outerjoin(
             offerers_models.VenueBankAccountLink,
             sa.and_(

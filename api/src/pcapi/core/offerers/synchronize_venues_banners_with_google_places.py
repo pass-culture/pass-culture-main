@@ -58,7 +58,8 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
 
     if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
         query = (
-            offerers_models.Venue.query.join(offerers_models.Offerer)
+            db.session.query(offerers_models.Venue)
+            .join(offerers_models.Offerer)
             .filter(
                 offerers_models.Venue.isOpenToPublic.is_(True),
                 offerers_models.Venue.bannerUrl.is_(None),  # type: ignore[attr-defined]
@@ -70,7 +71,8 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
         )
     else:
         query = (
-            offerers_models.Venue.query.join(offerers_models.Offerer)
+            db.session.query(offerers_models.Venue)
+            .join(offerers_models.Offerer)
             .filter(
                 offerers_models.Venue.isPermanent.is_(True),
                 offerers_models.Venue.bannerUrl.is_(None),  # type: ignore[attr-defined]
@@ -245,10 +247,14 @@ def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
         "deleting old google places banners",
         extra={"partial_ids": venue_ids[:10], "venues_updated_count": len(venue_ids)},
     )
-    google_places_info_query = offerers_models.GooglePlacesInfo.query.filter(
-        offerers_models.GooglePlacesInfo.venueId.in_(venue_ids),
-        offerers_models.GooglePlacesInfo.bannerUrl.is_not(None),
-    ).order_by(offerers_models.GooglePlacesInfo.venueId)
+    google_places_info_query = (
+        db.session.query(offerers_models.GooglePlacesInfo)
+        .filter(
+            offerers_models.GooglePlacesInfo.venueId.in_(venue_ids),
+            offerers_models.GooglePlacesInfo.bannerUrl.is_not(None),
+        )
+        .order_by(offerers_models.GooglePlacesInfo.venueId)
+    )
 
     nb_deleted_banners = 0
     venues_ids_with_deleted_banners = set()

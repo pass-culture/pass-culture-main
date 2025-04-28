@@ -24,7 +24,7 @@ def activate_beneficiary_thread_safely(
 ) -> None:
     with app.app_context():
         # Flask-SQLAlchemy sessions are already thread-safe because they are scoped to the current Flask context
-        user = users_models.User.query.filter(users_models.User.id == user_id).one()
+        user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one()
 
         barrier.wait(2)
 

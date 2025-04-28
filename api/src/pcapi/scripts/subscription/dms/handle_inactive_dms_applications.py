@@ -12,6 +12,7 @@ from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.connectors.dms import utils as dms_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
+from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -105,12 +106,16 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
 
 def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
     try:
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-            fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
-            fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
-            fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
-        ).one_or_none()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(
+                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+                fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
+                fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
+                fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
+            )
+            .one_or_none()
+        )
     except sa_exc.MultipleResultsFound:
         logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
         return

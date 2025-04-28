@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -65,7 +66,7 @@ class CreateThumbnailFromFileTest:
 
         # then
         assert response.status_code == 201
-        mediation = Mediation.query.one()
+        mediation = db.session.query(Mediation).one()
         assert mediation.thumbCount == 1
         assert response.json == {
             "credit": "John Do",

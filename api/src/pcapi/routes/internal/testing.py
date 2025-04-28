@@ -2,6 +2,7 @@ import logging
 
 from pcapi import settings
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import Feature
 from pcapi.repository.session_management import atomic
@@ -24,7 +25,7 @@ def set_features(body: serializers.FeaturesToggleRequest) -> None:
         raise ApiErrors({"code": "not found"}, status_code=404)
 
     for feature in body.features:
-        Feature.query.filter_by(name=feature.name).update({"isActive": feature.isActive})
+        db.session.query(Feature).filter_by(name=feature.name).update({"isActive": feature.isActive})
 
 
 class AdageFakeToken(BaseModel):

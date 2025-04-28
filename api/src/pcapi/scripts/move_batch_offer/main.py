@@ -122,7 +122,7 @@ def move_collective_offers(origin_venue: offerers_models.Venue, destination_venu
 def move_collective_offer_template(
     origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue
 ) -> None:
-    educational_models.CollectiveOfferTemplate.query.filter(
+    db.session.query(educational_models.CollectiveOfferTemplate).filter(
         educational_models.CollectiveOfferTemplate.venueId == origin_venue.id
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
@@ -130,15 +130,15 @@ def move_collective_offer_template(
 def move_collective_offer_playlist(
     origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue
 ) -> None:
-    educational_models.CollectivePlaylist.query.filter(
+    db.session.query(educational_models.CollectivePlaylist).filter(
         educational_models.CollectivePlaylist.venueId == origin_venue.id
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
 def move_price_category_label(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
-    offer_models.PriceCategoryLabel.query.filter(offer_models.PriceCategoryLabel.venueId == origin_venue.id).update(
-        {"venueId": destination_venue.id}, synchronize_session=False
-    )
+    db.session.query(offer_models.PriceCategoryLabel).filter(
+        offer_models.PriceCategoryLabel.venueId == origin_venue.id
+    ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
 def main(commit_by_venue: bool) -> None:
@@ -147,10 +147,14 @@ def main(commit_by_venue: bool) -> None:
         origin_venue_id = int(row[ORIGIN_VENUE_ID_HEADER])
         destination_venue_id = int(row[DESTINATION_VENUE_ID_HEADER])
 
-        origin_venue = offerers_models.Venue.query.filter(offerers_models.Venue.id == origin_venue_id).one_or_none()
-        destination_venue = offerers_models.Venue.query.filter(
-            offerers_models.Venue.id == destination_venue_id
-        ).one_or_none()
+        origin_venue = (
+            db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == origin_venue_id).one_or_none()
+        )
+        destination_venue = (
+            db.session.query(offerers_models.Venue)
+            .filter(offerers_models.Venue.id == destination_venue_id)
+            .one_or_none()
+        )
 
         invalidity_reason = check_venues_validity(
             origin_venue, origin_venue_id, destination_venue, destination_venue_id

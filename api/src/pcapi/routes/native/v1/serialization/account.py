@@ -21,6 +21,7 @@ from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
 import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.v1.serialization import achievements as achievements_serialization
 from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
@@ -133,13 +134,17 @@ class UserProfileGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         user = self._obj
         if key == "bookedOffers":
-            not_cancelled_bookings = bookings_models.Booking.query.options(
-                joinedload(bookings_models.Booking.stock)
-                .joinedload(offers_models.Stock.offer)
-                .load_only(offers_models.Offer.id)
-            ).filter(
-                bookings_models.Booking.userId == user.id,
-                bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+            not_cancelled_bookings = (
+                db.session.query(bookings_models.Booking)
+                .options(
+                    joinedload(bookings_models.Booking.stock)
+                    .joinedload(offers_models.Stock.offer)
+                    .load_only(offers_models.Offer.id)
+                )
+                .filter(
+                    bookings_models.Booking.userId == user.id,
+                    bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+                )
             )
 
             return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}

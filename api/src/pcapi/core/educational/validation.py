@@ -8,6 +8,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.models import api_errors
+from pcapi.models import db
 
 
 if TYPE_CHECKING:
@@ -107,7 +108,7 @@ def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveSt
 
 
 def check_institution_id_exists(institution_id: int) -> models.EducationalInstitution | None:
-    institution = models.EducationalInstitution.query.get(institution_id)
+    institution = db.session.query(models.EducationalInstitution).get(institution_id)
     if not institution:
         raise exceptions.EducationalInstitutionNotFound()
     return institution

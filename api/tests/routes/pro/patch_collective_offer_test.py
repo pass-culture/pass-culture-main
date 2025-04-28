@@ -97,7 +97,7 @@ class Returns200Test:
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert not response.json["isTemplate"]
 
-        updated_offer = models.CollectiveOffer.query.get(offer.id)
+        updated_offer = db.session.query(models.CollectiveOffer).get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.contactEmail == "toto@example.com"
@@ -249,7 +249,7 @@ class Returns200Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == []
 
@@ -269,7 +269,7 @@ class Returns200Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
@@ -289,7 +289,7 @@ class Returns200Test:
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
@@ -322,7 +322,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddressId == oa.id
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
@@ -346,7 +346,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
@@ -370,7 +370,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddress.label == "My address"
         assert offer.offererAddress.address.city == "Paris"
@@ -402,7 +402,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
@@ -443,7 +443,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.venueId == other_venue.id
         assert offer.offererAddressId == other_venue.offererAddressId
@@ -462,7 +462,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.nationalProgramId == program.id
 
     def test_national_program_set_none(self, client):
@@ -475,7 +475,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.nationalProgramId is None
 
     def test_national_program_valid_update_program(self, client):
@@ -489,7 +489,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.nationalProgramId == new_program.id
         assert [domain.id for domain in offer.domains] == [current_domain.id]
 
@@ -505,7 +505,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.nationalProgramId == current_program.id
         assert [domain.id for domain in offer.domains] == [new_domain.id]
 
@@ -522,7 +522,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.nationalProgramId == new_program.id
         assert [domain.id for domain in offer.domains] == [new_domain.id]
 
@@ -1037,7 +1037,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert models.CollectiveOffer.query.get(offer.id).name == "Old name"
+        assert db.session.query(models.CollectiveOffer).get(offer.id).name == "Old name"
 
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
         # Given

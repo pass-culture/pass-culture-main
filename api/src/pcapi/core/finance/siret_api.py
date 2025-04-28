@@ -164,10 +164,12 @@ def move_siret(
 
 def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
     return db.session.query(
-        models.Pricing.query.filter_by(
+        db.session.query(models.Pricing)
+        .filter_by(
             pricingPoint=pricing_point,
             status=models.PricingStatus.PENDING,
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 
@@ -265,11 +267,15 @@ def remove_siret(
 
     new_siret: str | None = None
     if new_pricing_point_id:
-        new_pricing_point_venue: offerers_models.Venue = offerers_models.Venue.query.filter(
-            offerers_models.Venue.id == new_pricing_point_id,
-            offerers_models.Venue.managingOffererId == venue.managingOffererId,
-            offerers_models.Venue.siret.is_not(None),
-        ).one_or_none()
+        new_pricing_point_venue: offerers_models.Venue = (
+            db.session.query(offerers_models.Venue)
+            .filter(
+                offerers_models.Venue.id == new_pricing_point_id,
+                offerers_models.Venue.managingOffererId == venue.managingOffererId,
+                offerers_models.Venue.siret.is_not(None),
+            )
+            .one_or_none()
+        )
         if not new_pricing_point_venue:
             raise CheckError(
                 "Le nouveau point de valorisation doit être un partenaire culturel avec SIRET sur la même entité juridique"
@@ -289,7 +295,8 @@ def remove_siret(
 
     # End all active links to this pricing point
     pricing_point_links = (
-        offerers_models.VenuePricingPointLink.query.filter(
+        db.session.query(offerers_models.VenuePricingPointLink)
+        .filter(
             offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
             offerers_models.VenuePricingPointLink.timespan.contains(now),
         )
@@ -333,7 +340,7 @@ def remove_siret(
 def _force_close_custom_reimbursement_rules_for_venue(venue: offerers_models.Venue) -> None:
     now = datetime.datetime.utcnow()
 
-    custom_reimbursement_rules = finance_models.CustomReimbursementRule.query.filter(
+    custom_reimbursement_rules = db.session.query(finance_models.CustomReimbursementRule).filter(
         finance_models.CustomReimbursementRule.venueId == venue.id,
         sa.or_(
             sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),

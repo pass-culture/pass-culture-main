@@ -14,6 +14,7 @@ from pcapi.core.offers.models import OfferStatus
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -42,7 +43,7 @@ class Returns200Test:
         assert response.json["venue"]["id"] == offer.venue.id
         assert response.json["productId"] == None
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert updated_offer.description == "New description"
@@ -65,7 +66,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.ean == "2222222222222"
         assert updated_offer.extraData == {}
 
@@ -91,7 +92,7 @@ class Returns200Test:
         assert response.json["venue"]["id"] == offer.venue.id
         assert response.json["productId"] == None
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert updated_offer.description == "New description"
@@ -119,7 +120,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.extraData == {"stageDirector": "Greta Gerwig"}
 
     def test_patch_draft_offer_with_empty_extra_data(self, client):
@@ -157,7 +158,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.extraData == {
             "author": "",
             "gtl_id": "",
@@ -239,7 +240,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = db.session.query(Offer).get(offer.id)
         assert updated_offer.extraData == {
             "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
             "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
@@ -370,7 +371,7 @@ class Returns200Test:
         response = client.with_session_auth(user_email).post("/offers/draft", json=data)
         assert response.status_code == 201
 
-        draft_offer = Offer.query.one()
+        draft_offer = db.session.query(Offer).one()
         offer_id = draft_offer.id
         response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
         assert response.status_code == 200
@@ -399,8 +400,10 @@ class Returns200Test:
         }
         with patch("pcapi.connectors.api_adresse.get_address", return_value=return_value):
             response = client.with_session_auth(user_email).patch(f"/offers/{offer_id}", json=data)
-        updated_draft_offer = Offer.query.one()
-        created_address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        updated_draft_offer = db.session.query(Offer).one()
+        created_address = (
+            db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
+        )
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
         assert response.json["id"] == updated_draft_offer.id
@@ -533,7 +536,7 @@ class Returns403Test:
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         assert response.json["global"] == [msg]
-        assert Offer.query.get(offer.id).name == "Old name"
+        assert db.session.query(Offer).get(offer.id).name == "Old name"
 
 
 @pytest.mark.usefixtures("db_session")

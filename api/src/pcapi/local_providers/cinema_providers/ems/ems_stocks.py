@@ -48,7 +48,9 @@ class EMSStocks:
         self.poster_urls_map: dict[str, str | None] = {}
         self.created_offers: set[offers_models.Offer] = set()
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
-            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .all()
         )
 
     def synchronize(self) -> None:
@@ -142,7 +144,7 @@ class EMSStocks:
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue
     ) -> offers_models.Offer:
         movie_offer_uuid = _build_movie_uuid_for_offer(event.id, venue.id)
-        offer = offers_models.Offer.query.filter_by(idAtProvider=movie_offer_uuid).one_or_none()
+        offer = db.session.query(offers_models.Offer).filter_by(idAtProvider=movie_offer_uuid).one_or_none()
         if offer:
             return offer
         offer = offers_models.Offer()
@@ -177,7 +179,7 @@ class EMSStocks:
         self, session: ems_serializers.Session, event: ems_serializers.Event, offer: offers_models.Offer
     ) -> offers_models.Stock:
         session_stock_uuid = _build_session_uuid_for_stock(event.id, offer.venueId, session.id)
-        stock = offers_models.Stock.query.filter_by(idAtProviders=session_stock_uuid).one_or_none()
+        stock = db.session.query(offers_models.Stock).filter_by(idAtProviders=session_stock_uuid).one_or_none()
         if stock:
             return stock
         stock = offers_models.Stock()

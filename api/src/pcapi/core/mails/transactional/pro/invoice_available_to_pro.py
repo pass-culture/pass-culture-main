@@ -9,6 +9,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import db
 from pcapi.utils.date import get_date_formatted_for_email
 
 
@@ -28,7 +29,8 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: 
         },
     )
     bank_account = (
-        finance_models.BankAccount.query.filter(finance_models.BankAccount.id == invoice.bankAccountId)
+        db.session.query(finance_models.BankAccount)
+        .filter(finance_models.BankAccount.id == invoice.bankAccountId)
         .join(
             offerers_models.VenueBankAccountLink,
             sa.and_(

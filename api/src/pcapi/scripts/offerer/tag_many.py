@@ -17,7 +17,8 @@ OfferersTagsMappings = typing.Collection[models.OffererTagMapping]
 
 def load_offerers(offerer_ids: Ids) -> Offerers:
     return (
-        models.Offerer.query.filter(models.Offerer.id.in_(offerer_ids))
+        db.session.query(models.Offerer)
+        .filter(models.Offerer.id.in_(offerer_ids))
         .options(joinedload(models.Offerer.tags))
         .options(load_only(models.Offerer.id))
         .all()
@@ -25,7 +26,7 @@ def load_offerers(offerer_ids: Ids) -> Offerers:
 
 
 def load_tags(tag_names: TagNames) -> OffererTags:
-    return models.OffererTag.query.filter(models.OffererTag.name.in_(tag_names)).all()
+    return db.session.query(models.OffererTag).filter(models.OffererTag.name.in_(tag_names)).all()
 
 
 def find_offerer_missing_tags(offerer: models.Offerer, tags: OffererTags) -> OfferersTagsMappings:

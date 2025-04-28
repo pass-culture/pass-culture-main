@@ -14,6 +14,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -134,7 +135,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.bookingEmail == venue.bookingEmail
         assert created_offer._description is None
         assert created_offer.description == product.description
@@ -152,7 +153,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
         assert created_offer.offererAddressId == venue.offererAddressId
 
-        created_stock = offers_models.Stock.query.one()
+        created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
@@ -257,7 +258,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
 
-        offer = offers_models.Offer.query.one()
+        offer = db.session.query(offers_models.Offer).one()
         assert len(offer.stocks) == 1
 
         stock = offer.stocks[0]
@@ -407,8 +408,8 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
 
-        assert offers_models.Offer.query.count() == 1
-        assert offers_models.Stock.query.count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(offers_models.Stock).count() == 1
 
     @pytest.mark.parametrize(
         "gcu_compatibility_type",
@@ -436,7 +437,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
-        assert offers_models.Offer.query.all() == []
+        assert db.session.query(offers_models.Offer).all() == []
 
     def test_400_when_quantity_is_too_big(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -535,8 +536,8 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             },
         )
 
-        assert offers_models.Offer.query.one()
-        created_stock = offers_models.Stock.query.one()
+        assert db.session.query(offers_models.Offer).one()
+        created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("78.90")
         assert created_stock.quantity == 3
 
@@ -563,7 +564,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             },
         )
         assert response.status_code == 204
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
     def test_with_custom_address_should_create_offerer_address(self, client):
@@ -585,11 +586,15 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 204
-        created_offer = offers_models.Offer.query.one()
-        offerer_address = offerers_models.OffererAddress.query.filter(
-            offerers_models.OffererAddress.addressId == address.id,
-            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
-        ).one()
+        created_offer = db.session.query(offers_models.Offer).one()
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress)
+            .filter(
+                offerers_models.OffererAddress.addressId == address.id,
+                offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+            )
+            .one()
+        )
         assert created_offer.offererAddress == offerer_address
 
     def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
@@ -665,7 +670,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             },
         )
 
-        [updated_offer, created_offer] = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
+        [updated_offer, created_offer] = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
         assert updated_offer.ean == ean_to_update
         assert updated_offer.activeStocks[0].price == decimal.Decimal("12.34")
         assert updated_offer.activeStocks[0].quantity == 3
@@ -765,7 +770,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
 
-        created_product = offers_models.Offer.query.one()
+        created_product = db.session.query(offers_models.Offer).one()
         created_stock = created_product.stocks[0]
 
         assert created_stock.price == 0
@@ -798,6 +803,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
 
-        updated_stock = offers_models.Stock.query.get(stock.id)
+        updated_stock = db.session.query(offers_models.Stock).get(stock.id)
         assert updated_stock.price == 0
         assert updated_stock.quantity == 3

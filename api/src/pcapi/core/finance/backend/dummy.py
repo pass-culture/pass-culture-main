@@ -1,5 +1,6 @@
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import BaseFinanceBackend
+from pcapi.models import db
 
 
 invoices: list[finance_models.Invoice] = []
@@ -16,11 +17,11 @@ class DummyFinanceBackend(BaseFinanceBackend):
         return bank_account.__dict__
 
     def get_invoice(self, reference: str) -> dict:
-        invoice = finance_models.Invoice.query.filter(finance_models.Invoice.reference == reference).first()
+        invoice = db.session.query(finance_models.Invoice).filter(finance_models.Invoice.reference == reference).first()
         return invoice.__dict__
 
     def get_bank_account(self, bank_account_id: int) -> dict:
-        bank_account = finance_models.BankAccount.query.get(bank_account_id)
+        bank_account = db.session.query(finance_models.BankAccount).get(bank_account_id)
         return bank_account.__dict__
 
     @property

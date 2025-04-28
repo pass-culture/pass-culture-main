@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -51,7 +52,9 @@ class Returns201Test:
             f"/offers/{offer.id}/event_opening_hours", json=event_opening_hours_data
         )
 
-        created_event_opening_hours: offers_models.EventOpeningHours = offers_models.EventOpeningHours.query.one()
+        created_event_opening_hours: offers_models.EventOpeningHours = db.session.query(
+            offers_models.EventOpeningHours
+        ).one()
 
         assert response.status_code == 201
         assert response.json["id"] == created_event_opening_hours.id
@@ -82,7 +85,9 @@ class Returns201Test:
             f"/offers/{offer.id}/event_opening_hours", json=event_opening_hours_data
         )
 
-        created_event_opening_hours: offers_models.EventOpeningHours = offers_models.EventOpeningHours.query.one()
+        created_event_opening_hours: offers_models.EventOpeningHours = db.session.query(
+            offers_models.EventOpeningHours
+        ).one()
 
         assert response.status_code == 201
         assert not response.json["endDatetime"]
@@ -144,7 +149,7 @@ class Returns400Test:
             json=event_opening_hours_data,
         )
 
-        created_event_opening_hours = offers_models.EventOpeningHours.query.one_or_none()
+        created_event_opening_hours = db.session.query(offers_models.EventOpeningHours).one_or_none()
 
         assert response.status_code == 400
         assert response.json == expected_json
@@ -159,7 +164,7 @@ class Returns400Test:
             json=_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD,
         )
 
-        created_event_opening_hours = offers_models.EventOpeningHours.query.one_or_none()
+        created_event_opening_hours = db.session.query(offers_models.EventOpeningHours).one_or_none()
 
         assert response.status_code == 400
         assert response.json == {"offer.subcategory": ["`ABO_BIBLIOTHEQUE` subcategory does not allow opening hours"]}
@@ -174,7 +179,7 @@ class Returns400Test:
             json=_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD,
         )
 
-        created_event_opening_hours_count = offers_models.EventOpeningHours.query.count()
+        created_event_opening_hours_count = db.session.query(offers_models.EventOpeningHours).count()
 
         assert response.status_code == 400
         assert response.json == {"offer": [f"Offer #{offer.id} already has opening hours"]}
@@ -190,7 +195,7 @@ class Returns400Test:
             json=_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD,
         )
 
-        created_event_opening_hours = offers_models.EventOpeningHours.query.one_or_none()
+        created_event_opening_hours = db.session.query(offers_models.EventOpeningHours).one_or_none()
 
         assert response.status_code == 400
         assert response.json == {"offer": [f"Offer #{offer.id} already has timestamped stocks"]}
@@ -209,7 +214,7 @@ class Returns403Test:
             json=_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD,
         )
 
-        created_event_opening_hours = offers_models.EventOpeningHours.query.one_or_none()
+        created_event_opening_hours = db.session.query(offers_models.EventOpeningHours).one_or_none()
 
         assert response.status_code == 403
         assert response.json == {

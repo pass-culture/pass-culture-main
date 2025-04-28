@@ -2,6 +2,7 @@ import typing
 
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 
 from . import models
@@ -55,7 +56,7 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
     if "siret" in modifications and not siret and "comment" not in modifications:
         raise ApiErrors(errors={"siret": ["Vous ne pouvez pas supprimer le siret d'un lieu"]})
     if siret:
-        venue_with_same_siret = models.Venue.query.filter_by(siret=siret).one_or_none()
+        venue_with_same_siret = db.session.query(models.Venue).filter_by(siret=siret).one_or_none()
         if venue_with_same_siret:
             raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
     if "name" in modifications and modifications["name"] != venue.name and (siret is None or venue.siret == siret):
@@ -79,7 +80,7 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
             }
         )
 
-    pricing_point = models.Venue.query.filter_by(id=pricing_point_id).one_or_none()
+    pricing_point = db.session.query(models.Venue).filter_by(id=pricing_point_id).one_or_none()
     if not pricing_point:
         raise ApiErrors(errors={"pricingPointId": ["Ce lieu n'existe pas."]})
     if not pricing_point.siret:

@@ -3,7 +3,7 @@ from pcapi.repository import db
 
 
 def add_accessibility_compliance_to_venues() -> None:
-    venues = Venue.query.all()
+    venues = db.session.query(Venue).all()
     for i, venue in enumerate(venues):
         venue.audioDisabilityCompliant = bool(i & 1)
         venue.mentalDisabilityCompliant = bool(i & 2)

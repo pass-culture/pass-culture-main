@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.token as token_utils
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 
 class ValidateUserTest:
@@ -69,7 +70,7 @@ class Returns204Tests:
         args, _ = mocked_send_signup_email.call_args
         passwordless_login_token = args[1]
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
         mocked_pipeline_exec.return_value = [f'{{"user_id": "{user.id}", "jti": "{str(uuid.uuid4())}"}}', 1]
@@ -77,7 +78,7 @@ class Returns204Tests:
         assert response.status_code == 204
         assert "Set-Cookie" in response.headers
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is True
 
@@ -113,7 +114,7 @@ class Returns204Tests:
         args, _ = mocked_send_signup_email.call_args
         signup_confirmation_email_token = args[1]
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
 
@@ -126,7 +127,7 @@ class Returns204Tests:
         assert response.status_code == 204
         assert "Set-Cookie" not in response.headers  # User shouldn't be logged in
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is True
 
@@ -175,7 +176,7 @@ class Returns400Test:
         args, _ = mocked_send_signup_email.call_args
         passwordless_login_token = args[1]
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
         mocked_pipeline_exec.return_value = [f'{{"user_id": "{user.id - 1}", "jti": "{str(uuid.uuid4())}"}}', 1]
@@ -183,7 +184,7 @@ class Returns400Test:
         assert response.status_code == 404
         assert "Set-Cookie" not in response.headers
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
 
@@ -225,7 +226,7 @@ class Returns400Test:
 
         mocked_send_signup_email.assert_called_once()
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
 
@@ -235,6 +236,6 @@ class Returns400Test:
         assert response.status_code == 404
         assert "Set-Cookie" not in response.headers
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False

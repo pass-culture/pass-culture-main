@@ -140,7 +140,7 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).first()
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.userId == user.id
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
@@ -295,9 +295,8 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
 
         fraud_check = (
-            fraud_models.BeneficiaryFraudCheck.query.filter(
-                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
-            )
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS)
             .order_by(fraud_models.BeneficiaryFraudCheck.id.desc())
             .first()
         )
@@ -533,9 +532,11 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == dms_internal_mailing.DMS_ERROR_MESSAGE_USER_NOT_FOUND
 
-        orphan_dms_application = fraud_models.OrphanDmsApplication.query.filter(
-            fraud_models.OrphanDmsApplication.email == "user@example.com"
-        ).first()
+        orphan_dms_application = (
+            db.session.query(fraud_models.OrphanDmsApplication)
+            .filter(fraud_models.OrphanDmsApplication.email == "user@example.com")
+            .first()
+        )
         assert orphan_dms_application.application_id == 6044787
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -558,7 +559,7 @@ class DmsWebhookApplicationTest:
         )
 
         # assert an OrphanApplication is not created again
-        assert fraud_models.OrphanDmsApplication.query.count() == 1
+        assert db.session.query(fraud_models.OrphanDmsApplication).count() == 1
         # assert the message is not sent again
         assert send_user_message.call_count == 0
         assert len(mails_testing.outbox) == 0
@@ -582,7 +583,7 @@ class DmsWebhookApplicationTest:
         )
 
         # assert an OrphanApplication is not created again
-        assert fraud_models.OrphanDmsApplication.query.count() == 1
+        assert db.session.query(fraud_models.OrphanDmsApplication).count() == 1
         # assert no email is sent to ask to create account (Already sent once when the application was created)
         assert len(mails_testing.outbox) == 0
 
@@ -627,7 +628,7 @@ class DmsWebhookApplicationTest:
             "L’équipe du pass Culture"
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -671,7 +672,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -728,7 +729,7 @@ class DmsWebhookApplicationTest:
             "L’équipe du pass Culture"
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -774,7 +775,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION

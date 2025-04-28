@@ -6,6 +6,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import repository as geography_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -46,7 +47,7 @@ def get_address(
 
     Return an address by id
     """
-    address = geography_models.Address.query.get(address_id)
+    address = db.session.query(geography_models.Address).get(address_id)
     if not address:
         raise api_errors.ResourceNotFoundError({"address": "We could not find any address for the given `id`"})
 

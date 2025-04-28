@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.scripts.deactivate_300e_thing_offers import deactivate_300e_thing_offers
 
 
@@ -21,5 +22,5 @@ class Deactivate300eThingOffersTest:
         deactivate_300e_thing_offers()
 
         # Then
-        deactivated_offers = Offer.query.filter_by(isActive=False).all()
+        deactivated_offers = db.session.query(Offer).filter_by(isActive=False).all()
         assert len(deactivated_offers) == 2

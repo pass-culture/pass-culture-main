@@ -18,6 +18,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.models import db
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
 import pcapi.routes.serialization.educonnect as educonnect_serializers
@@ -124,7 +125,7 @@ def on_educonnect_authentication_response() -> Response:
         )
         return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
-    user = users_models.User.query.get(user_id)
+    user = db.session.query(users_models.User).get(user_id)
 
     logger.info(
         "Received educonnect authentication response",

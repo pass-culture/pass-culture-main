@@ -12,6 +12,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.token.serialization as token_serialization
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 ActionOccurred = namedtuple("ActionOccurred", ["type", "authorUserId", "venueId", "offererId", "bankAccountId"])
@@ -61,7 +62,9 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 1
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -106,9 +109,13 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 1
 
-        action_logged = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
-        ).one()
+        action_logged = (
+            db.session.query(history_models.ActionHistory)
+            .filter(
+                history_models.ActionHistory.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+            )
+            .one()
+        )
 
         assert action_logged.authorUserId == impersonator.id
         assert action_logged.venueId == venue.id
@@ -148,7 +155,9 @@ class OffererPatchBankAccountsTest:
 
         assert not bank_account.venueLinks
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured) == 0
 
@@ -189,7 +198,9 @@ class OffererPatchBankAccountsTest:
 
         assert not bank_account.venueLinks
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured) == 0
 
@@ -210,7 +221,8 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 3
         assert (
-            offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
+            db.session.query(offerers_models.VenueBankAccountLink)
+            .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
@@ -263,7 +275,8 @@ class OffererPatchBankAccountsTest:
         assert len(bank_account.venueLinks) == 3
 
         assert (
-            not offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
+            not db.session.query(offerers_models.VenueBankAccountLink)
+            .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
@@ -271,7 +284,9 @@ class OffererPatchBankAccountsTest:
             .count()
         )
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -333,7 +348,8 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 2
         assert (
-            not offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
+            not db.session.query(offerers_models.VenueBankAccountLink)
+            .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
@@ -384,7 +400,8 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 4
         assert (
-            offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
+            db.session.query(offerers_models.VenueBankAccountLink)
+            .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
@@ -402,7 +419,9 @@ class OffererPatchBankAccountsTest:
             else:
                 assert link.timespan.upper is None
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -439,7 +458,8 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 2
         assert (
-            offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
+            db.session.query(offerers_models.VenueBankAccountLink)
+            .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
@@ -490,7 +510,8 @@ class OffererPatchBankAccountsTest:
         assert len(bank_account.venueLinks) == 4
 
         assert (
-            offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
+            db.session.query(offerers_models.VenueBankAccountLink)
+            .join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
@@ -507,7 +528,9 @@ class OffererPatchBankAccountsTest:
                 ), "Already existing and current bank-account-venues links shouldn't changed !"
             assert link.timespan.upper is None
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured)
 
@@ -572,7 +595,9 @@ class OffererPatchBankAccountsTest:
 
         assert len(bank_account.venueLinks) == 1
 
-        actions_logged = history_models.ActionHistory.query.order_by(history_models.ActionHistory.venueId).all()
+        actions_logged = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.venueId).all()
+        )
 
         assert len(actions_logged) == len(actions_occured)
 

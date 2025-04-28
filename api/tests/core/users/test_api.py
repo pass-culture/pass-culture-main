@@ -193,10 +193,10 @@ class SuspendAccountTest:
         assert _datetime_within_last_5sec(user.suspension_date)
         assert not user.isActive
         assert not user.has_admin_role
-        assert not users_models.UserSession.query.filter_by(userId=user.id).first()
+        assert not db.session.query(users_models.UserSession).filter_by(userId=user.id).first()
         assert author.isActive
 
-        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
             history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
@@ -232,7 +232,7 @@ class SuspendAccountTest:
         assert confirmed_booking.status is BookingStatus.CONFIRMED
         assert used_booking.status is BookingStatus.USED
 
-        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
             history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
@@ -257,7 +257,7 @@ class SuspendAccountTest:
         assert not pro.isActive
         assert booking.status is BookingStatus.CONFIRMED  # not canceled
 
-        history = history_models.ActionHistory.query.filter_by(userId=pro.id).all()
+        history = db.session.query(history_models.ActionHistory).filter_by(userId=pro.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
             history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
@@ -307,7 +307,7 @@ class UnsuspendAccountTest:
         assert not user.suspension_date
         assert user.isActive
 
-        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
         _assert_user_action_history_as_expected(
             history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
@@ -378,12 +378,12 @@ class ChangeUserEmailTest:
         returned_user = email_update.validate_email_update_request(token)
 
         # Then
-        reloaded_user = users_models.User.query.get(user.id)
+        reloaded_user = db.session.query(users_models.User).get(user.id)
         assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
-        assert users_models.User.query.filter_by(email=self.old_email).first() is None
-        assert users_models.UserSession.query.filter_by(userId=reloaded_user.id).first() is None
-        assert users_models.SingleSignOn.query.filter_by(userId=reloaded_user.id).first() is None
+        assert db.session.query(users_models.User).filter_by(email=self.old_email).first() is None
+        assert db.session.query(users_models.UserSession).filter_by(userId=reloaded_user.id).first() is None
+        assert db.session.query(users_models.SingleSignOn).filter_by(userId=reloaded_user.id).first() is None
 
         assert len(reloaded_user.email_history) == 1
 
@@ -405,15 +405,17 @@ class ChangeUserEmailTest:
             email_update.validate_email_update_request(token)
 
         # Then
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.email == "oldemail@mail.com"
 
-        other_user = users_models.User.query.get(other_user.id)
+        other_user = db.session.query(users_models.User).get(other_user.id)
         assert other_user.email == self.new_email
 
-        single_sign_on = users_models.SingleSignOn.query.filter(
-            users_models.SingleSignOn.userId == user.id
-        ).one_or_none()
+        single_sign_on = (
+            db.session.query(users_models.SingleSignOn)
+            .filter(users_models.SingleSignOn.userId == user.id)
+            .one_or_none()
+        )
         assert single_sign_on is not None
 
     def test_change_user_email_expired_token(self, app):
@@ -430,7 +432,7 @@ class ChangeUserEmailTest:
                     email_update.validate_email_update_request(token)
 
                 # Then
-                user = users_models.User.query.get(user.id)
+                user = db.session.query(users_models.User).get(user.id)
                 assert user.email == self.old_email
 
     def test_change_user_email_twice(self):
@@ -449,13 +451,13 @@ class ChangeUserEmailTest:
         # first call, email is updated as expected
         returned_user = email_update.validate_email_update_request(token)
 
-        reloaded_user = users_models.User.query.get(user.id)
+        reloaded_user = db.session.query(users_models.User).get(user.id)
         assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
 
         # second call, no error, no update
         returned_user = email_update.validate_email_update_request(token)
-        reloaded_user = users_models.User.query.get(user.id)
+        reloaded_user = db.session.query(users_models.User).get(user.id)
         assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
 
@@ -676,7 +678,7 @@ class SetProTutoAsSeenTest:
         users_api.set_pro_tuto_as_seen(user)
 
         # Then
-        assert users_models.User.query.one().hasSeenProTutorials is True
+        assert db.session.query(users_models.User).one().hasSeenProTutorials is True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -689,7 +691,7 @@ class SetProRgsAsSeenTest:
         users_api.set_pro_rgs_as_seen(user)
 
         # Then
-        assert users_models.User.query.one().hasSeenProRgs is True
+        assert db.session.query(users_models.User).one().hasSeenProRgs is True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -698,12 +700,12 @@ class UpdateUserInfoTest:
         user = users_factories.UserFactory(email="initial@example.com")
 
         users_api.update_user_info(user, author=user, first_name="New", last_name="Name")
-        user = users_models.User.query.one()
+        user = db.session.query(users_models.User).one()
         assert user.email == "initial@example.com"
         assert user.full_name == "New Name"
 
         users_api.update_user_info(user, author=user, email="new@example.com")
-        user = users_models.User.query.one()
+        user = db.session.query(users_models.User).one()
         assert user.email == "new@example.com"
         assert user.full_name == "New Name"
 
@@ -711,7 +713,7 @@ class UpdateUserInfoTest:
         user = users_factories.UserFactory(email="initial@example.com")
 
         users_api.update_user_info(user, author=user, email="  NEW@example.com   ")
-        user = users_models.User.query.one()
+        user = db.session.query(users_models.User).one()
         assert user.email == "new@example.com"
 
     def test_update_user_info_returns_modified_info(self):
@@ -1485,7 +1487,7 @@ class UserEmailValidationTest:
 
         users_api.validate_pro_user_email(user_offerer.user)
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
         assert user_offerer.user.isEmailValidated is True
         assert len(mails_testing.outbox) == 0
 
@@ -1495,8 +1497,8 @@ class UserEmailValidationTest:
 
         users_api.validate_pro_user_email(user_offerer.user, backoffice_user)
 
-        assert history_models.ActionHistory.query.count() == 1
-        action = history_models.ActionHistory.query.one()
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_EMAIL_VALIDATED
         assert action.user == user_offerer.user
         assert action.authorUser == backoffice_user
@@ -1580,7 +1582,7 @@ class SaveTrustedDeviceTest:
 
         users_api.save_trusted_device(device_info=device_info, user=user)
 
-        assert users_models.TrustedDevice.query.count() == 0
+        assert db.session.query(users_models.TrustedDevice).count() == 0
 
     def test_can_save_trusted_device(self):
         user = users_factories.UserFactory()
@@ -1592,7 +1594,7 @@ class SaveTrustedDeviceTest:
 
         users_api.save_trusted_device(device_info=device_info, user=user)
 
-        trusted_device = users_models.TrustedDevice.query.one()
+        trusted_device = db.session.query(users_models.TrustedDevice).one()
 
         assert trusted_device.deviceId == device_info.device_id
         assert trusted_device.source == "iPhone 13"
@@ -1608,7 +1610,7 @@ class SaveTrustedDeviceTest:
 
         users_api.save_trusted_device(device_info=device_info, user=user)
 
-        trusted_device = users_models.TrustedDevice.query.one()
+        trusted_device = db.session.query(users_models.TrustedDevice).one()
 
         assert user.trusted_devices == [trusted_device]
 
@@ -1642,7 +1644,7 @@ class UpdateLoginDeviceHistoryTest:
 
         users_api.update_login_device_history(device_info=device_info, user=user)
 
-        assert users_models.LoginDeviceHistory.query.count() == 0
+        assert db.session.query(users_models.LoginDeviceHistory).count() == 0
 
     def test_can_save_login_device(self):
         user = users_factories.UserFactory()
@@ -1654,7 +1656,7 @@ class UpdateLoginDeviceHistoryTest:
 
         users_api.update_login_device_history(device_info=device_info, user=user)
 
-        login_device = users_models.LoginDeviceHistory.query.one()
+        login_device = db.session.query(users_models.LoginDeviceHistory).one()
 
         assert login_device.deviceId == device_info.device_id
         assert login_device.source == "iPhone 13"
@@ -1671,7 +1673,7 @@ class UpdateLoginDeviceHistoryTest:
 
         login_history = users_api.update_login_device_history(device_info=device_info, user=user)
 
-        login_device = users_models.LoginDeviceHistory.query.one()
+        login_device = db.session.query(users_models.LoginDeviceHistory).one()
 
         assert login_history == login_device
 
@@ -1685,7 +1687,7 @@ class UpdateLoginDeviceHistoryTest:
 
         users_api.update_login_device_history(device_info=device_info, user=user)
 
-        login_device = users_models.LoginDeviceHistory.query.one()
+        login_device = db.session.query(users_models.LoginDeviceHistory).one()
 
         assert user.login_device_history == [login_device]
 
@@ -1875,7 +1877,7 @@ class DeleteOldTrustedDevicesTest:
 
         users_api.delete_old_trusted_devices()
 
-        assert users_models.TrustedDevice.query.count() == 0
+        assert db.session.query(users_models.TrustedDevice).count() == 0
 
     def should_not_delete_trusted_devices_created_less_than_five_years_ago(self):
         less_than_five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5) + datetime.timedelta(days=1)
@@ -1883,7 +1885,7 @@ class DeleteOldTrustedDevicesTest:
 
         users_api.delete_old_trusted_devices()
 
-        assert users_models.TrustedDevice.query.count() == 1
+        assert db.session.query(users_models.TrustedDevice).count() == 1
 
 
 class DeleteOldLoginDeviceHistoryTest:
@@ -1895,7 +1897,7 @@ class DeleteOldLoginDeviceHistoryTest:
 
         users_api.delete_old_login_device_history()
 
-        assert users_models.LoginDeviceHistory.query.count() == 0
+        assert db.session.query(users_models.LoginDeviceHistory).count() == 0
 
     def should_not_delete_device_history_created_less_than_thirteen_months_ago(self):
         less_than_thirteen_months_ago = (
@@ -1905,7 +1907,7 @@ class DeleteOldLoginDeviceHistoryTest:
 
         users_api.delete_old_login_device_history()
 
-        assert users_models.LoginDeviceHistory.query.count() == 1
+        assert db.session.query(users_models.LoginDeviceHistory).count() == 1
 
 
 class RefreshAccessTokenTest:
@@ -2028,7 +2030,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         users_api.notify_users_before_deletion_of_suspended_account()
 
         # then
-        user = users_models.User.query.get(suspension_to_be_detected.userId)
+        user = db.session.query(users_models.User).get(suspension_to_be_detected.userId)
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
         assert mails_testing.outbox[0]["To"] == user.email
@@ -2157,7 +2159,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         )
 
         self.import_iris()
-        iris = geography_models.IrisFrance.query.first()
+        iris = db.session.query(geography_models.IrisFrance).first()
 
         with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
             users_api.anonymize_non_pro_non_beneficiary_users(force=False)
@@ -2256,9 +2258,9 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
         assert (
-            history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.userId == user_to_anonymize.id
-            ).count()
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.userId == user_to_anonymize.id)
+            .count()
             == 2
         )
 
@@ -2392,8 +2394,8 @@ class AnonymizeProUserTest:
         user_id = user_offerer_to_delete.user.id
         users_api.anonymize_pro_users()
 
-        assert users_models.User.query.filter_by(id=user_id).count() == 0
-        assert users_models.User.query.filter_by(id=user_offerer_to_keep.user.id).count() == 1
+        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
+        assert db.session.query(users_models.User).filter_by(id=user_offerer_to_keep.user.id).count() == 1
         delete_beamer_user_mock.assert_called_once_with(user_id)
 
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
@@ -2408,7 +2410,7 @@ class AnonymizeProUserTest:
 
         users_api.anonymize_pro_users()
 
-        assert users_models.User.query.count() == 2
+        assert db.session.query(users_models.User).count() == 2
         delete_beamer_user_mock.assert_not_called()
 
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
@@ -2419,7 +2421,7 @@ class AnonymizeProUserTest:
         user_id = user_offerer_to_delete.user.id
         users_api.anonymize_pro_users()
 
-        assert users_models.User.query.filter_by(id=user_id).count() == 1
+        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 1
         delete_beamer_user_mock.assert_not_called()
 
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
@@ -2437,9 +2439,9 @@ class AnonymizeProUserTest:
         user_id = user_to_delete.id
         users_api.anonymize_pro_users()
 
-        assert users_models.User.query.filter_by(id=user_id).count() == 0
-        assert users_models.User.query.filter_by(id=user_to_keep1.id).count() == 1
-        assert users_models.User.query.filter_by(id=user_to_keep2.id).count() == 1
+        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
+        assert db.session.query(users_models.User).filter_by(id=user_to_keep1.id).count() == 1
+        assert db.session.query(users_models.User).filter_by(id=user_to_keep2.id).count() == 1
         delete_beamer_user_mock.assert_called_once_with(user_id)
 
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
@@ -2455,8 +2457,8 @@ class AnonymizeProUserTest:
         user_id = user_offerer_to_delete.user.id
         users_api.anonymize_pro_users()
 
-        assert users_models.User.query.filter_by(id=user_id).count() == 0
-        assert users_models.User.query.filter_by(id=user_offerer_to_keep.userId).count() == 1
+        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
+        assert db.session.query(users_models.User).filter_by(id=user_offerer_to_keep.userId).count() == 1
         delete_beamer_user_mock.assert_called_once_with(user_id)
 
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
@@ -2468,8 +2470,8 @@ class AnonymizeProUserTest:
         user_id = user_to_delete.id
         users_api.anonymize_pro_users()
 
-        assert users_models.User.query.filter_by(id=user_id).count() == 0
-        assert users_models.User.query.filter_by(id=user_to_keep.id).count() == 1
+        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
+        assert db.session.query(users_models.User).filter_by(id=user_to_keep.id).count() == 1
         delete_beamer_user_mock.assert_called_once_with(user_id)
 
 
@@ -2542,7 +2544,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         )
 
         self.import_iris()
-        iris = geography_models.IrisFrance.query.first()
+        iris = db.session.query(geography_models.IrisFrance).first()
 
         with open(
             self.storage_folder / f"{user_with_expired_gdpr_extract_to_anonymize.gdprUserDataExtract[0].id}.zip", "wb"
@@ -2605,9 +2607,9 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
                 assert deposit.source == "Anonymized"
 
             assert (
-                users_models.GdprUserDataExtract.query.filter(
-                    users_models.GdprUserDataExtract.userId == user_to_anonymize.id
-                ).count()
+                db.session.query(users_models.GdprUserDataExtract)
+                .filter(users_models.GdprUserDataExtract.userId == user_to_anonymize.id)
+                .count()
                 == 0
             )
 
@@ -2696,7 +2698,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         )
 
         self.import_iris()
-        iris = geography_models.IrisFrance.query.first()
+        iris = db.session.query(geography_models.IrisFrance).first()
 
         with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
             users_api.anonymize_beneficiary_users(force=False)
@@ -2705,7 +2707,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         assert len(sendinblue_testing.sendinblue_requests) == 0
         assert user_beneficiary_to_anonymize.firstName == "user_beneficiary_to_anonymize"
-        assert users_models.GdprUserDataExtract.query.count() == 1
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 1
 
     def test_anonymize_beneficiary_user_no_addr_api(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2733,7 +2735,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
-        assert users_models.GdprUserAnonymization.query.count() == 0
+        assert db.session.query(users_models.GdprUserAnonymization).count() == 0
 
     def test_do_not_anonymize_user_tagged_when_he_is_less_than_21(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2748,7 +2750,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
-        assert users_models.GdprUserAnonymization.query.count() == 1
+        assert db.session.query(users_models.GdprUserAnonymization).count() == 1
 
     @pytest.mark.parametrize(
         "reason",
@@ -2784,7 +2786,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
-        assert users_models.GdprUserAnonymization.query.count() == 1
+        assert db.session.query(users_models.GdprUserAnonymization).count() == 1
 
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_tagged_as_fraud_5_years_ago(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2803,7 +2805,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
-        assert users_models.GdprUserAnonymization.query.count() == 0
+        assert db.session.query(users_models.GdprUserAnonymization).count() == 0
 
     @pytest.mark.parametrize(
         "reason",
@@ -2939,7 +2941,7 @@ class DeleteGdprExtractTest(StorageFolderManager):
         users_api.delete_gdpr_extract(extract.id)
 
         # then
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
         assert len(os.listdir(self.storage_folder)) == 0
 
     def test_extract_file_does_not_exists(self):
@@ -2949,7 +2951,7 @@ class DeleteGdprExtractTest(StorageFolderManager):
         users_api.delete_gdpr_extract(extract.id)
 
         # then
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
 
 
 class CleanGdprExtractTest(StorageFolderManager):
@@ -2966,7 +2968,7 @@ class CleanGdprExtractTest(StorageFolderManager):
         # when
         users_api.clean_gdpr_extracts()
         # then
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
         assert len(os.listdir(self.storage_folder)) == 0
 
     def test_delete_extracts_files_not_in_db(self):
@@ -2986,7 +2988,7 @@ class CleanGdprExtractTest(StorageFolderManager):
         # when
         users_api.clean_gdpr_extracts()
         # then
-        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 0
 
     def test_keep_unexpired_extracts(self):
         # given
@@ -2999,7 +3001,7 @@ class CleanGdprExtractTest(StorageFolderManager):
         # when
         users_api.clean_gdpr_extracts()
         # then
-        assert users_models.GdprUserDataExtract.query.count() == 1
+        assert db.session.query(users_models.GdprUserDataExtract).count() == 1
         assert len(os.listdir(self.storage_folder)) == 1
 
 
@@ -3211,7 +3213,7 @@ def generate_minimal_beneficiary():
     )
     db.session.add(action_history)
     db.session.flush()
-    history_models.ActionHistory.query.filter(history_models.ActionHistory.id == action_history.id).update(
+    db.session.query(history_models.ActionHistory).filter(history_models.ActionHistory.id == action_history.id).update(
         {"actionDate": None},
     )
     db.session.add(

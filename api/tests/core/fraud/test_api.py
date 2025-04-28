@@ -14,6 +14,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -374,10 +375,14 @@ class EduconnectFraudTest:
             ),
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-        ).one_or_none()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                user=user,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+            )
+            .one_or_none()
+        )
         assert fraud_check is not None
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
@@ -412,7 +417,8 @@ class EduconnectFraudTest:
         )
 
         fraud_check = (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
                 user=user,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
             )

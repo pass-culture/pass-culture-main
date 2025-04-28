@@ -6,6 +6,7 @@ import pcapi.core.educational.api.playlists as playlist_api
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -64,9 +65,11 @@ class SynchronizePlaylistsTest:
             ]
             playlist_api.synchronize_collective_playlist(playlist_type)
 
-        playlist_items = educational_models.CollectivePlaylist.query.order_by(
-            educational_models.CollectivePlaylist.id
-        ).all()
+        playlist_items = (
+            db.session.query(educational_models.CollectivePlaylist)
+            .order_by(educational_models.CollectivePlaylist.id)
+            .all()
+        )
         playlist_data = [
             {
                 "type": item.type,
@@ -146,9 +149,11 @@ class SynchronizePlaylistsTest:
             ]
             playlist_api.synchronize_collective_playlist(playlist_type)
 
-        playlist_items = educational_models.CollectivePlaylist.query.order_by(
-            educational_models.CollectivePlaylist.id
-        ).all()
+        playlist_items = (
+            db.session.query(educational_models.CollectivePlaylist)
+            .order_by(educational_models.CollectivePlaylist.id)
+            .all()
+        )
         playlist_data = [
             {
                 "type": item.type,

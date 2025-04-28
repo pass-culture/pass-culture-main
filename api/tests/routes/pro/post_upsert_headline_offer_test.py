@@ -9,6 +9,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -34,7 +35,7 @@ class Returns200Test:
         with caplog.at_level(logging.INFO):
             assert response.status_code == 201
         assert offer.is_headline_offer
-        headline_offer = offers_models.HeadlineOffer.query.one()
+        headline_offer = db.session.query(offers_models.HeadlineOffer).one()
         assert headline_offer
 
         assert response.json == {
@@ -77,7 +78,7 @@ class Returns200Test:
 
         assert response.status_code == 201
         assert offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 2
+        assert db.session.query(offers_models.HeadlineOffer).count() == 2
         assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 0
 
         mocked_async_index_offer_ids.assert_called_once_with(
@@ -107,7 +108,7 @@ class Returns200Test:
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 2
+        assert db.session.query(offers_models.HeadlineOffer).count() == 2
         assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 1
         log = next(log for log in caplog.records if log.message == "Headline Offer Deactivation")
         assert log.extra == {
@@ -148,7 +149,7 @@ class Returns200Test:
 
         assert not offer.is_headline_offer
         assert another_offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 2
+        assert db.session.query(offers_models.HeadlineOffer).count() == 2
         assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 1
         log = next(log for log in caplog.records if log.message == "Headline Offer Deactivation")
         assert log.extra == {
@@ -185,7 +186,7 @@ class Returns400Test:
         assert response.json["global"] == ["Cette offre est déjà mise à la une"]
 
         assert offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.one()
+        assert db.session.query(offers_models.HeadlineOffer).one()
 
         mocked_async_index_offer_ids.assert_not_called()
 
@@ -207,7 +208,7 @@ class Returns400Test:
         assert response.json["global"] == ["Cette offre est inactive et ne peut pas être mise à la une"]
 
         assert not offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 0
+        assert db.session.query(offers_models.HeadlineOffer).count() == 0
 
         mocked_async_index_offer_ids.assert_not_called()
 
@@ -234,7 +235,7 @@ class Returns400Test:
         ]
 
         assert not offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 0
+        assert db.session.query(offers_models.HeadlineOffer).count() == 0
 
         mocked_async_index_offer_ids.assert_not_called()
 
@@ -258,7 +259,7 @@ class Returns400Test:
         assert response.json["global"] == ["Une offre virtuelle ne peut pas être mise à la une"]
 
         assert not offer.is_headline_offer
-        assert offers_models.HeadlineOffer.query.count() == 0
+        assert db.session.query(offers_models.HeadlineOffer).count() == 0
 
         mocked_async_index_offer_ids.assert_not_called()
 

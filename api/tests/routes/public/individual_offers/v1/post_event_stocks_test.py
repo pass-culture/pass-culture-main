@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
@@ -102,7 +103,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_stocks = offers_models.Stock.query.filter(offers_models.Stock.offerId == event.id).all()
+        created_stocks = db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId == event.id).all()
         assert len(created_stocks) == 2
         first_stock = next(stock for stock in created_stocks if stock.beginningDatetime == next_month)
         assert first_stock.price == decimal.Decimal("88.99")

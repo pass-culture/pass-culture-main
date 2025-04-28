@@ -31,7 +31,7 @@ def create_special_event_from_typeform(
     venue_id: int | None = None,
 ) -> models.SpecialEvent:
     if venue_id:
-        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not venue:
             raise ValueError(f"Le lieu {venue_id} n'existe pas")
         if offerer_id and offerer_id != venue.managingOffererId:
@@ -39,7 +39,7 @@ def create_special_event_from_typeform(
         if not offerer_id:
             offerer_id = venue.managingOffererId
     elif offerer_id:
-        offerer = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        offerer = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not offerer:
             raise ValueError(f"La structure {offerer_id} n'existe pas")
 
@@ -60,13 +60,15 @@ def create_special_event_from_typeform(
 
 @atomic()
 def reject_response_on_expired_operation() -> None:
-    models.SpecialEventResponse.query.filter(
+    db.session.query(models.SpecialEventResponse).filter(
         models.SpecialEventResponse.eventId.in_(
-            models.SpecialEvent.query.filter(
+            db.session.query(models.SpecialEvent)
+            .filter(
                 models.SpecialEvent.eventDate < datetime.date.today() - datetime.timedelta(days=7),
                 # limit to 10 days to avoid checking all events until the end of time.
                 models.SpecialEvent.eventDate >= datetime.date.today() - datetime.timedelta(days=10),
-            ).with_entities(models.SpecialEvent.id),
+            )
+            .with_entities(models.SpecialEvent.id),
         ),
         models.SpecialEventResponse.status == models.SpecialEventResponseStatus.NEW,
     ).update(
@@ -78,7 +80,7 @@ def reject_response_on_expired_operation() -> None:
 
 
 def retrieve_data_from_typeform() -> None:
-    events = models.SpecialEvent.query.filter(
+    events = db.session.query(models.SpecialEvent).filter(
         models.SpecialEvent.eventDate >= datetime.date.today() - datetime.timedelta(days=7),
     )
     for event in events:
@@ -110,7 +112,7 @@ def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
 @atomic()
 def update_form_title_from_typeform(event_id: int, event_title: str, form: typeform.TypeformForm) -> None:
     if form.title != event_title:
-        models.SpecialEvent.query.filter(models.SpecialEvent.id == event_id).update(
+        db.session.query(models.SpecialEvent).filter(models.SpecialEvent.id == event_id).update(
             {
                 "title": form.title,
             },
@@ -120,7 +122,9 @@ def update_form_title_from_typeform(event_id: int, event_title: str, form: typef
 
 @atomic()
 def update_form_questions_from_typeform(event_id: int, form: typeform.TypeformForm) -> dict[str, int]:
-    old_questions = models.SpecialEventQuestion.query.filter(models.SpecialEventQuestion.eventId == event_id).all()
+    old_questions = (
+        db.session.query(models.SpecialEventQuestion).filter(models.SpecialEventQuestion.eventId == event_id).all()
+    )
 
     questions = {q.externalId: q for q in old_questions}
 
@@ -140,7 +144,8 @@ def update_form_questions_from_typeform(event_id: int, form: typeform.TypeformFo
 def download_responses_from_typeform(event_id: int, event_external_id: str, questions: dict[str, int]) -> None:
     def get_last_date_for_event() -> datetime.datetime | None:
         result = (
-            models.SpecialEventResponse.query.with_entities(models.SpecialEventResponse.dateSubmitted)
+            db.session.query(models.SpecialEventResponse)
+            .with_entities(models.SpecialEventResponse.dateSubmitted)
             .filter(models.SpecialEventResponse.eventId == event_id)
             .order_by(models.SpecialEventResponse.dateSubmitted.desc())
             .limit(1)
@@ -159,13 +164,14 @@ def download_responses_from_typeform(event_id: int, event_external_id: str, ques
 def _get_user_for_form(form: typeform.TypeformResponse) -> users_models.User | None:
     user = None
     if form.email:
-        user = users_models.User.query.filter(users_models.User.email == form.email).one_or_none()
+        user = db.session.query(users_models.User).filter(users_models.User.email == form.email).one_or_none()
     if form.phone_number and not user:
         with suppress(InvalidPhoneNumber):
             parsed_phone_number = ParsedPhoneNumber(form.phone_number)
             with suppress(sa.exc.MultipleResultsFound):
                 user = (
-                    users_models.User.query.filter(
+                    db.session.query(users_models.User)
+                    .filter(
                         users_models.User._phoneNumber == parsed_phone_number.phone_number,
                     )
                     .limit(2)

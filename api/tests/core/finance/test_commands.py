@@ -43,7 +43,7 @@ class AddCustomOfferReimbursementRuleTest:
 
         # fmt: on
         assert "Created new rule" in result.output
-        rule = finance_models.CustomReimbursementRule.query.one()
+        rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
 
@@ -64,7 +64,7 @@ class AddCustomOfferReimbursementRuleTest:
         assert "Command has failed" in result.output
         assert "Mismatch on offerer" in result.output
         assert "Mismatch on original amount" in result.output
-        assert finance_models.CustomReimbursementRule.query.count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 0
 
     def test_force_with_warnings(self, run_command):
         stock = offers_factories.StockFactory(price=24.68)
@@ -84,7 +84,7 @@ class AddCustomOfferReimbursementRuleTest:
         )
         # fmt: on
         assert "Created new rule" in result.output
-        rule = finance_models.CustomReimbursementRule.query.one()
+        rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
 

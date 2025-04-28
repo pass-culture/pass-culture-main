@@ -12,6 +12,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 
 
@@ -34,7 +35,7 @@ class Returns204Test:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
         assert response.status_code == 204
-        updated_booking = Booking.query.one()
+        updated_booking = db.session.query(Booking).one()
         assert updated_booking.status is BookingStatus.CANCELLED
 
         assert push_testing.requests[-1] == {
@@ -65,7 +66,7 @@ class Returns204Test:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
         assert response.status_code == 204
-        updated_booking = Booking.query.one()
+        updated_booking = db.session.query(Booking).one()
         assert updated_booking.status is BookingStatus.CANCELLED
 
         cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
@@ -84,7 +85,7 @@ class Returns204Test:
         )
 
         assert response.status_code == 204
-        booking = Booking.query.one()
+        booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
@@ -120,7 +121,7 @@ class Returns204Test:
         )
 
         assert response.status_code == 204
-        booking = Booking.query.one()
+        booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.CANCELLED
         assert stock.dnBookedQuantity == 4
         assert booking.stock.quantity == 14  # 4 already booked + 10 remaining
@@ -165,7 +166,7 @@ class Returns204Test:
         )
 
         assert response.status_code == 204
-        booking = Booking.query.one()
+        booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.CANCELLED
         assert stock.dnBookedQuantity == 4
         assert booking.stock.quantity == None  # stock quantity is unlimited when value is None
@@ -207,7 +208,7 @@ class Returns204Test:
         )
 
         assert response.status_code == 204
-        booking = Booking.query.one()
+        booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.quantity == 17  # 2 already booked + 15 remaining
         assert booking.stock.dnBookedQuantity == 2
@@ -249,7 +250,7 @@ class Returns204Test:
         )
 
         assert response.status_code == 204
-        booking = Booking.query.one()
+        booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == 4
         assert booking.stock.quantity == 37  # shouldn't change
@@ -314,7 +315,7 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json["global"] == ["Impossible d'annuler une réservation consommée"]
-        booking = Booking.query.first()
+        booking = db.session.query(Booking).first()
         assert booking.status is BookingStatus.USED
         assert not push_testing.requests
 
@@ -383,6 +384,6 @@ class Returns400Test:
         assert response.json == {
             "global": ["L'annulation de réservation a échoué."],
         }
-        booking = Booking.query.one()
+        booking = db.session.query(Booking).one()
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.stock.dnBookedQuantity == 5

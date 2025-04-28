@@ -87,7 +87,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        new_venue = offerers_models.Venue.query.get(venue_id)
+        new_venue = db.session.query(offerers_models.Venue).get(venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert response.json["street"] == venue.street
@@ -202,11 +202,11 @@ class Returns200Test:
             },
         }
 
-        assert (len(offerers_models.OffererAddress.query.all())) == 2
-        offerer_address = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).first()
-        old_oa = offerers_models.OffererAddress.query.get(venue_oa_id)
+        assert (len(db.session.query(offerers_models.OffererAddress).all())) == 2
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).first()
+        )
+        old_oa = db.session.query(offerers_models.OffererAddress).get(venue_oa_id)
         address = offerer_address.address
         assert old_oa.label == "old name"
         assert venue.offererAddressId == offerer_address.id
@@ -372,10 +372,10 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.one()
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).all()
+        venue = db.session.query(offerers_models.Venue).one()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
+        )
         offerer_address = offerer_addresses[0]
         address = offerer_address.address
         assert len(offerer_addresses) == 2
@@ -458,8 +458,15 @@ class Returns200Test:
 
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
-        offerers_models.Venue.query.one()
-        assert len(offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id.desc()).all()) == 2
+        db.session.query(offerers_models.Venue).one()
+        assert (
+            len(
+                db.session.query(offerers_models.OffererAddress)
+                .order_by(offerers_models.OffererAddress.id.desc())
+                .all()
+            )
+            == 2
+        )
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -473,10 +480,10 @@ class Returns200Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
 
-        venue = offerers_models.Venue.query.one()
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).all()
+        venue = db.session.query(offerers_models.Venue).one()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
+        )
         # We should still have only 2 offerer_addresses:
         #   - The first one created along side the venue
         #   - The second one created manually along side an edition
@@ -606,11 +613,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.filter_by(id=venue_without_siret.id).one()
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(
-            offerers_models.OffererAddress.id.desc()
-        ).all()
+        venue = db.session.query(offerers_models.Venue).filter_by(id=venue_without_siret.id).one()
+        address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
+        )
         offerer_address = offerer_addresses[0]
 
         assert len(offerer_addresses) == 3
@@ -672,8 +679,10 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         auth_request.patch("/venues/%s" % venue.id, json=update_data)
 
-        venue = offerers_models.Venue.query.one()
-        offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id).all()
+        venue = db.session.query(offerers_models.Venue).one()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id).all()
+        )
         assert len(offerer_addresses) == 1
 
     def test_edit_only_activity_parameters_and_not_venue_accessibility(self, client):
@@ -708,7 +717,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = db.session.query(offerers_models.Venue).get(venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.audioDisabilityCompliant == None
         assert venue.mentalDisabilityCompliant == None
@@ -1002,7 +1011,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        venue = offerers_models.Venue.query.get(venue.id)
+        venue = db.session.query(offerers_models.Venue).get(venue.id)
         assert venue.audioDisabilityCompliant
         assert venue.mentalDisabilityCompliant
         assert venue.motorDisabilityCompliant is False
@@ -1032,7 +1041,7 @@ class Returns200Test:
         response = http_client.patch(f"/venues/{venue_id}", json=venue_data)
         assert response.status_code == 200
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     def test_update_only_venue_contact(self, mock_request_url_scan, client):
@@ -1046,7 +1055,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user_offerer.user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        venue = offerers_models.Venue.query.get(venue.id)
+        venue = db.session.query(offerers_models.Venue).get(venue.id)
         assert venue.contact
         assert venue.contact.phone_number == "+33788888888"
         assert venue.contact.email == venue_data["contact"]["email"]
@@ -1064,7 +1073,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user_offerer.user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        venue = offerers_models.Venue.query.get(venue.id)
+        venue = db.session.query(offerers_models.Venue).get(venue.id)
         assert venue.contact.website == "https://new.website.com"
         mock_request_url_scan.assert_called_once_with(venue_data["contact"]["website"], skip_if_recent_scan=True)
 
@@ -1079,7 +1088,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user_offerer.user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        assert offerers_models.VenueContact.query.count() == 0
+        assert db.session.query(offerers_models.VenueContact).count() == 0
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     def test_no_venue_contact_no_modification(self, mock_request_url_scan, client) -> None:
@@ -1099,7 +1108,7 @@ class Returns200Test:
 
         # then
         # nothing has changed => nothing to save nor update
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
         mock_request_url_scan.assert_not_called()
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
@@ -1129,7 +1138,7 @@ class Returns200Test:
         assert venue.contact.website == venue_data["contact"]["website"]
 
         # contact info added => an action should be logged in history
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.authorUserId == user.id
         assert action.venueId == venue.id

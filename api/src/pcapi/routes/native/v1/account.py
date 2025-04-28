@@ -26,6 +26,7 @@ import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
@@ -204,7 +205,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
         # Returning an error message might help the end client find
         # existing email addresses through user enumeration attacks.
         token = token_utils.Token.load_without_checking(body.token)
-        user = users_models.User.query.get(token.user_id)
+        user = db.session.query(users_models.User).get(token.user_id)
 
     if user.is_eligible and not user.is_beneficiary:
         try:
@@ -491,7 +492,7 @@ def suspend_account_for_hack_suspicion(user: users_models.User) -> None:
 def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSuspiciousLoginRequest) -> None:
     try:
         token = token_utils.Token.load_and_check(body.token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
-        user = users_models.User.query.filter_by(id=token.user_id).one()
+        user = db.session.query(users_models.User).filter_by(id=token.user_id).one()
     except sa_orm.exc.NoResultFound:
         raise api_errors.ResourceNotFoundError()
     except exceptions.ExpiredToken:

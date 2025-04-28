@@ -7,6 +7,7 @@ import pcapi.core.offers.models as offer_models
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -27,7 +28,7 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert all(stock.isSoftDeleted for stock in offer_models.Stock.query.all())
+        assert all(stock.isSoftDeleted for stock in db.session.query(offer_models.Stock).all())
         assert booking_1.cancellationUser == user
         assert booking_2.cancellationUser == user
 
@@ -59,7 +60,7 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert all(stock.isSoftDeleted for stock in offer_models.Stock.query.all())
+        assert all(stock.isSoftDeleted for stock in db.session.query(offer_models.Stock).all())
         assert booking_1.cancellationUser == admin
         assert booking_2.cancellationUser == admin
 
@@ -80,7 +81,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
 
-        assert all(not stock.isSoftDeleted for stock in offer_models.Stock.query.all())
+        assert all(not stock.isSoftDeleted for stock in db.session.query(offer_models.Stock).all())
 
 
 @pytest.mark.usefixtures("db_session")

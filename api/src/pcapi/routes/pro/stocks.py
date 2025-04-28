@@ -13,6 +13,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceGoneError
@@ -57,17 +58,21 @@ def _get_existing_stocks_by_fields(
         )
         for stock in stock_payload
     ]
-    return offers_models.Stock.query.filter(sa.or_(*combinaisons_to_check)).all()
+    return db.session.query(offers_models.Stock).filter(sa.or_(*combinaisons_to_check)).all()
 
 
 def _get_existing_stocks_by_id(
     offer_id: int, stocks_payload: list[stock_serialize.StockEditionBodyModel]
 ) -> dict[int, offers_models.Stock]:
-    existing_stocks = offers_models.Stock.query.filter(
-        offers_models.Stock.offerId == offer_id,
-        offers_models.Stock.isSoftDeleted == False,
-        offers_models.Stock.id.in_([stock_payload.id for stock_payload in stocks_payload]),
-    ).all()
+    existing_stocks = (
+        db.session.query(offers_models.Stock)
+        .filter(
+            offers_models.Stock.offerId == offer_id,
+            offers_models.Stock.isSoftDeleted == False,
+            offers_models.Stock.id.in_([stock_payload.id for stock_payload in stocks_payload]),
+        )
+        .all()
+    )
     return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
 
 
@@ -89,7 +94,8 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = (
-        offers_models.Offer.query.options(
+        db.session.query(offers_models.Offer)
+        .options(
             sa_orm.joinedload(offers_models.Offer.priceCategories),
         )
         .filter_by(id=body.offer_id)

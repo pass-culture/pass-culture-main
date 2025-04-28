@@ -8,6 +8,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 from tests.connectors import sirene_test_data
@@ -35,7 +36,7 @@ def test_returned_data(client):
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
 
-    created_offerer = offerers_models.Offerer.query.one()
+    created_offerer = db.session.query(offerers_models.Offerer).one()
     assert response.json == {
         "id": created_offerer.id,
         "siren": "418166096",
@@ -59,7 +60,7 @@ def test_user_cant_create_same_offerer_twice(client):
     client = client.with_session_auth(pro.email)
     first_response = client.post("/offerers", json=body)
 
-    created_offerer = offerers_models.Offerer.query.one()
+    created_offerer = db.session.query(offerers_models.Offerer).one()
     assert first_response.json == {
         "id": created_offerer.id,
         "siren": "418166096",
@@ -115,14 +116,14 @@ def test_user_can_create_offerer_with_phone_number(client):
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
 
-    created_offerer = offerers_models.Offerer.query.one()
+    created_offerer = db.session.query(offerers_models.Offerer).one()
     assert response.json == {
         "id": created_offerer.id,
         "siren": "418166096",
         "name": "MINISTERE DE LA CULTURE",
     }
 
-    pro = users_models.User.query.filter_by(id=pro.id).one()
+    pro = db.session.query(users_models.User).filter_by(id=pro.id).one()
     assert pro.phoneNumber == "+33123456789"
 
 
@@ -165,7 +166,7 @@ def test_use_offerer_name_retrieved_from_sirene_api(client):
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
 
-    offerers_models.Offerer.query.one()
+    db.session.query(offerers_models.Offerer).one()
     assert response.status_code == 201
     assert response.json["siren"] == "418166096"
     assert response.json["name"] == "MINISTERE DE LA CULTURE"
@@ -190,7 +191,7 @@ def test_current_user_has_access_to_created_offerer(client):
 
     # then
     assert response.status_code == 201
-    offerer = offerers_models.Offerer.query.one()
+    offerer = db.session.query(offerers_models.Offerer).one()
     assert offerer.UserOfferers[0].user == pro
 
 
@@ -215,8 +216,8 @@ def test_new_user_offerer_has_validation_status_new(client):
 
     # then
     assert response.status_code == 201
-    offerer = offerers_models.Offerer.query.one()
-    created_user_offerer = offerers_models.UserOfferer.query.filter_by(offerer=offerer, user=pro).one()
+    offerer = db.session.query(offerers_models.Offerer).one()
+    created_user_offerer = db.session.query(offerers_models.UserOfferer).filter_by(offerer=offerer, user=pro).one()
     assert created_user_offerer.validationStatus == ValidationStatus.NEW
 
 
@@ -240,7 +241,7 @@ def test_create_offerer_action_is_logged(client):
 
     # then
     assert response.status_code == 201
-    action = history_models.ActionHistory.query.one()
+    action = db.session.query(history_models.ActionHistory).one()
     assert action.actionType == history_models.ActionType.OFFERER_NEW
     assert action.authorUser == user
     assert action.user == user
@@ -307,5 +308,5 @@ def test_saint_martin_offerer_creation_without_postal_code_is_successfull(reques
 
     assert response.status_code == 201
 
-    offerer = offerers_models.Offerer.query.one()
+    offerer = db.session.query(offerers_models.Offerer).one()
     assert offerer.postalCode == "97150"

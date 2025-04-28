@@ -7,6 +7,7 @@ from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
+from pcapi.models import db
 
 
 class Returns400Test:
@@ -93,7 +94,7 @@ class Returns204Test:
 
         # then
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = db.session.query(User).get(user.id)
 
     @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_email_is_known(self, check_recaptcha_token_is_valid_mock, client, db_session):
@@ -106,7 +107,7 @@ class Returns204Test:
 
         # then
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = db.session.query(User).get(user.id)
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
         now = datetime.utcnow()
         assert (

@@ -11,6 +11,7 @@ from pcapi.core.educational.exceptions import CantGetImageFromUrl
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as user_factories
+from pcapi.models import db
 from pcapi.models import validation_status_mixin
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.date import format_into_utc_date
@@ -61,7 +62,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         # Then
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.status_code == 201
         assert response.json["imageCredit"] == offer.imageCredit
         assert response.json["imageUrl"] == duplicate.imageUrl
@@ -85,7 +86,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
@@ -184,7 +185,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
     def test_duplicate_ended(self, client):
@@ -196,7 +197,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_DUPLIATE)
@@ -277,7 +278,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.validation == offers_models.OfferValidationStatus.DRAFT
         assert duplicate.lastValidationDate is None
         assert duplicate.lastValidationType is None
@@ -296,7 +297,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.domains == [domain]
         assert duplicate.nationalProgramId is None
 
@@ -313,7 +314,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.domains == [domain]
         assert duplicate.nationalProgramId is None
 
@@ -327,6 +328,6 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.domains == []
         assert duplicate.nationalProgramId is None

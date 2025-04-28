@@ -1,6 +1,7 @@
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_virtual_venue_by_offerer_id
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -13,7 +14,7 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
 
     if venue.managingOffererId:
         if not venue.managingOfferer:
-            managing_offerer = offerers_models.Offerer.query.filter_by(id=venue.managingOffererId).one()
+            managing_offerer = db.session.query(offerers_models.Offerer).filter_by(id=venue.managingOffererId).one()
         else:
             managing_offerer = venue.managingOfferer
         if not managing_offerer.siren:

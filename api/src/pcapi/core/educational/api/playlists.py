@@ -71,7 +71,7 @@ def synchronize_institution_playlist(
 
     actual_rows = {
         getattr(row, ctx.local_attr_name): row
-        for row in educational_models.CollectivePlaylist.query.filter(
+        for row in db.session.query(educational_models.CollectivePlaylist).filter(
             educational_models.CollectivePlaylist.type == playlist_type,
             educational_models.CollectivePlaylist.institution == institution,
         )
@@ -103,7 +103,7 @@ def synchronize_institution_playlist(
     ]
 
     if playlist_ids_to_remove:
-        educational_models.CollectivePlaylist.query.filter(
+        db.session.query(educational_models.CollectivePlaylist).filter(
             educational_models.CollectivePlaylist.id.in_(playlist_ids_to_remove)
         ).delete()
     if playlist_items_to_add:
@@ -129,7 +129,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
     for row in ctx.query().execute(page_size=BIGQUERY_PLAYLIST_BATCH_SIZE):
         current_institution_id = int(getattr(row, "institution_id"))
         if institution is None:
-            institution = educational_models.EducationalInstitution.query.get(current_institution_id)
+            institution = db.session.query(educational_models.EducationalInstitution).get(current_institution_id)
         if institution.id != current_institution_id:
             try:
                 with transaction():
@@ -137,7 +137,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
             except Exception:  # pylint: disable=broad-exception-caught
                 logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
                 db.session.rollback()
-            institution = educational_models.EducationalInstitution.query.get(current_institution_id)
+            institution = db.session.query(educational_models.EducationalInstitution).get(current_institution_id)
             institution_rows = []
         institution_rows.append(row)
     # Don't forget to synchronize the latest institution

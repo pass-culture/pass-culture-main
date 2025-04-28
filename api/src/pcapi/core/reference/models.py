@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.core.logging import log_elapsed
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import db
 
 from . import exceptions
 
@@ -74,7 +75,8 @@ class ReferenceScheme(Base, Model):
         # updated reference.
         with log_elapsed(logger, "Waited to acquire lock to update ReferenceScheme"):
             return (
-                cls.query.populate_existing()
+                db.session.query(cls)
+                .populate_existing()
                 .with_for_update(nowait=False)
                 .filter_by(
                     name=name,

@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.core.artist.models import Artist
+from pcapi.models import db
 from pcapi.repository.session_management import atomic
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -16,6 +17,6 @@ logger = logging.getLogger(__name__)
 @atomic()
 def get_artist(artist_id: str) -> serializers.ArtistResponse:
 
-    artist = Artist.query.get_or_404(artist_id)
+    artist = db.session.query(Artist).get_or_404(artist_id)
 
     return serializers.ArtistResponse.from_orm(artist)

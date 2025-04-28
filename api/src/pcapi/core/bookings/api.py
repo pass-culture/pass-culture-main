@@ -100,7 +100,9 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
     including the offer and venue data.
     """
     return (
-        models.Booking.query.filter_by(userId=user.id).options(
+        db.session.query(models.Booking)
+        .filter_by(userId=user.id)
+        .options(
             sa_orm.joinedload(models.Booking.stock)
             .load_only(
                 offers_models.Stock.id,
@@ -220,7 +222,9 @@ def _book_offer(
 
         is_activation_code_applicable = (
             stock.canHaveActivationCodes
-            and db.session.query(offers_models.ActivationCode.query.filter_by(stock=stock).exists()).scalar()
+            and db.session.query(
+                db.session.query(offers_models.ActivationCode).filter_by(stock=stock).exists()
+            ).scalar()
         )
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
@@ -321,7 +325,8 @@ def book_offer(
     Update a user's credit information on Batch.
     """
     stock = (
-        offers_models.Stock.query.filter_by(id=stock_id)
+        db.session.query(offers_models.Stock)
+        .filter_by(id=stock_id)
         .options(
             sa_orm.joinedload(offers_models.Stock.offer)
             .joinedload(offers_models.Offer.venue)
@@ -337,7 +342,7 @@ def book_offer(
         raise offers_exceptions.StockDoesNotExist()
 
     first_venue_booking = not db.session.query(
-        models.Booking.query.filter(models.Booking.venueId == stock.offer.venueId).exists()
+        db.session.query(models.Booking).filter(models.Booking.venueId == stock.offer.venueId).exists()
     ).scalar()
 
     try:
@@ -474,7 +479,8 @@ def _cancel_booking(
     # After UPDATE query, objet is refreshed when accessed.
     # Force refresh with joinedload to avoid N+1 queries below.
     booking = (
-        models.Booking.query.filter_by(id=booking.id)
+        db.session.query(models.Booking)
+        .filter_by(id=booking.id)
         .options(
             sa_orm.joinedload(models.Booking.externalBookings),
             sa_orm.joinedload(models.Booking.stock, innerjoin=True).joinedload(
@@ -987,10 +993,14 @@ def auto_mark_as_used_after_event() -> None:
     # would already have an event). If it happened, `add_event` would
     # fail because of the PostgreSQL partially unique constraint on
     # `bookingId`.
-    individual_bookings = models.Booking.query.filter_by(dateUsed=now).options(
-        sa_orm.joinedload(models.Booking.stock, innerjoin=True).joinedload(offers_models.Stock.offer),
-        sa_orm.joinedload(models.Booking.venue, innerjoin=True),
-        sa_orm.joinedload(models.Booking.user).selectinload(users_models.User.achievements),
+    individual_bookings = (
+        db.session.query(models.Booking)
+        .filter_by(dateUsed=now)
+        .options(
+            sa_orm.joinedload(models.Booking.stock, innerjoin=True).joinedload(offers_models.Stock.offer),
+            sa_orm.joinedload(models.Booking.venue, innerjoin=True),
+            sa_orm.joinedload(models.Booking.user).selectinload(users_models.User.achievements),
+        )
     )
     n_individual_bookings_updated = 0
     for booking in individual_bookings:
@@ -1014,9 +1024,13 @@ def auto_mark_as_used_after_event() -> None:
         .values(dateUsed=now, status=educational_models.CollectiveBookingStatus.USED),
         execution_options={"synchronize_session": False},
     )
-    collective_bookings = educational_models.CollectiveBooking.query.filter_by(dateUsed=now).options(
-        sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True),
-        sa_orm.joinedload(educational_models.CollectiveBooking.venue, innerjoin=True),
+    collective_bookings = (
+        db.session.query(educational_models.CollectiveBooking)
+        .filter_by(dateUsed=now)
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True),
+            sa_orm.joinedload(educational_models.CollectiveBooking.venue, innerjoin=True),
+        )
     )
     n_collective_bookings_updated = 0
     for booking in collective_bookings:
@@ -1048,9 +1062,8 @@ def get_individual_bookings_from_stock(
     stock_id: int,
 ) -> typing.Generator[models.Booking, None, None]:
     query = (
-        models.Booking.query.filter(
-            models.Booking.stockId == stock_id, models.Booking.status != models.BookingStatus.CANCELLED
-        )
+        db.session.query(models.Booking)
+        .filter(models.Booking.stockId == stock_id, models.Booking.status != models.BookingStatus.CANCELLED)
         .with_entities(models.Booking.id, models.Booking.userId)
         .distinct()
     )
@@ -1061,7 +1074,8 @@ def archive_old_bookings() -> None:
     date_condition = models.Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
 
     query_old_booking_ids = (
-        models.Booking.query.join(models.Booking.stock)
+        db.session.query(models.Booking)
+        .join(models.Booking.stock)
         .join(offers_models.Stock.offer)
         .join(models.Booking.activationCode)
         .filter(date_condition)
@@ -1071,7 +1085,8 @@ def archive_old_bookings() -> None:
         )
         .with_entities(models.Booking.id)
         .union(
-            models.Booking.query.join(models.Booking.stock)
+            db.session.query(models.Booking)
+            .join(models.Booking.stock)
             .join(offers_models.Stock.offer)
             .filter(date_condition)
             .filter(models.Booking.display_even_if_used)
@@ -1079,9 +1094,13 @@ def archive_old_bookings() -> None:
         )
     )
 
-    number_updated = models.Booking.query.filter(models.Booking.id.in_(query_old_booking_ids)).update(
-        {"displayAsEnded": True},
-        synchronize_session=False,
+    number_updated = (
+        db.session.query(models.Booking)
+        .filter(models.Booking.id.in_(query_old_booking_ids))
+        .update(
+            {"displayAsEnded": True},
+            synchronize_session=False,
+        )
     )
     db.session.commit()
 
@@ -1119,14 +1138,14 @@ def cancel_unstored_external_bookings() -> None:
             break
 
         barcode = external_booking_info["barcode"]
-        external_bookings = models.ExternalBooking.query.filter_by(barcode=barcode).all()
+        external_bookings = db.session.query(models.ExternalBooking).filter_by(barcode=barcode).all()
         if not external_bookings:
             booking_type = external_booking_info.get("booking_type")
             if booking_type == constants.RedisExternalBookingType.EVENT:
                 provider_id = external_booking_info["cancel_event_info"]["provider_id"]
                 provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
                 stock_id = external_booking_info["cancel_event_info"]["stock_id"]
-                stock = offers_models.Stock.query.filter_by(id=stock_id).one_or_none()
+                stock = db.session.query(offers_models.Stock).filter_by(id=stock_id).one_or_none()
                 if not stock or not provider:
                     logger.error("Couldn't find stock or provider for external booking", extra=external_booking_info)
                     raise external_bookings_exceptions.ExternalBookingException(

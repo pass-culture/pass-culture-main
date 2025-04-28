@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -23,7 +24,7 @@ class Returns200Test:
 
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
         assert response.status_code == 200
-        price_category = offers_models.PriceCategory.query.one()
+        price_category = db.session.query(offers_models.PriceCategory).one()
         assert price_category.offerId == offer.id
         assert price_category.price == decimal.Decimal("20.34")
         assert price_category.label == "Behind a post"
@@ -46,7 +47,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 200
-        assert offers_models.PriceCategory.query.count() == 3
+        assert db.session.query(offers_models.PriceCategory).count() == 3
 
     def test_edit_one_price_category(self, client):
         offer = offers_factories.OfferFactory()
@@ -65,7 +66,7 @@ class Returns200Test:
         }
 
         client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
-        price_category = offers_models.PriceCategory.query.one()
+        price_category = db.session.query(offers_models.PriceCategory).one()
         assert price_category.price == decimal.Decimal("200.54")
         assert price_category.label == "Behind a post"
 
@@ -87,10 +88,10 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 200
-        price_category = offers_models.PriceCategory.query.one()
+        price_category = db.session.query(offers_models.PriceCategory).one()
         assert price_category.price == decimal.Decimal("25.12")
         assert price_category.label == "Already exists"
-        assert offers_models.PriceCategoryLabel.query.count() == 1
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
 
     def test_create_and_update_multiple_price_categories(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -114,8 +115,8 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 200
-        assert offers_models.PriceCategory.query.count() == 3
-        assert offers_models.PriceCategoryLabel.query.count() == 3
+        assert db.session.query(offers_models.PriceCategory).count() == 3
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 3
 
     def test_stock_price_update(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -162,7 +163,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
-        assert offers_models.PriceCategory.query.count() == 0
+        assert db.session.query(offers_models.PriceCategory).count() == 0
         assert response.json == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
     def test_update_price_category_not_found(self, client):

@@ -4,6 +4,7 @@ from pcapi.core.finance.api import recredit_users
 import pcapi.core.finance.models as finance_models
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
+from pcapi.models import db
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
 from pcapi.sandboxes.scripts.creators.test_cases import create_users_for_credit_v3_tests
 
@@ -12,12 +13,12 @@ from pcapi.sandboxes.scripts.creators.test_cases import create_users_for_credit_
 class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()
-        assert User.query.count() == 46
-        assert finance_models.Deposit.query.count() == 54
+        assert db.session.query(User).count() == 46
+        assert db.session.query(finance_models.Deposit).count() == 54
 
-        ex_underage = User.query.filter_by(email="exunderage_18@example.com").first()
-        ex_beneficiary = User.query.filter_by(email="exbene_20@example.com").first()
-        beneficiary_and_exunderage = User.query.filter_by(email="bene_18_exunderage@example.com").first()
+        ex_underage = db.session.query(User).filter_by(email="exunderage_18@example.com").first()
+        ex_beneficiary = db.session.query(User).filter_by(email="exbene_20@example.com").first()
+        beneficiary_and_exunderage = db.session.query(User).filter_by(email="bene_18_exunderage@example.com").first()
 
         assert ex_underage.age == 18
         assert ex_underage.roles == [UserRole.UNDERAGE_BENEFICIARY]
@@ -38,20 +39,24 @@ class CreateTestCasesTest:
     def test_create_users_for_credit_v3_tests(self):
         create_users_for_credit_v3_tests()
 
-        credit_v3_tests_users = User.query.filter(
-            User.email.in_(
-                [
-                    "user18avantdecret@test.com",
-                    "user18apresdecret@test.com",
-                    "user17avantdecret@test.com",
-                    "user17apresdecret@test.com",
-                    "user16avantdecret@test.com",
-                    "user16apresdecret@test.com",
-                    "user15avantdecret@test.com",
-                    "user15apresdecret@test.com",
-                ]
+        credit_v3_tests_users = (
+            db.session.query(User)
+            .filter(
+                User.email.in_(
+                    [
+                        "user18avantdecret@test.com",
+                        "user18apresdecret@test.com",
+                        "user17avantdecret@test.com",
+                        "user17apresdecret@test.com",
+                        "user16avantdecret@test.com",
+                        "user16apresdecret@test.com",
+                        "user15avantdecret@test.com",
+                        "user15apresdecret@test.com",
+                    ]
+                )
             )
-        ).all()
+            .all()
+        )
 
         assert len(credit_v3_tests_users) == 8
 
@@ -106,18 +111,22 @@ class CreateTestCasesTest:
     def test_create_users_for_credit_v3_tests_with_underage_deposits(self):
         create_users_for_credit_v3_tests()
 
-        credit_v3_tests_users = User.query.filter(
-            User.email.in_(
-                [
-                    "user18redepotavantdecret@test.com",
-                    "user18redepotapresdecret@test.com",
-                    "user17anniversaireavantdecret@test.com",
-                    "user17anniversaireapresdecret@test.com",
-                    "user16anniversaireavantdecret@test.com",
-                    "user16anniversaireapresdecret@test.com",
-                ]
+        credit_v3_tests_users = (
+            db.session.query(User)
+            .filter(
+                User.email.in_(
+                    [
+                        "user18redepotavantdecret@test.com",
+                        "user18redepotapresdecret@test.com",
+                        "user17anniversaireavantdecret@test.com",
+                        "user17anniversaireapresdecret@test.com",
+                        "user16anniversaireavantdecret@test.com",
+                        "user16anniversaireapresdecret@test.com",
+                    ]
+                )
             )
-        ).all()
+            .all()
+        )
 
         assert len(credit_v3_tests_users) == 6
 
@@ -195,13 +204,13 @@ class CreateTestCasesTest:
         recredit_users()
 
         # check 16 yo user is not recredited
-        user_16_after_decree = User.query.filter_by(email="user16anniversaireapresdecret@test.com").one()
+        user_16_after_decree = db.session.query(User).filter_by(email="user16anniversaireapresdecret@test.com").one()
         assert user_16_after_decree.deposit.type == finance_models.DepositType.GRANT_15_17
         assert user_16_after_decree.deposit.amount == 20
         assert not user_16_after_decree.deposit.recredits
 
         # Check user 17 yo is recredited
-        user_17_after_decree = User.query.filter_by(email="user17anniversaireapresdecret@test.com").one()
+        user_17_after_decree = db.session.query(User).filter_by(email="user17anniversaireapresdecret@test.com").one()
         # At this point, the RECREDIT_17 is applied.
         assert user_17_after_decree.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user_17_after_decree.deposit.amount == 20 + 30 + 50
@@ -213,7 +222,7 @@ class CreateTestCasesTest:
         assert (finance_models.RecreditType.PREVIOUS_DEPOSIT, 20 + 30) in recredit_types_and_amounts
 
         # Check that the user 18 yo is recredited
-        user_18_after_decree = User.query.filter_by(email="user18redepotapresdecret@test.com").one()
+        user_18_after_decree = db.session.query(User).filter_by(email="user18redepotapresdecret@test.com").one()
         assert user_18_after_decree.deposit.type == finance_models.DepositType.GRANT_17_18
         assert (
             user_18_after_decree.deposit.amount == 150 + 30 + 50 - 15

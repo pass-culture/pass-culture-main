@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.offerers.models import VenueLabel
+from pcapi.models import db
 from pcapi.scripts.venue.venue_label.create_venue_labels import save_new_venue_labels
 
 
@@ -17,7 +18,7 @@ class SaveNewVenueLabelsTest:
         save_new_venue_labels(venue_labels_to_create)
 
         # Then
-        venue_labels_sql_entities = VenueLabel.query.all()
+        venue_labels_sql_entities = db.session.query(VenueLabel).all()
         assert len(venue_labels_sql_entities) == 2
         assert "Architecture contemporaine remarquable" in [
             venue_label.label for venue_label in venue_labels_sql_entities

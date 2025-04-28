@@ -28,7 +28,7 @@ def add_all_cinema_pivot_from_file(
     ending_excel_row_number_to_import: int = 2,
     dry_run: bool = True,
 ) -> None:
-    cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one_or_none()
+    cds_provider = db.session.query(Provider).filter(Provider.localClass == "CDSStocks").one_or_none()
     if cds_provider:
         if file_ext == "excel":
             print("read excel file")
@@ -59,7 +59,7 @@ def add_all_cinema_pivot_from_file(
 
 def add_provider_pivot_for_cinema(cinema: CDSCinema, provider: Provider) -> None:
     print(f"Adding Pivot for {cinema.account_id} - {cinema.cinema_id} - {cinema.venue_siret} -  ...")
-    venue = Venue.query.filter(Venue.siret == cinema.venue_siret).one_or_none()
+    venue = db.session.query(Venue).filter(Venue.siret == cinema.venue_siret).one_or_none()
     if venue:
         try:
             with db.session.begin_nested():

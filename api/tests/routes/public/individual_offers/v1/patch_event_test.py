@@ -248,7 +248,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert event_offer.idAtProvider == "oh it has been updated"
         assert event_offer.name == new_name
 
-        assert offers_models.Mediation.query.one()
+        assert db.session.query(offers_models.Mediation).one()
         assert (
             event_offer.image.url
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(event_offer.activeMediation.id)}"

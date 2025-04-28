@@ -11,6 +11,7 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import create_phone_validation_token
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -52,9 +53,9 @@ class EnsurePhoneNumberUnicityTest:
         assert already_validated_user.phoneValidationStatus == users_models.PhoneValidationStatusType.UNVALIDATED
         assert in_validation_user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
-        unvalidated_by_peer_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=already_validated_user.id
-        ).one()
+        unvalidated_by_peer_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=already_validated_user.id).one()
+        )
         assert unvalidated_by_peer_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER]
         assert (
             unvalidated_by_peer_check.reason
@@ -62,11 +63,15 @@ class EnsurePhoneNumberUnicityTest:
         )
         assert unvalidated_by_peer_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
-        unvalidated_for_peer_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=in_validation_user.id,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-        ).one()
+        unvalidated_for_peer_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                userId=in_validation_user.id,
+                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            )
+            .one()
+        )
 
         assert unvalidated_for_peer_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER]
         assert (
@@ -75,11 +80,15 @@ class EnsurePhoneNumberUnicityTest:
         )
         assert unvalidated_for_peer_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
-        success_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=in_validation_user.id,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
-        ).one()
+        success_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
+                userId=in_validation_user.id,
+                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+            .one()
+        )
         assert success_check.reasonCodes is None
 
 

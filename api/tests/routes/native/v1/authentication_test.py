@@ -386,7 +386,9 @@ class SSOSigninTest:
 
         assert response.status_code == 200
 
-        created_sso = SingleSignOn.query.filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "google").one()
+        created_sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "google").one()
+        )
         assert created_sso.ssoUserId == self.valid_google_user.sub
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
@@ -437,7 +439,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 200
-        assert SingleSignOn.query.filter(SingleSignOn.user == single_sign_on.user).count() == 1
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.user == single_sign_on.user).count() == 1
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_single_sign_on_raises_if_another_sso_is_already_configured(self, mocked_google_oauth, client):
@@ -453,7 +455,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 400
-        assert SingleSignOn.query.filter(SingleSignOn.ssoUserId == self.valid_google_user.sub).count() == 0
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.ssoUserId == self.valid_google_user.sub).count() == 0
 
     def test_oauth_state_token_past_expiration_date(self, client):
         with time_machine.travel("2022-01-01"):
@@ -591,7 +593,7 @@ class TrustedDeviceFeatureTest:
 
             client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
 
-            login_device = LoginDeviceHistory.query.one()
+            login_device = db.session.query(LoginDeviceHistory).one()
 
             assert login_device.deviceId == data["deviceInfo"]["deviceId"]
             assert login_device.source == "iPhone 13"
@@ -609,7 +611,7 @@ class TrustedDeviceFeatureTest:
 
             client.post(f"/native/v1/{signin_route}", json={**data, "deviceInfo": None})
 
-            assert LoginDeviceHistory.query.count() == 0
+            assert db.session.query(LoginDeviceHistory).count() == 0
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
@@ -625,7 +627,9 @@ class TrustedDeviceFeatureTest:
             client.post(f"/native/v1/{signin_route}", json=data)
             client.post(f"/native/v1/{signin_route}", json=data)
 
-            trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == data["deviceInfo"]["deviceId"]).one()
+            trusted_device = (
+                db.session.query(TrustedDevice).filter(TrustedDevice.deviceId == data["deviceInfo"]["deviceId"]).one()
+            )
             assert user.trusted_devices == [trusted_device]
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
@@ -652,7 +656,7 @@ class TrustedDeviceFeatureTest:
             client.post(f"/native/v1/{signin_route}", json={**data, "deviceInfo": first_device})
             client.post(f"/native/v1/{signin_route}", json={**data, "deviceInfo": second_device})
 
-            assert TrustedDevice.query.count() == 0
+            assert db.session.query(TrustedDevice).count() == 0
             assert user.trusted_devices == []
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")

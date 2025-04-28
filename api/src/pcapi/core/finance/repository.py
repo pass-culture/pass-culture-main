@@ -27,10 +27,12 @@ logger = logging.getLogger(__name__)
 
 def deposit_exists_for_beneficiary_and_type(beneficiary: users_models.User, deposit_type: models.DepositType) -> bool:
     return db.session.query(
-        models.Deposit.query.filter_by(
+        db.session.query(models.Deposit)
+        .filter_by(
             userId=beneficiary.id,
             type=deposit_type.value,
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 
@@ -49,7 +51,7 @@ def has_reimbursement(booking: bookings_models.Booking | educational_models.Coll
         pricing_field = models.Pricing.bookingId
     else:
         pricing_field = models.Pricing.collectiveBookingId
-    paid_pricings = models.Pricing.query.filter(
+    paid_pricings = db.session.query(models.Pricing).filter(
         pricing_field == booking.id,
         models.Pricing.status.in_(
             (
@@ -72,15 +74,24 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     """
     now = datetime.datetime.utcnow()
     timespan = db_utils.make_timerange(start=now, end=None)
-    query = models.CustomReimbursementRule.query.filter(
-        models.CustomReimbursementRule.offerId == offer.id,
-        models.CustomReimbursementRule.timespan.overlaps(timespan),
-    ).exists()
+    query = (
+        db.session.query(models.CustomReimbursementRule)
+        .filter(
+            models.CustomReimbursementRule.offerId == offer.id,
+            models.CustomReimbursementRule.timespan.overlaps(timespan),
+        )
+        .exists()
+    )
     return db.session.query(query).scalar()
 
 
 def get_invoices_by_references(references: list[str]) -> list[models.Invoice]:
-    return models.Invoice.query.filter(models.Invoice.reference.in_(references)).order_by(models.Invoice.date).all()
+    return (
+        db.session.query(models.Invoice)
+        .filter(models.Invoice.reference.in_(references))
+        .order_by(models.Invoice.date)
+        .all()
+    )
 
 
 def find_offerer_payments(
@@ -208,7 +219,8 @@ def _get_sent_pricings_for_collective_bookings(
     )
 
     return (
-        educational_models.CollectiveBooking.query.join(
+        db.session.query(educational_models.CollectiveBooking)
+        .join(
             pricing_sub_query,
             pricing_sub_query.c.collective_booking_id == educational_models.CollectiveBooking.id,
         )
@@ -240,7 +252,8 @@ def _get_sent_pricings_for_individual_bookings(
     invoices_references: list[str] | None = None,
 ) -> list[tuple]:
     query = (
-        models.Pricing.query.join(models.Pricing.booking)
+        db.session.query(models.Pricing)
+        .join(models.Pricing.booking)
         .join(models.Pricing.cashflows)
         .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
@@ -343,7 +356,8 @@ def _get_sent_pricings_for_individual_bookings(
 
 def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) -> BaseQuery:
     return (
-        models.Invoice.query.filter(
+        db.session.query(models.Invoice)
+        .filter(
             models.Invoice.id.in_(invoice_ids),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
@@ -540,7 +554,8 @@ def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) 
 
 def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id: int) -> models.BankAccount | None:
     return (
-        models.BankAccount.query.filter(
+        db.session.query(models.BankAccount)
+        .filter(
             models.BankAccount.id == bank_account_id,
             models.BankAccount.offererId == offerer_id,
             models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
@@ -583,7 +598,9 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
 
 
 def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
-    query = models.BankAccount.query.filter(models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED)
+    query = db.session.query(models.BankAccount).filter(
+        models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED
+    )
 
     if not user.has_admin_role:
         query = query.join(
@@ -605,7 +622,7 @@ def get_invoices_query(
     If given, ``date_from`` is **inclusive**, ``date_until`` is
     **exclusive**.
     """
-    bank_account_subquery = models.BankAccount.query
+    bank_account_subquery = db.session.query(models.BankAccount)
 
     if not user.has_admin_role:
         bank_account_subquery = bank_account_subquery.join(
@@ -623,7 +640,7 @@ def get_invoices_query(
     elif offerer_id:
         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.offererId == offerer_id)
 
-    invoices = models.Invoice.query.filter(
+    invoices = db.session.query(models.Invoice).filter(
         models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id))
     )
 
@@ -640,7 +657,8 @@ def get_invoices_query(
 
 def has_invoice(offerer_id: int) -> bool:
     return db.session.query(
-        models.Invoice.query.join(models.Invoice.bankAccount)
+        db.session.query(models.Invoice)
+        .join(models.Invoice.bankAccount)
         .filter(models.BankAccount.offererId == offerer_id)
         .exists()
     ).scalar()

@@ -7,14 +7,14 @@ import sqlalchemy.orm as sa_orm
 from pcapi.core import mails as mails_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.utils.requests import ExternalAPIException
 
 
 def delete_external_suspended_users(min_id: int = 0, do_update: bool = False) -> None:
     users = (
-        users_models.User.query.outerjoin(
-            offerers_models.Venue, offerers_models.Venue.bookingEmail == users_models.User.email
-        )
+        db.session.query(users_models.User)
+        .outerjoin(offerers_models.Venue, offerers_models.Venue.bookingEmail == users_models.User.email)
         .filter(
             users_models.User.id >= min_id,
             users_models.User.isActive.is_(False),

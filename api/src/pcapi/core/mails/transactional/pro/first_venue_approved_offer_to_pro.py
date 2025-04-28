@@ -13,12 +13,14 @@ from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueBankAccountLink
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.utils.urls import build_pc_pro_offer_link
 
 
 def get_first_venue_approved_offer_email_data(offer: Offer) -> models.TransactionalEmailData:
     venue = (
-        Venue.query.filter(Venue.id == offer.venueId)
+        db.session.query(Venue)
+        .filter(Venue.id == offer.venueId)
         .outerjoin(
             VenueBankAccountLink,
             sa.and_(

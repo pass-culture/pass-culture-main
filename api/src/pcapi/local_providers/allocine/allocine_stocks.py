@@ -19,6 +19,7 @@ from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
@@ -192,7 +193,8 @@ class AllocineStocks(LocalProvider):
         offer = allocine_stock.offer
         if offer not in self.price_categories_by_offer:
             self.price_categories_by_offer[offer] = (
-                offers_models.PriceCategory.query.filter_by(offer=offer)
+                db.session.query(offers_models.PriceCategory)
+                .filter_by(offer=offer)
                 .order_by(offers_models.PriceCategory.id.desc())
                 .all()
                 if offer.id

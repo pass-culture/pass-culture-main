@@ -9,6 +9,7 @@ from pcapi.core.offerers.factories import OffererStatsFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.models import OffererStats
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -58,7 +59,7 @@ class OffererStatsTest:
     def test_create_offerer_stats_data(self):
         offerer = OffererFactory()
 
-        assert OffererStats.query.count() == 0
+        assert db.session.query(OffererStats).count() == 0
 
         result = api.get_offerer_stats_data(offerer.id)
 

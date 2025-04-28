@@ -381,8 +381,8 @@ def _create_or_update_ean_offers(
     address_id: int | None = None,
     address_label: str | None = None,
 ) -> None:
-    provider = providers_models.Provider.query.filter_by(id=provider_id).one()
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
+    provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one()
+    venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one()
 
     ean_to_create_or_update = set(serialized_products_stocks.keys())
 
@@ -528,14 +528,18 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
-    return offers_models.Product.query.filter(
-        offers_models.Product.ean.in_(ean_to_create),
-        offers_models.Product.can_be_synchronized == True,
-        offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
-        # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
-        offers_models.Product.lastProviderId.is_not(None),
-        offers_models.Product.idAtProviders.is_not(None),
-    ).all()
+    return (
+        db.session.query(offers_models.Product)
+        .filter(
+            offers_models.Product.ean.in_(ean_to_create),
+            offers_models.Product.can_be_synchronized == True,
+            offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
+            # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
+            offers_models.Product.lastProviderId.is_not(None),
+            offers_models.Product.idAtProviders.is_not(None),
+        )
+        .all()
+    )
 
 
 def _get_existing_offers(
@@ -557,7 +561,7 @@ def _get_existing_offers(
     )
 
     return (
-        utils.retrieve_offer_relations_query(offers_models.Offer.query)
+        utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
         .join(subquery, offers_models.Offer.id == subquery.c.max_id)
         .all()
     )
@@ -724,9 +728,13 @@ def check_eans_availability(
     - `notCompliantWithCgu`: The product identified by the EAN does not comply with our CGU (General Terms and Conditions).
     """
     eans_to_check = set(query.eans)
-    existing_products = offers_models.Product.query.filter(
-        offers_models.Product.ean.in_(eans_to_check),
-    ).all()
+    existing_products = (
+        db.session.query(offers_models.Product)
+        .filter(
+            offers_models.Product.ean.in_(eans_to_check),
+        )
+        .all()
+    )
 
     rejected_eans_because_subcategory_is_not_allowed = []
     rejected_eans_for_cgu_violation = []

@@ -120,11 +120,11 @@ def discord_call_back() -> str | Response | None:
 
 
 def update_discord_user(user_id: str, discord_id: str) -> None:
-    already_linked_user = user_models.DiscordUser.query.filter_by(discordId=discord_id).first()
+    already_linked_user = db.session.query(user_models.DiscordUser).filter_by(discordId=discord_id).first()
     if already_linked_user:
         raise users_exceptions.DiscordUserAlreadyLinked()
 
-    user: user_models.User = user_models.User.query.get(user_id)
+    user: user_models.User = db.session.query(user_models.User).get(user_id)
     discord_user = user.discordUser
 
     if discord_user is None:

@@ -58,7 +58,7 @@ class PostBookingTest:
 
         assert response.status_code == 200
 
-        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).first()
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
@@ -153,7 +153,7 @@ class PostBookingTest:
 
         assert response.status_code == 200
 
-        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).first()
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.USED
@@ -177,7 +177,7 @@ class PostBookingTest:
 
         assert response.status_code == 200
 
-        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).first()
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
@@ -217,7 +217,7 @@ class PostBookingTest:
 
         assert response.status_code == 200
 
-        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).first()
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
@@ -317,7 +317,7 @@ class PostBookingTest:
             "venue_id": stock.offer.venue.id,
             "venue_name": stock.offer.venue.name,
         }
-        external_bookings = bookings_models.ExternalBooking.query.one()
+        external_bookings = db.session.query(bookings_models.ExternalBooking).one()
         assert external_bookings.bookingId == response.json["bookingId"]
         assert external_bookings.barcode == "12123932898127"
         assert external_bookings.seat == "A12"
@@ -393,7 +393,7 @@ class PostBookingTest:
             "venue_id": stock.offer.venue.id,
             "venue_name": stock.offer.venue.name,
         }
-        external_bookings = bookings_models.ExternalBooking.query.one()
+        external_bookings = db.session.query(bookings_models.ExternalBooking).one()
         assert external_bookings.bookingId == response.json["bookingId"]
         assert external_bookings.barcode == "12123932898127"
         assert external_bookings.seat == "A12"
@@ -433,8 +433,8 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_STOCK_SOLD_OUT"}
         assert stock.quantity == 10
-        assert len(bookings_models.ExternalBooking.query.all()) == 0
-        assert len(bookings_models.Booking.query.all()) == 0
+        assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_book_sold_out_cinema_stock_does_not_book_anything(self, client):
@@ -442,7 +442,7 @@ class PostBookingTest:
 
         id_at_provider = "test_id_at_provider"
 
-        provider = providers_models.Provider.query.filter_by(localClass="CGRStocks").first()
+        provider = db.session.query(providers_models.Provider).filter_by(localClass="CGRStocks").first()
         venue_provider = providers_factories.VenueProviderFactory(
             provider=provider, venueIdAtOfferProvider=id_at_provider
         )
@@ -508,8 +508,8 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"}
         assert stock.quantity == 11
-        assert len(bookings_models.ExternalBooking.query.all()) == 0
-        assert len(bookings_models.Booking.query.all()) == 0
+        assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_when_response_fields_are_too_long(self, client, requests_mock):
@@ -622,8 +622,8 @@ class PostBookingTest:
             "was returned for duo reservation",
         }
         assert stock.quantity == 15
-        assert len(bookings_models.ExternalBooking.query.all()) == 0
-        assert len(bookings_models.Booking.query.all()) == 0
+        assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_nothing(self, client, requests_mock):
@@ -661,8 +661,8 @@ class PostBookingTest:
             "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
             "message": "External booking failed.",
         }
-        assert len(bookings_models.ExternalBooking.query.all()) == 0
-        assert len(bookings_models.Booking.query.all()) == 0
+        assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     def test_bookings_with_external_event_api_return_more_tickets_than_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
@@ -707,7 +707,7 @@ class PostBookingTest:
         )
 
         assert response.status_code == 200
-        external_booking = bookings_models.ExternalBooking.query.one()
+        external_booking = db.session.query(bookings_models.ExternalBooking).one()
         assert external_booking.bookingId == response.json["bookingId"]
         assert stock.quantity == 50 + 11  # remainingQuantity + dnBookedQuantity after new booking
         assert stock.dnBookedQuantity == 11
@@ -728,7 +728,7 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json == {"code": "STOCK_NOT_BOOKABLE"}
-        assert Booking.query.count() == 0
+        assert db.session.query(Booking).count() == 0
 
 
 class GetBookingsTest:
@@ -1138,7 +1138,7 @@ class CancelBookingTest:
 
         assert response.status_code == 204
 
-        booking = Booking.query.get(booking.id)
+        booking = db.session.query(Booking).get(booking.id)
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 1
@@ -1154,7 +1154,7 @@ class CancelBookingTest:
 
         assert response.status_code == 204
 
-        booking = Booking.query.get(booking.id)
+        booking = db.session.query(Booking).get(booking.id)
         assert len(push_testing.requests) == 3
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,

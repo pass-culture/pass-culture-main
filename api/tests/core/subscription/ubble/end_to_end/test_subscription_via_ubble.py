@@ -19,6 +19,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.validation.routes import ubble as ubble_routes
 
@@ -271,9 +272,11 @@ class UbbleEndToEndTest:
                 }
             }
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.UBBLE
-        ).one()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.UBBLE)
+            .one()
+        )
 
         assert fraud_check.thirdPartyId == fixtures.IDENTIFICATION_ID
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
@@ -353,9 +356,8 @@ class UbbleEndToEndTest:
         # Step 4: The user performs the HONOR_STATEMENT step
         response = client.post("/native/v1/subscription/honor_statement")
         assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
-                user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT
-            )
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT)
             .one()
             .status
             == fraud_models.FraudCheckStatus.OK

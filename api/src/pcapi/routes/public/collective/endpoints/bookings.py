@@ -8,6 +8,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import on_commit
@@ -71,7 +72,8 @@ def cancel_collective_booking(booking_id: int) -> None:
 
 def _get_booking(booking_id: int) -> models.CollectiveBooking | None:
     return (
-        models.CollectiveBooking.query.filter(models.CollectiveBooking.id == booking_id)
+        db.session.query(models.CollectiveBooking)
+        .filter(models.CollectiveBooking.id == booking_id)
         .join(models.CollectiveStock)
         .join(models.CollectiveOffer)
         .join(offerers_models.Venue)

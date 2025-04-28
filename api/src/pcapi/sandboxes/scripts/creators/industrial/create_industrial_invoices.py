@@ -36,11 +36,11 @@ def create_industrial_invoices() -> None:
     finance_api.price_events()
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
-    cashflows_created = finance_models.Cashflow.query.count()
+    cashflows_created = db.session.query(finance_models.Cashflow).count()
     logger.info("Created %s Cashflows", cashflows_created)
 
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
-    logger.info("Created %s Invoices", finance_models.Invoice.query.count())
+    logger.info("Created %s Invoices", db.session.query(finance_models.Invoice).count())
 
 
 def create_free_invoice() -> None:
@@ -83,7 +83,7 @@ def create_free_invoice() -> None:
 
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
 
-    cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+    cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
     finance_api.generate_and_store_invoice_legacy(
@@ -214,10 +214,10 @@ def create_specific_invoice() -> None:
     for booking in bookings:
         finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
     for booking in bookings:
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
-    cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+    cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
     finance_api.generate_and_store_invoice_legacy(
@@ -269,7 +269,7 @@ def build_many_extra_invoices(count: int = 32) -> None:
         )
 
         finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
 
         last_day = stock_start - timedelta(days=1)
@@ -278,7 +278,7 @@ def build_many_extra_invoices(count: int = 32) -> None:
         finance_api.generate_cashflows_and_payment_files(cutoff=cutoff)
 
         bank_account = venue.current_bank_account
-        cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+        cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
         cashflow_ids = [c.id for c in cashflows]
 
         max_invoice_id_before = db.session.query(sa.func.max(finance_models.Invoice.id)).scalar()
@@ -293,7 +293,8 @@ def build_many_extra_invoices(count: int = 32) -> None:
         # built in the past.
         # But... please do not change invoice date created in other modules!
         invoice = (
-            finance_models.Invoice.query.filter(finance_models.Invoice.id > max_invoice_id_before)
+            db.session.query(finance_models.Invoice)
+            .filter(finance_models.Invoice.id > max_invoice_id_before)
             .order_by(finance_models.Invoice.id.desc())
             .first()
         )
@@ -318,7 +319,7 @@ def build_many_extra_invoices(count: int = 32) -> None:
         mock_cashflow_label.side_effect = cashflow_batch_label_generator(1000, count)
 
         try:
-            user = users_models.User.query.filter_by(email="activation@example.com").one_or_none()
+            user = db.session.query(users_models.User).filter_by(email="activation@example.com").one_or_none()
             if not user:
                 user = users_factories.ProFactory.create(
                     lastName="PRO",
@@ -478,7 +479,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     for booking in bookings:
         finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
     for booking in bookings:
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
 

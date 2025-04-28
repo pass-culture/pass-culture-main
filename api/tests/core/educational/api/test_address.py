@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.educational import models
 from pcapi.core.educational.api import address as api
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models import db
 from pcapi.repository.session_management import atomic
 
 
@@ -82,8 +83,8 @@ class UpsertVenuesAddressesTest:
 
 def get_venue_addresses(venue_ids=None):
     if venue_ids is None:
-        return models.AdageVenueAddress.query.all()
-    return models.AdageVenueAddress.query.filter(models.AdageVenueAddress.venueId.in_(venue_ids)).all()
+        return db.session.query(models.AdageVenueAddress).all()
+    return db.session.query(models.AdageVenueAddress).filter(models.AdageVenueAddress.venueId.in_(venue_ids)).all()
 
 
 def format_date(inscription_date):

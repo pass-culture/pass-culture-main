@@ -17,7 +17,7 @@ class AtomicTest:
         with atomic():
             db.session.add(user_session)
 
-        assert UserSession.query.count() == 1
+        assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_rolls_back_on_raise(self):
@@ -28,7 +28,7 @@ class AtomicTest:
                 db.session.add(user_session)
                 raise ValueError()
 
-        assert UserSession.query.count() == 0
+        assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_is_reentrant(self):
@@ -39,11 +39,11 @@ class AtomicTest:
                 with atomic():
                     db.session.add(user_session)
 
-                assert UserSession.query.count() == 1
+                assert db.session.query(UserSession).count() == 1
 
                 raise ValueError()
 
-        assert UserSession.query.count() == 0
+        assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_disables_autoflush(self):
@@ -51,7 +51,7 @@ class AtomicTest:
 
         with atomic():
             db.session.add(user_session)
-            assert UserSession.query.count() == 0
+            assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_decorator_commits_on_success(self):
@@ -62,7 +62,7 @@ class AtomicTest:
 
         view()
         _manage_session()
-        assert UserSession.query.count() == 1
+        assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_decorator_rollsback_on_exception(self):
@@ -74,7 +74,7 @@ class AtomicTest:
 
         with pytest.raises(ValueError):
             view()
-        assert UserSession.query.count() == 0
+        assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_decorator_rollback_invalid_transaction(self):
@@ -85,4 +85,4 @@ class AtomicTest:
             mark_transaction_as_invalid()
 
         view()
-        assert UserSession.query.count() == 0
+        assert db.session.query(UserSession).count() == 0

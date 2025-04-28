@@ -31,7 +31,7 @@ class ImportAllArtistsTest:
 
         get_all_artists_mock.assert_called_once()
 
-        all_artists = Artist.query.all()
+        all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
     @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
@@ -45,7 +45,7 @@ class ImportAllArtistsTest:
 
         get_all_artists_mock.assert_called_once()
 
-        all_artists = Artist.query.all()
+        all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
         get_all_artists_mock.reset_mock()
@@ -53,7 +53,7 @@ class ImportAllArtistsTest:
 
         get_all_artists_mock.assert_called_once()
 
-        all_artists = Artist.query.all()
+        all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
     @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
@@ -80,11 +80,11 @@ class ImportAllArtistsTest:
 
         get_all_artists_product_links_mock.assert_called_once()
 
-        author = Artist.query.filter_by(id=author.id).one()
+        author = db.session.query(Artist).filter_by(id=author.id).one()
         for product in author.products:
             assert product in books_by_same_artist
 
-        performer = Artist.query.filter_by(id=performer.id).one()
+        performer = db.session.query(Artist).filter_by(id=performer.id).one()
         for product in performer.products:
             assert product in albums_by_same_artist
 
@@ -105,7 +105,7 @@ class ImportAllArtistsTest:
 
         get_all_artist_aliases_mock.assert_called_once()
 
-        all_artist_aliases = ArtistAlias.query.all()
+        all_artist_aliases = db.session.query(ArtistAlias).all()
 
         assert len(all_artist_aliases) == 4
 

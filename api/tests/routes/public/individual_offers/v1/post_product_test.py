@@ -13,6 +13,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
@@ -72,7 +73,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue_provider.venue
         assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
@@ -155,7 +156,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200, response.json
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue_provider.venue
         assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
@@ -173,13 +174,13 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.offererAddress.id == venue_provider.venue.offererAddress.id
 
-        created_stock = offers_models.Stock.query.one()
+        created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == in_ten_minutes
 
-        created_mediation = offers_models.Mediation.query.one()
+        created_mediation = db.session.query(offers_models.Mediation).one()
         assert created_mediation.offer == created_offer
         assert created_offer.image.url == created_mediation.thumbUrl
         assert (
@@ -244,11 +245,11 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
 
-        created_stock = offers_models.Stock.query.one()
+        created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("0.01")
         assert created_stock.quantity is None
         assert created_stock.offer == created_offer
@@ -293,7 +294,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             },
         )
         assert response.status_code == 400
-        assert offers_models.Offer.query.one_or_none() is None
+        assert db.session.query(offers_models.Offer).one_or_none() is None
         assert response.json == {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
 
     @pytest.mark.usefixtures("db_session")
@@ -315,7 +316,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "1234567891234"}
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.ean == "1234567891234"
         assert "ean" not in created_offer.extraData
 
@@ -340,7 +341,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert response.json["location"]["addressId"] == address.id
         assert response.json["location"]["addressLabel"] == "My beautiful address no one knows about"
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
     @pytest.mark.usefixtures("db_session")
@@ -349,10 +350,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
 
-        assert not offerers_models.OffererAddress.query.filter(
-            offerers_models.OffererAddress.addressId == address.id,
-            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
-        ).one_or_none()
+        assert (
+            not db.session.query(offerers_models.OffererAddress)
+            .filter(
+                offerers_models.OffererAddress.addressId == address.id,
+                offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+            )
+            .one_or_none()
+        )
 
         payload["location"] = {
             "type": "address",
@@ -362,11 +367,15 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         }
         response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-        offerer_address = offerers_models.OffererAddress.query.filter(
-            offerers_models.OffererAddress.addressId == address.id,
-            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
-        ).one()
+        created_offer = db.session.query(offers_models.Offer).one()
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress)
+            .filter(
+                offerers_models.OffererAddress.addressId == address.id,
+                offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+            )
+            .one()
+        )
         assert created_offer.offererAddress == offerer_address
 
     def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
@@ -402,7 +411,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert "categoryRelatedFields.category" in response.json
-        assert offers_models.Offer.query.first() is None
+        assert db.session.query(offers_models.Offer).first() is None
 
     @pytest.mark.usefixtures("db_session")
     def test_offer_with_ean_in_name_is_not_accepted(self, client):
@@ -446,7 +455,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
         assert response.json == {"global": "Venue cannot be found"}
-        assert offers_models.Offer.query.first() is None
+        assert db.session.query(offers_models.Offer).first() is None
 
     @pytest.mark.usefixtures("clean_database")
     @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
@@ -472,8 +481,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 500
         assert response.json == {}
 
-        assert offers_models.Offer.query.first() is None
-        assert offers_models.Stock.query.first() is None
+        assert db.session.query(offers_models.Offer).first() is None
+        assert db.session.query(offers_models.Stock).first() is None
 
     @pytest.mark.usefixtures("clean_database")
     def test_image_too_small(self, client):
@@ -497,8 +506,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"imageFile": "The image is too small. It must be above 400x600 pixels."}
 
-        assert offers_models.Offer.query.first() is None
-        assert offers_models.Stock.query.first() is None
+        assert db.session.query(offers_models.Offer).first() is None
+        assert db.session.query(offers_models.Stock).first() is None
 
     @pytest.mark.usefixtures("clean_database")
     def test_bad_image_ratio(self, client):
@@ -525,8 +534,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"imageFile": "Bad image ratio: expected 0.66, found 1.0"}
 
-        assert offers_models.Offer.query.first() is None
-        assert offers_models.Stock.query.first() is None
+        assert db.session.query(offers_models.Offer).first() is None
+        assert db.session.query(offers_models.Stock).first() is None
 
     @pytest.mark.usefixtures("db_session")
     def test_stock_booking_limit_without_timezone(self, client):
@@ -610,7 +619,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             ],
             "categoryRelatedFields.musicType": ["field required", "field required"],
         }
-        assert offers_models.Offer.query.first() is None
+        assert db.session.query(offers_models.Offer).first() is None
 
     @pytest.mark.usefixtures("db_session")
     def test_books_are_not_allowed(self, client):
@@ -631,7 +640,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert offers_models.Offer.query.count() == 0
+        assert db.session.query(offers_models.Offer).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_create_allowed_product(self, client):
@@ -652,7 +661,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert offers_models.Offer.query.count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_unique_venue_and_id_at_provider_violation(self, client):

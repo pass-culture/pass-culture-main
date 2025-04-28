@@ -9,6 +9,7 @@ from pcapi.core.history import models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.models import db
 
 from tests.connectors import sirene_test_data
 
@@ -57,13 +58,13 @@ class Returns200Test:
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 201
-        created_offerer = offerers_models.Offerer.query.one()
+        created_offerer = db.session.query(offerers_models.Offerer).one()
         assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.city == "Paris"
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
-        created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
         assert created_venue.street == "3 RUE DE VALOIS"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
@@ -98,7 +99,7 @@ class Returns200Test:
 
         mocked_get_address.assert_called_once()
 
-        address = geography_models.Address.query.one()
+        address = db.session.query(geography_models.Address).one()
         assert created_venue.offererAddress.addressId == address.id
         assert address.street == "3 Rue de Valois"
         assert address.city == REQUEST_BODY["address"]["city"]
@@ -129,13 +130,13 @@ class Returns200Test:
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 201
-        created_offerer = offerers_models.Offerer.query.one()
+        created_offerer = db.session.query(offerers_models.Offerer).one()
         assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.city == "Paris"
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
-        created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
         assert created_venue.street == "3 RUE DE VALOIS"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
@@ -168,7 +169,7 @@ class Returns200Test:
         assert created_venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert created_venue.action_history[0].authorUser == user
 
-        address = geography_models.Address.query.one()
+        address = db.session.query(geography_models.Address).one()
         assert created_venue.offererAddress.addressId == address.id
         assert address.street == REQUEST_BODY["address"]["street"]
         assert address.city == REQUEST_BODY["address"]["city"]
@@ -181,7 +182,7 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
-        created_offerer = offerers_models.Offerer.query.one()
+        created_offerer = db.session.query(offerers_models.Offerer).one()
         assert response.json == {
             "id": created_offerer.id,
             "siren": "853318459",
@@ -196,10 +197,10 @@ class Returns200Test:
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 201
-        created_offerer = offerers_models.Offerer.query.one()
+        created_offerer = db.session.query(offerers_models.Offerer).one()
         assert created_offerer.isValidated
 
-        created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
         assert created_venue.adageId is not None
         assert created_venue.adageInscriptionDate is not None
 
@@ -213,10 +214,10 @@ class Returns200Test:
         client = client.with_session_auth(pro.email)
         response = client.post("/offerers/new", json=body)
 
-        created_offerer = offerers_models.Offerer.query.one()
+        created_offerer = db.session.query(offerers_models.Offerer).one()
         assert response.json["id"] == created_offerer.id
 
-        pro = users_models.User.query.filter_by(id=pro.id).one()
+        pro = db.session.query(users_models.User).filter_by(id=pro.id).one()
         assert pro.phoneNumber == "+33123456789"
 
     @pytest.mark.features(WIP_2025_SIGN_UP=True)
@@ -230,10 +231,10 @@ class Returns200Test:
         client = client.with_session_auth(pro.email)
         response = client.post("/offerers/new", json=body)
 
-        created_offerer = offerers_models.Offerer.query.one()
+        created_offerer = db.session.query(offerers_models.Offerer).one()
         assert response.json["id"] == created_offerer.id
 
-        pro = users_models.User.query.filter_by(id=pro.id).one()
+        pro = db.session.query(users_models.User).filter_by(id=pro.id).one()
         assert not pro.phoneNumber
 
 
@@ -246,9 +247,9 @@ class Returns400Test:
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 400
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.UserOfferer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offerers_models.UserOfferer).count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
 
     @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.NonPublicDataException())
     def test_non_diffusible_siret(self, _get_siret_mock, client):
@@ -259,9 +260,9 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."]}
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.UserOfferer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offerers_models.UserOfferer).count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
 
     @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
     def test_inactive_siret(self, requests_mock, client):
@@ -279,9 +280,9 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"siret": "SIRET is no longer active"}
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.UserOfferer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offerers_models.UserOfferer).count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
 
 
 class Returns500Test:
@@ -293,6 +294,6 @@ class Returns500Test:
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
         assert response.status_code == 500
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.UserOfferer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offerers_models.UserOfferer).count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0

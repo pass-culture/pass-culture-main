@@ -14,6 +14,7 @@ from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
 
@@ -165,7 +166,8 @@ def ubble_fraud_checks(user: users_models.User, content: fraud_models.UbbleConte
 
 def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFraudCheck | None:
     fraud_check = (
-        fraud_models.BeneficiaryFraudCheck.query.filter(
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
         )
         .filter(fraud_models.BeneficiaryFraudCheck.thirdPartyId == identification_id)
@@ -197,7 +199,8 @@ def does_match_ubble_test_names(content: fraud_models.UbbleContent) -> bool:
 
 def get_restartable_identity_checks(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     started_fraud_check = (
-        fraud_models.BeneficiaryFraudCheck.query.filter(
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.STARTED,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,

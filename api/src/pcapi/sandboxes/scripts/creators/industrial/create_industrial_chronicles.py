@@ -5,6 +5,7 @@ import logging
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -18,12 +19,14 @@ def ean_generator(factor: int) -> str:
 def create_industrial_chronicles() -> None:
     logger.info("create_industrial_chronicles")
     users = (
-        users_models.User.query.filter(users_models.User.roles.contains([users_models.UserRole.BENEFICIARY]))
+        db.session.query(users_models.User)
+        .filter(users_models.User.roles.contains([users_models.UserRole.BENEFICIARY]))
         .order_by(users_models.User.id)
         .limit(10)
     )
     products = (
-        offers_models.Product.query.filter(
+        db.session.query(offers_models.Product)
+        .filter(
             ~offers_models.Product.ean.is_(None),
         )
         .order_by(offers_models.Product.id)

@@ -86,7 +86,7 @@ def create_venue_provider(
 def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     """Reset all stock quantity with the number of non-cancelled bookings."""
     logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
-    stocks = offers_models.Stock.query.filter(
+    stocks = db.session.query(offers_models.Stock).filter(
         offers_models.Stock.offerId == offers_models.Offer.id,
         offers_models.Offer.venue == venue,
         offers_models.Offer.idAtProvider.is_not(None),
@@ -374,7 +374,7 @@ def update_venue_provider_external_urls(
 
 
 def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any) -> None:
-    venue_providers = providers_models.VenueProvider.query.filter_by(providerId=provider_id).all()
+    venue_providers = db.session.query(providers_models.VenueProvider).filter_by(providerId=provider_id).all()
     for venue_provider in venue_providers:
         on_commit(
             functools.partial(

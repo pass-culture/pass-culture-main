@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import shared
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -20,9 +21,11 @@ class SharedTest:
         assert new_start_naive.tzinfo is None
         shared._update_collective_booking_cancellation_limit_date(booking, new_start_naive)
 
-        booking = educational_models.CollectiveBooking.query.filter(
-            educational_models.CollectiveBooking.id == booking.id
-        ).one()
+        booking = (
+            db.session.query(educational_models.CollectiveBooking)
+            .filter(educational_models.CollectiveBooking.id == booking.id)
+            .one()
+        )
         assert booking.cancellationLimitDate == new_start_naive - datetime.timedelta(days=30)
 
     def test_update_cancellation_limit_date_aware(self) -> None:
@@ -37,7 +40,9 @@ class SharedTest:
         assert new_start_aware.tzinfo is datetime.timezone.utc
         shared._update_collective_booking_cancellation_limit_date(booking, new_start_aware)
 
-        booking = educational_models.CollectiveBooking.query.filter(
-            educational_models.CollectiveBooking.id == booking.id
-        ).one()
+        booking = (
+            db.session.query(educational_models.CollectiveBooking)
+            .filter(educational_models.CollectiveBooking.id == booking.id)
+            .one()
+        )
         assert booking.cancellationLimitDate == new_start_aware - datetime.timedelta(days=30)

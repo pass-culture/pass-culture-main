@@ -26,6 +26,7 @@ from pcapi.core.offers import repository
 from pcapi.core.offers import schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import stock_serialize as serialization
@@ -155,9 +156,11 @@ def check_stock_price(
         )
         raise errors
 
-    offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
-        models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
-    ).one_or_none()
+    offer_price_limitation_rule = (
+        db.session.query(models.OfferPriceLimitationRule)
+        .filter(models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId)
+        .one_or_none()
+    )
     if (
         offer_price_limitation_rule
         and offer.validation is not OfferValidationStatus.DRAFT
@@ -227,7 +230,9 @@ def check_stock_price(
 
 
 def _get_number_of_existing_stocks(offer_id: int) -> int:
-    return models.Stock.query.filter_by(offerId=offer_id).filter(models.Stock.isSoftDeleted == False).count()
+    return (
+        db.session.query(models.Stock).filter_by(offerId=offer_id).filter(models.Stock.isSoftDeleted == False).count()
+    )
 
 
 def check_stocks_quantity(quantity: int) -> None:
@@ -742,9 +747,11 @@ def _check_ean_field(ean: str) -> None:
 
 
 def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
-    venue_cinema_pivot = providers_models.CinemaProviderPivot.query.filter(
-        providers_models.CinemaProviderPivot.venueId == offer.venueId
-    ).one_or_none()
+    venue_cinema_pivot = (
+        db.session.query(providers_models.CinemaProviderPivot)
+        .filter(providers_models.CinemaProviderPivot.venueId == offer.venueId)
+        .one_or_none()
+    )
     if not venue_cinema_pivot or offer.lastProviderId != venue_cinema_pivot.providerId:
         raise exceptions.UnexpectedCinemaProvider()
 
@@ -832,7 +839,8 @@ def check_for_duplicated_price_categories(
     new_labels_and_prices: set[tuple[str, decimal.Decimal]], offer_id: int
 ) -> None:
     existing_price_category = (
-        models.PriceCategory.query.filter_by(offerId=offer_id)
+        db.session.query(models.PriceCategory)
+        .filter_by(offerId=offer_id)
         .join(models.PriceCategoryLabel)
         .filter(sa.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
         .first()
@@ -852,13 +860,13 @@ class OfferValidationError(Exception):
 def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
     # FIXME: ogeber 03.01.2025 - when venue regularisation is done, we can change this validation by
     # raising the OffererCanNotHaveHeadlineOffer only if
-    # offerers_models.Venue.query.filter(
+    # db.session.query(offerers_models.Venue).filter(
     #     offerers_models.Venue.managingOffererId == offerer_id
     #     offerers_models.Venue.isPermanent.is_(True)
     # ).count()
     # is superior to 1 (as permanent & virtual venues won't exist anymore)
 
-    venues = offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).all()
+    venues = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer_id).all()
 
     permanent_venues = [v for v in venues if v.isPermanent and not v.isVirtual]
     non_permanent_venues = [v for v in venues if not v.isPermanent and not v.isVirtual]

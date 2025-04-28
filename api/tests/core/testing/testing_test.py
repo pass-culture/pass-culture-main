@@ -3,13 +3,14 @@ import pytest
 from pcapi import settings as pcapi_settings
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
 
 class AssertNoDuplicatedQueriesTest:
     def _run_dummy_query(self):
         # We cast to list to force query execution
-        list(bookings_models.Booking.query.all())
+        list(db.session.query(bookings_models.Booking).all())
 
     def test_passes_when_no_queries(self):
         with assert_no_duplicated_queries():

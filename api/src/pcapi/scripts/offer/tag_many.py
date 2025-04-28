@@ -19,7 +19,8 @@ OffersCriteria = typing.Collection[criteria_models.OfferCriterion]
 
 def load_offers(offer_ids: Ids) -> Offers:
     return (
-        models.Offer.query.filter(models.Offer.id.in_(offer_ids))
+        db.session.query(models.Offer)
+        .filter(models.Offer.id.in_(offer_ids))
         .options(joinedload(models.Offer.criteria))
         .options(load_only(models.Offer.id))
         .all()
@@ -27,7 +28,7 @@ def load_offers(offer_ids: Ids) -> Offers:
 
 
 def load_criteria(criterion_names: CriterionNames) -> Criteria:
-    return criteria_models.Criterion.query.filter(criteria_models.Criterion.name.in_(criterion_names)).all()
+    return db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.name.in_(criterion_names)).all()
 
 
 def find_offer_missing_criteria(offer: models.Offer, criteria: Criteria) -> OffersCriteria:

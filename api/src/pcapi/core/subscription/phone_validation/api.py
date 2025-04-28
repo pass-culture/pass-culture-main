@@ -13,6 +13,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.notifications import sms as sms_notifications
 from pcapi.repository import repository
 from pcapi.utils import phone_number as phone_number_utils
@@ -67,9 +68,11 @@ def _ensure_phone_number_unicity(
     - a fraud_check with reasonCode PHONE_UNVALIDATED_FOR_PEER on account B: the phone was unvalidated for account A
     """
     try:
-        user_with_same_validated_number = users_models.User.query.filter(
-            users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated
-        ).one_or_none()
+        user_with_same_validated_number = (
+            db.session.query(users_models.User)
+            .filter(users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated)
+            .one_or_none()
+        )
     except sa_exc.MultipleResultsFound:
         logger.exception("Multiple users with the same validated phone number", extra={"phone_number": phone_number})
         raise exceptions.PhoneAlreadyExists()

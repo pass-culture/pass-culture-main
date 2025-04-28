@@ -302,8 +302,8 @@ class MoveCollectiveOfferSuccessTest:
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
-        assert educational_models.CollectiveBooking.query.count() == 1
-        assert educational_models.CollectiveBooking.query.all()[0].venue == destination_venue
+        assert db.session.query(educational_models.CollectiveBooking).count() == 1
+        assert db.session.query(educational_models.CollectiveBooking).all()[0].venue == destination_venue
 
 
 class MoveCollectiveOfferFailTest:

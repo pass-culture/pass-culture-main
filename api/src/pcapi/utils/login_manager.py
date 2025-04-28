@@ -50,7 +50,9 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
     try:
-        user_session = users_models.UserSession.query.filter_by(userId=user_id, uuid=session_uuid).one_or_none()
+        user_session = (
+            db.session.query(users_models.UserSession).filter_by(userId=user_id, uuid=session_uuid).one_or_none()
+        )
     except InternalError as exception:
         logger.error(
             "The connection seems corrupted, killing the worker (SIGINT)",
@@ -70,11 +72,11 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
     except AttributeError:
         pass
 
-    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
 
     internal_admin_id = flask.session.get("internal_admin_id", 0)
     if user and internal_admin_id:
-        if admin := users_models.User.query.filter(users_models.User.id == internal_admin_id).one_or_none():
+        if admin := db.session.query(users_models.User).filter(users_models.User.id == internal_admin_id).one_or_none():
             user.impersonator = admin
     return manage_pro_session(user)
 
@@ -98,7 +100,7 @@ def discard_session() -> None:
     session_uuid = flask.session.get("session_uuid")
     user_id = flask.session.get("user_id")
     flask.session.clear()
-    users_models.UserSession.query.filter_by(
+    db.session.query(users_models.UserSession).filter_by(
         userId=user_id,
         uuid=session_uuid,
     ).delete(synchronize_session=False)

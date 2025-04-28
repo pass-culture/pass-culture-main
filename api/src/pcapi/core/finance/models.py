@@ -24,6 +24,7 @@ from sqlalchemy.sql.selectable import Exists
 from pcapi import settings
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
@@ -1013,7 +1014,8 @@ class FinanceIncident(PcObject, Base, Model):
         author_full_name = self.details.get("author")
         if author_id := self.details.get("authorId"):
             if (
-                author := User.query.filter_by(id=author_id)
+                author := db.session.query(User)
+                .filter_by(id=author_id)
                 .options(sa_orm.load_only(User.firstName, User.lastName))
                 .one_or_none()
             ):

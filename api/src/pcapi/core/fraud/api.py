@@ -213,7 +213,7 @@ def find_duplicate_beneficiary(
     birth_date: datetime.date,
     excluded_user_id: int,
 ) -> users_models.User | None:
-    base_query = users_models.User.query.filter(
+    base_query = db.session.query(users_models.User).filter(
         (users_models.User.validatedBirthDate == birth_date)
         & matching(users_models.User.firstName, first_name)
         & (users_models.User.is_beneficiary)
@@ -257,11 +257,15 @@ def format_id_piece_number(id_piece_number: str) -> str:
 def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_user_id: int) -> users_models.User | None:
     if not id_piece_number:
         return None
-    return users_models.User.query.filter(
-        users_models.User.id != excluded_user_id,
-        users_models.User.idPieceNumber.is_not(None),
-        users_models.User.idPieceNumber == format_id_piece_number(id_piece_number),
-    ).first()
+    return (
+        db.session.query(users_models.User)
+        .filter(
+            users_models.User.id != excluded_user_id,
+            users_models.User.idPieceNumber.is_not(None),
+            users_models.User.idPieceNumber == format_id_piece_number(id_piece_number),
+        )
+        .first()
+    )
 
 
 def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> models.FraudItem:
@@ -278,9 +282,11 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> mode
 
 
 def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> users_models.User | None:
-    return users_models.User.query.filter(
-        users_models.User.id != excluded_user_id, users_models.User.ineHash == ine_hash
-    ).first()
+    return (
+        db.session.query(users_models.User)
+        .filter(users_models.User.id != excluded_user_id, users_models.User.ineHash == ine_hash)
+        .first()
+    )
 
 
 def _check_user_eligibility(
@@ -382,9 +388,8 @@ def _create_failed_phone_validation_fraud_check(
 
 def handle_phone_already_exists(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     orig_user_id = (
-        users_models.User.query.filter(
-            users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated
-        )
+        db.session.query(users_models.User)
+        .filter(users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated)
         .one()
         .id
     )
@@ -444,7 +449,7 @@ def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.B
     if not user.deposit or user.deposit.type != finance_models.DepositType.GRANT_15_17:
         return
 
-    duplicate_beneficiary = users_models.User.query.get(duplicate_beneficiary_id)
+    duplicate_beneficiary = db.session.query(users_models.User).get(duplicate_beneficiary_id)
     if not duplicate_beneficiary:
         return
 
@@ -501,12 +506,14 @@ def validate_frauds(
 
 def has_user_pending_identity_check(user: users_models.User) -> bool:
     return db.session.query(
-        models.BeneficiaryFraudCheck.query.filter(
+        db.session.query(models.BeneficiaryFraudCheck)
+        .filter(
             models.BeneficiaryFraudCheck.user == user,
             models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
             models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 

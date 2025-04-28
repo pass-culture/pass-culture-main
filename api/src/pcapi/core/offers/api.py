@@ -484,7 +484,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         offers_count += len(offer_ids)
         found_venue_ids |= set(venue_ids)
 
-        query_to_update = models.Offer.query.filter(models.Offer.id.in_(offer_ids))
+        query_to_update = db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids))
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.flush()
 
@@ -1038,7 +1038,8 @@ def create_mediation(
 
     # cleanup former thumbnails and mediations
     previous_mediations = (
-        models.Mediation.query.filter(models.Mediation.offerId == offer.id)
+        db.session.query(models.Mediation)
+        .filter(models.Mediation.offerId == offer.id)
         .filter(models.Mediation.id != mediation.id)
         .all()
     )
@@ -1056,7 +1057,7 @@ def create_mediation(
 
 
 def delete_mediation(offer: models.Offer) -> None:
-    mediations = models.Mediation.query.filter(models.Mediation.offerId == offer.id).all()
+    mediations = db.session.query(models.Mediation).filter(models.Mediation.offerId == offer.id).all()
 
     _delete_mediations_and_thumbs(mediations)
 
@@ -1104,7 +1105,7 @@ def add_criteria_to_offers(
     if (not ean and not visa) or not criterion_ids:
         return False
 
-    query = models.Product.query
+    query = db.session.query(models.Product)
     if ean:
         ean = ean.replace("-", "").replace(" ", "")
         query = query.filter(models.Product.ean == ean)
@@ -1115,9 +1116,11 @@ def add_criteria_to_offers(
     if not products:
         return False
 
-    offer_ids_query = models.Offer.query.filter(
-        models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True)
-    ).with_entities(models.Offer.id)
+    offer_ids_query = (
+        db.session.query(models.Offer)
+        .filter(models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True))
+        .with_entities(models.Offer.id)
+    )
     offer_ids = {offer_id for offer_id, in offer_ids_query.all()}
 
     if not offer_ids:
@@ -1153,16 +1156,20 @@ def reject_inappropriate_products(
     rejected_by_fraud_action: bool = False,
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
-    products = models.Product.query.filter(
-        models.Product.ean.in_(eans),
-        models.Product.idAtProviders.is_not(None),
-        models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
-    ).all()
+    products = (
+        db.session.query(models.Product)
+        .filter(
+            models.Product.ean.in_(eans),
+            models.Product.idAtProviders.is_not(None),
+            models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        )
+        .all()
+    )
 
     if not products:
         return False
     product_ids = [product.id for product in products]
-    offers_query = models.Offer.query.filter(
+    offers_query = db.session.query(models.Offer).filter(
         sa.or_(
             models.Offer.productId.in_(product_ids),
             models.Offer.ean.in_(eans),
@@ -1235,7 +1242,7 @@ def reject_inappropriate_products(
     )
 
     if offer_ids:
-        users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
+        db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
             synchronize_session=False
         )
         on_commit(
@@ -1296,9 +1303,8 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         # continue so that offers are checked against rules: gives more information for manual validation
 
     offer_validation_rules = (
-        models.OfferValidationRule.query.options(
-            sa_orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
-        )
+        db.session.query(models.OfferValidationRule)
+        .options(sa_orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules))
         .filter(models.OfferValidationRule.isActive.is_(True))
         .all()
     )
@@ -1539,7 +1545,7 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
 
 
 def fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
-    product = models.Product.query.filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
+    product = db.session.query(models.Product).filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
     if not product:
         return titelive_product
 
@@ -1561,22 +1567,22 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
 def batch_delete_draft_offers(query: BaseQuery) -> None:
     offer_ids = [id_ for id_, in query.with_entities(models.Offer.id)]
     filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
-    models.Mediation.query.filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
+    db.session.query(models.Mediation).filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
         synchronize_session=False
     )
-    criteria_models.OfferCriterion.query.filter(
+    db.session.query(criteria_models.OfferCriterion).filter(
         criteria_models.OfferCriterion.offerId == models.Offer.id,
         *filters,
     ).delete(synchronize_session=False)
-    models.ActivationCode.query.filter(
+    db.session.query(models.ActivationCode).filter(
         models.ActivationCode.stockId == models.Stock.id,
         models.Stock.offerId == models.Offer.id,
         *filters,
     ).delete(synchronize_session=False)
-    models.Stock.query.filter(models.Stock.offerId == models.Offer.id).filter(*filters).delete(
+    db.session.query(models.Stock).filter(models.Stock.offerId == models.Offer.id).filter(*filters).delete(
         synchronize_session=False
     )
-    models.Offer.query.filter(*filters).delete(synchronize_session=False)
+    db.session.query(models.Offer).filter(*filters).delete(synchronize_session=False)
     db.session.flush()
 
 
@@ -1592,7 +1598,7 @@ def batch_delete_stocks(
 
 
 def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
-    price_category_label = models.PriceCategoryLabel.query.filter_by(label=label, venue=venue).one_or_none()
+    price_category_label = db.session.query(models.PriceCategoryLabel).filter_by(label=label, venue=venue).one_or_none()
     if not price_category_label:
         return models.PriceCategoryLabel(label=label, venue=venue)
     return price_category_label
@@ -1663,11 +1669,15 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
 
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
-    product = models.Product.query.filter(
-        models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
-        models.Product.ean == ean,
-        models.Product.idAtProviders.is_not(None),
-    ).one_or_none()
+    product = (
+        db.session.query(models.Product)
+        .filter(
+            models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+            models.Product.ean == ean,
+            models.Product.idAtProviders.is_not(None),
+        )
+        .one_or_none()
+    )
 
     if not product:
         raise exceptions.ProductNotFound()
@@ -1678,11 +1688,15 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
             db.session.add(product)
 
-            offers_query = models.Offer.query.filter(
-                models.Offer.productId == product.id,
-                models.Offer.validation == models.OfferValidationStatus.REJECTED,
-                models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-            ).options(sa_orm.load_only(models.Offer.id))
+            offers_query = (
+                db.session.query(models.Offer)
+                .filter(
+                    models.Offer.productId == product.id,
+                    models.Offer.validation == models.OfferValidationStatus.REJECTED,
+                    models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                )
+                .options(sa_orm.load_only(models.Offer.id))
+            )
 
             offers = offers_query.all()
 
@@ -1723,17 +1737,20 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
 
 def get_stocks_stats(offer_id: int) -> StocksStats:
     data = (
-        models.Stock.query.with_entities(
+        db.session.query(models.Stock)
+        .with_entities(
             sa.func.min(models.Stock.beginningDatetime),
             sa.func.max(models.Stock.beginningDatetime),
             sa.func.count(models.Stock.id),
             sa.case(
                 (
-                    models.Stock.query.filter(
+                    db.session.query(models.Stock)
+                    .filter(
                         models.Stock.quantity == None,
                         models.Stock.isSoftDeleted.is_(False),
                         models.Stock.offerId == offer_id,
-                    ).exists(),
+                    )
+                    .exists(),
                     None,
                 ),
                 else_=sa.cast(sa.func.sum(models.Stock.quantity - models.Stock.dnBookedQuantity), sa.Integer),
@@ -1759,7 +1776,8 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
         raise exceptions.OfferIsNotEvent()
 
     count_past_stocks = (
-        models.Stock.query.with_entities(models.Stock.id)
+        db.session.query(models.Stock)
+        .with_entities(models.Stock.id)
         .filter(
             models.Stock.offerId == offer.id,
             models.Stock.beginningDatetime < datetime.datetime.utcnow(),
@@ -1771,7 +1789,8 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
         raise exceptions.OfferEventInThePast(count_past_stocks)
 
     count_reimbursed_bookings = (
-        bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
+        db.session.query(bookings_models.Booking)
+        .with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
         .filter(models.Stock.offerId == offer.id, bookings_models.Booking.isReimbursed)
         .count()
@@ -1832,7 +1851,8 @@ def move_offer(
         destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     bookings = (
-        bookings_models.Booking.query.join(bookings_models.Booking.stock)
+        db.session.query(bookings_models.Booking)
+        .join(bookings_models.Booking.stock)
         .outerjoin(
             # max 1 row joined thanks to idx_uniq_individual_booking_id
             finance_models.FinanceEvent,
@@ -1922,7 +1942,8 @@ def move_event_offer(
     destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     bookings = (
-        bookings_models.Booking.query.join(bookings_models.Booking.stock)
+        db.session.query(bookings_models.Booking)
+        .join(bookings_models.Booking.stock)
         .outerjoin(
             # max 1 row joined thanks to idx_uniq_individual_booking_id
             finance_models.FinanceEvent,
@@ -2012,17 +2033,18 @@ def update_used_stock_price(
 
     if new_price:
         stock.price = new_price
-        bookings_models.Booking.query.filter(
+        db.session.query(bookings_models.Booking).filter(
             bookings_models.Booking.stockId == stock.id,
         ).update({bookings_models.Booking.amount: func.least(new_price, bookings_models.Booking.amount)})
     elif price_percent:
         stock.price = round(stock.price * price_percent, 2)
-        bookings_models.Booking.query.filter(
+        db.session.query(bookings_models.Booking).filter(
             bookings_models.Booking.stockId == stock.id,
         ).update({bookings_models.Booking.amount: bookings_models.Booking.amount * price_percent})
 
     first_finance_event = (
-        finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)
+        db.session.query(finance_models.FinanceEvent)
+        .join(bookings_models.Booking, finance_models.FinanceEvent.booking)
         .filter(
             finance_models.FinanceEvent.status != finance_models.FinanceEventStatus.CANCELLED,
             bookings_models.Booking.stockId == stock.id,

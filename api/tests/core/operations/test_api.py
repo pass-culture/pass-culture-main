@@ -36,7 +36,7 @@ class CreateSpecialEventFromTypeformTest:
             "test", event_date=event_date, venue_id=venue.id
         ).id
 
-        special_event = operations_models.SpecialEvent.query.one()
+        special_event = db.session.query(operations_models.SpecialEvent).one()
         assert special_event.id == special_event_id
         assert special_event.externalId == "test"
         assert special_event.title == "Mon questionnaire"
@@ -44,9 +44,11 @@ class CreateSpecialEventFromTypeformTest:
         assert special_event.offererId == venue.managingOffererId
         assert special_event.venueId == venue.id
 
-        questions = operations_models.SpecialEventQuestion.query.order_by(
-            operations_models.SpecialEventQuestion.externalId
-        ).all()
+        questions = (
+            db.session.query(operations_models.SpecialEventQuestion)
+            .order_by(operations_models.SpecialEventQuestion.externalId)
+            .all()
+        )
         assert len(questions) == 2
         assert questions[0].externalId == "question1"
         assert questions[0].title == "Quel est ton prénom ?"
@@ -159,10 +161,12 @@ class UpdateFormQuestionsFromTypeformTest:
         result = operations_api.update_form_questions_from_typeform(event_id=event.id, form=form)
 
         db.session.refresh(question)
-        assert operations_models.SpecialEventQuestion.query.count() == 2
-        new_question = operations_models.SpecialEventQuestion.query.filter(
-            operations_models.SpecialEventQuestion.externalId == "qwerty123"
-        ).one()
+        assert db.session.query(operations_models.SpecialEventQuestion).count() == 2
+        new_question = (
+            db.session.query(operations_models.SpecialEventQuestion)
+            .filter(operations_models.SpecialEventQuestion.externalId == "qwerty123")
+            .one()
+        )
         assert new_question.title == form.fields[0].title
         assert new_question.eventId == event.id
         assert result == {
@@ -190,9 +194,11 @@ class UpdateFormQuestionsFromTypeformTest:
         result = operations_api.update_form_questions_from_typeform(event_id=event.id, form=form)
 
         db.session.refresh(question)
-        new_question = operations_models.SpecialEventQuestion.query.filter(
-            operations_models.SpecialEventQuestion.externalId == "qwerty123"
-        ).one()
+        new_question = (
+            db.session.query(operations_models.SpecialEventQuestion)
+            .filter(operations_models.SpecialEventQuestion.externalId == "qwerty123")
+            .one()
+        )
         assert result == {
             question.externalId: question.id,
             new_question.externalId: new_question.id,
@@ -236,8 +242,8 @@ class SaveResponseTest:
 
         operations_api.save_response(event_id=event.id, form=form, questions=questions)
 
-        response = operations_models.SpecialEventResponse.query.one()
-        answers = operations_models.SpecialEventAnswer.query.order_by("text").all()
+        response = db.session.query(operations_models.SpecialEventResponse).one()
+        answers = db.session.query(operations_models.SpecialEventAnswer).order_by("text").all()
 
         assert response.eventId == event.id
         assert response.externalId == form.response_id
@@ -277,8 +283,8 @@ class SaveResponseTest:
 
         operations_api.save_response(event_id=question.event.id, form=form, questions=questions)
 
-        assert operations_models.SpecialEventResponse.query.count() == 1
-        assert operations_models.SpecialEventAnswer.query.count() == 0
+        assert db.session.query(operations_models.SpecialEventResponse).count() == 1
+        assert db.session.query(operations_models.SpecialEventAnswer).count() == 0
 
     def test_question_does_not_exist(self):
         question = operations_factories.SpecialEventQuestionFactory()
@@ -304,8 +310,8 @@ class SaveResponseTest:
 
         operations_api.save_response(event_id=question.event.id, form=form, questions=questions)
 
-        response = operations_models.SpecialEventResponse.query.one()
-        answer = operations_models.SpecialEventAnswer.query.one()
+        response = db.session.query(operations_models.SpecialEventResponse).one()
+        answer = db.session.query(operations_models.SpecialEventAnswer).one()
 
         assert response.eventId == question.event.id
         assert response.externalId == form.response_id
@@ -342,8 +348,8 @@ class SaveResponseTest:
 
         operations_api.save_response(event_id=question.event.id, form=form, questions=questions)
 
-        assert operations_models.SpecialEventResponse.query.count() == 1
-        assert operations_models.SpecialEventAnswer.query.count() == 1
+        assert db.session.query(operations_models.SpecialEventResponse).count() == 1
+        assert db.session.query(operations_models.SpecialEventAnswer).count() == 1
 
 
 class GetUserForFormTest:
@@ -455,7 +461,8 @@ class RejectResponseOnExpiredOperationTest:
         operations_api.reject_response_on_expired_operation()
 
         responses = (
-            operations_models.SpecialEventResponse.query.filter(
+            db.session.query(operations_models.SpecialEventResponse)
+            .filter(
                 operations_models.SpecialEventResponse.event == event,
             )
             .order_by(
@@ -480,7 +487,8 @@ class RejectResponseOnExpiredOperationTest:
         operations_api.reject_response_on_expired_operation()
 
         response = (
-            operations_models.SpecialEventResponse.query.filter(
+            db.session.query(operations_models.SpecialEventResponse)
+            .filter(
                 operations_models.SpecialEventResponse.event == event,
             )
             .order_by(
@@ -502,7 +510,8 @@ class RejectResponseOnExpiredOperationTest:
         operations_api.reject_response_on_expired_operation()
 
         response = (
-            operations_models.SpecialEventResponse.query.filter(
+            db.session.query(operations_models.SpecialEventResponse)
+            .filter(
                 operations_models.SpecialEventResponse.event == event,
             )
             .order_by(

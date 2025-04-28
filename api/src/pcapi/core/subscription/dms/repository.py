@@ -8,7 +8,7 @@ from pcapi.models import db
 
 
 def get_orphan_dms_application_by_application_id(application_id: int) -> fraud_models.OrphanDmsApplication | None:
-    return fraud_models.OrphanDmsApplication.query.filter_by(application_id=application_id).first()
+    return db.session.query(fraud_models.OrphanDmsApplication).filter_by(application_id=application_id).first()
 
 
 def create_orphan_dms_application(
@@ -35,7 +35,8 @@ def get_already_processed_applications_ids(procedure_number: int) -> set[int]:
 
 def _get_already_processed_applications_ids_from_orphans(procedure_number: int) -> set[int]:
     orphans = (
-        fraud_models.OrphanDmsApplication.query.filter(fraud_models.OrphanDmsApplication.process_id == procedure_number)
+        db.session.query(fraud_models.OrphanDmsApplication)
+        .filter(fraud_models.OrphanDmsApplication.process_id == procedure_number)
         .with_entities(fraud_models.OrphanDmsApplication.application_id)
         .all()
     )
@@ -44,19 +45,24 @@ def _get_already_processed_applications_ids_from_orphans(procedure_number: int) 
 
 
 def _get_already_processed_applications_ids_from_fraud_checks(procedure_number: int) -> set[int]:
-    fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-        or_(
-            # If there was a parsing error, a fraudCheck exists but no resultContent
-            fraud_models.BeneficiaryFraudCheck.resultContent.is_(None),
-            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_number,
-        ),
-        fraud_models.BeneficiaryFraudCheck.status.notin_(
-            [
-                fraud_models.FraudCheckStatus.PENDING,
-                fraud_models.FraudCheckStatus.STARTED,
-            ]
-        ),
-    ).with_entities(fraud_models.BeneficiaryFraudCheck.thirdPartyId)
+    fraud_checks = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            or_(
+                # If there was a parsing error, a fraudCheck exists but no resultContent
+                fraud_models.BeneficiaryFraudCheck.resultContent.is_(None),
+                fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer)
+                == procedure_number,
+            ),
+            fraud_models.BeneficiaryFraudCheck.status.notin_(
+                [
+                    fraud_models.FraudCheckStatus.PENDING,
+                    fraud_models.FraudCheckStatus.STARTED,
+                ]
+            ),
+        )
+        .with_entities(fraud_models.BeneficiaryFraudCheck.thirdPartyId)
+    )
 
     return {int(fraud_check[0]) for fraud_check in fraud_checks}

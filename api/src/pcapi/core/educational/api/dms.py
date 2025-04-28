@@ -137,10 +137,14 @@ def _get_or_create_application(procedure_number: int, node: dict) -> None:
         )
         return
 
-    application = educational_models.CollectiveDmsApplication.query.filter(
-        educational_models.CollectiveDmsApplication.procedure == procedure_number,
-        educational_models.CollectiveDmsApplication.application == data["application"],
-    ).one_or_none()
+    application = (
+        db.session.query(educational_models.CollectiveDmsApplication)
+        .filter(
+            educational_models.CollectiveDmsApplication.procedure == procedure_number,
+            educational_models.CollectiveDmsApplication.application == data["application"],
+        )
+        .one_or_none()
+    )
     if application:
         for key, value in data.items():
             setattr(application, key, value)
@@ -163,7 +167,7 @@ def _convert_iso_string_to_naive_utc_datetime(date_str: str | None) -> datetime.
 
 
 def _get_previous_import(procedure_number: int) -> dms_models.LatestDmsImport | None:
-    previous_import_query = dms_models.LatestDmsImport.query.filter(
+    previous_import_query = db.session.query(dms_models.LatestDmsImport).filter(
         dms_models.LatestDmsImport.procedureId == procedure_number
     )
     previous_import_query = previous_import_query.order_by(dms_models.LatestDmsImport.latestImportDatetime.desc())

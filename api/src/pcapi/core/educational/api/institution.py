@@ -110,9 +110,9 @@ def import_deposit_institution_csv(
         )
 
         if program_name is not None:
-            educational_program = educational_models.EducationalInstitutionProgram.query.filter_by(
-                name=program_name
-            ).one()
+            educational_program = (
+                db.session.query(educational_models.EducationalInstitutionProgram).filter_by(name=program_name).one()
+            )
             logger.info("Updating institutions with program %s", program_name)
             _update_institutions_educational_program(educational_program=educational_program, uais=data.keys())
 
@@ -131,7 +131,8 @@ def import_deposit_institution_data(
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
     }
     db_institutions = {
-        institution.institutionId: institution for institution in educational_models.EducationalInstitution.query.all()
+        institution.institutionId: institution
+        for institution in db.session.query(educational_models.EducationalInstitution).all()
     }
 
     not_found_uais = [uai for uai in data if uai not in adage_institutions]
@@ -169,10 +170,14 @@ def import_deposit_institution_data(
 
         deposit = None
         if not created:
-            deposit = educational_models.EducationalDeposit.query.filter(
-                educational_models.EducationalDeposit.educationalYear == educational_year,
-                educational_models.EducationalDeposit.educationalInstitution == db_institution,
-            ).one_or_none()
+            deposit = (
+                db.session.query(educational_models.EducationalDeposit)
+                .filter(
+                    educational_models.EducationalDeposit.educationalYear == educational_year,
+                    educational_models.EducationalDeposit.educationalInstitution == db_institution,
+                )
+                .one_or_none()
+            )
 
         if deposit:
             if deposit.ministry != ministry and conflict == "replace":
@@ -204,11 +209,9 @@ def import_deposit_institution_data(
 def _update_institutions_educational_program(
     educational_program: educational_models.EducationalInstitutionProgram, uais: typing.Iterable[str]
 ) -> None:
-    institutions: typing.Iterable[educational_models.EducationalInstitution] = (
-        educational_models.EducationalInstitution.query.options(
-            sa_orm.joinedload(educational_models.EducationalInstitution.programAssociations)
-        )
-    )
+    institutions: typing.Iterable[educational_models.EducationalInstitution] = db.session.query(
+        educational_models.EducationalInstitution
+    ).options(sa_orm.joinedload(educational_models.EducationalInstitution.programAssociations))
     institution_by_uai = {institution.institutionId: institution for institution in institutions}
 
     for uai in uais:
@@ -298,9 +301,9 @@ def synchronise_institutions_geolocation(adage_year_id: str | None = None) -> No
     adage_institutions = get_adage_educational_institutions(adage_year_id)
     adage_uais = [instition.uai for instition in adage_institutions]
 
-    educational_institutions = EducationalInstitution.query.filter(
-        EducationalInstitution.institutionId.in_(adage_uais)
-    ).all()
+    educational_institutions = (
+        db.session.query(EducationalInstitution).filter(EducationalInstitution.institutionId.in_(adage_uais)).all()
+    )
     educational_institutions_by_uai = {
         institution.institutionId: institution for institution in educational_institutions
     }
@@ -318,7 +321,7 @@ def synchronise_rurality_level() -> None:
     rows = list(InstitutionRuralLevelQuery().execute())
     actual_rows = (
         e._asdict()
-        for e in educational_models.EducationalInstitution.query.with_entities(
+        for e in db.session.query(educational_models.EducationalInstitution).with_entities(
             educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.ruralLevel
         )
     )
@@ -335,7 +338,7 @@ def synchronise_rurality_level() -> None:
         ids_to_update = ids - ids_by_rurality_actual.get(rural_level, set())
         rural_level_enum = educational_models.InstitutionRuralLevel(rural_level) if rural_level else None
         if ids_to_update:
-            educational_models.EducationalInstitution.query.filter(
+            db.session.query(educational_models.EducationalInstitution).filter(
                 educational_models.EducationalInstitution.id.in_(ids_to_update)
             ).update({"ruralLevel": rural_level_enum})
 
@@ -344,9 +347,8 @@ def synchronise_rurality_level() -> None:
 
 def get_offers_count_for_my_institution(uai: str) -> int:
     offer_query = (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
+        db.session.query(educational_models.CollectiveOffer)
+        .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
         .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings

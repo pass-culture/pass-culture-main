@@ -4,6 +4,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factory
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -24,7 +25,7 @@ class Returns204Test:
 
         assert response.status_code == 204
 
-        assert offer_models.Offer.query.one() == validated_offer
+        assert db.session.query(offer_models.Offer).one() == validated_offer
 
     def test_delete_unaccessible_draft(self, client):
         pro = users_factory.ProFactory()
@@ -36,7 +37,7 @@ class Returns204Test:
 
         assert response.status_code == 204
 
-        assert offer_models.Offer.query.count() == 1
+        assert db.session.query(offer_models.Offer).count() == 1
 
 
 class Returns401Test:
@@ -50,4 +51,4 @@ class Returns401Test:
 
         assert response.status_code == 401
 
-        assert offer_models.Offer.query.count() == 1
+        assert db.session.query(offer_models.Offer).count() == 1

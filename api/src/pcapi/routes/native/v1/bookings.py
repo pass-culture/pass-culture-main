@@ -9,6 +9,7 @@ from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -29,7 +30,7 @@ from .. import blueprint
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
-    stock = Stock.query.get(body.stock_id)
+    stock = db.session.query(Stock).get(body.stock_id)
     if not stock:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
@@ -121,7 +122,7 @@ def get_bookings(user: User) -> BookingsResponse:
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
 @authenticated_and_active_user_required
 def cancel_booking(user: User, booking_id: int) -> None:
-    booking = Booking.query.filter(Booking.id == booking_id, Booking.userId == user.id).first_or_404()
+    booking = db.session.query(Booking).filter(Booking.id == booking_id, Booking.userId == user.id).first_or_404()
     try:
         bookings_api.cancel_booking_by_beneficiary(user, booking)
     except bookings_exceptions.BookingIsCancelled:
@@ -149,6 +150,6 @@ def cancel_booking(user: User, booking_id: int) -> None:
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
-    booking = Booking.query.filter(Booking.userId == user.id, Booking.id == booking_id).first_or_404()
+    booking = db.session.query(Booking).filter(Booking.userId == user.id, Booking.id == booking_id).first_or_404()
     booking.displayAsEnded = body.ended
     repository.save(booking)

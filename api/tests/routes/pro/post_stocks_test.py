@@ -20,6 +20,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -43,14 +44,14 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
         assert response.json["stocks_count"] == 1
-        assert len(Stock.query.all()) == len(stock_data["stocks"])
-        created_stock = Stock.query.first()
+        assert len(db.session.query(Stock).all()) == len(stock_data["stocks"])
+        created_stock = db.session.query(Stock).first()
 
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive is False
-        assert offers_models.PriceCategory.query.count() == 0
-        assert offers_models.PriceCategoryLabel.query.count() == 0
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_called_once_with(
@@ -76,14 +77,14 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
         assert response.json["stocks_count"] == 1
-        assert len(Stock.query.all()) == len(stock_data["stocks"])
-        created_stock = Stock.query.first()
+        assert len(db.session.query(Stock).all()) == len(stock_data["stocks"])
+        created_stock = db.session.query(Stock).first()
 
         assert offer.id == created_stock.offerId
         assert created_stock.price == 0
         assert offer.isActive is False
-        assert offers_models.PriceCategory.query.count() == 0
-        assert offers_models.PriceCategoryLabel.query.count() == 0
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_called_once_with(
@@ -132,10 +133,10 @@ class Returns201Test:
 
         assert response.json["stocks_count"] == len(stock_data["stocks"])
 
-        created_stocks = Stock.query.order_by(Stock.price).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.price).all()
         assert len(created_stocks) == 3
-        assert offers_models.PriceCategory.query.count() == 2
-        assert offers_models.PriceCategoryLabel.query.count() == 2
+        assert db.session.query(offers_models.PriceCategory).count() == 2
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 2
         assert created_stocks[0].price == 20
         assert created_stocks[0].priceCategory.price == 20
         assert created_stocks[0].priceCategory.label == "Tarif 1"
@@ -188,10 +189,10 @@ class Returns201Test:
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
-        created_stocks = Stock.query.order_by(Stock.price).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.price).all()
         assert len(created_stocks) == 3
-        assert offers_models.PriceCategory.query.count() == 2
-        assert offers_models.PriceCategoryLabel.query.count() == 2
+        assert db.session.query(offers_models.PriceCategory).count() == 2
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 2
         assert created_stocks[0].price == 20
         assert created_stocks[0].priceCategory.price == 20
         assert created_stocks[0].priceCategory.label == "Shared"
@@ -214,12 +215,12 @@ class Returns201Test:
         }
 
         client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(Stock).first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
-        assert len(Stock.query.all()) == 1
-        assert offers_models.PriceCategory.query.count() == 0
-        assert offers_models.PriceCategoryLabel.query.count() == 0
+        assert len(db.session.query(Stock).all()) == 1
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
 
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -335,12 +336,12 @@ class Returns201Test:
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.json["stocks_count"] == len(stock_data["stocks"])
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(Stock).first()
         assert offer.id == created_stock.offerId
         assert price_category.price == created_stock.price
-        assert len(Stock.query.all()) == 1
-        assert offers_models.PriceCategory.query.count() == 1
-        assert offers_models.PriceCategoryLabel.query.count() == 1
+        assert len(db.session.query(Stock).all()) == 1
+        assert db.session.query(offers_models.PriceCategory).count() == 1
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_event_stock_created_with_price_category(self, mocked_async_index_offer_ids, client, caplog):
@@ -376,9 +377,9 @@ class Returns201Test:
         with caplog.at_level(logging.INFO):
             client.with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
 
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(Stock).first()
         assert offer.id == created_stock.offerId
-        assert len(Stock.query.all()) == 1
+        assert len(db.session.query(Stock).all()) == 1
         assert created_stock.priceCategory == new_price_category
         assert created_stock.price == 25
 
@@ -433,7 +434,7 @@ class Returns201Test:
 
         assert response.json["stocks_count"] == len(stock_data["stocks"])
 
-        created_stock: Stock = Stock.query.first()
+        created_stock: Stock = db.session.query(Stock).first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.quantity == 2  # Same as the activation codes length
@@ -481,10 +482,10 @@ class Returns201Test:
 
         response_dict = response.json
         assert response_dict["stocks_count"] == len(stock_data["stocks"])
-        created_stocks = Stock.query.all()
+        created_stocks = db.session.query(Stock).all()
         for idx, result_stock_id in enumerate(created_stocks):
             expected_stock = stock_data["stocks"][idx]
-            result_stock = Stock.query.get(result_stock_id.id)
+            result_stock = db.session.query(Stock).get(result_stock_id.id)
             assert result_stock.price == expected_stock["price"]
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
@@ -526,7 +527,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        stock = offers_models.Stock.query.one()
+        stock = db.session.query(offers_models.Stock).one()
         assert stock.beginningDatetime == beginning
         assert stock.bookingLimitDatetime == beginning
 
@@ -610,7 +611,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        updated_booking = bookings_models.Booking.query.get(booking.id)
+        updated_booking = db.session.query(bookings_models.Booking).get(booking.id)
         assert updated_booking.status is not bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
@@ -654,7 +655,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        updated_booking = bookings_models.Booking.query.get(booking.id)
+        updated_booking = db.session.query(bookings_models.Booking).get(booking.id)
         assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 
@@ -675,7 +676,7 @@ class Returns201Test:
 
         client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(Stock).first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.bookingLimitDatetime is None
@@ -739,7 +740,7 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         assert response.status_code == 201
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(Stock).first()
         assert offer.id == created_stock.offerId
         assert created_stock.quantity == 42
 

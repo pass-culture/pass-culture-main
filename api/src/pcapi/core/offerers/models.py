@@ -454,7 +454,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         import pcapi.core.offers.models as offers_models
 
         return bool(
-            offers_models.Offer.query.filter(offers_models.Offer.venueId == self.id)
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.venueId == self.id)
             .limit(1)
             .with_entities(offers_models.Offer.venueId)
             .all()
@@ -531,13 +532,15 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def has_individual_offers(self) -> bool:
         from pcapi.core.offers.models import Offer
 
-        return db.session.query(Offer.query.filter(Offer.venueId == self.id).exists()).scalar()
+        return db.session.query(db.session.query(Offer).filter(Offer.venueId == self.id).exists()).scalar()
 
     @property
     def has_collective_offers(self) -> bool:
         from pcapi.core.educational.models import CollectiveOffer
 
-        return db.session.query(CollectiveOffer.query.filter(CollectiveOffer.venueId == self.id).exists()).scalar()
+        return db.session.query(
+            db.session.query(CollectiveOffer).filter(CollectiveOffer.venueId == self.id).exists()
+        ).scalar()
 
     @property
     def has_approved_offers(self) -> bool:
@@ -547,12 +550,14 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         from pcapi.core.offers.models import OfferValidationStatus
 
         query_offer = db.session.query(
-            Offer.query.filter(Offer.validation == OfferValidationStatus.APPROVED, Offer.venueId == self.id).exists()
+            db.session.query(Offer)
+            .filter(Offer.validation == OfferValidationStatus.APPROVED, Offer.venueId == self.id)
+            .exists()
         )
         query_collective = db.session.query(
-            CollectiveOffer.query.filter(
-                CollectiveOffer.validation == OfferValidationStatus.APPROVED, CollectiveOffer.venueId == self.id
-            ).exists()
+            db.session.query(CollectiveOffer)
+            .filter(CollectiveOffer.validation == OfferValidationStatus.APPROVED, CollectiveOffer.venueId == self.id)
+            .exists()
         )
         results = query_offer.union(query_collective).all()
 

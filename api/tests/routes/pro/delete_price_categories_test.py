@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -23,8 +24,8 @@ class Return200Test:
         )
 
         assert response.status_code == 204
-        assert offers_models.PriceCategory.query.count() == 0
-        assert offers_models.Stock.query.count() == 0
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert db.session.query(offers_models.Stock).count() == 0
 
 
 class Return400Test:
@@ -41,7 +42,7 @@ class Return400Test:
         )
 
         assert response.status_code == 400
-        assert offers_models.PriceCategory.query.count() == 1
+        assert db.session.query(offers_models.PriceCategory).count() == 1
 
     def test_user_unrelated_to_offer(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
@@ -53,4 +54,4 @@ class Return400Test:
         )
 
         assert response.status_code == 403
-        assert offers_models.PriceCategory.query.count() == 1
+        assert db.session.query(offers_models.PriceCategory).count() == 1

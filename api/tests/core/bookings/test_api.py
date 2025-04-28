@@ -63,7 +63,7 @@ class BookOfferConcurrencyTest:
     def test_create_booking(self, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
-        assert models.Booking.query.count() == 0
+        assert db.session.query(models.Booking).count() == 0
 
         # open a second connection on purpose and lock the stock
         engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
@@ -83,8 +83,8 @@ class BookOfferConcurrencyTest:
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-        assert models.Booking.query.count() == 0
-        assert offers_models.Stock.query.filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
+        assert db.session.query(models.Booking).count() == 0
+        assert db.session.query(offers_models.Stock).filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
     def test_cancel_booking(self, app):
@@ -100,8 +100,8 @@ class BookOfferConcurrencyTest:
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.cancel_booking_by_beneficiary(booking.user, booking)
 
-        assert models.Booking.query.filter().count() == 1
-        assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 0
+        assert db.session.query(models.Booking).filter().count() == 1
+        assert db.session.query(models.Booking).filter(models.Booking.status == BookingStatus.CANCELLED).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_cancel_booking_with_concurrent_cancel(self, app):
@@ -142,8 +142,8 @@ class BookOfferConcurrencyTest:
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.cancel_bookings_from_stock_by_offerer(stock)
 
-        assert models.Booking.query.filter().count() == 4
-        assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 1
+        assert db.session.query(models.Booking).filter().count() == 4
+        assert db.session.query(models.Booking).filter(models.Booking.status == BookingStatus.CANCELLED).count() == 1
 
 
 @pytest.mark.usefixtures("db_session")
@@ -292,7 +292,7 @@ class BookOfferTest:
 
         assert booking.status is BookingStatus.USED
         assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
     def test_booking_on_digital_offer_without_activation_stock(self):
@@ -303,7 +303,7 @@ class BookOfferTest:
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert booking.status is not BookingStatus.USED
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).first()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).first()
         assert event is None
 
     def test_create_event_booking(self):
@@ -455,7 +455,7 @@ class BookOfferTest:
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             # Then
-            assert Booking.query.count() == 1
+            assert db.session.query(Booking).count() == 1
             assert error.value.errors == {
                 "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
             }
@@ -626,7 +626,7 @@ class BookOfferTest:
             with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-            assert not Booking.query.all()
+            assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
             assert mock_lpush.call_count == 1
             assert mock_lpush.mock_calls[0].args[0] == constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
@@ -683,7 +683,7 @@ class BookOfferTest:
             assert get_tickets_adapter.call_count == 1
             assert mock_rpop.call_count == 1
             assert mock_cancel_booking.call_count == 1
-            assert not Booking.query.all()
+            assert not db.session.query(Booking).all()
 
         @patch("flask.current_app.redis_client.llen")
         @patch("flask.current_app.redis_client.rpush")
@@ -737,7 +737,7 @@ class BookOfferTest:
             with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-            assert not Booking.query.all()
+            assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
             assert mock_lpush.call_count == 1
             assert mock_lpush.mock_calls[0].args[0] == constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
@@ -766,7 +766,7 @@ class BookOfferTest:
             assert mock_rpush.call_count == 1
             assert get_tickets_adapter.call_count == 0
             assert mock_cancel_booking.call_count == 0
-            assert not Booking.query.all()
+            assert not db.session.query(Booking).all()
 
         @patch("flask.current_app.redis_client.llen")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
@@ -818,7 +818,7 @@ class BookOfferTest:
             with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-            assert not Booking.query.all()
+            assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
             assert mock_lpush.call_count == 0
 
@@ -831,7 +831,7 @@ class BookOfferTest:
 
             assert mock_rpop.call_count == 0
             assert mock_cancel_booking.call_count == 0
-            assert not Booking.query.all()
+            assert not db.session.query(Booking).all()
 
         @patch("flask.current_app.redis_client.llen")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
@@ -983,7 +983,7 @@ class BookOfferTest:
             with pytest.raises(providers_exceptions.InactiveProvider):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            assert Booking.query.count() == 0
+            assert db.session.query(Booking).count() == 0
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
@@ -1010,7 +1010,7 @@ class BookOfferTest:
             with pytest.raises(Exception):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            assert Booking.query.count() == 0
+            assert db.session.query(Booking).count() == 0
 
         @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_manual_offer(self):
@@ -1053,7 +1053,7 @@ class BookOfferTest:
             with pytest.raises(external_bookings_exceptions.ExternalBookingSoldOutError):
                 api.book_offer(beneficiary, stock.id, quantity=1)
 
-            assert not models.Booking.query.count()
+            assert not db.session.query(models.Booking).count()
             assert stock.quantity == 10  # dnBookedQuantity + 0
 
         def test_not_enough_seats_failure(self, requests_mock):
@@ -1080,7 +1080,7 @@ class BookOfferTest:
             with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError):
                 api.book_offer(beneficiary, stock.id, quantity=2)
 
-            assert not models.Booking.query.count()
+            assert not db.session.query(models.Booking).count()
             assert stock.quantity == 11  # dnBookedQuantity + 1
 
         @pytest.mark.features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
@@ -1101,7 +1101,7 @@ class BookOfferTest:
             with pytest.raises(feature.DisabledFeatureError) as exc:
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            assert Booking.query.count() == 0
+            assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_CDS_EXTERNAL_BOOKINGS is active"
 
         @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
@@ -1122,7 +1122,7 @@ class BookOfferTest:
             with pytest.raises(feature.DisabledFeatureError) as exc:
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            assert Booking.query.count() == 0
+            assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_BOOST_EXTERNAL_BOOKINGS is active"
 
         @pytest.mark.features(ENABLE_CGR_INTEGRATION=True, DISABLE_CGR_EXTERNAL_BOOKINGS=True)
@@ -1143,7 +1143,7 @@ class BookOfferTest:
             with pytest.raises(feature.DisabledFeatureError) as exc:
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            assert Booking.query.count() == 0
+            assert db.session.query(Booking).count() == 0
             assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"
 
     @patch("pcapi.core.bookings.api.apps_flyer_job.log_user_booked_offer_event_job.delay")
@@ -1216,9 +1216,9 @@ class CancelByBeneficiaryTest:
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
-        updated_booking = models.Booking.query.filter().one()
+        updated_booking = db.session.query(models.Booking).filter().one()
 
-        assert models.Booking.query.filter().count() == 1
+        assert db.session.query(models.Booking).filter().count() == 1
         assert updated_booking.status == BookingStatus.CANCELLED
 
         assert updated_booking.stock.dnBookedQuantity == 1
@@ -1262,9 +1262,9 @@ class CancelByBeneficiaryTest:
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
-        updated_booking = models.Booking.query.filter().one()
+        updated_booking = db.session.query(models.Booking).filter().one()
 
-        assert models.Booking.query.filter().count() == 1
+        assert db.session.query(models.Booking).filter().count() == 1
         assert updated_booking.status == BookingStatus.CANCELLED
 
         assert updated_booking.stock.dnBookedQuantity == 1
@@ -1564,9 +1564,9 @@ class CancelByOffererTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        assert models.Booking.query.filter().count() == 4
-        assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 3
-        assert models.Booking.query.filter(models.Booking.is_used_or_reimbursed.is_(True)).count() == 1
+        assert db.session.query(models.Booking).filter().count() == 4
+        assert db.session.query(models.Booking).filter(models.Booking.status == BookingStatus.CANCELLED).count() == 3
+        assert db.session.query(models.Booking).filter(models.Booking.is_used_or_reimbursed.is_(True)).count() == 1
         assert booking_1.status is BookingStatus.CANCELLED
         assert booking_1.cancellationReason == BookingCancellationReasons.OFFERER
         assert booking_2.status is BookingStatus.CANCELLED
@@ -1667,9 +1667,9 @@ def test_mark_as_cancelled():
     )
     api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
-    event = finance_models.FinanceEvent.query.one()
+    event = db.session.query(finance_models.FinanceEvent).one()
     finance_api.price_event(event)
-    pricing = finance_models.Pricing.query.one()
+    pricing = db.session.query(finance_models.Pricing).one()
     assert booking.status == BookingStatus.USED
     assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
     assert pricing.status == finance_models.PricingStatus.VALIDATED
@@ -1679,7 +1679,7 @@ def test_mark_as_cancelled():
     assert booking.cancellationReason == BookingCancellationReasons.FRAUD
     assert event.status == finance_models.FinanceEventStatus.CANCELLED
     assert pricing.status == finance_models.PricingStatus.CANCELLED
-    unuse_event = finance_models.FinanceEvent.query.filter(finance_models.FinanceEvent.id != event.id).one()
+    unuse_event = db.session.query(finance_models.FinanceEvent).filter(finance_models.FinanceEvent.id != event.id).one()
     assert unuse_event.motive == finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE
     assert unuse_event.status == finance_models.FinanceEventStatus.NOT_TO_BE_PRICED
 
@@ -1694,7 +1694,7 @@ class MarkAsUsedTest:
         assert booking.status is BookingStatus.USED
         assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
         assert len(push_testing.requests) == 2
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
     def test_mark_as_used_unlocks_achievement(self):
@@ -1713,7 +1713,7 @@ class MarkAsUsedTest:
         assert booking.validationAuthorType == models.BookingValidationAuthorType.BACKOFFICE
         assert booking.dateUsed is not None
         assert not booking.cancellationReason
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
 
     def test_mark_as_used_with_uncancel_unlocks_achievement(self):
@@ -1794,9 +1794,9 @@ class MarkAsUnusedTest:
         )
 
         api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
-        event = finance_models.FinanceEvent.query.one()
+        event = db.session.query(finance_models.FinanceEvent).one()
         finance_api.price_event(event)
-        pricing = finance_models.Pricing.query.one()
+        pricing = db.session.query(finance_models.Pricing).one()
         assert booking.status == BookingStatus.USED
         assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
         assert pricing.status == finance_models.PricingStatus.VALIDATED
@@ -1805,7 +1805,9 @@ class MarkAsUnusedTest:
         assert booking.status == BookingStatus.CONFIRMED
         assert event.status == finance_models.FinanceEventStatus.CANCELLED
         assert pricing.status == finance_models.PricingStatus.CANCELLED
-        unuse_event = finance_models.FinanceEvent.query.filter(finance_models.FinanceEvent.id != event.id).one()
+        unuse_event = (
+            db.session.query(finance_models.FinanceEvent).filter(finance_models.FinanceEvent.id != event.id).one()
+        )
         assert unuse_event.motive == finance_models.FinanceEventMotive.BOOKING_UNUSED
         assert unuse_event.status == finance_models.FinanceEventStatus.NOT_TO_BE_PRICED
 
@@ -1912,7 +1914,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        booking = Booking.query.first()
+        booking = db.session.query(Booking).first()
         assert booking.status is not BookingStatus.USED
         assert not booking.dateUsed
 
@@ -1922,7 +1924,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        booking = Booking.query.first()
+        booking = db.session.query(Booking).first()
         assert booking.status is BookingStatus.USED
         assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
         assert booking.dateUsed is not None
@@ -1933,7 +1935,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        event = finance_models.FinanceEvent.query.one()
+        event = db.session.query(finance_models.FinanceEvent).one()
         assert event.booking == booking
         assert event.valueDate == booking.dateUsed != None
 
@@ -1982,7 +1984,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        booking = Booking.query.first()
+        booking = db.session.query(Booking).first()
         assert booking.status is not BookingStatus.USED
         assert booking.dateUsed is None
 
@@ -1993,7 +1995,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        booking = Booking.query.first()
+        booking = db.session.query(Booking).first()
         assert booking.status is BookingStatus.USED
         assert booking.dateUsed == initial_date_used
 
@@ -2003,7 +2005,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        booking = Booking.query.first()
+        booking = db.session.query(Booking).first()
         assert booking.status is BookingStatus.CANCELLED
 
     def test_update_external_booking_if_not_used(self):
@@ -2013,7 +2015,7 @@ class AutoMarkAsUsedAfterEventTest:
         )
         api.auto_mark_as_used_after_event()
 
-        validated_external_booking = Booking.query.first()
+        validated_external_booking = db.session.query(Booking).first()
         assert validated_external_booking.status is BookingStatus.USED
 
     def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self, caplog):
@@ -2023,7 +2025,7 @@ class AutoMarkAsUsedAfterEventTest:
         with caplog.at_level(logging.INFO):
             api.auto_mark_as_used_after_event()
 
-        collectiveBooking = CollectiveBooking.query.first()
+        collectiveBooking = db.session.query(CollectiveBooking).first()
         assert collectiveBooking.status is CollectiveBookingStatus.USED
         assert collectiveBooking.dateUsed is not None
         assert caplog.records[0].message == "BookingUsed"
@@ -2039,7 +2041,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        event = finance_models.FinanceEvent.query.one()
+        event = db.session.query(finance_models.FinanceEvent).one()
         assert event.collectiveBooking == booking
 
     def test_does_not_update_collective_booking_when_event_date_is_only_1_day_before(self):
@@ -2048,7 +2050,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        collectiveBooking = CollectiveBooking.query.first()
+        collectiveBooking = db.session.query(CollectiveBooking).first()
         assert collectiveBooking.status is not CollectiveBookingStatus.USED
         assert collectiveBooking.dateUsed is None
 
@@ -2060,7 +2062,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        collectiveBooking = CollectiveBooking.query.first()
+        collectiveBooking = db.session.query(CollectiveBooking).first()
         assert collectiveBooking.status is CollectiveBookingStatus.CANCELLED
         assert collectiveBooking.dateUsed is None
 

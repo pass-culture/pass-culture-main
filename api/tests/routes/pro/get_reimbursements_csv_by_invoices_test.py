@@ -13,6 +13,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -80,11 +81,13 @@ def test_with_pricings(client):
     assert len(rows) == 2
     row = rows[1]
 
-    invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
-    batch = finance_models.CashflowBatch.query.one()
-    offer = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).one()
-    booking = bookings_models.Booking.query.filter(bookings_models.Booking.venueId == venue1.id).one()
-    pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
+    invoice = (
+        db.session.query(finance_models.Invoice).filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
+    )
+    batch = db.session.query(finance_models.CashflowBatch).one()
+    offer = db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue1.id).one()
+    booking = db.session.query(bookings_models.Booking).filter(bookings_models.Booking.venueId == venue1.id).one()
+    pricing = db.session.query(finance_models.Pricing).filter(finance_models.Pricing.bookingId == booking.id).one()
 
     assert row["Date du justificatif"] == invoice.date.strftime("%Y-%m-%d")
     assert row["N° du justificatif"] == invoice.reference
@@ -159,17 +162,25 @@ def test_with_pricings_collective_use_case(client):
     assert len(rows) == 2
     row = rows[1]
 
-    invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
-    batch = finance_models.CashflowBatch.query.one()
-    collective_offer = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.venueId == venue1.id
-    ).one()
-    collective_booking = educational_models.CollectiveBooking.query.filter(
-        educational_models.CollectiveBooking.venueId == venue1.id
-    ).one()
-    pricing = finance_models.Pricing.query.filter(
-        finance_models.Pricing.collectiveBookingId == collective_booking.id
-    ).one()
+    invoice = (
+        db.session.query(finance_models.Invoice).filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
+    )
+    batch = db.session.query(finance_models.CashflowBatch).one()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.venueId == venue1.id)
+        .one()
+    )
+    collective_booking = (
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(educational_models.CollectiveBooking.venueId == venue1.id)
+        .one()
+    )
+    pricing = (
+        db.session.query(finance_models.Pricing)
+        .filter(finance_models.Pricing.collectiveBookingId == collective_booking.id)
+        .one()
+    )
     redactor = collective_booking.educationalRedactor
     institution = collective_booking.educationalInstitution
 

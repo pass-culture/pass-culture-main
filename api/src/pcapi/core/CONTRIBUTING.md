@@ -28,11 +28,13 @@ Par exemple :
 
 ```python
 def get_offerer_by_offer_id(offer_id: int) -> Offerer | None:
-    return Offerer.query
+    return (
+        db.session.query(Offerer)
         .join(Venue)
         .join(Offer)
         .filter_by(id=offer_id)
         .first()
+    )
 ```
 
 Ces fonctions ne doivent pas contenir :
@@ -67,7 +69,7 @@ def test_flush_inside_transaction():
     db.session.flush()
     venue_type_id = venue_type.id
     db.session.rollback()
-    assert offerers_models.VenueType.query.get(venue_type_id) is not None # the object is still present
+    assert db.session.query(offerers_models.VenueType).get(venue_type_id) is not None # the object is still present
 
 
 @conftest.clean_database
@@ -77,7 +79,7 @@ def test_flush_does_not_commit():
     db.session.flush()
     venue_type_id = venue_type.id
     db.session.rollback()
-    assert offerers_models.VenueType.query.first() is None # the object is not anymore present
+    assert db.session.query(offerers_models.VenueType).first() is None # the object is no longer present
 ```
 
 

@@ -10,6 +10,7 @@ from pcapi.core.mails.models import TransactionalEmailData
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
@@ -76,7 +77,8 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
     in_30_minutes = normalized_now + datetime.timedelta(minutes=30)
     in_1_hour = normalized_now + datetime.timedelta(hours=1)
     bookings_query = (
-        booking_models.Booking.query.join(Stock)
+        db.session.query(booking_models.Booking)
+        .join(Stock)
         .join(Offer)
         .join(Venue)
         .options(

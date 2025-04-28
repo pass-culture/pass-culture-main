@@ -20,6 +20,7 @@ from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils import date as utils_date
 
@@ -43,7 +44,9 @@ class CGRStocks(LocalProvider):
         self.films: Iterator[cgr_serializers.Film] = iter(self.cgr_client_api.get_films())
         self.last_offer: offers_models.Offer | None = None
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
-            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .all()
         )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
         self.provider = venue_provider.provider
@@ -208,7 +211,9 @@ class CGRStocks(LocalProvider):
         assert self.last_offer
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
-                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer).all()
+                db.session.query(offers_models.PriceCategory)
+                .filter(offers_models.PriceCategory.offer == self.last_offer)
+                .all()
                 if self.last_offer.id
                 else []
             )

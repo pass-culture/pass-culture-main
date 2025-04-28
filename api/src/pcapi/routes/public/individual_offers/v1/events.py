@@ -535,11 +535,15 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
-    stock_id_query = offers_models.Stock.query.filter(
-        offers_models.Stock.offerId == offer.id,
-        sa.not_(offers_models.Stock.isSoftDeleted),
-        offers_models.Stock.id >= query.firstIndex,
-    ).with_entities(offers_models.Stock.id)
+    stock_id_query = (
+        db.session.query(offers_models.Stock)
+        .filter(
+            offers_models.Stock.offerId == offer.id,
+            sa.not_(offers_models.Stock.isSoftDeleted),
+            offers_models.Stock.id >= query.firstIndex,
+        )
+        .with_entities(offers_models.Stock.id)
+    )
 
     if query.ids_at_provider is not None:
         stock_id_query = stock_id_query.filter(offers_models.Stock.idAtProviders.in_(query.ids_at_provider))
@@ -547,7 +551,8 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
     total_stock_ids = [stock_id for (stock_id,) in stock_id_query.all()]
 
     stocks = (
-        offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids))
+        db.session.query(offers_models.Stock)
+        .filter(offers_models.Stock.id.in_(total_stock_ids))
         .options(
             sa_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel

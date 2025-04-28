@@ -16,6 +16,7 @@ from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -63,7 +64,8 @@ def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
 def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponse:
     offer_ids = body.offer_ids
     offers = (
-        Offer.query.filter(Offer.id.in_(offer_ids))
+        db.session.query(Offer)
+        .filter(Offer.id.in_(offer_ids))
         .options(joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
@@ -88,7 +90,7 @@ def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest) -> None:
-    offer = Offer.query.get_or_404(offer_id)
+    offer = db.session.query(Offer).get_or_404(offer_id)
     # filter in the query above would cause one more db query reported by assert_num_queries
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
@@ -119,7 +121,7 @@ def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
 )
 @atomic()
 def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
-    offer = Offer.query.get_or_404(offer_id)
+    offer = db.session.query(Offer).get_or_404(offer_id)
 
     chronicles = chronicles_api.get_offer_published_chronicles(offer)
 
@@ -137,7 +139,8 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
     give them webapp link.
     """
     offer = (
-        Offer.query.options(joinedload(Offer.venue))
+        db.session.query(Offer)
+        .options(joinedload(Offer.venue))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
         .first_or_404()
     )
@@ -148,7 +151,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
-    offer = Offer.query.get_or_404(offer_id)
+    offer = db.session.query(Offer).get_or_404(offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
     push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)

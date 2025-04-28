@@ -2,6 +2,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
 
 
 def get_redactor_favorites_count(redactor_id: int) -> int:
@@ -12,7 +13,8 @@ def get_redactor_favorites_count(redactor_id: int) -> int:
     # a hybrid_property to allow filtering (not sure this is possible however)
     # lots of joinedload because of is_eligible_for_search
     redactor = (
-        educational_models.EducationalRedactor.query.filter_by(id=redactor_id)
+        db.session.query(educational_models.EducationalRedactor)
+        .filter_by(id=redactor_id)
         .options(
             sa_orm.joinedload(educational_models.EducationalRedactor.favoriteCollectiveOfferTemplates)
             .load_only(

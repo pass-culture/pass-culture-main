@@ -120,7 +120,7 @@ def _get_offerer_address_id(
 
     offer_venue = location_option["offerVenue"]
     if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
-        target_venue = offerers_models.Venue.query.get(offer_venue["venueId"])
+        target_venue = db.session.query(offerers_models.Venue).get(offer_venue["venueId"])
         return target_venue.offererAddressId if target_venue is not None else None
 
     factory = (
@@ -311,9 +311,11 @@ def create_offers_base_list(
 
         if settings.CREATE_ADAGE_TESTING_DATA:
             # add an offer with and emoji so that ADAGE can check that the encoding works
-            institution = educational_models.EducationalInstitution.query.filter(
-                educational_models.EducationalInstitution.institutionId == "0131251P"
-            ).one()
+            institution = (
+                db.session.query(educational_models.EducationalInstitution)
+                .filter(educational_models.EducationalInstitution.institutionId == "0131251P")
+                .one()
+            )
 
             stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} 🍕",
@@ -342,13 +344,17 @@ def create_offers_base_list(
             offers.append(stock.collectiveOffer)
 
     if offer_to_teacher:
-        institution = educational_models.EducationalInstitution.query.filter(
-            educational_models.EducationalInstitution.institutionId == "0560071Y"
-        ).one()
+        institution = (
+            db.session.query(educational_models.EducationalInstitution)
+            .filter(educational_models.EducationalInstitution.institutionId == "0560071Y")
+            .one()
+        )
 
-        redactor = educational_models.EducationalRedactor.query.filter(
-            educational_models.EducationalRedactor.email == "Marianne.Calvayrac@ac-versailles.fr"
-        ).one_or_none()
+        redactor = (
+            db.session.query(educational_models.EducationalRedactor)
+            .filter(educational_models.EducationalRedactor.email == "Marianne.Calvayrac@ac-versailles.fr")
+            .one_or_none()
+        )
         if not redactor:
             redactor = educational_factories.EducationalRedactorFactory.create(
                 email="Marianne.Calvayrac@ac-versailles.fr",
@@ -532,10 +538,14 @@ def create_offers_booking_with_different_displayed_status(
     venue: offerers_models.Venue,
     provider: providers_models.Provider | None,
 ) -> None:
-    current_ansco = educational_models.EducationalYear.query.filter(
-        educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
-        educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
-    ).one()
+    current_ansco = (
+        db.session.query(educational_models.EducationalYear)
+        .filter(
+            educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
+            educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
+        )
+        .one()
+    )
     domains_iterator = cycle(domains)
     institution_iterator = cycle(institutions)
 
@@ -893,10 +903,14 @@ def create_booking_base_list(
     cancelled_institution: bool = True,
     cancelled_expired: bool = True,
 ) -> None:
-    current_ansco = educational_models.EducationalYear.query.filter(
-        educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
-        educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
-    ).one()
+    current_ansco = (
+        db.session.query(educational_models.EducationalYear)
+        .filter(
+            educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
+            educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
+        )
+        .one()
+    )
     institution_iterator = cycle(institutions)
     number_iterator = count()
     domains_iterator = cycle(domains)

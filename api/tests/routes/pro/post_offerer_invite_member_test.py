@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -17,7 +18,7 @@ class Returns200Test:
         response = client.with_session_auth("pro.user@example.com").post(f"/offerers/{offerer.id}/invite", json=data)
 
         assert response.status_code == 204
-        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        offerer_invitation = db.session.query(offerers_models.OffererInvitation).one()
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id

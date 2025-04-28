@@ -90,15 +90,15 @@ class VenueTimezonePropertyTest:
 class VenueTimezoneSqlQueryTest:
     def test_europe_paris_is_default_timezone(self):
         factories.VenueFactory(postalCode="75000")
-        assert models.Venue.query.filter_by(timezone="Europe/Paris").count() == 1
+        assert db.session.query(models.Venue).filter_by(timezone="Europe/Paris").count() == 1
 
     def test_return_timezone_given_venue_departement_code(self):
         factories.VenueFactory(postalCode="97300")
-        assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
+        assert db.session.query(models.Venue).filter_by(timezone="America/Cayenne").count() == 1
 
     def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
         factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
-        assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
+        assert db.session.query(models.Venue).filter_by(timezone="America/Cayenne").count() == 1
 
 
 class VenueBannerUrlTest:
@@ -249,19 +249,19 @@ class OffererDepartementCodePropertyTest:
 class OffererDepartementCodeSQLExpressionTest:
     def test_metropole_postal_code(self):
         factories.OffererFactory(postalCode="75000")
-        assert models.Offerer.query.filter_by(departementCode="75").count() == 1
+        assert db.session.query(models.Offerer).filter_by(departementCode="75").count() == 1
 
     def test_drom_postal_code(self):
         factories.OffererFactory(postalCode="97300")
-        assert models.Offerer.query.filter_by(departementCode="973").count() == 1
+        assert db.session.query(models.Offerer).filter_by(departementCode="973").count() == 1
 
     def test_guadeloupe_postal_code(self):
         factories.OffererFactory(postalCode="97100")
-        assert models.Offerer.query.filter_by(departementCode="971").count() == 1
+        assert db.session.query(models.Offerer).filter_by(departementCode="971").count() == 1
 
     def test_saint_martin_postal_code(self):
         factories.OffererFactory(postalCode="97150")
-        assert models.Offerer.query.filter_by(departementCode="978").count() == 1
+        assert db.session.query(models.Offerer).filter_by(departementCode="978").count() == 1
 
 
 class OffererIsTopActeurTest:
@@ -287,11 +287,11 @@ class OffererIsTopActeurSQLExpressionTest:
                 factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
             ]
         )
-        assert models.Offerer.query.filter(models.Offerer.is_top_acteur.is_(True)).count() == 1
+        assert db.session.query(models.Offerer).filter(models.Offerer.is_top_acteur.is_(True)).count() == 1
 
     def test_is_not_top_acteur(self):
         factories.OffererFactory(tags=[factories.OffererTagFactory(name="test", label="Test")])
-        assert models.Offerer.query.filter(models.Offerer.is_top_acteur.is_(True)).count() == 0
+        assert db.session.query(models.Offerer).filter(models.Offerer.is_top_acteur.is_(True)).count() == 0
 
 
 class VenueNApprovedOffersTest:
@@ -380,7 +380,8 @@ class VenueDmsAdageStatusTest:
 class CurrentPricingPointTest:
     def _load_venue(self, venue_id) -> models.Venue:
         return (
-            models.Venue.query.filter_by(id=venue_id)
+            db.session.query(models.Venue)
+            .filter_by(id=venue_id)
             .options(
                 sa_orm.joinedload(models.Venue.pricing_point_links).joinedload(
                     models.VenuePricingPointLink.pricingPoint
@@ -423,7 +424,8 @@ class CurrentPricingPointTest:
 class CurrentBankAccountTest:
     def _load_venue(self, venue_id) -> models.Venue:
         return (
-            models.Venue.query.filter_by(id=venue_id)
+            db.session.query(models.Venue)
+            .filter_by(id=venue_id)
             .options(
                 sa_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
             )
@@ -497,13 +499,13 @@ class OffererAddressTest:
 
     def test_offerers_address_isLinkedToVenue_expression_should_be_false(self):
         offererAddress = factories.OffererAddressFactory()
-        assert models.OffererAddress.query.filter_by(id=offererAddress.id).one().isLinkedToVenue is False
-        assert models.OffererAddress.query.filter(models.OffererAddress.isLinkedToVenue == False).one()
+        assert db.session.query(models.OffererAddress).filter_by(id=offererAddress.id).one().isLinkedToVenue is False
+        assert db.session.query(models.OffererAddress).filter(models.OffererAddress.isLinkedToVenue == False).one()
 
     def test_offerers_address_isLinkedToVenue_expression_should_be_true(self):
         offererAddress = factories.OffererAddressFactory()
         factories.VenueFactory(offererAddress=offererAddress)
-        assert models.OffererAddress.query.filter(models.OffererAddress.isLinkedToVenue == True).one()
+        assert db.session.query(models.OffererAddress).filter(models.OffererAddress.isLinkedToVenue == True).one()
 
 
 class OffererRid7Test:
@@ -611,5 +613,7 @@ class VenueHasPartnerPageTest:
 
         assert venue.has_partner_page is False
         assert partner_page_venue.has_partner_page is True
-        assert models.Venue.query.filter(models.Venue.has_partner_page == False).all() == [venue]
-        assert models.Venue.query.filter(models.Venue.has_partner_page == True).all() == [partner_page_venue]
+        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == False).all() == [venue]
+        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == True).all() == [
+            partner_page_venue
+        ]

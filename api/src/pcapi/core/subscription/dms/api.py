@@ -25,6 +25,7 @@ from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 from pcapi.repository import repository
@@ -61,7 +62,7 @@ APPLICATION_LABEL_TO_SETTINGS_LABEL_ID: dict[int, dict[ApplicationLabel, str | N
 
 
 def try_dms_orphan_adoption(user: users_models.User) -> None:
-    dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+    dms_orphan = db.session.query(fraud_models.OrphanDmsApplication).filter_by(email=user.email).first()
     if not dms_orphan:
         return
 

@@ -14,6 +14,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
+from pcapi.models import db
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import finance_serialize
@@ -133,7 +134,8 @@ class GetOffererResponseModel(BaseModel):
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
         }
         venues = (
-            offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
+            db.session.query(offerers_models.Venue)
+            .filter_by(managingOffererId=offerer.id)
             .options(sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
             .options(sa_orm.joinedload(offerers_models.Venue.venueProviders))
             .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))

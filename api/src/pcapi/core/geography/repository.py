@@ -4,12 +4,17 @@ import re
 from pcapi.connectors import api_adresse
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
+from pcapi.models import db
 
 
 def get_iris_from_coordinates(*, lon: float, lat: float) -> geography_models.IrisFrance | None:
-    return geography_models.IrisFrance.query.filter(
-        geography_models.IrisFrance.shape.ST_contains(f"SRID={WGS_SPATIAL_REFERENCE_IDENTIFIER};POINT({lon} {lat})")
-    ).one_or_none()
+    return (
+        db.session.query(geography_models.IrisFrance)
+        .filter(
+            geography_models.IrisFrance.shape.ST_contains(f"SRID={WGS_SPATIAL_REFERENCE_IDENTIFIER};POINT({lon} {lat})")
+        )
+        .one_or_none()
+    )
 
 
 def get_iris_from_address(
@@ -53,7 +58,7 @@ def search_addresses(
         - they are rounded to five decimal places (as it is the precision of the latitude and longitude stored in our DB)
         - they are taken into account only if both params are filled
     """
-    base_query = geography_models.Address.query.filter(
+    base_query = db.session.query(geography_models.Address).filter(
         geography_models.Address.street == street,
         geography_models.Address.city == city,
         geography_models.Address.postalCode == postal_code,

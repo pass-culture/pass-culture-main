@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.geography import api
 from pcapi.core.geography import models
+from pcapi.models import db
 
 import tests
 
@@ -29,7 +30,7 @@ class ImportIrisTest:
     def test_import_iris(self):
         path = DATA_DIR / "iris_min.7z"
         api.import_iris_from_7z(str(path))
-        assert models.IrisFrance.query.count() == 6
+        assert db.session.query(models.IrisFrance).count() == 6
 
 
 def test_to_wkt_polygon():

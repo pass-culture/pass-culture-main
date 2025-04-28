@@ -23,7 +23,7 @@ EMPTY_ANSWER = typeform.TypeformAnswer(field_id="")
 
 
 def anonymize_unlinked_chronicles() -> None:
-    models.Chronicle.query.filter(
+    db.session.query(models.Chronicle).filter(
         models.Chronicle.userId.is_(None),
         models.Chronicle.email != constants.ANONYMIZED_EMAIL,
         models.Chronicle.dateCreated < datetime.utcnow() - relativedelta(years=2),
@@ -104,7 +104,7 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
 
     products: list[sa_orm.Mapped[offers_models.Product]] = []
     if ean:
-        products = offers_models.Product.query.filter(offers_models.Product.ean == ean).all()
+        products = db.session.query(offers_models.Product).filter(offers_models.Product.ean == ean).all()
 
     try:
         if all((content, ean, form.email)):
@@ -149,12 +149,14 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
 
 def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Chronicle]:
     if offer.productId:
-        chronicles_query = models.Chronicle.query.join(models.Chronicle.products).filter(
-            offers_models.Product.id == offer.productId
+        chronicles_query = (
+            db.session.query(models.Chronicle)
+            .join(models.Chronicle.products)
+            .filter(offers_models.Product.id == offer.productId)
         )
     else:
-        chronicles_query = models.Chronicle.query.join(models.Chronicle.offers).filter(
-            offers_models.Offer.id == offer.id
+        chronicles_query = (
+            db.session.query(models.Chronicle).join(models.Chronicle.offers).filter(offers_models.Offer.id == offer.id)
         )
 
     return chronicles_query.filter(models.Chronicle.isPublished).order_by(models.Chronicle.id.desc()).all()

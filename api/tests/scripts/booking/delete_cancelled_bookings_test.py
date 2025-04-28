@@ -28,7 +28,7 @@ def test_should_not_delete_booking_with_reimbursement():
     assert exception.value.errors["cannotDeleteBookingWithReimbursementException"] == [
         "Réservation non supprimable car elle est liée à un remboursement"
     ]
-    assert bookings_models.Booking.query.count() == 1
+    assert db.session.query(bookings_models.Booking).count() == 1
 
 
 @pytest.mark.usefixtures("db_session")
@@ -41,7 +41,7 @@ def test_should_delete_booking_without_reimbursement():
     delete_cancelled_booking(venue.id)
 
     # Then
-    assert bookings_models.Booking.query.count() == 0
+    assert db.session.query(bookings_models.Booking).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -64,4 +64,4 @@ def test_should_delete_bookings_without_reimbursement_when_stop_on_exception_is_
     delete_cancelled_booking(venue.id, stop_on_exception=False)
 
     # Then
-    assert bookings_models.Booking.query.one() == booking_with_reimbursement
+    assert db.session.query(bookings_models.Booking).one() == booking_with_reimbursement

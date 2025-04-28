@@ -151,7 +151,7 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
 
     for table in tables_to_clean:
         try:
-            table.query.delete()
+            db.session.query(table).delete()
             if reset_ids:
                 # Reset sequence id to 1 to have consistent ids in testing environment
                 # This is mandatory for EAC bookings which are used by Adage (external partner)

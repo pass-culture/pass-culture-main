@@ -94,7 +94,8 @@ class ImportBankAccountMixin:
         """
         created = False
         bank_account = (
-            finance_models.BankAccount.query.filter_by(dsApplicationId=self.application_details.application_id)
+            db.session.query(finance_models.BankAccount)
+            .filter_by(dsApplicationId=self.application_details.application_id)
             .options(sa_orm.load_only(finance_models.BankAccount.id))
             .outerjoin(
                 finance_models.BankAccountStatusHistory,
@@ -260,7 +261,8 @@ class ImportBankAccountMixin:
         )
 
         venues = (
-            offerers_models.Venue.query.filter(
+            db.session.query(offerers_models.Venue)
+            .filter(
                 offerers_models.Venue.managingOffererId == offerer_id,
                 offerers_models.Venue.id != venue_id,
                 sa.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery),
@@ -337,7 +339,8 @@ class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
         Fetch the venue given the DS token of the application.
         """
         venue = (
-            offerers_models.Venue.query.filter(offerers_models.Venue.dmsToken == self.application_details.dms_token)
+            db.session.query(offerers_models.Venue)
+            .filter(offerers_models.Venue.dmsToken == self.application_details.dms_token)
             .options(
                 sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name)
             )
@@ -399,7 +402,8 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         Return None if no existing venues or more than one.
         """
         venues = (
-            offerers_models.Venue.query.filter(
+            db.session.query(offerers_models.Venue)
+            .filter(
                 offerers_models.Offerer.siren == self.application_details.siren,
                 offerers_models.Venue.isVirtual == False,
             )
@@ -433,7 +437,8 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
     def get_offerer(self) -> "Offerer | None":
         assert self.application_details.siren  # helps mypy
         offerer = (
-            offerers_models.Offerer.query.filter_by(siren=self.application_details.siren)
+            db.session.query(offerers_models.Offerer)
+            .filter_by(siren=self.application_details.siren)
             .options(sa_orm.load_only(offerers_models.Offerer.id))
             .one_or_none()
         )

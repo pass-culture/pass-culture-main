@@ -8,6 +8,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.utils import human_ids
 
 import tests
@@ -63,7 +64,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
         assert response.status_code == 204
-        mediation = offers_models.Mediation.query.one()
+        mediation = db.session.query(offers_models.Mediation).one()
         assert mediation.thumbCount == 1
         assert offer.image == offers_models.OfferImage(
             url=f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(mediation.id)}", credit="John Do"

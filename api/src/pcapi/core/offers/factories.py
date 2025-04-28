@@ -18,6 +18,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.date import timespan_str_to_numrange
 
@@ -317,9 +318,11 @@ class PriceCategoryLabelFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.PriceCategoryLabel:
-        label = offers_models.PriceCategoryLabel.query.filter_by(
-            label=kwargs.get("label"), venue=kwargs.get("venue")
-        ).one_or_none()
+        label = (
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter_by(label=kwargs.get("label"), venue=kwargs.get("venue"))
+            .one_or_none()
+        )
         if label:
             return label
         return super()._create(model_class, *args, **kwargs)

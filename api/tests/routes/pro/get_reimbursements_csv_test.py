@@ -13,6 +13,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -107,11 +108,13 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert len(rows) == 1
     row = rows[0]
 
-    invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
-    batch = finance_models.CashflowBatch.query.one()
-    offer = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).one()
-    booking = bookings_models.Booking.query.filter(bookings_models.Booking.venueId == venue1.id).one()
-    pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
+    invoice = (
+        db.session.query(finance_models.Invoice).filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
+    )
+    batch = db.session.query(finance_models.CashflowBatch).one()
+    offer = db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue1.id).one()
+    booking = db.session.query(bookings_models.Booking).filter(bookings_models.Booking.venueId == venue1.id).one()
+    pricing = db.session.query(finance_models.Pricing).filter(finance_models.Pricing.bookingId == booking.id).one()
 
     assert f"{fortnight} quinzaine" in row["Réservations concernées par le remboursement"]
     assert row["Date du justificatif"] == invoice.date.strftime("%Y-%m-%d")
@@ -220,17 +223,18 @@ def test_with_reimbursement_period_filter_with_pricings_using_oa(client, cutoff,
     assert len(rows) == 2
 
     bookings = (
-        bookings_models.Booking.query.filter(bookings_models.Booking.venueId == venue.id)
+        db.session.query(bookings_models.Booking)
+        .filter(bookings_models.Booking.venueId == venue.id)
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
         .all()
     )
 
     for row, booking in zip(rows, bookings):
-        pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
+        pricing = db.session.query(finance_models.Pricing).filter(finance_models.Pricing.bookingId == booking.id).one()
         cashflow = pricing.cashflows[0]
         invoice = cashflow.invoices[0]
         offer = booking.stock.offer
-        batch = finance_models.CashflowBatch.query.one()
+        batch = db.session.query(finance_models.CashflowBatch).one()
 
         assert f"{fortnight} quinzaine" in row["Réservations concernées par le remboursement"]
         assert row["Date du justificatif"] == invoice.date.strftime("%Y-%m-%d")
@@ -311,17 +315,25 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     assert len(rows) == 1
     row = rows[0]
 
-    invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
-    batch = finance_models.CashflowBatch.query.one()
-    collective_offer = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.venueId == venue1.id
-    ).one()
-    collective_booking = educational_models.CollectiveBooking.query.filter(
-        educational_models.CollectiveBooking.venueId == venue1.id
-    ).one()
-    pricing = finance_models.Pricing.query.filter(
-        finance_models.Pricing.collectiveBookingId == collective_booking.id
-    ).one()
+    invoice = (
+        db.session.query(finance_models.Invoice).filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
+    )
+    batch = db.session.query(finance_models.CashflowBatch).one()
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.venueId == venue1.id)
+        .one()
+    )
+    collective_booking = (
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(educational_models.CollectiveBooking.venueId == venue1.id)
+        .one()
+    )
+    pricing = (
+        db.session.query(finance_models.Pricing)
+        .filter(finance_models.Pricing.collectiveBookingId == collective_booking.id)
+        .one()
+    )
     redactor = collective_booking.educationalRedactor
     institution = collective_booking.educationalInstitution
 
@@ -428,21 +440,24 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
     assert len(rows) == 2
 
     collective_bookings = (
-        educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.venueId == venue.id)
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(educational_models.CollectiveBooking.venueId == venue.id)
         .order_by(educational_models.CollectiveBooking.dateUsed.desc(), educational_models.CollectiveBooking.id.desc())
         .all()
     )
 
     for row, collective_booking in zip(rows, collective_bookings):
-        pricing = finance_models.Pricing.query.filter(
-            finance_models.Pricing.collectiveBookingId == collective_booking.id
-        ).one()
+        pricing = (
+            db.session.query(finance_models.Pricing)
+            .filter(finance_models.Pricing.collectiveBookingId == collective_booking.id)
+            .one()
+        )
         cashflow = pricing.cashflows[0]
         invoice = cashflow.invoices[0]
         collective_offer = collective_booking.collectiveStock.collectiveOffer
         redactor = collective_booking.educationalRedactor
         institution = collective_booking.educationalInstitution
-        batch = finance_models.CashflowBatch.query.one()
+        batch = db.session.query(finance_models.CashflowBatch).one()
 
         assert f"{fortnight} quinzaine" in row["Réservations concernées par le remboursement"]
         assert row["Date du justificatif"] == invoice.date.strftime("%Y-%m-%d")
@@ -530,9 +545,9 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
         )
         assert response.status_code == 200
 
-    offers = offers_models.Offer.query.all()
-    addresses = offerers_models.OffererAddress.query.all()
-    bookings = bookings_models.Booking.query.all()
+    offers = db.session.query(offers_models.Offer).all()
+    addresses = db.session.query(offerers_models.OffererAddress).all()
+    bookings = db.session.query(bookings_models.Booking).all()
 
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"

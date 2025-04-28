@@ -331,7 +331,8 @@ def adage_mock_book_offer(offer_id: int) -> BookedCollectiveOffer:
 
 def _get_offer_or_raise_404(offer_id: int) -> models.CollectiveOffer:
     offer = (
-        models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer_id)
+        db.session.query(models.CollectiveOffer)
+        .filter(models.CollectiveOffer.id == offer_id)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
@@ -353,7 +354,8 @@ def _get_offer_or_raise_404(offer_id: int) -> models.CollectiveOffer:
 
 def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
     booking = (
-        models.CollectiveBooking.query.filter(models.CollectiveBooking.id == booking_id)
+        db.session.query(models.CollectiveBooking)
+        .filter(models.CollectiveBooking.id == booking_id)
         .join(models.CollectiveStock)
         .join(models.CollectiveOffer)
         .join(offerers_models.Venue)

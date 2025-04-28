@@ -9,6 +9,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import factories
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -37,7 +38,7 @@ class GetAvailableProvidersTest:
     def _clean(self):
         # Remove providers that are automatically added for all tests,
         # so that our tests here start with an empty "provider" table.
-        models.Provider.query.delete()
+        db.session.query(models.Provider).delete()
 
     def test_basics(self):
         self._clean()

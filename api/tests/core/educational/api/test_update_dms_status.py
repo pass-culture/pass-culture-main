@@ -9,6 +9,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.api.dms import import_dms_applications
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models import db
 
 
 DEFAULT_API_RESULT = [
@@ -83,7 +84,7 @@ class UpdateDmsStatusTest:
         assert venue2.collectiveDmsApplications[0].processingDate is None
         assert venue2.collectiveDmsApplications[0].userDeletionDate is None
 
-        latest_import = dms_models.LatestDmsImport.query.one()
+        latest_import = db.session.query(dms_models.LatestDmsImport).one()
         assert latest_import.procedureId == 123
         assert latest_import.latestImportDatetime is not None
         assert latest_import.isProcessing is False

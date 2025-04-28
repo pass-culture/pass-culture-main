@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -27,7 +28,8 @@ from . import bookings_serialization as serialization
 
 def _get_base_booking_query() -> sa_orm.Query:
     return (
-        booking_models.Booking.query.join(offerers_models.Venue)
+        db.session.query(booking_models.Booking)
+        .join(offerers_models.Venue)
         .join(offerers_models.Venue.managingOfferer)
         .outerjoin(offerers_models.Venue.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
@@ -127,7 +129,8 @@ def get_bookings_by_offer(
     """
 
     offer = (
-        offers_models.Offer.query.filter(offers_models.Offer.id == query.offer_id)
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id == query.offer_id)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)

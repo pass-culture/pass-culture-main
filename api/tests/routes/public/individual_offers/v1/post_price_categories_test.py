@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -77,9 +78,9 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 200
 
-        [triangle_argent_category, carre_or_category] = offers_models.PriceCategory.query.order_by(
-            offers_models.PriceCategory.price
-        ).all()
+        [triangle_argent_category, carre_or_category] = (
+            db.session.query(offers_models.PriceCategory).order_by(offers_models.PriceCategory.price).all()
+        )
         assert carre_or_category.label == "carre or"
         assert carre_or_category.price == decimal.Decimal("25")
         assert carre_or_category.idAtProvider == "id_carre_or"

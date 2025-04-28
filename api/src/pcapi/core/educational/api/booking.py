@@ -227,7 +227,8 @@ def get_collective_booking_report(
 
 def get_collective_booking_by_id(booking_id: int) -> educational_models.CollectiveBooking:
     collective_booking = (
-        educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(educational_models.CollectiveBooking.id == booking_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
                 educational_models.CollectiveStock.price,
@@ -268,7 +269,8 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
 
 def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_as: bool) -> None:
     collective_offer: educational_models.CollectiveOffer | None = (
-        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == offer_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings

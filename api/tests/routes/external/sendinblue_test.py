@@ -39,11 +39,15 @@ class SubscribeOrUnsubscribeUserTestHelper:
         db.session.refresh(existing_user)
         assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
 
-        action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
-            history_models.ActionHistory.authorUserId == existing_user.id,
-            history_models.ActionHistory.userId == existing_user.id,
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(
+                history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
+                history_models.ActionHistory.authorUserId == existing_user.id,
+                history_models.ActionHistory.userId == existing_user.id,
+            )
+            .one()
+        )
         assert action.extraData == {
             "modified_info": {
                 "notificationSubscriptions.marketing_email": {

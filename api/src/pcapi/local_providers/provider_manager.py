@@ -177,7 +177,8 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
         allocine_venue_provider_aliased = sa_orm.aliased(provider_models.AllocineVenueProvider, flat=True)
 
         venues_to_activate = (
-            Venue.query.join(Venue.venueProviders)
+            db.session.query(Venue)
+            .join(Venue.venueProviders)
             .join(
                 allocine_venue_provider_aliased,
                 sa.and_(
@@ -194,7 +195,8 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
         cinemas_aldready_activated = {
             cinema_id
             for cinema_id, in (
-                provider_models.CinemaProviderPivot.query.join(
+                db.session.query(provider_models.CinemaProviderPivot)
+                .join(
                     provider_models.EMSCinemaDetails,
                     provider_models.CinemaProviderPivot.id == provider_models.EMSCinemaDetails.cinemaProviderPivotId,
                 )
@@ -260,17 +262,17 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
 
         # Removing no longer up to date allocine sync
         # As AllocineVenueProvider inherit from VenueProvider, we need to delete rows in both tables
-        provider_models.AllocineVenueProvider.query.filter(
+        db.session.query(provider_models.AllocineVenueProvider).filter(
             provider_models.AllocineVenueProvider.id.in_(
                 venue_provider["id"] for venue_provider in venue_providers_to_deactivate
             )
         ).delete()
-        provider_models.VenueProvider.query.filter(
+        db.session.query(provider_models.VenueProvider).filter(
             provider_models.VenueProvider.id.in_(
                 venue_provider["id"] for venue_provider in venue_providers_to_deactivate
             )
         ).delete()
-        provider_models.AllocinePivot.query.filter(
+        db.session.query(provider_models.AllocinePivot).filter(
             provider_models.AllocinePivot.id.in_(allocine_pivot_to_delete)
         ).delete()
 
