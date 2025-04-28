@@ -11,6 +11,7 @@ import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { StocksCalendarFormSpecificTimeSlots } from './StocksCalendarFormSpecificTimeSlots/StocksCalendarFormSpecificTimeSlots'
 import styles from './StocksCalendarFormTimeAndPrice.module.scss'
@@ -71,7 +72,14 @@ export function StocksCalendarFormTimeAndPrice({
               'Le jeune doit réserver et se présenter sur un des horaires précis que vous avez défini.',
           },
           {
-            label: 'Aux horaires d’ouverture',
+            label: (
+              <span>
+                Aux horaires d’ouverture
+                <Tag variant={TagVariant.BLUE} className={styles['new-tag']}>
+                  Nouveau
+                </Tag>
+              </span>
+            ),
             value: TimeSlotTypeOption.OPENING_HOURS,
             description:
               'Le jeune se présente à n’importe quel moment sur les horaires d’ouverture que vous avez défini.',

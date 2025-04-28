@@ -23,3 +23,9 @@
 .error-callout {
   margin: rem.torem(24px) 0;
 }
+
+.new-tag {
+  position: absolute;
+  top: calc(-1 * var(--typography-body-line-height) / 2);
+  left: rem.torem(16px);
+}
