@@ -1,4 +1,6 @@
+from functools import partial
 import logging
+import typing
 
 from flask_login import current_user
 from flask_login import login_required
@@ -18,6 +20,8 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceGoneError
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -83,6 +87,7 @@ def _get_existing_stocks_by_id(
     response_model=stock_serialize.StocksResponseModel,
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serialize.StocksResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
@@ -170,6 +175,19 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 
+    stock_ids_with_update_info = [(stock.id, update_info) for stock, update_info in edited_stocks_with_update_info]
+    on_commit(partial(_handle_stocks_edition_after_commit, stock_ids_with_update_info))
+    return stock_serialize.StocksResponseModel(stocks_count=len(upserted_stocks))
+
+
+def _handle_stocks_edition_after_commit(stock_ids_with_update_info: typing.Collection[tuple[int, bool]]) -> None:
+    stock_ids = [row[0] for row in stock_ids_with_update_info]
+    stocks = offers_models.Stock.query.filter(offers_models.Stock.id.in_(stock_ids))
+    stocks_with_ids = {stock.id: stock for stock in stocks}
+    edited_stocks_with_update_info = [
+        (stocks_with_ids[stock_id], update_info) for stock_id, update_info in stock_ids_with_update_info
+    ]
+
     try:
         offers_api.handle_stocks_edition(edited_stocks_with_update_info)
     except booking_exceptions.BookingIsAlreadyCancelled:
@@ -181,12 +199,11 @@ def upsert_stocks(body: stock_serialize.StocksUpsertBodyModel) -> stock_serializ
     except booking_exceptions.BookingIsNotUsed:
         raise ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
 
-    return stock_serialize.StocksResponseModel(stocks_count=len(upserted_stocks))
-
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(response_model=stock_serialize.StockIdResponseModel, api=blueprint.pro_private_schema)
+@atomic()
 def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
     # fmt: off
     stock = (
