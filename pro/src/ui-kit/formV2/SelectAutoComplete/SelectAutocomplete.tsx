@@ -352,7 +352,7 @@ export const SelectAutocomplete = forwardRef(
               <OptionsList
                 className={className}
                 fieldName={name}
-                selectedValues={field}
+                selectedValue={field}
                 filteredOptions={filteredOptions}
                 setHoveredOptionIndex={setHoveredOptionIndex}
                 listRef={listRef}
