@@ -1,7 +1,11 @@
 import datetime
 import decimal
 import logging
+import uuid
 
+import PIL
+
+from pcapi.connectors import thumb_storage
 import pcapi.connectors.ems as ems_connector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
@@ -105,18 +109,27 @@ class EMSStocks:
                 thumb = None
             if not thumb:
                 continue
-            try:
-                offers_api.create_mediation(
-                    user=None,
-                    offer=offer,
-                    credit=None,
-                    image_as_bytes=thumb,
-                    keep_ratio=True,
-                    min_height=None,
-                    min_width=None,
-                )
-            except offers_exceptions.ImageValidationError as e:
-                logger.warning("Error: Offer image could not be created. Reason: %s", e)
+
+            if offer.product and not offer.product.productMediations:
+                try:
+                    image_id = str(uuid.uuid4())
+                    mediation = offers_models.ProductMediation(
+                        productId=offer.product.id,
+                        lastProvider=self.provider,
+                        imageType=offers_models.ImageType.POSTER,
+                        uuid=image_id,
+                    )
+                    db.session.add(mediation)
+                    thumb_storage.create_thumb(
+                        offer.product,
+                        thumb,
+                        storage_id_suffix_str="",
+                        keep_ratio=True,
+                        object_id=image_id,
+                    )
+                    db.session.commit()
+                except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
+                    logger.warning("Error: Offer image could not be created. Reason: %s", e)
 
         offer_ids = {offer.id for offer in self.created_offers}
         search.async_index_offer_ids(
