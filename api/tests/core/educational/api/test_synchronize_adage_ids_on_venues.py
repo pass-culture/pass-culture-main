@@ -413,8 +413,8 @@ def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, d
     adage_id1 = 128028
     adage_id2 = 128029
 
-    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()  # pylint: disable=datetime-now
-    a_month_ago = (datetime.now(timezone.utc) - timedelta(days=31)).isoformat()  # pylint: disable=datetime-now
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+    a_month_ago = (datetime.now(timezone.utc) - timedelta(days=31)).isoformat()
 
     venue1_data = {**BASE_DATA, "id": adage_id1, "venueId": venue1.id, "dateModification": yesterday}
     venue2_data = {**BASE_DATA, "id": adage_id2, "venueId": venue2.id, "dateModification": a_month_ago}

@@ -2455,7 +2455,7 @@ def test_get_offerer_stats_dashboard_url():
 
 class GetOffererTotalRevenueTest:
     def _create_data(self):
-        today = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+        today = datetime.datetime.now(datetime.timezone.utc)
         offerer = offerers_factories.OffererFactory()
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, stock__price=10)
         bookings_factories.UsedBookingFactory(

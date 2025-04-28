@@ -33,19 +33,19 @@ def handle_expired_individual_bookings() -> None:
     try:
         logger.info("[handle_expired_individual_bookings] STEP 1 : cancel_expired_individual_bookings()")
         cancel_expired_individual_bookings()
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception("[handle_expired_individual_bookings] Error in STEP 1 : %s", e)
 
     try:
         logger.info("[handle_expired_individual_bookings] STEP 2 : notify_users_of_expired_individual_bookings()")
         notify_users_of_expired_individual_bookings()
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception("[handle_expired_individual_bookings] Error in STEP 2 : %s", e)
 
     try:
         logger.info("[handle_expired_individual_bookings] STEP 3 : notify_offerers_of_expired_individual_bookings()")
         notify_offerers_of_expired_individual_bookings()
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception("[handle_expired_individual_bookings] Error in STEP 3 : %s", e)
 
     logger.info("[handle_expired_individual_bookings] End")
@@ -181,13 +181,13 @@ def handle_expired_collective_bookings() -> None:
     try:
         logger.info("[handle_expired_collective_bookings] STEP 1 : cancel_expired_collective_bookings")
         cancel_expired_collective_bookings()
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception("[handle_expired_collective_bookings] Error in STEP 1 : %s", e)
 
     try:
         logger.info("[handle_expired_educational_bookings] STEP 2 : notify_offerers_of_expired_individual_bookings()")
         notify_offerers_of_expired_collective_bookings()
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception("[handle_expired_educational_bookings] Error in STEP 2 : %s", e)
 
     logger.info("[handle_expired_collective_bookings] End")

@@ -318,7 +318,7 @@ def create_users_from_google_sheet(document_id: str, update_if_exists: bool = Fa
     wrapper = TextIOWrapper(content, encoding="utf-8")
     try:
         return create_users_from_csv(wrapper, update_if_exists=update_if_exists)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception("Could not create or update user from Google Drive file", extra={"exc": str(exc)})
         import_test_user_failure.send()
     return []

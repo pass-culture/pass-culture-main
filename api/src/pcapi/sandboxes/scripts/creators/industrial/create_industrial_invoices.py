@@ -305,7 +305,7 @@ def build_many_extra_invoices(count: int = 32) -> None:
         return booking
 
     # start in the past, move on to today
-    start = datetime.now(timezone.utc) - timedelta(days=15 * count)  # pylint: disable=datetime-now
+    start = datetime.now(timezone.utc) - timedelta(days=15 * count)
 
     beneficiary = None
 
@@ -330,7 +330,7 @@ def build_many_extra_invoices(count: int = 32) -> None:
             offerer = offerers_factories.OffererFactory.create(name="Structure avec de nombreux remboursements")
             offerers_factories.UserOffererFactory.create(offerer=offerer, user=user)
 
-            current_timestamp = int(datetime.now().timestamp())  # pylint: disable=datetime-now
+            current_timestamp = int(datetime.now().timestamp())
             bank_account = finance_factories.BankAccountFactory.create(
                 label=f"Compte bancaire avec plein de remboursements #{current_timestamp}",
                 offerer=offerer,
@@ -363,9 +363,7 @@ def build_many_extra_invoices(count: int = 32) -> None:
             db.session.rollback()
             raise
 
-        logger.info(  # pylint: disable=logging-fstring-interpolation
-            f"Created {count} invoices for venue #{venue.id}/{venue.name} and offer #{offer.id}/{offer.name}"
-        )
+        logger.info(f"Created {count} invoices for venue #{venue.id}/{venue.name} and offer #{offer.id}/{offer.name}")
 
 
 def create_specific_cashflow_batch_without_invoice() -> None:

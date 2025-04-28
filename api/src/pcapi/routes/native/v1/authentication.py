@@ -158,7 +158,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     try:
         dms_subscription_api.try_dms_orphan_adoption(user)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logger.exception(
             "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
         )

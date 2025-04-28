@@ -49,7 +49,7 @@ def full_index_collective_template_offers(start: int, end: int) -> None:
         if force_index or len(q) > BATCH_SIZE:
             try:
                 backend.index_collective_offer_templates(q)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 logger.exception(
                     "Full collective template offer reindexation: error while reindexing from %d to %d: %s",
                     q[0][0].id,

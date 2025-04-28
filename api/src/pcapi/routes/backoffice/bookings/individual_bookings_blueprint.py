@@ -427,7 +427,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                         "warning",
                     )
                 mark_transaction_as_invalid()
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 flash(
                     Markup(
                         "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"
@@ -486,7 +486,7 @@ def _batch_cancel_bookings(
                         author_id=current_user.id,
                     )
                     success_count += 1
-                except Exception as exception:  # pylint: disable=broad-except
+                except Exception as exception:
                     mark_transaction_as_invalid()
                     flash(
                         Markup(
@@ -501,7 +501,7 @@ def _batch_cancel_bookings(
                         ),
                         "warning",
                     )
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 mark_transaction_as_invalid()
                 flash(
                     Markup(

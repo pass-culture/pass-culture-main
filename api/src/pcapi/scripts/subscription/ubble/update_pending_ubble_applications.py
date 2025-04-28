@@ -46,7 +46,7 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
     for fraud_check in pending_ubble_application_fraud_checks:
         try:
             ubble_api.update_ubble_workflow(fraud_check)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.error(
                 "Error while updating pending ubble application",
                 extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},

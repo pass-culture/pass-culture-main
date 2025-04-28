@@ -97,7 +97,7 @@ def _define_handler(
 
             if retry_attempt and int(retry_attempt) + 1 >= settings.CLOUD_TASK_MAX_ATTEMPTS:
                 # notify that External API is probably unavailable
-                logger.error(  # pylint: disable=logging-fstring-interpolation
+                logger.error(
                     f"External API unavailable for CloudTask {path}",
                     extra=job_details | {"exception": str(exception), "cause_exception": str(exception.__cause__)},
                 )

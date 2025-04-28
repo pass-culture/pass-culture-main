@@ -582,9 +582,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             (search_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
         ],
     )
-    def test_search_with_single_filter(
-        self, authenticated_client, search_filter, expected_user
-    ):  # pylint: disable=possibly-unused-variable
+    def test_search_with_single_filter(self, authenticated_client, search_filter, expected_user):
         common_name = "Last-Name"
         underage_user = users_factories.BeneficiaryFactory(
             lastName=common_name,

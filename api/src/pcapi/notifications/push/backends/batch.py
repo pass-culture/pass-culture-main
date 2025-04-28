@@ -52,9 +52,7 @@ class BatchBackend:
                 raise ValueError(f"Invalid method {method}")
         except Exception as exc:
             logger_method = logger.warning if can_be_asynchronously_retried else logger.exception
-            logger_method(  # pylint: disable=logging-fstring-interpolation
-                f"Exception with Batch {api_name} API", extra={"payload": payload}
-            )
+            logger_method(f"Exception with Batch {api_name} API", extra={"payload": payload})
             raise requests.ExternalAPIException(is_retryable=True) from exc
 
         if response.ok:
@@ -67,7 +65,7 @@ class BatchBackend:
             logger_method = logger.error
             is_retryable = False
 
-        logger_method(  # pylint: disable=logging-fstring-interpolation
+        logger_method(
             f"Error with Batch {api_name} API: {response.status_code}",
             extra={"response_content": response.content, "payload": payload},
         )

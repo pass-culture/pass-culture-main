@@ -127,7 +127,7 @@ class DMSGraphQLClient:
             variables["input"]["correction"] = "incorrect"
         try:
             return self.execute_query(SEND_USER_MESSAGE_QUERY_NAME, variables)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception(
                 "DMS : unexpected error when sending message", extra={"application_scalar_id": application_scalar_id}
             )

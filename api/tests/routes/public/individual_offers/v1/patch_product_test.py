@@ -269,7 +269,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
-        new_limit = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        new_limit = datetime.datetime.now() + datetime.timedelta(minutes=1)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             self.endpoint_url,

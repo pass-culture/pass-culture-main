@@ -102,7 +102,7 @@ def get_api_key_provider_id() -> int | None:
 
 
 def monkey_patch_logger_makeRecord() -> None:
-    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def] # pylint: disable=too-many-positional-arguments
+    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def]
         """Make a record but store ``extra`` arguments in an ``extra``
         attribute (not only as direct attributes of the object itself,
         like the original method does).
@@ -131,7 +131,7 @@ def monkey_patch_logger_makeRecord() -> None:
 
 
 def monkey_patch_logger_log() -> None:
-    def _log(  # type: ignore[no-untyped-def]  # pylint: disable=too-many-positional-arguments
+    def _log(  # type: ignore[no-untyped-def]
         self,
         level,
         msg,
@@ -234,7 +234,7 @@ class JsonFormatter(logging.Formatter):
 
 
 def install_logging() -> None:
-    global _internal_logger  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
+    global _internal_logger  # noqa: PLW0603 (global-statement)
 
     # Avoid side effects of calling this function more than once.
     if _internal_logger is not None:
@@ -262,7 +262,7 @@ def install_logging() -> None:
     # process (so that the developer sees logs), and on the standard
     # output of the master process (for log gathering).
     if settings.RUNS_ON_KUBERNETES and sys.stdout.isatty():
-        # pylint: disable=consider-using-with
+
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
         handlers.append(handler2)  # type: ignore[arg-type]

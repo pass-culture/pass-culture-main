@@ -14,11 +14,11 @@ if TYPE_CHECKING:
 @sa_orm.declarative_mixin
 class ProvidableMixin:
     @declared_attr
-    def lastProviderId(cls) -> sa_orm.Mapped[int | None]:  # pylint: disable=no-self-argument
+    def lastProviderId(cls) -> sa_orm.Mapped[int | None]:
         return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
 
     @declared_attr
-    def lastProvider(cls) -> sa_orm.Mapped["Provider | None"]:  # pylint: disable=no-self-argument
+    def lastProvider(cls) -> sa_orm.Mapped["Provider | None"]:
         return sa_orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     idAtProviders = sa.Column(

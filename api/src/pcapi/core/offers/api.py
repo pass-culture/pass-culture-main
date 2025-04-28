@@ -1077,7 +1077,7 @@ def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
             for thumb_index in range(1, mediation.thumbCount + 1):
                 suffix = str(thumb_index - 1) if thumb_index > 1 else ""
                 remove_thumb(mediation, storage_id_suffix=suffix)
-        except Exception as exception:  # pylint: disable=broad-except
+        except Exception as exception:
             logger.exception(
                 "An unexpected error was encountered during the thumbnails deletion for %s: %s",
                 mediation,
@@ -1202,7 +1202,7 @@ def reject_inappropriate_products(
             db.session.flush()
         else:
             db.session.commit()
-    except Exception as exception:  # pylint: disable=broad-except
+    except Exception as exception:
         if is_managed_transaction():
             mark_transaction_as_invalid()
         else:
@@ -1467,7 +1467,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
             extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
         )
         return
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception(
             "Unknown error when getting shows remaining places from provider",
             extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},

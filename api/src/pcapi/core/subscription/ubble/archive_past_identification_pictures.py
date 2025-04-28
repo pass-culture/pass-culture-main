@@ -67,7 +67,7 @@ def archive_past_identification_pictures(
                 result.add_result(True)
             except (UbbleDownloadedFileEmpty, ExternalAPIException):
                 result.add_result(False)
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 # Catch all exception. Watch logs to find errors during archive
                 logger.exception("Error in archive_past_identification_pictures")
                 result.add_result()

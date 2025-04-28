@@ -32,7 +32,7 @@ class BookingFactory(BaseFactory):
     )
 
     @factory.lazy_attribute
-    def usedRecreditType(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def usedRecreditType(  # type: ignore[misc]
         obj: models.Booking,
     ) -> models.BookingRecreditType | None:
         assert (deposit := obj.deposit)  # helps mypy
@@ -44,7 +44,7 @@ class BookingFactory(BaseFactory):
         return None
 
     @factory.post_generation
-    def cancellation_limit_date(  # type: ignore[misc]  # pylint: disable=no-self-argument
+    def cancellation_limit_date(  # type: ignore[misc]
         obj: models.Booking,
         create: bool,
         extracted: datetime.datetime | None,

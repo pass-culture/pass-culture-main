@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-import requests.models as real_requests_models  # pylint: disable=wrong-requests-import # noqa: TID251
+import requests.models as real_requests_models  # noqa: TID251
 
 from pcapi.utils import requests
 

@@ -265,11 +265,11 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     )
 
     @declared_attr
-    def lastProviderId(cls) -> sa_orm.Mapped[int | None]:  # pylint: disable=no-self-argument
+    def lastProviderId(cls) -> sa_orm.Mapped[int | None]:
         return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
 
     @declared_attr
-    def lastProvider(cls) -> sa_orm.Mapped["Provider | None"]:  # pylint: disable=no-self-argument
+    def lastProvider(cls) -> sa_orm.Mapped["Provider | None"]:
         return relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     idAtProviders = sa.Column(
@@ -312,7 +312,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         return not self.isExpired and not self.isSoldOut
 
     @_bookable.expression  # type: ignore[no-redef]
-    def _bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def _bookable(cls) -> BooleanClauseList:
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
@@ -326,7 +326,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:
         return sa.and_(cls.bookingLimitDatetime.is_not(None), cls.bookingLimitDatetime <= sa.func.now())
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
@@ -335,7 +335,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
     @remainingQuantity.expression  # type: ignore[no-redef]
-    def remainingQuantity(cls) -> Case:  # pylint: disable=no-self-argument
+    def remainingQuantity(cls) -> Case:
         return sa.case((cls.quantity.is_(None), None), else_=(cls.quantity - cls.dnBookedQuantity))
 
     AUTOMATICALLY_USED_SUBCATEGORIES = [
@@ -353,7 +353,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
 
     @isEventExpired.expression  # type: ignore[no-redef]
-    def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def isEventExpired(cls) -> BooleanClauseList:
         return sa.and_(cls.beginningDatetime.is_not(None), cls.beginningDatetime <= sa.func.now())
 
     @hybrid_property
@@ -361,7 +361,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
     @isExpired.expression  # type: ignore[no-redef]
-    def isExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def isExpired(cls) -> BooleanClauseList:
         return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
     @property
@@ -373,7 +373,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
 
     @hybrid_property
     def isSoldOut(self) -> bool:
-        # pylint: disable=comparison-with-callable
+
         return (
             self.isSoftDeleted
             or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.utcnow())
@@ -381,13 +381,13 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         )
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> BooleanClauseList:
         return sa.or_(
             cls.isSoftDeleted,
             sa.and_(sa.not_(cls.beginningDatetime.is_(None)), cls.beginningDatetime <= sa.func.now()),
             sa.and_(
                 sa.not_(cls.remainingQuantity.is_(None)),
-                cls.remainingQuantity <= 0,  # pylint: disable=comparison-with-callable
+                cls.remainingQuantity <= 0,
             ),
         )
 
@@ -419,7 +419,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         return 0
 
     @remainingStock.expression  # type: ignore[no-redef]
-    def remainingStock(cls) -> Case:  # pylint: disable=no-self-argument
+    def remainingStock(cls) -> Case:
         return sa.case((cls._bookable, cls.remainingQuantity), else_=0)
 
 
@@ -572,7 +572,7 @@ class FutureOffer(PcObject, Base, Model, SoftDeletableMixin):
         return datetime.datetime.utcnow() < self.publicationDate
 
     @isWaitingForPublication.expression  # type: ignore[no-redef]
-    def isWaitingForPublication(cls) -> bool:  # pylint: disable=no-self-argument
+    def isWaitingForPublication(cls) -> bool:
         return sa.func.now() < cls.publicationDate
 
 
@@ -608,7 +608,7 @@ class HeadlineOffer(PcObject, Base, Model):
         return now in self.timespan and self.offer.status == OfferStatus.ACTIVE and has_images
 
     @isActive.expression  # type: ignore[no-redef]
-    def isActive(cls) -> bool:  # pylint: disable=no-self-argument
+    def isActive(cls) -> bool:
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
         return sa.and_(
             cls.timespan.contains(sa.cast(sa.func.now(), sa.TIMESTAMP)),
@@ -803,7 +803,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return True
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> UnaryExpression:
         return (
             ~sa.exists()
             .where(Stock.offerId == cls.id)
@@ -823,7 +823,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
 
     @canExpire.expression  # type: ignore[no-redef]
-    def canExpire(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def canExpire(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
 
     @property
@@ -836,7 +836,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.isActive and self.validation == OfferValidationStatus.APPROVED
 
     @_released.expression  # type: ignore[no-redef]
-    def _released(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def _released(cls) -> BooleanClauseList:
         return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
     @hybrid_property
@@ -844,7 +844,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
 
     @isPermanent.expression  # type: ignore[no-redef]
-    def isPermanent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isPermanent(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
     @hybrid_property
@@ -852,7 +852,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategory.is_event
 
     @isEvent.expression  # type: ignore[no-redef]
-    def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isEvent(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
@@ -868,7 +868,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.url is not None and self.url != ""
 
     @isDigital.expression  # type: ignore[no-redef]
-    def isDigital(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def isDigital(cls) -> BooleanClauseList:
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
     @property
@@ -914,7 +914,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.is_released_and_bookable
 
     @is_eligible_for_search.expression  # type: ignore[no-redef]
-    def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def is_eligible_for_search(cls) -> BooleanClauseList:
         return sa.or_(
             sa.and_(cls._released, Stock._bookable),
             sa.and_(cls.validation == OfferValidationStatus.APPROVED, FutureOffer.isWaitingForPublication),
@@ -925,7 +925,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.isReleased and self.isBookable
 
     @is_released_and_bookable.expression  # type: ignore[no-redef]
-    def is_released_and_bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def is_released_and_bookable(cls) -> BooleanClauseList:
         return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
@@ -933,7 +933,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.isReleased and self.isBookable
 
     @is_offer_released_with_bookable_stock.expression  # type: ignore[no-redef]
-    def is_offer_released_with_bookable_stock(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def is_offer_released_with_bookable_stock(cls) -> BooleanClauseList:
         return sa.and_(cls._released, sa.exists().where(Stock.offerId == cls.id).where(Stock._bookable))
 
     @hybrid_property
@@ -943,7 +943,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return False
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> BooleanClauseList:
         return sa.and_(
             sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
             ~sa.exists()
@@ -960,7 +960,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return min(stocks_with_date) if stocks_with_date else None
 
     @firstBeginningDatetime.expression  # type: ignore[no-redef]
-    def firstBeginningDatetime(cls) -> datetime.datetime | None:  # pylint: disable=no-self-argument
+    def firstBeginningDatetime(cls) -> datetime.datetime | None:
         return (
             sa.select(sa.func.min(Stock.beginningDatetime))
             .where(Stock.offerId == cls.id)
@@ -1074,7 +1074,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.hasBookingLimitDatetimesPassed
 
     @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> UnaryExpression:
         return cls.hasBookingLimitDatetimesPassed
 
     @hybrid_property
@@ -1092,15 +1092,15 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return OfferStatus.INACTIVE
 
         if self.validation == OfferValidationStatus.APPROVED:
-            if self.hasBookingLimitDatetimesPassed:  # pylint: disable=using-constant-test
+            if self.hasBookingLimitDatetimesPassed:
                 return OfferStatus.EXPIRED
-            if self.isSoldOut:  # pylint: disable=using-constant-test
+            if self.isSoldOut:
                 return OfferStatus.SOLD_OUT
 
         return OfferStatus.ACTIVE
 
     @status.expression  # type: ignore[no-redef]
-    def status(cls) -> Case:  # pylint: disable=no-self-argument
+    def status(cls) -> Case:
         return sa.case(
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
@@ -1150,7 +1150,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
     @is_headline_offer.expression  # type: ignore[no-redef]
-    def is_headline_offer(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
+    def is_headline_offer(cls) -> UnaryExpression:
         headline_offer_alias = sa_orm.aliased(HeadlineOffer)
         return sa.exists().where(headline_offer_alias.offerId == cls.id, headline_offer_alias.isActive)
 

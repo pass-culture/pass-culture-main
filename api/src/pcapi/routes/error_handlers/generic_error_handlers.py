@@ -140,7 +140,7 @@ def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
     if error.statement:
         try:
             sql_info_extra = {"sql_query": error.statement % format_sql_statement_params(error.params)}
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             # `format_sql_statement_params()` cannot handle `params`
             # when it's a list, which happens when `executemany()` is
             # used.

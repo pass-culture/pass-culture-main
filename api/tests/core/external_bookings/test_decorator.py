@@ -58,14 +58,14 @@ class CatchCinemaProviderRequestTimeoutTest:
 
         with pytest.raises(TypeError) as exception:
             # We ignore the pylint error because we test incorrect args here
-            client.get_film_showtimes_stocks(12, show_id=1)  # pylint: disable=unexpected-keyword-arg
+            client.get_film_showtimes_stocks(12, show_id=1)
             assert (
                 str(exception.value)
                 == "TypeError: get_film_showtimes_stocks() got an unexpected keyword argument 'show_id'"
             )
 
         with pytest.raises(TypeError) as exception:
-            client.get_film_showtimes_stocks(12, 13, 24)  # pylint: disable=too-many-function-args
+            client.get_film_showtimes_stocks(12, 13, 24)
             assert (
                 str(exception.value)
                 == "TypeError: get_film_showtimes_stocks() takes 1 positional arguments but 3 were given"

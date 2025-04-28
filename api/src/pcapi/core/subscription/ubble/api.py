@@ -63,7 +63,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         )
         try:
             ubble_fraud_api.on_ubble_result(fraud_check)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
             return
 
@@ -78,7 +78,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 
         try:
             is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
             return
 

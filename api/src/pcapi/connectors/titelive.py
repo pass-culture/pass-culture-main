@@ -177,9 +177,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
 
     if article and "gtl" in article and "first" in article["gtl"]:
         # this will reverse the position and take the highest gtl which is the most precise
-        for key, gtl_from_api in sorted(  # pylint:disable=unused-variable
-            list(article["gtl"]["first"].items()), reverse=True
-        ):
+        for key, gtl_from_api in sorted(list(article["gtl"]["first"].items()), reverse=True):
             gtl_id = gtl_from_api["code"].zfill(8)
             break
 

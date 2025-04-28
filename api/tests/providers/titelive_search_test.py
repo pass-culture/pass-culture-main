@@ -62,15 +62,10 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        cd_product = (
-            db.session.query(offers_models.Product)
-            .filter(
-                offers_models.Product.idAtProviders == "3700187679323",
-                offers_models.Product.lastProvider  # pylint: disable=comparison-with-callable
-                == titelive_epagine_provider,
-            )
-            .one()
-        )
+        cd_product = offers_models.Product.query.filter(
+            offers_models.Product.idAtProviders == "3700187679323",
+            offers_models.Product.lastProvider == titelive_epagine_provider,
+        ).one()
         assert cd_product is not None
         assert cd_product.name == "Les dernières volontés de Mozart (symphony)"
         assert cd_product.description == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
@@ -96,8 +91,7 @@ class TiteliveSearchTest:
             db.session.query(offers_models.Product)
             .filter(
                 offers_models.Product.idAtProviders == "3700187679324",
-                offers_models.Product.lastProvider  # pylint: disable=comparison-with-callable
-                == titelive_epagine_provider,
+                offers_models.Product.lastProvider == titelive_epagine_provider,
             )
             .one()
         )
@@ -131,8 +125,7 @@ class TiteliveSearchTest:
             db.session.query(offers_models.Product)
             .filter(
                 offers_models.Product.idAtProviders == "5054197199738",
-                offers_models.Product.lastProvider  # pylint: disable=comparison-with-callable
-                == titelive_epagine_provider,
+                offers_models.Product.lastProvider == titelive_epagine_provider,
             )
             .one()
         )
@@ -245,7 +238,7 @@ class TiteliveSearchTest:
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
         titelive_synced_products_query = db.session.query(offers_models.Product).filter(
-            offers_models.Product.lastProvider == titelive_epagine_provider  # pylint: disable=comparison-with-callable
+            offers_models.Product.lastProvider == titelive_epagine_provider
         )
         assert titelive_synced_products_query.count() == 2
 

@@ -35,7 +35,7 @@ def testing_route_with_common_errors(*args, **kwargs):
     """Route for test purpose that raise common exception
     with default fingerprint.
     """
-    1 / 0  # pylint: disable=pointless-statement
+    1 / 0
 
 
 @private_api.route("/test/route-with-validation-error/<field_name>", methods=["GET"])

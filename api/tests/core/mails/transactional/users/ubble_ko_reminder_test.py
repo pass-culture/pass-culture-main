@@ -23,7 +23,6 @@ def build_user_with_ko_retryable_ubble_fraud_check(
     user_age: int = 18,
     ubble_date_created: datetime.datetime = datetime.datetime.utcnow() - relativedelta(days=7),
     ubble_eligibility: users_models.EligibilityType = users_models.EligibilityType.AGE17_18,
-    # pylint: disable=dangerous-default-value
     reasonCodes: list[fraud_models.FraudReasonCode] = [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
 ) -> users_models.User:
     """

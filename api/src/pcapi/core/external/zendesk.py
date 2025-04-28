@@ -241,7 +241,7 @@ def _put_to_zendesk(zendesk_user_id: int, route: str, data: dict) -> bool:
         )
         response.raise_for_status()
         return True
-    except Exception as exception:  # pylint: disable=broad-except
+    except Exception as exception:
         logger.exception(
             "Exception when calling Zendesk API: %e",
             exception,

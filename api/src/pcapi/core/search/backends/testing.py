@@ -38,7 +38,7 @@ class TestingBackend(AlgoliaBackend):
     external search service is faked.
     """
 
-    def __init__(self) -> None:  # pylint: disable=super-init-not-called
+    def __init__(self) -> None:
         self.algolia_offers_client = FakeClient("offers")
         self.algolia_venues_client = FakeClient("venues")
         self.algolia_collective_offers_client = FakeClient("collective-offers")

@@ -99,7 +99,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
             except json.JSONDecodeError:
                 pass
 
-        logger.exception(  # pylint: disable=logging-fstring-interpolation
+        logger.exception(
             f"Exception when calling Sendinblue send_transac_email with status={exception.status} and code={code}",
             extra=extra,
         )

@@ -629,7 +629,7 @@ def format_collective_offer_formats(formats: typing.Sequence[EacFormat] | None) 
         return ""
     try:
         return ", ".join([fmt.value for fmt in formats])
-    except Exception:  # pylint: disable=broad-exception-caught
+    except Exception:
         return "<inconnus>"
 
 
@@ -1509,7 +1509,7 @@ def parse_referrer(url: str) -> str:
     try:
         parsed = urlparse(url)
         return urlunparse(("", "", parsed.path, parsed.params, parsed.query, parsed.fragment))
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         return "/"
 
 
@@ -1521,7 +1521,7 @@ def action_to_name(action_url: str) -> str:
         if len(action_url) != 0:
             return action_url[1:].replace("-", "_").replace("/", "_")
         return format(random.getrandbits(128), "x")
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         return action_url
 
 
@@ -1532,7 +1532,7 @@ def format_date_range(daterange: list[datetime.date]) -> str:
     """
     try:
         return f"{daterange[0].strftime('%d/%m/%Y')} - {daterange[1].strftime('%d/%m/%Y')}"
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         return ""
 
 

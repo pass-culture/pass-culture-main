@@ -60,11 +60,11 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
 
 
 with app.app_context():
-    # pylint: disable=unused-import
-    from pcapi.routes import error_handlers  # pylint: disable=unused-import
+
+    from pcapi.routes import error_handlers
     from pcapi.routes.backoffice import install_routes
     from pcapi.routes.backoffice.blueprint import backoffice_web
-    import pcapi.routes.backoffice.error_handlers  # pylint: disable=unused-import
+    import pcapi.routes.backoffice.error_handlers
     import pcapi.utils.login_manager
 
     static_utils.generate_bundles()

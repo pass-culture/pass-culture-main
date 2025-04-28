@@ -4,7 +4,6 @@ from pcapi import settings
 
 
 def install_routes(app: Flask) -> None:
-    # pylint: disable=unused-import
 
     from .endpoints import bookings
     from .endpoints import domains

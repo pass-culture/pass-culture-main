@@ -284,7 +284,7 @@ class NextSubscriptionStepTest:
             assert next_step is None
             assert user.is_beneficiary
 
-            with time_machine.travel(datetime.now() + relativedelta(years=1)):  # pylint: disable=datetime-now
+            with time_machine.travel(datetime.now() + relativedelta(years=1)):
                 next_step = subscription_api.get_user_subscription_state(user).next_step
                 assert next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
 
@@ -381,7 +381,7 @@ class NextSubscriptionStepTest:
             assert user.age == 17
             assert user.is_beneficiary
 
-            with time_machine.travel(datetime.now() + relativedelta(years=1)):  # pylint: disable=datetime-now
+            with time_machine.travel(datetime.now() + relativedelta(years=1)):
                 # They should be able to finish the subscription steps
                 assert user.age == 18
                 next_step = subscription_api.get_user_subscription_state(user).next_step

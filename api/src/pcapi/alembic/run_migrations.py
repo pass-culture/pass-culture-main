@@ -29,7 +29,7 @@ def _is_an_array_of_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
 
 
 def include_object(
-    object: schema.SchemaItem,  # pylint: disable=redefined-builtin
+    object: schema.SchemaItem,
     name: str,
     type_: str,
     reflected: bool,
@@ -77,7 +77,7 @@ def run_online_migrations() -> None:
                 context.configure(
                     connection=connection,
                     target_metadata=target_metadata,
-                    include_object=include_object,
+                    include_object=include_object,  # type: ignore[arg-type]
                     include_schemas=True,
                     transaction_per_migration=True,
                     compare_server_default=True,

@@ -92,7 +92,7 @@ class EMSContext(PivotContext):
         try:
             connector.get_schedules(version=int(datetime.utcnow().timestamp()))
             flash("Connexion à l'API EMS OK.", "success")
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             logger.exception("Error while checking EMS API information", extra={"exc": exc})
             flash("Connexion à l'API EMS KO.", "warning")
 

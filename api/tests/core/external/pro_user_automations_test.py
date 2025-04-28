@@ -56,7 +56,7 @@ class BaseProAutomations:
             mock_run_query.return_value = mocked_bq_rows()
 
             with patch(self.MOCK_IMPORT_CONTACT_PATH) as mock_import_contacts:
-                assert type(self).func()  # pylint: disable=no-value-for-parameter # I don't get this code
+                assert type(self).func()
 
                 expected_params = build_expected_called_params(self.id)
                 mock_import_contacts.assert_called_once_with(expected_params)

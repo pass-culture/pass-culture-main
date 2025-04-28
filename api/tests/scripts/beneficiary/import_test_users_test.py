@@ -54,9 +54,9 @@ class ReadFileTest:
 
         if update_if_exists:
             assert len(users) == 5
-            jeanne, jean, jeune17, _, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
+            jeanne, jean, jeune17, _, pierre = users
         else:
-            jeanne, jeune17, _, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
+            jeanne, jeune17, _, pierre = users
             jean = None
 
         assert jeanne.firstName == "Jeanne"

@@ -348,7 +348,7 @@ def send_booking_notification_to_external_service(booking: bookings_models.Booki
                 payload,
             ),
         )
-    except Exception as err:  # pylint: disable=broad-except
+    except Exception as err:
         logger.exception(
             "Error: %s. Could not send external booking notification for: booking: %s, action %s",
             err,

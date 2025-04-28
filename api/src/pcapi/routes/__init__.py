@@ -29,7 +29,7 @@ def install_all_routes(app: Flask) -> None:
     from . import adage
     from . import adage_iframe
     from . import auth
-    from . import error_handlers  # pylint: disable=unused-import
+    from . import error_handlers
     from . import external
     from . import institutional
     from . import internal

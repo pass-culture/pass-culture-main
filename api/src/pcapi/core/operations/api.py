@@ -98,7 +98,7 @@ def retrieve_special_event_from_typeform(event: models.SpecialEvent) -> None:
     except typeform.NotFoundException:
         # form does no longer exist, ignore
         pass
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logger.error(
             "An error happened while retrieving special event",
             extra={

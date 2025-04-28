@@ -4,7 +4,7 @@ from flask import Flask
 
 
 def celery_init_app(app: Flask) -> Celery:
-    # pylint: disable=abstract-method
+
     # Should be ok to only override the __call__ method
     # https://docs.celeryq.dev/en/stable/reference/celery.app.task.html#celery.app.task.Task
     class FlaskTask(Task):

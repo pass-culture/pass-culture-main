@@ -110,7 +110,7 @@ def sync_user_account_update_requests(
     for node in ds_client.get_beneficiary_account_update_nodes(procedure_number=procedure_number, since=since):
         try:
             ds_application_id = _sync_ds_application(procedure_number, node, user_id_by_email, set_without_continuation)
-        except Exception:  # pylint: disable=broad-exception-caught
+        except Exception:
             # If we don't rollback here, we will persist in the faulty transaction
             # and we won't be able to commit at the end of the process and to set the current import `isProcessing` attr to False
             # Therefore, this import could be seen as on going for other next attempts, forever.

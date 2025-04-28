@@ -36,7 +36,7 @@ def _collect_users_attributes(users: list[User]) -> list[CollectedAttributes]:
     for user in users:
         try:
             attributes = get_user_attributes(user)
-        except Exception as exc:  # pylint: disable=broad-exception-caught
+        except Exception as exc:
             # This user will not be updated, do not make the whole command crash, trace the exception
             logger.exception(
                 "[update_brevo_and_batch_users] Failed to collect user attributes: %s",

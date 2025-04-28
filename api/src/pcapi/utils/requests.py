@@ -59,7 +59,7 @@ def _redact_url(url: str | None) -> str | None:
 
 def _wrapper(
     request_send_func: Callable,
-    request: requests.PreparedRequest,  # pylint: disable=redefined-outer-name
+    request: requests.PreparedRequest,
     log_info: bool,
     **kwargs: Any,
 ) -> requests.Response:
@@ -133,9 +133,7 @@ class Session(requests.Session):
         self.mount("https://", adapter)
         self.mount("http://", adapter)
 
-    def send(
-        self, request: requests.PreparedRequest, **kwargs: Any  # pylint: disable=redefined-outer-name
-    ) -> requests.Response:
+    def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
         return _wrapper(super().send, request, self.log_info, **kwargs)
 
 

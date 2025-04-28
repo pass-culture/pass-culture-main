@@ -252,7 +252,7 @@ def _update_application_annotations(
     logger.info("[DMS] Updating annotation for application %s", application_content.application_number)
     try:
         update_demarches_simplifiees_text_annotations(application_scalar_id, annotation.id, new_annotation_value)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception(
             "[DMS] Error while updating annotation for application %s",
             application_content.application_number,
@@ -464,7 +464,7 @@ def _process_accepted_application(
 
     try:
         fraud_api.on_dms_fraud_result(user, fraud_check)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception("Error on dms fraud check result: %s", exc)
         return
 
@@ -488,7 +488,7 @@ def _process_accepted_application(
 
     try:
         has_completed_all_steps = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logger.exception(
             "[DMS] Could not save application %s - Procedure %s",
             dms_content.application_number,

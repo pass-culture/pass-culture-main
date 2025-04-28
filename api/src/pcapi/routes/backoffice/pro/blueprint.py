@@ -294,8 +294,8 @@ def _get_connect_as_base_query() -> BaseQuery:
         .join(users_models.User.UserOfferers)
         .filter(
             users_models.User.isActive.is_(True),
-            ~users_models.User.has_admin_role,  # type: ignore[operator] # pylint: disable=invalid-unary-operand-type
-            ~users_models.User.has_anonymized_role,  # type: ignore[operator] # pylint: disable=invalid-unary-operand-type
+            ~users_models.User.has_admin_role,  # type: ignore[operator]
+            ~users_models.User.has_anonymized_role,  # type: ignore[operator]
             offerers_models.UserOfferer.isValidated,
         )
     )

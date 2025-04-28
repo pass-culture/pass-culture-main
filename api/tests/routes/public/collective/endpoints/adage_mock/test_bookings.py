@@ -710,10 +710,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
             # deposit creates an educational year
             collectiveOffer__institution=deposit.educationalInstitution,
             # start will not match the educational year
-            startDatetime=datetime.now(  # pylint: disable=datetime-now # ok because we use timezone aware datetime
-                timezone.utc
-            )
-            + timedelta(weeks=512),
+            startDatetime=datetime.now(timezone.utc) + timedelta(weeks=512),
         ).collectiveOffer
 
         self.assert_request_has_expected_result(

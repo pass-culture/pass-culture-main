@@ -40,7 +40,7 @@ def send_today_events_notifications_metropolitan_france() -> None:
     for stock_id in stock_ids:
         try:
             send_today_stock_notification.delay(stock_id)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
 
@@ -75,7 +75,7 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
     for stock_id in stock_ids:
         try:
             send_today_stock_notification.delay(stock_id)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
 
@@ -121,7 +121,7 @@ def notify_users_bookings_not_retrieved() -> None:
             batch_tasks.send_transactional_notification_task.delay(notification_data)
         except BookingIsExpired:
             logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception(
                 "Failed to register send_transactional_notification_task for booking %d",
                 booking.id,

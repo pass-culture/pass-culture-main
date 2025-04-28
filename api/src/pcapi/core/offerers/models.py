@@ -396,7 +396,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         self._street = value
 
     @street.expression  # type: ignore[no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
+    def street(cls):
         return cls._address
 
     def _get_type_banner_url(self) -> str | None:
@@ -420,7 +420,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         self._bannerUrl = value
 
     @bannerUrl.expression  # type: ignore[no-redef]
-    def bannerUrl(cls):  # pylint: disable=no-self-argument
+    def bannerUrl(cls):
         return cls._bannerUrl
 
     @hybrid_property
@@ -447,7 +447,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         self._bannerMeta = value
 
     @bannerMeta.expression  # type: ignore[no-redef]
-    def bannerMeta(cls):  # pylint: disable=no-self-argument
+    def bannerMeta(cls):
         return cls._bannerMeta
 
     @hybrid_property
@@ -464,7 +464,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         )
 
     @hasOffers.expression  # type: ignore[no-redef]
-    def hasOffers(cls) -> Exists:  # pylint: disable=no-self-argument
+    def hasOffers(cls) -> Exists:
         import pcapi.core.offers.models as offers_models
 
         return sa.exists().where(offers_models.Offer.venueId == cls.id)
@@ -508,7 +508,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         return self.last_collective_dms_application.state if self.last_collective_dms_application else None
 
     @dms_adage_status.expression  # type: ignore[no-redef]
-    def dms_adage_status(cls) -> str | None:  # pylint: disable=no-self-argument
+    def dms_adage_status(cls) -> str | None:
         return (
             db.session.query(educational_models.CollectiveDmsApplication.state)
             .select_from(educational_models.CollectiveDmsApplication)
@@ -658,7 +658,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         return self.publicName or self.name
 
     @common_name.expression  # type: ignore[no-redef]
-    def common_name(cls) -> str:  # pylint: disable=no-self-argument
+    def common_name(cls) -> str:
         return sa_func.coalesce(sa.func.nullif(cls.publicName, ""), cls.name)
 
     @property
@@ -753,7 +753,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         ).scalar()
 
     @has_partner_page.expression  # type: ignore[no-redef]
-    def has_partner_page(cls):  # pylint: disable=no-self-argument
+    def has_partner_page(cls):
         from pcapi.core.offers.models import Offer
 
         AliasedVenue = sa_orm.aliased(Venue)
@@ -1006,7 +1006,7 @@ class Offerer(
         return any(tag.name == "top-acteur" for tag in self.tags)
 
     @is_top_acteur.expression  # type: ignore[no-redef]
-    def is_top_acteur(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+    def is_top_acteur(cls) -> sa.sql.elements.BooleanClauseList:
         return (
             sa.select(1)
             .select_from(OffererTagMapping)
@@ -1050,7 +1050,7 @@ class Offerer(
         self._street = value
 
     @street.expression  # type: ignore[no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
+    def street(cls):
         return cls._address
 
     @hybrid_property
@@ -1058,7 +1058,7 @@ class Offerer(
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
     @departementCode.expression  # type: ignore[no-redef]
-    def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
+    def departementCode(cls) -> Case:
         return sa.func.postal_code_to_department_code(cls.postalCode)
 
     @hybrid_property
@@ -1068,7 +1068,7 @@ class Offerer(
         return None
 
     @rid7.expression  # type: ignore[no-redef]
-    def rid7(cls) -> Case:  # pylint: disable=no-self-argument
+    def rid7(cls) -> Case:
         return sa.case(
             (cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"), sa.func.substring(cls.siren, 3, 7)),
             else_=None,
@@ -1088,7 +1088,7 @@ class Offerer(
         return False
 
     @is_caledonian.expression  # type: ignore[no-redef]
-    def is_caledonian(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def is_caledonian(cls) -> BinaryExpression:
         return sa.or_(
             cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"),
             cls.postalCode.ilike(f"{regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE}%"),
@@ -1278,7 +1278,7 @@ class IndividualOffererSubscription(PcObject, Base, Model):
         return self.dateReminderEmailSent is not None
 
     @isReminderEmailSent.expression  # type: ignore[no-redef]
-    def isReminderEmailSent(cls) -> sa.Boolean:  # pylint: disable=no-self-argument
+    def isReminderEmailSent(cls) -> sa.Boolean:
         return cls.dateReminderEmailSent.is_not(sa.null())
 
 
@@ -1324,7 +1324,7 @@ class OffererAddress(PcObject, Base, Model):
         return db.session.query(sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
 
     @isLinkedToVenue.expression  # type: ignore[no-redef]
-    def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+    def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:
         return sa.select(1).where(Venue.offererAddressId == cls.id).exists()
 
 
