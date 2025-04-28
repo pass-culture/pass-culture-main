@@ -165,6 +165,7 @@ jobs:
   test-api:
     name: "Tests api"
     needs: [pcapi-init-job, build-pcapi-tests]
+    if: needs.pcapi-init-job.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
