@@ -6,7 +6,6 @@ from flask import request
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.wrappers.response import Response
 
-from pcapi import repository
 from pcapi import settings
 from pcapi.connectors import discord as discord_connector
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
@@ -18,6 +17,8 @@ from pcapi.core.users import repository as users_repo
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
 
@@ -43,7 +44,7 @@ def discord_signin() -> str:
 
 
 @blueprint.auth_blueprint.route("/discord/success", methods=["GET"])
-@repository.atomic()
+@atomic()
 def discord_success() -> Response | str:
     access_token = request.args.get("access_token")
     user_id = request.args.get("user_id")
@@ -196,7 +197,7 @@ def discord_signin_post() -> str | Response | None:
 
 
 def redirect_with_error(error_message: str) -> Response:
-    repository.mark_transaction_as_invalid()
+    mark_transaction_as_invalid()
     return redirect(f"/auth/discord/signin?error={error_message}", code=303)
 
 

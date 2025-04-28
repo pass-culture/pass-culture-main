@@ -1,7 +1,7 @@
 from flask import abort
 
 import pcapi.core.offerers.repository as offerers_repository
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint

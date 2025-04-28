@@ -65,9 +65,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
-from pcapi.repository import is_managed_transaction
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.repository.session_management import is_managed_transaction
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.clean_accents import clean_accents

@@ -23,7 +23,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents

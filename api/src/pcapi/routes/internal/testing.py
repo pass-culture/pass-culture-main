@@ -4,7 +4,7 @@ from pcapi import settings
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import Feature
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import BaseModel

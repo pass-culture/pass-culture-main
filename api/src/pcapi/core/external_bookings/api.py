@@ -25,7 +25,7 @@ import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import on_commit
 import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest

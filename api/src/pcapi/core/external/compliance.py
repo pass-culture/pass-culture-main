@@ -8,7 +8,7 @@ from pcapi.core.categories.genres import show
 from pcapi.core.external.compliance_backends import compliance_backend
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.repository import is_managed_transaction
+from pcapi.repository.session_management import is_managed_transaction
 from pcapi.tasks import compliance_tasks
 from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
 

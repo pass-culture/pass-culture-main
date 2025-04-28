@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.educational import models
 from pcapi.core.educational.api import address as api
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

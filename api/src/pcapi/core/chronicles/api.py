@@ -10,8 +10,8 @@ from pcapi.connectors import typeform
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository import atomic
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
 
 from . import constants
 from . import models

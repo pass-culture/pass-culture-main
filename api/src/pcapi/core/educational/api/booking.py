@@ -25,9 +25,9 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import atomic
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import collective_bookings_serialize
 

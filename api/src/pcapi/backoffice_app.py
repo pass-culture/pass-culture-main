@@ -12,7 +12,7 @@ from sentry_sdk import set_tag
 from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import static_utils
 
 

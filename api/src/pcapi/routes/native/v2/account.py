@@ -8,7 +8,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.email import update as email_api
 from pcapi.models import api_errors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as v1_serializers

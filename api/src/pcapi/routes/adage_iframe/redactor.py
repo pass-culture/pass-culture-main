@@ -1,7 +1,7 @@
 from pcapi.core.educational import repository as educational_repository
 import pcapi.core.educational.api.redactor as educational_redactor_api
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe import serialization
 from pcapi.routes.adage_iframe.security import adage_jwt_required

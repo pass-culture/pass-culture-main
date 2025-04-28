@@ -27,7 +27,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import CollectiveOfferStatus
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import on_commit
 
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')

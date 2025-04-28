@@ -1,5 +1,5 @@
 from pcapi.core.educational.api.institution import search_educational_institution
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.serialization import institutions as institutions_serialization

@@ -11,8 +11,8 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.repository import atomic
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import db as db_utils
 
 from . import models

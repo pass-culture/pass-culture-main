@@ -21,8 +21,8 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.repository as offers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.repository import atomic
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
