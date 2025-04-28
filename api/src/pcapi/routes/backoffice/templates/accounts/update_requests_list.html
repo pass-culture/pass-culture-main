@@ -52,7 +52,6 @@
                   <i class="bi bi-three-dots-vertical"></i>
                 </button>
                 <ul class="dropdown-menu">
-                  <div class="btn btn-sm ms-3 px-3 fs-7 text-secondary">Actions</div>
                   {% if update_request.status == update_request.status.draft %}
                     <li class="dropdown-item p-0">
                       <form action="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) }}"
