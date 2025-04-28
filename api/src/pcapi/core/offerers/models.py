@@ -29,6 +29,7 @@ from pcapi import settings
 from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
+from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -298,7 +299,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     thumb_path_component = "venues"
 
     criteria: list["criteria_models.Criterion"] = sa_orm.relationship(
-        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
+        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary=VenueCriterion.__table__
     )
 
     dmsToken: str = sa.Column(sa.Text, nullable=False, unique=True)
@@ -325,7 +326,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     collectiveDomains: sa_orm.Mapped[list[educational_models.EducationalDomain]] = sa_orm.relationship(
         educational_models.EducationalDomain,
         back_populates="venues",
-        secondary="educational_domain_venue",
+        secondary=educational_models.EducationalDomainVenue.__table__,
         uselist=True,
     )
     collectiveDmsApplications: sa_orm.Mapped[list[educational_models.CollectiveDmsApplication]] = sa_orm.relationship(
@@ -951,6 +952,19 @@ class VenueRegistration(PcObject, Base, Model):
     webPresence: str | None = sa.Column(sa.Text, nullable=True)
 
 
+class OffererTagMapping(PcObject, Base, Model):
+    __tablename__ = "offerer_tag_mapping"
+
+    offererId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    tagId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (sa.UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
+
+
 class Offerer(
     PcObject,
     Base,
@@ -976,7 +990,7 @@ class Offerer(
 
     dateValidated = sa.Column(sa.DateTime, nullable=True, default=None)
 
-    tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary="offerer_tag_mapping")
+    tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary=OffererTagMapping.__table__)
 
     # use an expression instead of joinedload(tags) to avoid multiple SQL rows returned
     isTopActeur: sa_orm.Mapped["bool"] = sa_orm.query_expression()
@@ -1136,6 +1150,19 @@ class ApiKey(PcObject, Base, Model):
         return False
 
 
+class OffererTagCategoryMapping(PcObject, Base, Model):
+    __tablename__ = "offerer_tag_category_mapping"
+
+    tagId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    categoryId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (sa.UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),)
+
+
 class OffererTag(PcObject, Base, Model):
     """
     Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
@@ -1149,7 +1176,7 @@ class OffererTag(PcObject, Base, Model):
     description: str = sa.Column(sa.Text)
 
     categories: list["OffererTagCategory"] = sa_orm.relationship(
-        "OffererTagCategory", secondary="offerer_tag_category_mapping"
+        "OffererTagCategory", secondary=OffererTagCategoryMapping.__table__
     )
 
     def __str__(self) -> str:
@@ -1170,32 +1197,6 @@ class OffererTagCategory(PcObject, Base, Model):
 
     def __str__(self) -> str:
         return self.label or self.name
-
-
-class OffererTagCategoryMapping(PcObject, Base, Model):
-    __tablename__ = "offerer_tag_category_mapping"
-
-    tagId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    categoryId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offerer_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (sa.UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),)
-
-
-class OffererTagMapping(PcObject, Base, Model):
-    __tablename__ = "offerer_tag_mapping"
-
-    offererId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    tagId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (sa.UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
 
 
 class OffererProvider(PcObject, Base, Model):

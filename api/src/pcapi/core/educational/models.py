@@ -486,6 +486,56 @@ class CollectiveOfferRejectionReason(enum.Enum):
     WRONG_PRICE = "WRONG_PRICE"
 
 
+class ValidationRuleCollectiveOfferLink(PcObject, models.Base, models.Model):
+    __tablename__ = "validation_rule_collective_offer_link"
+    ruleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
+    )
+    collectiveOfferId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class ValidationRuleCollectiveOfferTemplateLink(PcObject, models.Base, models.Model):
+    __tablename__ = "validation_rule_collective_offer_template_link"
+    ruleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
+    )
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class CollectiveOfferTemplateDomain(models.Base, models.Model):
+    """An association table between CollectiveOfferTemplate and
+    EducationalDomain for their many-to-many relationship.
+    """
+
+    __tablename__ = "collective_offer_template_domain"
+
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    educationalDomainId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+
+
+class CollectiveOfferDomain(models.Base, models.Model):
+    """An association table between CollectiveOffer and
+    EducationalDomain for their many-to-many relationship.
+    """
+
+    __tablename__ = "collective_offer_domain"
+
+    collectiveOfferId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    educationalDomainId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+
+
 class CollectiveOffer(
     PcObject,
     models.Base,
@@ -562,7 +612,7 @@ class CollectiveOffer(
     )
 
     domains: list["EducationalDomain"] = sa_orm.relationship(
-        "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
+        "EducationalDomain", secondary=CollectiveOfferDomain.__table__, back_populates="collectiveOffers"
     )
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
@@ -604,7 +654,7 @@ class CollectiveOffer(
     )
 
     flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
-        "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
+        "OfferValidationRule", secondary=ValidationRuleCollectiveOfferLink.__table__, back_populates="collectiveOffers"
     )
 
     formats: list[EacFormat] = sa.Column(
@@ -988,6 +1038,23 @@ class CollectiveOffer(
         return self.collectiveStock.is_two_days_past_end()
 
 
+class CollectiveOfferTemplateEducationalRedactor(PcObject, models.Base, models.Model):
+    """Allow adding to favorite the offer template for adage user"""
+
+    __tablename__ = "collective_offer_template_educational_redactor"
+
+    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), nullable=False
+    )
+    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
+        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], viewonly=True
+    )
+    __table_args__ = (
+        sa.UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
+    )
+
+
 class CollectiveOfferTemplate(
     PcObject,
     offer_mixin.ValidationMixin,
@@ -1046,7 +1113,9 @@ class CollectiveOfferTemplate(
     )
 
     domains: list["EducationalDomain"] = sa_orm.relationship(
-        "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
+        "EducationalDomain",
+        secondary=CollectiveOfferTemplateDomain.__table__,
+        back_populates="collectiveOfferTemplates",
     )
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
@@ -1059,7 +1128,7 @@ class CollectiveOfferTemplate(
 
     flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
         "OfferValidationRule",
-        secondary="validation_rule_collective_offer_template_link",
+        secondary=ValidationRuleCollectiveOfferTemplateLink.__table__,
         back_populates="collectiveOfferTemplates",
     )
 
@@ -1077,7 +1146,7 @@ class CollectiveOfferTemplate(
 
     educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = sa_orm.relationship(
         "EducationalRedactor",
-        secondary="collective_offer_template_educational_redactor",
+        secondary=CollectiveOfferTemplateEducationalRedactor.__table__,
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
@@ -1617,7 +1686,7 @@ class EducationalRedactor(PcObject, models.Base, models.Model):
 
     favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa_orm.relationship(
         "CollectiveOfferTemplate",
-        secondary="collective_offer_template_educational_redactor",
+        secondary=CollectiveOfferTemplateEducationalRedactor.__table__,
         back_populates="educationalRedactorsFavorite",
     )
 
@@ -1897,36 +1966,6 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return self.collectiveStock.price
 
 
-class CollectiveOfferTemplateDomain(models.Base, models.Model):
-    """An association table between CollectiveOfferTemplate and
-    EducationalDomain for their many-to-many relationship.
-    """
-
-    __tablename__ = "collective_offer_template_domain"
-
-    collectiveOfferTemplateId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, primary_key=True
-    )
-    educationalDomainId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
-    )
-
-
-class CollectiveOfferDomain(models.Base, models.Model):
-    """An association table between CollectiveOffer and
-    EducationalDomain for their many-to-many relationship.
-    """
-
-    __tablename__ = "collective_offer_domain"
-
-    collectiveOfferId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, primary_key=True
-    )
-    educationalDomainId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
-    )
-
-
 class EducationalDomainVenue(models.Base, models.Model):
     __tablename__ = "educational_domain_venue"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -1944,24 +1983,46 @@ class EducationalDomainVenue(models.Base, models.Model):
     )
 
 
+class DomainToNationalProgram(PcObject, models.Base, models.Model):
+    """Intermediate table that links `EducationalDomain`
+    to `NationalProgram`. Links are unique: a domain can be linked to many
+    programs but not twice the same.
+    """
+
+    domainId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    nationalProgramId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "domainId",
+            "nationalProgramId",
+            name="unique_domain_to_national_program",
+        ),
+    )
+
+
 class EducationalDomain(PcObject, models.Base, models.Model):
     __tablename__ = "educational_domain"
 
     name: str = sa.Column(sa.Text, nullable=False)
     venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
-        "Venue", back_populates="collectiveDomains", secondary="educational_domain_venue"
+        "Venue", back_populates="collectiveDomains", secondary=EducationalDomainVenue.__table__
     )
     collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship(
-        "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
+        "CollectiveOffer", secondary=CollectiveOfferDomain.__table__, back_populates="domains"
     )
 
     collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa_orm.relationship(
-        "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
+        "CollectiveOfferTemplate", secondary=CollectiveOfferTemplateDomain.__table__, back_populates="domains"
     )
     nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa_orm.relationship(
         "NationalProgram",
         back_populates="domains",
-        secondary="domain_to_national_program",
+        secondary=DomainToNationalProgram.__table__,
         order_by="NationalProgram.name",
     )
 
@@ -2072,26 +2133,6 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
         return cls._phoneNumber
 
 
-class ValidationRuleCollectiveOfferLink(PcObject, models.Base, models.Model):
-    __tablename__ = "validation_rule_collective_offer_link"
-    ruleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
-    )
-    collectiveOfferId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
-    )
-
-
-class ValidationRuleCollectiveOfferTemplateLink(PcObject, models.Base, models.Model):
-    __tablename__ = "validation_rule_collective_offer_template_link"
-    ruleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
-    )
-    collectiveOfferTemplateId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
-    )
-
-
 class NationalProgram(PcObject, models.Base, models.Model):
     """
     Keep a track of existing national program that are used to highlight
@@ -2101,7 +2142,9 @@ class NationalProgram(PcObject, models.Base, models.Model):
     name: str = sa.Column(sa.Text, unique=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
-        "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
+        "EducationalDomain",
+        back_populates="nationalPrograms",
+        secondary=DomainToNationalProgram.__table__,
     )
     isActive: sa_orm.Mapped[bool] = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
@@ -2137,23 +2180,6 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, models.Base, models.Mode
     )
     nationalProgramId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
-    )
-
-
-class CollectiveOfferTemplateEducationalRedactor(PcObject, models.Base, models.Model):
-    """Allow adding to favorite the offer template for adage user"""
-
-    __tablename__ = "collective_offer_template_educational_redactor"
-
-    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
-    collectiveOfferTemplateId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), nullable=False
-    )
-    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
-        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], viewonly=True
-    )
-    __table_args__ = (
-        sa.UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
     )
 
 
@@ -2238,26 +2264,4 @@ class AdageVenueAddress(PcObject, models.Base, models.Model):
     )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="adage_addresses"
-    )
-
-
-class DomainToNationalProgram(PcObject, models.Base, models.Model):
-    """Intermediate table that links `EducationalDomain`
-    to `NationalProgram`. Links are unique: a domain can be linked to many
-    programs but not twice the same.
-    """
-
-    domainId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    nationalProgramId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "domainId",
-            "nationalProgramId",
-            name="unique_domain_to_national_program",
-        ),
     )

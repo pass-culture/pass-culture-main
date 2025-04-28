@@ -364,6 +364,24 @@ class FinanceEvent(PcObject, Base, Model):
     )
 
 
+class CashflowPricing(Base, Model):
+    """An association table between cashflows and pricings for their
+    many-to-many relationship.
+
+    A cashflow is "naturally" linked to multiple pricings of the same
+    pricing point: we build a cashflow based on all pricings of a
+    given period (e.g. two weeks).
+
+    A pricing may also be linked to multiple cashflows: for example,
+    if a cashflow is rejected by the bank because the bank information
+    are wrong, we will create another cashflow and the pricing will
+    thus be linked to two cashflows.
+    """
+
+    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
+    pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, primary_key=True)
+
+
 class Pricing(PcObject, Base, Model):
 
     status: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
@@ -409,7 +427,7 @@ class Pricing(PcObject, Base, Model):
     revenue: int = sa.Column(sa.Integer, nullable=False)
 
     cashflows: list["Cashflow"] = sa_orm.relationship(
-        "Cashflow", secondary="cashflow_pricing", back_populates="pricings"
+        "Cashflow", secondary=CashflowPricing.__table__, back_populates="pricings"
     )
     lines: list["PricingLine"] = sa_orm.relationship("PricingLine", back_populates="pricing", order_by="PricingLine.id")
     logs: list["PricingLog"] = sa_orm.relationship(
@@ -674,6 +692,21 @@ CustomReimbursementRule.trig_ddl = """
 sa.event.listen(CustomReimbursementRule.__table__, "after_create", sa.DDL(CustomReimbursementRule.trig_ddl))
 
 
+class InvoiceCashflow(Base, Model):
+    """An association table between invoices and cashflows for their many-to-many relationship."""
+
+    invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, primary_key=True)
+    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
+
+    __table_args__ = (
+        sa.PrimaryKeyConstraint(
+            "invoiceId",
+            "cashflowId",
+            name="unique_invoice_cashflow_association",
+        ),
+    )
+
+
 class Cashflow(PcObject, Base, Model):
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
@@ -701,8 +734,12 @@ class Cashflow(PcObject, Base, Model):
     logs: list["CashflowLog"] = sa_orm.relationship(
         "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
     )
-    pricings: list[Pricing] = sa_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
-    invoices: list["Invoice"] = sa_orm.relationship("Invoice", secondary="invoice_cashflow", back_populates="cashflows")
+    pricings: list[Pricing] = sa_orm.relationship(
+        "Pricing", secondary=CashflowPricing.__table__, back_populates="cashflows"
+    )
+    invoices: list["Invoice"] = sa_orm.relationship(
+        "Invoice", secondary=InvoiceCashflow.__table__, back_populates="cashflows"
+    )
 
 
 class CashflowLog(PcObject, Base, Model):
@@ -718,24 +755,6 @@ class CashflowLog(PcObject, Base, Model):
     details: dict | None = sa.Column(
         sa_mutable.MutableDict.as_mutable(sa_psql.JSONB), nullable=True, default={}, server_default="{}"
     )
-
-
-class CashflowPricing(Base, Model):
-    """An association table between cashflows and pricings for their
-    many-to-many relationship.
-
-    A cashflow is "naturally" linked to multiple pricings of the same
-    pricing point: we build a cashflow based on all pricings of a
-    given period (e.g. two weeks).
-
-    A pricing may also be linked to multiple cashflows: for example,
-    if a cashflow is rejected by the bank because the bank information
-    are wrong, we will create another cashflow and the pricing will
-    thus be linked to two cashflows.
-    """
-
-    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
-    pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, primary_key=True)
 
 
 class CashflowBatch(PcObject, Base, Model):
@@ -803,7 +822,9 @@ class Invoice(PcObject, Base, Model):
     amount: int = sa.Column(sa.Integer, nullable=False)
     token: str = sa.Column(sa.Text, unique=True, nullable=False)
     lines: list[InvoiceLine] = sa_orm.relationship("InvoiceLine", back_populates="invoice")
-    cashflows: list[Cashflow] = sa_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")
+    cashflows: list[Cashflow] = sa_orm.relationship(
+        "Cashflow", secondary=InvoiceCashflow.__table__, back_populates="invoices"
+    )
     status: InvoiceStatus = sa.Column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
 
     @property
@@ -818,21 +839,6 @@ class Invoice(PcObject, Base, Model):
     @property
     def url(self) -> str:
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
-
-
-class InvoiceCashflow(Base, Model):
-    """An association table between invoices and cashflows for their many-to-many relationship."""
-
-    invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, primary_key=True)
-    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
-
-    __table_args__ = (
-        sa.PrimaryKeyConstraint(
-            "invoiceId",
-            "cashflowId",
-            name="unique_invoice_cashflow_association",
-        ),
-    )
 
 
 # "Payment", "PaymentStatus" and "PaymentMessage" are deprecated. They

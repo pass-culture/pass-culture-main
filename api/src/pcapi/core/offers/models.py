@@ -26,6 +26,9 @@ from pcapi import settings
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria.models import OfferCriterion
+from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
+from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
 from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Base
 from pcapi.models import Model
@@ -618,6 +621,14 @@ class HeadlineOffer(PcObject, Base, Model):
         )
 
 
+class ValidationRuleOfferLink(PcObject, Base, Model):
+    __tablename__ = "validation_rule_offer_link"
+    ruleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
+    )
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+
+
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
@@ -651,7 +662,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         "OfferCompliance", back_populates="offer", uselist=False
     )
     criteria: sa_orm.Mapped["Criterion"] = sa_orm.relationship(
-        "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
+        "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
     )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
@@ -667,7 +678,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
     flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
-        "OfferValidationRule", secondary="validation_rule_offer_link", back_populates="offers"
+        "OfferValidationRule", secondary=ValidationRuleOfferLink.__table__, back_populates="offers"
     )
 
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
@@ -1315,24 +1326,18 @@ class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "offer_validation_rule"
     name: str = sa.Column(sa.Text, nullable=False)
     offers: list["Offer"] = sa_orm.relationship(
-        "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
+        "Offer", secondary=ValidationRuleOfferLink.__table__, back_populates="flaggingValidationRules"
     )
     collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship(
-        "CollectiveOffer", secondary="validation_rule_collective_offer_link", back_populates="flaggingValidationRules"
+        "CollectiveOffer",
+        secondary=ValidationRuleCollectiveOfferLink.__table__,
+        back_populates="flaggingValidationRules",
     )
     collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa_orm.relationship(
         "CollectiveOfferTemplate",
-        secondary="validation_rule_collective_offer_template_link",
+        secondary=ValidationRuleCollectiveOfferTemplateLink.__table__,
         back_populates="flaggingValidationRules",
     )
-
-
-class ValidationRuleOfferLink(PcObject, Base, Model):
-    __tablename__ = "validation_rule_offer_link"
-    ruleId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
-    )
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
 
 class OfferPriceLimitationRule(PcObject, Base, Model):
