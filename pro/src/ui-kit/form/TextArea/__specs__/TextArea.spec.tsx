@@ -2,8 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 
-import * as useAnalytics from 'app/App/analytics/firebase'
-
 import { TextArea } from '../TextArea'
 
 const mockOnPressTemplateButton = vi.fn()
@@ -36,10 +34,6 @@ describe('TextArea', () => {
   })
 
   it('should display template button and template text onclick when A/B template is enabled', async () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      AB_COLLECTIVE_DESCRIPTION_TEMPLATE: 'true',
-    })
-
     render(
       <Formik initialValues={{ test1: '', test2: '' }} onSubmit={() => {}}>
         <TextArea
@@ -63,10 +57,6 @@ describe('TextArea', () => {
   })
 
   it('should call tracker when clicking on template button', async () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      AB_COLLECTIVE_DESCRIPTION_TEMPLATE: 'true',
-    })
-
     render(
       <Formik initialValues={{ test1: '', test2: '' }} onSubmit={() => {}}>
         <TextArea

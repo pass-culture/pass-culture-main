@@ -106,10 +106,6 @@ describe('FormOfferType', () => {
   })
 
   it('should call tracker when clicking on template button', async () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      AB_COLLECTIVE_DESCRIPTION_TEMPLATE: 'true',
-    })
-
     renderFormOfferType({
       initialValues: {
         ...DEFAULT_EAC_FORM_VALUES,
