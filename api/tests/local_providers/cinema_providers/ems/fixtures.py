@@ -70,7 +70,7 @@ DATA_VERSION_0 = {
             "events": [
                 {
                     "id": "CDFG5",
-                    "allocine_id": "",
+                    "allocine_id": 269976,
                     "title": "Mon voisin Totoro",
                     "director": "Hayao Miyazaki",
                     "release_date": "19991208",
@@ -227,7 +227,7 @@ DATA_VERSION_0_WITH_NEW_DATE = {
             "events": [
                 {
                     "id": "SHJRH",
-                    "allocine_id": 269975,
+                    "allocine_id": "",
                     "title": "Spider-Man : Across the Spider-Verse",
                     "director": "Joaquim Dos Santos, Justin K. Thompson, Kemp Powers",
                     "release_date": "20230531",
