@@ -301,6 +301,7 @@ extend-select = [
   # "PLR0913",  # too-many-arguments
   # "PLR0914",  # too-many-locals
   # "PLR0915"  # too-many-statements
+  "S704", # unsafe-markup-use
 ]
 
 # Pylint rules mapped to Ruff rules

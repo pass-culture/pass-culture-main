@@ -4,48 +4,6 @@ import pylint.interfaces
 import pylint.lint
 
 
-MSG_USE_OF_UNCONTROLLED_STRING = "markupsafe-uncontrolled-string"
-
-MARKUP_SAFE_HELP = """\
-`markupsafe.Markup()` should not directly accept an uncontrolled string.
-You should rather use `Markup("{variable}").format(variable=variable)`
-to properly escape `variable`.
-"""
-
-
-class MarkupSafeChecker(pylint.checkers.BaseChecker):
-    name = "markupsafe"
-    priority = -1
-    msgs = {
-        "W4001": (
-            "Possible XSS caused by using a non-constant string as an argument of `markupsafe.Markup()`.",
-            MSG_USE_OF_UNCONTROLLED_STRING,
-            MARKUP_SAFE_HELP,
-        ),
-    }
-    options = ()
-
-    def visit_call(self, node: astroid.nodes.Call) -> None:
-        children = node.get_children()
-        first_child = next(children)
-        # Access through `Markup` (name) or `markupsafe.Markup` (attrname)
-        name = getattr(first_child, "name", None) or getattr(first_child, "attrname", None)
-        if name != "Markup":
-            return
-
-        # If we're here, it's because we are calling `Markup()`. So
-        # check the type of its argument, if any.
-        try:
-            second_child = next(children)
-        except StopIteration:
-            # No argument was passed. Odd, but fine.
-            return
-
-        if not isinstance(second_child, astroid.nodes.Const):
-            self.add_message(MSG_USE_OF_UNCONTROLLED_STRING, node=node, line=node.lineno)
-            return
-
-
 WRONG_PYDANTIC_BASE_MODEL_IMPORT = "wrong-pydantic-base-model-import"
 
 
@@ -126,5 +84,4 @@ class RequestsImportChecker(pylint.checkers.BaseChecker):
 def register(linter: pylint.lint.PyLinter) -> None:
     linter.register_checker(BaseModelImportChecker(linter))
     linter.register_checker(DatetimeNowChecker(linter))
-    linter.register_checker(MarkupSafeChecker(linter))
     linter.register_checker(RequestsImportChecker(linter))
