@@ -40,7 +40,6 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     fi
   fi
 
-
   # run typescript quality on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",tsc," ]]; then
     echo "Quality checking..."
@@ -208,18 +207,19 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     fi
   fi
 
-  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",black," ]]; then
-    echo -ne "\033[0;96mRunning black to format files...\033[0m"
-    black $LINTED_FILES --check --quiet --config pyproject.toml
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",format," ]]; then
+    echo -e "\033[0;96mRunning ruff to format files...\033[0m"
+    ruff format $LINTED_FILES --check --quiet --config pyproject.toml
     if [[ "$?" != 0 ]]; then
-      edited_files=$(black $LINTED_FILES --config pyproject.toml 2>&1 | grep "^reformatted " | sed -E "s/reformatted (.*)/  - \\1/g")
+      edited_files=$(ruff format $LINTED_FILES --check --config pyproject.toml 2>&1 | grep "^Would reformat: " | sed -E "s/Would reformat: (.*)/  - \\1/g")
+      ruff format $LINTED_FILES --config pyproject.toml
       counter=$((counter + 1))
       # Go up 1 line to overwrite "Running..." line
       echo -e "\033[1F"
-      echo -e "\033[0;91mblack: Add edited files to your commit:"
+      echo -e "\033[0;91mruff: Add edited files to your commit:"
       echo -e "${edited_files}\033[0m"
     else
-      echo -e "\033[2K\r\033[0;92mblack: Code correctly formatted\033[0m"
+      echo -e "\033[2K\r\033[0;92mruff: Code correctly formatted\033[0m"
     fi
   fi
 
@@ -250,7 +250,6 @@ cd ../
 ##########
 ## END API ##
 ##########
-
 
 ###########
 ## PROXY ##
@@ -327,8 +326,6 @@ cd ../
 ###############
 ## END PROXY ##
 ###############
-
-
 
 #######################
 ## API Documentation ##

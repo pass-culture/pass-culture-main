@@ -94,7 +94,6 @@ dependencies = [
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
 commitizen = "^4.6.0"
 debugpy = "^1.8.14"
 djlint = "1.36.4"
@@ -117,20 +116,6 @@ types-pyyaml = "^6.0.12.20250402"
 types-redis = "^4.6.0.20241004"
 types-requests = "2.32.0.20250328"
 types-urllib3 = "^1.26.25.14"
-
-[tool.black]
-extend-exclude = '''
-(
-  /(
-    | \.mypy_cache
-    | \.pytest_cache
-    | \.venv
-  )/
-)
-'''
-include = '\.pyi?$'
-line-length = 120
-target-version = ['py310']
 
 
 [tool.isort]
