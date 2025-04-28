@@ -6,7 +6,7 @@ import hmac
 import json
 
 import pydantic.v1 as pydantic_v1
-from requests.auth import HTTPBasicAuth  # pylint: disable=wrong-requests-import
+from requests.auth import HTTPBasicAuth  # noqa: TID251
 import sentry_sdk
 
 from pcapi import settings

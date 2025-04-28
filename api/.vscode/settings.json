@@ -1,5 +1,4 @@
 {
-  "pylint.importStrategy": "fromEnvironment",
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },

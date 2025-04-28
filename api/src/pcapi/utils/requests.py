@@ -19,8 +19,8 @@ from typing import Callable
 
 import gql.transport.exceptions
 import gql.transport.requests
-import requests  # pylint: disable=wrong-requests-import
-from requests.adapters import HTTPAdapter  # pylint: disable=wrong-requests-import
+import requests  # noqa: TID251
+from requests.adapters import HTTPAdapter  # noqa: TID251
 from urllib3.util.retry import Retry
 import zeep
 
@@ -29,8 +29,8 @@ import zeep
 # isort: off
 # Allow our code to access `requests` exceptions and models directly
 # from this wrapper module.
-from requests import Response  # pylint: disable=unused-import, wrong-requests-import
-from requests import exceptions  # pylint: disable=unused-import, wrong-requests-import
+from requests import Response  # noqa: TID251
+from requests import exceptions  # noqa: TID251
 # isort: on
 # fmt: on
 

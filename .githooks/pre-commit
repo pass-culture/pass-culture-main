@@ -124,7 +124,7 @@ cd $DIR/api
 # To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
 # environment variable. For example:
 #
-#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,pylint,squawk,ruff"
+#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,squawk,ruff"
 #
 
 ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- './src/pcapi/alembic/versions/*.py' | grep '^api/*' | sed 's|^api\/||g')
@@ -233,15 +233,6 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     fi
   fi
 
-  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]; then
-    echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
-    # parallel execution breaks plugins, use one single job !
-    pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=1
-    if [[ "$?" != 0 ]]; then
-      counter=$((counter + 1))
-    fi
-  fi
-
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",ruff," ]]; then
     echo -e "\033[0;96mRunning ruff for code linting...\033[0m"
     ruff check $LINTED_FILES
@@ -269,7 +260,7 @@ cd $DIR/proxy
 # To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
 # environment variable. For example:
 #
-#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,pylint"
+#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy"
 #
 
 counter=0
@@ -323,15 +314,6 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       if [[ "$?" != 0 ]]; then
         counter=$((counter + 1))
       fi
-    fi
-  fi
-
-  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]; then
-    echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
-    # parallel execution breaks plugins, use one single job !
-    pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=1
-    if [[ "$?" != 0 ]]; then
-      counter=$((counter + 1))
     fi
   fi
 fi
