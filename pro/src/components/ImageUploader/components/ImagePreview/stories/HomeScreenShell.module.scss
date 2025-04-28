@@ -2,39 +2,38 @@
 
 .home-screen-shell {
   position: absolute;
-  height: rem.torem(515px);
+  width: rem.torem(92px);
 }
 
 .preview-on-home-screen {
   background-color: var(--color-white);
-  border-radius: rem.torem(5px);
-  left: rem.torem(17px);
+  border-radius: rem.torem(2px);
+  left: rem.torem(5.88px);
   position: absolute;
-  top: rem.torem(152px);
-  height: rem.torem(228px);
+  top: rem.torem(86.75px);
+  width: rem.torem(35.8px);
 }
 
 .offer-screen-shell {
-  top: rem.torem(236px);
+  top: rem.torem(50px);
   position: absolute;
-  height: rem.torem(280px);
+  width: rem.torem(92px);
 }
 
 .blurred-preview-on-offer-screen {
   background-color: var(--color-white);
   filter: blur(2px);
-  left: rem.torem(1px);
   position: absolute;
   top: rem.torem(1px);
-  height: rem.torem(435px);
-  width: rem.torem(290px);
+  width: 92px;
+  overflow: hidden;
 }
 
 .preview-on-offer-screen {
   background-color: var(--color-white);
-  border-radius: rem.torem(5px);
-  left: rem.torem(65px);
+  border-radius: rem.torem(2px);
+  left: rem.torem(16.15px);
   position: absolute;
-  top: rem.torem(71px);
-  height: rem.torem(240px);
+  top: rem.torem(29.44px);
+  width: rem.torem(58.88px);
 }
