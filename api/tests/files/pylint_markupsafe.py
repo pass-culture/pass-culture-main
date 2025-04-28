@@ -4,6 +4,8 @@ This file is NOT run by pytest, which is why it does not contain any
 assertion.
 """
 
+# ruff: noqa
+
 import markupsafe
 from markupsafe import Markup
 

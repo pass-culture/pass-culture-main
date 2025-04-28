@@ -24,7 +24,7 @@ from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 import pytest
-from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-import
+from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-import # noqa: TID251
 import requests_mock
 import sqlalchemy as sa
 

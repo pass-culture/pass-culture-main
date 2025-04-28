@@ -100,63 +100,7 @@ jobs:
       - name: "Run ruff"
         uses: astral-sh/ruff-action@v3
         with:
-          src: "./api/src"
-
-  pylint-check:
-    name: "Pylint"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: "Compute docker image name:tag"
-        id: compute-image-name
-        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-      - name: "Download artifact"
-        if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-          path: ${{ runner.temp }}
-      - name: "Docker load artifact."
-        if: ${{ inputs.tag != 'latest' }}
-        run: |
-          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: secrets
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
-        with:
-          secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - name: "OpenID Connect Authentication"
-        id: openid-auth
-        uses: "google-github-actions/auth@v2"
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: "Docker login"
-        id: docker-login
-        uses: "docker/login-action@v3"
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
-      - name: "Show installed Python packages"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: pip freeze
-      - name: "Run pylint"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: pylint src tests --jobs=3
+          src: "./api"
 
   tests-database:
     name: "Test database schema"
@@ -572,7 +516,7 @@ jobs:
 
   notify-failure:
     name: "Notification of any check failure"
-    needs: [quality-checks, ruff-checks, pylint-check, tests-database, pytest]
+    needs: [quality-checks, ruff-checks, tests-database, pytest]
     if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:

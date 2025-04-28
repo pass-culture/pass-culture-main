@@ -26,7 +26,6 @@ LICENSE
 # Misc
 .gitguardian.yaml
 .vscode
-.pylintrc
 .tyrion-config.json
 helm
 mypy.ini

@@ -45,7 +45,7 @@ def get_error_message(exception: Exception) -> str:
         msg += " Identifiant(s) technique(s) : "
         msg += ", ".join(str(rule_id) for rule_id in exception.conflicts)
         msg += "."
-        return Markup(msg)  # pylint: disable=markupsafe-uncontrolled-string
+        return Markup(msg)  # noqa: S704
     return str(exception)
 
 
