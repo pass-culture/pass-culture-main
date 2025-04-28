@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ForwardedRef } from 'react'
 
-import * as useAnalytics from 'app/App/analytics/firebase'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { TextArea, TextAreaProps } from './TextArea'
@@ -38,10 +37,6 @@ describe('TextArea', () => {
   })
 
   it('should fill the textarea with the collective custom template', async () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      AB_COLLECTIVE_DESCRIPTION_TEMPLATE: 'true',
-    })
-
     rednerTextArea({
       hasTemplateButton: true,
       wordingTemplate: 'Test template',

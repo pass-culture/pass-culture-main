@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useEffect, useRef } from 'react'
 
-import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { Button } from 'ui-kit/Button/Button'
 
 import {
@@ -114,13 +113,6 @@ export const TextArea = ({
   const [field, meta, helpers] = useField({ name })
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-  const {
-    AB_COLLECTIVE_DESCRIPTION_TEMPLATE: isCollectiveDescriptionTemplateActive,
-  } = useRemoteConfigParams()
-
-  const shouldDisplayTemplateButton =
-    hasTemplateButton && isCollectiveDescriptionTemplateActive === 'true'
-
   /**
    * Updates the height of the textarea based on its content.
    * Resets the height to initial value before setting it to scrollHeight to allow shrinking.
@@ -190,7 +182,7 @@ export const TextArea = ({
           props.onChange?.(event)
         }}
       />
-      {shouldDisplayTemplateButton && (
+      {hasTemplateButton && (
         <Button
           className={styles['template-button']}
           onClick={generateTemplate}
