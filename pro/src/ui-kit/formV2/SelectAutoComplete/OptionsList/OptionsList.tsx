@@ -5,10 +5,10 @@ import { SelectOption } from 'commons/custom_types/form'
 
 import styles from './OptionsList.module.scss'
 
-interface OptionsListProps {
+export interface OptionsListProps {
   className?: string
   fieldName: string
-  selectedValues: string | string[] | null
+  selectedValue: string | null
   filteredOptions: SelectOption[]
   setHoveredOptionIndex: (value: number | null) => void
   listRef: Ref<HTMLUListElement>
@@ -20,7 +20,7 @@ interface OptionsListProps {
 export const OptionsList = ({
   className,
   fieldName,
-  selectedValues,
+  selectedValue,
   filteredOptions,
   setHoveredOptionIndex,
   listRef,
@@ -42,7 +42,7 @@ export const OptionsList = ({
       >
         {displayedOptions.map(
           ({ value, label }: SelectOption, index: number) => {
-            const isSelected = (selectedValues || []).includes(String(value))
+            const isSelected = selectedValue === String(value)
             return (
               <li
                 aria-selected={isSelected}
