@@ -128,6 +128,7 @@ export const Offerer = (): JSX.Element => {
           venueOfOffererProvidersResponse.venues.find(
             (venue) => venue.siret === formattedSiret
           ) !== undefined,
+        apeCode: offererSiretData.values.apeCode,
       })
     } catch (error) {
       notify.error(

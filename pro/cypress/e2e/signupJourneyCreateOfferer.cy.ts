@@ -241,7 +241,7 @@ describe('Signup journey with known offerer...', () => {
           cy.intercept('GET', `/sirene/siret/**`, (req) =>
             req.reply({
               statusCode: 200,
-              body: siretInterceptionPayload(mySiret, venueName),
+              body: siretInterceptionPayload(mySiret, venueName, '84.11Z'),
             })
           ).as('getSiret')
         }
@@ -251,7 +251,7 @@ describe('Signup journey with known offerer...', () => {
       cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
     })
 
-    it('I should be able to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {
+    it('I should be able as a local authority to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {
       goToOffererCreation(login)
 
       cy.stepLog({ message: 'I specify an offerer with a SIRET' })
@@ -384,7 +384,11 @@ function goToOffererCreation(login: string) {
   cy.findByText('Commencer').click()
 }
 
-function siretInterceptionPayload(mySiret: string, venueName: string) {
+function siretInterceptionPayload(
+  mySiret: string,
+  venueName: string,
+  apeCode?: string
+) {
   return {
     siret: mySiret,
     name: venueName,
@@ -394,7 +398,7 @@ function siretInterceptionPayload(mySiret: string, venueName: string) {
       postalCode: '75001',
       city: 'Paris',
     },
-    ape_code: '90.03A',
+    ape_code: apeCode ? apeCode : '90.03A',
     legal_category_code: '1000',
   }
 }

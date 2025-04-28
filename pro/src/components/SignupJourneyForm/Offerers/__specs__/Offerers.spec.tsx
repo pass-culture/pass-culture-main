@@ -60,6 +60,7 @@ describe('screens:SignupJourney::Offerers', () => {
         ...DEFAULT_OFFERER_FORM_VALUES,
         name: 'Offerer Name',
         siret: '12345678933333',
+        apeCode: '5610C',
       },
       setActivity: () => {},
       setOfferer: () => {},
@@ -154,13 +155,13 @@ describe('screens:SignupJourney::Offerers', () => {
       screen.queryByRole('button', {
         name: 'Ajouter une nouvelle structure',
       })
-    ).toBeInTheDocument()
+    ).not.toBeInTheDocument()
 
     expect(
-      screen.getByText(
+      screen.queryByText(
         'Vous souhaitez ajouter une nouvelle structure à cet espace ?'
       )
-    ).toBeInTheDocument()
+    ).not.toBeInTheDocument()
 
     expect(
       screen.queryByRole('button', {
@@ -244,8 +245,20 @@ describe('screens:SignupJourney::Offerers', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should redirect to offerer authentication on add offerer button click', async () => {
-    renderOfferersScreen(contextValue)
+  it('should redirect only local authority to offerer authentication on add offerer button click', async () => {
+    const contextValueForLocalAuthority = {
+      activity: null,
+      offerer: {
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        name: 'Trifoulli les Oies',
+        siret: '12345678933333',
+        apeCode: '84.11Z',
+      },
+      setActivity: () => {},
+      setOfferer: () => {},
+    }
+
+    renderOfferersScreen(contextValueForLocalAuthority)
 
     expect(
       await screen.findByText(
@@ -295,6 +308,25 @@ describe('screens:SignupJourney::Offerers', () => {
     )
     renderOfferersScreen(contextValue)
     expect(await screen.findByText('Offerer screen')).toBeInTheDocument()
+  })
+
+  it('should display add a venue button for local authority', async () => {
+    const contextValueForLocalAuthority = {
+      activity: null,
+      offerer: {
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        name: 'Trifoulli les Oies',
+        siret: '12345678933333',
+        apeCode: '84.11Z',
+      },
+      setActivity: () => {},
+      setOfferer: () => {},
+    }
+
+    renderOfferersScreen(contextValueForLocalAuthority)
+    expect(
+      await screen.findByText('Ajouter une nouvelle structure')
+    ).toBeInTheDocument()
   })
 
   describe('modal handling', () => {
