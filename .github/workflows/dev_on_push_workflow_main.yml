@@ -196,7 +196,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   test-pro:
-    name: "Pro Units Tests"
+    name: "Pro Unit Tests"
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
