@@ -147,11 +147,9 @@ export const computeInitialValuesFromOffer = (
       id_oa: isVenueAddress
         ? offer.location?.address?.id_oa.toString()
         : 'SPECIFIC_ADDRESS',
-      isManualEdition: false,
+      isManualEdition: !!offer.location?.address?.isManualEdition,
     },
   }
-
-  const offerAddress = offer.location?.address
 
   const participants = {
     college: false,
@@ -166,6 +164,7 @@ export const computeInitialValuesFromOffer = (
   const phone = offer.contactPhone
   const domains = offer.domains.map(({ id }) => id.toString())
 
+  const offerAddress = offer.location?.address
   const address = isVenueAddress ? venueAddress : offerAddress
 
   return {
@@ -203,10 +202,13 @@ export const computeInitialValuesFromOffer = (
     latitude: address?.latitude.toString(),
     longitude: address?.longitude.toString(),
     banId: address?.banId,
-    addressAutocomplete: isVenueAddress
-      ? ''
-      : `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
-    'search-addressAutocomplete': `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
+    coords: `${address?.latitude}, ${address?.longitude}`,
+    ...(isVenueAddress || offerAddress?.isManualEdition
+      ? { addressAutocomplete: '', 'search-addressAutocomplete': '' }
+      : {
+          addressAutocomplete: `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
+          'search-addressAutocomplete': `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
+        }),
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

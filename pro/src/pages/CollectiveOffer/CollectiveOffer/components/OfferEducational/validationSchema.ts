@@ -11,6 +11,7 @@ import {
   OfferEducationalFormValues,
   OfferDatesType,
 } from 'commons/core/OfferEducational/types'
+import { checkCoords } from 'commons/utils/coords'
 import { toDateStrippedOfTimezone } from 'commons/utils/date'
 import { emailSchema } from 'commons/utils/isValidEmail'
 
@@ -92,6 +93,7 @@ export function getOfferEducationalValidationSchema(
             }
           )
       : yup.mixed(),
+    ...(isCollectiveOaActive && addressValidationSchema),
     eventAddress: yup.object().shape({
       addressType: yup
         .string()
@@ -255,4 +257,47 @@ export function getOfferEducationalValidationSchema(
           ),
     }),
   })
+}
+
+const addressValidationSchema = {
+  street: yup
+    .string()
+    .trim()
+    .when(['location.locationType', 'location.address.isManualEdition'], {
+      is: (locationType: string, isManualEdition: boolean) =>
+        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+      then: (schema) =>
+        schema.required('Veuillez renseigner une adresse postale'),
+    }),
+  postalCode: yup
+    .string()
+    .trim()
+    .when(['location.locationType', 'location.address.isManualEdition'], {
+      is: (locationType: string, isManualEdition: boolean) =>
+        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+      then: (schema) => schema.required('Veuillez renseigner un code postal'),
+    })
+    .min(5, 'Veuillez renseigner un code postal valide')
+    .max(5, 'Veuillez renseigner un code postal valide'),
+  city: yup
+    .string()
+    .trim()
+    .when(['location.locationType', 'location.address.isManualEdition'], {
+      is: (locationType: string, isManualEdition: boolean) =>
+        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+      then: (schema) => schema.required('Veuillez renseigner une ville'),
+    }),
+  coords: yup
+    .string()
+    .trim()
+    .when(['location.locationType', 'location.address.isManualEdition'], {
+      is: (locationType: string, isManualEdition: boolean) =>
+        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+      then: (schema) =>
+        schema
+          .required('Veuillez renseigner les coordonnées GPS')
+          .test('coords', 'Veuillez respecter le format attendu', (value) =>
+            checkCoords(value)
+          ),
+    }),
 }

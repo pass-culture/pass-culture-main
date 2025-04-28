@@ -32,7 +32,7 @@ export const FormLocation = ({
   const formik = useFormikContext<OfferEducationalFormValues>()
   const setFieldValue = formik.setFieldValue
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
-    useState(false)
+    useState(formik.values.location.address.isManualEdition)
 
   const selectedVenue = venues.find(
     (v) => v.id.toString() === formik.values.venueId.toString()
@@ -41,6 +41,7 @@ export const FormLocation = ({
   const toggleManualAddressForm = async () => {
     setShouldShowManualAddressForm(!shouldShowManualAddressForm)
     if (!shouldShowManualAddressForm) {
+      await setFieldValue('location.address.isVenueAddress', false)
       await setFieldValue('location.address.isManualEdition', true)
       await resetAddressFields({ formik })
     }
@@ -64,10 +65,16 @@ export const FormLocation = ({
         setFieldValue('latitude', address?.latitude),
         setFieldValue('postalCode', address?.postalCode),
         setFieldValue('street', address?.street),
-        setFieldValue('location.address.isVenueAddress', true),
         setFieldValue('location.address.label', address?.label),
+        setFieldValue('location.address.isVenueAddress', true),
+        setFieldValue('location.address.isManualEdition', false),
       ])
     }
+  }
+
+  const onAddressSelect = async () => {
+    await setFieldValue('location.address.isVenueAddress', false)
+    await setFieldValue('location.address.isManualEdition', false)
   }
 
   const addressTypeRadios = [
@@ -104,9 +111,7 @@ export const FormLocation = ({
                   />
                   <AddressSelect
                     disabled={disableForm || shouldShowManualAddressForm}
-                    onAddressSelect={() =>
-                      setFieldValue('location.address.isVenueAddress', false)
-                    }
+                    onAddressSelect={onAddressSelect}
                   />
                   <Button
                     variant={ButtonVariant.QUATERNARY}
@@ -126,6 +131,11 @@ export const FormLocation = ({
                     <AddressManual
                       gpsCalloutMessage={
                         'Les coordonnées GPS sont des informations à ne pas négliger. Elles permettent aux enseignants de trouver votre offre sur ADAGE.'
+                      }
+                      readOnlyFields={
+                        disableForm
+                          ? ['city', 'street', 'postalCode', 'coords']
+                          : []
                       }
                     />
                   )}
