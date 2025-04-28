@@ -4,8 +4,10 @@ import pytest
 
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.reminders import factories
+from pcapi.core.reminders import models
 from pcapi.core.reminders.external.reminders_notifications import notify_users_future_offer_activated
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 
 
@@ -61,6 +63,13 @@ class NotifyUsersFutureOfferActivatedTest:
         future_offer_activated_event = next(event for event in push_testing.requests)
         event_payload = future_offer_activated_event["payload"]
         assert event_payload == expected_payload
+
+        future_offer_reminders = (
+            db.session.query(models.FutureOfferReminder)
+            .filter(models.FutureOfferReminder.futureOfferId == future_offer.id)
+            .all()
+        )
+        assert future_offer_reminders == []
 
     def test_notify_no_users_future_offer_activated(self, caplog):
         user_1 = users_factories.UserFactory()

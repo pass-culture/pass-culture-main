@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.external.batch import send_users_reminders_for_offer
 from pcapi.core.offers.models import Offer
+from pcapi.core.reminders.repository import delete_reminders_on_offer
 from pcapi.core.reminders.repository import get_user_ids_with_reminders
 
 
@@ -15,3 +16,5 @@ def notify_users_future_offer_activated(offer: Offer) -> None:
         return
 
     send_users_reminders_for_offer(user_ids, offer)
+
+    delete_reminders_on_offer(offer.id)
