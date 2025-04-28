@@ -6,12 +6,29 @@ import { SelectOption } from 'commons/custom_types/form'
 import { getToday, isDateValid, removeTime } from 'commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
 
+import { weekDays } from './constants'
 import {
   DurationTypeOption,
   RecurrenceDays,
   RecurrenceType,
   TimeSlotTypeOption,
 } from './types'
+
+const weekDayOpeningHourValidationSchema = yup.array().of(
+  yup.object().shape({
+    open: yup.string().required("L'horaire d'ouverture est requis"),
+    close: yup
+      .string()
+      .required("L'horaire de fermeture est requis")
+      .test(
+        'is-after-open-time',
+        "L'horaire de fermeture doit être après l'horaire d'ouverture",
+        function (closeTime) {
+          return closeTime > this.parent.open
+        }
+      ),
+  })
+)
 
 export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
   yup.object().shape({
@@ -233,11 +250,15 @@ export const validationSchema = yup.object().shape({
   specificTimeSlots: yup
     .array()
     .required()
-    .of(
-      yup.object().shape({
-        slot: yup.string().required('Veuillez renseigner un horaire'),
-      })
-    )
+    .when('timeSlotType', {
+      is: TimeSlotTypeOption.SPECIFIC_TIME,
+      then: (schema) =>
+        schema.of(
+          yup.object().shape({
+            slot: yup.string().required('Veuillez renseigner un horaire'),
+          })
+        ),
+    })
     .test('areSlotsUnique', function (list) {
       const slots = list.map((a) => a.slot)
       const duplicateSlotsErrors = slots
@@ -257,6 +278,18 @@ export const validationSchema = yup.object().shape({
 
       return true
     }),
+  openingHours: yup.object().when('timeSlotType', {
+    is: TimeSlotTypeOption.OPENING_HOURS,
+    then: (schema) => {
+      const validationObj = {} as {
+        [key in RecurrenceDays]?: typeof weekDayOpeningHourValidationSchema
+      }
+      for (const day of weekDays) {
+        validationObj[day.value] = weekDayOpeningHourValidationSchema
+      }
+      return schema.shape(validationObj)
+    },
+  }),
   pricingCategoriesQuantities: yup
     .array()
     .required()

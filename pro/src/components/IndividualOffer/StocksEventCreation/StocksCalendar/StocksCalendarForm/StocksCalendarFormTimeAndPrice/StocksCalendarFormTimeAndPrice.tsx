@@ -12,6 +12,7 @@ import { CalloutVariant } from 'ui-kit/Callout/types'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
+import { StocksCalendarFormOpeningHours } from './StocksCalendarFormOpeningHours/StocksCalendarFormOpeningHours'
 import { StocksCalendarFormSpecificTimeSlots } from './StocksCalendarFormSpecificTimeSlots/StocksCalendarFormSpecificTimeSlots'
 import styles from './StocksCalendarFormTimeAndPrice.module.scss'
 import { StocksCalendarLimitDates } from './StocksCalendarLimitDates/StocksCalendarLimitDates'
@@ -89,9 +90,10 @@ export function StocksCalendarFormTimeAndPrice({
       ) : (
         <>
           <div className={styles['time-slots']}>
-            {form.watch('timeSlotType') ===
-              TimeSlotTypeOption.SPECIFIC_TIME && (
+            {form.watch('timeSlotType') === TimeSlotTypeOption.SPECIFIC_TIME ? (
               <StocksCalendarFormSpecificTimeSlots form={form} />
+            ) : (
+              <StocksCalendarFormOpeningHours form={form} />
             )}
           </div>
 

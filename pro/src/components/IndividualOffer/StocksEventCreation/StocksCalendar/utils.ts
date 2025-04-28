@@ -80,11 +80,15 @@ export function getWeekDaysInBetweenDates(
 
   let date = date1
   while (isAfter(date2, date) || isSameDay(date2, date)) {
-    recurrencedays.push(weekDays[getISODay(date) - 1])
+    recurrencedays.push(getWeekDayForDate(date))
     date = addDays(date, 1)
   }
 
   return recurrencedays
+}
+
+export function getWeekDayForDate(date: Date) {
+  return weekDays[getISODay(date) - 1]
 }
 
 function getDayDatesInBetweenDates(date1: Date, date2: Date): Date[] {
