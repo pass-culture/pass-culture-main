@@ -46,7 +46,7 @@ class CachingUrlFetcher:
     def delete_cache(self) -> None:
         try:
             self.shutil_rmtree(self.tmp_dir_parent)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             pass
 
     def fetch_url(self, url: str) -> dict:

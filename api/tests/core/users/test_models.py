@@ -428,7 +428,7 @@ class SQLFunctionsTest:
         users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_18)
 
         with pytest.raises(sa_exc.ProgrammingError) as exc:
-            # pylint: disable=expression-not-assigned
+
             db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0]
 
         assert "more than one row returned by a subquery" in str(exc.value)
@@ -480,7 +480,7 @@ class SQLFunctionsTest:
 
     def test_deposit_balance_wrong_id(self):
         with pytest.raises(sa_exc.InternalError) as exc:
-            # pylint: disable=expression-not-assigned
+
             db.session.query(sa.func.get_deposit_balance(None, False)).first()[0]
 
         assert "the deposit was not found" in str(exc)

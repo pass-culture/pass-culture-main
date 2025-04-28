@@ -498,7 +498,7 @@ def _batch_validate_or_reject_collective_offers(
 
             try:
                 db.session.flush()
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 mark_transaction_as_invalid()
                 collective_offer_update_failed_ids.append(collective_offer_id)
                 continue

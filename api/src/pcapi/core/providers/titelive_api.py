@@ -73,7 +73,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
                 try:
                     with repository.transaction():
                         db.session.add(product)
-                except Exception as e:  # pylint: disable=broad-except
+                except Exception as e:
                     ean = product.ean
                     logger.error(
                         "Error while saving product in db",

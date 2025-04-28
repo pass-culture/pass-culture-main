@@ -269,7 +269,7 @@ class AlgoliaIndexingQueuesMixin:
                 for id_ in redis_client.smembers(processing_queue):
                     pipeline.smove(processing_queue, originating_queue, id_)
                 pipeline.execute()
-            except Exception:  # pylint: disable=broad-exception-caught
+            except Exception:
                 # That's not critical: the processing queue will
                 # still be here, and can be handled in the next run
                 # of this function. But we raise a warning because
@@ -318,7 +318,7 @@ class AlgoliaIndexingQueuesMixin:
             for offer_id in offer_ids:
                 pipeline.hset(REDIS_HASHMAP_INDEXED_OFFERS_NAME, str(offer_id), "")
             pipeline.execute()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Could not add to list of indexed offers", extra={"offers": offer_ids})
         finally:
             pipeline.reset()

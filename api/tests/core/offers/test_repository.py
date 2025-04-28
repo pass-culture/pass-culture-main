@@ -2207,7 +2207,7 @@ class GetActiveOfferByVenueIdAndEanTest:
 
     def test_most_recent_offer_is_returned_if_many_amongst_venue_shares_same_ean(self, caplog):
         def past_date(delta):
-            today = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            today = datetime.datetime.now(datetime.timezone.utc)
             return today - datetime.timedelta(days=delta)
 
         venue = offerers_factories.VenueFactory()

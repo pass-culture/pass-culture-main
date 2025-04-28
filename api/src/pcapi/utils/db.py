@@ -50,7 +50,7 @@ class MagicEnum(sa_types.TypeDecorator):
 
     cache_ok = True
 
-    def __init__(self, enum_class: type[enum.Enum]):  # pylint: disable=super-init-not-called
+    def __init__(self, enum_class: type[enum.Enum]):
         # WARNING: The attribute MUST have the same name as the
         # argument in `__init__()` for SQLAlchemy to produce a valid
         # cache key. See https://docs.sqlalchemy.org/en/14/core/type_api.html#sqlalchemy.types.ExternalType.cache_ok
@@ -93,7 +93,7 @@ class MagicEnum(sa_types.TypeDecorator):
         return self.enum_class(value)
 
 
-class TSVector(sa_types.TypeDecorator):  # pylint: disable=abstract-method
+class TSVector(sa_types.TypeDecorator):
     impl = sa_postgresql.TSVECTOR
     cache_ok = True
 
@@ -242,7 +242,7 @@ def _upload_as_csv_to_google_drive(filename_base: str, header: typing.Iterable, 
     gdrive_api = googledrive.get_backend()
     try:
         gdrive_api.create_file(settings.PG_STAT_FOLDER_ID, local_path.name, local_path)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception("Could not upload stat file to Google Drive", extra={"path": str(local_path), "exc": str(exc)})
     else:
         logger.info("Stat file has been uploaded to Google Drive", extra={"path": str(local_path)})

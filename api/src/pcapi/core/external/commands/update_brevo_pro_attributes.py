@@ -66,7 +66,7 @@ def update_brevo_pro_attributes(start_index: int = 0) -> None:
         try:
             attributes = get_pro_attributes(email)
             update_contact_attributes(email, attributes, asynchronous=False)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             logger.exception("[update_brevo_pro] ***** Exception while processing %s: %s", email, exc)
             errors.append(email)
 

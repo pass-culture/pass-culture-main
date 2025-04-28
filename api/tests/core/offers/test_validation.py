@@ -852,10 +852,8 @@ class CheckBookingLimitDatetimeTest:
 
         # It's ok to ignore the tuple unpacking warning here because we are testing the value of beginning
         # and it should fails if check_booking_limit_datetime returns an empty list
-        beginning, booking_limit_datetime = (  # pylint: disable=unbalanced-tuple-unpacking
-            validation.check_booking_limit_datetime(
-                stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
-            )
+        beginning, booking_limit_datetime = validation.check_booking_limit_datetime(
+            stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
         )
         assert beginning.tzinfo == booking_limit_datetime.tzinfo == time_zone_expected
 
@@ -989,7 +987,7 @@ def build_event_opening_hours():
 
 
 def now_with_offset(days):
-    return datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=days)  # pylint: disable=datetime-now
+    return datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=days)
 
 
 class ValidateEventOpeningHoursCanBeUpdatedTest:

@@ -268,7 +268,7 @@ def update_venue(
     return venue
 
 
-def update_venue_location(  # pylint: disable=too-many-positional-arguments
+def update_venue_location(
     venue: models.Venue,
     modifications: dict,
     location_modifications: dict,
@@ -1500,7 +1500,7 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
         with atomic():
             try:
                 bookings_api.cancel_booking_on_closed_offerer(booking, author_id=author_id)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 mark_transaction_as_invalid()
                 logger.exception(
                     "Failed to cancel booking when closing offerer",
@@ -1548,7 +1548,7 @@ def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: i
                 educational_models.CollectiveBookingCancellationReasons.OFFERER_CLOSED,
                 author_id=author_id,
             )
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             logger.exception(
                 "Failed to cancel collective booking when closing offerer",
                 extra={"exc": exc, "collective_booking_id": collective_booking.id, "offerer_id": offerer_id},

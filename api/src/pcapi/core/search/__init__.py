@@ -141,7 +141,7 @@ def async_index_offer_ids(
     backend = _get_backend()
     try:
         backend.enqueue_offer_ids(offer_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not enqueue offer ids to index", extra={"offers": offer_ids})
@@ -162,7 +162,7 @@ def async_index_collective_offer_template_ids(
     backend = _get_backend()
     try:
         backend.enqueue_collective_offer_template_ids(collective_offer_template_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception(
@@ -188,7 +188,7 @@ def async_index_venue_ids(
     backend = _get_backend()
     try:
         backend.enqueue_venue_ids(venue_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not enqueue venue ids to index", extra={"venues": venue_ids})
@@ -209,7 +209,7 @@ def async_index_offers_of_venue_ids(
     backend = _get_backend()
     try:
         backend.enqueue_venue_ids_for_offers(venue_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception(
@@ -254,7 +254,7 @@ def index_offers_in_queue(from_error_queue: bool = False, max_batches_to_process
                 with atomic():
                     reindex_offer_ids(offer_ids, from_error_queue=from_error_queue)
                     mark_transaction_as_invalid()
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 if not settings.CATCH_INDEXATION_EXCEPTIONS:
                     raise
                 logger.exception(
@@ -302,7 +302,7 @@ def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -
                 return
             _reindex_collective_offer_template_ids(backend, collective_offer_template_ids, from_error_queue)
 
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not index collective offers template from queue", extra={"exc": str(exc)})
@@ -321,7 +321,7 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
                 return
             _reindex_venue_ids(backend, venue_ids, from_error_queue)
 
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not index venues from queue", extra={"exc": str(exc)})
@@ -363,7 +363,7 @@ def _reindex_venue_ids(
 
     try:
         backend.index_venues(to_add)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         backend.enqueue_venue_ids_in_error(to_add_ids)
         _log_indexation_error(
             "venues",
@@ -409,7 +409,7 @@ def _reindex_collective_offer_template_ids(
 
     try:
         backend.index_collective_offer_templates(to_add)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         backend.enqueue_collective_offer_template_ids_in_error(to_add_ids)
         _log_indexation_error(
             "collective offer templates",
@@ -446,7 +446,7 @@ def index_offers_of_venues_in_queue() -> None:
                     reindex_offer_ids(offer_ids, from_error_queue=False)
                     page += 1
                 logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not index offers of venues from queue")
@@ -640,7 +640,7 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     last_x_days_bookings_count_by_offer = get_last_x_days_booking_count_by_offer(to_add)
     try:
         backend.index_offers(to_add, last_x_days_bookings_count_by_offer)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         _log_indexation_error(
@@ -654,7 +654,7 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     # Handle unavailable offers (deleted, expired, sold out, etc.)
     try:
         backend.unindex_offer_ids(to_delete_ids)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         _log_indexation_error(
@@ -673,7 +673,7 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     backend = _get_backend()
     try:
         backend.unindex_offer_ids(offer_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex offers", extra={"offers": offer_ids})
@@ -688,7 +688,7 @@ def unindex_all_offers() -> None:
     backend = _get_backend()
     try:
         backend.unindex_all_offers()
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex all offers")
@@ -725,7 +725,7 @@ def reindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
     backend = _get_backend()
     try:
         _reindex_venue_ids(backend, venue_ids, from_error_queue=False)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not reindex venues", extra={"venues": venue_ids})
@@ -737,7 +737,7 @@ def unindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
     backend = _get_backend()
     try:
         backend.unindex_venue_ids(venue_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex venues", extra={"venues": venue_ids})
@@ -749,7 +749,7 @@ def unindex_all_collective_offer_templates() -> None:
     backend = _get_backend()
     try:
         backend.unindex_all_collective_offer_templates()
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex all offers")
@@ -761,7 +761,7 @@ def unindex_collective_offer_template_ids(collective_offer_template_ids: abc.Col
     backend = _get_backend()
     try:
         backend.unindex_collective_offer_template_ids(collective_offer_template_ids)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception(
@@ -776,7 +776,7 @@ def unindex_all_venues() -> None:
     backend = _get_backend()
     try:
         backend.unindex_all_venues()
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex all venues")

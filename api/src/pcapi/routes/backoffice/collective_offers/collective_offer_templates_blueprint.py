@@ -299,7 +299,7 @@ def _batch_validate_or_reject_collective_offer_templates(
 
             try:
                 db.session.flush()
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 mark_transaction_as_invalid()
                 collective_offer_template_update_failed_ids.append(collective_offer_template.id)
                 continue

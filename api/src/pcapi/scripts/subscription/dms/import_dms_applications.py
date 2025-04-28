@@ -27,7 +27,7 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
             processed_applications.append(application_details.number)
             if new_import_datetime is None or application_details.latest_modification_datetime > new_import_datetime:
                 new_import_datetime = application_details.latest_modification_datetime
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("[DMS] Error in script while importing application %s", application_details.number)
     if new_import_datetime is None:
         # This is a normal situation outside prod, when we have few
@@ -91,10 +91,10 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
                 with dms_utils.lock_ds_application(application_details.number):
                     dms_api.handle_dms_application(application_details)
                 processed_applications.append(application_details.number)
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 logger.exception("[DMS] Error in script while importing application %s", application_details.number)
 
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         logger.exception(
             "[DMS] Error in script while importing all applications for procedure %s", procedure_number, exc_info=e
         )

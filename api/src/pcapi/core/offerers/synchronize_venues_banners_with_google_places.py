@@ -220,7 +220,7 @@ def synchronize_venues_banners_with_google_places(
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
             db.session.commit()
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             logger.exception(
                 "[gmaps_banner_synchro]venue id: %s error: %s",
                 venue.id,
@@ -261,7 +261,7 @@ def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
     for place_info in google_places_info_query:
         try:
             delete_public_object(GOOGLE_PLACES_BANNER_STORAGE_FOLDER, place_info.bannerUrl.split("/")[-1])
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             logger.exception(
                 "error deleting google banner %s for venue %s: %s",
                 place_info.bannerUrl,

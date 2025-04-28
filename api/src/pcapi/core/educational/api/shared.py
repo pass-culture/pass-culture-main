@@ -54,7 +54,7 @@ def _update_collective_booking_cancellation_limit_date(
     now = (
         datetime.datetime.utcnow()
         if new_start_datetime.tzinfo is None
-        else datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+        else datetime.datetime.now(datetime.timezone.utc)
     )
     booking.cancellationLimitDate = educational_utils.compute_educational_booking_cancellation_limit_date(
         new_start_datetime, now

@@ -50,7 +50,7 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
                     draft_application.number, draft_application.applicant.email or draft_application.profile.email
                 )
                 marked_applications_count += 1
-            except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
+            except (dms_exceptions.DmsGraphQLApiException, Exception):
                 logger.exception(
                     "[DMS] Could not mark application %s without continuation",
                     draft_application.number,

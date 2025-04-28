@@ -85,7 +85,7 @@ def payload_fixture(minimal_payload, venue_provider, domain, institution, nation
 def minimal_payload_fixture(domain, institution, venue):
     educational_factories.EducationalCurrentYearFactory()
 
-    booking_beginning = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+    booking_beginning = datetime.now(timezone.utc) + timedelta(days=10)
     booking_limit = booking_beginning - timedelta(days=2)
 
     return {
@@ -417,7 +417,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
     @time_machine.travel(time_travel_str)
     def test_should_raise_400_because_startDatetime_is_after_endDatetime(self, public_client, payload):
-        start_datetime = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+        start_datetime = datetime.now(timezone.utc) + timedelta(days=10)
         end_datetime = start_datetime - timedelta(days=1)
         payload["startDatetime"] = start_datetime.isoformat(timespec="seconds")
         payload["endDatetime"] = end_datetime.isoformat(timespec="seconds")

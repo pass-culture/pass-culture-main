@@ -366,7 +366,7 @@ class EventOpeningHoursFactory(BaseFactory):
     )
 
     @factory.post_generation
-    def weekday_opening_hours(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def weekday_opening_hours(  # type: ignore[misc]
         obj: models.EventOpeningHours,
         create: bool,
         extracted: list[models.EventWeekDayOpeningHours] | None,

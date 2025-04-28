@@ -78,7 +78,7 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
     for node in dms_client.get_eac_nodes_siret_states(procedure_number=procedure_number, since=since):
         try:
             _get_or_create_application(procedure_number=procedure_number, node=node)
-        except Exception as exp:  # pylint: disable=broad-exception-caught
+        except Exception as exp:
             logger.exception(
                 "[DMS] Application parsing failed with error %s",
                 str(exp),

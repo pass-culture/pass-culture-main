@@ -367,7 +367,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
     @pytest.mark.parametrize("date_field", ["bookingLimitDatetime", "beginningDatetime"])
     def test_should_return_400_because_new_date_is_in_the_past(self, client, date_field):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        now = datetime.datetime.now()  # pylint: disable=datetime-now
+        now = datetime.datetime.now()
         new_date = now - datetime.timedelta(days=2)
 
         stock = offers_factories.EventStockFactory(
@@ -407,7 +407,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             lastProvider=venue_provider.provider,
         )
 
-        new_beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        new_beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url.format(event_id=event.id, stock_id="12"),
             json={"beginningDatetime": date_utils.format_into_utc_date(new_beginning)},
@@ -440,9 +440,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         price_category = offers_factories.PriceCategoryFactory(offer=event)
 
-        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
-            days=10
-        )
+        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
         stock = offers_factories.EventStockFactory(
             offer=event,
             priceCategory=price_category,

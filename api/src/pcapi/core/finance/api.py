@@ -327,7 +327,7 @@ def price_events(
                 }
                 with log_elapsed(logger, "Priced event", extra):
                     price_event(event)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 errored_pricing_point_ids.add(event.pricingPointId)
                 logger.info(
                     "Ignoring further events from pricing point",
@@ -1209,7 +1209,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 db.session.commit()
                 elapsed = time.perf_counter() - start
                 logger.info("Generated cashflow", extra=log_extra | {"elapsed": elapsed})
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception("Could not generate cashflow for bank account %d", bank_account_id, extra=log_extra)
@@ -1301,7 +1301,7 @@ def _upload_files_to_google_drive(folder_name: str, paths: typing.Iterable[pathl
             parent_folder_id=settings.FINANCE_GOOGLE_DRIVE_ROOT_FOLDER_ID,
             name=folder_name,
         )
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception(
             "Could not create folder and upload finance files to Google Drive",
             extra={"exc": exc},
@@ -1310,7 +1310,7 @@ def _upload_files_to_google_drive(folder_name: str, paths: typing.Iterable[pathl
     for path in paths:
         try:
             gdrive_api.create_file(parent_folder_id, path.name, path)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             logger.exception(
                 "Could not upload finance file to Google Drive",
                 extra={
@@ -1931,7 +1931,7 @@ def generate_invoices_and_debit_notes(batch: models.CashflowBatch) -> None:
                         cashflow_ids=row.cashflow_ids,
                         is_debit_note=is_debit_note,
                     )
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
@@ -1970,7 +1970,7 @@ def generate_invoices_and_debit_notes_legacy(batch: models.CashflowBatch) -> Non
                         cashflow_ids=row.cashflow_ids,
                         is_debit_note=is_debit_note,
                     )
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
@@ -3608,7 +3608,7 @@ def recredit_users_by_id(user_ids: list[int]) -> None:
                 recredit_user_if_no_missing_step(user)
             except exceptions.UserHasNotFinishedSubscription:
                 continue
-            except Exception as e:  # pylint: disable=broad-except
+            except Exception as e:
                 failed_users.append(user.id)
                 logger.exception("Could not recredit user %s: %s", user.id, e)
                 continue

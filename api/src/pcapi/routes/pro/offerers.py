@@ -373,7 +373,7 @@ def get_offerer_eligibility(
 
     try:
         has_ds_application = api.synchronize_from_ds_and_check_application(offerer_id)
-    except Exception as exception:  # pylint: disable=broad-exception-caught
+    except Exception as exception:
         has_ds_application = None
         logger.error(
             "Error while checking Adage status",

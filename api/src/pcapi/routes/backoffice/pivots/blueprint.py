@@ -102,7 +102,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
             db.session.flush()
         else:
             mark_transaction_as_invalid()
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:
         # IntegrityError or external error (which inherit from any ExternalBooking*)
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
@@ -148,7 +148,7 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
             db.session.flush()
         else:
             mark_transaction_as_invalid()
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:
         # IntegrityError or external error (which inherit from any ExternalBooking*)
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
@@ -182,7 +182,7 @@ def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
         can_delete_pivot = pivot_context.delete_pivot(pivot_id)
         if can_delete_pivot:
             db.session.flush()
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:

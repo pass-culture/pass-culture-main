@@ -35,7 +35,7 @@ class DummyBackend(AlgoliaBackend):
     Redis-related functions as no-op, but it's not worth.
     """
 
-    def __init__(self) -> None:  # pylint: disable=super-init-not-called
+    def __init__(self) -> None:
         self.algolia_offers_client = FakeClient()
         self.algolia_venues_client = FakeClient()
         self.algolia_collective_offers_client = FakeClient()

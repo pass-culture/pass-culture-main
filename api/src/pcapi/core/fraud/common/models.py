@@ -52,13 +52,13 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
     def get_eligibility_type_at_registration(self) -> users_models.EligibilityType | None:
         from pcapi.core.users import eligibility_api
 
-        registration_datetime = self.get_registration_datetime()  # pylint: disable=assignment-from-none
+        registration_datetime = self.get_registration_datetime()
         birth_date = self.get_birth_date()
 
         if registration_datetime is None or birth_date is None:
             return None
 
-        postal_code = self.get_postal_code()  # pylint: disable=assignment-from-none
+        postal_code = self.get_postal_code()
         department = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
         eligibility_at_registration = eligibility_api.get_eligibility_at_date(
             birth_date, registration_datetime, department

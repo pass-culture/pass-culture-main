@@ -41,7 +41,7 @@ def synchronize_data_for_provider(provider_name: str, limit: int | None = None) 
         provider = provider_class()
         provider.updateObjects(limit)
         provider.postTreatment()
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
 
 
@@ -57,7 +57,7 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
                 synchronize_venue_provider(venue_provider, limit)
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
@@ -123,7 +123,7 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
             venues_provider_to_sync.discard(venue_provider.id)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
             venues_provider_to_sync.discard(venue_provider.id)
 

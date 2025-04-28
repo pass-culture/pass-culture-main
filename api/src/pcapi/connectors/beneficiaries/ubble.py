@@ -229,7 +229,7 @@ def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | N
         raise requests.ExternalAPIException(is_retryable=False)
 
     if response.status_code != 200:
-        logger.error(  # pylint: disable=logging-fstring-interpolation
+        logger.error(
             f"Ubble picture-download: unexpected error: {response.status_code}",
             extra={"url": str(http_url)},
         )
@@ -300,7 +300,7 @@ def start_identification(
             )
             raise requests.ExternalAPIException(is_retryable=True)
 
-        logger.error(  # pylint: disable=logging-fstring-interpolation
+        logger.error(
             # ungroup errors on sentry
             f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
             extra={
@@ -354,7 +354,7 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
             )
             raise requests.ExternalAPIException(is_retryable=True)
 
-        logger.error(  # pylint: disable=logging-fstring-interpolation
+        logger.error(
             # ungroup errors on sentry
             f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",
             extra=typing.cast(

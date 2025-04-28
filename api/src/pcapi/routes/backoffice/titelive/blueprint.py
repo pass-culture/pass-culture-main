@@ -70,7 +70,7 @@ def search_titelive() -> utils.BackofficeResponse:
 
     try:
         data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, json["oeuvre"])
-    except Exception:  # pylint: disable=broad-exception-caught
+    except Exception:
         ineligibility_reason = None
     else:
         ineligibility_reason = get_ineligibility_reason(data.article[0], data.titre)

@@ -468,7 +468,7 @@ class Pricing(PcObject, Base, Model):
         return utils.euros_to_xpf(self.amount)
 
     @xpf_amount.expression  # type: ignore[no-redef]
-    def xpf_amount(cls) -> int:  # pylint: disable=no-self-argument
+    def xpf_amount(cls) -> int:
         return sa.cast(sa.func.round(cls.amount * utils.EUR_TO_XPF_RATE), sa.Integer)
 
 
@@ -999,7 +999,7 @@ class FinanceIncident(PcObject, Base, Model):
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
 
     @relates_to_collective_bookings.expression  # type: ignore[no-redef]
-    def relates_to_collective_bookings(cls) -> sa.sql.elements.UnaryExpression:  # pylint: disable=no-self-argument
+    def relates_to_collective_bookings(cls) -> sa.sql.elements.UnaryExpression:
         aliased_booking_finance_incident = sa_orm.aliased(BookingFinanceIncident)
         return sa.exists().where(
             aliased_booking_finance_incident.incidentId == cls.id,
@@ -1044,7 +1044,7 @@ class FinanceIncident(PcObject, Base, Model):
         )
 
     @isClosed.expression  # type: ignore[no-redef]
-    def isClosed(cls) -> Exists:  # pylint: disable=no-self-argument
+    def isClosed(cls) -> Exists:
         return (
             sa.exists()
             .where(BookingFinanceIncident.incidentId == cls.id)

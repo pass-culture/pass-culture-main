@@ -134,7 +134,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
             try:
                 with transaction():
                     synchronize_institution_playlist(playlist_type, institution, institution_rows)
-            except Exception:  # pylint: disable=broad-exception-caught
+            except Exception:
                 logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
                 db.session.rollback()
             institution = db.session.query(educational_models.EducationalInstitution).get(current_institution_id)
@@ -145,7 +145,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
         try:
             with transaction():
                 synchronize_institution_playlist(playlist_type, institution, institution_rows)
-        except Exception:  # pylint: disable=broad-exception-caught
+        except Exception:
             logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
             db.session.rollback()
 

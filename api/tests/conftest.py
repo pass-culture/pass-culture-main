@@ -24,7 +24,7 @@ from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 import pytest
-from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-import # noqa: TID251
+from requests.auth import _basic_auth_str  # noqa: TID251
 import requests_mock
 import sqlalchemy as sa
 
@@ -188,7 +188,7 @@ def faker():
 
 
 @pytest.fixture()
-def clear_tests_assets_bucket(settings):  # pylint: disable=redefined-outer-name
+def clear_tests_assets_bucket(settings):
     try:
         Path(settings.LOCAL_STORAGE_DIR / "thumbs" / "mediations").mkdir(parents=True, exist_ok=True)
         yield
@@ -197,7 +197,7 @@ def clear_tests_assets_bucket(settings):  # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture()
-def clear_tests_invoices_bucket(settings):  # pylint: disable=redefined-outer-name
+def clear_tests_invoices_bucket(settings):
     try:
         Path(settings.LOCAL_STORAGE_DIR / "invoices").mkdir(parents=True, exist_ok=True)
         yield
@@ -241,7 +241,7 @@ def client_fixture(app: Flask):
 
 
 @pytest.fixture(name="ubble_mock")
-def ubble_mock(requests_mock, settings):  # pylint: disable=redefined-outer-name
+def ubble_mock(requests_mock, settings):
     """
     Mocks all Ubble requests calls to ease test
     Returns a configured requests mock matcher
@@ -263,7 +263,7 @@ def ubble_mock(requests_mock, settings):  # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture(name="ubble_mock_connection_error")
-def ubble_mock_connection_error(requests_mock, settings):  # pylint: disable=redefined-outer-name
+def ubble_mock_connection_error(requests_mock, settings):
     """
     Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
     """
@@ -281,7 +281,7 @@ def ubble_mock_connection_error(requests_mock, settings):  # pylint: disable=red
 
 
 @pytest.fixture(name="ubble_mock_http_error_status")
-def ubble_mock_http_error_status(requests_mock, settings):  # pylint: disable=redefined-outer-name
+def ubble_mock_http_error_status(requests_mock, settings):
     """
     Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
     """
@@ -298,11 +298,9 @@ def ubble_mock_http_error_status(requests_mock, settings):  # pylint: disable=re
 
 
 @pytest.fixture
-def ubble_mocker(settings) -> typing.Callable:  # pylint: disable=redefined-outer-name
+def ubble_mocker(settings) -> typing.Callable:
     @contextlib.contextmanager
-    def ubble_mock(  # pylint: disable=redefined-outer-name
-        identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None
-    ) -> None:
+    def ubble_mock(identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None) -> None:
         url = f"{settings.UBBLE_API_URL}/identifications/{identification_id}/"
 
         if mocker is None:
@@ -318,7 +316,7 @@ def ubble_mocker(settings) -> typing.Callable:  # pylint: disable=redefined-oute
 
 
 @pytest.fixture(name="ubble_client")
-def ubble_client(app: Flask, settings):  # pylint: disable=redefined-outer-name
+def ubble_client(app: Flask, settings):
     signing_key = ecdsa.SigningKey.generate()
 
     public_key = signing_key.verifying_key
@@ -702,7 +700,7 @@ def _settings_marker(request: pytest.FixtureRequest) -> None:
 
 
 @pytest.fixture
-def run_command(app, clean_database):  # pylint: disable=redefined-outer-name
+def run_command(app, clean_database):
     from tests.test_utils import run_command as _run_command
 
     return functools.partial(_run_command, app)

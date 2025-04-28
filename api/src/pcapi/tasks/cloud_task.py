@@ -75,7 +75,7 @@ def enqueue_task(
     except AlreadyExists:
         logger.info("Task on queue %s url %s already retried", queue, http_request.url)
         return None
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception(
             "Failed to enqueue a task: %s",
             exc,

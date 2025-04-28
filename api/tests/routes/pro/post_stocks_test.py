@@ -409,7 +409,7 @@ class Returns201Test:
         )
         activation_codes = ["AZ3", "3ZE"]
 
-        now = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+        now = datetime.datetime.now(datetime.timezone.utc)
         beginning = now + datetime.timedelta(days=1)
         expiration = beginning + datetime.timedelta(days=60)
 
@@ -451,7 +451,7 @@ class Returns201Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=10)  # pylint: disable=datetime-now
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=10)
 
         # When
         stock_data = {
@@ -618,7 +618,7 @@ class Returns201Test:
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
         # Given
-        now = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        now = datetime.datetime.now() + datetime.timedelta(minutes=1)
         date_used_in_48_hours = now + datetime.timedelta(hours=48)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
@@ -709,7 +709,7 @@ class Returns201Test:
         assert not response.json["ended_bookings"]
 
     def test_update_event_stock_quantity(self, client):
-        beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
         existing_stock = offers_factories.EventStockFactory(
@@ -747,7 +747,7 @@ class Returns201Test:
     def should_not_create_duplicated_stock(self, client):
         # Given
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)
         beginning_later = beginning + relativedelta(days=10)
         price_cat_label_1 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat_label_2 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 2")
@@ -822,7 +822,7 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=30)  # pylint: disable=datetime-now
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=30)
 
         # When
         stock_data = {
@@ -956,7 +956,7 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
 
-        now = datetime.datetime.now()  # pylint: disable=datetime-now
+        now = datetime.datetime.now()
         booking_limit_datetime = now + datetime.timedelta(days=30)
         activation_codes_expiration_datetime = now + datetime.timedelta(days=31)
 
@@ -1053,7 +1053,7 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
 
-        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(minutes=1)
         activation_codes_expiration_datetime = booking_limit_datetime + datetime.timedelta(days=10)
 
         # When
@@ -1129,7 +1129,7 @@ class Returns400Test:
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
 
-        beginning = datetime.datetime.now() + datetime.timedelta(days=20)  # pylint: disable=datetime-now
+        beginning = datetime.datetime.now() + datetime.timedelta(days=20)
         booking_limit = beginning + datetime.timedelta(days=10)
 
         stock_data = {
@@ -1308,7 +1308,7 @@ class Returns403Test:
         user = users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()
         offerers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
-        booking_datetime = datetime.datetime.now() + datetime.timedelta(minutes=1)  # pylint: disable=datetime-now
+        booking_datetime = datetime.datetime.now() + datetime.timedelta(minutes=1)
 
         # When
         stock_data = {

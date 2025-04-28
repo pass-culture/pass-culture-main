@@ -4,15 +4,15 @@ zendesk_sell_requests: list[dict] = []
 
 
 def reset_sendinblue_requests() -> None:
-    global sendinblue_requests  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
+    global sendinblue_requests  # noqa: PLW0603 (global-statement)
     sendinblue_requests = []
 
 
 def reset_zendesk_requests() -> None:
-    global zendesk_requests  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
+    global zendesk_requests  # noqa: PLW0603 (global-statement)
     zendesk_requests = []
 
 
 def reset_zendesk_sell_requests() -> None:
-    global zendesk_sell_requests  # pylint: disable=global-statement  # noqa: PLW0603 (global-statement)
+    global zendesk_sell_requests  # noqa: PLW0603 (global-statement)
     zendesk_sell_requests = []

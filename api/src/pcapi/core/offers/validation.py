@@ -921,7 +921,7 @@ def check_event_opening_hours_can_be_updated(
     def _ensure_datetime_has_tz(dt: datetime.datetime | None) -> datetime.datetime | None:
         return dt.replace(tzinfo=datetime.timezone.utc) if dt and not dt.tzinfo else dt
 
-    now = datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+    now = datetime.datetime.now(datetime.timezone.utc)
     two_days_from_now = now + datetime.timedelta(hours=48)
 
     current_end = _ensure_datetime_has_tz(opening_hours.endDatetime)

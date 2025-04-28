@@ -58,7 +58,7 @@ class BeneficiaryImport(PcObject, Base, Model):
         return self._last_status().status
 
     @currentStatus.expression  # type: ignore[no-redef]
-    def currentStatus(cls):  # pylint: disable=no-self-argument
+    def currentStatus(cls):
         return cls._query_last_status(BeneficiaryImportStatus.status)
 
     @hybrid_property
@@ -66,7 +66,7 @@ class BeneficiaryImport(PcObject, Base, Model):
         return self._last_status().date
 
     @updatedAt.expression  # type: ignore[no-redef]
-    def updatedAt(cls):  # pylint: disable=no-self-argument
+    def updatedAt(cls):
         return cls._query_last_status(BeneficiaryImportStatus.date)
 
     @hybrid_property
@@ -74,7 +74,7 @@ class BeneficiaryImport(PcObject, Base, Model):
         return self._last_status().detail
 
     @detail.expression  # type: ignore[no-redef]
-    def detail(cls):  # pylint: disable=no-self-argument
+    def detail(cls):
         return cls._query_last_status(BeneficiaryImportStatus.detail)
 
     @hybrid_property
@@ -83,7 +83,7 @@ class BeneficiaryImport(PcObject, Base, Model):
         return author.email or None
 
     @authorEmail.expression  # type: ignore[no-redef]
-    def authorEmail(cls):  # pylint: disable=no-self-argument
+    def authorEmail(cls):
         return cls._query_last_status(BeneficiaryImportStatus.author)
 
     @property

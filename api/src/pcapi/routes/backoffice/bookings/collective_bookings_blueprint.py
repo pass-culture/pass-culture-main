@@ -229,7 +229,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 
     try:
         educational_api_booking.uncancel_collective_booking(collective_booking)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
@@ -265,7 +265,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
     except educational_exceptions.BookingIsAlreadyRefunded:
         mark_transaction_as_invalid()
         flash("Cette réservation est en train d’être remboursée, il est impossible de l’invalider", "warning")
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:

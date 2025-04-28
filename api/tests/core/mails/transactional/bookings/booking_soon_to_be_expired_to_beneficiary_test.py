@@ -91,7 +91,7 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
 
         # then
         assert len(mails_testing.outbox) == 2  # test number of emails sent
-        email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
+        email1, email2 = mails_testing.outbox
         email1 = mails_testing.outbox[0]
         assert email1["template"] == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
         assert email1["params"] == {

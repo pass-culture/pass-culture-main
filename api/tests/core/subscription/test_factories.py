@@ -102,7 +102,7 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
     # The use of `datetime.now()` here is legit, because the Ubble API
     # sends a formatted UTC datetime and pydantic turns it into a
     # timezone-aware datetime.
-    created_at = factory.LazyFunction(lambda: datetime.datetime.now(tz=pytz.utc))  # pylint: disable=datetime-now
+    created_at = factory.LazyFunction(lambda: datetime.datetime.now(tz=pytz.utc))
     identification_id = factory.LazyFunction(lambda: str(uuid.uuid4()))
     identification_url = factory.LazyAttribute(
         lambda o: f"{settings.UBBLE_API_URL}/identifications/{o.identification_id}"

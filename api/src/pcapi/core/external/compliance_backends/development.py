@@ -29,7 +29,7 @@ class DevelopmentBackend(ComplianceBackend):
             # The auth_token has probably not been changed to a correct value
             logger.info("Check the value of your auth_token")
             return None
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             logger.info("Could not get id_token", extra={"exc": exc})
             return None
         return id_token

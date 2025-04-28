@@ -286,7 +286,7 @@ class Booking(PcObject, Base, Model):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def isConfirmed(cls) -> BooleanClauseList:
         return sa.and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= sa.func.now())
 
     @hybrid_property
@@ -294,7 +294,7 @@ class Booking(PcObject, Base, Model):
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore[no-redef]
-    def is_used_or_reimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def is_used_or_reimbursed(cls) -> BinaryExpression:
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
     @hybrid_property
@@ -302,7 +302,7 @@ class Booking(PcObject, Base, Model):
         return self.status == BookingStatus.REIMBURSED
 
     @isReimbursed.expression  # type: ignore[no-redef]
-    def isReimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isReimbursed(cls) -> BinaryExpression:
         return cls.status == BookingStatus.REIMBURSED
 
     @hybrid_property
@@ -310,7 +310,7 @@ class Booking(PcObject, Base, Model):
         return self.status == BookingStatus.CANCELLED
 
     @isCancelled.expression  # type: ignore[no-redef]
-    def isCancelled(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isCancelled(cls) -> BinaryExpression:
         return cls.status == BookingStatus.CANCELLED
 
     @property
@@ -334,7 +334,7 @@ class Booking(PcObject, Base, Model):
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
     @isExternal.expression  # type: ignore[no-redef]
-    def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
+    def isExternal(cls) -> Label:
         return sa.select(
             sa.case(
                 (sa.exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
@@ -350,7 +350,7 @@ class Booking(PcObject, Base, Model):
         return None
 
     @validated_incident_id.expression  # type: ignore[no-redef]
-    def validated_incident_id(cls) -> int | None:  # pylint: disable=no-self-argument
+    def validated_incident_id(cls) -> int | None:
         return (
             sa.select(finance_models.FinanceIncident.id)
             .select_from(finance_models.FinanceIncident)
@@ -426,7 +426,7 @@ class Booking(PcObject, Base, Model):
         )
 
     @display_even_if_used.expression  # type: ignore[no-redef]
-    def display_even_if_used(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    def display_even_if_used(cls) -> BooleanClauseList:
         return sa.and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
             cls.amount == 0,

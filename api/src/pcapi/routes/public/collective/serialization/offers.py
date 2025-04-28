@@ -97,7 +97,7 @@ def validate_start_datetime(start_datetime: datetime | None, values: dict[str, A
         return None
 
     if start_datetime.tzinfo is not None:
-        if start_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+        if start_datetime < datetime.now(timezone.utc):
             raise ValueError("L'évènement ne peut commencer dans le passé.")
     elif start_datetime < datetime.utcnow():
         raise ValueError("L'évènement ne peut commencer dans le passé.")
@@ -110,7 +110,7 @@ def validate_end_datetime(end_datetime: datetime | None, values: dict[str, Any])
         return None
 
     if end_datetime.tzinfo is not None:
-        if end_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+        if end_datetime < datetime.now(timezone.utc):
             raise ValueError("L'évènement ne peut se terminer dans le passé.")
     elif end_datetime < datetime.utcnow():
         raise ValueError("L'évènement ne peut se terminer dans le passé.")

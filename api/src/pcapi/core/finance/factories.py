@@ -305,7 +305,7 @@ class PaymentFactory(BaseFactory):
     transactionLabel: str | None = None
 
     @factory.post_generation
-    def statuses(  # pylint: disable=no-self-argument
+    def statuses(
         obj,
         create: bool,
         extracted: list[models.PaymentStatus],

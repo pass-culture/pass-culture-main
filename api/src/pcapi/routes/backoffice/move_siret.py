@@ -182,7 +182,7 @@ def apply_move_siret() -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash(Markup("La vérification a échoué : {message}").format(message=str(exc)), "warning")
         return _render_confirmation_page(form, source_venue, target_venue, code=400)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
         return _render_confirmation_page(form, source_venue, target_venue, code=400)

@@ -136,7 +136,7 @@ def _blacklist_domain_name(domain_name: str, actor: users_models.User) -> tuple[
             res = suspend_account(
                 user=user, reason=users_constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME, actor=actor
             )
-        except Exception:  # pylint: disable=broad-exception-caught
+        except Exception:
             flash(
                 "Une erreur est survenue lors de la suspension. Tous les comptes n'ont pas pu être traités.", "warning"
             )

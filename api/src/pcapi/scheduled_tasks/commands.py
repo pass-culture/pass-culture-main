@@ -241,7 +241,7 @@ def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
     for booking in bookings:
         try:
             transactional_mails.send_individual_booking_event_reminder_email_to_beneficiary(booking)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception(
                 "Could not send email reminder tomorrow event to beneficiary",
                 extra={
@@ -259,7 +259,7 @@ def send_email_reminder_offer_creation_j5_to_pro() -> None:
     for venue_id, venue_booking_email in venues:
         try:
             transactional_mails.send_reminder_offer_creation_j5_to_pro(venue_booking_email)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception(
                 "Could not send email reminder offer creation j+5 to pro",
                 extra={
@@ -276,7 +276,7 @@ def send_email_reminder_offer_creation_j10_to_pro() -> None:
     for venue_id, venue_booking_email in venues:
         try:
             transactional_mails.send_reminder_offer_creation_j10_to_pro(venue_booking_email)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception(
                 "Could not send email reminder offer creation j+10 to pro",
                 extra={
@@ -385,7 +385,7 @@ def handle_deleted_dms_applications_cron() -> None:
     for procedure_id in procedures:
         try:
             dms_script.handle_deleted_dms_applications(procedure_id)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
 
 
@@ -427,7 +427,7 @@ def _send_notification_favorites_not_booked() -> None:
 
             if notification_data:
                 push.send_transactional_notification(notification_data)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
             logger.error("Favorites not booked: failed to send notification", extra=log_extra)
 

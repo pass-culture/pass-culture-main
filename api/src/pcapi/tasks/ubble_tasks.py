@@ -26,7 +26,7 @@ def store_id_pictures_task(payload: StoreIdPictureRequest) -> None:
         raise
     except ubble_exceptions.UbbleDownloadedFileEmpty as exc:
         logger.warning("File to archive is empty", extra={"exception": exc})
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logger.exception(
             "Could not archive Ubble user id picture",
             extra={"identification_id": payload.identification_id},

@@ -42,7 +42,7 @@ def push_bank_accounts(count: int) -> None:
                 backend_name = finance_backend.get_backend_name()
                 logger.info("Push bank account", extra={"bank_account_id": bank_account_id, "backend": backend_name})
                 finance_backend.push_bank_account(bank_account_id)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 logger.exception(
                     "Unable to sync bank account",
                     extra={
@@ -93,7 +93,7 @@ def push_invoices(count: int) -> None:
                 backend_name = finance_backend.get_backend_name()
                 logger.info("Push invoice", extra={"invoice_id": invoice_id, "backend": backend_name})
                 finance_backend.push_invoice(invoice_id)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 logger.exception(
                     "Unable to push invoice",
                     extra={

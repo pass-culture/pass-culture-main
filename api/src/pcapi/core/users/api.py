@@ -392,7 +392,7 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
         user.isEmailValidated = True
         try:
             dms_subscription_api.try_dms_orphan_adoption(user)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception(
                 "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
             )
@@ -1515,7 +1515,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
         if exc.is_retryable:
             logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:
         logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 
@@ -1614,7 +1614,7 @@ def _remove_external_user(user: models.User) -> bool:
         if exc.is_retryable:
             logger.exception("Could not delete external user", extra={"user_id": user.id, "exc": str(exc)})
             return False
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:
         logger.exception("Could not delete external user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 

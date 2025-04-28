@@ -58,10 +58,8 @@ class EditCollectiveOfferStocksTest:
             bookingLimitDatetime=initial_booking_limit_date,
         )
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            startDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-            + datetime.timedelta(days=7, hours=5),
-            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-            + datetime.timedelta(days=5, hours=16),
+            startDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5, hours=16),
             totalPrice=1500,
             numberOfTickets=35,
         )
@@ -93,8 +91,7 @@ class EditCollectiveOfferStocksTest:
             bookingLimitDatetime=initial_booking_limit_date,
         )
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            startDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-            + datetime.timedelta(days=7, hours=5),
+            startDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -122,9 +119,7 @@ class EditCollectiveOfferStocksTest:
             startDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_event_datetime = datetime.datetime.now(  # pylint: disable=datetime-now
-            datetime.timezone.utc
-        ) + datetime.timedelta(days=7, hours=5)
+        new_event_datetime = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5)
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             startDatetime=new_event_datetime,
             bookingLimitDatetime=None,
@@ -209,13 +204,10 @@ class EditCollectiveOfferStocksTest:
             educationalYear=educational_year,
         )
 
-        new_event_date = datetime.datetime.now(  # pylint: disable=datetime-now
-            datetime.timezone.utc
-        ) + datetime.timedelta(days=5, hours=5)
+        new_event_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5, hours=5)
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             startDatetime=new_event_date,
-            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
-            + datetime.timedelta(days=3, hours=5),
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3, hours=5),
         )
 
         # When
@@ -278,9 +270,7 @@ class EditCollectiveOfferStocksTest:
         if offer.collectiveStock is None:
             educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        new_limit = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
-            days=10
-        )
+        new_limit = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
         new_start = new_limit + datetime.timedelta(days=5)
         new_end = new_limit + datetime.timedelta(days=7)
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
@@ -415,9 +405,7 @@ class ReturnErrorTest:
         if offer.collectiveStock is None:
             educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
-            days=5
-        )
+        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
         for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):
             kwargs = {date_field: new_date}
             new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**kwargs)
@@ -430,9 +418,7 @@ class ReturnErrorTest:
     def test_cannot_edit_dates_ended(self):
         offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
 
-        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
-            days=5
-        )
+        new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
         for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):
             kwargs = {date_field: new_date}
             new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**kwargs)
@@ -464,9 +450,7 @@ class ReturnErrorTest:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_cannot_set_end_before_stock_start(self):
-        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(  # pylint: disable=datetime-now
-            days=10
-        )
+        start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
         educational_factories.create_educational_year(date_time=start)
         stock = educational_factories.CollectiveStockFactory(startDatetime=start)
 

@@ -321,7 +321,7 @@ class HasImageMixin:
         return self.imageId is not None
 
     @hasImage.expression  # type: ignore[no-redef]
-    def hasImage(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def hasImage(cls) -> sa_elements.BinaryExpression:
         return cls.imageId is not None
 
     def _get_image_storage_id(self, original: bool = False) -> str:
@@ -366,7 +366,7 @@ class HasImageMixin:
         keep_original: bool = False,
     ) -> None:
         old_id = self.imageId
-        if self.hasImage:  # pylint: disable=using-constant-test
+        if self.hasImage:
             self.delete_image()
 
         self.imageId = self._generate_new_image_id(old_id)
@@ -436,7 +436,7 @@ class CollectiveStatusMixin:
         return offer_mixin.CollectiveOfferStatus.ACTIVE
 
     @status.expression  # type: ignore[no-redef]
-    def status(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
+    def status(cls) -> sa.sql.elements.Case:
         return sa.case(
             (
                 cls.isArchived.is_(True),
@@ -742,7 +742,7 @@ class CollectiveOffer(
         return False
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
+    def hasEndDatePassed(cls) -> sa_elements.False_:
         return sa.sql.expression.false()
 
     @hybrid_property
@@ -752,7 +752,7 @@ class CollectiveOffer(
         return True
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         aliased_collective_booking = sa_orm.aliased(CollectiveBooking)
         return (
@@ -767,7 +767,7 @@ class CollectiveOffer(
         return self.dateArchived is not None
 
     @isArchived.expression  # type: ignore[no-redef]
-    def isArchived(cls) -> sa.Boolean:  # pylint: disable=no-self-argument
+    def isArchived(cls) -> sa.Boolean:
         return cls.dateArchived.is_not(sa.null())
 
     @property
@@ -812,7 +812,7 @@ class CollectiveOffer(
         return self.collectiveStock.hasStartDatetimePassed
 
     @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+    def hasStartDatetimePassed(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
@@ -833,7 +833,7 @@ class CollectiveOffer(
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
@@ -848,7 +848,7 @@ class CollectiveOffer(
         return self.collectiveStock.hasEndDatetimePassed
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> sa_selectable.Exists:  # pylint: disable=no-self-argument
+    def hasEndDatetimePassed(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
@@ -897,7 +897,7 @@ class CollectiveOffer(
 
     @property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
-        if self.isArchived:  # pylint: disable=using-constant-test
+        if self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
         match self.validation:
@@ -918,7 +918,7 @@ class CollectiveOffer(
 
                 match last_booking_status:
                     case None:
-                        # pylint: disable=using-constant-test
+
                         if has_started:
                             return CollectiveOfferDisplayedStatus.CANCELLED
 
@@ -928,13 +928,13 @@ class CollectiveOffer(
                         return CollectiveOfferDisplayedStatus.PUBLISHED
 
                     case CollectiveBookingStatus.PENDING:
-                        # pylint: disable=using-constant-test
+
                         if has_booking_limit_passed:
                             return CollectiveOfferDisplayedStatus.EXPIRED
                         return CollectiveOfferDisplayedStatus.PREBOOKED
 
                     case CollectiveBookingStatus.CONFIRMED:
-                        # pylint: disable=using-constant-test
+
                         if has_ended:
                             return CollectiveOfferDisplayedStatus.ENDED
                         return CollectiveOfferDisplayedStatus.BOOKED
@@ -1028,7 +1028,7 @@ class CollectiveOffer(
         return self.hasStartDatetimePassed
 
     @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> sa_elements.UnaryExpression:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> sa_elements.UnaryExpression:
         return cls.hasStartDatetimePassed
 
     def is_two_days_past_end(self) -> bool:
@@ -1229,7 +1229,7 @@ class CollectiveOfferTemplate(
 
     @hybrid_property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
-        if self.isArchived:  # pylint: disable=using-constant-test
+        if self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
         if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
@@ -1241,7 +1241,7 @@ class CollectiveOfferTemplate(
         if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
             return CollectiveOfferDisplayedStatus.DRAFT
 
-        if self.hasEndDatePassed:  # pylint: disable=using-constant-test
+        if self.hasEndDatePassed:
             return CollectiveOfferDisplayedStatus.ENDED
 
         if not self.isActive:
@@ -1250,7 +1250,7 @@ class CollectiveOfferTemplate(
         return CollectiveOfferDisplayedStatus.PUBLISHED
 
     @displayedStatus.expression  # type: ignore[no-redef]
-    def displayedStatus(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
+    def displayedStatus(cls) -> sa.sql.elements.Case:
         return sa.case(
             (
                 cls.isArchived.is_(True),
@@ -1313,7 +1313,7 @@ class CollectiveOfferTemplate(
         return self.end < datetime.datetime.utcnow()
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> sa_elements.BooleanClauseList:  # pylint: disable=no-self-argument
+    def hasEndDatePassed(cls) -> sa_elements.BooleanClauseList:
         return sa.and_(
             cls.dateRange.is_not(None),
             sa.func.upper(cls.dateRange) < sa.func.now(),
@@ -1325,7 +1325,7 @@ class CollectiveOfferTemplate(
         return False
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimesPassed(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1335,7 +1335,7 @@ class CollectiveOfferTemplate(
         return False
 
     @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
+    def hasStartDatetimePassed(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1345,7 +1345,7 @@ class CollectiveOfferTemplate(
         return False
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
+    def hasEndDatetimePassed(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1354,7 +1354,7 @@ class CollectiveOfferTemplate(
         return self.dateArchived is not None
 
     @isArchived.expression  # type: ignore[no-redef]
-    def isArchived(cls) -> sa.Boolean:  # pylint: disable=no-self-argument
+    def isArchived(cls) -> sa.Boolean:
         return cls.dateArchived.is_not(sa.null())
 
     @hybrid_property
@@ -1363,7 +1363,7 @@ class CollectiveOfferTemplate(
         return False
 
     @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> sa_elements.False_:  # pylint: disable=no-self-argument
+    def isSoldOut(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1403,7 +1403,7 @@ class CollectiveOfferTemplate(
         return self.hasStartDatetimePassed
 
     @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> sa_elements.UnaryExpression:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> sa_elements.UnaryExpression:
         return cls.hasStartDatetimePassed
 
 
@@ -1481,7 +1481,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         return self.bookingLimitDatetime <= datetime.datetime.utcnow()
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def hasBookingLimitDatetimePassed(cls) -> sa_elements.BinaryExpression:
         return cls.bookingLimitDatetime <= sa.func.now()
 
     @hybrid_property
@@ -1489,7 +1489,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         return self.startDatetime <= datetime.datetime.utcnow()
 
     @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def hasStartDatetimePassed(cls) -> sa_elements.BinaryExpression:
         return cls.startDatetime <= sa.func.now()
 
     @hybrid_property
@@ -1497,7 +1497,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         return self.endDatetime <= datetime.datetime.utcnow()
 
     @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def hasEndDatetimePassed(cls) -> sa_elements.BinaryExpression:
         return cls.endDatetime <= sa.func.now()
 
     @hybrid_property
@@ -1505,7 +1505,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         return self.startDatetime <= datetime.datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
-    def isEventExpired(cls):  # pylint: disable=no-self-argument
+    def isEventExpired(cls):
         return cls.startDatetime <= sa.func.now()
 
     @property
@@ -1823,7 +1823,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return self.cancellationLimitDate <= datetime.datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def isConfirmed(cls) -> sa_elements.BinaryExpression:
         return cls.cancellationLimitDate <= datetime.datetime.utcnow()
 
     @hybrid_property
@@ -1831,7 +1831,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore[no-redef]
-    def is_used_or_reimbursed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def is_used_or_reimbursed(cls) -> sa_elements.BinaryExpression:
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
@@ -1839,7 +1839,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return self.status == CollectiveBookingStatus.REIMBURSED
 
     @isReimbursed.expression  # type: ignore[no-redef]
-    def isReimbursed(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def isReimbursed(cls) -> sa_elements.BinaryExpression:
         return cls.status == CollectiveBookingStatus.REIMBURSED
 
     @hybrid_property
@@ -1847,7 +1847,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return self.status == CollectiveBookingStatus.CANCELLED
 
     @isCancelled.expression  # type: ignore[no-redef]
-    def isCancelled(cls) -> sa_elements.BinaryExpression:  # pylint: disable=no-self-argument
+    def isCancelled(cls) -> sa_elements.BinaryExpression:
         return cls.status == CollectiveBookingStatus.CANCELLED
 
     @property
@@ -1892,7 +1892,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return None
 
     @validated_incident_id.expression  # type: ignore[no-redef]
-    def validated_incident_id(cls) -> int | None:  # pylint: disable=no-self-argument
+    def validated_incident_id(cls) -> int | None:
         return (
             sa.select(finance_models.FinanceIncident.id)
             .select_from(finance_models.FinanceIncident)
@@ -2046,7 +2046,7 @@ class CollectiveDmsApplication(PcObject, models.Base, models.Model):
         return self.siret[:SIREN_LENGTH]
 
     @siren.expression  # type: ignore[no-redef]
-    def siren(cls) -> str:  # pylint: disable=no-self-argument
+    def siren(cls) -> str:
         return sa.func.substr(cls.siret, 1, SIREN_LENGTH)
 
     # Search application related to an offerer should use siren expression to use take benefit from the index
@@ -2129,7 +2129,7 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
     @phoneNumber.expression  # type: ignore[no-redef]
-    def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
+    def phoneNumber(cls) -> str | None:
         return cls._phoneNumber
 
 

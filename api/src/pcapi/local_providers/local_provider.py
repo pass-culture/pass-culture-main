@@ -202,7 +202,7 @@ class LocalProvider(Iterator):
         return object_in_current_chunk
 
     def updateObjects(self, limit: int | None = None) -> None:
-        # pylint: disable=too-many-nested-blocks
+
         if self.venue_provider and not self.venue_provider.isActive:
             logger.info("Venue provider %s is inactive", self.venue_provider)
             return
@@ -264,7 +264,7 @@ class LocalProvider(Iterator):
                     initial_thumb_count = pc_object.thumbCount
                     try:
                         self._handle_thumb(pc_object)
-                    except Exception as e:  # pylint: disable=broad-except
+                    except Exception as e:
                         self.log_provider_event(providers_models.LocalProviderEventType.SyncError, e.__class__.__name__)
                         self.erroredThumbs += 1
                         logger.info("ERROR during handle thumb: %s", e, exc_info=True)

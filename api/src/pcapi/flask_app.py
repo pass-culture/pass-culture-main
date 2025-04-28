@@ -123,7 +123,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         extra.update(g.log_request_details_extra)
     except AttributeError:
         logger.warning("g.log_request_details_extra was not available in log_request_details", exc_info=True)
-    except Exception:  # pylint: disable=broad-exception-caught
+    except Exception:
         logger.warning("g.log_request_details_extra does not seem to contain a valid dict", exc_info=True)
 
     logger.info("HTTP request at %s", request.path, extra=extra)
@@ -251,7 +251,7 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
 def remove_db_session(exc: BaseException | None = None) -> None:
     try:
         db.session.remove()
-    except Exception as exception:  # pylint: disable=broad-exception-caught
+    except Exception as exception:
         logger.error(
             "An error happened while removing the transaction",
             extra={
@@ -269,7 +269,7 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
                 session_management.mark_transaction_as_invalid()
             session_management._manage_session()
             db.session.autoflush = True
-        except Exception as exception:  # pylint: disable=broad-exception-caught
+        except Exception as exception:
             # this may break the session's internal states but we will detroy it anyway
             db.session.connection().execute("ROLLBACK")
             logger.error(

@@ -33,7 +33,7 @@ def re_attach_price_categories_to_new_allocine_offers(dry_run: bool = True) -> N
         .join(PriceCategory.offer)
         .filter(
             Stock.id > 100_000_000,  # I roughly estimated that no stocks are relevant before that id
-            Stock.lastProviderId == 22,  # pylint: disable=comparison-with-callable  # 22 = Allociné
+            Stock.lastProviderId == 22,
             Stock.beginningDatetime > datetime.datetime.utcnow(),
             Offer.isActive.is_(False),
             sa.or_(Offer.name.endswith(" - VO"), Offer.name.endswith(" - VF")),

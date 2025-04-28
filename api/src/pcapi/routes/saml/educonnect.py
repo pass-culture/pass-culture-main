@@ -112,7 +112,7 @@ def on_educonnect_authentication_response() -> Response:
         logger.exception("KeyError after educonnect exception", extra={"parsed_data": exc.parsed_dict})
         return redirect(ERROR_PAGE_URL + urlencode({"logout_url": exc.logout_url}), code=302)
 
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logger.exception("Error after educonnect authentication")
         return redirect(ERROR_PAGE_URL, code=302)
 

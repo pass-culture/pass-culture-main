@@ -244,7 +244,7 @@ def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
 
 def days_ago_timestamp(days: int) -> int:
     """Get a timestamp from a date `days` ago"""
-    days_ago = datetime.now(tz.utc) - timedelta(days=days)  # pylint: disable=datetime-now
+    days_ago = datetime.now(tz.utc) - timedelta(days=days)
     return int(days_ago.timestamp())
 
 

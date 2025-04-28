@@ -71,7 +71,7 @@ def fetch_user_ids_from_tasks(client: CloudTasksClient, parent: str) -> UsersTas
     for task in client.list_tasks(request=request):
         try:
             payload = json.loads(task.http_request.body)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Failed to parse task's http request's body", extra={"task": task.name})
         else:
             yield UserTask(user_id=payload["user_id"], task_name=task.name)
@@ -83,7 +83,7 @@ def delete_tasks(client: CloudTasksClient, task_names: set[str]) -> set[str]:
     for task_name in task_names:
         try:
             client.delete_task(name=task_name)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Failed to delete task", extra={"task": task_name})
         else:
             deleted_tasks.add(task_name)
@@ -127,14 +127,14 @@ def unstack_batch_queue(queue_name: str, chunk_size: int = 1_000, sleep_time: fl
         try:
             user_ids = {item.user_id for item in users_task_chunk}
             users = db.session.query(User).filter(User.id.in_(user_ids)).all()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Failed to fetch users from chunk", extra={"chunk_size": len(users_task_chunk)})
             continue
 
         try:
             batch_users_data = format_batch_users(users)
             update_users_attributes(batch_users_data)
-        except Exception:  # pylint: disable=broad-except  # pylint: disable=broad-except
+        except Exception:
             logger.exception("Failed to update users attributes", extra={"chunk_size": len(users_task_chunk)})
             continue
 

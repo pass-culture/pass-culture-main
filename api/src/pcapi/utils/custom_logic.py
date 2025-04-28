@@ -81,8 +81,8 @@ def intersects(a: list, b: list) -> bool:
 OPERATIONS = {
     "==": soft_equals,
     "!=": lambda a, b: not soft_equals(a, b),
-    ">": lambda a, b: less(b, a),  # pylint: disable=arguments-out-of-order
-    ">=": lambda a, b: less(b, a) or soft_equals(a, b),  # pylint: disable=arguments-out-of-order
+    ">": lambda a, b: less(b, a),
+    ">=": lambda a, b: less(b, a) or soft_equals(a, b),
     "<": less,
     "<=": less_or_equal,
     "in": lambda a, b: sanitize_str(a) in sanitize_list(b) if "__contains__" in dir(b) else False,

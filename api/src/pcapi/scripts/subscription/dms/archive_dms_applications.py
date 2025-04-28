@@ -30,7 +30,7 @@ def archive_applications(procedure_number: int, dry_run: bool = True) -> None:
         if not dry_run:
             try:
                 client.archive_application(application_techid, settings.DMS_ENROLLMENT_INSTRUCTOR)
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 logger.exception("error while archiving application %d", application_number)
         logger.info("Archiving application %d on procedure %d", application_number, procedure_number)
         archived_applications += 1

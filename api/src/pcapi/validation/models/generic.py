@@ -25,7 +25,7 @@ def validate_generic(model: Model) -> ApiErrors:
         column = columns[key]
         value = getattr(model, key)
 
-        if (  # pylint: disable=too-many-boolean-expressions
+        if (
             not getattr(column.expression, "nullable", False)
             and not column.expression.foreign_keys
             and not column.expression.primary_key

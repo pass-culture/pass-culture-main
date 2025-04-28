@@ -57,7 +57,7 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         send_bookings_expiration_to_pro_email(offerer, [expired_today_dvd_booking, expired_today_book_booking])
 
         assert len(mails_testing.outbox) == 2
-        email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
+        email1, email2 = mails_testing.outbox
         if has_offerer_address:
             assert email1["params"]["OFFER_ADDRESS"] == expired_today_book_booking.stock.offer.fullAddress
             assert email2["params"]["OFFER_ADDRESS"] == expired_today_dvd_booking.stock.offer.fullAddress

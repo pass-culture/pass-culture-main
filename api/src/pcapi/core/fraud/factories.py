@@ -157,7 +157,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     dateCreated = factory.LazyFunction(datetime.utcnow)
 
     @factory.lazy_attribute
-    def eligibilityType(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def eligibilityType(  # type: ignore[misc]
         obj: models.BeneficiaryFraudCheck,
     ) -> users_models.EligibilityType:
         if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and obj.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:

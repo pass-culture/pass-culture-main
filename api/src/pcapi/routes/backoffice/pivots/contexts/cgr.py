@@ -118,7 +118,7 @@ class CGRContext(PivotContext):
             flash("Connexion à l'API CGR OK.", "success")
             return response.ObjetRetour.NumCine
         # it could be an unexpected XML parsing error
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             logger.exception("Error while checking CGR API information", extra={"exc": exc})
         flash("Connexion à l'API KO.", "warning")
         return None

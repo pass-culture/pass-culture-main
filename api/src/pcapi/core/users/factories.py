@@ -114,7 +114,7 @@ class BaseUserFactory(BaseFactory):
         return []
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -161,7 +161,7 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -224,7 +224,7 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -263,7 +263,7 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -275,7 +275,7 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
         return IdentityValidatedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
 
     @factory.post_generation
-    def id_piece_number(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def id_piece_number(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: str | None,
@@ -313,7 +313,7 @@ class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
         return fraud_checks
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -350,7 +350,7 @@ class BeneficiaryFactory(HonorStatementValidatedUserFactory):
     )
 
     @factory.post_generation
-    def deposit(  # pylint: disable=no-self-argument
+    def deposit(
         obj,
         create: bool,
         extracted: finance_models.Deposit | None,
@@ -377,7 +377,7 @@ class Transition1718Factory(BeneficiaryFactory):
     roles = [models.UserRole.UNDERAGE_BENEFICIARY]
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -391,7 +391,7 @@ class Transition1718Factory(BeneficiaryFactory):
         return fraud_checks
 
     @factory.post_generation
-    def deposit(  # pylint: disable=no-self-argument
+    def deposit(
         obj,
         create: bool,
         extracted: finance_models.Deposit | None,
@@ -605,7 +605,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @factory.post_generation
-    def beneficiaryImports(  # type: ignore[misc]  # pylint: disable=no-self-argument
+    def beneficiaryImports(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: BeneficiaryImport | None,
@@ -630,7 +630,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return beneficiary_import
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -671,7 +671,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         )
 
     @factory.post_generation
-    def deposit(  # pylint: disable=no-self-argument
+    def deposit(
         obj,
         create: bool,
         extracted: finance_models.Deposit | None,
@@ -709,7 +709,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
 
     @factory.post_generation
-    def deposit(  # pylint: disable=no-self-argument
+    def deposit(
         obj,
         create: bool,
         extracted: finance_models.Deposit | None,
@@ -741,7 +741,7 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
     )
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -770,7 +770,7 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
         )
 
     @factory.post_generation
-    def deposit(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def deposit(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: finance_models.Deposit | None,
@@ -795,7 +795,7 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
         subscription_age = 18
 
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -841,7 +841,7 @@ class EligibleUnderageFactory(UserFactory):
 
 class EligibleActivableFactory(EligibleGrant18Factory):
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -879,7 +879,7 @@ class EligibleActivableFactory(EligibleGrant18Factory):
 
 class EligibleActivableUnderageFactory(EligibleUnderageFactory):
     @factory.post_generation
-    def beneficiaryFraudChecks(  # type: ignore[misc]  # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(  # type: ignore[misc]
         obj: models.User,
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
@@ -1032,7 +1032,7 @@ class DepositGrantFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
     @factory.post_generation
-    def recredits(  # type: ignore[misc] # pylint: disable=no-self-argument
+    def recredits(  # type: ignore[misc]
         obj: finance_models.Deposit,
         create: bool,
         extracted: finance_models.Recredit | None,

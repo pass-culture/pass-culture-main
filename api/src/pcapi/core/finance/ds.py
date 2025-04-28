@@ -34,7 +34,7 @@ def update_ds_applications_for_procedure(
             ImportBankAccount = ImportBankAccountFactory.get(procedure_version)
             application_details = ApplicationDetail(**{"application_type": procedure_version, **data})
             ImportBankAccount(application_details).execute()
-        except Exception as exc:  # pylint: disable=broad-exception-caught
+        except Exception as exc:
             logger.exception(
                 "[DS] Application parsing failed with error %s",
                 str(exc),
@@ -114,7 +114,7 @@ def mark_without_continuation_applications() -> None:
                             "[DS] Successfully mark `without_continuation` and archived an application",
                             extra={"application_id": application.number},
                         )
-                except Exception:  # pylint: disable=broad-exception-caught
+                except Exception:
                     logger.exception(
                         "Error while trying to mark without continuation an application",
                         extra={"application_id": application.number},

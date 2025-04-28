@@ -24,7 +24,7 @@ def path(tmp_path):
     API_URL_FOR_EDUCONNECT="https://backend.staging.passculture.team",
     EDUCONNECT_METADATA_FILE="educonnect.pr4.metadata.xml",
 )
-def test_educonnect(path, monkeypatch, socket_enabled):  # pylint: disable=redefined-outer-name
+def test_educonnect(path, monkeypatch, socket_enabled):
     """
     CERTIFICATE_CONTENT and KEY_CONTENT should be populated from values set on stating (not testing) env.
 

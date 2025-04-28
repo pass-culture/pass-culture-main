@@ -12,7 +12,7 @@ def check_database_connection() -> bool:
     try:
         db.session.query(User).limit(1).all()
         database_working = True
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.critical("Could not query database: %s", exc)
 
     return database_working

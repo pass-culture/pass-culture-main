@@ -30,7 +30,7 @@ class OnCommitCallback:
     def __call__(self) -> bool:
         try:
             self.func()
-        except Exception as exp:  # pylint: disable=broad-exception-caught
+        except Exception as exp:
             logger.error(
                 "An error was raised in the post commit callbacks",
                 extra={

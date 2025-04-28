@@ -28,7 +28,7 @@ def parse_phone_numbers(phone_numbers: str | None) -> list[str]:
         return []
     try:
         return [name_and_phone.strip().split(":")[1] for name_and_phone in phone_numbers.split(";")]
-    except Exception as exception:  # pylint: disable=broad-except
+    except Exception as exception:
         logger.exception("Error when parsing phone_numbers variable %s: %s", phone_numbers, exception)
         return []
 
