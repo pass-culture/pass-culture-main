@@ -23,7 +23,6 @@ from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.models import db
-from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.local_providers.provider_test_utils import create_finance_event_to_update
@@ -209,7 +208,7 @@ class EMSStocksTest:
         created_price_category = db.session.query(offers_models.PriceCategory).all()
         assert len(created_price_category) == 2
 
-    def should_create_offer_with_correct_thumb(self, requests_mock):
+    def test_should_create_product_mediation(self, requests_mock):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
@@ -228,11 +227,8 @@ class EMSStocksTest:
         ems_stocks.synchronize()
 
         created_offer = db.session.query(offers_models.Offer).one()
-        assert (
-            created_offer.image.url
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
-        )
-        assert len(created_offer.mediations) == 1
+
+        assert created_offer.image.url == created_offer.product.productMediations[0].url
 
     def should_create_offer_even_if_thumb_is_incorrect(self, requests_mock):
         connector = EMSScheduleConnector()
