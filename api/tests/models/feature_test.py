@@ -28,7 +28,7 @@ FEATURES_DISABLED_BY_DEFAULT_TEST = [TestingFeatureToggle.ENABLE_LANDING]
 class FeatureToggleTest:
     def test_is_active_returns_true_when_feature_is_active(self):
         # Given
-        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
+        feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
 
@@ -37,14 +37,14 @@ class FeatureToggleTest:
 
     def test_is_active_returns_false_when_feature_is_inactive(self):
         # Given
-        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
+        feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = False
         repository.save(feature)
         # When / Then
         assert not FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_query_count_inside_request_context(self):
-        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
+        feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
 
@@ -54,7 +54,7 @@ class FeatureToggleTest:
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_query_count_outside_request_context(self, app):
-        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
+        feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
         context = flask._request_ctx_stack.pop()
@@ -81,7 +81,7 @@ class FeatureTest:
     def test_features_installation(self):
         # assert all defined feature flags are present in the database with the right initial value
         for flag in list(FeatureToggle):
-            assert Feature.query.filter_by(name=flag.name).first().isActive == (
+            assert db.session.query(Feature).filter_by(name=flag.name).first().isActive == (
                 flag not in FEATURES_DISABLED_BY_DEFAULT
             )
 
@@ -90,7 +90,7 @@ class FeatureTest:
 @patch("pcapi.models.feature.FeatureToggle", TestingFeatureToggle)
 @patch("pcapi.models.feature.FEATURES_DISABLED_BY_DEFAULT", FEATURES_DISABLED_BY_DEFAULT_TEST)
 def test_install_feature_flags(app, caplog):
-    Feature.query.delete()
+    db.session.query(Feature).delete()
 
     declared_and_installed = Feature(
         name=TestingFeatureToggle.AUTO_DESTROY_AIRCRAFT_ON_WINDOW_OPENING.name,
@@ -102,10 +102,10 @@ def test_install_feature_flags(app, caplog):
     install_feature_flags()
 
     # already installed keeps isActive value
-    assert not Feature.query.filter_by(name=declared_and_installed.name).one().isActive
+    assert not db.session.query(Feature).filter_by(name=declared_and_installed.name).one().isActive
 
     # new installed with isActive=True
-    assert Feature.query.filter_by(name=TestingFeatureToggle.ENABLE_LOOPING_INOPINE.name).one().isActive
+    assert db.session.query(Feature).filter_by(name=TestingFeatureToggle.ENABLE_LOOPING_INOPINE.name).one().isActive
 
     # new installed with isActive=False
 
@@ -113,7 +113,7 @@ def test_install_feature_flags(app, caplog):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.models.feature.FeatureToggle", TestingFeatureToggle)
 def test_feature_flag_completeness(app, caplog):
-    Feature.query.delete()
+    db.session.query(Feature).delete()
     declared_and_installed = Feature(
         name=TestingFeatureToggle.AUTO_DESTROY_AIRCRAFT_ON_WINDOW_OPENING.name,
         description=TestingFeatureToggle.AUTO_DESTROY_AIRCRAFT_ON_WINDOW_OPENING.value,
@@ -138,7 +138,7 @@ def test_feature_flag_completeness(app, caplog):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.models.feature.FeatureToggle", TestingFeatureToggle)
 def test_clean_feature_flags(app):
-    Feature.query.delete()
+    db.session.query(Feature).delete()
     install_feature_flags()
     old_feature = Feature(
         name="old_feature",
@@ -149,5 +149,5 @@ def test_clean_feature_flags(app):
 
     clean_feature_flags()
 
-    assert Feature.query.filter_by(name="old_feature").one_or_none() is None
-    assert Feature.query.count() == len(TestingFeatureToggle)
+    assert db.session.query(Feature).filter_by(name="old_feature").one_or_none() is None
+    assert db.session.query(Feature).count() == len(TestingFeatureToggle)

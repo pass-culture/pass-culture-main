@@ -103,7 +103,7 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(run_command, c
 
     db.session.flush()
 
-    invoices = finance_models.Invoice.query.order_by(finance_models.Invoice.date).all()
+    invoices = db.session.query(finance_models.Invoice).order_by(finance_models.Invoice.date).all()
     assert len(invoices) == 1
     assert invoices[0].reference.startswith("F")
     assert invoices[0].amount == -2850
@@ -112,7 +112,9 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(run_command, c
 
     ## Two weeks later
 
-    previous_incident_booking = finance_models.FinanceEvent.query.filter_by(id=previous_incident_booking_id).one()
+    previous_incident_booking = (
+        db.session.query(finance_models.FinanceEvent).filter_by(id=previous_incident_booking_id).one()
+    )
     # Debit Note part
     booking_total_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
         incident__status=finance_models.IncidentStatus.VALIDATED,
@@ -135,7 +137,7 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(run_command, c
         str(second_batch.id),
     )
 
-    invoices = finance_models.Invoice.query.order_by(finance_models.Invoice.date).all()
+    invoices = db.session.query(finance_models.Invoice).order_by(finance_models.Invoice.date).all()
     assert len(invoices) == 2
     assert invoices[1].reference.startswith("A")
     assert invoices[1].amount == 2850
@@ -189,7 +191,7 @@ def test_when_there_is_a_debit_note_to_generate_on_partial_incident(run_command,
 
     db.session.flush()
 
-    invoices = finance_models.Invoice.query.all()
+    invoices = db.session.query(finance_models.Invoice).all()
     assert len(invoices) == 1
     assert invoices[0].reference.startswith("F")
     assert invoices[0].amount == -3000
@@ -198,7 +200,9 @@ def test_when_there_is_a_debit_note_to_generate_on_partial_incident(run_command,
 
     ## Two weeks later
 
-    previous_incident_booking = finance_models.FinanceEvent.query.filter_by(id=previous_incident_booking_id).one()
+    previous_incident_booking = (
+        db.session.query(finance_models.FinanceEvent).filter_by(id=previous_incident_booking_id).one()
+    )
     # Debit Note part
     booking_partial_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
         incident__status=finance_models.IncidentStatus.VALIDATED,
@@ -221,7 +225,7 @@ def test_when_there_is_a_debit_note_to_generate_on_partial_incident(run_command,
         str(second_batch.id),
     )
 
-    invoices = finance_models.Invoice.query.order_by(finance_models.Invoice.id).all()
+    invoices = db.session.query(finance_models.Invoice).order_by(finance_models.Invoice.id).all()
     assert len(invoices) == 2
     assert invoices[1].reference.startswith("A")
     assert invoices[1].bankAccountId == bank_account_id
@@ -259,7 +263,7 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
         booking=booking1,
         validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
     )
-    finance_events = finance_models.FinanceEvent.query.all()
+    finance_events = db.session.query(finance_models.FinanceEvent).all()
     assert len(finance_events) == 1
 
     initial_finance_event = finance_events[0]
@@ -321,9 +325,11 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
         author=author_user,
     )
 
-    finance_events = finance_models.FinanceEvent.query.filter(
-        finance_models.FinanceEvent.id != initial_finance_event.id
-    ).all()
+    finance_events = (
+        db.session.query(finance_models.FinanceEvent)
+        .filter(finance_models.FinanceEvent.id != initial_finance_event.id)
+        .all()
+    )
     assert len(finance_events) == 2
     assert {finance_event.motive for finance_event in finance_events} == {
         finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,

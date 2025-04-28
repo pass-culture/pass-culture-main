@@ -80,7 +80,7 @@ def _fill_favorite_offer(
 @spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)
 @authenticated_and_active_user_required
 def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
-    return serializers.FavoritesCountResponse(count=Favorite.query.filter_by(user=user).count())
+    return serializers.FavoritesCountResponse(count=db.session.query(Favorite).filter_by(user=user).count())
 
 
 def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favorite]:
@@ -199,7 +199,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
 @authenticated_and_active_user_required
 def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
     if settings.MAX_FAVORITES:
-        if Favorite.query.filter_by(user=user).count() >= settings.MAX_FAVORITES:
+        if db.session.query(Favorite).filter_by(user=user).count() >= settings.MAX_FAVORITES:
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
 
     try:
@@ -210,7 +210,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
     except sa.exc.IntegrityError as exception:
-        favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
+        favorite = db.session.query(Favorite).filter_by(offerId=body.offerId, userId=user.id).one_or_none()
         if not favorite:
             raise exception
     else:
@@ -226,5 +226,5 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
 @authenticated_and_active_user_required
 def delete_favorite(user: User, favorite_id: int) -> None:
     with transaction():
-        favorite = Favorite.query.filter_by(id=favorite_id, user=user).first_or_404()
+        favorite = db.session.query(Favorite).filter_by(id=favorite_id, user=user).first_or_404()
         db.session.delete(favorite)

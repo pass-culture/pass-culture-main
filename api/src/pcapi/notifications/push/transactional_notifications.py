@@ -5,6 +5,7 @@ import logging
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils.urls import booking_app_link
 from pcapi.utils.urls import offer_app_link
@@ -34,7 +35,7 @@ class TransactionalNotificationData(BaseModel):
 
 
 def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> TransactionalNotificationData | None:
-    bookings = Booking.query.filter(Booking.id.in_(booking_ids))
+    bookings = db.session.query(Booking).filter(Booking.id.in_(booking_ids))
 
     if not bookings:
         return None

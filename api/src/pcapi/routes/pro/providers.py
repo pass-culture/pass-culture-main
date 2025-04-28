@@ -2,6 +2,7 @@ from flask_login import login_required
 
 from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.repository as providers_repository
+from pcapi.models import db
 from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization.providers_serialize import ListProviderResponse
 from pcapi.routes.serialization.providers_serialize import ProviderResponse
@@ -20,6 +21,6 @@ from . import blueprint
     api=blueprint.pro_private_schema,
 )
 def get_providers_by_venue(venue_id: int) -> ListProviderResponse:
-    venue = Venue.query.get_or_404(venue_id)
+    venue = db.session.query(Venue).get_or_404(venue_id)
     providers = providers_repository.get_available_providers(venue)
     return ListProviderResponse(__root__=[ProviderResponse.from_orm(provider) for provider in providers])

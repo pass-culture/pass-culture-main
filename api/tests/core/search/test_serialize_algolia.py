@@ -23,6 +23,7 @@ from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.search import get_base_query_for_offer_indexation
 from pcapi.core.search.backends import algolia
 from pcapi.core.search.backends import serialization
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 
@@ -38,9 +39,9 @@ def test_serialize_offer():
     # note: some might contain trailing whitespaces. Also sections are
     # usually lowercase whilst sections from providers might be
     # capitalized.
-    book_macro_section = offers_models.BookMacroSection.query.filter_by(
-        section="policier / thriller format poche"
-    ).one()
+    book_macro_section = (
+        db.session.query(offers_models.BookMacroSection).filter_by(section="policier / thriller format poche").one()
+    )
     macro_section = book_macro_section.macroSection.strip()
 
     venue_offerer_address = offerers_factories.OffererAddressFactory(
@@ -149,9 +150,9 @@ def test_serialize_offer_legacy():
     # note: some might contain trailing whitespaces. Also sections are
     # usually lowercase whilst sections from providers might be
     # capitalized.
-    book_macro_section = offers_models.BookMacroSection.query.filter_by(
-        section="policier / thriller format poche"
-    ).one()
+    book_macro_section = (
+        db.session.query(offers_models.BookMacroSection).filter_by(section="policier / thriller format poche").one()
+    )
     macro_section = book_macro_section.macroSection.strip()
 
     offer = offers_factories.OfferFactory(

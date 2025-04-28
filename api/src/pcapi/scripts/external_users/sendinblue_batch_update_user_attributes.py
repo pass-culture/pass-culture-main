@@ -15,6 +15,7 @@ from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
 
@@ -57,7 +58,8 @@ def run(
 
     print("%s started" % message)
     chunk = (
-        User.query.filter(User.id.in_(user_ids))
+        db.session.query(User)
+        .filter(User.id.in_(user_ids))
         .filter(
             sa.not_(User.has_pro_role),
             sa.not_(User.has_admin_role),

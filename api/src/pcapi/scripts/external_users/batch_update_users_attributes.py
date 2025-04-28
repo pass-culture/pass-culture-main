@@ -14,6 +14,7 @@ from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
 
@@ -21,7 +22,7 @@ from pcapi.notifications.push.backends.batch import UserUpdateData
 def get_users(batch_size: int) -> Generator[User, None, None]:
     """Fetch users from database, without loading all of them at once."""
     try:
-        yield from User.query.yield_per(batch_size)
+        yield from db.session.query(User).yield_per(batch_size)
     except Exception as err:
         print("Users fetch failed: %s", err)
         raise

@@ -16,6 +16,7 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import factories as user_factories
+from pcapi.models import db
 
 from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
@@ -43,11 +44,11 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        venue_provider = VenueProvider.query.one()
+        venue_provider = db.session.query(VenueProvider).one()
         assert venue_provider.venueId == venue.id
         assert venue_provider.providerId == provider.id
         assert "id" in response.json
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.SYNC_VENUE_TO_PROVIDER
         assert action.authorUser == user
         assert action.extraData["provider_name"] == venue_provider.provider.name
@@ -85,7 +86,7 @@ class Returns201Test:
         assert response.json["isDuo"]
         assert response.json["price"] == 9.99
         assert response.json["quantity"] == 50
-        venue_provider = VenueProvider.query.one()
+        venue_provider = db.session.query(VenueProvider).one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
@@ -116,7 +117,7 @@ class Returns201Test:
         assert response.json["isDuo"]
         assert response.json["price"] == 9.99
         assert response.json["quantity"] == 50
-        venue_provider = VenueProvider.query.one()
+        venue_provider = db.session.query(VenueProvider).one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
@@ -184,7 +185,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        venue_provider = VenueProvider.query.one()
+        venue_provider = db.session.query(VenueProvider).one()
         assert venue_provider.venueId == venue.id
         assert venue_provider.providerId == provider.id
         assert "id" in response.json
@@ -223,7 +224,7 @@ class Returns201Test:
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         client = client.with_session_auth(email=user.email)
-        provider = Provider.query.filter(Provider.localClass == "CDSStocks").first()
+        provider = db.session.query(Provider).filter(Provider.localClass == "CDSStocks").first()
 
         cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
         providers_factories.CDSCinemaDetailsFactory(
@@ -325,9 +326,9 @@ class Returns201Test:
         assert response.json["provider"]["id"] == ems_provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == pivot.idAtProvider
-        venue_provider = VenueProvider.query.one()
+        venue_provider = db.session.query(VenueProvider).one()
         mocked_synchronize_ems_venue_provider.assert_called_once_with(venue_provider)
-        venue_provider = VenueProvider.query.one()
+        venue_provider = db.session.query(VenueProvider).one()
 
 
 class Returns400Test:
@@ -370,7 +371,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"price": ["Saisissez un nombre valide"]}
-        assert VenueProvider.query.count() == 0
+        assert db.session.query(VenueProvider).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_when_add_allocine_stocks_provider_with_no_price(self, client):
@@ -394,7 +395,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json["price"] == ["Il est obligatoire de saisir un prix."]
-        assert VenueProvider.query.count() == 0
+        assert db.session.query(VenueProvider).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_when_add_allocine_stocks_provider_with_negative_price(self, client):
@@ -419,7 +420,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json["price"] == ["Le prix doit être positif."]
-        assert VenueProvider.query.count() == 0
+        assert db.session.query(VenueProvider).count() == 0
 
 
 class Returns401Test:
@@ -482,7 +483,7 @@ class Returns404Test:
                 "Ce lieu n'est pas autorisé à être synchronisé avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
             ]
         }
-        assert VenueProvider.query.count() == 0
+        assert db.session.query(VenueProvider).count() == 0
 
 
 class ConnectProviderToVenueTest:

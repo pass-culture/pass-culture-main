@@ -4,6 +4,7 @@ from flask import current_app as app
 
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.scripts.external_users.batch_update_users_attributes import format_sendinblue_users
 
@@ -27,7 +28,7 @@ def synchronize_unsubscribed_users() -> None:
     total_users = len(unsubscribed_users)
     with app.app_context():
         print("Fetching users to update...")
-        users_to_update = User.query.filter(User.email.in_(unsubscribed_users))
+        users_to_update = db.session.query(User).filter(User.email.in_(unsubscribed_users))
         users_found_in_db = users_to_update.count()
         print("Found %s users" % users_found_in_db)
 

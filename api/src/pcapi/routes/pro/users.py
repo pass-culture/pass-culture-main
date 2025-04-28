@@ -28,6 +28,7 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
 from pcapi.domain.password import check_password_validity
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -78,7 +79,7 @@ def validate_user(token: str) -> None:
     def classic_token_check(token: str) -> None:
         try:
             stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
-            user_to_validate = users_models.User.query.get_or_404(stored_token.user_id)
+            user_to_validate = db.session.query(users_models.User).get_or_404(stored_token.user_id)
             stored_token.expire()
             users_api.validate_pro_user_email(user_to_validate)
         except users_exceptions.InvalidToken:
@@ -87,7 +88,7 @@ def validate_user(token: str) -> None:
     if FeatureToggle.WIP_2025_SIGN_UP.is_active():
         try:
             user_id = token_utils.validate_passwordless_token(token)["sub"]
-            user = users_models.User.query.get_or_404(user_id)
+            user = db.session.query(users_models.User).get_or_404(user_id)
             users_api.validate_pro_user_email(user)
         except jwt.InvalidAlgorithmError:
             # Users could have signup before the FF were activated, but validate their email after.
@@ -315,7 +316,7 @@ def connect_as(token: str) -> Response:
         )
 
     token_data = ConnectAsInternalModel(**secure_token.data)
-    user = users_models.User.query.filter(users_models.User.id == token_data.user_id).one_or_none()
+    user = db.session.query(users_models.User).filter(users_models.User.id == token_data.user_id).one_or_none()
 
     if not user:
         raise ApiErrors(

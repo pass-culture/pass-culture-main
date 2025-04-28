@@ -1,6 +1,7 @@
 from flask import url_for
 import pytest
 
+from pcapi.models import db
 from pcapi.models.feature import Feature
 
 
@@ -23,7 +24,7 @@ class FeaturesToggleTest:
         )
 
         assert response.status_code == 204
-        feature = Feature.query.filter_by(name="ENABLE_NATIVE_APP_RECAPTCHA").one()
+        feature = db.session.query(Feature).filter_by(name="ENABLE_NATIVE_APP_RECAPTCHA").one()
         assert feature.isActive
 
 

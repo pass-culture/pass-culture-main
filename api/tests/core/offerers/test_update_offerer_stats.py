@@ -52,9 +52,13 @@ class UpdateOffererStatsTest:
         update_offerer_stats.update_offerer_daily_views_stats()
         update_offerer_stats.delete_offerer_old_stats()
 
-        new_offerer_stats = OffererStats.query.filter(
-            OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
-        ).all()
+        new_offerer_stats = (
+            db.session.query(OffererStats)
+            .filter(
+                OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+            )
+            .all()
+        )
 
         assert len(new_offerer_stats) == 2
         assert new_offerer_stats[0].offererId == offerer.id
@@ -103,9 +107,13 @@ class UpdateOffererStatsTest:
         assert update_offerer_stats.PAGE_SIZE > 1
         update_offerer_stats.update_offerer_daily_views_stats()
 
-        new_offerer_stats = OffererStats.query.filter(
-            OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
-        ).all()
+        new_offerer_stats = (
+            db.session.query(OffererStats)
+            .filter(
+                OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+            )
+            .all()
+        )
 
         assert len(new_offerer_stats) == 2
         assert new_offerer_stats[0].offererId == offerer.id
@@ -169,9 +177,13 @@ class UpdateOffererStatsTest:
 
         # Check that the stats have been updated
 
-        new_offerer_stats = OffererStats.query.filter(
-            OffererStats.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
-        ).all()
+        new_offerer_stats = (
+            db.session.query(OffererStats)
+            .filter(
+                OffererStats.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+            )
+            .all()
+        )
         assert len(new_offerer_stats) == 2
         assert new_offerer_stats[0].offererId == offerer.id
         assert new_offerer_stats[0].jsonData["top_offers"] == [

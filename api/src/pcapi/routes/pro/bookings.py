@@ -12,6 +12,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
 from pcapi.routes.serialization.bookings_recap_serialize import EventDateScheduleAndPriceCategoriesCountModel
@@ -85,7 +86,7 @@ def get_user_has_bookings() -> UserHasBookingResponse:
 )
 def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
-    offer = Offer.query.get(int(offer_id))
+    offer = db.session.query(Offer).get(int(offer_id))
 
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
@@ -117,7 +118,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
 )
 def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
-    offer = Offer.query.get(int(offer_id))
+    offer = db.session.query(Offer).get(int(offer_id))
 
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
@@ -170,13 +171,14 @@ def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
 @spectree_serialize(response_model=EventDatesInfos, api=blueprint.pro_private_schema)
 def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDatesInfos:
     user = current_user._get_current_object()
-    offer = Offer.query.get(offer_id)
+    offer = db.session.query(Offer).get(offer_id)
 
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
     stocks = (
-        Stock.query.join(bookings_models.Booking)
+        db.session.query(Stock)
+        .join(bookings_models.Booking)
         .filter(
             Stock.offerId == offer_id,
             Stock.isSoftDeleted == False,

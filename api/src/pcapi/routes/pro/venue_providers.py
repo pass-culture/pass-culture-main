@@ -11,6 +11,7 @@ from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.models import VenueProviderCreationPayload
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import on_commit
@@ -24,14 +25,14 @@ from . import blueprint
 
 
 def _get_venue_or_404(venue_id: int) -> offerers_models.Venue:
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+    venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
     if not venue:
         raise NotFound
     return venue
 
 
 def _get_provider_or_404(provider_id: int) -> providers_models.Provider:
-    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+    provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one_or_none()
     if not provider:
         raise NotFound
     return provider

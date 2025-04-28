@@ -7,6 +7,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.providers import factories as providers_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -26,8 +27,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 202
-        assert Offer.query.get(offer1.id).isActive
-        assert Offer.query.get(offer2.id).isActive
+        assert db.session.query(Offer).get(offer1.id).isActive
+        assert db.session.query(Offer).get(offer2.id).isActive
 
     def when_deactivating_all_existing_offers(self, client):
         # Given
@@ -44,8 +45,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 202
-        assert not Offer.query.get(offer1.id).isActive
-        assert not Offer.query.get(offer2.id).isActive
+        assert not db.session.query(Offer).get(offer1.id).isActive
+        assert not db.session.query(Offer).get(offer2.id).isActive
 
     def should_update_offers_by_given_filters(self, client):
         # Given
@@ -79,11 +80,11 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 202
-        assert not Offer.query.get(matching_offer1.id).isActive
-        assert not Offer.query.get(matching_offer2.id).isActive
-        assert Offer.query.get(offer_out_of_date_range.id).isActive
-        assert Offer.query.get(offer_on_other_venue.id).isActive
-        assert Offer.query.get(offer_with_not_matching_name.id).isActive
+        assert not db.session.query(Offer).get(matching_offer1.id).isActive
+        assert not db.session.query(Offer).get(matching_offer2.id).isActive
+        assert db.session.query(Offer).get(offer_out_of_date_range.id).isActive
+        assert db.session.query(Offer).get(offer_on_other_venue.id).isActive
+        assert db.session.query(Offer).get(offer_with_not_matching_name.id).isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)
@@ -141,7 +142,7 @@ class Returns204Test:
         data = {"isActive": True, "offererAddressId": offerer_address.id}
         response = authentified_client.patch("/offers/all-active-status", json=data)
         assert response.status_code == 202
-        offer1 = Offer.query.get(offer1.id)
-        offer2 = Offer.query.get(offer2.id)
+        offer1 = db.session.query(Offer).get(offer1.id)
+        offer2 = db.session.query(Offer).get(offer2.id)
         assert offer1.isActive
         assert not offer2.isActive

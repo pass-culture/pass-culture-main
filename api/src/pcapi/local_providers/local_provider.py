@@ -186,7 +186,7 @@ class LocalProvider(Iterator):
             lookup["idAtProvider"] = id_at_providers
         else:
             lookup["idAtProviders"] = id_at_providers
-        query = model_type.query.filter_by(**lookup)
+        query = db.session.query(model_type).filter_by(**lookup)
         if model_type == offers_models.Stock:
             query = query.with_for_update()
 

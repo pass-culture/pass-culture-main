@@ -6,6 +6,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models import db
 
 
 STATUSES_ALLOWING_EDIT_INSTITUTION = (models.CollectiveOfferDisplayedStatus.DRAFT,)
@@ -31,7 +32,7 @@ class Returns200Test:
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 200
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.institution == institution2
 
 
@@ -52,7 +53,7 @@ class Returns404Test:
 
         # Then
         assert response.status_code == 404
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
 
     def test_institution_not_found(self, client: Any) -> None:
@@ -65,7 +66,7 @@ class Returns404Test:
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 404
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
 
 
@@ -89,7 +90,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
     def test_change_institution_on_uneditable_offer_booking_reimbused(self, client: Any) -> None:
@@ -109,7 +110,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
     def test_change_institution_on_uneditable_offer_booking_used(self, client: Any) -> None:
@@ -129,7 +130,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
     @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_INSTITUTION)
@@ -145,7 +146,7 @@ class Returns403Test:
 
         assert response.status_code == 403
         assert response.json == {"offer": ["Cette action n'est pas autorisée sur cette offre"]}
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.institution == institution1
 
     def test_change_institution_ended(self, client) -> None:
@@ -160,7 +161,7 @@ class Returns403Test:
 
         assert response.status_code == 403
         assert response.json == {"offer": ["Cette action n'est pas autorisée sur cette offre"]}
-        offer = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer.institution == institution1
 
     def test_add_institution_link_on_pending_offer(self, client: Any) -> None:
@@ -177,7 +178,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        offer_db = models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer.id).one()
+        offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
 
         assert len(adage_api_testing.adage_requests) == 0

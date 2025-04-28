@@ -11,9 +11,9 @@ from pcapi.core.history import api as history_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import db
 from pcapi.repository import repository
 from pcapi.routes.apis import public_api
 from pcapi.routes.external.serialization import sendinblue as serializers
@@ -120,7 +120,8 @@ def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersRespo
 
     offer_ids = [int(offer_id) for offer_id in decoded.get("playlist_recommended_offers", [])][:5]
     offers = (
-        offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(offer_ids))
         .options(joinedload(offers_models.Offer.mediations))
         .options(joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations))
         .all()

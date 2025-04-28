@@ -13,6 +13,7 @@ from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 import pcapi.repository
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
@@ -1422,7 +1423,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert not user.is_beneficiary
         assert user.firstName == "John"
         assert user.lastName == "Doe"
@@ -1630,7 +1631,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert user.firstName == "Alexandra"
         assert user.lastName == "Stan"
         assert user.has_beneficiary_role
@@ -1702,9 +1703,11 @@ class HonorStatementTest:
 
         assert response.status_code == 204
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT
-        ).first()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT)
+            .first()
+        )
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"

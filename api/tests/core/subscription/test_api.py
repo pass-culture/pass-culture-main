@@ -25,6 +25,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status
 import pcapi.core.users.api as users_api
+from pcapi.models import db
 from pcapi.utils.string import u_nbsp
 
 
@@ -817,7 +818,7 @@ class CommonSubscriptionTest:
         )
 
         user_fraud_checks = sorted(
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all(), key=lambda x: x.id
+            db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).all(), key=lambda x: x.id
         )
         assert len(user_fraud_checks) == 6
         assert user_fraud_checks[0].eligibilityType == users_models.EligibilityType.UNDERAGE
@@ -1276,12 +1277,14 @@ class CompleteProfileTest:
 
         assert fraud_repository.get_completed_profile_check(user, users_models.EligibilityType.AGE17_18)
         assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(
                 userId=user.id,
                 type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
                 status=fraud_models.FraudCheckStatus.OK,
                 eligibilityType=users_models.EligibilityType.AGE17_18,
-            ).count()
+            )
+            .count()
             == 1
         )
 
@@ -2948,7 +2951,8 @@ class TestQueriesTest:
         )
 
         fetched_user = (
-            users_models.User.query.filter(users_models.User.id == user.id)
+            db.session.query(users_models.User)
+            .filter(users_models.User.id == user.id)
             .options(
                 joinedload(users_models.User.beneficiaryFraudChecks),
                 joinedload(users_models.User.beneficiaryFraudReviews),

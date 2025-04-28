@@ -17,7 +17,7 @@ def unlock_achievement(booking: bookings_models.Booking) -> achievements_models.
     - booking.user.achievements.name
     - booking.stock.offer.subcategoryId
 
-    Example: Booking.query
+    Example: db.session.query(Booking)
              .options(joinedload(Booking.user).selectinload(User.achievements))
              .options(joinedload(Booking.stock).joinedload(Stock.offer))
     """

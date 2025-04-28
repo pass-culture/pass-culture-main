@@ -3,6 +3,7 @@ import logging
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +16,8 @@ def create_user_offerers() -> None:
     count = 0
 
     query = (
-        offerers_models.Offerer.query.outerjoin(offerers_models.Offerer.UserOfferers)
+        db.session.query(offerers_models.Offerer)
+        .outerjoin(offerers_models.Offerer.UserOfferers)
         .outerjoin(offerers_models.Offerer.offererProviders)
         .filter(offerers_models.UserOfferer.id.is_(None), offerers_models.OffererProvider.id.is_(None))
     )

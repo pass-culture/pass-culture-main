@@ -10,6 +10,7 @@ import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
+from pcapi.models import db
 
 
 BASE_DATA_PRO_WITHOUT_PHONE = {
@@ -51,7 +52,7 @@ class Returns204Test:
         assert response.status_code == 204
         assert "Set-Cookie" not in response.headers
 
-        user = User.query.filter_by(email="toto_pro@example.com").first()
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user is not None
         assert user.has_beneficiary_role is False
         assert user.has_non_attached_pro_role is True
@@ -68,7 +69,9 @@ class Returns204Test:
             "subscribed_themes": [],
         }
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_CREATED
         assert actions_list[0].authorUser == user
@@ -93,7 +96,7 @@ class Returns204Test:
         assert response.status_code == 204
         assert "Set-Cookie" not in response.headers
 
-        user = User.query.filter_by(email="toto_pro@example.com").first()
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user is not None
         assert user.has_beneficiary_role is False
         assert user.has_non_attached_pro_role is True
@@ -110,7 +113,9 @@ class Returns204Test:
             "subscribed_themes": [],
         }
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_CREATED
         assert actions_list[0].authorUser == user
@@ -128,7 +133,7 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        user = User.query.filter_by(email="toto_pro@example.com").first()
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user.needsToFillCulturalSurvey is False
 
 
@@ -222,7 +227,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        created_user = User.query.filter_by(email="toto_pro@example.com").first()
+        created_user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert created_user is None
 
     def test_when_bad_format_phone_number(self, client):
@@ -284,7 +289,7 @@ class Returns400Test:
 
         assert "fake_passwordless_login_token" in args
 
-        user = User.query.filter_by(email="toto_pro@example.com").first()
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user is not None
         assert user.has_beneficiary_role is False
         assert user.has_non_attached_pro_role is True
@@ -322,7 +327,7 @@ class Returns400Test:
 
         assert token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION in args
 
-        user = User.query.filter_by(email="toto_pro@example.com").first()
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user is not None
         assert user.has_beneficiary_role is False
         assert user.has_non_attached_pro_role is True

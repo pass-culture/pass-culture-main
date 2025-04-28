@@ -6,10 +6,13 @@ from pcapi.core.users import constants
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
+from pcapi.models import db
 
 
 def _query_ordered_email_update_entry(user: User) -> BaseQuery:
-    latest_entries = UserEmailHistory.query.filter_by(user=user).order_by(UserEmailHistory.creationDate.desc())
+    latest_entries = (
+        db.session.query(UserEmailHistory).filter_by(user=user).order_by(UserEmailHistory.creationDate.desc())
+    )
     return latest_entries
 
 

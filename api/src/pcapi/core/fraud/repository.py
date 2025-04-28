@@ -67,7 +67,7 @@ def _get_completed_profile_checks(user: users_models.User) -> list[fraud_models.
     This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
     queries.
 
-    Example: User.query.options(selectinload(User.beneficiaryFraudChecks))
+    Example: db.session.query(User).options(selectinload(User.beneficiaryFraudChecks))
     """
     return [
         fraud_check
@@ -118,7 +118,7 @@ def _get_filled_pending_or_started_dms_fraud_checks(
     This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
     queries.
 
-    Example: User.query.options(selectinload(User.beneficiaryFraudChecks))
+    Example: db.session.query(User).options(selectinload(User.beneficiaryFraudChecks))
     """
     return [
         fraud_check
@@ -137,7 +137,7 @@ def get_relevant_identity_fraud_check(
     This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
     queries.
 
-    Example: User.query.options(selectinload(User.beneficiaryFraudChecks))
+    Example: db.session.query(User).options(selectinload(User.beneficiaryFraudChecks))
     """
     identity_fraud_checks = [
         fraud_check
@@ -186,7 +186,7 @@ def get_completed_honor_statement(
     This function assumes that the user.beneficiaryFraudChecks relationship is already loaded to avoid additional
     queries.
 
-    Example: User.query.options(selectinload(User.beneficiaryFraudChecks))
+    Example: db.session.query(User).options(selectinload(User.beneficiaryFraudChecks))
     """
     completed_fraud_checks = [
         fraud_check

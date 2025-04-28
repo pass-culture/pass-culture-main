@@ -5,6 +5,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 import pcapi.core.subscription.ubble.api as ubble_api
 from pcapi.core.subscription.ubble.exceptions import UbbleDownloadedFileEmpty
+from pcapi.models import db
 from pcapi.utils.requests import ExternalAPIException
 
 
@@ -82,7 +83,8 @@ def get_fraud_check_to_archive(
     start_date: datetime, end_date: datetime, status: bool | None, limit: int = DEFAULT_LIMIT, offset: int = 0
 ) -> list[fraud_models.BeneficiaryFraudCheck]:
     query = (
-        fraud_models.BeneficiaryFraudCheck.query.filter(
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.OK,
             fraud_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
             fraud_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),

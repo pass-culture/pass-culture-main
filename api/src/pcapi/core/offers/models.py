@@ -390,7 +390,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
 
     @classmethod
     def queryNotSoftDeleted(cls) -> BaseQuery:
-        return Stock.query.filter_by(isSoftDeleted=False)
+        return db.session.query(Stock).filter_by(isSoftDeleted=False)
 
     @staticmethod
     def restize_internal_error(internal_error: sa_exc.InternalError) -> tuple[str, str]:
@@ -1106,11 +1106,13 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return False
         if (
             self.lastProviderId
-            and not VenueProvider.query.filter_by(
+            and not db.session.query(VenueProvider)
+            .filter_by(
                 isActive=True,
                 venueId=self.venueId,
                 providerId=self.lastProviderId,
-            ).one_or_none()
+            )
+            .one_or_none()
         ):
             return False
         return True

@@ -17,6 +17,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import Ministry
+from pcapi.models import db
 from pcapi.routes.adage.v1.serialization import constants
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
@@ -75,7 +76,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == expected_serialized_prebooking(booking)
         assert (
-            CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status
+            db.session.query(CollectiveBooking).filter(CollectiveBooking.id == booking.id).one().status
             == CollectiveBookingStatus.CONFIRMED
         )
 

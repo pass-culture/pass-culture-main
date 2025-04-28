@@ -19,6 +19,7 @@ from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.repository.providable_queries import get_last_update_for_provider
 
 
@@ -46,7 +47,9 @@ class BoostStocks(LocalProvider):
         self.attributs: list[boost_serializers.CinemaAttribut] = self._get_cinema_attributs()
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
-            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .all()
         )
 
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
@@ -198,7 +201,9 @@ class BoostStocks(LocalProvider):
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
-                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer).all()
+                db.session.query(offers_models.PriceCategory)
+                .filter(offers_models.PriceCategory.offer == self.last_offer)
+                .all()
                 if self.last_offer.id
                 else []
             )

@@ -13,6 +13,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.users import models as user_models
+from pcapi.models import db
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 
@@ -37,7 +38,8 @@ def _get_csv_reimbursement_email_data(link_to_csv: str) -> models.TransactionalE
 
 def _get_all_invoices(user_id: int, batch_id: int) -> list:
     invoices = (
-        finance_models.Invoice.query.join(finance_models.Invoice.bankAccount)
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.Invoice.bankAccount)
         .join(finance_models.BankAccount.offerer)
         .join(offerer_models.UserOfferer, offerer_models.UserOfferer.offererId == offerer_models.Offerer.id)
         .filter(
@@ -102,7 +104,7 @@ def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str,
 def export_csv_and_send_notification_emails(batch_id: int, batch_label: str) -> None:
     for email, infos in OFFERER_INFORMATION.items():
         try:
-            user = user_models.User.query.filter_by(email=email).one()
+            user = db.session.query(user_models.User).filter_by(email=email).one()
         except NoResultFound:
             logger.exception("Email is not linked to any user", extra={"email": email})
         filename = _get_filename(infos["offerer_name"], batch_label)

@@ -64,7 +64,7 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
 
 
 def _find_user_by_email_query(email: str) -> BaseQuery:
-    return models.User.query.filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
+    return db.session.query(models.User).filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
 
 
 def find_user_by_email(email: str) -> models.User | None:
@@ -80,11 +80,13 @@ def has_access(user: models.User, offerer_id: int) -> bool:
     if user.has_admin_role:
         return True
     return db.session.query(
-        offerers_models.UserOfferer.query.filter(
+        db.session.query(offerers_models.UserOfferer)
+        .filter(
             offerers_models.UserOfferer.offererId == offerer_id,
             offerers_models.UserOfferer.userId == user.id,
             offerers_models.UserOfferer.isValidated,
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 
@@ -120,7 +122,8 @@ def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
     eligible_users = (
-        models.User.query.outerjoin(offerers_models.UserOfferer)
+        db.session.query(models.User)
+        .outerjoin(offerers_models.UserOfferer)
         .filter(
             sa.not_(models.User.has_admin_role),  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
@@ -135,7 +138,8 @@ def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User
 
 def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offerer) -> list[models.User]:
     return (
-        models.User.query.join(offerers_models.UserOfferer)
+        db.session.query(models.User)
+        .join(offerers_models.UserOfferer)
         .filter(
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.offererId == offerer.id,
@@ -146,7 +150,8 @@ def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offe
 
 def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> list[models.User]:
     return (
-        models.User.query.join(offerers_models.UserOfferer)
+        db.session.query(models.User)
+        .join(offerers_models.UserOfferer)
         .filter_by(offererId=offerer.id, isValidated=True)
         .order_by(offerers_models.UserOfferer.id)
         .all()
@@ -154,13 +159,20 @@ def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> lis
 
 
 def get_and_lock_user(userId: int) -> models.User:
-    user = models.User.query.filter(models.User.id == userId).populate_existing().with_for_update().one_or_none()
+    user = (
+        db.session.query(models.User)
+        .filter(models.User.id == userId)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
     return user
 
 
 def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSignOn | None:
     return (
-        models.SingleSignOn.query.filter(
+        db.session.query(models.SingleSignOn)
+        .filter(
             models.SingleSignOn.ssoProvider == sso_provider,
             models.SingleSignOn.ssoUserId == sso_user_id,
         )

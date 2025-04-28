@@ -13,13 +13,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.fixture(scope="function", name="permissions")
 def permissions_fixture() -> list[perm_models.Permissions]:
-    return perm_models.Permission.query.order_by(perm_models.Permission.name).limit(5).all()
+    return db.session.query(perm_models.Permission).order_by(perm_models.Permission.name).limit(5).all()
 
 
 @pytest.fixture(scope="function", name="roles")
 def roles_fixture(permissions) -> list[perm_models.Roles]:
     roles = (
-        perm_models.Role.query.filter(
+        db.session.query(perm_models.Role)
+        .filter(
             perm_models.Role.name.in_(
                 [
                     perm_models.Roles.SUPPORT_N1.value,

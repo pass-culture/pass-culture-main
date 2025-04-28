@@ -8,7 +8,7 @@ from pcapi.models import db
 
 
 def create_venue_provider(provider_id: int, venue_ids: list[int]) -> None:
-    provider = provider_models.Provider.query.get(provider_id)
+    provider = db.session.query(provider_models.Provider).get(provider_id)
     if not provider or not provider.hasOffererProvider:
         print("Provider not found or not synchronisable")
         return

@@ -10,6 +10,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -43,9 +44,11 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        provider_events = providers_models.LocalProviderEvent.query.order_by(
-            providers_models.LocalProviderEvent.id.asc()
-        ).all()
+        provider_events = (
+            db.session.query(providers_models.LocalProviderEvent)
+            .order_by(providers_models.LocalProviderEvent.id.asc())
+            .all()
+        )
         assert provider_events[0].type == providers_models.LocalProviderEventType.SyncStart
         assert provider_events[1].type == providers_models.LocalProviderEventType.SyncEnd
 
@@ -61,7 +64,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        new_product = offers_models.Product.query.one()
+        new_product = db.session.query(offers_models.Product).one()
         assert new_product.name == "New Product"
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
@@ -84,7 +87,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.name == "New Product"
         assert product.dateModifiedAtLastProvider == providable_info.date_modified_at_provider
 
@@ -107,7 +110,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.name == "Old product name"
         assert product.dateModifiedAtLastProvider == datetime(2020, 1, 1)
 
@@ -124,7 +127,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_objects_when_provider_is_not_active(self, next_function):
@@ -138,7 +141,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProviderNoCreation.__next__")
     def test_does_not_create_new_object_when_can_create_is_false(self, next_function):
@@ -152,7 +155,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_only_one_object_when_limit_is_one(self, next_function):
@@ -167,7 +170,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects(limit=1)
 
         # Then
-        new_product = offers_models.Product.query.one()
+        new_product = db.session.query(offers_models.Product).one()
         assert new_product.name == "New Product"
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
@@ -204,8 +207,8 @@ class CreateObjectTest:
         assert api_errors.value.errors["url"] == [
             "Une offre de sous-catégorie Achat instrument ne peut pas être numérique"
         ]
-        assert offers_models.Product.query.count() == 0
-        provider_event = providers_models.LocalProviderEvent.query.one()
+        assert db.session.query(offers_models.Product).count() == 0
+        provider_event = db.session.query(providers_models.LocalProviderEvent).one()
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 
@@ -227,7 +230,7 @@ class HandleUpdateTest:
         local_provider._handle_update(product, providable_info)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.name == "New Product"
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
@@ -251,7 +254,7 @@ class HandleUpdateTest:
         assert api_errors.value.errors["url"] == [
             "Une offre de sous-catégorie Achat instrument ne peut pas être numérique"
         ]
-        provider_event = providers_models.LocalProviderEvent.query.one()
+        provider_event = db.session.query(providers_models.LocalProviderEvent).one()
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 

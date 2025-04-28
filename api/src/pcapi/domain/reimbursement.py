@@ -8,6 +8,7 @@ from pcapi.core.finance import utils as finance_utils
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 
 
 # A new set rules are in effect as of 1 September 2021 (i.e. 31 August 22:00 UTC)
@@ -216,7 +217,7 @@ assert [r.description for r in REGULAR_RULES] == [
 
 class CustomRuleFinder:
     def __init__(self) -> None:
-        self.rules = finance_models.CustomReimbursementRule.query.all()
+        self.rules = db.session.query(finance_models.CustomReimbursementRule).all()
         self.rules_by_offer = self._partition_by_field("offerId")
         self.rules_by_venue = self._partition_by_field("venueId")
         self.rules_by_offerer = self._partition_by_field("offererId")

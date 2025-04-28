@@ -14,7 +14,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import DiscordUser
-from pcapi.core.users.models import UserRole
+from pcapi.models import db
 from pcapi.utils import requests
 
 
@@ -272,7 +272,7 @@ class DiscordSigninTest:
         response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
         assert response.status_code == 200
 
-        created_discord_link = DiscordUser.query.filter_by(userId=user.id).first()
+        created_discord_link = db.session.query(DiscordUser).filter_by(userId=user.id).first()
         assert created_discord_link.hasAccess
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
@@ -289,7 +289,7 @@ class DiscordSigninTest:
         )
         assert response.status_code == 303
 
-        created_discord_link = DiscordUser.query.filter_by(userId=non_beneficiary.id).first()
+        created_discord_link = db.session.query(DiscordUser).filter_by(userId=non_beneficiary.id).first()
         assert not created_discord_link.hasAccess
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
@@ -306,7 +306,7 @@ class DiscordSigninTest:
         )
         assert response.status_code == 303
 
-        created_discord_link = DiscordUser.query.filter_by(userId=not_eligible_user.id).first()
+        created_discord_link = db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).first()
         assert not created_discord_link.hasAccess
 
     @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)

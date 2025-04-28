@@ -12,6 +12,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -24,7 +25,8 @@ def get_new_booking_to_pro_email_data(
     offer = stock.offer
 
     venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == offer.venueId)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == offer.venueId)
         .outerjoin(
             offerers_models.VenueBankAccountLink,
             sa.and_(

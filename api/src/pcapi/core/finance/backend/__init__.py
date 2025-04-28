@@ -4,7 +4,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.core.finance.backend.cegid import CegidFinanceBackend
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
-from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
 from pcapi.utils.module_loading import import_string
 
 
@@ -16,13 +16,18 @@ _backends = [
 
 def push_invoice(invoice_id: int) -> dict | None:
     backend = _get_backend()
-    invoice = finance_models.Invoice.query.get(invoice_id)
+    invoice = db.session.query(finance_models.Invoice).get(invoice_id)
     return backend.push_invoice(invoice)
 
 
 def push_bank_account(bank_account_id: int) -> dict | None:
     backend = _get_backend()
-    bank_account = finance_models.BankAccount.query.join(finance_models.BankAccount.offerer).get(bank_account_id)
+    bank_account = (
+        db.session.query(finance_models.BankAccount)
+        .filter_by(id=bank_account_id)
+        .join(finance_models.BankAccount.offerer)
+        .one()
+    )
     return backend.push_bank_account(bank_account)
 
 

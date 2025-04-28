@@ -8,6 +8,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.tasks.mails_tasks import send_withdrawal_detail_changed_emails
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailBookingDetail
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
@@ -16,7 +17,8 @@ from pcapi.utils.date import format_time_in_second_to_human_readable
 
 def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
     ongoing_bookings = (
-        bookings_models.Booking.query.join(bookings_models.Booking.stock)
+        db.session.query(bookings_models.Booking)
+        .join(bookings_models.Booking.stock)
         .join(offers_models.Stock.offer)
         .filter(
             offers_models.Offer.id == offer.id,

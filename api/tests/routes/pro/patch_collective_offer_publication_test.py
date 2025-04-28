@@ -6,6 +6,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -38,7 +39,7 @@ class Returns204Test:
         assert response.json["isActive"] is True
         assert response.json["isNonFreeOffer"] is False
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert not offer.lastValidationAuthor
 
     def expect_offer_to_be_pending(self, client):
@@ -70,7 +71,7 @@ class Returns204Test:
         assert response.json["isActive"] is False
         assert response.json["isNonFreeOffer"] is True
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert not offer.lastValidationAuthor
 
 
@@ -85,7 +86,7 @@ class Returns403Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 403
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.lastValidationAuthor
 
@@ -100,6 +101,6 @@ class Returns401Test:
         response = client.patch(url)
 
         assert response.status_code == 401
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.lastValidationAuthor

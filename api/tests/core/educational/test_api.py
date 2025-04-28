@@ -16,6 +16,7 @@ from pcapi.core.educational.api.offer import unindex_expired_or_archived_collect
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.utils import db as db_utils
@@ -43,7 +44,7 @@ class CreateCollectiveOfferStocksTest:
 
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
 
-        stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
+        stock = db.session.query(educational_models.CollectiveStock).filter_by(id=stock_created.id).one()
         assert stock.startDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
         assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
@@ -68,7 +69,7 @@ class CreateCollectiveOfferStocksTest:
 
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
 
-        stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
+        stock = db.session.query(educational_models.CollectiveStock).filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -95,7 +96,7 @@ class CreateCollectiveOfferStocksTest:
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        assert educational_models.CollectiveStock.query.count() == 0
+        assert db.session.query(educational_models.CollectiveStock).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -687,9 +688,11 @@ class SynchroniseRuralityLevelTest:
             ]
             institution_api.synchronise_rurality_level()
 
-        institutions = educational_models.EducationalInstitution.query.order_by(
-            educational_models.EducationalInstitution.id
-        ).all()
+        institutions = (
+            db.session.query(educational_models.EducationalInstitution)
+            .order_by(educational_models.EducationalInstitution.id)
+            .all()
+        )
         assert [i.id for i in institutions] == [et1.id, et2.id, et3.id, et4.id]
         assert institutions[0].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         assert institutions[1].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE

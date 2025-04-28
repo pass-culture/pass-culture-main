@@ -7,6 +7,7 @@ from pcapi.core.offers.models import Movie
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.models import Provider
+from pcapi.models import db
 from pcapi.repository import transaction
 
 
@@ -99,7 +100,7 @@ def _exclude_empty_movies_and_special_events(
 
 
 def get_allocine_products_provider() -> Provider:
-    return Provider.query.filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME).one()
+    return db.session.query(Provider).filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME).one()
 
 
 def build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraData:

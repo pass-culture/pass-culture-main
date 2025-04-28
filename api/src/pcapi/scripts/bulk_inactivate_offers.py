@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def process_batch(offer_ids: list[str]) -> None:
     logger.info("Bulk-deactivating offers as incompatible", extra={"offers": offer_ids})
-    offers = Offer.query.filter(Offer.id.in_(offer_ids))
+    offers = db.session.query(Offer).filter(Offer.id.in_(offer_ids))
     offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id)]
     offers.update({"isActive": False}, synchronize_session=False)
     db.session.commit()

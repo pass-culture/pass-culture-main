@@ -353,7 +353,7 @@ class CreateStockTest:
             )
 
         # Then
-        assert models.Stock.query.count() == 0
+        assert db.session.query(models.Stock).count() == 0
 
     def test_does_not_allow_creation_on_a_synchronized_offer(self):
         # Given
@@ -376,7 +376,7 @@ class CreateStockTest:
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        assert models.Stock.query.count() == 0
+        assert db.session.query(models.Stock).count() == 0
 
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
@@ -391,7 +391,7 @@ class EditStockTest:
         edited_stock, update_info = api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
         # Then
-        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock == db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 5
         assert edited_stock.quantity == 7
         assert update_info is False
@@ -413,7 +413,7 @@ class EditStockTest:
         edited_stock, _ = api.edit_stock(stock=existing_stock, id_at_provider=edit_value, quantity=2)
 
         # Then
-        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock == db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.idAtProviders == edit_value
 
     def test_edit_beginning_datetime(self):
@@ -435,7 +435,7 @@ class EditStockTest:
         )
 
         # Then
-        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock == db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 12
         assert edited_stock.quantity == 77
         assert edited_stock.beginningDatetime == new_beginning
@@ -461,7 +461,7 @@ class EditStockTest:
         )
 
         # Then
-        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock == db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 10
         assert edited_stock.quantity == 7
         assert edited_stock.beginningDatetime == beginning
@@ -479,7 +479,7 @@ class EditStockTest:
 
         edited_stock, _ = api.edit_stock(stock=stock, price=stock.price, quantity=50)
 
-        assert edited_stock == models.Stock.query.filter_by(id=stock.id).first()
+        assert edited_stock == db.session.query(models.Stock).filter_by(id=stock.id).first()
         assert set(stock.fieldsUpdated) == {"quantity", "price"}
 
     def test_does_not_allow_invalid_quantity(self):
@@ -620,7 +620,7 @@ class EditStockTest:
         api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
-        edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
+        edited_stock = db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.price == decimal.Decimal(str(new_price))
 
     @pytest.mark.parametrize("new_price", [49, 151])
@@ -640,7 +640,7 @@ class EditStockTest:
         api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
-        edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
+        edited_stock = db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.price == decimal.Decimal(str(new_price))
 
     def test_does_not_allow_beginning_datetime_for_thing_offers(self):
@@ -752,7 +752,7 @@ class EditStockTest:
         )
 
         # Then
-        edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
+        edited_stock = db.session.query(models.Stock).filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 4
         assert edited_stock.quantity is None
 
@@ -792,7 +792,7 @@ class EditStockTest:
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        existing_stock = models.Stock.query.one()
+        existing_stock = db.session.query(models.Stock).one()
         assert existing_stock.price == 10
 
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
@@ -930,7 +930,7 @@ class DeleteStockTest:
         with caplog.at_level(logging.INFO):
             api.delete_stock(stock)
 
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
         mocked_async_index_offer_ids.assert_called_once_with(
             [stock.offerId],
@@ -970,18 +970,18 @@ class DeleteStockTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
         db.session.expunge_all()
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = bookings_models.Booking.query.get(booking1.id)
+        booking1 = db.session.query(bookings_models.Booking).get(booking1.id)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = bookings_models.Booking.query.get(booking2.id)
+        booking2 = db.session.query(bookings_models.Booking).get(booking2.id)
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = bookings_models.Booking.query.get(booking3.id)
+        booking3 = db.session.query(bookings_models.Booking).get(booking3.id)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = bookings_models.Booking.query.get(booking4.id)
+        booking4 = db.session.query(bookings_models.Booking).get(booking4.id)
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -1031,18 +1031,18 @@ class DeleteStockTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
         db.session.expunge_all()
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = bookings_models.Booking.query.get(booking1.id)
+        booking1 = db.session.query(bookings_models.Booking).get(booking1.id)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = bookings_models.Booking.query.get(booking2.id)
+        booking2 = db.session.query(bookings_models.Booking).get(booking2.id)
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = bookings_models.Booking.query.get(booking3.id)
+        booking3 = db.session.query(bookings_models.Booking).get(booking3.id)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = bookings_models.Booking.query.get(booking4.id)
+        booking4 = db.session.query(bookings_models.Booking).get(booking4.id)
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -1064,7 +1064,7 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
 
     def test_can_delete_if_event_ended_recently(self):
@@ -1072,7 +1072,7 @@ class DeleteStockTest:
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_too_late(self):
@@ -1081,7 +1081,7 @@ class DeleteStockTest:
 
         with pytest.raises(exceptions.TooLateToDeleteStock):
             api.delete_stock(stock)
-        stock = models.Stock.query.one()
+        stock = db.session.query(models.Stock).one()
         assert not stock.isSoftDeleted
 
 
@@ -1102,12 +1102,12 @@ class CreateMediationV2Test:
         api.create_mediation(user, offer, "©Photographe", image_as_bytes)
 
         # Then
-        models.mediation = models.Mediation.query.one()
+        models.mediation = db.session.query(models.Mediation).one()
         assert models.mediation.author == user
         assert models.mediation.offer == offer
         assert models.mediation.credit == "©Photographe"
         assert models.mediation.thumbCount == 1
-        assert models.Mediation.query.filter(models.Mediation.offerId == offer.id).count() == 1
+        assert db.session.query(models.Mediation).filter(models.Mediation.offerId == offer.id).count() == 1
         mocked_async_index_offer_ids.assert_called_once_with(
             [offer.id],
             reason=search.IndexationReason.MEDIATION_CREATION,
@@ -1131,7 +1131,7 @@ class CreateMediationV2Test:
         api.create_mediation(user, offer, "©moi", image_as_bytes)
 
         # Then
-        models.mediation_3 = models.Mediation.query.one()
+        models.mediation_3 = db.session.query(models.Mediation).one()
         assert models.mediation_3.credit == "©moi"
         thumb_3_id = humanize(models.mediation_3.id)
 
@@ -1160,7 +1160,7 @@ class CreateMediationV2Test:
         db.session.rollback()
 
         # Then
-        assert models.Mediation.query.count() == 0
+        assert db.session.query(models.Mediation).count() == 0
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
@@ -1182,7 +1182,7 @@ class CreateDraftOfferTest:
         assert not offer.isActive
         assert offer.validation == models.OfferValidationStatus.DRAFT
         assert not offer.product
-        assert models.Offer.query.count() == 1
+        assert db.session.query(models.Offer).count() == 1
 
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
@@ -1357,7 +1357,7 @@ class CreateOfferTest:
         assert offer.validation == models.OfferValidationStatus.DRAFT
         assert offer.extraData == {}
         assert not offer.bookingEmail
-        assert models.Offer.query.count() == 1
+        assert db.session.query(models.Offer).count() == 1
         assert offer.offererAddress == offerer_address
         assert offer.offererAddress != venue.offererAddress
 
@@ -1390,7 +1390,7 @@ class CreateOfferTest:
         assert offer.validation == models.OfferValidationStatus.DRAFT
         assert offer.extraData == {}
         assert offer.idAtProvider == "coucou"
-        assert models.Offer.query.count() == 1
+        assert db.session.query(models.Offer).count() == 1
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
@@ -1600,7 +1600,7 @@ class UpdateOfferTest:
             api.update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
-        assert models.Offer.query.one().name == "Old name"
+        assert db.session.query(models.Offer).one().name == "Old name"
 
     def test_cannot_update_with_name_containing_ean(self):
         offer = factories.OfferFactory(name="Old name", ean="1234567890124")
@@ -1609,7 +1609,7 @@ class UpdateOfferTest:
             api.update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
-        assert models.Offer.query.one().name == "Old name"
+        assert db.session.query(models.Offer).one().name == "Old name"
 
     def test_success_on_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
@@ -1619,7 +1619,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(name="Old name", isDuo=True)
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
         assert offer.isDuo
 
@@ -1633,7 +1633,7 @@ class UpdateOfferTest:
             api.update_offer(offer, body)
 
         assert error.value.errors == {"durationMinutes": ["Vous ne pouvez pas modifier ce champ"]}
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.durationMinutes == 90
         assert not offer.isDuo
 
@@ -1648,7 +1648,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
         assert offer.externalTicketOfficeUrl == "https://example.com"
 
@@ -1671,7 +1671,7 @@ class UpdateOfferTest:
         )
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
         assert offer.audioDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is True
@@ -1704,7 +1704,7 @@ class UpdateOfferTest:
         )
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.name == "Old name"
         assert offer.audioDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is True
@@ -1732,7 +1732,7 @@ class UpdateOfferTest:
             "durationMinutes": ["Vous ne pouvez pas modifier ce champ"],
             "isDuo": ["Vous ne pouvez pas modifier ce champ"],
         }
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.durationMinutes == 90
         assert offer.isDuo is False
         assert offer.audioDisabilityCompliant is True
@@ -1746,7 +1746,7 @@ class UpdateOfferTest:
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        pending_offer = models.Offer.query.one()
+        pending_offer = db.session.query(models.Offer).one()
         assert pending_offer.name == "Soliloquy"
 
     def test_success_on_updating_id_at_provider(self):
@@ -1761,7 +1761,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.name == "Offer linked to a provider"
         assert offer.idAtProvider == "some_id_at_provider"
 
@@ -1777,7 +1777,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(ean="1234567890125")
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.ean == "1234567890125"
 
     def test_success_should_not_duplicate_ean_when_it_is_an_empty_string(self):
@@ -1788,7 +1788,7 @@ class UpdateOfferTest:
         body = offers_schemas.UpdateOffer(ean=None)
         api.update_offer(offer, body)
 
-        offer = models.Offer.query.one()
+        offer = db.session.query(models.Offer).one()
         assert offer.ean == None
 
     def test_raise_error_on_updating_id_at_provider(self):
@@ -1854,7 +1854,7 @@ class UpdateOfferTest:
                 assert error.value.errors["offerUrl"] == ["Une offre numérique ne peut pas avoir d'adresse"]
         else:
             api.update_offer(offer, body)
-            offer = models.Offer.query.one()
+            offer = db.session.query(models.Offer).one()
             assert offer.offererAddress == offerer_address
 
     def test_update_venue(self):
@@ -1925,11 +1925,11 @@ class BatchUpdateOffersTest:
     def test_activate_empty_list(self, mocked_async_index_offer_ids, caplog):
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
 
-        query = models.Offer.query.filter(models.Offer.id.in_({pending_offer.id}))
+        query = db.session.query(models.Offer).filter(models.Offer.id.in_({pending_offer.id}))
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": True})
 
-        assert not models.Offer.query.get(pending_offer.id).isActive
+        assert not db.session.query(models.Offer).get(pending_offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
 
         assert len(caplog.records) == 2
@@ -1951,17 +1951,17 @@ class BatchUpdateOffersTest:
         rejected_offer = factories.OfferFactory(isActive=False, validation=models.OfferValidationStatus.REJECTED)
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
 
-        query = models.Offer.query.filter(
+        query = db.session.query(models.Offer).filter(
             models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
         )
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": True})
 
-        assert models.Offer.query.get(offer1.id).isActive
-        assert models.Offer.query.get(offer2.id).isActive
-        assert not models.Offer.query.get(offer3.id).isActive
-        assert not models.Offer.query.get(rejected_offer.id).isActive
-        assert not models.Offer.query.get(pending_offer.id).isActive
+        assert db.session.query(models.Offer).get(offer1.id).isActive
+        assert db.session.query(models.Offer).get(offer2.id).isActive
+        assert not db.session.query(models.Offer).get(offer3.id).isActive
+        assert not db.session.query(models.Offer).get(rejected_offer.id).isActive
+        assert not db.session.query(models.Offer).get(pending_offer.id).isActive
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
@@ -1986,13 +1986,13 @@ class BatchUpdateOffersTest:
         offer2 = factories.OfferFactory()
         offer3 = factories.OfferFactory()
 
-        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
+        query = db.session.query(models.Offer).filter(models.Offer.id.in_({offer1.id, offer2.id}))
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": False})
 
-        assert not models.Offer.query.get(offer1.id).isActive
-        assert not models.Offer.query.get(offer2.id).isActive
-        assert models.Offer.query.get(offer3.id).isActive
+        assert not db.session.query(models.Offer).get(offer1.id).isActive
+        assert not db.session.query(models.Offer).get(offer2.id).isActive
+        assert db.session.query(models.Offer).get(offer3.id).isActive
 
         assert len(caplog.records) == 4
         first_record = caplog.records[0]
@@ -2300,7 +2300,7 @@ class ActivateFutureOffersTest:
 
         offers_ids = api.activate_future_offers()
 
-        assert not models.Offer.query.get(offer.id).isActive
+        assert not db.session.query(models.Offer).get(offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
         assert offers_ids == []
 
@@ -2314,7 +2314,7 @@ class ActivateFutureOffersTest:
 
         assert offers_ids == [offer.id]
         assert models.Offer.query.get(offer.id).isActive
-        assert models.FutureOffer.query.get(future_offer.id).isSoftDeleted
+        assert db.session.query(models.FutureOffer).get(future_offer.id).isSoftDeleted
 
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
@@ -2911,13 +2911,13 @@ class RejectInappropriateProductTest:
         api.reject_inappropriate_products([ean_1], user, send_booking_cancellation_emails=False)
 
         # Then
-        offers = models.Offer.query.all()
-        bookings = bookings_models.Booking.query.all()
+        offers = db.session.query(models.Offer).all()
+        bookings = db.session.query(bookings_models.Booking).all()
 
-        product1 = models.Product.query.filter(models.Product.ean == ean_1).one()
+        product1 = db.session.query(models.Product).filter(models.Product.ean == ean_1).one()
         assert product1.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
-        product2 = models.Product.query.filter(models.Product.ean == ean_2).one()
+        product2 = db.session.query(models.Product).filter(models.Product.ean == ean_2).one()
         assert product2.isGcuCompatible
 
         assert all(
@@ -2933,7 +2933,7 @@ class RejectInappropriateProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {
             o.id for o in offers if o.product.id == product1.id
         }
-        assert users_models.Favorite.query.count() == 1  # product 2
+        assert db.session.query(users_models.Favorite).count() == 1  # product 2
         assert all(booking.isCancelled is True for booking in bookings if booking.stock.offer.product.id == product1)
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
 
@@ -2962,8 +2962,8 @@ class RejectInappropriateProductTest:
             users_factories.FavoriteFactory(offer=offer)
             bookings_factories.BookingFactory(stock__offer=offer)
 
-        assert users_models.Favorite.query.count() == len(offers)
-        assert bookings_models.Booking.query.count() == len(offers)
+        assert db.session.query(users_models.Favorite).count() == len(offers)
+        assert db.session.query(bookings_models.Booking).count() == len(offers)
 
         # When
         api.reject_inappropriate_products([ean_1], user)
@@ -2992,7 +2992,7 @@ class RejectInappropriateProductTest:
 
         # Then
 
-        product = models.Product.query.filter(models.Product.ean == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.gcuCompatibilityType == models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
@@ -3016,7 +3016,7 @@ class ResolveOfferValidationRuleTest:
             api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
             == models.OfferValidationStatus.PENDING
         )
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
 
     def test_offer_validation_with_unrelated_rule(self):
         collective_offer = educational_factories.CollectiveOfferFactory(name="REJECTED")
@@ -3028,7 +3028,7 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.APPROVED
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 0
 
     @pytest.mark.parametrize(
         "price, expected_status",
@@ -3180,7 +3180,7 @@ class ResolveOfferValidationRuleTest:
 
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag_too) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 2
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 2
 
     def test_offer_validation_rule_with_offer_type(self):
         offer = factories.OfferFactory()
@@ -3195,8 +3195,8 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 0
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 0
+        assert db.session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
     def test_offer_validation_rule_with_venue_id(self):
         venue = offerers_factories.VenueFactory()
@@ -3213,8 +3213,8 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
+        assert db.session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
     def test_offer_validation_rule_with_offerer_id(self):
         offerer = offerers_factories.OffererFactory()
@@ -3232,8 +3232,8 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
+        assert db.session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
     @pytest.mark.parametrize(
         "offer_kwargs, expected_status",
@@ -3321,7 +3321,7 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
 
     def test_offer_validation_rule_with_multiple_sub_rules(self):
         offer_to_approve = factories.OfferFactory(name="offer with a verboten name")
@@ -3345,7 +3345,7 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_approve) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
 
     def test_offer_validation_rule_with_unrelated_rules(self):
         offer_to_flag = factories.OfferFactory(name="offer with a verboten name")
@@ -3375,8 +3375,8 @@ class ResolveOfferValidationRuleTest:
             api.set_offer_status_based_on_fraud_criteria(collective_offer_to_flag)
             == models.OfferValidationStatus.PENDING
         )
-        assert models.ValidationRuleOfferLink.query.count() == 1
-        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
+        assert db.session.query(educational_models.ValidationRuleCollectiveOfferLink).count() == 1
 
     def test_offer_validation_with_description_rule_and_offer_without_description(self):
         offer = factories.OfferFactory(description=None)
@@ -3414,11 +3414,11 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag_too) == models.OfferValidationStatus.PENDING
 
-        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_to_flag.id).count() == 2
-        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_to_flag_too.id).count() == 1
-        assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_name_rule.id).count() == 2
-        assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_price_rule.id).count() == 1
-        assert models.ValidationRuleOfferLink.query.count() == 3
+        assert db.session.query(models.ValidationRuleOfferLink).filter_by(offerId=offer_to_flag.id).count() == 2
+        assert db.session.query(models.ValidationRuleOfferLink).filter_by(offerId=offer_to_flag_too.id).count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).filter_by(ruleId=offer_name_rule.id).count() == 2
+        assert db.session.query(models.ValidationRuleOfferLink).filter_by(ruleId=offer_price_rule.id).count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 3
 
     @pytest.mark.parametrize(
         "formats, excluded_formats, expected_status",
@@ -3484,7 +3484,7 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
 
         assert status == models.OfferValidationStatus.APPROVED
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 0
 
     def test_offer_validation_when_offerer_on_manual_review(self):
         collective_offer = educational_factories.CollectiveOfferFactory()
@@ -3493,7 +3493,7 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(collective_offer)
 
         assert status == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 0
 
     def test_offer_validation_when_offerer_on_manual_review_with_rules(self, offer_matching_one_validation_rule):
         offerers_factories.ManualReviewOffererConfidenceRuleFactory(
@@ -3503,7 +3503,7 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
 
         assert status == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
 
     def test_offer_validation_when_venue_whitelisted(self, offer_matching_one_validation_rule):
         offerers_factories.WhitelistedVenueConfidenceRuleFactory(venue=offer_matching_one_validation_rule.venue)
@@ -3511,7 +3511,7 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
 
         assert status == models.OfferValidationStatus.APPROVED
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 0
 
     def test_offer_validation_when_venue_on_manual_review(self):
         collective_offer = educational_factories.CollectiveOfferFactory()
@@ -3520,7 +3520,7 @@ class ResolveOfferValidationRuleTest:
         status = api.set_offer_status_based_on_fraud_criteria(collective_offer)
 
         assert status == models.OfferValidationStatus.PENDING
-        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -3601,7 +3601,7 @@ class WhitelistExistingProductTest:
 
         api.whitelist_product(ean)
 
-        assert models.Product.query.one() == product
+        assert db.session.query(models.Product).one() == product
         assert product.isGcuCompatible
         oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
         article = oeuvre["article"][0]
@@ -3631,11 +3631,11 @@ class WhitelistExistingProductTest:
             f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
             json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
-        assert not models.Product.query.filter(models.Product.idAtProviders == ean).one_or_none()
+        assert not db.session.query(models.Product).filter(models.Product.idAtProviders == ean).one_or_none()
 
         api.whitelist_product(ean)
 
-        product = models.Product.query.filter(models.Product.idAtProviders == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.idAtProviders == ean).one()
         assert product
         assert len(product.extraData["gtl_id"]) == 8
 
@@ -3652,13 +3652,13 @@ class DeleteDraftOffersTest:
 
         offer_ids = [draft_offer.id, other_draft_offer.id]
 
-        api.batch_delete_draft_offers(models.Offer.query.filter(models.Offer.id.in_(offer_ids)))
+        api.batch_delete_draft_offers(db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids)))
 
-        assert criteria_models.OfferCriterion.query.count() == 0
-        assert models.Mediation.query.count() == 0
-        assert models.Stock.query.count() == 0
-        assert models.Offer.query.count() == 0
-        assert models.ActivationCode.query.count() == 0
+        assert db.session.query(criteria_models.OfferCriterion).count() == 0
+        assert db.session.query(models.Mediation).count() == 0
+        assert db.session.query(models.Stock).count() == 0
+        assert db.session.query(models.Offer).count() == 0
+        assert db.session.query(models.ActivationCode).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -4398,7 +4398,7 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.ean == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
         mocked_async_index_offer_ids.assert_not_called()
@@ -4423,10 +4423,13 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.ean == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
-        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.APPROVED).count() == 2
+        assert (
+            db.session.query(models.Offer).filter(models.Offer.validation == OfferValidationStatus.APPROVED).count()
+            == 2
+        )
 
         mocked_async_index_offer_ids.assert_not_called()
 
@@ -4456,14 +4459,19 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.ean == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
-        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.APPROVED).count() == 2
         assert (
-            models.Offer.query.filter(
+            db.session.query(models.Offer).filter(models.Offer.validation == OfferValidationStatus.APPROVED).count()
+            == 2
+        )
+        assert (
+            db.session.query(models.Offer)
+            .filter(
                 models.Offer.id == offert_to_approve.id, models.Offer.lastValidationType == OfferValidationType.AUTO
-            ).count()
+            )
+            .count()
             == 1
         )
 
@@ -4491,10 +4499,13 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.ean == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
-        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.REJECTED).count() == 1
+        assert (
+            db.session.query(models.Offer).filter(models.Offer.validation == OfferValidationStatus.REJECTED).count()
+            == 1
+        )
         mocked_async_index_offer_ids.assert_not_called()
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -4518,10 +4529,13 @@ class ApproveProductAndRejectedOffersTest:
         api.approves_provider_product_and_rejected_offers(ean)
 
         # Then
-        product = models.Product.query.filter(models.Product.ean == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.isGcuCompatible
 
-        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.REJECTED).count() == 1
+        assert (
+            db.session.query(models.Offer).filter(models.Offer.validation == OfferValidationStatus.REJECTED).count()
+            == 1
+        )
         mocked_async_index_offer_ids.assert_not_called()
 
     def test_should_approve_product_and_offers_with_update_exception(self):
@@ -4719,7 +4733,7 @@ class UpdateUsedStockPriceTest:
         assert stock_to_edit.price == decimal.Decimal("50.1")
         assert booking_to_edit.amount == decimal.Decimal("50.1")
         assert later_event.status == finance_models.FinanceEventStatus.READY
-        assert finance_models.Pricing.query.filter_by(id=later_pricing_id).count() == 0
+        assert db.session.query(finance_models.Pricing).filter_by(id=later_pricing_id).count() == 0
 
     def test_update_used_stock_price_should_update_confirmed_events(self):
         stock_to_edit = factories.StockFactory(
@@ -4750,10 +4764,10 @@ class CreateMovieProductFromProviderTest:
         cls.boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
 
     def setup_method(self):
-        models.Product.query.delete()
+        db.session.query(models.Product).delete()
 
     def teardown_method(self):
-        models.Product.query.delete()
+        db.session.query(models.Product).delete()
 
     def _get_movie(self, allocine_id: str | None = None, visa: str | None = None):
         return models.Movie(
@@ -4952,8 +4966,13 @@ class CreateMovieProductFromProviderTest:
         assert caplog.records[0].extra == {"allocine_id": "12345", "visa": "54321"}
         assert offer.product == allocine_product
         assert reaction.product == allocine_product
-        assert models.ProductMediation.query.filter(models.ProductMediation.productId == boost_product_id).count() == 0
-        assert models.Product.query.filter(models.Product.id == boost_product_id).count() == 0
+        assert (
+            db.session.query(models.ProductMediation)
+            .filter(models.ProductMediation.productId == boost_product_id)
+            .count()
+            == 0
+        )
+        assert db.session.query(models.Product).filter(models.Product.id == boost_product_id).count() == 0
         assert allocine_product.idAtProviders == "idAllocineProducts"
         assert allocine_product.extraData == {"allocineId": 12345, "visa": "54321", "title": "Mon vieux film Allociné"}
 
@@ -5175,8 +5194,8 @@ class MoveOfferTest:
             bookings_models.BookingStatus.USED,
             bookings_models.BookingStatus.REIMBURSED,
         ):
-            assert bookings_models.Booking.query.count() == 1
-            assert bookings_models.Booking.query.all()[0].venue == new_venue
+            assert db.session.query(bookings_models.Booking).count() == 1
+            assert db.session.query(bookings_models.Booking).all()[0].venue == new_venue
 
     def test_move_offer_with_booking_with_pending_finance_event(self):
         new_venue = offerers_factories.VenueFactory(pricing_point="self")
@@ -5197,5 +5216,5 @@ class MoveOfferTest:
 
         db.session.refresh(offer)
         assert offer.venue == new_venue
-        assert bookings_models.Booking.query.count() == 1
-        assert bookings_models.Booking.query.all()[0].venue == new_venue
+        assert db.session.query(bookings_models.Booking).count() == 1
+        assert db.session.query(bookings_models.Booking).all()[0].venue == new_venue

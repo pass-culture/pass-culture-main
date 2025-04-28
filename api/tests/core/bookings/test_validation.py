@@ -300,7 +300,7 @@ class InsufficientFundsSQLCheckTest:
         # They should be able to book free offers
         stock = offers_factories.StockFactory(price=0)
         api.book_offer(user, stock.id, quantity=1)
-        assert models.Booking.query.filter(Booking.userId == user.id).count() == 2
+        assert db.session.query(models.Booking).filter(Booking.userId == user.id).count() == 2
 
     def test_cannot_change_quantity_with_expired_deposit(self):
         # The user once booked.

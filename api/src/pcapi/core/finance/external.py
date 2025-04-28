@@ -7,6 +7,7 @@ from flask import current_app as app
 from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -16,10 +17,14 @@ def push_bank_accounts(count: int) -> None:
     if bool(app.redis_client.exists(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)):
         return
 
-    bank_accounts_query = finance_models.BankAccount.query.filter(
-        finance_models.BankAccount.lastCegidSyncDate.is_(None),
-        finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
-    ).with_entities(finance_models.BankAccount.id)
+    bank_accounts_query = (
+        db.session.query(finance_models.BankAccount)
+        .filter(
+            finance_models.BankAccount.lastCegidSyncDate.is_(None),
+            finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
+        )
+        .with_entities(finance_models.BankAccount.id)
+    )
     if count != 0:
         bank_accounts_query = bank_accounts_query.limit(count)
 
@@ -48,7 +53,9 @@ def push_bank_accounts(count: int) -> None:
                 # Wait until next cron run to continue sync process
                 break
             else:
-                finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id).update(
+                db.session.query(finance_models.BankAccount).filter(
+                    finance_models.BankAccount.id == bank_account_id
+                ).update(
                     {"lastCegidSyncDate": datetime.datetime.utcnow()},
                     synchronize_session=False,
                 )
@@ -62,9 +69,13 @@ def push_invoices(count: int) -> None:
     if bool(app.redis_client.exists(conf.REDIS_PUSH_INVOICE_LOCK)):
         return
 
-    invoices_query = finance_models.Invoice.query.filter(
-        finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING,
-    ).with_entities(finance_models.Invoice.id)
+    invoices_query = (
+        db.session.query(finance_models.Invoice)
+        .filter(
+            finance_models.Invoice.status == finance_models.InvoiceStatus.PENDING,
+        )
+        .with_entities(finance_models.Invoice.id)
+    )
     if count != 0:
         invoices_query = invoices_query.limit(count)
 
@@ -93,7 +104,7 @@ def push_invoices(count: int) -> None:
                 # Wait until next cron run to continue sync process
                 break
             else:
-                finance_models.Invoice.query.filter(finance_models.Invoice.id == invoice_id).update(
+                db.session.query(finance_models.Invoice).filter(finance_models.Invoice.id == invoice_id).update(
                     {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
                     synchronize_session=False,
                 )

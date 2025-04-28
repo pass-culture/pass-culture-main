@@ -254,7 +254,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         )
 
     venues = (
-        offerers_models.Venue.query.filter_by(bookingEmail=email)
+        db.session.query(offerers_models.Venue)
+        .filter_by(bookingEmail=email)
         .join(
             offerers_models.Offerer,
             sa.and_(  # type: ignore[type-var]
@@ -421,7 +422,8 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
 
     user_bookings = get_user_bookings(user)
     favorites = (
-        users_models.Favorite.query.filter_by(userId=user.id)
+        db.session.query(users_models.Favorite)
+        .filter_by(userId=user.id)
         .options(joinedload(users_models.Favorite.offer).load_only(offers_models.Offer.subcategoryId))
         .order_by(users_models.Favorite.id.desc())
         .all()
@@ -563,9 +565,8 @@ def get_bookings_categories_and_subcategories(
 
 def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
     return (
-        bookings_models.Booking.query.options(
-            joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual)
-        )
+        db.session.query(bookings_models.Booking)
+        .options(joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual))
         .options(
             joinedload(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer)

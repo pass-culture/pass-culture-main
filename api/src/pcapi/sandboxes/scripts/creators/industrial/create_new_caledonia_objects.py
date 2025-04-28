@@ -409,7 +409,7 @@ def _create_nc_invoice() -> None:
     for booking in bookings:
         finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
     for booking in bookings:
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())

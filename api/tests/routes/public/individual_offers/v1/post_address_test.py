@@ -7,6 +7,7 @@ from pcapi.connectors.api_adresse import AdresseApiServerErrorException
 from pcapi.connectors.api_adresse import NoResultException
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
+from pcapi.models import db
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
@@ -138,9 +139,11 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
         get_address_mock.assert_called_once_with(
             address="182 rue St Honoré", postcode="75001", city="Paris", strict=True
         )
-        created_address = geography_models.Address.query.filter(
-            geography_models.Address.banId == "75101_8635_00182"
-        ).one_or_none()
+        created_address = (
+            db.session.query(geography_models.Address)
+            .filter(geography_models.Address.banId == "75101_8635_00182")
+            .one_or_none()
+        )
 
         assert created_address is not None
         assert not created_address.isManualEdition
@@ -189,9 +192,11 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
             address="Dans le champ derrière chez oim", postcode="71640", city="St Jean de Vaux", strict=True
         )
         get_municipality_centroid_mock.assert_called_once_with(postcode="71640", city="St Jean de Vaux")
-        created_address = geography_models.Address.query.filter(
-            geography_models.Address.inseeCode == "71430"
-        ).one_or_none()
+        created_address = (
+            db.session.query(geography_models.Address)
+            .filter(geography_models.Address.inseeCode == "71430")
+            .one_or_none()
+        )
 
         assert created_address is not None
         assert created_address.isManualEdition
@@ -236,9 +241,11 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
             },
         )
 
-        created_address = geography_models.Address.query.filter(
-            geography_models.Address.inseeCode == "75056"
-        ).one_or_none()
+        created_address = (
+            db.session.query(geography_models.Address)
+            .filter(geography_models.Address.inseeCode == "75056")
+            .one_or_none()
+        )
 
         assert created_address is not None
         assert created_address.isManualEdition

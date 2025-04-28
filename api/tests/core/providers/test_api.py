@@ -23,6 +23,7 @@ from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
@@ -143,7 +144,7 @@ class DeleteVenueProviderTest:
         assert not venue.venueProviders
         mocked_update_all_offers_active_status_job.assert_called_once_with(venue.id, venue_provider.providerId, False)
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
         assert action.authorUserId == user.id
         assert action.venueId == venue.id
@@ -165,7 +166,7 @@ class DisableVenueProviderTest:
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
         assert action.authorUserId == user.id
         assert action.venueId == venue.id
@@ -191,8 +192,8 @@ class ConnectVenueToAllocineTest:
         )
         api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
 
-        venue_provider = providers_models.AllocineVenueProvider.query.one()
-        pivot = providers_models.AllocinePivot.query.one()
+        venue_provider = db.session.query(providers_models.AllocineVenueProvider).one()
+        pivot = db.session.query(providers_models.AllocinePivot).one()
         assert venue_provider.venue == venue
         assert venue_provider.isDuo
         assert venue_provider.quantity == 50
@@ -213,7 +214,7 @@ class ConnectVenueToAllocineTest:
         )
         api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
 
-        venue_provider = providers_models.AllocineVenueProvider.query.one()
+        venue_provider = db.session.query(providers_models.AllocineVenueProvider).one()
         assert venue_provider.venue == venue
         assert venue_provider.isDuo
         assert venue_provider.quantity == 50

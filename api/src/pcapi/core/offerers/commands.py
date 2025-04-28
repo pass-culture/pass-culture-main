@@ -37,7 +37,8 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         day = datetime.date.today().day
 
     offerers = (
-        offerers_models.Offerer.query.filter(
+        db.session.query(offerers_models.Offerer)
+        .filter(
             offerers_models.Offerer.id % 28 == day - 1,
             offerers_models.Offerer.isActive,
             sa.not_(offerers_models.Offerer.isRejected),
@@ -94,7 +95,8 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
     else:
         known_siren_list = [
             siren
-            for siren, in offerers_models.Offerer.query.filter(
+            for siren, in db.session.query(offerers_models.Offerer)
+            .filter(
                 offerers_models.Offerer.siren.in_(siren_list),
                 offerers_models.Offerer.isActive,
                 sa.not_(offerers_models.Offerer.isRejected),

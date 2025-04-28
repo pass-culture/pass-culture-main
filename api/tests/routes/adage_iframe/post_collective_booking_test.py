@@ -9,6 +9,7 @@ from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveBooking
 import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational.utils import get_hashed_user_id
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
@@ -46,7 +47,7 @@ class CollectiveBookingTest:
 
         # Then
         assert response.status_code == 200
-        booking = CollectiveBooking.query.filter(CollectiveBooking.collectiveStockId == stock.id).one()
+        booking = db.session.query(CollectiveBooking).filter(CollectiveBooking.collectiveStockId == stock.id).one()
         assert booking.collectiveStock.id == stock.id
         assert booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert booking.educationalYear.adageId == educational_year.adageId
@@ -82,7 +83,7 @@ class CollectiveBookingTest:
 
         assert response.status_code == 403
         assert response.json == {"global": "Could not book offer: not allowed"}
-        assert CollectiveBooking.query.filter(CollectiveBooking.collectiveStockId == stock.id).count() == 0
+        assert db.session.query(CollectiveBooking).filter(CollectiveBooking.collectiveStockId == stock.id).count() == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_post_educational_booking_with_less_redactor_information(self, client):
@@ -112,7 +113,7 @@ class CollectiveBookingTest:
 
         # Then
         assert response.status_code == 200
-        booking = CollectiveBooking.query.filter(CollectiveBooking.collectiveStockId == stock.id).first()
+        booking = db.session.query(CollectiveBooking).filter(CollectiveBooking.collectiveStockId == stock.id).first()
         assert booking.collectiveStock.id == stock.id
         assert booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert booking.educationalYear.adageId == educational_year.adageId

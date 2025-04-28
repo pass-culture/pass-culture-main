@@ -5,6 +5,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -59,7 +60,7 @@ class Returns403Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 403
-        offer = educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOfferTemplate).filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.lastValidationAuthor
 
@@ -74,6 +75,6 @@ class Returns401Test:
         response = client.patch(url)
 
         assert response.status_code == 401
-        offer = educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOfferTemplate).filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.lastValidationAuthor

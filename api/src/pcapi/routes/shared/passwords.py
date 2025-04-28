@@ -14,6 +14,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
@@ -61,9 +62,11 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
     try:
         token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
         token.expire()
-        user = users_models.User.query.options(
-            sa_orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits)
-        ).get(token.user_id)
+        user = (
+            db.session.query(users_models.User)
+            .options(sa_orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits))
+            .get(token.user_id)
+        )
     except users_exceptions.InvalidToken:
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")

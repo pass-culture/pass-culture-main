@@ -11,6 +11,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
+from pcapi.models import db
 from pcapi.routes.native.v1.api_errors import account as account_errors
 
 
@@ -27,7 +28,7 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 204, response.json
 
-        user = users_models.User.query.filter_by(email=self.identifier).one()
+        user = db.session.query(users_models.User).filter_by(email=self.identifier).one()
         assert user.email == self.identifier  # email not updated until validation link is used
         assert len(mails_testing.outbox) == 1  # one confirmation email to the current address
 

@@ -21,6 +21,7 @@ from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import BoostStocks
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -64,7 +65,7 @@ class BoostStocksTest:
         )
 
     def _get_product_by_allocine_id(self, allocine_id):
-        return Product.query.filter(Product.extraData["allocineId"] == str(allocine_id)).one()
+        return db.session.query(Product).filter(Product.extraData["allocineId"] == str(allocine_id)).one()
 
     def _create_cinema_and_pivot(self):
         boost_provider = get_provider_by_local_class("BoostStocks")
@@ -135,10 +136,10 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 3
@@ -226,10 +227,10 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offer = Offer.query.order_by(Offer.id).one()
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_labels = PriceCategoryLabel.query.order_by(PriceCategoryLabel.label).all()
+        created_offer = db.session.query(Offer).order_by(Offer.id).one()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_labels = db.session.query(PriceCategoryLabel).order_by(PriceCategoryLabel.label).all()
         assert len(created_price_categories) == 2
         assert len(created_price_category_labels) == 2
 
@@ -289,9 +290,9 @@ class BoostStocksTest:
         BoostStocks(venue_provider=venue_provider).updateObjects()
         BoostStocks(venue_provider=venue_provider).updateObjects()
 
-        created_price_category = PriceCategory.query.one()
+        created_price_category = db.session.query(PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
-        assert PriceCategoryLabel.query.count() == 1
+        assert db.session.query(PriceCategoryLabel).count() == 1
 
         assert get_cinema_attr_adapter.call_count == 2
 
@@ -309,8 +310,8 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_stocks = Stock.query.order_by(Stock.id).all()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
 
         assert len(created_offers) == 0
         assert len(created_stocks) == 0
@@ -336,7 +337,7 @@ class BoostStocksTest:
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
-        created_stock = Stock.query.one()
+        created_stock = db.session.query(Stock).one()
         # we received numberSeatsForOnlineSale = 96
         assert created_stock.quantity == 96
 
@@ -354,7 +355,7 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_stocks = Stock.query.all()
+        created_stocks = db.session.query(Stock).all()
 
         assert len(created_stocks) == 1
         assert created_stocks[0].quantity == 2
@@ -389,7 +390,7 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        stock = Stock.query.one()
+        stock = db.session.query(Stock).one()
 
         assert stock.price == decimal.Decimal("4.0")
         assert stock.priceCategory.price == decimal.Decimal("4.0")
@@ -437,9 +438,11 @@ class BoostStocksTest:
         for providable_infos in boost_stocks:
             for providable_info in providable_infos:
                 if isinstance(providable_info.type(), offers_models.Stock):
-                    stock_synchronised = offers_models.Stock.query.filter_by(
-                        idAtProviders=providable_info.id_at_providers
-                    ).one_or_none()
+                    stock_synchronised = (
+                        db.session.query(offers_models.Stock)
+                        .filter_by(idAtProviders=providable_info.id_at_providers)
+                        .one_or_none()
+                    )
                     assert stock_synchronised is not None
                     event_created = create_finance_event_to_update(
                         stock=stock_synchronised, venue_provider=venue_provider
@@ -471,7 +474,7 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offer = Offer.query.one()
+        created_offer = db.session.query(Offer).one()
         assert (
             created_offer.thumbUrl
             == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
@@ -503,7 +506,7 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offer = Offer.query.one()
+        created_offer = db.session.query(Offer).one()
 
         assert created_offer.activeMediation is None
         assert boost_stocks.erroredThumbs == 1
@@ -555,7 +558,7 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offer = Offer.query.one()
+        created_offer = db.session.query(Offer).one()
         assert created_offer.thumbUrl is None
 
     def should_link_offer_with_known_visa_to_product(self, requests_mock):
@@ -581,7 +584,7 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_offers = Offer.query.order_by(Offer.id).all()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
 
         assert len(created_offers) == 2
         assert created_offers[0].product == product_1

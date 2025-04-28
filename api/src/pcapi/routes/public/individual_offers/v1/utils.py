@@ -20,7 +20,7 @@ from . import serialization
 
 
 def get_address_or_raise_404(address_id: int) -> geography_models.Address:
-    address = geography_models.Address.query.filter(geography_models.Address.id == address_id).one_or_none()
+    address = db.session.query(geography_models.Address).filter(geography_models.Address.id == address_id).one_or_none()
 
     if not address:
         raise api_errors.ResourceNotFoundError(
@@ -31,7 +31,8 @@ def get_address_or_raise_404(address_id: int) -> geography_models.Address:
 
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
     return (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .one()
     )
@@ -66,11 +67,13 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
         return
 
     is_venue_tied_to_api_key = db.session.query(
-        providers_models.VenueProvider.query.filter(
+        db.session.query(providers_models.VenueProvider)
+        .filter(
             providers_models.VenueProvider.provider == current_api_key.provider,
             providers_models.VenueProvider.venueId == venue_id,
             providers_models.VenueProvider.isActive,
-        ).exists()
+        )
+        .exists()
     ).scalar()
     if not is_venue_tied_to_api_key:
         raise api_errors.ApiErrors({"venue_id": ["The venue could not be found"]}, status_code=404)
@@ -91,7 +94,8 @@ def retrieve_offer_query(offer_id: int) -> sa_orm.Query:
 
 def _retrieve_offer_tied_to_user_query() -> sa_orm.Query:
     return (
-        offers_models.Offer.query.join(offerers_models.Venue)
+        db.session.query(offers_models.Offer)
+        .join(offerers_models.Venue)
         .join(offerers_models.Venue.venueProviders)
         .join(providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
@@ -105,7 +109,8 @@ def get_filtered_offers_linked_to_provider(
     is_event: bool,
 ) -> sa_orm.Query:
     offers_query = (
-        offers_models.Offer.query.outerjoin(offers_models.Offer.futureOffer)
+        db.session.query(offers_models.Offer)
+        .outerjoin(offers_models.Offer.futureOffer)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)

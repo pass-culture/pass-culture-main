@@ -32,7 +32,8 @@ def check_can_book_free_offer(user: User, stock: Stock) -> None:
 def check_offer_already_booked(user: User, offer: Offer) -> None:
     """Raise ``OfferIsAlreadyBooked`` if the user already booked this offer."""
     if db.session.query(
-        Booking.query.filter(
+        db.session.query(Booking)
+        .filter(
             Booking.user == user,
             Booking.status != BookingStatus.CANCELLED,
         )

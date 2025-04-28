@@ -21,7 +21,7 @@ class DeleteSiretTest:
             factories.PricingFactory(
                 booking=finance_event.booking, pricingPoint=venue, status=status, event=finance_event
             )
-        assert models.Pricing.query.count() == 5
+        assert db.session.query(models.Pricing).count() == 5
         old_siret = venue.siret
 
         siret_api.remove_siret(venue, comment="no SIRET because reasons")
@@ -30,11 +30,11 @@ class DeleteSiretTest:
         assert venue.comment == "no SIRET because reasons"
         assert venue.current_pricing_point_id is None
         assert dependent_venue.current_pricing_point_id is None
-        assert models.Pricing.query.count() == 4
-        left_statuses = {status for status, in models.Pricing.query.with_entities(models.Pricing.status)}
+        assert db.session.query(models.Pricing).count() == 4
+        left_statuses = {status for status, in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
         assert left_statuses == initial_statuses - {models.PricingStatus.VALIDATED}
 
-        actions = history_models.ActionHistory.query.all()
+        actions = db.session.query(history_models.ActionHistory).all()
         assert len(actions) == 2
         for action in actions:
             assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -55,7 +55,7 @@ class DeleteSiretTest:
             factories.PricingFactory(
                 booking=finance_event.booking, pricingPoint=venue, status=status, event=finance_event
             )
-        assert models.Pricing.query.count() == 5
+        assert db.session.query(models.Pricing).count() == 5
         new_pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         old_siret = venue.siret
 
@@ -67,14 +67,14 @@ class DeleteSiretTest:
         assert venue.comment == "no SIRET because reasons"
         assert venue.current_pricing_point_id == new_pricing_point.id
         assert dependent_venue.current_pricing_point_id is None
-        assert models.Pricing.query.count() == 4
-        left_statuses = {status for status, in models.Pricing.query.with_entities(models.Pricing.status)}
+        assert db.session.query(models.Pricing).count() == 4
+        left_statuses = {status for status, in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
         assert left_statuses == initial_statuses - {models.PricingStatus.VALIDATED}
 
         assert finance_events[models.PricingStatus.VALIDATED].status == models.FinanceEventStatus.READY
         assert finance_events[models.PricingStatus.VALIDATED].pricingPoint == new_pricing_point
 
-        actions = history_models.ActionHistory.query.order_by(history_models.ActionHistory.id).all()
+        actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 2
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert actions[0].offererId == venue.managingOffererId

@@ -16,6 +16,7 @@ from pcapi.core.subscription import models as subscription_status
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
+from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 
 
@@ -144,7 +145,8 @@ class EduconnectTest:
         }
 
         fraud_check = (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
             .filter(fraud_models.BeneficiaryFraudCheck.id != already_done_check.id)
             .one()
         )
@@ -212,9 +214,11 @@ class EduconnectTest:
             == f"https://webapp-v2.example.com/educonnect/validation?firstName=Max&lastName=SENS&dateOfBirth={birth_date}&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK
-        ).one()
+        assert (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK)
+            .one()
+        )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_birth_date_missing(self, mock_get_educonnect_saml_client, client, caplog, app):
@@ -266,9 +270,9 @@ class EduconnectTest:
         }
 
         assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
-                user=user, type=fraud_models.FraudCheckType.EDUCONNECT
-            ).first()
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+            .first()
             is None
         )
 
@@ -353,7 +357,7 @@ class EduconnectTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"}
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=duplicate_user.id).one()
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
 
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
@@ -380,7 +384,7 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=DuplicateINE"
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=duplicate_user.id).one()
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_INE]
 
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
@@ -406,7 +410,7 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
             message.user_message
@@ -429,7 +433,7 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid18YearsOld"
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
             message.user_message
@@ -451,7 +455,7 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
             message.user_message
@@ -526,6 +530,8 @@ class PerformanceTest:
         response = client.post("/saml/acs", form={"SAMLResponse": str(user.id)})
 
         assert response.status_code == 302
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK
-        ).one()
+        assert (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK)
+            .one()
+        )

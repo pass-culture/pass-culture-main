@@ -110,7 +110,7 @@ class CreateVenueTest:
         data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
         offerers_api.create_venue(data, user_offerer.user)
 
-        venue = offerers_models.Venue.query.one()
+        venue = db.session.query(offerers_models.Venue).one()
         assert venue.street == "rue du test"
         assert venue.banId == "75113_1834_00007"
         assert venue.city == "Paris"
@@ -123,7 +123,7 @@ class CreateVenueTest:
         assert venue.dmsToken
         assert venue.current_pricing_point_id == venue.id
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.VENUE_CREATED
         assert action.authorUser == user_offerer.user
         assert action.user is None
@@ -136,7 +136,7 @@ class CreateVenueTest:
         data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
         offerers_api.create_venue(data, user_offerer.user)
 
-        venue = offerers_models.Venue.query.one()
+        venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
@@ -150,7 +150,7 @@ class CreateVenueTest:
         data = venues_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
-        venue = offerers_models.Venue.query.one()
+        venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
@@ -160,7 +160,7 @@ class CreateVenueTest:
         data = venues_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
-        venue = offerers_models.Venue.query.one()
+        venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
@@ -174,7 +174,7 @@ class CreateVenueTest:
         data = venues_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
-        venue = offerers_models.Venue.query.one()
+        venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is False
 
     def test_venue_with_no_siret_has_no_pricing_point(self):
@@ -184,7 +184,7 @@ class CreateVenueTest:
 
         offerers_api.create_venue(data, user_offerer.user)
 
-        venue = offerers_models.Venue.query.one()
+        venue = db.session.query(offerers_models.Venue).one()
         assert venue.siret is None
         assert venue.current_pricing_point_id is None
 
@@ -203,9 +203,9 @@ class DeleteVenueTest:
         assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
             "Partenaire culturel non supprimable car il contient des réservations"
         ]
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Stock.query.count() == 1
-        assert bookings_models.Booking.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Stock).count() == 1
+        assert db.session.query(bookings_models.Booking).count() == 1
 
     def test_delete_cascade_venue_should_abort_when_venue_has_any_collective_bookings(self):
         # Given
@@ -220,9 +220,9 @@ class DeleteVenueTest:
         assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
             "Partenaire culturel non supprimable car il contient des réservations"
         ]
-        assert offerers_models.Venue.query.count() == 1
-        assert educational_models.CollectiveStock.query.count() == 1
-        assert educational_models.CollectiveBooking.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(educational_models.CollectiveStock).count() == 1
+        assert db.session.query(educational_models.CollectiveBooking).count() == 1
 
     def test_delete_cascade_venue_should_abort_when_pricing_point_for_another_venue(self):
         # Given
@@ -237,9 +237,9 @@ class DeleteVenueTest:
         assert exception.value.errors["cannotDeleteVenueUsedAsPricingPointException"] == [
             "Partenaire culturel non supprimable car il est utilisé comme point de valorisation d'un autre partenaire culturel"
         ]
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 2
-        assert offerers_models.VenuePricingPointLink.query.count() == 2
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 2
+        assert db.session.query(offerers_models.VenuePricingPointLink).count() == 2
 
     def test_delete_cascade_venue_remove_former_pricing_point_for_another_venue(self):
         venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
@@ -254,8 +254,8 @@ class DeleteVenueTest:
 
         offerers_api.delete_venue(venue_to_delete.id)
 
-        assert offerers_models.Venue.query.count() == 2
-        assert offerers_models.VenuePricingPointLink.query.count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 2
+        assert db.session.query(offerers_models.VenuePricingPointLink).count() == 0
 
     def test_delete_cascade_venue_should_abort_when_pricing_exists_on_former_pricing_point_link(self):
         venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
@@ -299,12 +299,12 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert offers_models.Stock.query.count() == 1
-        assert offers_models.ActivationCode.query.count() == 1
-        assert offers_models.PriceCategory.query.count() == 1
-        assert offers_models.PriceCategoryLabel.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(offers_models.Stock).count() == 1
+        assert db.session.query(offers_models.ActivationCode).count() == 1
+        assert db.session.query(offers_models.PriceCategory).count() == 1
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
 
     def test_delete_cascade_venue_should_remove_collective_offers_stocks_and_templates(self):
         # Given
@@ -324,19 +324,19 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert educational_models.CollectiveOffer.query.count() == 1
-        assert educational_models.CollectiveOfferTemplate.query.count() == 0
-        assert educational_models.CollectiveStock.query.count() == 1
-        assert educational_models.CollectiveOfferRequest.query.count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(educational_models.CollectiveOffer).count() == 1
+        assert db.session.query(educational_models.CollectiveOfferTemplate).count() == 0
+        assert db.session.query(educational_models.CollectiveStock).count() == 1
+        assert db.session.query(educational_models.CollectiveOfferRequest).count() == 0
 
     def test_delete_cascade_venue_should_remove_pricing_point_links(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
 
         offerers_api.delete_venue(venue.id)
 
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.VenuePricingPointLink.query.count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(offerers_models.VenuePricingPointLink).count() == 0
 
     def test_delete_cascade_venue_should_remove_mediations_of_managed_offers(self):
         # Given
@@ -349,9 +349,9 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert offers_models.Mediation.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(offers_models.Mediation).count() == 1
 
     def test_delete_cascade_venue_should_remove_reports_of_managed_offers(self):
         # Given
@@ -364,9 +364,9 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert offers_models.OfferReport.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(offers_models.OfferReport).count() == 1
 
     def test_delete_cascade_venue_should_remove_favorites_of_managed_offers(self):
         # Given
@@ -379,9 +379,9 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert users_models.Favorite.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(users_models.Favorite).count() == 1
 
     def test_delete_cascade_venue_should_remove_criterions(self):
         # Given
@@ -396,10 +396,10 @@ class DeleteVenueTest:
         offerers_api.delete_venue(offer_venue_to_delete.venue.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert criteria_models.OfferCriterion.query.count() == 1
-        assert criteria_models.Criterion.query.count() == 2
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(criteria_models.OfferCriterion).count() == 1
+        assert db.session.query(criteria_models.Criterion).count() == 2
 
     def test_delete_cascade_venue_should_remove_synchronization_to_provider(self):
         # Given
@@ -412,9 +412,9 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert providers_models.VenueProvider.query.count() == 1
-        assert providers_models.Provider.query.count() > 0
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(providers_models.VenueProvider).count() == 1
+        assert db.session.query(providers_models.Provider).count() > 0
 
     def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider(self):
         # Given
@@ -429,11 +429,11 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 1
-        assert providers_models.VenueProvider.query.count() == 1
-        assert providers_models.AllocineVenueProvider.query.count() == 1
-        assert providers_models.AllocinePivot.query.count() == 1
-        assert providers_models.Provider.query.count() > 0
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(providers_models.VenueProvider).count() == 1
+        assert db.session.query(providers_models.AllocineVenueProvider).count() == 1
+        assert db.session.query(providers_models.AllocinePivot).count() == 1
+        assert db.session.query(providers_models.Provider).count() > 0
 
     def test_delete_cascade_venue_when_template_has_offer_on_other_venue(self):
         venue = offerers_factories.VenueFactory()
@@ -442,9 +442,9 @@ class DeleteVenueTest:
         offer = educational_factories.CollectiveOfferFactory(venue=venue2, template=template)
         offerers_api.delete_venue(venue.id)
 
-        assert offerers_models.Venue.query.count() == 1
-        assert educational_models.CollectiveOffer.query.count() == 1
-        assert educational_models.CollectiveOfferTemplate.query.count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(educational_models.CollectiveOffer).count() == 1
+        assert db.session.query(educational_models.CollectiveOfferTemplate).count() == 0
         assert offer.template is None
 
     def test_delete_cascade_venue_should_remove_links(self):
@@ -458,9 +458,13 @@ class DeleteVenueTest:
         offerers_api.delete_venue(venue_to_delete.id)
 
         # Then
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.VenueBankAccountLink.query.count() == 0
-        assert finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id).one_or_none()
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(offerers_models.VenueBankAccountLink).count() == 0
+        assert (
+            db.session.query(finance_models.BankAccount)
+            .filter(finance_models.BankAccount.id == bank_account_id)
+            .one_or_none()
+        )
 
     def test_delete_cascade_venue_should_remove_adage_addresses(self):
         venue = offerers_factories.CollectiveVenueFactory()
@@ -468,8 +472,8 @@ class DeleteVenueTest:
 
         offerers_api.delete_venue(venue.id)
 
-        assert offerers_models.Venue.query.count() == 0
-        assert educational_models.AdageVenueAddress.query.count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(educational_models.AdageVenueAddress).count() == 0
 
     def test_delete_cascade_venue_should_remove_playlist(self):
         venue = offerers_factories.CollectiveVenueFactory()
@@ -480,8 +484,8 @@ class DeleteVenueTest:
 
         offerers_api.delete_venue(venue.id)
 
-        assert offerers_models.Venue.query.count() == 0
-        assert educational_models.CollectivePlaylist.query.count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(educational_models.CollectivePlaylist).count() == 0
 
     @pytest.mark.parametrize(
         "timespan",
@@ -509,8 +513,8 @@ class DeleteVenueTest:
         with pytest.raises(offerers_exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule):
             offerers_api.delete_venue(venue.id)
 
-        assert offerers_models.Venue.query.count() == 1
-        assert finance_models.CustomReimbursementRule.query.count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 1
 
 
 class EditVenueContactTest:
@@ -620,7 +624,7 @@ class CreateOffererTest:
 
         assert not created_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.all()
+        actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
@@ -654,7 +658,7 @@ class CreateOffererTest:
 
         assert not created_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.all()
+        actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
@@ -703,7 +707,7 @@ class CreateOffererTest:
 
         assert not created_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.all()
+        actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
@@ -774,7 +778,7 @@ class CreateOffererTest:
 
         assert not created_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.all()
+        actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
         assert actions_list[0].authorUser == user
@@ -813,7 +817,9 @@ class CreateOffererTest:
 
         assert not updated_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
@@ -853,7 +859,9 @@ class CreateOffererTest:
 
         assert not updated_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
@@ -885,7 +893,9 @@ class CreateOffererTest:
 
         assert not updated_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
@@ -917,7 +927,9 @@ class CreateOffererTest:
 
         assert not updated_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 2
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
@@ -983,7 +995,9 @@ class CreateOffererTest:
 
         assert not updated_user_offerer.user.has_pro_role
 
-        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        actions_list = (
+            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
+        )
         created_offerer = updated_user_offerer.offerer
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
@@ -1050,13 +1064,13 @@ class UpdateOffererTest:
         author = users_factories.UserFactory()
 
         offerers_api.update_offerer(offerer, author, city="Nantes", postal_code="44000", street="29 avenue de Bretagne")
-        offerer = offerers_models.Offerer.query.one()
+        offerer = db.session.query(offerers_models.Offerer).one()
         assert offerer.city == "Nantes"
         assert offerer.postalCode == "44000"
         assert offerer.street == "29 avenue de Bretagne"
 
         offerers_api.update_offerer(offerer, author, city="Naoned")
-        offerer = offerers_models.Offerer.query.one()
+        offerer = db.session.query(offerers_models.Offerer).one()
         assert offerer.city == "Naoned"
         assert offerer.postalCode == "44000"
         assert offerer.street == "29 avenue de Bretagne"
@@ -1067,7 +1081,7 @@ class UpdateOffererTest:
 
         offerers_api.update_offerer(offerer, author, city="Nantes", street="29 avenue de Bretagne")
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == author.id
@@ -1095,11 +1109,11 @@ class DeleteOffererTest:
         assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
             "Entité juridique non supprimable car elle contient des réservations"
         ]
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 2
-        assert offers_models.Offer.query.count() == 2
-        assert offers_models.Stock.query.count() == 1
-        assert bookings_models.Booking.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 2
+        assert db.session.query(offers_models.Offer).count() == 2
+        assert db.session.query(offers_models.Stock).count() == 1
+        assert db.session.query(bookings_models.Booking).count() == 1
 
     def test_delete_cascade_offerer_should_abort_when_offerer_has_collective_bookings(self):
         # Given
@@ -1117,11 +1131,11 @@ class DeleteOffererTest:
         assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
             "Entité juridique non supprimable car elle contient des réservations"
         ]
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 2
-        assert educational_models.CollectiveOffer.query.count() == 2
-        assert educational_models.CollectiveStock.query.count() == 1
-        assert educational_models.CollectiveBooking.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 2
+        assert db.session.query(educational_models.CollectiveOffer).count() == 2
+        assert db.session.query(educational_models.CollectiveStock).count() == 1
+        assert db.session.query(educational_models.CollectiveBooking).count() == 1
 
     def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_activation_codes(self):
         # Given
@@ -1141,13 +1155,13 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 2
-        assert offers_models.Stock.query.count() == 2
-        assert offers_models.ActivationCode.query.count() == 1
-        assert offers_models.PriceCategory.query.count() == 1
-        assert offers_models.PriceCategoryLabel.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 2
+        assert db.session.query(offers_models.Stock).count() == 2
+        assert db.session.query(offers_models.ActivationCode).count() == 1
+        assert db.session.query(offers_models.PriceCategory).count() == 1
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
 
     def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_offerer(self):
         # Given
@@ -1160,8 +1174,8 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.UserOfferer.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.UserOfferer).count() == 1
 
     def test_delete_cascade_offerer_should_remove_api_key_of_offerer(self):
         # Given
@@ -1173,8 +1187,8 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.ApiKey.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.ApiKey).count() == 1
 
     def test_delete_cascade_offerer_should_remove_offers_of_offerer(self):
         # Given
@@ -1187,8 +1201,8 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert offers_models.Offer.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offers_models.Offer).count() == 0
 
     def test_delete_cascade_offerer_should_remove_pricing_point_links(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
@@ -1197,9 +1211,9 @@ class DeleteOffererTest:
 
         offerers_api.delete_offerer(offerer.id)
 
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.VenuePricingPointLink.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(offerers_models.VenuePricingPointLink).count() == 0
 
     def test_delete_cascade_offerer_should_remove_mediations_of_managed_offers(self):
         # Given
@@ -1211,10 +1225,10 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert offers_models.Mediation.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(offers_models.Mediation).count() == 1
 
     def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers(self):
         # Given
@@ -1226,10 +1240,10 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert users_models.Favorite.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(users_models.Favorite).count() == 1
 
     def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers(self):
         # Given
@@ -1243,11 +1257,11 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert offers_models.Offer.query.count() == 1
-        assert criteria_models.OfferCriterion.query.count() == 1
-        assert criteria_models.Criterion.query.count() == 2
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(offers_models.Offer).count() == 1
+        assert db.session.query(criteria_models.OfferCriterion).count() == 1
+        assert db.session.query(criteria_models.Criterion).count() == 2
 
     def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider(self):
         # Given
@@ -1259,10 +1273,10 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert providers_models.VenueProvider.query.count() == 1
-        assert providers_models.Provider.query.count() > 0
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(providers_models.VenueProvider).count() == 1
+        assert db.session.query(providers_models.Provider).count() > 0
 
     def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_provider(self):
         # Given
@@ -1280,12 +1294,12 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert providers_models.VenueProvider.query.count() == 1
-        assert providers_models.AllocineVenueProvider.query.count() == 1
-        assert providers_models.AllocinePivot.query.count() == 1
-        assert providers_models.Provider.query.count() > 0
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(providers_models.VenueProvider).count() == 1
+        assert db.session.query(providers_models.AllocineVenueProvider).count() == 1
+        assert db.session.query(providers_models.AllocinePivot).count() == 1
+        assert db.session.query(providers_models.Provider).count() > 0
 
     def test_delete_cascade_offerer_should_remove_related_bank_account(self):
         # Given
@@ -1296,8 +1310,8 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(offerer_to_delete.id)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert finance_models.BankAccount.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(finance_models.BankAccount).count() == 0
 
     def test_delete_cascade_offerer_should_remove_collective_templates_and_playlists(self):
         # Given
@@ -1313,9 +1327,9 @@ class DeleteOffererTest:
         offerers_api.delete_offerer(venue.managingOffererId)
 
         # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert educational_models.CollectiveOfferTemplate.query.count() == 0
-        assert educational_models.CollectivePlaylist.query.count() == 0
+        assert db.session.query(offerers_models.Offerer).count() == 0
+        assert db.session.query(educational_models.CollectiveOfferTemplate).count() == 0
+        assert db.session.query(educational_models.CollectivePlaylist).count() == 0
 
     @pytest.mark.parametrize(
         "timespan",
@@ -1343,8 +1357,8 @@ class DeleteOffererTest:
         with pytest.raises(offerers_exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule):
             offerers_api.delete_offerer(offerer.id)
 
-        assert offerers_models.Offerer.query.count() == 1
-        assert finance_models.CustomReimbursementRule.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 1
 
     @pytest.mark.parametrize(
         "timespan",
@@ -1373,9 +1387,9 @@ class DeleteOffererTest:
         with pytest.raises(offerers_exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule):
             offerers_api.delete_offerer(offerer.id)
 
-        assert offerers_models.Offerer.query.count() == 1
-        assert offerers_models.Venue.query.count() == 1
-        assert finance_models.CustomReimbursementRule.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.Venue).count() == 1
+        assert db.session.query(finance_models.CustomReimbursementRule).count() == 1
 
 
 class SearchOffererTest:
@@ -1458,7 +1472,7 @@ class RejectOffererAttachementTest:
         offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
-        user_offerer_query = offerers_models.UserOfferer.query
+        user_offerer_query = db.session.query(offerers_models.UserOfferer)
         assert user_offerer_query.count() == 1
         assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
 
@@ -1510,7 +1524,7 @@ class RejectOffererAttachementTest:
         offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
@@ -1529,7 +1543,7 @@ class DeleteOffererAttachementTest:
         offerers_api.delete_offerer_attachment(user_offerer, admin)
 
         # Then
-        user_offerer_query = offerers_models.UserOfferer.query
+        user_offerer_query = db.session.query(offerers_models.UserOfferer)
         assert user_offerer_query.count() == 1
         assert user_offerer_query.one().validationStatus == ValidationStatus.DELETED
 
@@ -1569,7 +1583,7 @@ class DeleteOffererAttachementTest:
         offerers_api.delete_offerer_attachment(user_offerer, admin)
 
         # Then
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
@@ -1666,7 +1680,7 @@ class ValidateOffererTest:
         offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
@@ -1731,7 +1745,7 @@ class RejectOffererTest:
         )
 
         # Then
-        user_offerer_query = offerers_models.UserOfferer.query
+        user_offerer_query = db.session.query(offerers_models.UserOfferer)
         assert user_offerer_query.count() == 1
         assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
 
@@ -1747,10 +1761,10 @@ class RejectOffererTest:
         )
 
         # Then
-        user_offerer_query = offerers_models.UserOfferer.query
+        user_offerer_query = db.session.query(offerers_models.UserOfferer)
         assert user_offerer_query.count() == 1
         assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
-        assert offerers_models.ApiKey.query.count() == 0
+        assert db.session.query(offerers_models.ApiKey).count() == 0
 
     @patch("pcapi.core.mails.transactional.send_offerer_attachment_rejection_email_to_pro")
     @patch("pcapi.core.mails.transactional.send_new_offerer_rejection_email_to_pro")
@@ -1785,18 +1799,22 @@ class RejectOffererTest:
         offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.OFFERER_REJECTED
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .one()
+        )
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
 
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.USER_OFFERER_REJECTED, user=user
-        ).one()
+        action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED, user=user)
+            .one()
+        )
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId == user.id
@@ -1866,7 +1884,7 @@ class CloseOffererTest:
             modified_info={"tags": {"new_info": "SIREN caduc"}},
         )
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.OFFERER_CLOSED
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
@@ -2190,7 +2208,7 @@ class VenueBannerTest:
         settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
         offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-        updated_venue = Venue.query.get(venue.id)
+        updated_venue = db.session.query(Venue).get(venue.id)
         with open(updated_venue.bannerUrl, mode="rb") as f:
             # test that image size has been reduced
             assert len(f.read()) < len(image_content)
@@ -2220,7 +2238,7 @@ class VenueBannerTest:
         settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
         offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-        updated_venue = Venue.query.get(venue.id)
+        updated_venue = db.session.query(Venue).get(venue.id)
         with open(updated_venue.bannerUrl, mode="rb") as f:
             # test that image size has been reduced
             assert len(f.read()) < len(image_content)
@@ -2313,13 +2331,13 @@ class LinkVenueToPricingPointTest:
     def test_no_pre_existing_link(self):
         venue = offerers_factories.VenueWithoutSiretFactory()
         pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        assert offerers_models.VenuePricingPointLink.query.count() == 0
+        assert db.session.query(offerers_models.VenuePricingPointLink).count() == 0
 
         offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
 
         db.session.rollback()  # ensure that commit() was called before assertions
 
-        new_link = offerers_models.VenuePricingPointLink.query.one()
+        new_link = db.session.query(offerers_models.VenuePricingPointLink).one()
         assert new_link.venue == venue
         assert new_link.pricingPoint == pricing_point
         assert new_link.timespan.upper is None
@@ -2339,18 +2357,20 @@ class LinkVenueToPricingPointTest:
         venue = offerers_factories.VenueWithoutSiretFactory()
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point_1)
-        pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
+        pre_existing_link = db.session.query(offerers_models.VenuePricingPointLink).one()
         pricing_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
 
         with pytest.raises(offerers_exceptions.CannotLinkVenueToPricingPoint):
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
-        assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
+        assert db.session.query(offerers_models.VenuePricingPointLink).one() == pre_existing_link
 
         # Now force the link.
         offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id, force_link=True)
-        link = offerers_models.VenuePricingPointLink.query.order_by(
-            offerers_models.VenuePricingPointLink.id.desc()
-        ).first()
+        link = (
+            db.session.query(offerers_models.VenuePricingPointLink)
+            .order_by(offerers_models.VenuePricingPointLink.id.desc())
+            .first()
+        )
         assert link.venue == venue
         assert link.pricingPoint == pricing_point_2
 
@@ -2509,7 +2529,7 @@ class UpdateOffererTagTest:
         offerers_api.update_offerer_tag(
             offerer_tag, name="not-so-serious-tag-name", label="Taggy McTagface", description="Why so serious ?"
         )
-        offerer_tag = offerers_models.OffererTag.query.one()
+        offerer_tag = db.session.query(offerers_models.OffererTag).one()
         assert offerer_tag.name == "not-so-serious-tag-name"
         assert offerer_tag.label == "Taggy McTagface"
         assert offerer_tag.description == "Why so serious ?"
@@ -2542,7 +2562,7 @@ class CreateFromOnboardingDataTest:
         )
 
     def assert_venue_registration_attrs(self, venue: Venue) -> None:
-        assert offerers_models.VenueRegistration.query.all() == [venue.registration]
+        assert db.session.query(offerers_models.VenueRegistration).all() == [venue.registration]
         assert venue.registration.target == offerers_models.Target.INDIVIDUAL
         assert (
             venue.registration.webPresence
@@ -2620,8 +2640,8 @@ class CreateFromOnboardingDataTest:
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
-        address = geography_models.Address.query.one()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        address = db.session.query(geography_models.Address).one()
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
 
         # Offerer has been created
         created_offerer = created_user_offerer.offerer
@@ -2655,17 +2675,21 @@ class CreateFromOnboardingDataTest:
         assert offerer_address.addressId == address.id
 
         # Action logs
-        assert history_models.ActionHistory.query.count() == 2
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
-        ).one()
+        assert db.session.query(history_models.ActionHistory).count() == 2
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW)
+            .one()
+        )
         assert offerer_action.offerer == created_offerer
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
-        venue_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
-        ).one()
+        venue_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .one()
+        )
         assert venue_action.venue == created_venue
         assert venue_action.authorUser == user
 
@@ -2732,7 +2756,7 @@ class CreateFromOnboardingDataTest:
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
         # Offerer has not been created
-        assert offerers_models.Offerer.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_user_offerer.offerer == offerer
         # User is not attached to offerer yet
         assert created_user_offerer.userId == user.id
@@ -2746,17 +2770,21 @@ class CreateFromOnboardingDataTest:
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
         # Action logs
-        assert history_models.ActionHistory.query.count() == 2
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
-        ).one()
+        assert db.session.query(history_models.ActionHistory).count() == 2
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW)
+            .one()
+        )
         assert offerer_action.offerer == offerer
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
-        venue_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
-        ).one()
+        venue_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .one()
+        )
         assert venue_action.venue == created_venue
         assert venue_action.authorUser == user
 
@@ -2773,7 +2801,7 @@ class CreateFromOnboardingDataTest:
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
         # Offerer has not been created
-        assert offerers_models.Offerer.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_user_offerer.offerer == offerer
         # User is not attached to offerer yet
         assert created_user_offerer.userId == user.id
@@ -2788,17 +2816,21 @@ class CreateFromOnboardingDataTest:
         # No pricing point yet
         assert not created_venue.current_pricing_point_id
         # Action logs
-        assert history_models.ActionHistory.query.count() == 2
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
-        ).one()
+        assert db.session.query(history_models.ActionHistory).count() == 2
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW)
+            .one()
+        )
         assert offerer_action.offerer == offerer
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
-        ).one()
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .one()
+        )
         assert offerer_action.venue == created_venue
         assert offerer_action.authorUser == user
 
@@ -2840,26 +2872,28 @@ class CreateFromOnboardingDataTest:
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
         # Offerer has not been created
-        assert offerers_models.Offerer.query.count() == 1
+        assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_user_offerer.offerer == offerer
         # User is not attached to offerer yet
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.user.has_non_attached_pro_role
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         # Venue has not been created
-        assert offerers_models.Venue.query.count() == 2
+        assert db.session.query(offerers_models.Venue).count() == 2
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
-        ).one()
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW)
+            .one()
+        )
         assert offerer_action.offerer == offerer
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         assert len(mails_testing.outbox) == 0
         # Venue Registration
-        assert offerers_models.VenueRegistration.query.count() == 0
+        assert db.session.query(offerers_models.VenueRegistration).count() == 0
 
     def test_previously_rejected_siren_same_user(self):
         offerer = offerers_factories.RejectedOffererFactory(siren="853318459")
@@ -2870,7 +2904,7 @@ class CreateFromOnboardingDataTest:
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
-        assert offerers_models.Offerer.query.one() == offerer
+        assert db.session.query(offerers_models.Offerer).one() == offerer
         assert offerer.isNew
 
         assert created_user_offerer == rejected_user_offerer
@@ -2884,7 +2918,7 @@ class CreateFromOnboardingDataTest:
         assert venue.id != rejected_venue_id
         assert venue.publicName == onboarding_data.publicName
 
-        actions = history_models.ActionHistory.query.all()
+        actions = db.session.query(history_models.ActionHistory).all()
         assert len(actions) == 3
 
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -2916,7 +2950,7 @@ class CreateFromOnboardingDataTest:
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
         created_user_offerer = offerers_api.create_from_onboarding_data(new_user, onboarding_data)
 
-        assert offerers_models.Offerer.query.one() == offerer
+        assert db.session.query(offerers_models.Offerer).one() == offerer
         assert offerer.isNew
 
         assert created_user_offerer != rejected_user_offerer
@@ -2931,7 +2965,7 @@ class CreateFromOnboardingDataTest:
         assert venue.id != rejected_venue_id
         assert venue.publicName == onboarding_data.publicName
 
-        actions = history_models.ActionHistory.query.all()
+        actions = db.session.query(history_models.ActionHistory).all()
         assert len(actions) == 3
 
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -3027,7 +3061,7 @@ class InviteMembersTest:
 
         offerers_api.invite_member(offerer=offerer, email="new.user@example.com", current_user=pro_user)
 
-        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        offerer_invitation = db.session.query(offerers_models.OffererInvitation).one()
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
@@ -3038,7 +3072,7 @@ class InviteMembersTest:
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.id
         )
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_offerer_invitation_created_when_user_exists_and_email_not_validated(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -3048,7 +3082,7 @@ class InviteMembersTest:
 
         offerers_api.invite_member(offerer=offerer, email="new.user@example.com", current_user=pro_user)
 
-        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        offerer_invitation = db.session.query(offerers_models.OffererInvitation).one()
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
@@ -3059,7 +3093,7 @@ class InviteMembersTest:
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value.id
         )
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_raise_and_not_create_offerer_invitation_when_invitation_already_exists(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -3073,11 +3107,11 @@ class InviteMembersTest:
         assert exception.value.errors["EmailAlreadyInvitedException"] == [
             "Une invitation a déjà été envoyée à ce collaborateur"
         ]
-        offerer_invitations = offerers_models.OffererInvitation.query.all()
+        offerer_invitations = db.session.query(offerers_models.OffererInvitation).all()
         assert len(offerer_invitations) == 1
         assert len(mails_testing.outbox) == 0
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_raise_error_not_create_offerer_invitation_when_user_already_attached_to_offerer(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -3092,11 +3126,11 @@ class InviteMembersTest:
         assert exception.value.errors["UserAlreadyAttachedToOffererException"] == [
             "Ce collaborateur est déjà membre de votre structure"
         ]
-        offerer_invitations = offerers_models.OffererInvitation.query.all()
+        offerer_invitations = db.session.query(offerers_models.OffererInvitation).all()
         assert len(offerer_invitations) == 0
         assert len(mails_testing.outbox) == 0
 
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
     def test_user_offerer_created_when_user_exists_and_attached_to_another_offerer(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -3107,22 +3141,24 @@ class InviteMembersTest:
 
         offerers_api.invite_member(offerer=offerer, email="attached.user@example.com", current_user=pro_user)
 
-        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        offerer_invitation = db.session.query(offerers_models.OffererInvitation).one()
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0]["template"]["id_not_prod"]
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.id
         )
-        user_offerer = offerers_models.UserOfferer.query.filter_by(
-            userId=attached_to_other_offerer_user.id, offererId=offerer.id
-        ).one()
+        user_offerer = (
+            db.session.query(offerers_models.UserOfferer)
+            .filter_by(userId=attached_to_other_offerer_user.id, offererId=offerer.id)
+            .one()
+        )
         assert user_offerer.validationStatus == ValidationStatus.NEW
         assert offerer_invitation.email == "attached.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
         assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
 
-        actions_list = history_models.ActionHistory.query.all()
+        actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == pro_user
@@ -3145,14 +3181,16 @@ class AcceptOffererInvitationTest:
 
         offerers_api.accept_offerer_invitation_if_exists(user)
 
-        new_user_offerer = offerers_models.UserOfferer.query.filter_by(validationStatus=ValidationStatus.NEW).one()
-        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        new_user_offerer = (
+            db.session.query(offerers_models.UserOfferer).filter_by(validationStatus=ValidationStatus.NEW).one()
+        )
+        offerer_invitation = db.session.query(offerers_models.OffererInvitation).one()
 
         assert new_user_offerer.offererId == offerer.id
         assert new_user_offerer.userId == user.id
         assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
 
-        actions_list = history_models.ActionHistory.query.all()
+        actions_list = db.session.query(history_models.ActionHistory).all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
         assert actions_list[0].authorUser == user
@@ -3179,10 +3217,10 @@ class AcceptOffererInvitationTest:
 
         offerers_api.accept_offerer_invitation_if_exists(user)
 
-        user_offerers = offerers_models.UserOfferer.query.all()
+        user_offerers = db.session.query(offerers_models.UserOfferer).all()
 
         assert len(user_offerers) == 2
-        assert history_models.ActionHistory.query.count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
 
 
 class OpeningHoursTest:
@@ -3498,7 +3536,7 @@ class OffererAddressTest:
             ban_id="75103_7560_00001",
         )
         address = offerers_api.get_or_create_address(location_data=location_data, is_manual_edition=False)
-        assert len(geography_models.Address.query.all()) == 1
+        assert len(db.session.query(geography_models.Address).all()) == 1
         if existant_address:
             assert address == old_address
         else:

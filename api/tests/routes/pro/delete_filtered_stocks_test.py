@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -32,7 +33,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
 
-        assert len(offer_models.Stock.query.all()) == 0
+        assert len(db.session.query(offer_models.Stock).all()) == 0
 
 
 @pytest.mark.usefixtures("db_session")

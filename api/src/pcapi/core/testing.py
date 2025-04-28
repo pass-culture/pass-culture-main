@@ -214,9 +214,9 @@ class FeaturesContext:
 
     def __setattr__(self, attr_name: str, value: typing.Any) -> None:
         self._initial_features[attr_name] = (
-            Feature.query.filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
+            db.session.query(Feature).filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
         )
-        Feature.query.filter(Feature.name == attr_name).update({"isActive": value})
+        db.session.query(Feature).filter(Feature.name == attr_name).update({"isActive": value})
         db.session.commit()
         # Clear the feature cache on request if any
         if flask.has_request_context():
@@ -224,11 +224,13 @@ class FeaturesContext:
                 del flask.request._cached_features
 
     def __getattr__(self, attr_name: str) -> typing.Any:
-        return Feature.query.filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
+        return (
+            db.session.query(Feature).filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
+        )
 
     def reset(self) -> None:
         for name, status in self._initial_features.items():
-            Feature.query.filter_by(name=name).update({"isActive": status})
+            db.session.query(Feature).filter_by(name=name).update({"isActive": status})
             db.session.commit()
         # Clear the feature cache on request if any
         if flask.has_request_context():
@@ -241,11 +243,11 @@ def assert_model_count_delta(
     model: flask_sqlalchemy.Model,
     delta: int,
 ) -> collections.abc.Generator[None, None, None]:
-    start_count = model.query.count()
+    start_count = db.session.query(model).count()
     expected_count = start_count + delta
 
     yield
 
-    end_count = model.query.count()
+    end_count = db.session.query(model).count()
     if end_count != expected_count:
         pytest.fail(f"Got {end_count} {model.__class__.__name__} instead of {expected_count}")

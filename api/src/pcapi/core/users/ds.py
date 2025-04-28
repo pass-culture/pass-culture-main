@@ -65,7 +65,8 @@ def sync_instructor_ids(procedure_number: int) -> None:
     emails = instructors.keys()
 
     users = (
-        users_models.User.query.outerjoin(users_models.User.backoffice_profile)
+        db.session.query(users_models.User)
+        .outerjoin(users_models.User.backoffice_profile)
         .filter(
             users_models.User.email.in_(list(emails)),
             perm_models.BackOfficeUserProfile.id.is_not(None),
@@ -296,9 +297,11 @@ def _sync_ds_application(
                     data["flags"].add(users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION)
                 break
 
-        user_request = users_models.UserAccountUpdateRequest.query.filter_by(
-            dsApplicationId=ds_application_id
-        ).one_or_none()
+        user_request = (
+            db.session.query(users_models.UserAccountUpdateRequest)
+            .filter_by(dsApplicationId=ds_application_id)
+            .one_or_none()
+        )
         if node["archived"]:
             if user_request:
                 db.session.delete(user_request)
@@ -339,9 +342,11 @@ def sync_deleted_user_account_update_requests(procedure_number: int, since: date
         application_numbers.append(deleted_application.number)
 
     if application_numbers:
-        count_deleted = users_models.UserAccountUpdateRequest.query.filter(
-            users_models.UserAccountUpdateRequest.dsApplicationId.in_(application_numbers)
-        ).delete()
+        count_deleted = (
+            db.session.query(users_models.UserAccountUpdateRequest)
+            .filter(users_models.UserAccountUpdateRequest.dsApplicationId.in_(application_numbers))
+            .delete()
+        )
 
     logger.info(
         "[DS] Finished deleting User Update Account procedure %s.",

@@ -9,7 +9,8 @@ from pcapi.utils.clean_accents import clean_accents
 
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
-        offerers_models.Venue.query.filter(
+        db.session.query(offerers_models.Venue)
+        .filter(
             offerers_models.Venue.siret == siret,
             sa.not_(offerers_models.Venue.isVirtual),
         )
@@ -48,7 +49,8 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
     per_page = 1000 if per_page is None else per_page
 
     return (
-        offerers_models.Venue.query.filter(
+        db.session.query(offerers_models.Venue)
+        .filter(
             sa.not_(offerers_models.Venue.isVirtual),
         )
         .order_by(offerers_models.Venue.id)
@@ -70,7 +72,8 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
     name = name.replace("-", "%")
     name = clean_accents(name)
     venues = (
-        offerers_models.Venue.query.filter(
+        db.session.query(offerers_models.Venue)
+        .filter(
             sa.or_(
                 sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
                 sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),

@@ -9,6 +9,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import repository as users_repository
+from pcapi.models import db
 from pcapi.utils.date import get_date_formatted_for_email
 
 
@@ -18,7 +19,8 @@ def get_offerer_closed_email_data(
     bookings_subcategory_ids = [
         entities[0]
         for entities in (
-            bookings_models.Booking.query.filter(
+            db.session.query(bookings_models.Booking)
+            .filter(
                 bookings_models.Booking.offererId == offerer.id,
                 bookings_models.Booking.status.in_(
                     [bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED]

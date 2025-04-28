@@ -7,6 +7,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import utils as dms_utils
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.subscription.dms import repository as dms_repository
+from pcapi.models import db
 from pcapi.repository import repository
 
 
@@ -52,7 +53,8 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
     logger.info("[DMS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
 
     latest_dms_import_record: dms_models.LatestDmsImport | None = (
-        dms_models.LatestDmsImport.query.filter(dms_models.LatestDmsImport.procedureId == procedure_number)
+        db.session.query(dms_models.LatestDmsImport)
+        .filter(dms_models.LatestDmsImport.procedureId == procedure_number)
         .order_by(dms_models.LatestDmsImport.latestImportDatetime.desc())
         .first()
     )

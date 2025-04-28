@@ -19,7 +19,8 @@ def is_dms_content(obj: typing.Any) -> typing.TypeGuard[fraud_models.DMSContent]
 
 def get_latest_deleted_application_datetime(procedure_number: int) -> datetime.datetime | None:
     fraud_check: fraud_models.BeneficiaryFraudCheck | None = (
-        fraud_models.BeneficiaryFraudCheck.query.filter(
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.CANCELED,
             fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
@@ -55,12 +56,16 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
     ):
         applications_to_mark_as_deleted[str(deleted_application.number)] = deleted_application
 
-    fraud_checks_to_mark_as_deleted = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.thirdPartyId.in_(applications_to_mark_as_deleted),
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-        fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.CANCELED,
-        fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.OK,
-    ).yield_per(100)
+    fraud_checks_to_mark_as_deleted = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.thirdPartyId.in_(applications_to_mark_as_deleted),
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.CANCELED,
+            fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.OK,
+        )
+        .yield_per(100)
+    )
     updated_fraud_checks_count = 0
 
     for fraud_check in fraud_checks_to_mark_as_deleted:

@@ -14,6 +14,7 @@ from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
 from pcapi.core.providers.allocine import synchronize_products
 from pcapi.core.providers.models import Provider
+from pcapi.models import db
 
 from tests.domain import fixtures
 
@@ -30,18 +31,20 @@ class AllocineMovieListTest:
     def test_synchronize_products_creates_products(self, requests_mock):
         # Given
         self._configure_api_responses(requests_mock)
-        assert Product.query.count() == 0
+        assert db.session.query(Product).count() == 0
 
         # When
         synchronize_products()
 
         # Then
-        catalogue = Product.query.order_by(Product.id).all()
+        catalogue = db.session.query(Product).order_by(Product.id).all()
         assert len(catalogue) == 5
 
-        allocine_products_provider = Provider.query.filter(
-            Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME
-        ).one()
+        allocine_products_provider = (
+            db.session.query(Provider)
+            .filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
+            .one()
+        )
         assert all(product.lastProviderId == allocine_products_provider.id for product in catalogue)
         assert all(
             product.idAtProviders == f"{allocine_products_provider.id}:{product.extraData['allocineId']}"
@@ -78,7 +81,7 @@ class AllocineMovieListTest:
     def test_synchronize_products_updates_products(self, requests_mock):
         # Given
         self._configure_api_responses(requests_mock)
-        assert Product.query.count() == 0
+        assert db.session.query(Product).count() == 0
         synchronize_products()
         requests_mock.get(f"{ALLOCINE_API_URL}/movieList?after=", json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_1_UPDATED)
 
@@ -86,19 +89,19 @@ class AllocineMovieListTest:
         synchronize_products()
 
         # Then
-        updated_product = Product.query.order_by(Product.id).first()
+        updated_product = db.session.query(Product).order_by(Product.id).first()
         assert updated_product.extraData["title"] == "Nouveau titre pour ceux de chez nous"
 
     def test_synchronize_products_is_idempotent(self, requests_mock):
         # Given
         self._configure_api_responses(requests_mock)
-        assert Product.query.count() == 0
+        assert db.session.query(Product).count() == 0
 
         # When
         synchronize_products()
-        old_catalogue = Product.query.order_by(Product.id).all()
+        old_catalogue = db.session.query(Product).order_by(Product.id).all()
         synchronize_products()
-        new_catalogue = Product.query.order_by(Product.id).all()
+        new_catalogue = db.session.query(Product).order_by(Product.id).all()
 
         # Then
         assert all(new_product.__dict__ == old_catalogue[idx].__dict__ for idx, new_product in enumerate(new_catalogue))
@@ -116,13 +119,13 @@ class AllocineMovieListTest:
         # Given
         fixture = make_fixture_with_invalid_release_date(fixtures.ALLOCINE_MOVIE_LIST_PAGE_1)
         requests_mock.get(f"{ALLOCINE_API_URL}/movieList?after=", json=fixture)
-        assert Product.query.count() == 0
+        assert db.session.query(Product).count() == 0
 
         # When
         synchronize_products()
 
         # Then
-        product = Product.query.order_by(Product.id).first()
+        product = db.session.query(Product).order_by(Product.id).first()
         assert "releaseDate" not in product.extraData
 
 

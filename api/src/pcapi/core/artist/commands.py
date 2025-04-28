@@ -91,7 +91,7 @@ class ImportArtists(BaseImportTemplate[ArtistModel, artist_models.Artist]):
         yield from big_query_queries.ArtistQuery().execute()
 
     def exists(self, artist: ArtistModel) -> bool:
-        return artist_models.Artist.query.filter_by(id=artist.id).first() is not None
+        return db.session.query(artist_models.Artist).filter_by(id=artist.id).first() is not None
 
     def create(self, artist: ArtistModel) -> artist_models.Artist:
         return artist_models.Artist(
@@ -111,11 +111,13 @@ class ImportAliases(BaseImportTemplate[ArtistAliasModel, artist_models.ArtistAli
 
     def exists(self, alias: ArtistAliasModel) -> bool:
         return (
-            artist_models.ArtistAlias.query.filter_by(
+            db.session.query(artist_models.ArtistAlias)
+            .filter_by(
                 artist_id=alias.artist_id,
                 artist_alias_name=alias.artist_alias_name,
                 artist_cluster_id=alias.artist_cluster_id,
-            ).first()
+            )
+            .first()
             is not None
         )
 
@@ -136,10 +138,12 @@ class ImportProductLinks(BaseImportTemplate[ArtistProductLinkModel, artist_model
 
     def exists(self, link: ArtistProductLinkModel) -> bool:
         return (
-            artist_models.ArtistProductLink.query.filter_by(
+            db.session.query(artist_models.ArtistProductLink)
+            .filter_by(
                 artist_id=link.artist_id,
                 product_id=link.product_id,
-            ).first()
+            )
+            .first()
             is not None
         )
 

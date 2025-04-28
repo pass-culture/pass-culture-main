@@ -88,7 +88,8 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
             return
 
     offerer = (
-        offerers_models.Offerer.query.filter_by(siren=payload.siren)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(siren=payload.siren)
         .options(sa_orm.joinedload(offerers_models.Offerer.tags).load_only(offerers_models.OffererTag.name))
         .one_or_none()
     )
@@ -111,9 +112,11 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                 # Offerer may have been tagged in the past, but not closed
                 if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
                     # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
-                    tag = offerers_models.OffererTag.query.filter(
-                        offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME
-                    ).one()
+                    tag = (
+                        db.session.query(offerers_models.OffererTag)
+                        .filter(offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME)
+                        .one()
+                    )
                     action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
                     db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
 

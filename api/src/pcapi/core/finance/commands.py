@@ -14,6 +14,7 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
 import pcapi.scheduled_tasks.decorators as cron_decorators
@@ -83,7 +84,7 @@ def generate_invoices(batch_id: int) -> None:
 
     This command can be run multiple times.
     """
-    batch = finance_models.CashflowBatch.query.get(batch_id)
+    batch = db.session.query(finance_models.CashflowBatch).get(batch_id)
     if not batch:
         print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
         return
@@ -139,7 +140,8 @@ def add_custom_offer_reimbursement_rule(
     reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore[assignment]
 
     offer = (
-        offers_models.Offer.query.options(
+        db.session.query(offers_models.Offer)
+        .options(
             sa_orm.joinedload(offers_models.Offer.stocks, innerjoin=True),
             sa_orm.joinedload(offers_models.Offer.venue, innerjoin=True),
         )

@@ -10,6 +10,7 @@ from pcapi.core.external.compliance_backends.compliance import ComplianceBackend
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.utils import requests
 
 
@@ -28,7 +29,7 @@ class GetDataComplianceScoringTest:
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
-        offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
+        offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == ["stock_price", "offer_description"]
 
@@ -47,7 +48,7 @@ class GetDataComplianceScoringTest:
         )
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
-        offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
+        offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == ["offer_name"]
 
@@ -61,7 +62,7 @@ class GetDataComplianceScoringTest:
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
-        offer_compliance = offers_models.OfferCompliance.query.filter_by(offerId=offer.id).one()
+        offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == []
 
@@ -79,7 +80,7 @@ class GetDataComplianceScoringTest:
         assert exc.value.is_retryable is False
         assert caplog.records[0].message == "Connection to Compliance API was refused"
         assert caplog.records[0].extra == {"status_code": 401}
-        assert not offers_models.OfferCompliance.query.filter_by(offerId=offer.id).count()
+        assert not db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).count()
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -95,7 +96,7 @@ class GetDataComplianceScoringTest:
         assert exc.value.is_retryable is False
         assert caplog.records[0].message == "Data sent to Compliance API is faulty"
         assert caplog.records[0].extra == {"status_code": 422}
-        assert not offers_models.OfferCompliance.query.filter_by(offerId=offer.id).count()
+        assert not db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).count()
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -111,7 +112,7 @@ class GetDataComplianceScoringTest:
         assert exc.value.is_retryable is True
         assert caplog.records[0].message == "Response from Compliance API is not ok"
         assert caplog.records[0].extra == {"status_code": 500}
-        assert not offers_models.OfferCompliance.query.filter_by(offerId=offer.id).count()
+        assert not db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).count()
 
 
 @pytest.mark.usefixtures("db_session")
@@ -133,7 +134,8 @@ class GetPayloadForComplianceApiTest:
         mediation = offers_factories.MediationFactory(offer=offer)
 
         offer_in_db = (
-            offers_models.Offer.query.filter(offers_models.Offer.id == offer.id)
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.id == offer.id)
             .options(sa_orm.joinedload(offers_models.Offer.stocks), sa_orm.joinedload(offers_models.Offer.mediations))
             .one()
         )

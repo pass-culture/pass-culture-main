@@ -11,6 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 from pcapi.utils.date import local_datetime_to_default_timezone
@@ -61,7 +62,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue_provider.venue
         assert created_offer.subcategoryId == "RENCONTRE"
@@ -120,7 +121,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.publicationDate == local_datetime_to_default_timezone(
             publication_date, "Europe/Paris"
         ).replace(microsecond=0, tzinfo=None)
@@ -196,7 +197,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.lastProvider.name == venue_provider.provider.name
         assert created_offer.name == "Nicolas Jaar dans ton salon"
         assert created_offer.venue == venue_provider.venue
@@ -223,7 +224,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDelay == None
         assert created_offer.idAtProvider == "T'as un bel id tu sais"
 
-        created_mediation = offers_models.Mediation.query.one()
+        created_mediation = db.session.query(offers_models.Mediation).one()
         assert created_mediation.offer == created_offer
         assert created_offer.image.url == created_mediation.thumbUrl
         assert (
@@ -231,7 +232,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(created_mediation.id)}"
         )
 
-        created_price_category = offers_models.PriceCategory.query.one()
+        created_price_category = db.session.query(offers_models.PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("300")
         assert created_price_category.label == "triangle or"
         assert created_price_category.idAtProvider == "gold_triangle"
@@ -302,7 +303,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             },
         )
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.subcategoryId == "CONCERT"
         assert created_offer.extraData == {
             "author": "Ray Charles",
@@ -351,7 +352,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.subcategoryId == "CONCERT"
         assert created_offer.extraData == {
             "author": "Ray Charles",
@@ -388,7 +389,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1", "gtl_id": "19000000"}
 
         assert response.json["categoryRelatedFields"] == {
@@ -418,7 +419,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert response.json["location"]["addressId"] == address.id
         assert response.json["location"]["addressLabel"] == "My beautiful address no one knows about"
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
     def test_event_with_custom_address_should_create_offerer_address(self, client):
@@ -426,10 +427,14 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
 
-        assert not offerers_models.OffererAddress.query.filter(
-            offerers_models.OffererAddress.addressId == address.id,
-            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
-        ).one_or_none()
+        assert (
+            not db.session.query(offerers_models.OffererAddress)
+            .filter(
+                offerers_models.OffererAddress.addressId == address.id,
+                offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+            )
+            .one_or_none()
+        )
 
         payload["location"] = {
             "type": "address",
@@ -439,11 +444,15 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         }
         response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-        offerer_address = offerers_models.OffererAddress.query.filter(
-            offerers_models.OffererAddress.addressId == address.id,
-            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
-        ).one()
+        created_offer = db.session.query(offers_models.Offer).one()
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress)
+            .filter(
+                offerers_models.OffererAddress.addressId == address.id,
+                offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+            )
+            .one()
+        )
         assert created_offer.offererAddress == offerer_address
 
     def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
@@ -510,7 +519,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
     def test_event_with_has_ticket_to_true_and_ticketing_service_at_provider_level(self, client):
@@ -528,7 +537,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             },
         )
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
     def test_event_with_has_ticket_to_true_and_ticketing_service_at_venue_level(self, client):
@@ -546,7 +555,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             },
         )
         assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
     def test_error_when_event_with_has_ticket_to_true_and_no_ticketing_service_set(self, client):
@@ -583,7 +592,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert offers_models.Offer.query.count() == 0
+        assert db.session.query(offers_models.Offer).count() == 0
         assert response.json == {
             "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
         }

@@ -4,6 +4,7 @@ import time_machine
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -27,7 +28,7 @@ class Returns200Test:
         response = client.post("/users/password", json=data)
 
         # then
-        user = users_models.User.query.get(user_id)
+        user = db.session.query(users_models.User).get(user_id)
         assert user.checkPassword("N3W_p4ssw0rd") is True
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1

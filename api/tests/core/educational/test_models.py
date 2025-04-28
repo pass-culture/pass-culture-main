@@ -846,12 +846,14 @@ class CollectiveOfferTemplateHasEndDatePassedTest:
         assert offer_passed.dateRange is not None
         assert offer_passed.hasEndDatePassed
 
-        passed_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.hasEndDatePassed.is_(True)).one()
+        passed_offer = (
+            db.session.query(CollectiveOfferTemplate).filter(CollectiveOfferTemplate.hasEndDatePassed.is_(True)).one()
+        )
         assert passed_offer.id == offer_passed.id
 
-        not_passed_offers = CollectiveOfferTemplate.query.filter(
-            CollectiveOfferTemplate.hasEndDatePassed.is_(False)
-        ).all()
+        not_passed_offers = (
+            db.session.query(CollectiveOfferTemplate).filter(CollectiveOfferTemplate.hasEndDatePassed.is_(False)).all()
+        )
         assert len(not_passed_offers) == 2
         assert {o.id for o in not_passed_offers} == {offer_without_range.id, offer_with_range.id}
 
@@ -916,5 +918,7 @@ class CollectiveDmsApplicationTest:
         application_2 = factories.CollectiveDmsApplicationFactory(venue__siret="12345678200028")
         factories.CollectiveDmsApplicationFactory(venue__siret="12345679000013")
 
-        filtered = CollectiveDmsApplication.query.filter(CollectiveDmsApplication.siren == "123456782").all()
+        filtered = (
+            db.session.query(CollectiveDmsApplication).filter(CollectiveDmsApplication.siren == "123456782").all()
+        )
         assert set(filtered) == {application_1, application_2}

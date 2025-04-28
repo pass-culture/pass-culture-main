@@ -38,7 +38,7 @@ def test_sync_instructor_ids(mocked_get_instructors, app):
     db.session.close()
     db.session.begin()
 
-    user = users_models.User.query.filter_by(id=user_id).one()
+    user = db.session.query(users_models.User).filter_by(id=user_id).one()
     assert user.backoffice_profile.dsInstructorId == "SW5wdHK1Y3RleRItFtH4p6Vs"
 
 

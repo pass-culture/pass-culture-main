@@ -4,6 +4,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -49,7 +50,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = db.session.query(offerers_models.Venue).get(venue_id)
         assert venue.collectiveDomains == [domain]
         assert venue.collectiveStudents == [educational_models.StudentLevels.COLLEGE4]
         assert venue.collectiveNetwork == ["network1", "network2"]
@@ -99,7 +100,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = db.session.query(offerers_models.Venue).get(venue_id)
         assert venue.collectiveDomains == []
         assert venue.collectiveStudents == []
         assert venue.collectiveNetwork == []
@@ -144,7 +145,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = db.session.query(offerers_models.Venue).get(venue_id)
         assert venue.collectiveDomains == [domain]
         assert venue.collectiveStudents == [educational_models.StudentLevels.COLLEGE4]
         assert venue.collectiveNetwork == ["network3"]

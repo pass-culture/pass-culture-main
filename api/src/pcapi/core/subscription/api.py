@@ -28,6 +28,7 @@ from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 import pcapi.utils.postal_code as postal_code_utils
@@ -44,7 +45,11 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     # ensure the FOR UPDATE lock is freed if anything arises
     with pcapi_repository.transaction():
         user = (
-            users_models.User.query.filter(users_models.User.id == user.id).populate_existing().with_for_update().one()
+            db.session.query(users_models.User)
+            .filter(users_models.User.id == user.id)
+            .populate_existing()
+            .with_for_update()
+            .one()
         )
         subscription_state = get_user_subscription_state(user)
 
@@ -530,7 +535,7 @@ def complete_profile(
         update_payload["lastName"] = last_name
 
     with pcapi_repository.transaction():
-        users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
+        db.session.query(users_models.User).filter(users_models.User.id == user.id).update(update_payload)
 
     fraud_api.create_profile_completion_fraud_check(
         user,
@@ -657,20 +662,28 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     new_fraud_check = _update_fraud_check_eligibility_with_history(fraud_check, id_provider_detected_eligibility)
 
     # Handle eligibility update for PROFILE_COMPLETION fraud check, if it exists
-    profile_completion_fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.user == user,
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
-        fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
-    ).first()
+    profile_completion_fraud_check = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
+        )
+        .first()
+    )
     if profile_completion_fraud_check:
         _update_fraud_check_eligibility_with_history(profile_completion_fraud_check, id_provider_detected_eligibility)
 
     # Handle eligibility update for HONOR_STATEMENT fraud check, if it exists
-    honor_statement_fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.user == user,
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.HONOR_STATEMENT,
-        fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
-    ).first()
+    honor_statement_fraud_check = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.HONOR_STATEMENT,
+            fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
+        )
+        .first()
+    )
     if honor_statement_fraud_check:
         _update_fraud_check_eligibility_with_history(honor_statement_fraud_check, id_provider_detected_eligibility)
 

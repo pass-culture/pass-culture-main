@@ -58,8 +58,8 @@ class PostMergeInstitutionPrebookingTest:
 
         # first: existing one created by the booking, second: the new
         # one created by the api call
-        assert models.EducationalInstitution.query.count() == 2
-        assert destination_uai in {inst.institutionId for inst in models.EducationalInstitution.query.all()}
+        assert db.session.query(models.EducationalInstitution).count() == 2
+        assert destination_uai in {inst.institutionId for inst in db.session.query(models.EducationalInstitution).all()}
 
         db.session.refresh(booking)
 

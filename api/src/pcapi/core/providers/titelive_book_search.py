@@ -11,6 +11,7 @@ from pcapi.core.categories.subcategories import LIVRE_PAPIER
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
+from pcapi.models import db
 from pcapi.utils.csr import get_closest_csr
 
 from .titelive_api import TiteliveSearchTemplate
@@ -26,7 +27,10 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
     def __init__(self) -> None:
         super().__init__()
         self.product_whitelist_eans = {
-            ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
+            ean
+            for ean, in db.session.query(fraud_models.ProductWhitelist)
+            .with_entities(fraud_models.ProductWhitelist.ean)
+            .all()
         }
 
     def deserialize_titelive_product(self, titelive_work: dict) -> TiteLiveBookWork:

@@ -21,6 +21,7 @@ from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.repository.providable_queries import get_last_update_for_provider
 import pcapi.utils.date as utils_date
 
@@ -60,7 +61,9 @@ class CDSStocks(LocalProvider):
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
-            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+            db.session.query(offers_models.PriceCategoryLabel)
+            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .all()
         )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
         self.provider = venue_provider.provider
@@ -102,13 +105,17 @@ class CDSStocks(LocalProvider):
         # exception to the ProvidableMixin because Offer no longer extends this class
         # idAtProviders has been replaced by idAtProvider property
         if model_type == offers_models.Offer:
-            query = model_type.query.filter_by(idAtProvider=id_at_providers)
+            query = db.session.query(model_type).filter_by(idAtProvider=id_at_providers)
         elif model_type == offers_models.Stock:
-            query = model_type.query.filter(
-                offers_models.Stock.idAtProviders == id_at_providers,  # i.e. "51%123%CDS#2"
-            ).with_for_update()
+            query = (
+                db.session.query(model_type)
+                .filter(
+                    offers_models.Stock.idAtProviders == id_at_providers,  # i.e. "51%123%CDS#2"
+                )
+                .with_for_update()
+            )
         else:
-            query = model_type.query.filter_by(idAtProviders=id_at_providers)
+            query = db.session.query(model_type).filter_by(idAtProviders=id_at_providers)
 
         return query.one_or_none()
 
@@ -232,7 +239,9 @@ class CDSStocks(LocalProvider):
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
-                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer).all()
+                db.session.query(offers_models.PriceCategory)
+                .filter(offers_models.PriceCategory.offer == self.last_offer)
+                .all()
                 if self.last_offer.id
                 else []
             )

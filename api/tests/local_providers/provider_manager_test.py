@@ -11,6 +11,7 @@ from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
+from pcapi.models import db
 from pcapi.repository import repository
 
 from tests.local_providers.cinema_providers.ems import fixtures as ems_fixtures
@@ -151,4 +152,4 @@ class SynchronizeEMSVenueProviderTest:
 
             assert ems_cinema_details.lastVersion == 86400
             assert venue_provider.lastSyncDate
-            assert Offer.query.count() == 1
+            assert db.session.query(Offer).count() == 1

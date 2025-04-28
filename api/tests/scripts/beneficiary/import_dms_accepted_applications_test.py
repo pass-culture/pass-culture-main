@@ -20,6 +20,7 @@ import pcapi.core.subscription.models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
+from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.subscription.dms.import_dms_applications import import_all_updated_dms_applications
 
@@ -104,9 +105,11 @@ class RunTest:
 
         import_all_updated_dms_applications(6712558)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
-        ).one()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS)
+            .one()
+        )
         assert fraud_check.userId == user.id
         assert fraud_check.thirdPartyId == "123"
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
@@ -158,16 +161,18 @@ class RunIntegrationTest:
         ]
         import_all_updated_dms_applications(6712558)
 
-        assert users_models.User.query.count() == 1
-        user = users_models.User.query.first()
+        assert db.session.query(users_models.User).count() == 1
+        user = db.session.query(users_models.User).first()
         assert user.firstName == "profile-firstname"
         assert user.postalCode == "12400"
         assert user.address == "Route de Gozon"
         assert user.phoneNumber is None
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
-        ).one()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS)
+            .one()
+        )
         assert fraud_check.userId == user.id
         assert fraud_check.thirdPartyId == "123"
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
@@ -202,17 +207,19 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [details]
         import_all_updated_dms_applications(6712558)
 
-        assert users_models.User.query.count() == 1
-        user = users_models.User.query.first()
+        assert db.session.query(users_models.User).count() == 1
+        user = db.session.query(users_models.User).first()
         assert user.has_beneficiary_role
-        deposits = finance_models.Deposit.query.filter_by(user=user).all()
+        deposits = db.session.query(finance_models.Deposit).filter_by(user=user).all()
         age_18_deposit = next(deposit for deposit in deposits if deposit.type == finance_models.DepositType.GRANT_17_18)
         assert len(deposits) == 2
         assert age_18_deposit.amount == 150 + 20  # remaining amount
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
-        ).one()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS)
+            .one()
+        )
         assert fraud_check.userId == user.id
         assert fraud_check.thirdPartyId == "123"
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
@@ -227,9 +234,11 @@ class RunIntegrationTest:
         ]
 
         import_all_updated_dms_applications(6712558)
-        dms_application = fraud_models.OrphanDmsApplication.query.filter(
-            fraud_models.OrphanDmsApplication.application_id == 123
-        ).one()
+        dms_application = (
+            db.session.query(fraud_models.OrphanDmsApplication)
+            .filter(fraud_models.OrphanDmsApplication.application_id == 123)
+            .one()
+        )
         assert dms_application.application_id == 123
         assert dms_application.process_id == 6712558
         assert dms_application.email == "nonexistant@example.com"
@@ -262,18 +271,22 @@ class RunIntegrationTest:
         import_all_updated_dms_applications(6712558)
 
         # then
-        assert users_models.User.query.count() == 1
-        user = users_models.User.query.first()
+        assert db.session.query(users_models.User).count() == 1
+        user = db.session.query(users_models.User).first()
 
         assert len(user.beneficiaryFraudChecks) == 2
 
-        honor_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT
-        ).one_or_none()
+        honor_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT)
+            .one_or_none()
+        )
         assert honor_check
-        dms_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
-        ).one_or_none()
+        dms_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK)
+            .one_or_none()
+        )
         assert dms_check
         assert len(push_testing.requests) == 3
 
@@ -318,8 +331,8 @@ class RunIntegrationTest:
 
         import_all_updated_dms_applications(6712558)
 
-        assert users_models.User.query.count() == 1
-        user = users_models.User.query.first()
+        assert db.session.query(users_models.User).count() == 1
+        user = db.session.query(users_models.User).first()
 
         assert user.firstName == "John"
         assert user.postalCode == "67200"
@@ -381,7 +394,7 @@ class RunIntegrationTest:
         ]
         import_all_updated_dms_applications(6712558)
 
-        user = users_models.User.query.one()
+        user = db.session.query(users_models.User).one()
 
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
@@ -417,9 +430,9 @@ class RunIntegrationTest:
         ]
         import_all_updated_dms_applications(6712558)
 
-        assert users_models.User.query.count() == 2
+        assert db.session.query(users_models.User).count() == 2
 
-        user = users_models.User.query.get(user.id)
+        user = db.session.query(users_models.User).get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
@@ -464,7 +477,7 @@ class RunIntegrationTest:
         import_all_updated_dms_applications(6712558)
 
         mocked_activate_beneficiary_if_no_missing_step.assert_not_called()
-        assert users_models.User.query.count() == 2
+        assert db.session.query(users_models.User).count() == 2
 
         fraud_check = applicant.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
@@ -500,9 +513,9 @@ class RunIntegrationTest:
         import_all_updated_dms_applications(6712558)
 
         # then
-        assert users_models.User.query.count() == 1
+        assert db.session.query(users_models.User).count() == 1
 
-        user = users_models.User.query.first()
+        user = db.session.query(users_models.User).first()
         assert user.firstName == "John"
         assert user.postalCode == "67200"
 
@@ -772,7 +785,7 @@ class GraphQLSourceProcessApplicationTest:
 
         import_all_updated_dms_applications(6712558)
 
-        dms_fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        dms_fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).first()
         assert dms_fraud_check.userId == user.id
         assert dms_fraud_check.status == fraud_models.FraudCheckStatus.ERROR
         assert dms_fraud_check.thirdPartyId == "1"
@@ -803,8 +816,12 @@ class GraphQLSourceProcessApplicationTest:
 
         import_all_updated_dms_applications(procedure_number)
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.userId == already_imported_user.id,
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-        ).one()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(
+                fraud_models.BeneficiaryFraudCheck.userId == already_imported_user.id,
+                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            )
+            .one()
+        )
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK

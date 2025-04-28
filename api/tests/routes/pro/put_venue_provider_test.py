@@ -4,6 +4,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as provider_models
 import pcapi.core.users.factories as user_factories
+from pcapi.models import db
 
 
 class Returns200Test:
@@ -48,7 +49,9 @@ class Returns200Test:
         user = user_offerer.user
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        cds_provider = provider_models.Provider.query.filter(provider_models.Provider.localClass == "CDSStocks").one()
+        cds_provider = (
+            db.session.query(provider_models.Provider).filter(provider_models.Provider.localClass == "CDSStocks").one()
+        )
         providers_factories.VenueProviderFactory(venue=venue, provider=cds_provider, isDuoOffers=False, isActive=False)
 
         updated_venue_provider_data = {

@@ -1,5 +1,6 @@
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 
 
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
@@ -251,8 +252,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
 
 def create_roles_with_permissions() -> None:
     # Roles have already been created from enum in sync_db_roles()
-    roles_ids_in_db = {role.name: role.id for role in perm_models.Role.query.all()}
-    perm_ids_in_db = {perm.name: perm.id for perm in perm_models.Permission.query.all()}
+    roles_ids_in_db = {role.name: role.id for role in db.session.query(perm_models.Role).all()}
+    perm_ids_in_db = {perm.name: perm.id for perm in db.session.query(perm_models.Permission).all()}
 
     for role_name, perms in ROLE_PERMISSIONS.items():
         for perm in perms:

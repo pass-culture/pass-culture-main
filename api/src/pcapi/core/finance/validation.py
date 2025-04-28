@@ -4,6 +4,7 @@ import pytz
 
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
 import pcapi.utils.date as date_utils
 
 from . import exceptions
@@ -23,7 +24,7 @@ def validate_reimbursement_rule(
 
 def _check_reimbursement_rule_venue_has_siret(rule: models.CustomReimbursementRule) -> None:
     if rule.venueId:
-        venue = offerers_models.Venue.query.filter(offerers_models.Venue.id == rule.venueId).one()
+        venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == rule.venueId).one()
         if not venue.siret:
             message = f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
             raise exceptions.NotPricingPointVenueForReimbursementRule(message)
@@ -72,7 +73,7 @@ def _check_reimbursement_rule_dates(
 
 
 def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule) -> None:
-    overlapping = models.CustomReimbursementRule.query
+    overlapping = db.session.query(models.CustomReimbursementRule)
     overlapping = overlapping.filter(models.CustomReimbursementRule.timespan.overlaps(rule.timespan))
     if rule.offerId:
         overlapping = overlapping.filter_by(offerId=rule.offerId)

@@ -2,6 +2,7 @@ import enum
 from unittest import mock
 
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 
 
 def test_sync_first_perms(db_session):
@@ -10,7 +11,7 @@ def test_sync_first_perms(db_session):
         FOO = "foo"
         BAR = "bar"
 
-    perm_models.RolePermission.query.delete()
+    db.session.query(perm_models.RolePermission).delete()
     db_session.query(perm_models.Permission).delete()
     assert db_session.query(perm_models.Permission.id).count() == 0
 
@@ -30,7 +31,7 @@ def test_sync_new_perms(db_session):
         BAR = "bar"
         BAZ = "baz"
 
-    perm_models.RolePermission.query.delete()
+    db.session.query(perm_models.RolePermission).delete()
     db_session.query(perm_models.Permission).delete()
     db_session.add(perm_models.Permission(name="FOO"))
     db_session.add(perm_models.Permission(name="BAR"))
@@ -51,7 +52,7 @@ def test_sync_removed_perms(db_session):
         FOO = "foo"
         BAR = "bar"
 
-    perm_models.RolePermission.query.delete()
+    db.session.query(perm_models.RolePermission).delete()
     db_session.query(perm_models.Permission).delete()
     db_session.add(perm_models.Permission(name="FOO"))
     db_session.add(perm_models.Permission(name="BAR"))
@@ -75,7 +76,7 @@ def test_sync_new_roles(db_session):
         BAR = "bar"
         BAZ = "baz"
 
-    perm_models.RolePermission.query.delete()
+    db.session.query(perm_models.RolePermission).delete()
     db_session.query(perm_models.Role).delete()
     db_session.add(perm_models.Role(name="foo"))
     assert db_session.query(perm_models.Role.id).count() == 1

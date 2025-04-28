@@ -24,6 +24,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
+from pcapi.models import db
 import pcapi.utils.date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 from pcapi.utils.stopwords import STOPWORDS
@@ -179,9 +180,8 @@ class AlgoliaSerializationMixin:
         if section:
             try:
                 macro_section = (
-                    offers_models.BookMacroSection.query.filter(
-                        sa.func.lower(offers_models.BookMacroSection.section) == section
-                    )
+                    db.session.query(offers_models.BookMacroSection)
+                    .filter(sa.func.lower(offers_models.BookMacroSection.section) == section)
                     .with_entities(offers_models.BookMacroSection.macroSection)
                     .scalar()
                 ).strip()

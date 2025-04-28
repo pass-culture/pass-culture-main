@@ -7,6 +7,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 def create_industrial_individual_offerers() -> None:
     logger.info("create_industrial_individual_offerers")
 
-    ae_tag = offerers_models.OffererTag.query.filter_by(name="auto-entrepreneur").one()
-    adage_tag = offerers_models.OffererTag.query.filter_by(name="adage").one()
+    ae_tag = db.session.query(offerers_models.OffererTag).filter_by(name="auto-entrepreneur").one()
+    adage_tag = db.session.query(offerers_models.OffererTag).filter_by(name="adage").one()
 
     instructor = users_factories.AdminFactory.create(firstName="Instructeur", lastName="d'Autoentrepreneur")
     other_instructor = users_factories.AdminFactory.create(firstName="Instructeur", lastName="Bis")

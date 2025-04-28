@@ -44,7 +44,7 @@ class MagicEnum(sa_types.TypeDecorator):
              color = sa.Column(MagicEnum(Color))
 
          wall = Wall(color=Color.RED)  # not `Color.RED.value`
-         wall = Wall.query.first()
+         wall = db.session.query(Wall).first()
          assert wall.color == Color.RED  # again, not `Color.RED.value`
     """
 

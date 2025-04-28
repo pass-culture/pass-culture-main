@@ -167,7 +167,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
             assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
         assert offer.venueId == venue.id
         assert offer.name == payload["name"]
@@ -205,7 +205,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
             tzinfo=None
         )
@@ -223,7 +223,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
         assert offer.venueId == venue.id
         assert offer.name == payload["name"]
@@ -250,7 +250,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.status_code == 200
         assert offer.offerVenue == payload["offerVenue"]
 
@@ -276,7 +276,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.status_code == 200
         assert offer.offerVenue == payload["offerVenue"]
 
@@ -291,7 +291,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.status_code == 200
         assert offer.offerVenue == payload["offerVenue"]
 
@@ -309,7 +309,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.status_code == 200
         assert offer.offerVenue == payload["offerVenue"]
 
@@ -610,5 +610,5 @@ class CollectiveOffersPublicPostOfferMinimalTest:
 
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.name == payload["name"]

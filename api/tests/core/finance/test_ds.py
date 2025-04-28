@@ -23,6 +23,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import VenueBankAccountLinkFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
 
@@ -72,7 +73,7 @@ class ImportDSBankAccountApplicationsTest:
     def test_if_an_import_issue_an_error_it_doesnt_get_stuck_in_import_state(
         self, mock_archive_dossier, mock_update_text_annotation, mock_graphql_client
     ):
-        assert not LatestDmsImport.query.all()
+        assert not db.session.query(LatestDmsImport).all()
         siret = "85331845900049"
         siren = siret[:9]
         offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
@@ -82,7 +83,7 @@ class ImportDSBankAccountApplicationsTest:
         )
         import_ds_applications(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, update_ds_applications_for_procedure)
 
-        first_import = LatestDmsImport.query.first()
+        first_import = db.session.query(LatestDmsImport).first()
         assert first_import.isProcessing is False
 
         # One hour later...
@@ -100,7 +101,7 @@ class ImportDSBankAccountApplicationsTest:
         )
         import_ds_applications(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, update_ds_applications_for_procedure)
 
-        latest_imports = LatestDmsImport.query.order_by(LatestDmsImport.id).all()
+        latest_imports = db.session.query(LatestDmsImport).order_by(LatestDmsImport.id).all()
 
         assert latest_imports[0].id == first_import.id
         assert latest_imports[0].isProcessing == first_import.isProcessing == False
@@ -159,7 +160,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
-        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
         assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
 
@@ -212,7 +213,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
-        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
         assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
 
@@ -259,7 +260,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
-        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.DRAFT
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
@@ -305,7 +306,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
-        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.DRAFT
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
@@ -351,7 +352,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
-        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.DRAFT
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
@@ -426,7 +427,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
-        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
         assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
         assert bank_account.venueLinks
@@ -441,7 +442,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         for link in bank_account.venueLinks:
             assert link.timespan.upper is not None
 
-        action_history_logged = history_models.ActionHistory.query.one()
+        action_history_logged = db.session.query(history_models.ActionHistory).one()
         assert action_history_logged.venueId == action_occurred.venueId
         assert action_history_logged.bankAccountId == action_occurred.bankAccountId
         assert action_history_logged.actionType == action_occurred.type

@@ -29,7 +29,7 @@ def test_save_chunks_insert_1_offer_in_chunk():
 
     save_chunks({"1|Offer": offer}, chunk_to_update={})
 
-    assert Offer.query.count() == 1
+    assert db.session.query(Offer).count() == 1
 
 
 def test_save_chunks_insert_1_offer_and_1_stock_in_chunk():
@@ -51,8 +51,8 @@ def test_save_chunks_insert_1_offer_and_1_stock_in_chunk():
     }
     save_chunks(chunk_to_insert, chunk_to_update={})
 
-    assert Offer.query.count() == 1
-    assert Stock.query.count() == 1
+    assert db.session.query(Offer).count() == 1
+    assert db.session.query(Stock).count() == 1
 
 
 def test_save_chunks_update_1_offer_in_chunk():
@@ -67,8 +67,8 @@ def test_save_chunks_update_1_offer_in_chunk():
     db.session.expunge(offer)
     save_chunks(chunk_to_insert={}, chunk_to_update=chunk_to_update)
 
-    assert Offer.query.get(offer.id).isDuo
-    assert not Offer.query.get(other_offer.id).isDuo
+    assert db.session.query(Offer).get(offer.id).isDuo
+    assert not db.session.query(Offer).get(other_offer.id).isDuo
 
 
 def test_save_chunks_update_2_offers_and_1_stock_in_chunk():
@@ -93,8 +93,8 @@ def test_save_chunks_update_2_offers_and_1_stock_in_chunk():
 
     save_chunks(chunk_to_insert={}, chunk_to_update=chunk_to_update)
 
-    offers = Offer.query.all()
+    offers = db.session.query(Offer).all()
     assert len(offers) == 2
     assert all(offer.isDuo for offer in offers)
-    stock = Stock.query.one()
+    stock = db.session.query(Stock).one()
     assert stock.quantity == 2

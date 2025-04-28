@@ -3,6 +3,7 @@ import time
 
 from pcapi import settings
 from pcapi.local_providers import provider_manager
+from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 
@@ -21,7 +22,9 @@ class SynchronizeVenueProvidersRequest(BaseModel):
 def synchronize_venue_providers_task(payload: SynchronizeVenueProvidersRequest) -> None:
     provider_id = payload.provider_id
     venue_provider_ids = payload.venue_provider_ids
-    venue_providers = models.VenueProvider.query.filter(models.VenueProvider.id.in_(venue_provider_ids)).all()
+    venue_providers = (
+        db.session.query(models.VenueProvider).filter(models.VenueProvider.id.in_(venue_provider_ids)).all()
+    )
 
     if not venue_providers:
         return

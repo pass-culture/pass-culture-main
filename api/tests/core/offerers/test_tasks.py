@@ -13,6 +13,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.models import db
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 from pcapi.utils import siren as siren_utils
@@ -211,7 +212,7 @@ class CheckOffererTest:
         assert response.status_code == 204
         assert offerer.tags == [siren_caduc_tag]
 
-        action = history_models.ActionHistory.query.one()
+        action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId is None
@@ -282,7 +283,7 @@ class CheckOffererTest:
 
         assert response.status_code == 204
         assert offerer.tags == [siren_caduc_tag]
-        assert history_models.ActionHistory.query.count() == 0  # tag already set, no change made
+        assert db.session.query(history_models.ActionHistory).count() == 0  # tag already set, no change made
 
         mock_search_file.assert_called_once()
         mock_append_to_spreadsheet.assert_called_once()
@@ -332,9 +333,11 @@ class CheckOffererTest:
         assert offerer.isRejected
         assert offerer.tags == [siren_caduc_tag]
 
-        offerer_action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.OFFERER_REJECTED
-        ).one()
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .one()
+        )
         assert offerer_action.actionDate is not None
         assert offerer_action.authorUserId is None
         assert offerer_action.userId == user_offerer.user.id
@@ -344,9 +347,11 @@ class CheckOffererTest:
             "rejection_reason": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
         }
 
-        user_offerer_action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.USER_OFFERER_REJECTED
-        ).one()
+        user_offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
+            .one()
+        )
         assert user_offerer_action.actionDate is not None
         assert user_offerer_action.authorUserId is None
         assert user_offerer_action.userId == user_offerer.user.id

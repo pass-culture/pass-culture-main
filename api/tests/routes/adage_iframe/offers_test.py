@@ -8,6 +8,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import AdageFrontRoles
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.educational.utils as educational_utils
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -120,7 +121,7 @@ class CreateCollectiveRequestTest:
         assert len(adage_api_testing.adage_requests) == 1
 
         # check: a new redactor has been saved into database
-        found_redactor = educational_models.EducationalRedactor.query.one()
+        found_redactor = db.session.query(educational_models.EducationalRedactor).one()
 
         assert found_redactor.email == educational_redactor.email
         assert found_redactor.civility == educational_redactor.civility

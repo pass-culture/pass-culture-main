@@ -4,6 +4,7 @@ from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -17,6 +18,7 @@ def test_venue_has_known_allocine_id(client):
 
     client = client.with_session_auth(email=user.email)
     venue_id = venue.id
+    db.session.expire_all()
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venue
     num_queries += 1  # select cinema_provider_pivot
@@ -54,6 +56,7 @@ def test_venue_has_no_allocine_id(client):
 
     client = client.with_session_auth(email=user.email)
     venue_id = venue.id
+    db.session.expire_all()
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venue
     num_queries += 1  # select cinema_provider_pivot
@@ -93,6 +96,7 @@ def test_venue_has_offerer_provider(client):
 
     client = client.with_session_auth(email=user.email)
     venue_id = venue.id
+    db.session.expire_all()
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venue
     num_queries += 1  # select cinema_provider_pivot

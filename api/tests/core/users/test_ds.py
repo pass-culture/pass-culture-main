@@ -69,7 +69,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21163559
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
@@ -105,7 +105,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21166546
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.on_going
@@ -141,9 +141,9 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        assert users_models.UserAccountUpdateRequest.query.count() == 2
+        assert db.session.query(users_models.UserAccountUpdateRequest).count() == 2
 
-        uaur = users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=21167090).one()
+        uaur = db.session.query(users_models.UserAccountUpdateRequest).filter_by(dsApplicationId=21167090).one()
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.accepted
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 19, 35)
@@ -165,7 +165,7 @@ class SyncUserAccountUpdateRequestsTest:
         assert uaur.dateLastInstructorMessage is None
         assert uaur.flags == []
 
-        uaur = users_models.UserAccountUpdateRequest.query.filter_by(dsApplicationId=21167148).one()
+        uaur = db.session.query(users_models.UserAccountUpdateRequest).filter_by(dsApplicationId=21167148).one()
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgx"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
         assert uaur.dateCreated == datetime(2024, 11, 26, 10, 20, 50)
@@ -200,7 +200,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21176193
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
@@ -236,7 +236,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21176997
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.on_going
@@ -272,7 +272,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21177744
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
@@ -311,7 +311,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21179224
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
@@ -348,7 +348,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21193637
         assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
         assert uaur.status == dms_models.GraphQLApplicationStates.draft
@@ -371,7 +371,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        uaur: users_models.UserAccountUpdateRequest = users_models.UserAccountUpdateRequest.query.one()
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
         assert uaur.dsApplicationId == 21163559
         assert uaur.flags == [users_models.UserAccountUpdateFlag.DUPLICATE_NEW_EMAIL]
 
@@ -388,7 +388,7 @@ class SyncUserAccountUpdateRequestsTest:
             dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        assert users_models.UserAccountUpdateRequest.query.count() == 0
+        assert db.session.query(users_models.UserAccountUpdateRequest).count() == 0
 
     @time_machine.travel("2025-01-16 17:12")
     @patch(
@@ -684,7 +684,7 @@ class SyncDeletedUserAccountUpdateRequestsTest:
             dms_api.GET_DELETED_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
         )
 
-        remaining_requests = users_models.UserAccountUpdateRequest.query.all()
+        remaining_requests = db.session.query(users_models.UserAccountUpdateRequest).all()
         assert len(remaining_requests) == 1
         assert remaining_requests[0].dsApplicationId == 10000002
 
@@ -966,7 +966,7 @@ class ArchiveTest:
             },
         )
 
-        assert users_models.UserAccountUpdateRequest.query.one() == other_uaur
+        assert db.session.query(users_models.UserAccountUpdateRequest).one() == other_uaur
 
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
@@ -1002,7 +1002,7 @@ class ArchiveTest:
             "variables": {"input": {"dossierId": uaur.dsTechnicalId, "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID}}
         }
 
-        assert users_models.UserAccountUpdateRequest.query.count() == 0
+        assert db.session.query(users_models.UserAccountUpdateRequest).count() == 0
 
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
@@ -1049,7 +1049,7 @@ class ArchiveTest:
             "variables": {"input": {"dossierId": uaur.dsTechnicalId, "instructeurId": pcapi_settings.DMS_INSTRUCTOR_ID}}
         }
 
-        assert users_models.UserAccountUpdateRequest.query.count() == 0
+        assert db.session.query(users_models.UserAccountUpdateRequest).count() == 0
 
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
@@ -1079,4 +1079,4 @@ class ArchiveTest:
             error.value.message
             == "Un dossier ne peut être déplacé dans « à archiver » qu’une fois le traitement terminé"
         )
-        assert users_models.UserAccountUpdateRequest.query.count() == 1
+        assert db.session.query(users_models.UserAccountUpdateRequest).count() == 1

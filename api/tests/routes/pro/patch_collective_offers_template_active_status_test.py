@@ -9,6 +9,7 @@ from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -30,8 +31,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert CollectiveOfferTemplate.query.get(offer1.id).isActive
-        assert CollectiveOfferTemplate.query.get(offer2.id).isActive
+        assert db.session.query(CollectiveOfferTemplate).get(offer1.id).isActive
+        assert db.session.query(CollectiveOfferTemplate).get(offer2.id).isActive
 
     def when_deactivating_existing_offers(self, client):
         # Given
@@ -49,8 +50,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not CollectiveOfferTemplate.query.get(offer1.id).isActive
-        assert not CollectiveOfferTemplate.query.get(offer2.id).isActive
+        assert not db.session.query(CollectiveOfferTemplate).get(offer1.id).isActive
+        assert not db.session.query(CollectiveOfferTemplate).get(offer2.id).isActive
 
 
 @pytest.mark.usefixtures("db_session")

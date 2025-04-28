@@ -59,36 +59,44 @@ class UserTest:
             user = users_factories.AdminFactory()
 
             assert user.has_admin_role
-            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(False)).all() == []
-            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(True)).all() == [user]
+            assert db.session.query(user_models.User).filter(user_models.User.has_admin_role.is_(False)).all() == []
+            assert db.session.query(user_models.User).filter(user_models.User.has_admin_role.is_(True)).all() == [user]
 
         def test_has_beneficiary_role(self):
             user = users_factories.BeneficiaryGrant18Factory()
 
             assert user.has_beneficiary_role
-            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
-            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(True)).all() == [user]
+            assert (
+                db.session.query(user_models.User).filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
+            )
+            assert db.session.query(user_models.User).filter(user_models.User.has_beneficiary_role.is_(True)).all() == [
+                user
+            ]
 
         def test_has_beneficiary_role_with_legacy_property(self):
             user = users_factories.UserFactory(roles=[user_models.UserRole.BENEFICIARY])
 
             assert user.has_beneficiary_role
-            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
-            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(True)).all() == [user]
+            assert (
+                db.session.query(user_models.User).filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
+            )
+            assert db.session.query(user_models.User).filter(user_models.User.has_beneficiary_role.is_(True)).all() == [
+                user
+            ]
 
         def test_has_pro_role(self):
             user = users_factories.ProFactory()
 
             assert user.has_pro_role
-            assert user_models.User.query.filter(user_models.User.has_pro_role.is_(False)).all() == []
-            assert user_models.User.query.filter(user_models.User.has_pro_role.is_(True)).all() == [user]
+            assert db.session.query(user_models.User).filter(user_models.User.has_pro_role.is_(False)).all() == []
+            assert db.session.query(user_models.User).filter(user_models.User.has_pro_role.is_(True)).all() == [user]
 
         def test_has_test_role(self):
             user = users_factories.UserFactory(roles=[user_models.UserRole.TEST])
 
             assert user.has_test_role
-            assert user_models.User.query.filter(user_models.User.has_test_role.is_(False)).all() == []
-            assert user_models.User.query.filter(user_models.User.has_test_role.is_(True)).all() == [user]
+            assert db.session.query(user_models.User).filter(user_models.User.has_test_role.is_(False)).all() == []
+            assert db.session.query(user_models.User).filter(user_models.User.has_test_role.is_(True)).all() == [user]
 
         def test_add_role_on_new_user(self):
             user = user_models.User()
@@ -579,7 +587,7 @@ class UserLoginTest:
                 db.session.add(new_user)
 
         assert "missingLoginMethod" in str(exc.value)
-        assert user_models.User.query.count() == 0
+        assert db.session.query(user_models.User).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
     def test_empty_password_update_with_sso(self):
@@ -602,7 +610,7 @@ class UserLoginTest:
             db.session.add(new_user)
             db.session.add(single_sign_on)
 
-        saved_user = user_models.User.query.one()
+        saved_user = db.session.query(user_models.User).one()
         assert saved_user.password is None
 
 

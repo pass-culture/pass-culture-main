@@ -11,6 +11,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.scripts.beneficiary import import_test_users
 from pcapi.utils import crypto
 from pcapi.utils.email import sanitize_email
@@ -95,14 +96,14 @@ class ReadFileTest:
         assert pierre.has_test_role
         assert len(pierre.deposits) == 0
 
-        offerer = offerers_models.Offerer.query.filter_by(name="Test Pierre Pro").one()
+        offerer = db.session.query(offerers_models.Offerer).filter_by(name="Test Pierre Pro").one()
         assert offerer.siren == "111222337"
         assert offerer.postalCode == "75001"
         assert offerer.city == "PARIS"
         assert offerer.isValidated
         assert offerer.allowedOnAdage
 
-        venue = offerers_models.Venue.query.filter_by(name="Structure Pierre Pro").one()
+        venue = db.session.query(offerers_models.Venue).filter_by(name="Structure Pierre Pro").one()
         assert venue.siret == "11122233700011"
         assert venue.postalCode == "75001"
         assert venue.city == "PARIS"
@@ -110,7 +111,8 @@ class ReadFileTest:
         assert venue.adageId is not None
 
         bank_accounts = (
-            finance_models.BankAccount.query.filter_by(offererId=offerer.id)
+            db.session.query(finance_models.BankAccount)
+            .filter_by(offererId=offerer.id)
             .order_by(finance_models.BankAccount.id)
             .all()
         )
@@ -123,15 +125,17 @@ class ReadFileTest:
             else:
                 assert not bank_account.venueLinks
 
-        offerer_addresses = offerers_models.OffererAddress.query.options(
-            sa_orm.joinedload(offerers_models.OffererAddress.address)
-        ).all()
+        offerer_addresses = (
+            db.session.query(offerers_models.OffererAddress)
+            .options(sa_orm.joinedload(offerers_models.OffererAddress.address))
+            .all()
+        )
         assert len(offerer_addresses) == 4
         assert {oa.address.postalCode for oa in offerer_addresses} == {"75001", "06400"}
 
         assert pierre.checkPassword("PierrePro$123")  # ggignore
 
-        admin = User.query.filter_by(email="admin@example.com").one()
+        admin = db.session.query(User).filter_by(email="admin@example.com").one()
         assert admin.has_admin_role
         assert not admin.has_beneficiary_role
         assert not admin.has_test_role
@@ -142,7 +146,7 @@ class ReadFileTest:
         import_test_users.create_users_from_csv(csv_file)
         sanitized_email = sanitize_email(BOUNTY_EMAIL).replace("_", "-")
         prefix = f"staging_{sanitized_email}"
-        api_key = offerers_models.ApiKey.query.filter_by(prefix=prefix).one()
+        api_key = db.session.query(offerers_models.ApiKey).filter_by(prefix=prefix).one()
         assert crypto.hash_public_api_key(sanitized_email) == api_key.secret
 
         # This call ensures that we have access to the api and at least one venue

@@ -8,6 +8,7 @@ from pcapi.connectors.dms import factories as dms_factories
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.scripts.subscription.dms.import_dms_applications import import_all_updated_dms_applications
 
 from tests.scripts.beneficiary import fixture
@@ -47,8 +48,8 @@ class DmsImportTest:
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == fraud_models.FraudCheckType.DMS
         ][0]
-        orphan_dms_application = fraud_models.OrphanDmsApplication.query.first()
-        latest_import_record = dms_models.LatestDmsImport.query.first()
+        orphan_dms_application = db.session.query(fraud_models.OrphanDmsApplication).first()
+        latest_import_record = db.session.query(dms_models.LatestDmsImport).first()
 
         assert mock_get_applications_with_details.call_count == 1
         assert user_dms_fraud_check.status == fraud_models.FraudCheckStatus.OK
@@ -91,9 +92,11 @@ class DmsImportTest:
 
         import_all_updated_dms_applications(1)
 
-        latest_import_record = dms_models.LatestDmsImport.query.order_by(
-            dms_models.LatestDmsImport.latestImportDatetime.desc()
-        ).first()
+        latest_import_record = (
+            db.session.query(dms_models.LatestDmsImport)
+            .order_by(dms_models.LatestDmsImport.latestImportDatetime.desc())
+            .first()
+        )
         assert latest_import_record.latestImportDatetime == datetime.datetime(2020, 10, 1, 19, 0, 0)
         mock_get_applications_with_details.assert_called_once_with(1, since=datetime.datetime(2020, 10, 1, 15, 0))
 
@@ -104,7 +107,7 @@ class DmsImportTest:
 
         import_all_updated_dms_applications(1)
 
-        assert dms_models.LatestDmsImport.query.count() == 1
+        assert db.session.query(dms_models.LatestDmsImport).count() == 1
         mock_get_applications_with_details.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
@@ -114,7 +117,7 @@ class DmsImportTest:
 
         import_all_updated_dms_applications(1)
 
-        latest_import_record = dms_models.LatestDmsImport.query.first()
+        latest_import_record = db.session.query(dms_models.LatestDmsImport).first()
         assert latest_import_record.latestImportDatetime == datetime.datetime(2020, 10, 1, 15, 0)
 
     @pytest.mark.usefixtures("db_session")

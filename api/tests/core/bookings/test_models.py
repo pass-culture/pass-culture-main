@@ -263,7 +263,7 @@ class BookingIsConfirmedSqlQueryTest:
         yesterday = datetime.utcnow() - timedelta(days=1)
         factories.BookingFactory(cancellation_limit_date=yesterday)
 
-        query_result = Booking.query.filter(Booking.isConfirmed.is_(True)).all()
+        query_result = db.session.query(Booking).filter(Booking.isConfirmed.is_(True)).all()
 
         assert len(query_result) == 1
 
@@ -271,14 +271,14 @@ class BookingIsConfirmedSqlQueryTest:
         tomorrow = datetime.utcnow() + timedelta(days=1)
         factories.BookingFactory(cancellation_limit_date=tomorrow)
 
-        query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
+        query_result = db.session.query(Booking).filter(Booking.isConfirmed.is_(False)).all()
 
         assert len(query_result) == 1
 
     def test_booking_is_not_confirmed_when_no_cancellation_limit_date_exists(self):
         factories.BookingFactory()
 
-        query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
+        query_result = db.session.query(Booking).filter(Booking.isConfirmed.is_(False)).all()
 
         assert len(query_result) == 1
 

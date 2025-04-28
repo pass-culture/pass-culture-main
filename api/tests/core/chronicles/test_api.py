@@ -127,7 +127,7 @@ class ImportBookClubChroniclesTest:
                 sort="submitted_at,asc",
             )
 
-        chronicle = models.Chronicle.query.order_by(models.Chronicle.id.desc()).first()
+        chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
         assert chronicle.email == "email@mail.test"
 
     def test_import_book_club_chronicles_without_old_chronicle(self):
@@ -143,7 +143,7 @@ class ImportBookClubChroniclesTest:
                 sort="submitted_at,asc",
             )
 
-        chronicle = models.Chronicle.query.order_by(models.Chronicle.id.desc()).first()
+        chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
         assert chronicle.email == "email@mail.test"
 
 
@@ -203,7 +203,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        chronicle = models.Chronicle.query.first()
+        chronicle = db.session.query(models.Chronicle).first()
         assert chronicle.age == 18
         assert chronicle.city == "Paris"
         assert chronicle.firstName == "Bob"
@@ -240,7 +240,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        chronicle = models.Chronicle.query.first()
+        chronicle = db.session.query(models.Chronicle).first()
         assert chronicle.age is None
         assert chronicle.city is None
         assert chronicle.firstName is None
@@ -275,7 +275,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        assert models.Chronicle.query.count() == 0
+        assert db.session.query(models.Chronicle).count() == 0
 
     def test_save_book_club_chronicle_without_content(self):
         form = typeform.TypeformResponse(
@@ -294,7 +294,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        assert models.Chronicle.query.count() == 0
+        assert db.session.query(models.Chronicle).count() == 0
 
     def test_save_book_club_chronicle_without_ean(self):
         form = typeform.TypeformResponse(
@@ -313,7 +313,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        assert models.Chronicle.query.count() == 0
+        assert db.session.query(models.Chronicle).count() == 0
 
     def test_save_book_club_chronicle_link_to_user(self):
         user = users_factories.UserFactory(
@@ -340,7 +340,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        chronicle = models.Chronicle.query.first()
+        chronicle = db.session.query(models.Chronicle).first()
         assert chronicle.userId == user.id
 
     def test_save_book_club_chronicle_refuse_publication(self):
@@ -378,7 +378,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        chronicle = models.Chronicle.query.first()
+        chronicle = db.session.query(models.Chronicle).first()
 
         assert not chronicle.isIdentityDiffusible
         assert not chronicle.isSocialMediaDiffusible
@@ -408,7 +408,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        chronicle = models.Chronicle.query.first()
+        chronicle = db.session.query(models.Chronicle).first()
 
         assert chronicle.products == [product]
 
@@ -437,7 +437,7 @@ class SaveBookClubChronicleTest:
 
         api.save_book_club_chronicle(form)
 
-        chronicles = models.Chronicle.query.all()
+        chronicles = db.session.query(models.Chronicle).all()
         assert len(chronicles) == 1
         assert chronicles[0].id == old_chronicle.id
 

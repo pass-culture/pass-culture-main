@@ -5,6 +5,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models
+from pcapi.models import db
 
 
 def upsert_roles(
@@ -24,7 +25,8 @@ def upsert_roles(
 
 def fetch_user_with_profile(user_id: int) -> models.User | None:
     return (
-        models.User.query.filter_by(id=user_id)
+        db.session.query(models.User)
+        .filter_by(id=user_id)
         .options(
             sa_orm.joinedload(models.User.backoffice_profile)
             .joinedload(perm_models.BackOfficeUserProfile.roles)

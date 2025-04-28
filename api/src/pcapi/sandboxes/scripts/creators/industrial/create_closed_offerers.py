@@ -16,6 +16,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ def _create_closed_offerer(
 ) -> None:
 
     now = datetime.datetime.utcnow()
-    siren_caduc_tag = offerers_models.OffererTag.query.filter_by(name="siren-caduc").one()
+    siren_caduc_tag = db.session.query(offerers_models.OffererTag).filter_by(name="siren-caduc").one()
 
     offerer = offerers_factories.ClosedOffererFactory.create(
         name=name.upper(), tags=[siren_caduc_tag], allowedOnAdage=True
@@ -128,9 +129,9 @@ def _create_closed_offerer(
 
         for booking in (used_1, used_2):
             finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
-            event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+            event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
             finance_api.price_event(event)
         finance_api.generate_cashflows_and_payment_files(cutoff=now)
-        cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+        cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
         cashflow_ids = [c.id for c in cashflows]
         finance_api.generate_and_store_invoice_legacy(bank_account_id=bank_account.id, cashflow_ids=cashflow_ids)

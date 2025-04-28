@@ -3,12 +3,14 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.functions import Function
 
 from pcapi.core.users.models import User
+from pcapi.models import db
 
 
 def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@{email_provider}"
     return (
-        User.query.filter_by(is_beneficiary=False, isActive=True)
+        db.session.query(User)
+        .filter_by(is_beneficiary=False, isActive=True)
         .filter(User.UserOfferers.any())
         .filter(sa.func.lower(User.email).like(sa.func.lower(formatted_email_provider)))
         .all()

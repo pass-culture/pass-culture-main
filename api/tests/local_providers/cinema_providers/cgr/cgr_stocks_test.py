@@ -13,6 +13,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import CGRStocks
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -85,12 +86,12 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
+        created_offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
 
         assert len(created_offers) == 2
 
@@ -138,12 +139,14 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
-        created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
-        created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
-        created_price_categories_labels = offers_models.PriceCategoryLabel.query.order_by(
-            offers_models.PriceCategoryLabel.id
-        ).all()
+        created_offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
+        created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.id).all()
+        created_price_categories = (
+            db.session.query(offers_models.PriceCategory).order_by(offers_models.PriceCategory.id).all()
+        )
+        created_price_categories_labels = (
+            db.session.query(offers_models.PriceCategoryLabel).order_by(offers_models.PriceCategoryLabel.id).all()
+        )
         assert len(created_offers) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
@@ -214,8 +217,8 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offer = offers_models.Offer.query.one()
-        created_stock = offers_models.Stock.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
+        created_stock = db.session.query(offers_models.Stock).one()
 
         should_apply_movie_festival_rate_mock.assert_called_with(
             created_offer.id, created_stock.beginningDatetime.date()
@@ -247,12 +250,14 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offer = offers_models.Offer.query.one()
-        created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
-        created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
-        created_price_category_labels = offers_models.PriceCategoryLabel.query.order_by(
-            offers_models.PriceCategoryLabel.id
-        ).all()
+        created_offer = db.session.query(offers_models.Offer).one()
+        created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.id).all()
+        created_price_categories = (
+            db.session.query(offers_models.PriceCategory).order_by(offers_models.PriceCategory.id).all()
+        )
+        created_price_category_labels = (
+            db.session.query(offers_models.PriceCategoryLabel).order_by(offers_models.PriceCategoryLabel.id).all()
+        )
 
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 3
@@ -318,7 +323,7 @@ class CGRStocksTest:
         CGRStocks(venue_provider=venue_provider).updateObjects()
         CGRStocks(venue_provider=venue_provider).updateObjects()
 
-        created_price_category = offers_models.PriceCategory.query.one()
+        created_price_category = db.session.query(offers_models.PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
 
     def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
@@ -340,7 +345,7 @@ class CGRStocksTest:
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
-        created_stock = offers_models.Stock.query.one()
+        created_stock = db.session.query(offers_models.Stock).one()
         # we received quantity 99
         assert created_stock.quantity == 99
 
@@ -357,7 +362,7 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_stocks = offers_models.Stock.query.all()
+        created_stocks = db.session.query(offers_models.Stock).all()
 
         assert len(created_stocks) == 1
         assert created_stocks[0].quantity == 2
@@ -388,7 +393,7 @@ class CGRStocksTest:
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
-        existing_synced_stock = offers_models.Stock.query.one()
+        existing_synced_stock = db.session.query(offers_models.Stock).one()
 
         # CGR sent us a showtime with negative remaining quantity
         # We should kept the previous value
@@ -439,9 +444,11 @@ class CGRStocksTest:
         for providable_infos in cgr_stocks:
             for providable_info in providable_infos:
                 if isinstance(providable_info.type(), offers_models.Stock):
-                    stock_synchronised = offers_models.Stock.query.filter_by(
-                        idAtProviders=providable_info.id_at_providers
-                    ).one_or_none()
+                    stock_synchronised = (
+                        db.session.query(offers_models.Stock)
+                        .filter_by(idAtProviders=providable_info.id_at_providers)
+                        .one_or_none()
+                    )
                     assert stock_synchronised is not None
                     event_created = create_finance_event_to_update(
                         stock=stock_synchronised, venue_provider=venue_provider
@@ -477,7 +484,7 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert (
             created_offer.image.url
             == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
@@ -509,7 +516,7 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.activeMediation == None
         assert cgr_stocks.erroredThumbs == 1
 
@@ -563,7 +570,7 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert (
             created_offer.image.url
             == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
@@ -594,7 +601,7 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
+        created_offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
 
         assert len(created_offers) == 2
         assert created_offers[0].product == product_1

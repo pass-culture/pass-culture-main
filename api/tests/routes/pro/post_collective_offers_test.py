@@ -10,6 +10,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
+from pcapi.models import db
 
 
 def base_offer_payload(
@@ -109,7 +110,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = models.CollectiveOffer.query.get(offer_id)
+        offer = db.session.query(models.CollectiveOffer).get(offer_id)
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -131,7 +132,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = models.CollectiveOffer.query.get(offer_id)
+        offer = db.session.query(models.CollectiveOffer).get(offer_id)
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -168,7 +169,7 @@ class Returns200Test:
 
         assert response.status_code == 201
 
-        offer = models.CollectiveOffer.query.get(response.json["id"])
+        offer = db.session.query(models.CollectiveOffer).get(response.json["id"])
         assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
     @pytest.mark.features(ENABLE_MARSEILLE=False)
@@ -214,7 +215,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == []
 
@@ -235,7 +236,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.offerVenue == data["offerVenue"]
         assert len(offer.interventionArea) > 0
 
@@ -256,7 +257,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.offerVenue == data["offerVenue"]
         assert len(offer.interventionArea) > 0
 
@@ -293,7 +294,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddressId == oa.id
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
@@ -321,7 +322,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddressId == None
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
@@ -349,7 +350,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddress.label == "My address"
         assert offer.offererAddress.address.city == "Paris"
@@ -384,7 +385,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddressId == None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
@@ -407,7 +408,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.domains == [domain]
         assert offer.nationalProgramId is None
 
@@ -430,7 +431,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
-        offer = models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.domains == [domain]
         assert offer.nationalProgramId is None
 
@@ -451,7 +452,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_adage_offerer(self, client):
         # Given
@@ -469,7 +470,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_offerer_address_venue_not_allowed(self, client):
         venue = offerers_factories.VenueFactory()
@@ -506,7 +507,7 @@ class Returns400Test:
             "bookingEmails.1": ["Le format d'email est incorrect."],
             "bookingEmails.2": ["Le format d'email est incorrect."],
         }
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_booking_email(self, client):
         venue = offerers_factories.VenueFactory()
@@ -518,7 +519,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"bookingEmails": ["Un email doit etre renseigné."]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_empty_contact_email(self, client):
         venue = offerers_factories.VenueFactory()
@@ -530,7 +531,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"contactEmail": ["Le format d'email est incorrect."]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_invalid_contact_email(self, client):
         venue = offerers_factories.VenueFactory()
@@ -542,7 +543,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"contactEmail": ["Le format d'email est incorrect."]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_intervention_area(self, client):
         venue = offerers_factories.VenueFactory()
@@ -554,7 +555,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["intervention_area must have at least one value"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_formats(self, client):
         venue = offerers_factories.VenueFactory()
@@ -566,7 +567,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"formats": ["formats must have at least one value"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_no_domains(self, client):
         venue = offerers_factories.VenueFactory()
@@ -578,7 +579,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"domains": ["domains must have at least one value"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_description_invalid(self, client):
         venue = offerers_factories.VenueFactory()
@@ -590,7 +591,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_cannot_receive_offer_venue(self, client):
@@ -610,7 +611,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_must_receive_location(self, client):
@@ -623,7 +624,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"location": ["location must be provided"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_with_location_type_school_must_not_receive_location_comment(self, client):
@@ -647,7 +648,7 @@ class Returns400Test:
         assert response.json == {
             "location.locationComment": ["locationComment is not allowed for the provided locationType"]
         }
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_with_location_type_address_must_not_receive_location_comment(self, client):
@@ -671,7 +672,7 @@ class Returns400Test:
         assert response.json == {
             "location.locationComment": ["locationComment is not allowed for the provided locationType"]
         }
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_with_location_type_school_must_provide_intervention_area(self, client):
@@ -694,7 +695,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["intervention_area is required and must not be empty"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_with_location_type_school_must_provide_correct_intervention_area(self, client):
@@ -717,7 +718,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["intervention_area must be a valid area"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_create_collective_offer_with_location_type_address_must_provide_address(self, client):
@@ -739,7 +740,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"location.address": ["address is required for the provided locationType"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     @pytest.mark.parametrize(
@@ -768,7 +769,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"location.address": ["address is not allowed for the provided locationType"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
     def test_create_collective_offer_cannot_receive_location(self, client):
@@ -788,7 +789,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"location": ["Cannot receive location, use offerVenue instead"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
     def test_create_collective_offer_must_receive_offer_venue(self, client):
@@ -801,7 +802,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"offerVenue": ["offerVenue must be provided"]}
-        assert models.CollectiveOffer.query.count() == 0
+        assert db.session.query(models.CollectiveOffer).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")

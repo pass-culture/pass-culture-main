@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.models import db
 from pcapi.routes.serialization import collective_stock_serialize
 
 
@@ -71,7 +72,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
         assert stock.startDatetime == new_stock_data.startDatetime.replace(tzinfo=None)
         assert stock.bookingLimitDatetime == new_stock_data.bookingLimitDatetime.replace(tzinfo=None)
         assert stock.price == 1500
@@ -103,7 +104,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
         assert stock.startDatetime == new_stock_data.startDatetime.replace(tzinfo=None)
         assert stock.bookingLimitDatetime == initial_booking_limit_date
         assert stock.price == 1200
@@ -135,7 +136,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == new_event_datetime.replace(tzinfo=None)
 
     def test_should_replace_bookingLimitDatetime_with_old_event_datetime_if_provided_but_none_and_event_date_unchanged(
@@ -162,7 +163,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == initial_event_date
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -188,7 +189,7 @@ class EditCollectiveOfferStocksTest:
         educational_api_stock.edit_collective_stock(stock=stock_to_be_updated, stock_data=data)
 
         # Then
-        booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
+        booking_updated = db.session.query(CollectiveBooking).filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime(2021, 11, 12, 20)
 
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
@@ -223,7 +224,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         # Then
-        booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
+        booking_updated = db.session.query(CollectiveBooking).filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
     def test_should_update_expired_booking(self) -> None:
@@ -353,7 +354,7 @@ class ReturnErrorTest:
             )
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == datetime.datetime(2021, 12, 5)
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -379,7 +380,7 @@ class ReturnErrorTest:
             )
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
         assert stock.startDatetime == datetime.datetime(2021, 12, 10)
 
     @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)

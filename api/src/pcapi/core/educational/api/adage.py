@@ -108,9 +108,9 @@ def get_venue_by_id_for_adage_iframe(
 def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPartner]) -> None:
     adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
     existing_sirens: dict[str, bool] = dict(
-        offerers_models.Offerer.query.filter(offerers_models.Offerer.siren != None).with_entities(
-            offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage
-        )
+        db.session.query(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.siren != None)
+        .with_entities(offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage)
     )
     existing_adage_sirens = {k for k, v in existing_sirens.items() if v}
 
@@ -126,7 +126,8 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPar
 
     # check we don't remove offerers that do have valid venues
     existing_sirens_from_synchronized_venues: dict[str, bool] = dict(
-        offerers_models.Offerer.query.join(offerers_models.Venue)
+        db.session.query(offerers_models.Offerer)
+        .join(offerers_models.Venue)
         .filter(
             offerers_models.Offerer.siren != None,
             offerers_models.Venue.adageId.is_not(None),
@@ -140,10 +141,10 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPar
     logger.info("SIRENs to delete: %s", sirens_to_delete)
     logger.info("existing SIRENs from synchronized venues: %s", existing_sirens_from_synchronized_venues)
 
-    offerers_models.Offerer.query.filter(offerers_models.Offerer.siren.in_(list(sirens_to_add))).update(
+    db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(list(sirens_to_add))).update(
         {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
     )
-    offerers_models.Offerer.query.filter(offerers_models.Offerer.siren.in_(list(sirens_to_delete))).update(
+    db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(list(sirens_to_delete))).update(
         {offerers_models.Offerer.allowedOnAdage: False}, synchronize_session=False
     )
 
@@ -182,7 +183,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
     deactivated_adage_ids = {row.adage_id for row in deactivated}
     deactivated_venue_ids = {row.venue_id for row in deactivated if row.venue_id}
 
-    deactivated_venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
+    deactivated_venues: list[offerers_models.Venue] = db.session.query(offerers_models.Venue).filter(
         sa.or_(
             offerers_models.Venue.adageId.in_(deactivated_adage_ids),
             offerers_models.Venue.id.in_(deactivated_venue_ids),
@@ -201,7 +202,8 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
     searched_ids = {cp.venue_id for cp in adage_cps} - deactivated_venue_ids
     searched_adage_ids = {cp.adage_id for cp in adage_cps} - deactivated_adage_ids
     venues: list[offerers_models.Venue] = (
-        offerers_models.Venue.query.filter(
+        db.session.query(offerers_models.Venue)
+        .filter(
             sa.or_(
                 offerers_models.Venue.adageId.in_(searched_adage_ids),
                 offerers_models.Venue.id.in_(searched_ids),

@@ -13,6 +13,7 @@ from pcapi import settings
 from pcapi.core.external import batch as batch_operations
 from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends import batch as batch_backend
 
@@ -125,7 +126,7 @@ def unstack_batch_queue(queue_name: str, chunk_size: int = 1_000, sleep_time: fl
     for users_task_chunk in get_users_task_chunks(fetch_user_ids_from_tasks(client, parent), chunk_size):
         try:
             user_ids = {item.user_id for item in users_task_chunk}
-            users = User.query.filter(User.id.in_(user_ids)).all()
+            users = db.session.query(User).filter(User.id.in_(user_ids)).all()
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to fetch users from chunk", extra={"chunk_size": len(users_task_chunk)})
             continue

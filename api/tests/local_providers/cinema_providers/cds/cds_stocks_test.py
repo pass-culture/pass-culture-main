@@ -17,6 +17,7 @@ from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -25,9 +26,13 @@ from . import fixtures
 
 
 def setup_cinema() -> tuple[providers_models.CDSCinemaDetails, providers_models.VenueProvider]:
-    cds_provider = providers_models.Provider.query.filter(
-        providers_models.Provider.localClass == "CDSStocks",
-    ).one()
+    cds_provider = (
+        db.session.query(providers_models.Provider)
+        .filter(
+            providers_models.Provider.localClass == "CDSStocks",
+        )
+        .one()
+    )
     venue_provider = providers_factories.VenueProviderFactory(
         provider=cds_provider,
         isDuoOffers=True,
@@ -174,7 +179,7 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        assert Offer.query.count() == 2
+        assert db.session.query(Offer).count() == 2
 
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
@@ -199,7 +204,7 @@ class CDSStocksTest:
             json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
         )
 
-        Product.query.filter(Product.extraData["allocineId"] == "2133").delete(synchronize_session=False)
+        db.session.query(Product).filter(Product.extraData["allocineId"] == "2133").delete(synchronize_session=False)
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
@@ -207,10 +212,10 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -298,10 +303,10 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -383,9 +388,9 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -448,9 +453,9 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -502,10 +507,10 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_offer = Offer.query.one()
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_labels = PriceCategoryLabel.query.order_by(PriceCategoryLabel.label).all()
+        created_offer = db.session.query(Offer).one()
+        created_stocks = db.session.query(Stock).order_by(Stock.id).all()
+        created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
+        created_price_category_labels = db.session.query(PriceCategoryLabel).order_by(PriceCategoryLabel.label).all()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
         assert len(created_price_category_labels) == 2
@@ -581,10 +586,10 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_offer = Offer.query.one()
-        created_stock = Stock.query.one()
-        created_price_category = PriceCategory.query.one()
-        created_price_category_label = PriceCategoryLabel.query.one()
+        created_offer = db.session.query(Offer).one()
+        created_stock = db.session.query(Stock).one()
+        created_price_category = db.session.query(PriceCategory).one()
+        created_price_category_label = db.session.query(PriceCategoryLabel).one()
 
         should_apply_movie_festival_rate_mock.assert_called_with(
             created_offer.id,
@@ -624,9 +629,9 @@ class CDSStocksTest:
         CDSStocks(venue_provider=venue_provider).updateObjects()
 
         # Then
-        created_price_category = PriceCategory.query.one()
+        created_price_category = db.session.query(PriceCategory).one()
         assert created_price_category.price == Decimal("6.9")
-        assert PriceCategoryLabel.query.count() == 1
+        assert db.session.query(PriceCategoryLabel).count() == 1
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
@@ -661,8 +666,8 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_meditations = Mediation.query.order_by(Mediation.id).all()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
+        created_meditations = db.session.query(Mediation).order_by(Mediation.id).all()
 
         assert len(created_offers) == 2
         assert len(created_meditations) == 2
@@ -715,8 +720,8 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_meditations = Mediation.query.order_by(Mediation.id).all()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
+        created_meditations = db.session.query(Mediation).order_by(Mediation.id).all()
 
         assert len(created_offers) == 2
         assert len(created_meditations) == 0
@@ -755,7 +760,7 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         # Then
-        offers = Offer.query.all()
+        offers = db.session.query(Offer).all()
         assert {offer.thumbUrl for offer in offers} == {None}
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
@@ -842,7 +847,7 @@ class CDSStocksTest:
         cgr_stocks = CDSStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_offers = Offer.query.order_by(Offer.id).all()
+        created_offers = db.session.query(Offer).order_by(Offer.id).all()
 
         assert len(created_offers) == 2
         assert created_offers[0].product == product_1
@@ -871,7 +876,7 @@ class CDSStocksQuantityTest:
         cds_stocks_provider = CDSStocks(venue_provider=venue_provider)
         cds_stocks_provider.updateObjects()
 
-        created_stock = Stock.query.one()
+        created_stock = db.session.query(Stock).one()
 
         # make a duo booking
         bookings_factories.BookingFactory(stock=created_stock, quantity=2)
@@ -887,7 +892,7 @@ class CDSStocksQuantityTest:
         cds_stocks_provider = CDSStocks(venue_provider=venue_provider)
         cds_stocks_provider.updateObjects()
 
-        created_stock = Stock.query.one()
+        created_stock = db.session.query(Stock).one()
 
         # Then
         assert created_stock.quantity == 2

@@ -7,6 +7,7 @@ from pcapi.core.bookings import models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offer_models
+from pcapi.models import db
 
 from tests.test_utils import run_command
 
@@ -31,8 +32,8 @@ class ArchiveOldBookingsTest:
         run_command(app, "archive_old_bookings")
 
         # then
-        old_booking = bookings_models.Booking.query.get(old_booking_id)
-        recent_booking = bookings_models.Booking.query.get(recent_booking_id)
+        old_booking = db.session.query(bookings_models.Booking).get(old_booking_id)
+        recent_booking = db.session.query(bookings_models.Booking).get(recent_booking_id)
         assert old_booking.displayAsEnded
         assert not recent_booking.displayAsEnded
 
@@ -64,9 +65,9 @@ class ArchiveOldBookingsTest:
 
         # then
 
-        old_booking = bookings_models.Booking.query.get(old_booking_id)
-        old_not_free_booking = bookings_models.Booking.query.get(old_not_free_booking_id)
-        recent_booking = bookings_models.Booking.query.get(recent_booking_id)
+        old_booking = db.session.query(bookings_models.Booking).get(old_booking_id)
+        old_not_free_booking = db.session.query(bookings_models.Booking).get(old_not_free_booking_id)
+        recent_booking = db.session.query(bookings_models.Booking).get(recent_booking_id)
         assert not recent_booking.displayAsEnded
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
@@ -101,7 +102,7 @@ class ArchiveOldBookingsTest:
         run_command(app, "archive_old_bookings")
 
         # then
-        recent_booking = bookings_models.Booking.query.get(recent_booking_id)
-        old_booking = bookings_models.Booking.query.get(old_booking_id)
+        recent_booking = db.session.query(bookings_models.Booking).get(recent_booking_id)
+        old_booking = db.session.query(bookings_models.Booking).get(old_booking_id)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded

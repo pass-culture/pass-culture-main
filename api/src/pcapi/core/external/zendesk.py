@@ -22,6 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import testing
 from pcapi.core.users import utils as users_utils
+from pcapi.models import db
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import requests
 from pcapi.utils import urls
@@ -53,7 +54,7 @@ def update_contact_attributes(
     # Then search by phone number, which is NOT unique in user database
     # TODO(prouzet) Should we search by phone number in venues?
     if not user and phone_number:
-        user = users_models.User.query.filter(users_models.User.phoneNumber == phone_number).first()
+        user = db.session.query(users_models.User).filter(users_models.User.phoneNumber == phone_number).first()
 
     if user and not email:
         email = user.email

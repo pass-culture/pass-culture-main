@@ -5,6 +5,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvByInvoicesModel
@@ -74,7 +75,8 @@ def get_reimbursements_csv_v2(query: ReimbursementCsvByInvoicesModel) -> bytes:
 
 def _get_reimbursments_csv_filter_by_invoices(user: User, query: ReimbursementCsvByInvoicesModel) -> str:
     offerers = (
-        finance_models.Invoice.query.join(finance_models.Invoice.bankAccount)
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.Invoice.bankAccount)
         .join(finance_models.BankAccount.offerer)
         .filter(finance_models.Invoice.reference.in_(query.invoicesReferences))
         .with_entities(offerer_models.Offerer.id)

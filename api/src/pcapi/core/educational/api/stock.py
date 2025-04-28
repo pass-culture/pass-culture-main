@@ -35,7 +35,8 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
         end = start
 
     collective_offer = (
-        educational_models.CollectiveOffer.query.filter_by(id=offer_id)
+        db.session.query(educational_models.CollectiveOffer)
+        .filter_by(id=offer_id)
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock))
         .one()
     )

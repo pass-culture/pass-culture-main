@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -25,7 +26,7 @@ class Returns204Test:
             )
 
             assert response.status_code == 204
-            booking = Booking.query.one()
+            booking = db.session.query(Booking).one()
             assert booking.status is BookingStatus.USED
 
     class WithBasicAuthTest:
@@ -38,7 +39,7 @@ class Returns204Test:
             response = client.with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
-            booking = Booking.query.one()
+            booking = db.session.query(Booking).one()
             assert booking.status is BookingStatus.USED
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
@@ -50,7 +51,7 @@ class Returns204Test:
             response = client.with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
-            booking = Booking.query.one()
+            booking = db.session.query(Booking).one()
             assert booking.status is BookingStatus.USED
 
 
@@ -98,7 +99,7 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            booking = Booking.query.get(booking.id)
+            booking = db.session.query(Booking).get(booking.id)
             assert booking.status == BookingStatus.CONFIRMED
 
         def test_when_offerer_is_closed(self, client):
@@ -111,7 +112,7 @@ class Returns403Test:
 
             assert response.status_code == 403
             assert response.json["booking"] == ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]
-            booking = Booking.query.get(booking.id)
+            booking = db.session.query(Booking).get(booking.id)
             assert booking.status == BookingStatus.CONFIRMED
 
 
@@ -141,7 +142,7 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
-        booking = Booking.query.get(booking.id)
+        booking = db.session.query(Booking).get(booking.id)
         assert booking.status == BookingStatus.CANCELLED
 
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
@@ -158,5 +159,5 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
-        booking = Booking.query.get(booking.id)
+        booking = db.session.query(Booking).get(booking.id)
         assert booking.status == BookingStatus.CANCELLED

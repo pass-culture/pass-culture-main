@@ -12,6 +12,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import Favorite
+from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.push import trigger_events
 from pcapi.utils.human_ids import humanize
@@ -379,8 +380,8 @@ class PostTest:
 
         # Then
         assert response.status_code == 200, response.data
-        assert Favorite.query.count() == 1
-        favorite = Favorite.query.first()
+        assert db.session.query(Favorite).count() == 1
+        favorite = db.session.query(Favorite).first()
         assert favorite.dateCreated
         assert favorite.userId == user.id
         assert response.json["id"] == favorite.id
@@ -412,7 +413,7 @@ class PostTest:
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer1 = offers_factories.EventOfferFactory(venue=venue)
-        assert Favorite.query.count() == 0
+        assert db.session.query(Favorite).count() == 0
 
         client.with_token(user.email)
 
@@ -423,7 +424,7 @@ class PostTest:
 
         # Then
         assert response.status_code == 200
-        assert Favorite.query.count() == 1
+        assert db.session.query(Favorite).count() == 1
 
         expected_push_counts = (
             1  # for user attribute update in android
@@ -439,20 +440,20 @@ class PostTest:
     def when_user_creates_one_favorite_above_the_limit(self, client):
         user = users_factories.UserFactory()
         offer = offers_factories.EventOfferFactory()
-        assert Favorite.query.count() == 0
+        assert db.session.query(Favorite).count() == 0
 
         client.with_token(user.email)
 
         response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
         assert response.status_code == 200, response.data
-        assert Favorite.query.count() == 1
+        assert db.session.query(Favorite).count() == 1
 
         response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
         assert response.status_code == 400, response.data
         assert response.json == {"code": "MAX_FAVORITES_REACHED"}
-        assert Favorite.query.count() == 1
+        assert db.session.query(Favorite).count() == 1
 
 
 class DeleteTest:
@@ -464,14 +465,14 @@ class DeleteTest:
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
             favorite = users_factories.FavoriteFactory(offer=offer, user=user)
-            assert Favorite.query.count() == 1
+            assert db.session.query(Favorite).count() == 1
 
             # When
             response = client.with_token(user.email).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 204
-            assert Favorite.query.count() == 0
+            assert db.session.query(Favorite).count() == 0
 
         def when_user_delete_another_user_favorite(self, client):
             # Given
@@ -481,14 +482,14 @@ class DeleteTest:
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
             favorite = users_factories.FavoriteFactory(offer=offer, user=other_beneficiary)
-            assert Favorite.query.count() == 1
+            assert db.session.query(Favorite).count() == 1
 
             # When
             response = client.with_token(user.email).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 404
-            assert Favorite.query.count() == 1
+            assert db.session.query(Favorite).count() == 1
 
         def when_user_delete_non_existent_favorite(self, client):
             # Given

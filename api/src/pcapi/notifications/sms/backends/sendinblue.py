@@ -6,6 +6,7 @@ from brevo_python.rest import ApiException
 from pcapi import settings
 from pcapi.core import mails
 import pcapi.core.mails.models as mails_models
+from pcapi.models import db
 from pcapi.utils import requests
 from pcapi.utils.email import is_email_whitelisted
 
@@ -75,7 +76,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
         )
 
         try:
-            user = users_models.User.query.filter(users_models.User.phoneNumber == recipient).one_or_none()
+            user = db.session.query(users_models.User).filter(users_models.User.phoneNumber == recipient).one_or_none()
         except sa_orm.exc.MultipleResultsFound:
             logger.error("Several user accounts with the same phone number", extra={"phone_number": recipient})
         else:

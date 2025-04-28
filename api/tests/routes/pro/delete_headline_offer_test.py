@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factory
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -88,7 +89,7 @@ class Returns401Test:
 
         assert response.status_code == 401
 
-        assert offer_models.HeadlineOffer.query.count() == 1
+        assert db.session.query(offer_models.HeadlineOffer).count() == 1
         assert headline_offer.isActive
 
         assert len([log for log in caplog.records if log.message == "Headline Offer Deactivation"]) == 0

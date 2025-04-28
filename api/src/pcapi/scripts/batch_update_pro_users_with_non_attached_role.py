@@ -18,7 +18,8 @@ def get_users(batch_size: int) -> Generator[User, None, None]:
     """Fetch users from database, without loading all of them at once."""
     try:
         yield from (
-            User.query.join(UserOfferer)
+            db.session.query(User)
+            .join(UserOfferer)
             .filter(
                 sa.not_(User.roles.any(UserRole.PRO)),
                 sa.not_(User.roles.any(UserRole.NON_ATTACHED_PRO)),

@@ -17,42 +17,45 @@ from . import models
 
 
 def get_venue_provider_by_id(venue_provider_id: int) -> models.VenueProvider:
-    return models.VenueProvider.query.filter_by(id=venue_provider_id).one()
+    return db.session.query(models.VenueProvider).filter_by(id=venue_provider_id).one()
 
 
 def get_venue_provider_list(venue_id: int) -> list[models.VenueProvider]:
     return (
-        models.VenueProvider.query.filter_by(venueId=venue_id)
+        db.session.query(models.VenueProvider)
+        .filter_by(venueId=venue_id)
         .options(sa_orm.joinedload(models.VenueProvider.provider).joinedload(models.Provider.offererProvider))
         .all()
     )
 
 
 def get_active_venue_providers_by_provider(provider_id: int) -> list[models.VenueProvider]:
-    return models.VenueProvider.query.filter_by(providerId=provider_id, isActive=True).all()
+    return db.session.query(models.VenueProvider).filter_by(providerId=provider_id, isActive=True).all()
 
 
 def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int) -> models.VenueProvider | None:
-    return models.VenueProvider.query.filter_by(venueId=venue_id, providerId=provider_id).one_or_none()
+    return db.session.query(models.VenueProvider).filter_by(venueId=venue_id, providerId=provider_id).one_or_none()
 
 
 def get_provider_enabled_for_pro_by_id(provider_id: int | None) -> models.Provider | None:
-    return models.Provider.query.filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
+    return db.session.query(models.Provider).filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
 
 
 def get_provider_by_local_class(local_class: str) -> models.Provider:
-    return models.Provider.query.filter_by(localClass=local_class).one_or_none()
+    return db.session.query(models.Provider).filter_by(localClass=local_class).one_or_none()
 
 
 def get_provider_by_name(name: str) -> models.Provider:
-    return models.Provider.query.filter_by(name=name).one()
+    return db.session.query(models.Provider).filter_by(name=name).one()
 
 
 def get_available_providers(venue: Venue) -> BaseQuery:
     from pcapi.local_providers import AllocineStocks
 
-    query = models.Provider.query.filter_by(isActive=True, enabledForPro=True).options(
-        sa_orm.joinedload(models.Provider.offererProvider)
+    query = (
+        db.session.query(models.Provider)
+        .filter_by(isActive=True, enabledForPro=True)
+        .options(sa_orm.joinedload(models.Provider.offererProvider))
     )
 
     local_classes_to_exclude = set(constants.CINEMA_PROVIDER_NAMES)
@@ -71,20 +74,21 @@ def get_available_providers(venue: Venue) -> BaseQuery:
 
 
 def get_allocine_theater(venue: Venue) -> models.AllocineTheater | None:
-    return models.AllocineTheater.query.filter_by(siret=venue.siret).one_or_none()
+    return db.session.query(models.AllocineTheater).filter_by(siret=venue.siret).one_or_none()
 
 
 def get_allocine_pivot(venue: Venue) -> models.AllocinePivot | None:
-    return models.AllocinePivot.query.filter_by(venue=venue).one_or_none()
+    return db.session.query(models.AllocinePivot).filter_by(venue=venue).one_or_none()
 
 
 def get_cinema_provider_pivot_for_venue(venue: Venue) -> models.CinemaProviderPivot | None:
-    return models.CinemaProviderPivot.query.filter_by(venue=venue).one_or_none()
+    return db.session.query(models.CinemaProviderPivot).filter_by(venue=venue).one_or_none()
 
 
 def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
     cinema_details = (
-        models.CDSCinemaDetails.query.join(models.CinemaProviderPivot)
+        db.session.query(models.CDSCinemaDetails)
+        .join(models.CinemaProviderPivot)
         .join(models.CinemaProviderPivot.provider)
         .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
         .filter(models.Provider.localClass == "CDSStocks")
@@ -94,7 +98,7 @@ def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
 
 
 def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
-    return models.VenueProvider.query.filter(
+    return db.session.query(models.VenueProvider).filter(
         models.VenueProvider.venueId == venue_id,
         models.VenueProvider.isFromCinemaProvider,
     )
@@ -102,7 +106,8 @@ def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
 
 def get_boost_cinema_details(cinema_id: str) -> models.BoostCinemaDetails:
     cinema_details = (
-        models.BoostCinemaDetails.query.join(models.CinemaProviderPivot)
+        db.session.query(models.BoostCinemaDetails)
+        .join(models.CinemaProviderPivot)
         .join(models.CinemaProviderPivot.provider)
         .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
         .filter(models.Provider.localClass == "BoostStocks")
@@ -113,7 +118,8 @@ def get_boost_cinema_details(cinema_id: str) -> models.BoostCinemaDetails:
 
 def get_cgr_cinema_details(cinema_id: str) -> models.CGRCinemaDetails:
     cinema_details = (
-        models.CGRCinemaDetails.query.join(models.CinemaProviderPivot)
+        db.session.query(models.CGRCinemaDetails)
+        .join(models.CinemaProviderPivot)
         .join(models.CinemaProviderPivot.provider)
         .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
         .filter(models.Provider.localClass == "CGRStocks")
@@ -124,7 +130,8 @@ def get_cgr_cinema_details(cinema_id: str) -> models.CGRCinemaDetails:
 
 def get_ems_cinema_details(cinema_id: str) -> models.EMSCinemaDetails:
     cinema_details = (
-        models.EMSCinemaDetails.query.join(models.CinemaProviderPivot)
+        db.session.query(models.EMSCinemaDetails)
+        .join(models.CinemaProviderPivot)
         .join(models.CinemaProviderPivot.provider)
         .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
         .filter(models.Provider.localClass == "EMSStocks")
@@ -138,7 +145,8 @@ def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) 
     Storing the version point (timestamp) from which we are up to update
     """
     ids: list[Sequence[int]] = (
-        models.EMSCinemaDetails.query.join(models.CinemaProviderPivot)
+        db.session.query(models.EMSCinemaDetails)
+        .join(models.CinemaProviderPivot)
         .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
         .filter(models.VenueProvider.id.in_(venues_provider_to_sync))
         .with_entities(models.EMSCinemaDetails.id)
@@ -166,10 +174,14 @@ def get_ems_oldest_sync_version() -> int:
 
 
 def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> models.CinemaProviderPivot | None:
-    pivot = models.CinemaProviderPivot.query.filter(
-        models.CinemaProviderPivot.idAtProvider == id_at_provider,
-        models.CinemaProviderPivot.providerId == provider_id,
-    ).one_or_none()
+    pivot = (
+        db.session.query(models.CinemaProviderPivot)
+        .filter(
+            models.CinemaProviderPivot.idAtProvider == id_at_provider,
+            models.CinemaProviderPivot.providerId == provider_id,
+        )
+        .one_or_none()
+    )
     return pivot
 
 
@@ -183,7 +195,8 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
 
 def get_providers_venues(provider_id: int) -> BaseQuery:
     return (
-        Venue.query.join(models.VenueProvider)
+        db.session.query(Venue)
+        .join(models.VenueProvider)
         .outerjoin(models.VenueProvider.externalUrls)
         .options(sa_orm.contains_eager(Venue.venueProviders).contains_eager(models.VenueProvider.externalUrls))
         .filter(models.VenueProvider.providerId == provider_id)
@@ -195,7 +208,8 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
 ) -> BaseQuery:
     # base query
     events_query = (
-        offers_models.Offer.query.join(offers_models.Stock, offers_models.Offer.stocks)
+        db.session.query(offers_models.Offer)
+        .join(offers_models.Stock, offers_models.Offer.stocks)
         .join(Venue, offers_models.Offer.venue)
         .join(models.VenueProvider, Venue.venueProviders)
         .outerjoin(models.VenueProviderExternalUrls, models.VenueProvider.externalUrls)

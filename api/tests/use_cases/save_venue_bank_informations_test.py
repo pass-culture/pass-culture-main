@@ -15,6 +15,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.models import db
 
 import tests.connector_creators.demarches_simplifiees_creators as dms_creators
 
@@ -42,20 +43,20 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "SOGEFRPP"
         assert bank_account.iban == "FR7630007000111234567890144"
         assert bank_account.offerer == offerer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
         assert bank_account.label == venue.common_name
         assert bank_account.dsApplicationId == self.dsv4_application_id
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
 
         mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
-        assert history_models.ActionHistory.query.count() == 1  # One link created
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 1  # One link created
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 0
 
@@ -73,7 +74,7 @@ class BankAccountJourneyTest:
             state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
         )
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert len(bank_account.label) <= 100
         assert bank_account.label[-3:] == "..."  # Check the placeholder indication
 
@@ -89,9 +90,9 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
         assert bank_account_link.bankAccount == bank_account
         assert bank_account_link.timespan.upper is None
@@ -103,9 +104,9 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
         assert bank_account_link.bankAccount == bank_account
         assert bank_account_link.timespan.upper is not None
@@ -122,10 +123,10 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
 
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
         assert bank_account_link.bankAccount == bank_account
         assert bank_account_link.timespan.upper is None
@@ -137,10 +138,10 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
 
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
         assert bank_account_link.bankAccount == bank_account
         assert bank_account_link.timespan.upper is not None
@@ -166,20 +167,20 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "SOGEFRPP"
         assert bank_account.iban == "FR7630007000111234567890144"
         assert bank_account.offerer == offerer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
         assert bank_account.label == venue.common_name
         assert bank_account.dsApplicationId == self.dsv4_application_id
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
 
         mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
-        assert history_models.ActionHistory.query.count() == 1  # One link created
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 1  # One link created
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == venue_with_no_bank_account.bookingEmail
@@ -209,7 +210,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_accounts = sorted(finance_models.BankAccount.query.all(), key=lambda b: b.id)
+        bank_accounts = sorted(db.session.query(finance_models.BankAccount).all(), key=lambda b: b.id)
         assert len(bank_accounts) == 2
         bank_account = bank_accounts[1]
         assert bank_account.bic == "SOGEFRPP"
@@ -218,7 +219,7 @@ class BankAccountJourneyTest:
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
         assert bank_account.label == venue.common_name
         assert bank_account.dsApplicationId == self.dsv4_application_id
-        bank_account_link = sorted(offerers_models.VenueBankAccountLink.query.all(), key=lambda v: v.id)
+        bank_account_link = sorted(db.session.query(offerers_models.VenueBankAccountLink).all(), key=lambda v: v.id)
         assert len(bank_account_link) == 2
 
         mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
@@ -232,8 +233,8 @@ class BankAccountJourneyTest:
         assert new_link.bankAccount == bank_account
         assert not new_link.timespan.upper
 
-        assert history_models.ActionHistory.query.count() == 2  # One link deprecated and one created
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 2  # One link deprecated and one created
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == venue_with_no_bank_account.bookingEmail
@@ -251,7 +252,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "SOGEFRPP"
         assert bank_account.iban == "FR7630007000111234567890144"
         assert bank_account.offerer == venue.managingOfferer
@@ -260,10 +261,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv4_application_id
         mock_archive_dossier.assert_not_called()
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
 
-        assert not history_models.ActionHistory.query.count()
-        on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
+        assert not db.session.query(history_models.ActionHistory).count()
+        on_going_status_history = db.session.query(finance_models.BankAccountStatusHistory).one()
 
         assert on_going_status_history.status == bank_account.status
         assert on_going_status_history.timespan.upper is None
@@ -276,7 +277,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "SOGEFRPP"
         assert bank_account.iban == "FR7630007000111234567890144"
         assert bank_account.offerer == venue.managingOfferer
@@ -284,12 +285,14 @@ class BankAccountJourneyTest:
         assert bank_account.label == venue.name
         mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
-        assert offerers_models.VenueBankAccountLink.query.count() == 1
+        assert db.session.query(offerers_models.VenueBankAccountLink).count() == 1
 
-        assert history_models.ActionHistory.query.count() == 1
-        status_history = finance_models.BankAccountStatusHistory.query.order_by(
-            finance_models.BankAccountStatusHistory.id
-        ).all()
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        status_history = (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .order_by(finance_models.BankAccountStatusHistory.id)
+            .all()
+        )
         assert len(status_history) == 2
         accepted_status_history = status_history[-1]
 
@@ -315,20 +318,20 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == offerer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
         assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
-        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert bank_account_link.venue == venue
 
         mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
 
-        assert history_models.ActionHistory.query.count() == 1  # One link created
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 1  # One link created
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 0
 
@@ -343,7 +346,7 @@ class BankAccountJourneyTest:
             label="PARIS LIBRAIRIES ASSOCIATION DES LIBRAIRIES DE PARIS LIBRAIRIE COMME UN ROMAN 39 RUE DE BRETAGNE 75003 PARIS",
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert len(bank_account.label) <= 100
         assert bank_account.label[-3:] == "..."  # Check the placeholder indication
 
@@ -365,7 +368,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -374,10 +377,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
 
-        assert not history_models.ActionHistory.query.count()
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert not db.session.query(history_models.ActionHistory).count()
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 2
         assert {mails_testing.outbox[0]["To"], mails_testing.outbox[1]["To"]} == {
@@ -397,7 +400,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -407,10 +410,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
-        assert finance_models.BankAccountStatusHistory.query.count() == 1
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1
 
         assert len(mails_testing.outbox) == 0
 
@@ -427,7 +430,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -436,10 +439,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
 
-        assert not history_models.ActionHistory.query.count()
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert not db.session.query(history_models.ActionHistory).count()
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
     def test_DSv5_bank_account_get_successfully_updated_on_status_change(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
@@ -454,7 +457,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -463,10 +466,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
-        on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
+        on_going_status_history = db.session.query(finance_models.BankAccountStatusHistory).one()
 
         assert on_going_status_history.status == bank_account.status
         assert on_going_status_history.timespan.upper is None
@@ -479,7 +482,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -487,14 +490,16 @@ class BankAccountJourneyTest:
         assert bank_account.label == "Intitulé du compte bancaire"
         mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
 
-        link = offerers_models.VenueBankAccountLink.query.one()
+        link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert link.bankAccount == bank_account
         assert link.venue == venue
 
-        assert history_models.ActionHistory.query.count() == 1
-        status_history = finance_models.BankAccountStatusHistory.query.order_by(
-            finance_models.BankAccountStatusHistory.id
-        ).all()
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        status_history = (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .order_by(finance_models.BankAccountStatusHistory.id)
+            .all()
+        )
         assert len(status_history) == 2
         accepted_status_history = status_history[-1]
 
@@ -522,7 +527,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -531,10 +536,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
-        assert not history_models.ActionHistory.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
+        assert not db.session.query(history_models.ActionHistory).count()
 
-        on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
+        on_going_status_history = db.session.query(finance_models.BankAccountStatusHistory).one()
 
         assert on_going_status_history.status == bank_account.status
         assert not on_going_status_history.timespan.upper
@@ -551,7 +556,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -559,12 +564,12 @@ class BankAccountJourneyTest:
         assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
 
-        link = offerers_models.VenueBankAccountLink.query.one()
+        link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert link.venue == venue
         assert link.bankAccount == bank_account
 
-        assert history_models.ActionHistory.query.count() == 1
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         # Multiple crons running without any changes
 
@@ -586,12 +591,12 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        link = offerers_models.VenueBankAccountLink.query.one()
+        link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert link.venue == venue
         assert link.bankAccount == bank_account
 
-        assert history_models.ActionHistory.query.count() == 1
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
     def test_legacy_data_convert_into_bank_account_does_not_have_status_history(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
@@ -615,7 +620,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -623,7 +628,7 @@ class BankAccountJourneyTest:
         assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
 
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
     def test_offerer_can_have_several_bank_informations(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
@@ -638,7 +643,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -647,10 +652,10 @@ class BankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
 
-        assert not history_models.ActionHistory.query.count()
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert not db.session.query(history_models.ActionHistory).count()
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
         fake_bic = str(schwifty.BIC.from_bank_code("FR", bank_code="30004"))
         fake_iban = str(schwifty.IBAN.generate("FR", bank_code="30004", account_code="12345"))
@@ -664,7 +669,7 @@ class BankAccountJourneyTest:
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_accounts = finance_models.BankAccount.query.order_by(finance_models.BankAccount.id).all()
+        bank_accounts = db.session.query(finance_models.BankAccount).order_by(finance_models.BankAccount.id).all()
         assert len(bank_accounts) == 2
         assert bank_accounts[0].bic == "BICAGRIFRPP"
         assert bank_accounts[0].iban == "FR7630006000011234567890189"
@@ -680,10 +685,10 @@ class BankAccountJourneyTest:
         assert bank_accounts[1].label == "Intitulé du compte bancaire"
         assert bank_accounts[1].dsApplicationId == 123
 
-        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
 
-        assert not history_models.ActionHistory.query.count()
-        assert finance_models.BankAccountStatusHistory.query.count() == 2
+        assert not db.session.query(history_models.ActionHistory).count()
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 2
 
     def test_association_to_physical_venue_if_both_virtual_and_physical_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
@@ -698,7 +703,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        bank_account = finance_models.BankAccount.query.one()
+        bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
@@ -706,12 +711,12 @@ class BankAccountJourneyTest:
         assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
 
-        link = offerers_models.VenueBankAccountLink.query.one()
+        link = db.session.query(offerers_models.VenueBankAccountLink).one()
         assert link.venue == venue
         assert link.bankAccount == bank_account
 
-        assert history_models.ActionHistory.query.count() == 1
-        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
     @pytest.mark.parametrize(
         "fake_iban,fake_bic",
@@ -739,7 +744,7 @@ class BankAccountJourneyTest:
 
         update_ds_applications_for_procedure(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
-        assert not finance_models.BankAccount.query.all()
+        assert not db.session.query(finance_models.BankAccount).all()
         message = ""
         if fake_iban:
             message = "L'IBAN n'est pas valide"

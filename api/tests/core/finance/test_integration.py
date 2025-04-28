@@ -34,7 +34,7 @@ def test_integration_full_workflow(css_font_http_request_mock):
     with time_machine.travel(initial_dt, tick=False) as frozen_time:
         bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.AUTO)
         assert booking.status == bookings_models.BookingStatus.USED
-        event = models.FinanceEvent.query.one()
+        event = db.session.query(models.FinanceEvent).one()
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.READY
 
@@ -42,7 +42,7 @@ def test_integration_full_workflow(css_font_http_request_mock):
         frozen_time.move_to(initial_dt + datetime.timedelta(minutes=1))
         api.price_events()
         assert event.status == models.FinanceEventStatus.PRICED
-        pricing = models.Pricing.query.one()
+        pricing = db.session.query(models.Pricing).one()
         assert pricing.event == event
         assert pricing.booking == booking
         assert pricing.status == models.PricingStatus.VALIDATED
@@ -85,7 +85,7 @@ def test_integration_partial_auto_mark_as_used():
         frozen_time.move_to(now)
         bookings_api.auto_mark_as_used_after_event()
         assert booking.status == bookings_models.BookingStatus.USED
-        event = models.FinanceEvent.query.one()
+        event = db.session.query(models.FinanceEvent).one()
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.READY
 
@@ -94,7 +94,7 @@ def test_integration_partial_auto_mark_as_used():
         frozen_time.move_to(now)
         api.price_events()
         assert event.status == models.FinanceEventStatus.PRICED
-        pricing = models.Pricing.query.one()
+        pricing = db.session.query(models.Pricing).one()
         assert pricing.event == event
         assert pricing.booking == booking
         assert pricing.status == models.PricingStatus.VALIDATED
@@ -116,7 +116,7 @@ def test_integration_partial_used_then_cancelled():
     # `price_events()` ignores recently created events (< 1 minute).
     with time_machine.travel(initial_dt + datetime.timedelta(minutes=1), tick=False):
         api.price_events()
-        assert models.Pricing.query.count() == 1
+        assert db.session.query(models.Pricing).count() == 1
 
         # Now cancel the booking. We should not get a new pricing.
         bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BENEFICIARY)
@@ -124,4 +124,4 @@ def test_integration_partial_used_then_cancelled():
     # `price_events()` ignores recently created events (< 1 minute).
     with time_machine.travel(initial_dt + datetime.timedelta(minutes=2), tick=False):
         api.price_events()
-        assert models.Pricing.query.count() == 1  # still only one pricing
+        assert db.session.query(models.Pricing).count() == 1  # still only one pricing

@@ -8,6 +8,7 @@ import sqlalchemy.sql.functions as sa_func
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.models import db
 
 
 INVOICE_LINE_INDIV_DICT = {
@@ -113,13 +114,14 @@ class BaseFinanceBackend:
 
         indiv_data = self._get_indiv_data(
             invoice_id,
-            finance_models.PricingLine.query.join(finance_models.PricingLine.pricing).join(
-                finance_models.Pricing.booking
-            ),
+            db.session.query(finance_models.PricingLine)
+            .join(finance_models.PricingLine.pricing)
+            .join(finance_models.Pricing.booking),
         )
         indiv_incident_data = self._get_indiv_data(
             invoice_id,
-            finance_models.PricingLine.query.join(finance_models.PricingLine.pricing)
+            db.session.query(finance_models.PricingLine)
+            .join(finance_models.PricingLine.pricing)
             .join(finance_models.Pricing.event)
             .join(finance_models.FinanceEvent.bookingFinanceIncident)
             .join(finance_models.BookingFinanceIncident.incident)
@@ -128,13 +130,14 @@ class BaseFinanceBackend:
 
         collective_data = self._get_collective_data(
             invoice_id,
-            finance_models.PricingLine.query.join(finance_models.PricingLine.pricing).join(
-                finance_models.Pricing.collectiveBooking
-            ),
+            db.session.query(finance_models.PricingLine)
+            .join(finance_models.PricingLine.pricing)
+            .join(finance_models.Pricing.collectiveBooking),
         )
         collective_incident_data = self._get_collective_data(
             invoice_id,
-            finance_models.PricingLine.query.join(finance_models.PricingLine.pricing)
+            db.session.query(finance_models.PricingLine)
+            .join(finance_models.PricingLine.pricing)
             .join(finance_models.Pricing.event)
             .join(finance_models.FinanceEvent.bookingFinanceIncident)
             .join(finance_models.BookingFinanceIncident.collectiveBooking),

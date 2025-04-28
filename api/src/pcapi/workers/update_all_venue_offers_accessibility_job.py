@@ -4,15 +4,18 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
 
 @job(worker.low_queue)
 def update_all_venue_offers_accessibility_job(venue: Venue, accessibility: dict[str, bool]) -> None:
-    offer_query = Offer.query.filter(Offer.venueId == venue.id)
-    collective_offer_query = CollectiveOffer.query.filter(CollectiveOffer.venueId == venue.id)
-    collective_offer_template_query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.venueId == venue.id)
+    offer_query = db.session.query(Offer).filter(Offer.venueId == venue.id)
+    collective_offer_query = db.session.query(CollectiveOffer).filter(CollectiveOffer.venueId == venue.id)
+    collective_offer_template_query = db.session.query(CollectiveOfferTemplate).filter(
+        CollectiveOfferTemplate.venueId == venue.id
+    )
 
     offers_api.batch_update_offers(offer_query, accessibility)
     educational_api_offer.batch_update_collective_offers(collective_offer_query, accessibility)

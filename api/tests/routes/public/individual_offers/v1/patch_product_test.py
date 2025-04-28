@@ -111,7 +111,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
         assert response.status_code == 200
-        assert offers_models.Mediation.query.one()
+        assert db.session.query(offers_models.Mediation).one()
         assert (
             product_offer.image.url
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(product_offer.activeMediation.id)}"

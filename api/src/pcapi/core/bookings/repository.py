@@ -119,24 +119,30 @@ def find_by_pro_user(
 
 
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[models.Booking]:
-    return models.Booking.query.filter(
-        models.Booking.stockId == stock_id,
-        models.Booking.status == models.BookingStatus.CONFIRMED,
-    ).all()
+    return (
+        db.session.query(models.Booking)
+        .filter(
+            models.Booking.stockId == stock_id,
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+        )
+        .all()
+    )
 
 
 def find_not_cancelled_bookings_by_stock(stock: offers_models.Stock) -> list[models.Booking]:
-    return models.Booking.query.filter(
-        models.Booking.stockId == stock.id, models.Booking.status != models.BookingStatus.CANCELLED
-    ).all()
+    return (
+        db.session.query(models.Booking)
+        .filter(models.Booking.stockId == stock.id, models.Booking.status != models.BookingStatus.CANCELLED)
+        .all()
+    )
 
 
 def token_exists(token: str) -> bool:
-    return db.session.query(models.Booking.query.filter_by(token=token.upper()).exists()).scalar()
+    return db.session.query(db.session.query(models.Booking).filter_by(token=token.upper()).exists()).scalar()
 
 
 def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) -> models.Booking | None:
-    query = models.Booking.query.filter_by(token=token.upper())
+    query = db.session.query(models.Booking).filter_by(token=token.upper())
     if "offerer" in load_options:
         query = query.options(sa_orm.joinedload(models.Booking.offerer))
     return query.one_or_none()
@@ -145,7 +151,8 @@ def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) ->
 def find_expiring_individual_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
-        models.Booking.query.join(offers_models.Stock)
+        db.session.query(models.Booking)
+        .join(offers_models.Stock)
         .join(offers_models.Offer)
         .filter(
             models.Booking.status == models.BookingStatus.CONFIRMED,
@@ -175,7 +182,8 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
     )
 
     return (
-        models.Booking.query.join(offers_models.Stock)
+        db.session.query(models.Booking)
+        .join(offers_models.Stock)
         .join(offers_models.Offer)
         .filter(
             models.Booking.status == models.BookingStatus.CONFIRMED,
@@ -220,19 +228,24 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date | None = Non
 
 def get_expired_individual_bookings_for_user(user: User, expired_on: date | None = None) -> list[models.Booking]:
     expired_on = expired_on or date.today()
-    return models.Booking.query.filter(
-        models.Booking.user == user,
-        models.Booking.status == models.BookingStatus.CANCELLED,
-        models.Booking.cancellationDate >= expired_on,
-        models.Booking.cancellationDate < (expired_on + timedelta(days=1)),
-        models.Booking.cancellationReason == models.BookingCancellationReasons.EXPIRED,
-    ).all()
+    return (
+        db.session.query(models.Booking)
+        .filter(
+            models.Booking.user == user,
+            models.Booking.status == models.BookingStatus.CANCELLED,
+            models.Booking.cancellationDate >= expired_on,
+            models.Booking.cancellationDate < (expired_on + timedelta(days=1)),
+            models.Booking.cancellationReason == models.BookingCancellationReasons.EXPIRED,
+        )
+        .all()
+    )
 
 
 def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None = None) -> list[models.Booking]:
     expired_on = expired_on or date.today()
     return (
-        models.Booking.query.filter(models.Booking.status == models.BookingStatus.CANCELLED)
+        db.session.query(models.Booking)
+        .filter(models.Booking.status == models.BookingStatus.CANCELLED)
         .filter(sa.cast(models.Booking.cancellationDate, sa.Date) == expired_on)
         .filter(models.Booking.cancellationReason == models.BookingCancellationReasons.EXPIRED)
         .order_by(models.Booking.offererId)
@@ -241,15 +254,20 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None 
 
 
 def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[models.Booking]:
-    return models.Booking.query.filter(
-        models.Booking.offererId == offerer_id,
-        models.Booking.status == models.BookingStatus.CONFIRMED,
-    ).all()
+    return (
+        db.session.query(models.Booking)
+        .filter(
+            models.Booking.offererId == offerer_id,
+            models.Booking.status == models.BookingStatus.CONFIRMED,
+        )
+        .all()
+    )
 
 
 def get_bookings_from_deposit(deposit_id: int) -> list[models.Booking]:
     return (
-        models.Booking.query.filter(
+        db.session.query(models.Booking)
+        .filter(
             models.Booking.depositId == deposit_id,
             models.Booking.status != models.BookingStatus.CANCELLED,
         )
@@ -303,7 +321,8 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
 
     query = (
-        models.Booking.query.join(models.Booking.offerer)
+        db.session.query(models.Booking)
+        .join(models.Booking.offerer)
         .join(models.Booking.user)
         .join(offerers_models.Offerer.UserOfferers)
         .join(models.Booking.venue)
@@ -385,7 +404,8 @@ def get_export(
 def get_pro_user_timezones(user: User) -> set[str]:
     # Timezones based on offerer addresses
     addresses_timezones_query = (
-        Address.query.with_entities(Address.timezone)
+        db.session.query(Address)
+        .with_entities(Address.timezone)
         .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
         .join(offerers_models.Offerer, offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
         .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
@@ -395,7 +415,8 @@ def get_pro_user_timezones(user: User) -> set[str]:
     # Timezones based on offerer venues
     # For digital offers that do not have an address
     venues_timezones_query = (
-        offerers_models.Venue.query.with_entities(offerers_models.Venue.timezone)
+        db.session.query(offerers_models.Venue)
+        .with_entities(offerers_models.Venue.timezone)
         .join(offerers_models.Offerer, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
         .filter(offerers_models.UserOfferer.userId == user.id)
@@ -431,7 +452,8 @@ def _get_filtered_bookings_query(
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
     bookings_query = (
-        models.Booking.query.join(models.Booking.offerer)
+        db.session.query(models.Booking)
+        .join(models.Booking.offerer)
         .join(offerers_models.Offerer.UserOfferers)
         .join(models.Booking.stock)
         .join(offers_models.Stock.offer)
@@ -505,7 +527,8 @@ def _get_filtered_bookings_query(
 
 def _get_offerer_address_timezone(offerer_address_id: int) -> str:
     return (
-        Address.query.with_entities(Address.timezone)
+        db.session.query(Address)
+        .with_entities(Address.timezone)
         .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
         .filter(offerers_models.OffererAddress.id == offerer_address_id)
         .scalar()
@@ -535,7 +558,8 @@ def _get_offer_timezone(offer_id: int) -> str:
     VenueAddress = sa_orm.aliased(Address)
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     return (
-        offers_models.Offer.query.with_entities(
+        db.session.query(offers_models.Offer)
+        .with_entities(
             # TODO: Simplify when the virtual venues are removed
             # Unfortunately, we still have to use Venue.timezone for digital offers
             # as they are still on virtual venues that don't have associated OA.
@@ -970,7 +994,8 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
 def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[models.Booking, None, None]:
     """Find bookings expiring in exactly `expiration_days_delta` days"""
     query = (
-        models.Booking.query.options(
+        db.session.query(models.Booking)
+        .options(
             sa_orm.contains_eager(models.Booking.stock)
             .load_only(offers_models.Stock.id)
             .contains_eager(offers_models.Stock.offer)
@@ -993,24 +1018,30 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[m
 def venues_have_bookings(*venues: offerers_models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one non-cancelled booking"""
     return db.session.query(
-        models.Booking.query.filter(
+        db.session.query(models.Booking)
+        .filter(
             models.Booking.venueId.in_([venue.id for venue in venues]),
             models.Booking.status != models.BookingStatus.CANCELLED,
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 
 def user_has_bookings(user: User) -> bool:
-    bookings_query = models.Booking.query.join(models.Booking.offerer).join(offerers_models.Offerer.UserOfferers)
+    bookings_query = (
+        db.session.query(models.Booking).join(models.Booking.offerer).join(offerers_models.Offerer.UserOfferers)
+    )
     return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
 
 
 def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     return db.session.query(
-        models.Booking.query.filter(
+        db.session.query(models.Booking)
+        .filter(
             models.Booking.offererId == offerer_id,
             models.Booking.status == models.BookingStatus.CONFIRMED,
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 
@@ -1020,7 +1051,8 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Boo
     tomorrow_max = datetime.combine(tomorrow, time.max)
 
     return (
-        models.Booking.query.join(
+        db.session.query(models.Booking)
+        .join(
             models.Booking.user,
         )
         .join(models.Booking.stock)
@@ -1055,7 +1087,8 @@ def get_external_bookings_by_cinema_id_and_barcodes(
     venueIdAtOfferProvider: str, barcodes: list[str]
 ) -> list[models.ExternalBooking]:
     return (
-        models.ExternalBooking.query.join(models.Booking)
+        db.session.query(models.ExternalBooking)
+        .join(models.Booking)
         .join(VenueProvider, models.Booking.venueId == VenueProvider.venueId)
         .filter(VenueProvider.venueIdAtOfferProvider == venueIdAtOfferProvider)
         .filter(models.ExternalBooking.barcode.in_(barcodes))

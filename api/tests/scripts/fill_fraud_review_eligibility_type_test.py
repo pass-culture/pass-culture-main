@@ -10,6 +10,7 @@ from pcapi.core.fraud.factories import BeneficiaryFraudReviewFactory
 from pcapi.core.users import models as users_models
 from pcapi.core.users.factories import DepositGrantFactory
 from pcapi.core.users.factories import UserFactory
+from pcapi.models import db
 from pcapi.scripts.fill_fraud_review_eligibility_type import add_eligibility_to_reviews_based_on_beneficiary_age
 from pcapi.scripts.fill_fraud_review_eligibility_type import add_eligibility_to_reviews_based_on_deposit
 
@@ -27,7 +28,9 @@ class FillFraudReviewEligibilityTypeTest:
 
         add_eligibility_to_reviews_based_on_deposit(do_update=True)
 
-        fraud_review: fraud_models.BeneficiaryFraudReview = fraud_models.BeneficiaryFraudReview.query.first()
+        fraud_review: fraud_models.BeneficiaryFraudReview = db.session.query(
+            fraud_models.BeneficiaryFraudReview
+        ).first()
 
         assert (
             fraud_review.eligibilityType == users_models.EligibilityType.AGE18
@@ -46,7 +49,9 @@ class FillFraudReviewEligibilityTypeTest:
 
         add_eligibility_to_reviews_based_on_deposit(do_update=True)
 
-        fraud_review: fraud_models.BeneficiaryFraudReview = fraud_models.BeneficiaryFraudReview.query.first()
+        fraud_review: fraud_models.BeneficiaryFraudReview = db.session.query(
+            fraud_models.BeneficiaryFraudReview
+        ).first()
 
         assert fraud_review.eligibilityType is None
 
@@ -60,7 +65,9 @@ class FillFraudReviewEligibilityTypeTest:
 
         add_eligibility_to_reviews_based_on_beneficiary_age(do_update=True)
 
-        fraud_review: fraud_models.BeneficiaryFraudReview = fraud_models.BeneficiaryFraudReview.query.first()
+        fraud_review: fraud_models.BeneficiaryFraudReview = db.session.query(
+            fraud_models.BeneficiaryFraudReview
+        ).first()
         expected_eligibility = (
             users_models.EligibilityType.AGE18 if beneficiary_age >= 18 else users_models.EligibilityType.UNDERAGE
         )

@@ -9,6 +9,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -67,7 +68,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         content = response.json
-        offer = offers_models.Offer.query.get(stock.offer.id)
+        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
         assert offer.publicationDate is None
@@ -111,7 +112,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         content = response.json
-        offer = offers_models.Offer.query.get(stock.offer.id)
+        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
@@ -154,23 +155,23 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        offer = offers_models.Offer.query.get(stock.offer.id)
+        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
         assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
             microsecond=0, tzinfo=None
         )
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
-        assert offers_models.FutureOffer.query.count() == 1
+        assert db.session.query(offers_models.FutureOffer).count() == 1
 
         response = client.patch("/offers/publish", json={"id": stock.offerId})
 
         assert response.status_code == 200
         content = response.json
-        offer = offers_models.Offer.query.get(stock.offer.id)
+        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
         assert offer.publicationDate is None
         assert content["isActive"] is True
         mock_async_index_offer_ids.assert_called_once()
-        assert offers_models.FutureOffer.query.count() == 0
+        assert db.session.query(offers_models.FutureOffer).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -190,7 +191,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
-        offer = offers_models.Offer.query.get(offer.id)
+        offer = db.session.query(offers_models.Offer).get(offer.id)
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_patch_publish_offer_with_non_bookable_stock(
@@ -212,7 +213,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
-        offer = offers_models.Offer.query.get(stock.offerId)
+        offer = db.session.query(offers_models.Offer).get(stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_patch_publish_future_offer(
@@ -241,7 +242,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]
-        offer = offers_models.Offer.query.get(stock.offerId)
+        offer = db.session.query(offers_models.Offer).get(stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_cannot_publish_offer_if_ean_is_already_used(

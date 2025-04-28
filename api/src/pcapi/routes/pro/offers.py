@@ -5,6 +5,7 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -280,14 +281,16 @@ def post_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == body.venue_id)
         .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .first_or_404()
     )
 
     ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
     product = (
-        models.Product.query.filter(models.Product.ean == ean_code)
+        db.session.query(models.Product)
+        .filter(models.Product.ean == ean_code)
         .filter(models.Product.id == body.product_id)
         .one_or_none()
     )
@@ -311,11 +314,15 @@ def post_draft_offer(
 def patch_draft_offer(
     offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = models.Offer.query.options(
-        sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-        sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sa_orm.joinedload(models.Offer.product),
-    ).get(offer_id)
+    offer = (
+        db.session.query(models.Offer)
+        .options(
+            sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+            sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sa_orm.joinedload(models.Offer.product),
+        )
+        .get(offer_id)
+    )
     if not offer:
         raise api_errors.ResourceNotFoundError
 
@@ -340,7 +347,8 @@ def patch_draft_offer(
 @atomic()
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == body.venue_id)
         .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .first_or_404()
     )
@@ -531,7 +539,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 )
 @atomic()
 def delete_thumbnail(offer_id: int) -> None:
-    offer = models.Offer.query.get_or_404(offer_id)
+    offer = db.session.query(models.Offer).get_or_404(offer_id)
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -579,7 +587,8 @@ def _get_offer_for_price_categories_upsert(
     offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
 ) -> models.Offer | None:
     return (
-        models.Offer.query.outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
+        db.session.query(models.Offer)
+        .outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
         .outerjoin(
             models.Offer.priceCategories.and_(
                 models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
@@ -660,10 +669,10 @@ def post_price_categories(
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 @atomic()
 def delete_price_category(offer_id: int, price_category_id: int) -> None:
-    offer = models.Offer.query.get_or_404(offer_id)
+    offer = db.session.query(models.Offer).get_or_404(offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    price_category = models.PriceCategory.query.get_or_404(price_category_id)
+    price_category = db.session.query(models.PriceCategory).get_or_404(price_category_id)
     offers_api.delete_price_category(offer, price_category)
 
 
@@ -699,7 +708,8 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
 @atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
     product = (
-        models.Product.query.filter(models.Product.ean == ean)
+        db.session.query(models.Product)
+        .filter(models.Product.ean == ean)
         .options(
             sa_orm.load_only(
                 models.Product.id,
@@ -715,7 +725,8 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
         .one_or_none()
     )
     offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
         .options(sa_orm.load_only(offerers_models.Offerer.id))
         .options(
             sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(
@@ -735,14 +746,17 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
 def update_event_opening_hours(
     offer_id: int, event_opening_hours_id: int, body: offers_schemas.UpdateEventOpeningHoursModel
 ) -> None:
-    offer = models.Offer.query.get_or_404(offer_id)
+    offer = db.session.query(models.Offer).get_or_404(offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     opening_hours = (
-        models.EventOpeningHours.query.filter(models.EventOpeningHours.offerId == offer_id)
+        db.session.query(models.EventOpeningHours)
+        .filter(models.EventOpeningHours.id == event_opening_hours_id, models.EventOpeningHours.offerId == offer_id)
         .options(sa_orm.selectinload(models.EventOpeningHours.weekDayOpeningHours))
-        .get_or_404(event_opening_hours_id)
+        .first()
     )
+    if not opening_hours:
+        raise NotFound()
 
     try:
         offers_api.update_event_opening_hours(opening_hours, body)

@@ -14,6 +14,7 @@ import pcapi.core.users.exceptions as users_exceptions
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -38,7 +39,7 @@ class RequestEmailUpdateTest:
 
         email_update.request_email_update_with_credentials(user, new_email, password)
 
-        reloaded_user = User.query.get(user.id)
+        reloaded_user = db.session.query(User).get(user.id)
         assert len(reloaded_user.email_history) == 1
 
         history = reloaded_user.email_history[0]
@@ -52,7 +53,7 @@ class RequestEmailUpdateTest:
 
         email_update.request_email_update(user)
 
-        reloaded_user = User.query.get(user.id)
+        reloaded_user = db.session.query(User).get(user.id)
         assert len(reloaded_user.email_history) == 1
 
         history = reloaded_user.email_history[0]

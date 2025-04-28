@@ -6,6 +6,7 @@ from pcapi.core import search
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 
@@ -24,7 +25,7 @@ class OfferMediationTest:
         response = client.delete(f"/offers/thumbnails/{offer.id}")
 
         expected_thumb_path = f"{mediation.thumb_path_component}/{humanize(mediation.id)}"
-        assert Mediation.query.all() == []
+        assert db.session.query(Mediation).all() == []
         assert response.status_code == 204
         assert mock_delete_public_object.call_args_list == [
             (("thumbs", expected_thumb_path),),

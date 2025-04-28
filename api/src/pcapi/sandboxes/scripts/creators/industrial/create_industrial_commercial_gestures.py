@@ -111,9 +111,12 @@ def _create_total_commercial_gesture_collective_offer(
     venue: offerers_models.Venue,
     users_count: int,
 ) -> None:
-    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory.create()
+    year = (
+        db.session.query(educational_models.EducationalYear).first()
+        or educational_factories.EducationalYearFactory.create()
+    )
     institution = (
-        educational_models.EducationalInstitution.query.first()
+        db.session.query(educational_models.EducationalInstitution).first()
         or educational_factories.EducationalInstitutionFactory.create()
     )
     deposit = (
@@ -317,9 +320,12 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
     ################################
     # Generate collective bookings #
     ################################
-    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory.create()
+    year = (
+        db.session.query(educational_models.EducationalYear).first()
+        or educational_factories.EducationalYearFactory.create()
+    )
     institution = (
-        educational_models.EducationalInstitution.query.first()
+        db.session.query(educational_models.EducationalInstitution).first()
         or educational_factories.EducationalInstitutionFactory.create()
     )
     deposit = (

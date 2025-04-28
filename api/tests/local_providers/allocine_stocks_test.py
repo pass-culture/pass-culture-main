@@ -14,6 +14,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers import AllocineStocks
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -113,7 +114,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
 
         assert created_offer.bookingEmail == "toto@example.com"
         assert created_offer._description is None
@@ -185,8 +186,8 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = offers_models.Offer.query.first()
-        created_stocks = offers_models.Stock.query.all()
+        created_offer = db.session.query(offers_models.Offer).first()
+        created_stocks = db.session.query(offers_models.Stock).all()
 
         assert created_offer, "No offer created"
 
@@ -226,7 +227,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offer = offers_models.Offer.query.one()
+        existing_offer = db.session.query(offers_models.Offer).one()
         assert existing_offer.durationMinutes == 21
         assert existing_offer.offererAddressId == venue.offererAddressId
 
@@ -255,7 +256,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.durationMinutes == 21
         assert created_offer.name == "Ceux de chez nous"
         assert created_offer.offererAddressId == venue.offererAddressId
@@ -289,7 +290,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offer = offers_models.Offer.query.one()
+        existing_offer = db.session.query(offers_models.Offer).one()
 
         assert (
             existing_offer.image.url
@@ -325,7 +326,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offer = offers_models.Offer.query.one()
+        existing_offer = db.session.query(offers_models.Offer).one()
         assert existing_offer.activeMediation is None
         assert allocine_stocks_provider.erroredThumbs == 1
 
@@ -356,7 +357,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offer = offers_models.Offer.query.one()
+        existing_offer = db.session.query(offers_models.Offer).one()
         assert (
             existing_offer.image.url
             == f"http://localhost/storage/thumbs/mediations/{humanize(existing_offer.activeMediation.id)}"
@@ -388,10 +389,10 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offer = offers_models.Offer.query.order_by("name").all()
-        created_stock = offers_models.Stock.query.order_by("beginningDatetime").all()
-        created_price_category = offers_models.PriceCategory.query.all()
-        created_price_category_label = offers_models.PriceCategoryLabel.query.one()
+        created_offer = db.session.query(offers_models.Offer).order_by("name").all()
+        created_stock = db.session.query(offers_models.Stock).order_by("beginningDatetime").all()
+        created_price_category = db.session.query(offers_models.PriceCategory).all()
+        created_price_category_label = db.session.query(offers_models.PriceCategoryLabel).one()
 
         unique_offer = created_offer[0]
 
@@ -473,8 +474,8 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
-            offer = offers_models.Offer.query.first()
+            created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.beginningDatetime).all()
+            offer = db.session.query(offers_models.Offer).first()
 
             first_stock = created_stocks[0]
             second_stock = created_stocks[1]
@@ -490,7 +491,7 @@ class UpdateObjectsTest:
             assert third_stock.offerId == offer.id
             assert third_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
 
-            assert offers_models.PriceCategory.query.count() == 1
+            assert db.session.query(offers_models.PriceCategory).count() == 1
 
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -536,17 +537,17 @@ class UpdateObjectsTest:
             allocine_stocks_provider2.updateObjects()
 
             # Then
-            created_offer = offers_models.Offer.query.all()
-            created_stock = offers_models.Stock.query.all()
-            created_price_categories = offers_models.PriceCategory.query.all()
-            created_price_categories_labels = offers_models.PriceCategoryLabel.query.all()
+            created_offer = db.session.query(offers_models.Offer).all()
+            created_stock = db.session.query(offers_models.Stock).all()
+            created_price_categories = db.session.query(offers_models.PriceCategory).all()
+            created_price_categories_labels = db.session.query(offers_models.PriceCategoryLabel).all()
 
             assert mock_poster_get_allocine.call_count == 2
             assert len(created_offer) == 2
             assert len(created_price_categories) == 2
             assert len(created_price_categories_labels) == 2
-            assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).count() == 1
-            assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue2.id).count() == 1
+            assert db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue1.id).count() == 1
+            assert db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 6
 
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -575,7 +576,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
+            created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.beginningDatetime).all()
 
             first_stock = created_stocks[0]
             first_stock.fieldsUpdated = ["quantity", "price"]
@@ -597,7 +598,7 @@ class UpdateObjectsTest:
 
             # Then
             assert len(created_stocks) == 3
-            assert len(offers_models.PriceCategory.query.all()) == 2
+            assert len(db.session.query(offers_models.PriceCategory).all()) == 2
             assert first_stock.quantity == 100
             assert first_stock.price == 20
             assert first_stock.priceCategory.price == 20
@@ -633,7 +634,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_offer = offers_models.Offer.query.one()
+            created_offer = db.session.query(offers_models.Offer).one()
             created_offer.isDuo = True
             created_offer.fieldsUpdated = ["isDuo"]
             repository.save(created_offer)
@@ -643,7 +644,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_offer = offers_models.Offer.query.one()
+            created_offer = db.session.query(offers_models.Offer).one()
             assert created_offer.isDuo is True
 
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -682,7 +683,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            stock = offers_models.Stock.query.first()
+            stock = db.session.query(offers_models.Stock).first()
             assert stock.priceCategory == newest_price_category
 
             assert allocine_stocks_provider.erroredObjects == 0
@@ -766,7 +767,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stock = offers_models.Stock.query.order_by(offers_models.Stock.id).first()
+            created_stock = db.session.query(offers_models.Stock).order_by(offers_models.Stock.id).first()
             created_stock.isSoftDeleted = True
 
             # When
@@ -774,7 +775,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = offers_models.Stock.query.order_by(offers_models.Stock.id).first()
+            created_stock = db.session.query(offers_models.Stock).order_by(offers_models.Stock.id).first()
             assert created_stock.isSoftDeleted is True
 
     class WhenSettingDefaultValuesAtImportTest:
@@ -804,7 +805,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_offer = offers_models.Offer.query.one()
+            created_offer = db.session.query(offers_models.Offer).one()
             assert created_offer.isDuo
 
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -832,7 +833,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            stock = offers_models.Stock.query.first()
+            stock = db.session.query(offers_models.Stock).first()
             assert stock.quantity == 50
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -855,7 +856,7 @@ class UpdateObjectsTest:
 
         allocine_stocks_provider.updateObjects()
 
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
 
         assert (
             created_offer.thumbUrl
@@ -865,7 +866,7 @@ class UpdateObjectsTest:
         assert mock_get_object_thumb.call_count == 1
 
         allocine_stocks_provider.updateObjects()
-        created_offer = offers_models.Offer.query.one()
+        created_offer = db.session.query(offers_models.Offer).one()
 
         assert (
             created_offer.thumbUrl

@@ -74,13 +74,17 @@ def cancel_expired_bookings(query: BaseQuery, batch_size: int = 500) -> None:
 
     while start_index < len(expiring_booking_ids):
         booking_ids_to_update = expiring_booking_ids[start_index : start_index + batch_size]
-        updated = Booking.query.filter(Booking.id.in_(booking_ids_to_update)).update(
-            {
-                "status": BookingStatus.CANCELLED,
-                "cancellationReason": BookingCancellationReasons.EXPIRED,
-                "cancellationDate": datetime.datetime.utcnow(),
-            },
-            synchronize_session=False,
+        updated = (
+            db.session.query(Booking)
+            .filter(Booking.id.in_(booking_ids_to_update))
+            .update(
+                {
+                    "status": BookingStatus.CANCELLED,
+                    "cancellationReason": BookingCancellationReasons.EXPIRED,
+                    "cancellationDate": datetime.datetime.utcnow(),
+                },
+                synchronize_session=False,
+            )
         )
         # Recompute denormalized stock quantity
         stocks_to_recompute = [
@@ -109,7 +113,7 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date | None
     user_ids = bookings_repository.find_user_ids_with_expired_individual_bookings(expired_on)
     notified_users_str = []
     for user_id in user_ids:
-        user = User.query.get(user_id)
+        user = db.session.query(User).get(user_id)
         transactional_mails.send_expired_bookings_to_beneficiary_email(
             user,
             bookings_repository.get_expired_individual_bookings_for_user(user),
@@ -207,13 +211,17 @@ def cancel_expired_collective_bookings(batch_size: int = 500) -> None:
 
     while start_index < len(expiring_booking_ids):
         booking_to_update_ids = expiring_booking_ids[start_index : start_index + batch_size]
-        updated = CollectiveBooking.query.filter(CollectiveBooking.id.in_(booking_to_update_ids)).update(
-            {
-                "status": CollectiveBookingStatus.CANCELLED,
-                "cancellationReason": CollectiveBookingCancellationReasons.EXPIRED,
-                "cancellationDate": datetime.datetime.utcnow(),
-            },
-            synchronize_session=False,
+        updated = (
+            db.session.query(CollectiveBooking)
+            .filter(CollectiveBooking.id.in_(booking_to_update_ids))
+            .update(
+                {
+                    "status": CollectiveBookingStatus.CANCELLED,
+                    "cancellationReason": CollectiveBookingCancellationReasons.EXPIRED,
+                    "cancellationDate": datetime.datetime.utcnow(),
+                },
+                synchronize_session=False,
+            )
         )
         db.session.commit()
 

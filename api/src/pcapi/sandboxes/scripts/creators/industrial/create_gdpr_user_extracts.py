@@ -3,6 +3,7 @@ import logging
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -11,15 +12,22 @@ logger = logging.getLogger(__name__)
 def create_gdpr_user_extract_data() -> None:
     logger.info("create_gdpr_user_extract_data")
 
-    author = users_models.User.query.filter(users_models.User.has_admin_role).order_by(users_models.User.id).first()
+    author = (
+        db.session.query(users_models.User)
+        .filter(users_models.User.has_admin_role)
+        .order_by(users_models.User.id)
+        .first()
+    )
     list_beneficiary = (
-        users_models.User.query.filter(users_models.User.has_beneficiary_role)
+        db.session.query(users_models.User)
+        .filter(users_models.User.has_beneficiary_role)
         .order_by(users_models.User.id)
         .limit(2)
         .all()
     )
     list_underage_beneficiary = (
-        users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
+        db.session.query(users_models.User)
+        .filter(users_models.User.has_underage_beneficiary_role)
         .order_by(users_models.User.id)
         .first()
     )

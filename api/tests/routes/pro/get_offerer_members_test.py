@@ -4,6 +4,7 @@ from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 
@@ -29,6 +30,7 @@ class Returns200Test:
         )
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
+        db.session.expire_all()
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # check user_offerer exists
         queries += 1  # select offerer

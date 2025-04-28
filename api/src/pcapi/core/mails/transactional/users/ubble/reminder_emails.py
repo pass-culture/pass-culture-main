@@ -13,6 +13,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.api as ubble_subscription
 from pcapi.core.users import eligibility_api
 import pcapi.core.users.models as users_models
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,8 @@ def _find_users_to_remind(
     days_ago: int, reason_codes_filter: list[fraud_models.FraudReasonCode]
 ) -> list[tuple[users_models.User, fraud_models.FraudReasonCode]]:
     users: list[users_models.User] = (
-        users_models.User.query.join(users_models.User.beneficiaryFraudChecks)
+        db.session.query(users_models.User)
+        .join(users_models.User.beneficiaryFraudChecks)
         .filter(
             sa.not_(users_models.User.is_beneficiary),
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,

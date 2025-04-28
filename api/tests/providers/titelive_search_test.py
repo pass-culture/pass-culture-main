@@ -24,6 +24,7 @@ from pcapi.core.providers.titelive_book_search import extract_eans_from_titelive
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.models import Favorite
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import requests
@@ -61,10 +62,15 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        cd_product = offers_models.Product.query.filter(
-            offers_models.Product.idAtProviders == "3700187679323",
-            offers_models.Product.lastProvider == titelive_epagine_provider,  # pylint: disable=comparison-with-callable
-        ).one()
+        cd_product = (
+            db.session.query(offers_models.Product)
+            .filter(
+                offers_models.Product.idAtProviders == "3700187679323",
+                offers_models.Product.lastProvider  # pylint: disable=comparison-with-callable
+                == titelive_epagine_provider,
+            )
+            .one()
+        )
         assert cd_product is not None
         assert cd_product.name == "Les dernières volontés de Mozart (symphony)"
         assert cd_product.description == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
@@ -86,10 +92,15 @@ class TiteliveSearchTest:
             music.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
 
-        shared_gtl_product = offers_models.Product.query.filter(
-            offers_models.Product.idAtProviders == "3700187679324",
-            offers_models.Product.lastProvider == titelive_epagine_provider,  # pylint: disable=comparison-with-callable
-        ).one()
+        shared_gtl_product = (
+            db.session.query(offers_models.Product)
+            .filter(
+                offers_models.Product.idAtProviders == "3700187679324",
+                offers_models.Product.lastProvider  # pylint: disable=comparison-with-callable
+                == titelive_epagine_provider,
+            )
+            .one()
+        )
         assert shared_gtl_product is not None
         assert shared_gtl_product.name == "Les dernières volontés de Mozart (symphony)"
         assert (
@@ -116,10 +127,15 @@ class TiteliveSearchTest:
             music.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
 
-        vinyle_product = offers_models.Product.query.filter(
-            offers_models.Product.idAtProviders == "5054197199738",
-            offers_models.Product.lastProvider == titelive_epagine_provider,  # pylint: disable=comparison-with-callable
-        ).one()
+        vinyle_product = (
+            db.session.query(offers_models.Product)
+            .filter(
+                offers_models.Product.idAtProviders == "5054197199738",
+                offers_models.Product.lastProvider  # pylint: disable=comparison-with-callable
+                == titelive_epagine_provider,
+            )
+            .one()
+        )
         assert vinyle_product.name is not None
         assert vinyle_product.name == "Cracker Island"
         assert (
@@ -162,9 +178,11 @@ class TiteliveSearchTest:
         assert requests_mock.request_history[-2].qs["dateminm"] == ["04/05/2022"]
         assert requests_mock.request_history[-1].qs["dateminm"] == ["05/05/2022"]
 
-        stop_event, start_event = providers_models.LocalProviderEvent.query.order_by(
-            providers_models.LocalProviderEvent.id.desc()
-        ).limit(2)
+        stop_event, start_event = (
+            db.session.query(providers_models.LocalProviderEvent)
+            .order_by(providers_models.LocalProviderEvent.id.desc())
+            .limit(2)
+        )
         assert stop_event.provider == start_event.provider == titelive_epagine_provider
         assert stop_event.date == start_event.date == datetime.datetime(2023, 1, 1)
         assert stop_event.payload == start_event.payload == titelive.TiteliveBase.MUSIC.value
@@ -186,21 +204,21 @@ class TiteliveSearchTest:
         with pytest.raises(requests.ExternalAPIException):
             TiteliveMusicSearch().synchronize_products()
 
-        start_sync_events_query = providers_models.LocalProviderEvent.query.filter(
+        start_sync_events_query = db.session.query(providers_models.LocalProviderEvent).filter(
             providers_models.LocalProviderEvent.provider == titelive_epagine_provider,
             providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncStart,
             providers_models.LocalProviderEvent.payload == titelive.TiteliveBase.MUSIC.value,
         )
         assert start_sync_events_query.count() == 1
 
-        end_sync_events_query = providers_models.LocalProviderEvent.query.filter(
+        end_sync_events_query = db.session.query(providers_models.LocalProviderEvent).filter(
             providers_models.LocalProviderEvent.provider == titelive_epagine_provider,
             providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncEnd,
             providers_models.LocalProviderEvent.payload == titelive.TiteliveBase.MUSIC.value,
         )
         assert end_sync_events_query.count() == 1  # no new end sync event
 
-        error_sync_events_query = providers_models.LocalProviderEvent.query.filter(
+        error_sync_events_query = db.session.query(providers_models.LocalProviderEvent).filter(
             providers_models.LocalProviderEvent.provider == titelive_epagine_provider,
             providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncError,
         )
@@ -218,13 +236,15 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        products_with_same_ean_query = offers_models.Product.query.filter(offers_models.Product.ean == "3700187679323")
+        products_with_same_ean_query = db.session.query(offers_models.Product).filter(
+            offers_models.Product.ean == "3700187679323"
+        )
         assert products_with_same_ean_query.count() == 1
 
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
-        titelive_synced_products_query = offers_models.Product.query.filter(
+        titelive_synced_products_query = db.session.query(offers_models.Product).filter(
             offers_models.Product.lastProvider == titelive_epagine_provider  # pylint: disable=comparison-with-callable
         )
         assert titelive_synced_products_query.count() == 2
@@ -239,12 +259,12 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        synced_products = offers_models.Product.query.all()
+        synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
         assert all(
-            offers_models.ProductMediation.query.filter(
-                offers_models.ProductMediation.productId == synced_product.id
-            ).count()
+            db.session.query(offers_models.ProductMediation)
+            .filter(offers_models.ProductMediation.productId == synced_product.id)
+            .count()
             > 0
             for synced_product in synced_products
         )
@@ -259,14 +279,14 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        synced_products = offers_models.Product.query.all()
+        synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
-        old_mediations = offers_models.ProductMediation.query.all()
+        old_mediations = db.session.query(offers_models.ProductMediation).all()
         assert len(old_mediations) == 6
 
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        new_mediations = offers_models.ProductMediation.query.all()
+        new_mediations = db.session.query(offers_models.ProductMediation).all()
         assert len(new_mediations) == 6
         assert all(old_mediation not in new_mediations for old_mediation in old_mediations)
         assert all(mediation.uuid is not None for mediation in new_mediations)
@@ -283,9 +303,9 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        synced_products = offers_models.Product.query.all()
+        synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
-        assert offers_models.ProductMediation.query.count() == 2
+        assert db.session.query(offers_models.ProductMediation).count() == 2
 
         no_thumbnail_product_1 = next(
             (product for product in synced_products if product.idAtProviders == "3700187679324"), None
@@ -293,9 +313,9 @@ class TiteliveSearchTest:
 
         assert no_thumbnail_product_1 is not None
         assert (
-            offers_models.ProductMediation.query.filter(
-                offers_models.ProductMediation.productId == no_thumbnail_product_1.id
-            ).count()
+            db.session.query(offers_models.ProductMediation)
+            .filter(offers_models.ProductMediation.productId == no_thumbnail_product_1.id)
+            .count()
             == 0
         )
         no_thumbnail_product_2 = next(
@@ -303,9 +323,9 @@ class TiteliveSearchTest:
         )
         assert no_thumbnail_product_2 is not None
         assert (
-            offers_models.ProductMediation.query.filter(
-                offers_models.ProductMediation.productId == no_thumbnail_product_2.id
-            ).count()
+            db.session.query(offers_models.ProductMediation)
+            .filter(offers_models.ProductMediation.productId == no_thumbnail_product_2.id)
+            .count()
             == 0
         )
 
@@ -320,17 +340,17 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        synced_products = offers_models.Product.query.all()
+        synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
-        assert offers_models.ProductMediation.query.count() == 4
+        assert db.session.query(offers_models.ProductMediation).count() == 4
         no_thumbnail_product = next(
             (product for product in synced_products if product.idAtProviders == "3700187679324"), None
         )
         assert no_thumbnail_product is not None
         assert (
-            offers_models.ProductMediation.query.filter(
-                offers_models.ProductMediation.productId == no_thumbnail_product.id
-            ).count()
+            db.session.query(offers_models.ProductMediation)
+            .filter(offers_models.ProductMediation.productId == no_thumbnail_product.id)
+            .count()
             == 0
         )
 
@@ -345,17 +365,17 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        synced_products = offers_models.Product.query.all()
+        synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
-        assert offers_models.ProductMediation.query.count() == 4
+        assert db.session.query(offers_models.ProductMediation).count() == 4
         no_thumbnail_product = next(
             (product for product in synced_products if product.idAtProviders == "3700187679324"), None
         )
         assert no_thumbnail_product is not None
         assert (
-            offers_models.ProductMediation.query.filter(
-                offers_models.ProductMediation.productId == no_thumbnail_product.id
-            ).count()
+            db.session.query(offers_models.ProductMediation)
+            .filter(offers_models.ProductMediation.productId == no_thumbnail_product.id)
+            .count()
             == 0
         )
 
@@ -373,7 +393,7 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        synced_product = offers_models.Product.query.one()
+        synced_product = db.session.query(offers_models.Product).one()
         assert synced_product.idAtProviders == "3700187679323"
 
     def test_titelive_music_sync_from_page(self, requests_mock, settings):
@@ -386,7 +406,7 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date, from_page=2)
 
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     def test_titelive_music_sync_on_multiple_days(self, requests_mock, settings):
         _configure_login_and_images(requests_mock, settings)
@@ -406,7 +426,7 @@ class TiteliveSearchTest:
             from_date=datetime.date(2022, 11, 30), to_date=datetime.date(2022, 12, 1)
         )
 
-        assert offers_models.Product.query.count() == 3
+        assert db.session.query(offers_models.Product).count() == 3
 
 
 @pytest.mark.settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com", TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
@@ -458,7 +478,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
@@ -484,7 +504,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.order_by(offers_models.Product.name).all()
+        product = db.session.query(offers_models.Product).order_by(offers_models.Product.name).all()
         assert len(product) == 2
         assert (
             product[0].name
@@ -502,7 +522,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
@@ -533,7 +553,7 @@ class TiteliveBookSearchTest:
             from_date=datetime.date(2022, 11, 30), to_date=datetime.date(2022, 12, 1)
         )
 
-        assert offers_models.Product.query.one()
+        assert db.session.query(offers_models.Product).one()
 
     def test_does_not_create_product_when_product_is_gtl_school_book(self, requests_mock, settings):
         # Given
@@ -548,7 +568,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @pytest.mark.parametrize("taux_tva", ["20", "20.00"])
     def test_does_not_create_product_when_product_is_vat_20(self, requests_mock, settings, taux_tva):
@@ -564,7 +584,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     def test_does_not_create_product_when_product_is_extracurricular(self, requests_mock, settings):
         self.setup_api_response_fixture(
@@ -578,7 +598,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @pytest.mark.parametrize(
         "support_code",
@@ -603,7 +623,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     def test_create_product_when_product_is_gtl_school_book_but_in_product_whitelist(self, requests_mock, settings):
         # Given
@@ -624,7 +644,7 @@ class TiteliveBookSearchTest:
 
         # Then
         # the assertion on the content is made in the previous tests
-        assert offers_models.Product.query.count() == 1
+        assert db.session.query(offers_models.Product).count() == 1
 
     def test_does_not_create_product_when_product_is_lectorat_eighteen(self, requests_mock, settings):
         # Given
@@ -639,7 +659,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @pytest.mark.parametrize(
         "level_02_code_gtl",
@@ -660,7 +680,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     @pytest.mark.parametrize(
         "title",
@@ -678,7 +698,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        assert db.session.query(offers_models.Product).count() == 0
 
     def test_should_not_create_product_when_product_is_paper_press(self, requests_mock, settings):
         # When
@@ -702,7 +722,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.ean == self.EAN_TEST
         assert product.ean == self.EAN_TEST
 
@@ -718,7 +738,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.ean == self.EAN_TEST
         assert product.ean == self.EAN_TEST
         assert product.name == fixture_data["result"][0]["titre"]
@@ -741,10 +761,10 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
-        offer = offers_models.Offer.query.one()
+        product = db.session.query(offers_models.Product).one()
+        offer = db.session.query(offers_models.Offer).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
-        assert Favorite.query.count() == 0
+        assert db.session.query(Favorite).count() == 0
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
@@ -769,10 +789,10 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
-        offer = offers_models.Offer.query.one()
+        product = db.session.query(offers_models.Product).one()
+        offer = db.session.query(offers_models.Offer).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
-        assert Favorite.query.count() == 0
+        assert db.session.query(Favorite).count() == 0
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
@@ -791,7 +811,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     def test_should_reject_product_when_it_changes_to_paper_press_product(self, requests_mock, settings):
@@ -809,7 +829,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     def test_should_not_reject_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(
@@ -833,11 +853,11 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        offer = offers_models.Offer.query.one()
+        offer = db.session.query(offers_models.Offer).one()
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert stock.bookings[0].status == BookingStatus.CANCELLED
 
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     def test_update_should_not_override_fraud_incompatibility(self, requests_mock, settings):
@@ -855,7 +875,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
     def test_update_offers_extra_data_from_thing(self, requests_mock, settings):
@@ -867,7 +887,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
@@ -896,7 +916,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.isGcuCompatible
 
     def test_approve_product_and_offers_from_inappropriate_thing(self, requests_mock, settings):
@@ -920,10 +940,10 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.isGcuCompatible
 
-        offers = offers_models.Offer.query.all()
+        offers = db.session.query(offers_models.Offer).all()
         assert all(offer.validation == OfferValidationStatus.APPROVED for offer in offers)
 
     @pytest.mark.parametrize(
@@ -949,7 +969,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.extraData.get("author") == expected_author
 
     def test_approval_should_not_override_fraud_incompatibility(self, requests_mock, settings):
@@ -967,7 +987,7 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         # Then
-        product = offers_models.Product.query.one()
+        product = db.session.query(offers_models.Product).one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
     def test_get_information_from_titelive_multiple_ean_route(self, requests_mock, settings):
@@ -1021,7 +1041,7 @@ class TiteliveBookSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        products = offers_models.Product.query.all()
+        products = db.session.query(offers_models.Product).all()
         ean_no_verso_image = "9782848018676"
         ean_verso_image = "9782370730541"
 
@@ -1044,6 +1064,6 @@ class TiteliveBookSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveBookSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        (product,) = offers_models.Product.query.all()
+        (product,) = db.session.query(offers_models.Product).all()
 
         assert product.images.get("recto") is None

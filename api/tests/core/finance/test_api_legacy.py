@@ -76,7 +76,7 @@ class PriceEventTest:
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        finance_events = models.FinanceEvent.query.all()
+        finance_events = db.session.query(models.FinanceEvent).all()
         assert len(finance_events) == 1
 
         initial_finance_event = finance_events[0]
@@ -138,7 +138,7 @@ class PriceEventTest:
         assert incident.origin == models.FinanceIncidentRequestOrigin.SUPPORT_PRO
         assert incident.comment == "BO"
 
-        booking_finance_incidents = models.BookingFinanceIncident.query.all()
+        booking_finance_incidents = db.session.query(models.BookingFinanceIncident).all()
         assert len(booking_finance_incidents) == 1
         booking_finance_incident = booking_finance_incidents[0]
         assert booking_finance_incident.beneficiaryId == user.id
@@ -156,7 +156,9 @@ class PriceEventTest:
             author=author_user,
         )
 
-        finance_events = models.FinanceEvent.query.filter(models.FinanceEvent.id != initial_finance_event.id).all()
+        finance_events = (
+            db.session.query(models.FinanceEvent).filter(models.FinanceEvent.id != initial_finance_event.id).all()
+        )
         assert len(finance_events) == 2
         assert {finance_event.motive for finance_event in finance_events} == {
             models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
@@ -318,7 +320,7 @@ class PriceEventTest:
             booking=initial_booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        finance_events = models.FinanceEvent.query.all()
+        finance_events = db.session.query(models.FinanceEvent).all()
         assert len(finance_events) == 1
 
         initial_booking_finance_event = finance_events[0]
@@ -358,9 +360,11 @@ class PriceEventTest:
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        booking_finance_events = models.FinanceEvent.query.filter(
-            models.FinanceEvent.id != initial_booking_finance_event.id
-        ).all()
+        booking_finance_events = (
+            db.session.query(models.FinanceEvent)
+            .filter(models.FinanceEvent.id != initial_booking_finance_event.id)
+            .all()
+        )
         assert len(booking_finance_events) == 1
         booking_finance_event = booking_finance_events[0]
         pricing = api.price_event(booking_finance_event)
@@ -399,9 +403,13 @@ class PriceEventTest:
         assert booking.status == bookings_models.BookingStatus.CANCELLED
         assert booking_finance_event.status == models.FinanceEventStatus.CANCELLED
         assert booking_finance_event.pricingPointId == venue.id
-        cancel_booking_finance_events = models.FinanceEvent.query.filter(
-            models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
-        ).all()
+        cancel_booking_finance_events = (
+            db.session.query(models.FinanceEvent)
+            .filter(
+                models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
+            )
+            .all()
+        )
         assert len(cancel_booking_finance_events) == 1
         cancel_booking_finance_event = cancel_booking_finance_events[0]
         assert cancel_booking_finance_event.motive == models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE
@@ -425,11 +433,15 @@ class PriceEventTest:
             booking=additional_booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        additional_finance_events = models.FinanceEvent.query.filter(
-            models.FinanceEvent.id.not_in(
-                (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
-            ),
-        ).all()
+        additional_finance_events = (
+            db.session.query(models.FinanceEvent)
+            .filter(
+                models.FinanceEvent.id.not_in(
+                    (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
+                ),
+            )
+            .all()
+        )
         assert len(additional_finance_events) == 1
         additional_finance_event = additional_finance_events[0]
         api.price_event(additional_finance_event)
@@ -461,16 +473,20 @@ class PriceEventTest:
         assert booking_finance_incident.bookingId == booking.id
         assert booking_finance_incident.incidentId == commercial_gesture.id
         assert booking_finance_incident.due_amount_by_offerer == 10_10
-        finance_event_count = models.FinanceEvent.query.filter(
-            models.FinanceEvent.id.in_(
-                (
-                    initial_booking_finance_event.id,
-                    booking_finance_event.id,
-                    cancel_booking_finance_event.id,
-                    additional_finance_event.id,
+        finance_event_count = (
+            db.session.query(models.FinanceEvent)
+            .filter(
+                models.FinanceEvent.id.in_(
+                    (
+                        initial_booking_finance_event.id,
+                        booking_finance_event.id,
+                        cancel_booking_finance_event.id,
+                        additional_finance_event.id,
+                    ),
                 ),
-            ),
-        ).count()
+            )
+            .count()
+        )
         assert finance_event_count == 4
 
         ###################################
@@ -478,16 +494,20 @@ class PriceEventTest:
         ###################################
         api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)
         assert commercial_gesture.status == models.IncidentStatus.VALIDATED
-        commercial_gesture_finance_events = models.FinanceEvent.query.filter(
-            models.FinanceEvent.id.not_in(
-                (
-                    initial_booking_finance_event.id,
-                    booking_finance_event.id,
-                    cancel_booking_finance_event.id,
-                    additional_finance_event.id,
+        commercial_gesture_finance_events = (
+            db.session.query(models.FinanceEvent)
+            .filter(
+                models.FinanceEvent.id.not_in(
+                    (
+                        initial_booking_finance_event.id,
+                        booking_finance_event.id,
+                        cancel_booking_finance_event.id,
+                        additional_finance_event.id,
+                    ),
                 ),
-            ),
-        ).all()
+            )
+            .all()
+        )
         assert len(commercial_gesture_finance_events) == 1
         commercial_gesture_finance_event = commercial_gesture_finance_events[0]
         assert commercial_gesture_finance_event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
@@ -568,7 +588,7 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     cutoff = datetime.datetime.utcnow()
     api.generate_cashflows_and_payment_files(cutoff)
 
-    cashflow = models.Cashflow.query.one()
+    cashflow = db.session.query(models.Cashflow).one()
     assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
     assert len(cashflow.logs) == 1
     assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
@@ -1177,7 +1197,7 @@ def test_invoices_csv_commercial_gesture():
         booking=initial_booking,
         validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
     )
-    finance_events = models.FinanceEvent.query.all()
+    finance_events = db.session.query(models.FinanceEvent).all()
     assert len(finance_events) == 1
     initial_booking_finance_event = finance_events[0]
     api.price_event(initial_booking_finance_event)
@@ -1191,9 +1211,9 @@ def test_invoices_csv_commercial_gesture():
         booking=booking,
         validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
     )
-    booking_finance_events = models.FinanceEvent.query.filter(
-        models.FinanceEvent.id != initial_booking_finance_event.id
-    ).all()
+    booking_finance_events = (
+        db.session.query(models.FinanceEvent).filter(models.FinanceEvent.id != initial_booking_finance_event.id).all()
+    )
     assert len(booking_finance_events) == 1
     booking_finance_event = booking_finance_events[0]
     api.price_event(booking_finance_event)
@@ -1204,9 +1224,13 @@ def test_invoices_csv_commercial_gesture():
         reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
     )
 
-    cancel_booking_finance_events = models.FinanceEvent.query.filter(
-        models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
-    ).all()
+    cancel_booking_finance_events = (
+        db.session.query(models.FinanceEvent)
+        .filter(
+            models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
+        )
+        .all()
+    )
     assert len(cancel_booking_finance_events) == 1
     cancel_booking_finance_event = cancel_booking_finance_events[0]
 
@@ -1221,11 +1245,15 @@ def test_invoices_csv_commercial_gesture():
         booking=additional_booking,
         validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
     )
-    additional_finance_events = models.FinanceEvent.query.filter(
-        models.FinanceEvent.id.not_in(
-            (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
-        ),
-    ).all()
+    additional_finance_events = (
+        db.session.query(models.FinanceEvent)
+        .filter(
+            models.FinanceEvent.id.not_in(
+                (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
+            ),
+        )
+        .all()
+    )
     assert len(additional_finance_events) == 1
     additional_finance_event = additional_finance_events[0]
     api.price_event(additional_finance_event)
@@ -1241,16 +1269,20 @@ def test_invoices_csv_commercial_gesture():
     # Validate the commercial gesture
     api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)
     assert commercial_gesture.status == models.IncidentStatus.VALIDATED
-    commercial_gesture_finance_events = models.FinanceEvent.query.filter(
-        models.FinanceEvent.id.not_in(
-            (
-                initial_booking_finance_event.id,
-                booking_finance_event.id,
-                cancel_booking_finance_event.id,
-                additional_finance_event.id,
+    commercial_gesture_finance_events = (
+        db.session.query(models.FinanceEvent)
+        .filter(
+            models.FinanceEvent.id.not_in(
+                (
+                    initial_booking_finance_event.id,
+                    booking_finance_event.id,
+                    cancel_booking_finance_event.id,
+                    additional_finance_event.id,
+                ),
             ),
-        ),
-    ).all()
+        )
+        .all()
+    )
     assert len(commercial_gesture_finance_events) == 1
     commercial_gesture_finance_event = commercial_gesture_finance_events[0]
     api.price_event(commercial_gesture_finance_event)
@@ -1366,7 +1398,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     batch = api.generate_cashflows_and_payment_files(cutoff)
     api.generate_invoices_and_debit_notes_legacy(batch)
 
-    invoices = models.Invoice.query.all()
+    invoices = db.session.query(models.Invoice).all()
     assert len(invoices) == 1
     invoice = invoices[0]
     assert len(invoice.lines) == 2
@@ -1891,7 +1923,7 @@ class GenerateDebitNotesTest:
         with pytest.raises(exceptions.NoInvoiceToGenerate):
             api.generate_invoices_and_debit_notes_legacy(batch)
 
-        invoices = models.Invoice.query.all()
+        invoices = db.session.query(models.Invoice).all()
         assert len(invoices) == 0
 
 
@@ -2008,7 +2040,7 @@ class GenerateInvoicesTest:
 
         api.generate_invoices_and_debit_notes_legacy(batch)
 
-        invoices = models.Invoice.query.all()
+        invoices = db.session.query(models.Invoice).all()
         assert len(invoices) == 2
         invoiced_bookings = {inv.cashflows[0].pricings[0].booking for inv in invoices}
         assert invoiced_bookings == {booking1, booking2}
@@ -2029,7 +2061,7 @@ class GenerateInvoicesTest:
 
         api.generate_invoices_and_debit_notes_legacy(batch)
 
-        invoices = models.Invoice.query.all()
+        invoices = db.session.query(models.Invoice).all()
         assert len(invoices) == 1
         invoice = invoices[0]
         assert len(invoice.cashflows) == 1
@@ -2084,7 +2116,7 @@ class GenerateInvoicesTest:
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
 
-        finance_events = models.FinanceEvent.query.all()
+        finance_events = db.session.query(models.FinanceEvent).all()
         assert len(finance_events) == 3
 
         booking_pricing_dict = dict()
@@ -2121,7 +2153,7 @@ class GenerateInvoicesTest:
 
         api.generate_invoices_and_debit_notes_legacy(batch)
 
-        assert 1 == models.Invoice.query.count()
+        assert 1 == db.session.query(models.Invoice).count()
         for pricing in [normal_pricing, normal_free_pricing, free_pricing]:
             assert pricing.status == models.PricingStatus.INVOICED
 
@@ -2161,7 +2193,7 @@ class GenerateInvoiceTest:
         api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         with transaction():
             current_year = datetime.date.today().year
@@ -2208,7 +2240,7 @@ class GenerateInvoiceTest:
         api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
@@ -2255,7 +2287,7 @@ class GenerateInvoiceTest:
         api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
@@ -2299,7 +2331,7 @@ class GenerateInvoiceTest:
         api.price_event(finance_event)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
@@ -2339,7 +2371,7 @@ class GenerateInvoiceTest:
         api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
@@ -2384,7 +2416,7 @@ class GenerateInvoiceTest:
             api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
@@ -2478,7 +2510,7 @@ class GenerateInvoiceTest:
         api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
@@ -2523,8 +2555,8 @@ class GenerateInvoiceTest:
             api.price_event(e)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
-        cashflow = models.Cashflow.query.one()
-        pricings = models.Pricing.query.all()
+        cashflow = db.session.query(models.Cashflow).one()
+        pricings = db.session.query(models.Pricing).all()
         assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
         assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
         assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
@@ -2545,7 +2577,7 @@ class GenerateInvoiceTest:
             assert pricing.logs[1].statusBefore == models.PricingStatus.PROCESSED
             assert pricing.logs[1].statusAfter == models.PricingStatus.INVOICED
             assert pricing.logs[1].reason == models.PricingLogReason.GENERATE_INVOICE
-        get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
+        get_statuses = lambda model: {s for s, in db.session.query(model).with_entities(getattr(model, "status"))}
         cashflow_statuses = get_statuses(models.Cashflow)
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
         pricing_statuses = get_statuses(models.Pricing)
@@ -2572,12 +2604,12 @@ class PrepareInvoiceContextTest:
             api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
         invoice = api._generate_invoice_legacy(
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = db.session.query(models.CashflowBatch).get(batch.id)
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -2639,12 +2671,12 @@ class PrepareInvoiceContextTest:
         api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
         invoice = api._generate_invoice_legacy(
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = db.session.query(models.CashflowBatch).get(batch.id)
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -2712,14 +2744,14 @@ class GenerateDebitNoteHtmlTest:
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
 
-        cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
+        cashflows = db.session.query(models.Cashflow).order_by(models.Cashflow.id).all()
         cashflow_ids = [c.id for c in cashflows]
         invoice = api._generate_invoice_legacy(
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
             is_debit_note=True,
         )
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = db.session.query(models.CashflowBatch).get(batch.id)
         invoice_html = api._generate_debit_note_html(invoice, batch)
 
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
@@ -2834,14 +2866,14 @@ class GenerateInvoiceHtmlTest:
 
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
+        cashflows = db.session.query(models.Cashflow).order_by(models.Cashflow.id).all()
         cashflow_ids = [c.id for c in cashflows]
         invoice = api._generate_invoice_legacy(
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
 
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = db.session.query(models.CashflowBatch).get(batch.id)
         invoice_html = api._generate_invoice_html(invoice, batch)
 
         expected_generated_file_name = "rendered_nc_invoice.html" if is_caledonian else "rendered_invoice.html"
@@ -2871,7 +2903,7 @@ class GenerateInvoiceHtmlTest:
 
     def test_basics(self, features, invoice_data):
         bank_account, stocks, venue = invoice_data
-        pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
+        pricing_point = db.session.query(offerers_models.Venue).get(venue.current_pricing_point_id)
         only_educational_venue = offerers_factories.VenueFactory(
             name="Coiffeur collecTIF",
             pricing_point=pricing_point,

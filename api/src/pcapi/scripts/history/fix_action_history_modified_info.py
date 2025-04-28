@@ -10,10 +10,14 @@ from pcapi.models import db
 
 
 def fix_modified_info(do_update: bool = False) -> None:
-    actions = history_models.ActionHistory.query.filter(
-        history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
-        history_models.ActionHistory.extraData["modified_info"].is_not(None),
-    ).order_by(history_models.ActionHistory.id)
+    actions = (
+        db.session.query(history_models.ActionHistory)
+        .filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
+            history_models.ActionHistory.extraData["modified_info"].is_not(None),
+        )
+        .order_by(history_models.ActionHistory.id)
+    )
 
     for action in actions:
         print(f"\naction {action.id}")

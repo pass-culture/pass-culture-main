@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -23,7 +24,7 @@ class Returns204Test:
             )
 
             assert response.status_code == 204
-            booking = Booking.query.one()
+            booking = db.session.query(Booking).one()
             assert booking.status == BookingStatus.CONFIRMED
             assert booking.dateUsed is None
 
@@ -36,7 +37,7 @@ class Returns204Test:
             response = client.with_session_auth(pro_user.email).patch(url)
 
             assert response.status_code == 204
-            booking = Booking.query.one()
+            booking = db.session.query(Booking).one()
             assert booking.status == BookingStatus.CONFIRMED
             assert booking.dateUsed is None
 
@@ -48,7 +49,7 @@ class Returns204Test:
             response = client.with_session_auth(pro_user.email).patch(url)
 
             assert response.status_code == 204
-            booking = Booking.query.one()
+            booking = db.session.query(Booking).one()
             assert booking.status == BookingStatus.CONFIRMED
             assert booking.dateUsed is None
 
@@ -158,7 +159,7 @@ class Returns410Test:
         response = client.with_session_auth(user.email).patch(url)
 
         # Then
-        booking = Booking.query.get(booking.id)
+        booking = db.session.query(Booking).get(booking.id)
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
         assert booking.status is BookingStatus.CANCELLED

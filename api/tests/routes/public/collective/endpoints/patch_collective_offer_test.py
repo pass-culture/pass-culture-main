@@ -122,7 +122,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
 
         assert offer.name == payload["name"]
         assert offer.description == payload["description"]
@@ -183,7 +183,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.venueId == other_venue.id
         assert offer.offerVenue == {
             "venueId": other_venue.id,
@@ -240,7 +240,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
@@ -271,7 +271,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 422
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.name == "old_name"
 
     def test_partial_patch_offer_uai(self, client):
@@ -302,7 +302,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
@@ -339,7 +339,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
 
         assert offer.collectiveStock.startDatetime == next_month_minus_one_day
         assert offer.collectiveStock.endDatetime == next_month
@@ -434,7 +434,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 400
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId is None
 
     def test_patch_offer_invalid_api_key(self, client):
@@ -632,7 +632,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
@@ -659,7 +659,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 400
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
@@ -686,7 +686,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         # Then
         assert response.status_code == 400
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
@@ -710,7 +710,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             )
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         # END SETUP
@@ -743,7 +743,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
         assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.domains[0].id == domain.id
 
     def test_patch_offer_empty_domains(self, client):
@@ -796,7 +796,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
         assert response.json == {"educationalInstitutionId": ["Établissement scolaire non trouvé."]}
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.institutionId == educational_institution.id
 
     @pytest.mark.parametrize("institution_field", ["educationalInstitution", "educationalInstitutionId"])
@@ -818,7 +818,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.institutionId
 
     def test_unknown_national_program(self, client):

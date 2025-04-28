@@ -167,7 +167,7 @@ class FeatureToggle(enum.Enum):
                     {f.name: f.isActive for f in db.session.query(Feature.name, Feature.isActive)},
                 )
             return flask.request._cached_features[self.name]  # type: ignore[attr-defined]
-        return Feature.query.filter_by(name=self.name).one().isActive
+        return db.session.query(Feature).filter_by(name=self.name).one().isActive
 
     def __bool__(self) -> bool:
         return self.is_active()
@@ -274,7 +274,7 @@ def install_feature_flags() -> None:
 
     This is done before each deployment and in tests.
     """
-    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
     defined_flag_name = {f.name for f in list(FeatureToggle)}
 
     to_install_flags = defined_flag_name - installed_flag_names
@@ -296,7 +296,7 @@ def clean_feature_flags() -> None:
 
     This is done after each deployment and in tests.
     """
-    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
     defined_flag_name = {f.name for f in list(FeatureToggle)}
 
     to_remove_flags = installed_flag_names - defined_flag_name
@@ -308,7 +308,7 @@ def clean_feature_flags() -> None:
 
 def check_feature_flags_completeness() -> None:
     """Check if all feature flags are present in the database and in the code"""
-    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
     defined_flag_name = {f.name for f in FeatureToggle}
     extra_flags = installed_flag_names - defined_flag_name
     if extra_flags:

@@ -62,7 +62,7 @@ def find_bookings_ending_in_x_days(number_of_days: int) -> list[educational_mode
 def find_bookings_in_interval(
     start: datetime, end: datetime, dateColumn: sa.Column
 ) -> list[educational_models.CollectiveBooking]:
-    query = educational_models.CollectiveBooking.query.join(
+    query = db.session.query(educational_models.CollectiveBooking).join(
         educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
     )
     query = query.filter(
@@ -98,7 +98,8 @@ def get_and_lock_educational_deposit(
     strictly necessary.
     """
     educational_deposit = (
-        educational_models.EducationalDeposit.query.filter_by(
+        db.session.query(educational_models.EducationalDeposit)
+        .filter_by(
             educationalInstitutionId=educational_institution_id,
             educationalYearId=educational_year_id,
         )
@@ -166,29 +167,38 @@ def find_collective_booking_by_id(booking_id: int) -> educational_models.Collect
 
 
 def find_educational_year_by_date(date_searched: datetime) -> educational_models.EducationalYear | None:
-    return educational_models.EducationalYear.query.filter(
-        date_searched >= educational_models.EducationalYear.beginningDate,
-        date_searched <= educational_models.EducationalYear.expirationDate,
-    ).one_or_none()
+    return (
+        db.session.query(educational_models.EducationalYear)
+        .filter(
+            date_searched >= educational_models.EducationalYear.beginningDate,
+            date_searched <= educational_models.EducationalYear.expirationDate,
+        )
+        .one_or_none()
+    )
 
 
 def find_educational_institution_by_uai_code(uai_code: str | None) -> educational_models.EducationalInstitution | None:
-    return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
+    return db.session.query(educational_models.EducationalInstitution).filter_by(institutionId=uai_code).one_or_none()
 
 
 def find_educational_deposit_by_institution_id_and_year(
     educational_institution_id: int,
     educational_year_id: str,
 ) -> educational_models.EducationalDeposit | None:
-    return educational_models.EducationalDeposit.query.filter(
-        educational_models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
-        educational_models.EducationalDeposit.educationalYearId == educational_year_id,
-    ).one_or_none()
+    return (
+        db.session.query(educational_models.EducationalDeposit)
+        .filter(
+            educational_models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
+            educational_models.EducationalDeposit.educationalYearId == educational_year_id,
+        )
+        .one_or_none()
+    )
 
 
 def get_educational_deposits_by_year(year_id: str) -> list[educational_models.EducationalDeposit]:
     return (
-        educational_models.EducationalDeposit.query.join(educational_models.EducationalDeposit.educationalInstitution)
+        db.session.query(educational_models.EducationalDeposit)
+        .join(educational_models.EducationalDeposit.educationalInstitution)
         .filter(educational_models.EducationalDeposit.educationalYearId == year_id)
         .options(sa_orm.joinedload(educational_models.EducationalDeposit.educationalInstitution))
         .all()
@@ -196,9 +206,11 @@ def get_educational_deposits_by_year(year_id: str) -> list[educational_models.Ed
 
 
 def get_educational_year_beginning_at_given_year(year: int) -> educational_models.EducationalYear:
-    educational_year = educational_models.EducationalYear.query.filter(
-        extract("year", educational_models.EducationalYear.beginningDate) == year
-    ).one_or_none()
+    educational_year = (
+        db.session.query(educational_models.EducationalYear)
+        .filter(extract("year", educational_models.EducationalYear.beginningDate) == year)
+        .one_or_none()
+    )
     if educational_year is None:
         raise educational_exceptions.EducationalYearNotFound()
     return educational_year
@@ -289,9 +301,11 @@ def find_collective_bookings_for_adage(
 
 
 def find_redactor_by_email(redactor_email: str) -> educational_models.EducationalRedactor | None:
-    return educational_models.EducationalRedactor.query.filter(
-        educational_models.EducationalRedactor.email == redactor_email
-    ).one_or_none()
+    return (
+        db.session.query(educational_models.EducationalRedactor)
+        .filter(educational_models.EducationalRedactor.email == redactor_email)
+        .one_or_none()
+    )
 
 
 def find_or_create_redactor(information: RedactorInformation) -> educational_models.EducationalRedactor:
@@ -351,7 +365,7 @@ def get_paginated_collective_bookings_for_educational_year(
     page = 1 if page is None else page
     per_page = 1000 if per_page is None else per_page
 
-    query = educational_models.CollectiveBooking.query.filter(
+    query = db.session.query(educational_models.CollectiveBooking).filter(
         educational_models.CollectiveBooking.educationalYearId == educational_year_id
     )
     query = query.options(
@@ -434,7 +448,7 @@ def get_expired_or_archived_collective_offers_template() -> BaseQuery:
 def find_expiring_collective_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
-    return educational_models.CollectiveBooking.query.filter(
+    return db.session.query(educational_models.CollectiveBooking).filter(
         educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
         educational_models.CollectiveBooking.confirmationLimitDate <= today_at_midnight,
     )
@@ -443,9 +457,8 @@ def find_expiring_collective_bookings_query() -> BaseQuery:
 def find_expired_collective_bookings() -> list[educational_models.CollectiveBooking]:
     expired_on = date.today()
     return (
-        educational_models.CollectiveBooking.query.filter(
-            educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
-        )
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED)
         .filter(sa.cast(educational_models.CollectiveBooking.cancellationDate, sa.Date) == expired_on)
         .filter(
             educational_models.CollectiveBooking.cancellationReason
@@ -487,7 +500,8 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
     # Also call `populate_existing()` to make sure we don't use something
     # older from the SQLAlchemy's session.
     stock = (
-        educational_models.CollectiveStock.query.filter_by(id=stock_id)
+        db.session.query(educational_models.CollectiveStock)
+        .filter_by(id=stock_id)
         .populate_existing()
         .with_for_update()
         .one_or_none()
@@ -499,7 +513,8 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
 
 def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     return (
-        educational_models.CollectiveStock.query.filter(educational_models.CollectiveStock.id == collective_stock_id)
+        db.session.query(educational_models.CollectiveStock)
+        .filter(educational_models.CollectiveStock.id == collective_stock_id)
         .options(
             sa_orm.joinedload(educational_models.CollectiveStock.collectiveOffer).options(
                 # needed to avoid a query when we call stock.collectiveOffer.collectiveStock
@@ -609,7 +624,8 @@ def _get_filtered_collective_bookings_query(
 ) -> sa_orm.Query:
 
     collective_bookings_query = (
-        educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer)
+        db.session.query(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveBooking.offerer)
         .join(offerers_models.Offerer.UserOfferers)
         .join(educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveBooking.venue, isouter=True)
@@ -667,7 +683,7 @@ def list_public_collective_offers(
     period_ending_date: str | None = None,
     limit: int = 500,
 ) -> list[educational_models.CollectiveOffer]:
-    query = educational_models.CollectiveOffer.query
+    query = db.session.query(educational_models.CollectiveOffer)
 
     query = query.join(providers_models.Provider, educational_models.CollectiveOffer.provider)
     query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
@@ -904,19 +920,21 @@ def get_collective_offer_and_extra_data(offer_id: int) -> educational_models.Col
 
 def get_collective_offer_request_by_id(request_id: int) -> educational_models.CollectiveOfferRequest:
     try:
-        query = educational_models.CollectiveOfferRequest.query.filter(
-            educational_models.CollectiveOfferRequest.id == request_id
-        ).options(
-            sa_orm.joinedload(educational_models.CollectiveOfferRequest.collectiveOfferTemplate)
-            .load_only(educational_models.CollectiveOfferTemplate.id)
-            .joinedload(educational_models.CollectiveOfferTemplate.venue)
-            .load_only(offerers_models.Venue.managingOffererId),
-            sa_orm.joinedload(educational_models.CollectiveOfferRequest.educationalRedactor).load_only(
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-                educational_models.EducationalRedactor.email,
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOfferRequest.educationalInstitution),
+        query = (
+            db.session.query(educational_models.CollectiveOfferRequest)
+            .filter(educational_models.CollectiveOfferRequest.id == request_id)
+            .options(
+                sa_orm.joinedload(educational_models.CollectiveOfferRequest.collectiveOfferTemplate)
+                .load_only(educational_models.CollectiveOfferTemplate.id)
+                .joinedload(educational_models.CollectiveOfferTemplate.venue)
+                .load_only(offerers_models.Venue.managingOffererId),
+                sa_orm.joinedload(educational_models.CollectiveOfferRequest.educationalRedactor).load_only(
+                    educational_models.EducationalRedactor.firstName,
+                    educational_models.EducationalRedactor.lastName,
+                    educational_models.EducationalRedactor.email,
+                ),
+                sa_orm.joinedload(educational_models.CollectiveOfferRequest.educationalInstitution),
+            )
         )
 
         return query.one()
@@ -993,8 +1011,10 @@ def get_collective_offer_templates_for_playlist_query(
 
 
 def user_has_bookings(user: User) -> bool:
-    bookings_query = educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer).join(
-        offerers_models.Offerer.UserOfferers
+    bookings_query = (
+        db.session.query(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveBooking.offerer)
+        .join(offerers_models.Offerer.UserOfferers)
     )
     return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
 
@@ -1077,7 +1097,7 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
 
 
 def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
-    query = educational_models.CollectiveOffer.query
+    query = db.session.query(educational_models.CollectiveOffer)
 
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
@@ -1095,7 +1115,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iter
 
 
 def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
-    query = educational_models.CollectiveOfferTemplate.query
+    query = db.session.query(educational_models.CollectiveOfferTemplate)
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue)
         query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
@@ -1107,7 +1127,8 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: ty
 
 def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[educational_models.EducationalDomain]:
     return (
-        educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids))
+        db.session.query(educational_models.EducationalDomain)
+        .filter(educational_models.EducationalDomain.id.in_(ids))
         .options(sa_orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
         .all()
     )
@@ -1115,7 +1136,8 @@ def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[educatio
 
 def get_all_educational_domains_ordered_by_name() -> list[educational_models.EducationalDomain]:
     return (
-        educational_models.EducationalDomain.query.order_by(educational_models.EducationalDomain.name)
+        db.session.query(educational_models.EducationalDomain)
+        .order_by(educational_models.EducationalDomain.name)
         .options(sa_orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
         .all()
     )
@@ -1126,7 +1148,7 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
     query = query.filter(educational_models.EducationalInstitution.isActive)
     total = query.one()[0]
 
-    query = educational_models.EducationalInstitution.query
+    query = db.session.query(educational_models.EducationalInstitution)
     query = query.filter(educational_models.EducationalInstitution.isActive)
     query = query.order_by(
         educational_models.EducationalInstitution.name,
@@ -1198,7 +1220,8 @@ def search_educational_institution(
         filters.append(educational_models.EducationalInstitution.institutionId == uai)
 
     return (
-        educational_models.EducationalInstitution.query.filter(
+        db.session.query(educational_models.EducationalInstitution)
+        .filter(
             *filters,
             educational_models.EducationalInstitution.isActive,
         )
@@ -1213,9 +1236,8 @@ def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     query = (
-        educational_models.CollectiveBooking.query.filter(
-            educational_models.CollectiveBooking.confirmationLimitDate.between(start, end)
-        )
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(educational_models.CollectiveBooking.confirmationLimitDate.between(start, end))
         .filter(educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING)
         .distinct()
     )
@@ -1236,7 +1258,8 @@ def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational
 
 def get_paginated_active_collective_offer_template_ids(batch_size: int, page: int = 1) -> list[int]:
     query = (
-        educational_models.CollectiveOfferTemplate.query.with_entities(educational_models.CollectiveOfferTemplate.id)
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .with_entities(educational_models.CollectiveOfferTemplate.id)
         .filter(
             educational_models.CollectiveOfferTemplate.isActive.is_(True),
         )
@@ -1249,7 +1272,8 @@ def get_paginated_active_collective_offer_template_ids(batch_size: int, page: in
 
 def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBankAccountLink | None:
     return (
-        finance_models.BankAccount.query.join(
+        db.session.query(finance_models.BankAccount)
+        .join(
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
@@ -1270,12 +1294,16 @@ def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBa
 def get_educational_institution_public(
     institution_id: int | None, uai: str | None
 ) -> educational_models.EducationalInstitution | None:
-    return educational_models.EducationalInstitution.query.filter(
-        sa.or_(
-            educational_models.EducationalInstitution.institutionId == uai,
-            educational_models.EducationalInstitution.id == institution_id,
-        ),
-    ).one_or_none()
+    return (
+        db.session.query(educational_models.EducationalInstitution)
+        .filter(
+            sa.or_(
+                educational_models.EducationalInstitution.institutionId == uai,
+                educational_models.EducationalInstitution.id == institution_id,
+            ),
+        )
+        .one_or_none()
+    )
 
 
 def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOfferTemplate]:
@@ -1299,14 +1327,19 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
 
 
 def get_venue_base_query() -> BaseQuery:
-    return offerers_models.Venue.query.filter(
-        offerers_models.Venue.adageId.is_not(None),
-    ).options(sa_orm.joinedload(offerers_models.Venue.adage_addresses))
+    return (
+        db.session.query(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.adageId.is_not(None),
+        )
+        .options(sa_orm.joinedload(offerers_models.Venue.adage_addresses))
+    )
 
 
 def fetch_venue_for_new_offer(venue_id: int, requested_provider_id: int) -> offerers_models.Venue:
     query = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == venue_id)
         .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
         .filter(providers_models.VenueProvider.providerId == requested_provider_id)
         .options(
@@ -1328,9 +1361,8 @@ def fetch_venue_for_new_offer(venue_id: int, requested_provider_id: int) -> offe
 
 def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids: typing.Iterable[str]) -> bool:
     query = (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
+        db.session.query(educational_models.CollectiveOffer)
+        .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
         .join(
             educational_models.EducationalInstitution.programAssociations,
         )
@@ -1362,10 +1394,12 @@ def offerer_has_ongoing_collective_bookings(offerer_id: int, include_used: bool 
         statuses.append(educational_models.CollectiveBookingStatus.USED)
 
     return db.session.query(
-        educational_models.CollectiveBooking.query.filter(
+        db.session.query(educational_models.CollectiveBooking)
+        .filter(
             educational_models.CollectiveBooking.offererId == offerer_id,
             educational_models.CollectiveBooking.status.in_(statuses),
-        ).exists()
+        )
+        .exists()
     ).scalar()
 
 

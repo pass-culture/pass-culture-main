@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.scripts.bulk_inactivate_offers import bulk_inactivate_offers
 
@@ -21,7 +22,7 @@ class BulkMarkIncompatibleViaOfferIdsTest:
         bulk_inactivate_offers(offer_ids_list, 2)
 
         # Then
-        offers = Offer.query.order_by(Offer.id).all()
+        offers = db.session.query(Offer).order_by(Offer.id).all()
         assert not offers[0].isActive
         assert not offers[1].isActive
         assert offers[2].isActive

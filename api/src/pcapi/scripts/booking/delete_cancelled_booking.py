@@ -10,10 +10,14 @@ logger = logging.getLogger(__name__)
 
 
 def delete_cancelled_booking(venue_id: int, stop_on_exception: bool = True) -> None:
-    booking_to_delete = bookings_models.Booking.query.filter(
-        bookings_models.Booking.venueId == venue_id,
-        bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED,
-    ).all()
+    booking_to_delete = (
+        db.session.query(bookings_models.Booking)
+        .filter(
+            bookings_models.Booking.venueId == venue_id,
+            bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED,
+        )
+        .all()
+    )
     logger.info("%s bookings to delete", len(booking_to_delete))
     for booking in booking_to_delete:
         if has_reimbursement(booking):

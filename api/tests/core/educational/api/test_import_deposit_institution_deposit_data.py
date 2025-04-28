@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api.institution import import_deposit_institution_data
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -23,11 +24,17 @@ class ImportDepositInstitutionDataTest:
             conflict="crash",
         )
 
-        institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
-        deposit = educational_models.EducationalDeposit.query.filter(
-            educational_models.EducationalDeposit.educationalInstitution == institution,
-            educational_models.EducationalDeposit.educationalYear == ansco,
-        ).one()
+        institution = (
+            db.session.query(educational_models.EducationalInstitution).filter_by(institutionId="0470010E").one()
+        )
+        deposit = (
+            db.session.query(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalInstitution == institution,
+                educational_models.EducationalDeposit.educationalYear == ansco,
+            )
+            .one()
+        )
 
         assert institution.institutionId == "0470010E"
         assert institution.institutionType == "COLLEGE"
@@ -55,11 +62,17 @@ class ImportDepositInstitutionDataTest:
             conflict="crash",
         )
 
-        institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
-        deposit = educational_models.EducationalDeposit.query.filter(
-            educational_models.EducationalDeposit.educationalInstitution == institution,
-            educational_models.EducationalDeposit.educationalYear == ansco,
-        ).one()
+        institution = (
+            db.session.query(educational_models.EducationalInstitution).filter_by(institutionId="0470010E").one()
+        )
+        deposit = (
+            db.session.query(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalInstitution == institution,
+                educational_models.EducationalDeposit.educationalYear == ansco,
+            )
+            .one()
+        )
 
         assert institution.institutionId == "0470010E"
         assert institution.institutionType == "COLLEGE"
@@ -87,8 +100,8 @@ class ImportDepositInstitutionDataTest:
                 conflict="crash",
             )
 
-        assert educational_models.EducationalInstitution.query.count() == 0
-        assert educational_models.EducationalDeposit.query.count() == 0
+        assert db.session.query(educational_models.EducationalInstitution).count() == 0
+        assert db.session.query(educational_models.EducationalDeposit).count() == 0
         assert str(exception.value) == "UAIs not found in adage: ['pouet']"
 
     def test_deposit_alread_in_ministry_replace(self) -> None:
@@ -109,11 +122,17 @@ class ImportDepositInstitutionDataTest:
             conflict="replace",
         )
 
-        institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
-        deposit = educational_models.EducationalDeposit.query.filter(
-            educational_models.EducationalDeposit.educationalInstitution == institution,
-            educational_models.EducationalDeposit.educationalYear == ansco,
-        ).one()
+        institution = (
+            db.session.query(educational_models.EducationalInstitution).filter_by(institutionId="0470010E").one()
+        )
+        deposit = (
+            db.session.query(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalInstitution == institution,
+                educational_models.EducationalDeposit.educationalYear == ansco,
+            )
+            .one()
+        )
 
         assert institution.institutionId == "0470010E"
         assert institution.institutionType == "COLLEGE"
@@ -145,11 +164,17 @@ class ImportDepositInstitutionDataTest:
             conflict="keep",
         )
 
-        institution = educational_models.EducationalInstitution.query.filter_by(institutionId="0470010E").one()
-        deposit = educational_models.EducationalDeposit.query.filter(
-            educational_models.EducationalDeposit.educationalInstitution == institution,
-            educational_models.EducationalDeposit.educationalYear == ansco,
-        ).one()
+        institution = (
+            db.session.query(educational_models.EducationalInstitution).filter_by(institutionId="0470010E").one()
+        )
+        deposit = (
+            db.session.query(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalInstitution == institution,
+                educational_models.EducationalDeposit.educationalYear == ansco,
+            )
+            .one()
+        )
 
         assert institution.institutionId == "0470010E"
         assert institution.institutionType == "COLLEGE"

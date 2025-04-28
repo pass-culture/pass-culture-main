@@ -6,6 +6,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -25,8 +26,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert Offer.query.get(offer1.id).isActive
-        assert Offer.query.get(offer2.id).isActive
+        assert db.session.query(Offer).get(offer1.id).isActive
+        assert db.session.query(Offer).get(offer2.id).isActive
 
     def when_deactivating_existing_offers(self, client):
         # Given
@@ -45,8 +46,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not Offer.query.get(offer.id).isActive
-        assert not Offer.query.get(synchronized_offer.id).isActive
+        assert not db.session.query(Offer).get(offer.id).isActive
+        assert not db.session.query(Offer).get(synchronized_offer.id).isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)

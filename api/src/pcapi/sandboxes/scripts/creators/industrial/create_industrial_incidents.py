@@ -17,6 +17,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
 
 
@@ -228,10 +229,13 @@ def _create_one_collective_incident(
         bank_account=bank_account,
     )
     institution = (
-        educational_models.EducationalInstitution.query.first()
+        db.session.query(educational_models.EducationalInstitution).first()
         or educational_factories.EducationalInstitutionFactory.create()
     )
-    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory.create()
+    year = (
+        db.session.query(educational_models.EducationalYear).first()
+        or educational_factories.EducationalYearFactory.create()
+    )
     deposit = (
         institution.deposits[0]
         if institution.deposits

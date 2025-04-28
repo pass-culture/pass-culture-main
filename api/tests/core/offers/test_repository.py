@@ -1622,7 +1622,7 @@ class ExcludeOffersFromInactiveVenueProviderTest:
         )
         offer_from_stock_api = factories.OfferFactory(lastProvider=stock_api_provider)
 
-        result_query = repository.exclude_offers_from_inactive_venue_provider(models.Offer.query)
+        result_query = repository.exclude_offers_from_inactive_venue_provider(db.session.query(models.Offer))
         selected_offers = result_query.all()
 
         assert offer_from_active_venue_provider in selected_offers

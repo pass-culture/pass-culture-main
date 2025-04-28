@@ -20,7 +20,8 @@ def fix_users_who_should_be_pro(do_update: bool = False) -> None:
     Users who don't have PRO role but have at least one validated attachment to a validated offerer
     """
     users = (
-        users_models.User.query.join(offerers_models.UserOfferer)
+        db.session.query(users_models.User)
+        .join(offerers_models.UserOfferer)
         .join(offerers_models.Offerer)
         .filter(
             sa.not_(users_models.User.has_pro_role),
@@ -41,9 +42,13 @@ def fix_users_who_should_not_be_pro(do_update: bool = False) -> None:
     """
     Users who have PRO roles but do not have any attachment (any status)
     """
-    users = users_models.User.query.outerjoin(offerers_models.UserOfferer).filter(
-        users_models.User.has_pro_role,
-        offerers_models.UserOfferer.id.is_(None),
+    users = (
+        db.session.query(users_models.User)
+        .outerjoin(offerers_models.UserOfferer)
+        .filter(
+            users_models.User.has_pro_role,
+            offerers_models.UserOfferer.id.is_(None),
+        )
     )
 
     for user in users:
@@ -58,7 +63,8 @@ def fix_users_who_should_be_non_attached_pro(do_update: bool = False) -> None:
     Users who don't have any PRO or NON_ATTACHED_PRO role but have an attachment to an offerer, waiting for validation.
     """
     users = (
-        users_models.User.query.join(offerers_models.UserOfferer)
+        db.session.query(users_models.User)
+        .join(offerers_models.UserOfferer)
         .join(offerers_models.Offerer)
         .filter(
             sa.not_(users_models.User.has_non_attached_pro_role),
