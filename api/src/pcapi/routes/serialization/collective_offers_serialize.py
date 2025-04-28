@@ -197,7 +197,7 @@ def _serialize_offer_paginated(
         stocks=serialized_stocks,  # type: ignore[arg-type]
         booking=last_booking,
         thumbUrl=None,
-        venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
+        venue=_serialize_venue(offer.venue),
         status=offer.status.name,
         displayedStatus=offer.displayedStatus,
         allowedActions=offer.allowedActions,
@@ -233,15 +233,21 @@ def _serialize_stock(stock: educational_models.CollectiveStock | None = None) ->
     }
 
 
-def _serialize_venue(venue: offerers_models.Venue) -> dict:
-    return {
-        "id": venue.id,
-        "isVirtual": venue.isVirtual,
-        "name": venue.name,
-        "offererName": venue.managingOfferer.name,
-        "publicName": venue.publicName,
-        "departementCode": venue.departementCode,
-    }
+def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
+    if venue.offererAddress is not None:
+        department_code = venue.offererAddress.address.departmentCode
+    else:
+        # TODO(OA): remove this when the virtual venues are migrated
+        department_code = None
+
+    return base_serializers.ListOffersVenueResponseModel(
+        id=venue.id,
+        isVirtual=venue.isVirtual,
+        name=venue.name,
+        offererName=venue.managingOfferer.name,
+        publicName=venue.publicName,
+        departementCode=department_code,
+    )
 
 
 def _get_serialize_last_booking(

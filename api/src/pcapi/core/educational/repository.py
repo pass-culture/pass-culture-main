@@ -540,8 +540,11 @@ def get_collective_offers_for_filters(
     query = query.order_by(educational_models.CollectiveOffer.dateCreated.desc())
     offers = (
         query.options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
-                offerers_models.Venue.managingOfferer
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             )
         )
         .options(
@@ -588,8 +591,11 @@ def get_collective_offers_template_for_filters(
 
     offers = (
         query.options(
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
-                offerers_models.Venue.managingOfferer
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             )
         )
         .limit(offers_limit)
