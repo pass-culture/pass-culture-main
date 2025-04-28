@@ -1,10 +1,9 @@
-
 import strokeDownIcon from 'icons/stroke-down.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Toggle.module.scss'
 
-interface ToggleProps {
+export interface ToggleProps {
   disabled: boolean
   isOpen: boolean
   toggleField: () => void
