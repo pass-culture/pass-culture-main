@@ -124,6 +124,7 @@ def test_user_is_forbidden(client):
     queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
+    queries += 1  # rollback
     with testing.assert_num_queries(queries):
         response = client.get(f"/bookings/dates/{offer_id}")
         assert response.status_code == 403
