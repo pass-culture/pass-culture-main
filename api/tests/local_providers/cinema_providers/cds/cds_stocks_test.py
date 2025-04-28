@@ -13,12 +13,12 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
+from pcapi.core.offers.models import ProductMediation
 from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
-from pcapi.utils.human_ids import humanize
 
 import tests
 
@@ -637,7 +637,7 @@ class CDSStocksTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def should_create_offer_with_correct_thumb(
+    def test_should_create_product_mediation(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
         # Given
@@ -667,20 +667,13 @@ class CDSStocksTest:
 
         # Then
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
-        created_meditations = db.session.query(Mediation).order_by(Mediation.id).all()
+        created_product_meditations = db.session.query(ProductMediation).order_by(ProductMediation.id).all()
 
         assert len(created_offers) == 2
-        assert len(created_meditations) == 2
+        assert len(created_product_meditations) == 2
 
-        assert (
-            created_offers[0].thumbUrl
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_meditations[0].id)}"
-        )
-
-        assert (
-            created_offers[1].thumbUrl
-            == f"http://localhost/storage/thumbs/mediations/{humanize(created_meditations[1].id)}"
-        )
+        assert created_offers[0].image.url == created_offers[0].product.productMediations[0].url
+        assert created_offers[1].image.url == created_offers[1].product.productMediations[0].url
 
         assert cds_stocks.createdThumbs == 2
         assert cds_stocks.erroredObjects == 0
