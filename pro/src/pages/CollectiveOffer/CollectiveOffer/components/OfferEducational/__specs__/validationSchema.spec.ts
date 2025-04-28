@@ -173,6 +173,29 @@ describe('validationSchema OfferEducational', () => {
         ],
         isCollectiveOaActive: true,
       },
+      {
+        description:
+          'invalid form with specific address without manual address fields when OA FF is active',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              id_oa: 'SPECIFIC_ADDRESS',
+              isManualEdition: true,
+              isVenueAddress: false,
+              label: '',
+            },
+          },
+        },
+        expectedErrors: [
+          'Veuillez renseigner une adresse postale',
+          'Veuillez renseigner un code postal',
+          'Veuillez renseigner une ville',
+          'Veuillez renseigner les coordonnées GPS',
+        ],
+        isCollectiveOaActive: true,
+      },
     ]
 
     cases.forEach(

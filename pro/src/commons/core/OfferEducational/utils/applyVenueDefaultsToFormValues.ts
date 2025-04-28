@@ -42,6 +42,9 @@ export const applyVenueDefaultsToFormValues = (
     postalCode: selectedVenue?.address?.postalCode ?? '',
     street: selectedVenue?.address?.street ?? '',
   }
+  const isVenueAddress =
+    values.location.locationType === CollectiveLocationType.ADDRESS &&
+    values.location.address.isVenueAddress
 
   if (isOfferCreated) {
     //  In this case we are re-opening the first step during creation
@@ -59,11 +62,8 @@ export const applyVenueDefaultsToFormValues = (
       location:
         // if offer location was the venue address, we set by default the new selected
         // venue address in offer location otherwise we keep former selected location
-        values.location.locationType === CollectiveLocationType.ADDRESS &&
-        values.location.address.isVenueAddress
-          ? locationFromSelectedVenue
-          : { ...values.location },
-      ...selectedVenueAddress,
+        isVenueAddress ? locationFromSelectedVenue : { ...values.location },
+      ...(isVenueAddress && selectedVenueAddress),
     }
   }
 

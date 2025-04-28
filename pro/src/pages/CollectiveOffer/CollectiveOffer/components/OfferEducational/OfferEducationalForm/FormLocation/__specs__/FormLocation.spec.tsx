@@ -82,6 +82,7 @@ describe('FormLocation', () => {
     | 'longitude'
     | 'postalCode'
     | 'street'
+    | 'coords'
   > = {
     venueId: '1',
     'search-addressAutocomplete': '',
@@ -91,6 +92,7 @@ describe('FormLocation', () => {
     longitude: '2.3785',
     postalCode: '75001',
     street: '1 Rue de Paris',
+    coords: '48.87004, 2.3785',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
       address: {
@@ -155,5 +157,111 @@ describe('FormLocation', () => {
 
     const radioInput = screen.getByLabelText('À une adresse précise')
     expect(radioInput).toBeDisabled()
+  })
+
+  it('should show manual address form when isManualEdition is true', () => {
+    renderFormLocation(props, {
+      ...initialValues,
+      location: {
+        ...initialValues.location,
+        address: {
+          ...initialValues.location.address,
+          id_oa: 'SPECIFIC_ADDRESS',
+          isManualEdition: true,
+          isVenueAddress: false,
+          label: 'mon adresse manuelle',
+        },
+      },
+    })
+
+    const radioInput = screen.getByLabelText('Autre adresse')
+    const labelInput = screen.getByLabelText('Intitulé de la localisation')
+    const addressAutocompleteInput = screen.getByLabelText(/Adresse postale/, {
+      selector: '#search-addressAutocomplete',
+    })
+    const addressInput = screen.getByLabelText(/Adresse postale/, {
+      selector: '#street',
+    })
+    const cityInput = screen.getByLabelText(/Ville/)
+    const postalCodeInput = screen.getByLabelText(/Code postal/)
+    const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
+
+    expect(radioInput).toBeChecked()
+    expect(addressAutocompleteInput).toBeDisabled()
+    expect(labelInput).toHaveValue('mon adresse manuelle')
+    expect(addressInput).toHaveValue('1 Rue de Paris')
+    expect(cityInput).toHaveValue('Paris')
+    expect(postalCodeInput).toHaveValue('75001')
+    expect(coordsInput).toHaveValue('48.87004, 2.3785')
+  })
+
+  it('should disable manual address form when disableForm prop is true', () => {
+    renderFormLocation(
+      { ...props, disableForm: true },
+      {
+        ...initialValues,
+        location: {
+          ...initialValues.location,
+          address: {
+            ...initialValues.location.address,
+            id_oa: 'SPECIFIC_ADDRESS',
+            isManualEdition: true,
+          },
+        },
+      }
+    )
+
+    const radioInput = screen.getByLabelText('Autre adresse')
+    const addressLabelInput = screen.getByLabelText(
+      'Intitulé de la localisation'
+    )
+    const addressInput = screen.getByLabelText(/Adresse postale/, {
+      selector: '#street',
+    })
+    const cityInput = screen.getByLabelText(/Ville/)
+    const postalCodeInput = screen.getByLabelText(/Code postal/)
+    const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
+
+    expect(radioInput).toBeDisabled()
+    expect(addressLabelInput).toBeDisabled()
+    expect(addressInput).toBeDisabled()
+    expect(cityInput).toBeDisabled()
+    expect(postalCodeInput).toBeDisabled()
+    expect(coordsInput).toBeDisabled()
+  })
+
+  it('should show manual address form on press "Vous ne trouvez pas votre adresse ?" and empty address fields', async () => {
+    renderFormLocation(props, {
+      ...initialValues,
+      location: {
+        ...initialValues.location,
+        address: {
+          ...initialValues.location.address,
+          id_oa: 'SPECIFIC_ADDRESS',
+        },
+      },
+    })
+
+    const showManualAddressFormButton = screen.getByText(
+      'Vous ne trouvez pas votre adresse ?'
+    )
+
+    await userEvent.click(showManualAddressFormButton)
+
+    const addressAutocompleteInput = screen.getByLabelText(/Adresse postale/, {
+      selector: '#search-addressAutocomplete',
+    })
+    const addressInput = screen.getByLabelText(/Adresse postale/, {
+      selector: '#street',
+    })
+    const cityInput = screen.getByLabelText(/Ville/)
+    const postalCodeInput = screen.getByLabelText(/Code postal/)
+    const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
+
+    expect(addressAutocompleteInput).toBeDisabled()
+    expect(addressInput).toBeInTheDocument()
+    expect(cityInput).toBeInTheDocument()
+    expect(postalCodeInput).toBeInTheDocument()
+    expect(coordsInput).toBeInTheDocument()
   })
 })
