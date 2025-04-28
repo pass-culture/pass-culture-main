@@ -340,6 +340,23 @@ def _reindex_venue_ids(
         .options(
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
+        .options(
+            sa_orm.with_expression(
+                offerers_models.Venue.hasOffers,
+                sa.exists().where(offers_models.Offer.venueId == offerers_models.Venue.id),
+            )
+        )
+        .options(
+            sa_orm.with_expression(
+                offerers_models.Venue.hasBookableOffers,
+                sa.select(offers_models.Offer.id)
+                .select_from(offers_models.Offer)
+                .join(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
+                .where(offers_models.Offer.venueId == offerers_models.Venue.id)
+                .where(offers_models.Offer.is_released_and_bookable)
+                .exists(),
+            )
+        )
     )
 
     to_add = []

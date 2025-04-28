@@ -1743,14 +1743,7 @@ def has_venue_at_least_one_bookable_offer(venue: models.Venue) -> bool:
     if not venue.is_eligible_for_search or not venue.isReleased:
         return False
 
-    at_least_one_eligible_offer_query = (
-        offers_models.Stock.query.join(offers_models.Offer)
-        .filter(offers_models.Offer.venueId == venue.id)
-        .filter(offers_models.Offer.is_released_and_bookable)
-        .exists()
-    )
-
-    return db.session.query(at_least_one_eligible_offer_query).scalar()
+    return venue.hasBookableOffers
 
 
 def generate_dms_token() -> str:
