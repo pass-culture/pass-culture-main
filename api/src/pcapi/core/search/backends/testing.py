@@ -1,7 +1,9 @@
+import abc
 import typing
 
-from flask import current_app
+from algoliasearch.search.models.search_response import SearchResponse
 
+from pcapi import settings
 from pcapi.core.search import testing
 
 from .algolia import AlgoliaBackend
@@ -37,10 +39,37 @@ class TestingBackend(AlgoliaBackend):
     what we have in production. Only the communication with the
     external search service is faked.
     """
+    def save_objects(self, index: str | None, serialized_object: list[dict]) -> None:
+        assert index
+        for obj in serialized_object:
+            testing.search_store[index][obj["objectID"]] = obj
 
-    def __init__(self) -> None:  # pylint: disable=super-init-not-called
-        self.algolia_offers_client = FakeClient("offers")
-        self.algolia_venues_client = FakeClient("venues")
-        self.algolia_collective_offers_client = FakeClient("collective-offers")
-        self.algolia_collective_offers_templates_client = FakeClient("collective-offers-templates")
-        self.redis_client = current_app.redis_client
+    def delete_objects(self, index: str | None, object_ids: abc.Collection[str]) -> None:
+        assert index
+        for object_id in object_ids:
+            testing.search_store[self.key].pop(object_id, None)
+
+    def clear_objects(self, index: str | None) -> None:
+        assert index
+        testing.search_store[index] = {}
+
+    def set_settings(self, index: str | None, algolia_settings: dict) -> None:
+        assert index
+        raise NotImplementedError()
+
+    def get_settings(self, index: str | None) -> dict:
+        assert index
+        raise NotImplementedError()
+
+    def search(
+        self,
+        index: str | None,
+        query: str,
+        params: dict[str, typing.Any],
+    ) -> SearchResponse:
+        assert index
+        if query == "ok":
+            start = params.get("page", 0) * 1000
+            count = params.get("hitsPerPage", 20)
+            return {"hits": [{"objectID": i} for i in range(start, start + count)]}
+        return {"hits": []}
