@@ -2,7 +2,7 @@ import logging
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation

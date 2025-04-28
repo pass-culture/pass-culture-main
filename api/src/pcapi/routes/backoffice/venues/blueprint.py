@@ -42,8 +42,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils

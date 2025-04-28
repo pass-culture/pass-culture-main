@@ -1,7 +1,7 @@
 import logging
 
 from pcapi.core.artist.models import Artist
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint

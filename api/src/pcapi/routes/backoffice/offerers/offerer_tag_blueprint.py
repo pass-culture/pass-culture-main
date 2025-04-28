@@ -12,7 +12,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import mark_transaction_as_invalid
 
 from . import forms as offerer_forms
 from .. import utils

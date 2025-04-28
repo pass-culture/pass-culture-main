@@ -21,9 +21,9 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import atomic
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms

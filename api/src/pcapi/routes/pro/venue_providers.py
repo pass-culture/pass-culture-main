@@ -5,7 +5,6 @@ from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
 from werkzeug.exceptions import NotFound
 
-from pcapi import repository
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
@@ -13,6 +12,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -37,7 +38,7 @@ def _get_provider_or_404(provider_id: int) -> providers_models.Provider:
 
 
 @private_api.route("/venueProviders", methods=["GET"])
-@repository.atomic()
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -60,7 +61,7 @@ def list_venue_providers(
 
 
 @private_api.route("/venueProviders", methods=["POST"])
-@repository.atomic()
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -112,13 +113,13 @@ def create_venue_provider(
     # since creating a venue_provider in this case only delegate the right for an
     # offerer to create offers for this venue. (we don't synchronize anything ourselves)
     if not new_venue_provider.provider.hasOffererProvider:
-        repository.on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
+        on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
 
     return venue_provider_serialize.VenueProviderResponse.from_orm(new_venue_provider)
 
 
 @private_api.route("/venueProviders", methods=["PUT"])
-@repository.atomic()
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -141,7 +142,7 @@ def update_venue_provider(
 
 
 @private_api.route("/venueProviders/<int:venue_provider_id>", methods=["DELETE"])
-@repository.atomic()
+@atomic()
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_provider(venue_provider_id: int) -> None:

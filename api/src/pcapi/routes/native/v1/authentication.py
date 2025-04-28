@@ -20,9 +20,9 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest

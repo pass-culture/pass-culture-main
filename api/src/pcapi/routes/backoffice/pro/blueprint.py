@@ -27,7 +27,7 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms

@@ -46,9 +46,9 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.repository import repository
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize

@@ -4,7 +4,7 @@ from pcapi.core.achievements import api as achievements_api
 from pcapi.core.achievements import exceptions as achievements_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization import achievements as serialization
 from pcapi.serialization.decorator import spectree_serialize

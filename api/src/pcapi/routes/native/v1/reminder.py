@@ -2,7 +2,7 @@ import logging
 
 import pcapi.core.reminders.api as reminders_api
 import pcapi.core.users.models as users_models
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 import pcapi.routes.native.v1.serialization.reminder as serialization
 from pcapi.serialization.decorator import spectree_serialize

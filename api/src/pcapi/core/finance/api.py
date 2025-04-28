@@ -71,9 +71,9 @@ import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.repository import is_managed_transaction
-from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import transaction
+from pcapi.repository.session_management import is_managed_transaction
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
 import pcapi.utils.date as date_utils

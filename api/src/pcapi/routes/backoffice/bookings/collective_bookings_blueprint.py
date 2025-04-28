@@ -23,7 +23,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms

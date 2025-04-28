@@ -3,7 +3,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.repository import find_redactor_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import favorites as serialize_favorites

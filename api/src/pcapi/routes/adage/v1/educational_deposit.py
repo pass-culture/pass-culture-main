@@ -2,7 +2,7 @@ import logging
 
 from pcapi.core.educational.repository import get_educational_deposits_by_year
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1 import blueprint
 from pcapi.routes.adage.v1.serialization import educational_deposit as deposit_serialization

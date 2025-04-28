@@ -22,7 +22,7 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import urls
 

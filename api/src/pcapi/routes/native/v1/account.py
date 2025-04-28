@@ -27,8 +27,8 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import atomic
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.routes.native.v1.api_errors import account as account_errors

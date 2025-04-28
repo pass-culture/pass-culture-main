@@ -25,8 +25,8 @@ from pcapi.core.providers.titelive_book_search import get_ineligibility_reason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.utils import requests
 
 from . import forms

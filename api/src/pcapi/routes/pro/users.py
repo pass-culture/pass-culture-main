@@ -33,7 +33,7 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize

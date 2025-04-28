@@ -17,7 +17,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers

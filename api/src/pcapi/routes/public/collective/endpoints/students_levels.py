@@ -1,5 +1,5 @@
 from pcapi.core.educational import models as educational_models
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.serialization import students_levels as students_levels_serialization

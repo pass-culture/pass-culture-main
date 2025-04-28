@@ -21,7 +21,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel

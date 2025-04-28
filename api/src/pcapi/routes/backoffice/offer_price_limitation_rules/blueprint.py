@@ -12,7 +12,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice.filters import format_offer_subcategory
 from pcapi.routes.backoffice.forms import empty as empty_forms
 

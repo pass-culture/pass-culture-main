@@ -63,12 +63,12 @@ from pcapi.models import feature
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import atomic
-from pcapi.repository import is_managed_transaction
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import is_managed_transaction
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base

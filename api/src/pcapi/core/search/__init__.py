@@ -22,8 +22,8 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import atomic
-from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 

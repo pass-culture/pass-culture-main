@@ -4,7 +4,7 @@ import pcapi.connectors.dms.api as dms_connector_api
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.dms.api as dms_api
 import pcapi.core.users.models as users_models
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.utils.blueprint import Blueprint
 
 

@@ -40,11 +40,11 @@ from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import is_managed_transaction
-from pcapi.repository import mark_transaction_as_invalid
-from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.repository.session_management import is_managed_transaction
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 import pcapi.serialization.utils as serialization_utils
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue

@@ -11,7 +11,7 @@ from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date

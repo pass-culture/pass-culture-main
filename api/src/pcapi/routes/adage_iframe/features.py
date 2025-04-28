@@ -1,5 +1,5 @@
-from pcapi.repository import atomic
 from pcapi.repository import feature_queries
+from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation

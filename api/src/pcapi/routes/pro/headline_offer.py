@@ -7,7 +7,7 @@ from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.models import api_errors
-from pcapi.repository import atomic
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.serialization.decorator import spectree_serialize

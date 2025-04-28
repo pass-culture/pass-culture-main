@@ -44,8 +44,8 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
-from pcapi.repository import is_managed_transaction
-from pcapi.repository import on_commit
+from pcapi.repository.session_management import is_managed_transaction
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize

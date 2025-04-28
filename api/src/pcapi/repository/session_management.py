@@ -182,7 +182,7 @@ def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) ->
     example
     ```
     from functools import partial
-    from pcapi.repository import on_commit
+    from pcapi.repository.session_management import on_commit
 
     def function(argument1, argument2):
         ...
