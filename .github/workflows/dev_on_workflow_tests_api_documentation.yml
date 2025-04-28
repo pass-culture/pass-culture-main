@@ -35,9 +35,9 @@ jobs:
           node-version-file: '${{ inputs.doc-api-entrypoint }}/.nvmrc'
       - name: "Build documentation"
         run: |
-            set -e
-            npm install
-            npm run build
+          set -e
+          npm install
+          npm run build
         env:
           ENV: ci-tests
         working-directory: '${{ inputs.doc-api-entrypoint }}'
