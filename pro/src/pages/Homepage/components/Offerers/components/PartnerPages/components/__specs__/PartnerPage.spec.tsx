@@ -115,6 +115,7 @@ describe('PartnerPages', () => {
     renderPartnerPages({ venueHasPartnerPage: true })
 
     expect(screen.getByText('Grand public')).toBeInTheDocument()
+    expect(screen.getByText('Paramètres généraux')).toBeInTheDocument()
   })
 
   it('should display the EAC section', () => {
