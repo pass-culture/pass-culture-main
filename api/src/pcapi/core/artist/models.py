@@ -25,6 +25,15 @@ class ArtistType(enum.Enum):
     PERFORMER = "performer"
 
 
+class ArtistProductLink(PcObject, Base, Model):
+    __tablename__ = "artist_product_link"
+
+    artist_id = sa.Column(sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True)
+    product_id = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    artist_type = sa.Column(MagicEnum(ArtistType))
+
+
 class Artist(PcObject, Base, Model):
     id = sa.Column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
     name = sa.Column(sa.Text, nullable=False, index=True)
@@ -35,7 +44,7 @@ class Artist(PcObject, Base, Model):
     image_license_url = sa.Column(sa.Text)
 
     products: list[sa_orm.Mapped["Product"]] = sa_orm.relationship(
-        "Product", backref="artists", secondary="artist_product_link"
+        "Product", backref="artists", secondary=ArtistProductLink.__table__
     )
 
 
@@ -53,12 +62,3 @@ class ArtistAlias(PcObject, Base, Model):
     artist_type = sa.Column(MagicEnum(ArtistType))
     artist_wiki_data_id = sa.Column(sa.Text)
     offer_category_id = sa.Column(sa.Text)
-
-
-class ArtistProductLink(PcObject, Base, Model):
-    __tablename__ = "artist_product_link"
-
-    artist_id = sa.Column(sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True)
-    product_id = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True)
-
-    artist_type = sa.Column(MagicEnum(ArtistType))

@@ -149,7 +149,7 @@ class Permission(PcObject, Base, Model):
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
     roles: sa_orm.Mapped["Role"] = sa_orm.relationship(
-        "Role", secondary="role_permission", back_populates="permissions"
+        "Role", secondary=RolePermission.__table__, back_populates="permissions"
     )
 
 
@@ -194,25 +194,15 @@ def sync_db_roles(session: sa_orm.Session) -> None:
     return sync_enum_with_db_field(session, Roles, "value", Role)
 
 
-role_backoffice_profile_table = sa.Table(
-    "role_backoffice_profile",
-    Base.metadata,
-    sa.Column("roleId", sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=False, primary_key=True),
-    sa.Column(
-        "profileId", sa.ForeignKey("backoffice_user_profile.id", ondelete="CASCADE"), nullable=False, primary_key=True
-    ),
-)
-
-
 class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
     permissions: sa_orm.Mapped["Permission"] = sa_orm.relationship(
-        Permission, secondary="role_permission", back_populates="roles"
+        Permission, secondary=RolePermission.__table__, back_populates="roles"
     )
     profiles: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
-        "BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles"
+        "BackOfficeUserProfile", secondary="role_backoffice_profile", back_populates="roles"
     )
 
     def has_permission(self, needed_permission: Permissions) -> bool:
@@ -234,7 +224,7 @@ class BackOfficeUserProfile(Base, Model):
         "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
     )
     roles: sa_orm.Mapped["list[Role]"] = sa_orm.relationship(
-        "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
+        "Role", secondary="role_backoffice_profile", back_populates="profiles"
     )
 
     preferences: sa_orm.Mapped[dict] = sa.Column(
@@ -256,3 +246,13 @@ class BackOfficeUserProfile(Base, Model):
             for perm in role.permissions
             if perm.name in permissions_members
         ]
+
+
+RoleBackofficeProfile = sa.Table(
+    "role_backoffice_profile",
+    Base.metadata,
+    sa.Column("roleId", sa.ForeignKey(Role.id, ondelete="CASCADE"), nullable=False, primary_key=True),
+    sa.Column(
+        "profileId", sa.ForeignKey(BackOfficeUserProfile.id, ondelete="CASCADE"), nullable=False, primary_key=True
+    ),
+)

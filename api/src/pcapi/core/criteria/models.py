@@ -6,6 +6,19 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
+class CriterionCategoryMapping(PcObject, Base, Model):
+    __tablename__ = "criterion_category_mapping"
+
+    criterionId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    categoryId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("criterion_category.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (sa.UniqueConstraint("criterionId", "categoryId", name="unique_criterion_category"),)
+
+
 class Criterion(PcObject, Base, Model):
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=True)
@@ -13,7 +26,7 @@ class Criterion(PcObject, Base, Model):
     endDateTime = sa.Column(sa.DateTime, nullable=True)
 
     categories: list["CriterionCategory"] = sa_orm.relationship(
-        "CriterionCategory", secondary="criterion_category_mapping"
+        "CriterionCategory", secondary=CriterionCategoryMapping.__table__
     )
 
     def __str__(self) -> str:
@@ -62,16 +75,3 @@ class CriterionCategory(PcObject, Base, Model):
 
     def __str__(self) -> str:
         return self.label
-
-
-class CriterionCategoryMapping(PcObject, Base, Model):
-    __tablename__ = "criterion_category_mapping"
-
-    criterionId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    categoryId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("criterion_category.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-
-    __table_args__ = (sa.UniqueConstraint("criterionId", "categoryId", name="unique_criterion_category"),)
