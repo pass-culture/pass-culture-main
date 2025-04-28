@@ -14,7 +14,6 @@ export interface OptionsListProps {
   listRef: Ref<HTMLUListElement>
   hoveredOptionIndex: number | null
   selectOption: (value: string) => void
-  maxDisplayedOptions?: number
 }
 
 export const OptionsList = ({
@@ -27,8 +26,6 @@ export const OptionsList = ({
   hoveredOptionIndex,
   selectOption,
 }: OptionsListProps): JSX.Element => {
-  const displayedOptions = filteredOptions
-
   return (
     <div className={cx(styles['menu'], className)} role="listbox">
       {filteredOptions.length === 0 && (
@@ -40,14 +37,14 @@ export const OptionsList = ({
         ref={listRef}
         role="listbox"
       >
-        {displayedOptions.map(
+        {filteredOptions.map(
           ({ value, label }: SelectOption, index: number) => {
             const isSelected = selectedValue === String(value)
             return (
               <li
                 aria-selected={isSelected}
                 aria-posinset={index + 1}
-                aria-setsize={displayedOptions.length}
+                aria-setsize={filteredOptions.length}
                 className={
                   hoveredOptionIndex === index ? styles['option-hovered'] : ''
                 }
