@@ -16,9 +16,15 @@
 .image-uploader {
   align-self: center;
   margin-bottom: 0;
+  width: 100%;
 
   @media (min-width: size.$tablet) {
     align-self: flex-start;
+    width: rem.torem(345px);
+
+    &-drag-and-drop {
+      height: rem.torem(230px);
+    }
   }
 
   > button,
@@ -41,6 +47,10 @@
     display: flex;
     flex-direction: column;
     gap: rem.torem(8px);
+  }
+
+  @media (min-width: size.$tablet) {
+    height: rem.torem(230px);
   }
 }
 

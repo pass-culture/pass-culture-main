@@ -8,7 +8,7 @@ import {
 import { OfferCollectiveImage } from 'commons/core/Offers/types'
 import { useNotification } from 'commons/hooks/useNotification'
 import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export const useCollectiveOfferImageUpload = (
   offer?:

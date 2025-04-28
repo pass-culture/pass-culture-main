@@ -16,11 +16,13 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { WEBAPP_URL } from 'commons/utils/config'
+import {
+  UploadImageValues,
+  UploaderModeEnum,
+} from 'commons/utils/imageUploadTypes'
+import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from 'components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
-import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
-import { ImageUploader } from 'components/ImageUploader/ImageUploader'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
@@ -123,8 +125,9 @@ export const VenueEditionHeader = ({
 
   return (
     <div className={styles['header']}>
-      <ImageUploader
+      <ImageDragAndDropUploader
         className={styles['image-uploader']}
+        dragAndDropClassName={styles['image-uploader-drag-and-drop']}
         onImageUpload={handleOnImageUpload}
         onImageDelete={() => {}}
         initialValues={imageValues}

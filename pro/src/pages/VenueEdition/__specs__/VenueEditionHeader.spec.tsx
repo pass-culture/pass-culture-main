@@ -11,11 +11,11 @@ import {
   sharedCurrentUserFactory,
   currentOffererFactory,
 } from 'commons/utils/factories/storeFactories'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import {
   VenueEditionHeader,
@@ -58,8 +58,9 @@ describe('VenueEditionHeader', () => {
       },
     })
 
-    expect(screen.getByText(/Ajouter une image/)).toBeInTheDocument()
-    await userEvent.click(screen.getByText(/Ajouter une image/))
+    const imageInput = screen.getByLabelText('Importez une image')
+    expect(imageInput).toBeInTheDocument()
+    await userEvent.click(imageInput)
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
       offererId: '1',

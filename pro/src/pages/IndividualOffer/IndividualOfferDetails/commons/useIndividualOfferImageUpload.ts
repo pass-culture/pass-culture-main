@@ -5,8 +5,8 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 const imageFileToDataUrl = (image: File): Promise<string> => {
   return new Promise((resolve, reject) => {

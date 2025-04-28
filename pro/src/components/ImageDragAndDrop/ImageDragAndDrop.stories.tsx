@@ -8,3 +8,9 @@ export default {
 }
 
 export const initialState: StoryObj<typeof ImageDragAndDrop> = {}
+
+export const disabledState: StoryObj<typeof ImageDragAndDrop> = {
+  args: {
+    disabled: true,
+  },
+}

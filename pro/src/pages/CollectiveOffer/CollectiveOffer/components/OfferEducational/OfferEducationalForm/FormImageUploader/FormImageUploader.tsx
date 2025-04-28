@@ -1,9 +1,11 @@
 import { OfferCollectiveImage } from 'commons/core/Offers/types'
+import {
+  UploadImageValues,
+  UploaderModeEnum,
+} from 'commons/utils/imageUploadTypes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
-import { ImageUploader } from 'components/ImageUploader/ImageUploader'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => void
@@ -37,12 +39,12 @@ export const FormImageUploader = ({
     }
   >
     <FormLayout.Row>
-      <ImageUploader
+      <ImageDragAndDropUploader
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
         initialValues={buildInitialValues(imageOffer)}
         mode={UploaderModeEnum.OFFER_COLLECTIVE}
-        disableForm={disableForm}
+        disabled={disableForm}
       />
     </FormLayout.Row>
   </FormLayout.Section>
