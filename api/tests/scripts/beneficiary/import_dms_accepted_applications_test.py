@@ -385,7 +385,6 @@ class RunIntegrationTest:
 
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    @time_machine.travel("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_duplicated_user(self, get_applications_with_details):
         existing_user = users_factories.BeneficiaryGrant18Factory(
