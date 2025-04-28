@@ -1016,7 +1016,7 @@ def user_has_bookings(user: User) -> bool:
         .join(educational_models.CollectiveBooking.offerer)
         .join(offerers_models.Offerer.UserOfferers)
     )
-    return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
+    return bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists().scalar()
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
@@ -1378,7 +1378,7 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
         .exists()
     )
 
-    return db.session.query(query).scalar()
+    return query.scalar()
 
 
 def field_to_venue_timezone(field: sa_orm.InstrumentedAttribute) -> sa.cast:
@@ -1393,14 +1393,15 @@ def offerer_has_ongoing_collective_bookings(offerer_id: int, include_used: bool 
     if include_used:
         statuses.append(educational_models.CollectiveBookingStatus.USED)
 
-    return db.session.query(
+    return (
         db.session.query(educational_models.CollectiveBooking)
         .filter(
             educational_models.CollectiveBooking.offererId == offerer_id,
             educational_models.CollectiveBooking.status.in_(statuses),
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.CollectiveOffer]":

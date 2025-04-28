@@ -79,7 +79,7 @@ def has_access(user: models.User, offerer_id: int) -> bool:
     """Return whether the user has access to the requested offerer's data."""
     if user.has_admin_role:
         return True
-    return db.session.query(
+    return (
         db.session.query(offerers_models.UserOfferer)
         .filter(
             offerers_models.UserOfferer.offererId == offerer_id,
@@ -87,7 +87,8 @@ def has_access(user: models.User, offerer_id: int) -> bool:
             offerers_models.UserOfferer.isValidated,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def has_access_to_venues(user: models.User, venue_ids: list[int]) -> bool:

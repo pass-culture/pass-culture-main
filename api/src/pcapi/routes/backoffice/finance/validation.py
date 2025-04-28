@@ -27,7 +27,7 @@ class Valid:
 
 
 def _collective_booking_has_pending_incident(collective_booking: educational_models.CollectiveBooking) -> bool:
-    return db.session.query(
+    return (
         db.session.query(finance_models.BookingFinanceIncident)
         .join(finance_models.FinanceIncident)
         .filter(
@@ -37,11 +37,12 @@ def _collective_booking_has_pending_incident(collective_booking: educational_mod
             ),
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> bool:
-    return db.session.query(
+    return (
         db.session.query(finance_models.BookingFinanceIncident)
         .join(finance_models.FinanceIncident)
         .filter(
@@ -51,7 +52,8 @@ def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> 
             ),
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def get_overpayment_incident_amount_interval(

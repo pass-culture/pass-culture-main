@@ -109,7 +109,7 @@ def _render_confirmation_page(
     target_venue: offerers_models.Venue,
     code: int = 200,
 ) -> utils.BackofficeResponse:
-    has_active_or_future_custom_reimbursement_rule = db.session.query(
+    has_active_or_future_custom_reimbursement_rule = (
         db.session.query(finance_models.CustomReimbursementRule)
         .filter(
             finance_models.CustomReimbursementRule.venueId == source_venue.id,
@@ -119,7 +119,8 @@ def _render_confirmation_page(
             ),
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
     return (
         render_template(

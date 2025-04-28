@@ -66,7 +66,7 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
     if venue_id is None:
         return
 
-    is_venue_tied_to_api_key = db.session.query(
+    is_venue_tied_to_api_key = (
         db.session.query(providers_models.VenueProvider)
         .filter(
             providers_models.VenueProvider.provider == current_api_key.provider,
@@ -74,7 +74,8 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
             providers_models.VenueProvider.isActive,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
     if not is_venue_tied_to_api_key:
         raise api_errors.ApiErrors({"venue_id": ["The venue could not be found"]}, status_code=404)
 

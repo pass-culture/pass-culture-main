@@ -26,14 +26,15 @@ logger = logging.getLogger(__name__)
 
 
 def deposit_exists_for_beneficiary_and_type(beneficiary: users_models.User, deposit_type: models.DepositType) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.Deposit)
         .filter_by(
             userId=beneficiary.id,
             type=deposit_type.value,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def has_reimbursement(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> bool:
@@ -60,7 +61,7 @@ def has_reimbursement(booking: bookings_models.Booking | educational_models.Coll
             )
         ),
     )
-    return db.session.query(paid_pricings.exists()).scalar()
+    return paid_pricings.exists().scalar()
 
 
 def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -> bool:
@@ -82,7 +83,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
         )
         .exists()
     )
-    return db.session.query(query).scalar()
+    return query.scalar()
 
 
 def get_invoices_by_references(references: list[str]) -> list[models.Invoice]:
@@ -656,9 +657,10 @@ def get_invoices_query(
 
 
 def has_invoice(offerer_id: int) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.Invoice)
         .join(models.Invoice.bankAccount)
         .filter(models.BankAccount.offererId == offerer_id)
         .exists()
-    ).scalar()
+        .scalar()
+    )

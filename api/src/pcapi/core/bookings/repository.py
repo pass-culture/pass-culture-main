@@ -1017,32 +1017,34 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[m
 
 def venues_have_bookings(*venues: offerers_models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one non-cancelled booking"""
-    return db.session.query(
+    return (
         db.session.query(models.Booking)
         .filter(
             models.Booking.venueId.in_([venue.id for venue in venues]),
             models.Booking.status != models.BookingStatus.CANCELLED,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def user_has_bookings(user: User) -> bool:
     bookings_query = (
         db.session.query(models.Booking).join(models.Booking.offerer).join(offerers_models.Offerer.UserOfferers)
     )
-    return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
+    return bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists().scalar()
 
 
 def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.Booking)
         .filter(
             models.Booking.offererId == offerer_id,
             models.Booking.status == models.BookingStatus.CONFIRMED,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Booking]:

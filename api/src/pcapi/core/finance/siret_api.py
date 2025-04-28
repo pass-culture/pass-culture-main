@@ -163,14 +163,15 @@ def move_siret(
 
 
 def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.Pricing)
         .filter_by(
             pricingPoint=pricing_point,
             status=models.PricingStatus.PENDING,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:

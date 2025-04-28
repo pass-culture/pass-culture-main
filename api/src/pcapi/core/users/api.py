@@ -1285,13 +1285,14 @@ def should_save_login_device_as_trusted_device(
     if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
         return False
 
-    return db.session.query(
+    return (
         db.session.query(models.LoginDeviceHistory)
         .with_entities(models.LoginDeviceHistory.deviceId)
         .filter(models.LoginDeviceHistory.userId == user.id)
         .filter(models.LoginDeviceHistory.deviceId == device_info.device_id)
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def is_login_device_a_trusted_device(
@@ -1692,9 +1693,12 @@ def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_act
 
 
 def has_user_pending_anonymization(user_id: int) -> bool:
-    return db.session.query(
-        db.session.query(models.GdprUserAnonymization).filter(models.GdprUserAnonymization.userId == user_id).exists()
-    ).scalar()
+    return (
+        db.session.query(models.GdprUserAnonymization)
+        .filter(models.GdprUserAnonymization.userId == user_id)
+        .exists()
+        .scalar()
+    )
 
 
 def anonymize_beneficiary_users(*, force: bool = False) -> None:

@@ -1264,7 +1264,7 @@ def _render_remove_siret_content(
         }
     )
 
-    active_custom_reimbursement_rule_exists = db.session.query(
+    active_custom_reimbursement_rule_exists = (
         db.session.query(finance_models.CustomReimbursementRule)
         .filter(
             finance_models.CustomReimbursementRule.venueId == venue.id,
@@ -1274,7 +1274,8 @@ def _render_remove_siret_content(
             ),
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
     if active_custom_reimbursement_rule_exists:
         info = "Ce partenaire culturel est associé à au moins un tarif dérogatoire actif ou futur. Confirmer l'action mettra automatiquement fin à ce tarif dérogatoire."
 

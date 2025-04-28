@@ -505,7 +505,7 @@ def validate_frauds(
 
 
 def has_user_pending_identity_check(user: users_models.User) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.BeneficiaryFraudCheck)
         .filter(
             models.BeneficiaryFraudCheck.user == user,
@@ -514,7 +514,8 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def has_user_performed_identity_check(user: users_models.User) -> bool:

@@ -904,7 +904,7 @@ def is_id_at_provider_taken_by_another_venue_offer(venue_id: int, id_at_provider
     if offer_id:
         base_query = base_query.filter(models.Offer.id != offer_id)
 
-    return db.session.query(base_query.exists()).scalar()
+    return base_query.exists().scalar()
 
 
 def is_id_at_provider_taken_by_another_offer_price_category(
@@ -923,7 +923,7 @@ def is_id_at_provider_taken_by_another_offer_price_category(
     if price_category_id:
         base_query = base_query.filter(models.PriceCategory.id != price_category_id)
 
-    return db.session.query(base_query.exists()).scalar()
+    return base_query.exists().scalar()
 
 
 def is_id_at_provider_taken_by_another_offer_stock(
@@ -942,7 +942,7 @@ def is_id_at_provider_taken_by_another_offer_stock(
     if stock_id:
         base_query = base_query.filter(models.Stock.id != stock_id)
 
-    return db.session.query(base_query.exists()).scalar()
+    return base_query.exists().scalar()
 
 
 def get_and_lock_stock(stock_id: int) -> models.Stock:
@@ -1321,17 +1321,21 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
 
 
 def offer_has_stocks(offer_id: int) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.Stock)
         .filter(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted))
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def offer_has_bookable_stocks(offer_id: int) -> bool:
-    return db.session.query(
-        db.session.query(models.Stock).filter(models.Stock.offerId == offer_id, models.Stock._bookable).exists()
-    ).scalar()
+    return (
+        db.session.query(models.Stock)
+        .filter(models.Stock.offerId == offer_id, models.Stock._bookable)
+        .exists()
+        .scalar()
+    )
 
 
 def _order_stocks_by(query: BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool) -> BaseQuery:
@@ -1519,7 +1523,7 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, off
     if offer_id is not None:
         base_query = base_query.filter(models.Offer.id != offer_id)
 
-    return db.session.query(base_query.exists()).scalar()
+    return base_query.exists().scalar()
 
 
 def get_movie_product_by_allocine_id(allocine_id: str) -> models.Product | None:
@@ -1555,14 +1559,11 @@ def merge_products(to_keep: models.Product, to_delete: models.Product) -> models
 
 def venues_have_individual_and_collective_offers(venue_ids: list[int]) -> tuple[bool, bool]:
     return (
-        db.session.query(
-            db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId.in_(venue_ids)).exists()
-        ).scalar(),
-        db.session.query(
-            db.session.query(educational_models.CollectiveOffer)
-            .filter(educational_models.CollectiveOffer.venueId.in_(venue_ids))
-            .exists()
-        ).scalar(),
+        db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId.in_(venue_ids)).exists().scalar(),
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.venueId.in_(venue_ids))
+        .exists()
+        .scalar(),
     )
 
 

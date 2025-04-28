@@ -529,31 +529,33 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
 
 
 def delete_venue(venue_id: int) -> None:
-    venue_has_bookings = db.session.query(
-        db.session.query(bookings_models.Booking).filter(bookings_models.Booking.venueId == venue_id).exists()
-    ).scalar()
-    venue_has_collective_bookings = db.session.query(
+    venue_has_bookings = (
+        db.session.query(bookings_models.Booking).filter(bookings_models.Booking.venueId == venue_id).exists().scalar()
+    )
+    venue_has_collective_bookings = (
         db.session.query(educational_models.CollectiveBooking)
         .filter(educational_models.CollectiveBooking.venueId == venue_id)
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
     if venue_has_bookings or venue_has_collective_bookings:
         raise exceptions.CannotDeleteVenueWithBookingsException()
 
-    venue_used_as_pricing_point = db.session.query(
+    venue_used_as_pricing_point = (
         db.session.query(offerers_models.VenuePricingPointLink)
         .filter(
             offerers_models.VenuePricingPointLink.venueId != venue_id,
             offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
     if venue_used_as_pricing_point:
         # Additional checks to allow removing a venue which is only a former pricing point for other venues but has
         # never been used for pricing, so that support team can handle misconfiguration by an offerer.
-        venue_used_as_current_pricing_point = db.session.query(
+        venue_used_as_current_pricing_point = (
             db.session.query(offerers_models.VenuePricingPointLink)
             .filter(
                 offerers_models.VenuePricingPointLink.venueId != venue_id,
@@ -561,14 +563,18 @@ def delete_venue(venue_id: int) -> None:
                 offerers_models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
             )
             .exists()
-        ).scalar()
+            .scalar()
+        )
 
         if venue_used_as_current_pricing_point:
             raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
 
-        pricing_point_has_pricings = db.session.query(
-            db.session.query(finance_models.Pricing).filter(finance_models.Pricing.pricingPointId == venue_id).exists()
-        ).scalar()
+        pricing_point_has_pricings = (
+            db.session.query(finance_models.Pricing)
+            .filter(finance_models.Pricing.pricingPointId == venue_id)
+            .exists()
+            .scalar()
+        )
 
         if pricing_point_has_pricings:
             raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
@@ -578,11 +584,12 @@ def delete_venue(venue_id: int) -> None:
             offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
         ).delete(synchronize_session=False)
 
-    venue_associated_with_reimbursement_rule = db.session.query(
+    venue_associated_with_reimbursement_rule = (
         db.session.query(finance_models.CustomReimbursementRule)
         .filter(finance_models.CustomReimbursementRule.venueId == venue_id)
         .exists()
-    ).scalar()
+        .scalar()
+    )
     if venue_associated_with_reimbursement_rule:
         raise exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule()
 
@@ -1108,7 +1115,7 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
 
 
 def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
-    return db.session.query(
+    return (
         db.session.query(models.UserOfferer)
         .join(models.UserOfferer.offerer)
         .filter(
@@ -1117,7 +1124,8 @@ def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
             models.UserOfferer.validationStatus.not_in((ValidationStatus.REJECTED, ValidationStatus.DELETED)),
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
 
 def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
@@ -2374,20 +2382,24 @@ def _update_external_offerer(
 
 
 def delete_offerer(offerer_id: int) -> None:
-    offerer_has_bookings = db.session.query(
-        db.session.query(bookings_models.Booking).filter(bookings_models.Booking.offererId == offerer_id).exists()
-    ).scalar()
+    offerer_has_bookings = (
+        db.session.query(bookings_models.Booking)
+        .filter(bookings_models.Booking.offererId == offerer_id)
+        .exists()
+        .scalar()
+    )
 
-    offerer_has_collective_bookings = db.session.query(
+    offerer_has_collective_bookings = (
         db.session.query(educational_models.CollectiveBooking)
         .filter(educational_models.CollectiveBooking.offererId == offerer_id)
         .exists()
-    ).scalar()
+        .scalar()
+    )
 
     if offerer_has_bookings or offerer_has_collective_bookings:
         raise exceptions.CannotDeleteOffererWithBookingsException()
 
-    offerer_associated_with_reimbursement_rule = db.session.query(
+    offerer_associated_with_reimbursement_rule = (
         db.session.query(finance_models.CustomReimbursementRule)
         .outerjoin(finance_models.CustomReimbursementRule.venue)
         .filter(
@@ -2397,7 +2409,8 @@ def delete_offerer(offerer_id: int) -> None:
             )
         )
         .exists()
-    ).scalar()
+        .scalar()
+    )
     if offerer_associated_with_reimbursement_rule:
         raise exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule()
 
@@ -3319,7 +3332,7 @@ def synchronize_from_ds_and_check_application(offerer_id: int) -> bool:
         .filter(offerers_models.Venue.managingOffererId == offerer_id)
         .filter(offerers_models.Venue.collectiveDmsApplications.any())
     )
-    return db.session.query(query.exists()).scalar()
+    return query.exists().scalar()
 
 
 def create_action_history_when_move_offers(

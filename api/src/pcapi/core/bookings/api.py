@@ -341,9 +341,9 @@ def book_offer(
     if not stock:
         raise offers_exceptions.StockDoesNotExist()
 
-    first_venue_booking = not db.session.query(
-        db.session.query(models.Booking).filter(models.Booking.venueId == stock.offer.venueId).exists()
-    ).scalar()
+    first_venue_booking = not (
+        db.session.query(models.Booking).filter(models.Booking.venueId == stock.offer.venueId).exists().scalar()
+    )
 
     try:
         booking = _book_offer(beneficiary, stock_id, quantity)
