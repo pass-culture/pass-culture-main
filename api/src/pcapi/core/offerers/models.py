@@ -22,7 +22,6 @@ from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 import sqlalchemy.sql.functions as sa_func
-from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import LargeBinary
 
 from pcapi import settings
@@ -448,24 +447,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def bannerMeta(cls):  # pylint: disable=no-self-argument
         return cls._bannerMeta
 
-    @hybrid_property
-    def hasOffers(self) -> bool:
-        # Don't use Python properties as high offer count venues will timeout
-        import pcapi.core.offers.models as offers_models
-
-        return bool(
-            offers_models.Offer.query.filter(offers_models.Offer.venueId == self.id)
-            .limit(1)
-            .with_entities(offers_models.Offer.venueId)
-            .all()
-        )
-
-    @hasOffers.expression  # type: ignore[no-redef]
-    def hasOffers(cls) -> Exists:  # pylint: disable=no-self-argument
-        import pcapi.core.offers.models as offers_models
-
-        return sa.exists().where(offers_models.Offer.venueId == cls.id)
-
     @property
     def is_eligible_for_search(self) -> bool:
         not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
@@ -726,6 +707,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
     _has_partner_page: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
+    hasOffers: sa_orm.Mapped[bool] = sa_orm.query_expression()
+    hasBookableOffers: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
     @hybrid_property
     def has_partner_page(self) -> bool:
