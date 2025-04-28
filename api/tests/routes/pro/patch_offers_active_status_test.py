@@ -1,3 +1,8 @@
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import call
+from unittest.mock import patch
+
 import pytest
 
 from pcapi.core import testing
@@ -93,3 +98,56 @@ class Returns204Test:
         assert response.status_code == 204
         assert not offer_that_should_stay_deactivated.isActive
         assert offer.isActive
+
+
+@pytest.mark.usefixtures("db_session")
+class ActivateFutureOffersTest:
+    def test_activate_future_offers_and_notify_users_with_reminders(self, client):
+        offer_to_publish_1 = offers_factories.OfferFactory(isActive=False)
+        venue = offer_to_publish_1.venue
+        offer_to_publish_2 = offers_factories.OfferFactory(isActive=False, venue=venue)
+        offer_to_publish_3 = offers_factories.OfferFactory(isActive=False, venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        publication_date = datetime.utcnow() + timedelta(days=30)
+        offers_factories.FutureOfferFactory(offer=offer_to_publish_1, publicationDate=publication_date)
+        offers_factories.FutureOfferFactory(offer=offer_to_publish_2, publicationDate=publication_date)
+
+        with patch(
+            "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
+        ) as mock_notify_users_future_offer_activated:
+            client = client.with_session_auth("pro@example.com")
+            data = {"ids": [offer_to_publish_1.id, offer_to_publish_2.id], "isActive": True}
+            response = client.patch("/offers/active-status", json=data)
+            mock_notify_users_future_offer_activated.assert_has_calls(
+                [call(offer_to_publish_1), call(offer_to_publish_2)], any_order=True
+            )
+
+        assert response.status_code == 204
+        assert db.session.query(Offer).get(offer_to_publish_1.id).isActive
+        assert db.session.query(Offer).get(offer_to_publish_2.id).isActive
+        assert not db.session.query(Offer).get(offer_to_publish_3.id).isActive
+
+    def test_deactivate_future_offers(self, client):
+        offer_published_1 = offers_factories.OfferFactory()
+        venue = offer_published_1.venue
+        offer_published_2 = offers_factories.OfferFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        publication_date = datetime.utcnow() + timedelta(days=30)
+        offers_factories.FutureOfferFactory(offer=offer_published_1, publicationDate=publication_date)
+        offers_factories.FutureOfferFactory(offer=offer_published_2, publicationDate=publication_date)
+
+        with patch(
+            "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
+        ) as mock_notify_users_future_offer_activated:
+            client = client.with_session_auth("pro@example.com")
+            data = {"ids": [offer_published_1.id, offer_published_2.id], "isActive": False}
+            response = client.patch("/offers/active-status", json=data)
+            mock_notify_users_future_offer_activated.assert_not_called()
+
+        assert response.status_code == 204
+        assert not db.session.query(Offer).get(offer_published_1.id).isActive
+        assert not db.session.query(Offer).get(offer_published_2.id).isActive
