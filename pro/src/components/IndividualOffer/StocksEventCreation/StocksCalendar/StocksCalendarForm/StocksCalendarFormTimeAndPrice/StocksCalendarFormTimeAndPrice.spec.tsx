@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDays } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
@@ -10,6 +11,7 @@ import {
   subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { weekDays } from 'components/IndividualOffer/StocksEventCreation/form/constants'
 import {
   DurationTypeOption,
   StocksCalendarFormValues,
@@ -38,6 +40,7 @@ function renderStocksCalendarFormTimeAndPrice(
         specificTimeSlots: [{ slot: '' }],
         pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
         oneDayDate: '',
+        openingHours: { MONDAY: [{ open: '', close: '' }] },
         ...defaultOptions,
       },
     })
@@ -120,5 +123,32 @@ describe('StocksCalendarFormTimeAndPrice', () => {
     expect(
       screen.queryByLabelText('Le public doit se présenter :')
     ).not.toBeInTheDocument()
+  })
+
+  it('should show week days time spans form if the opening hours are selected', async () => {
+    renderStocksCalendarFormTimeAndPrice(
+      {
+        durationType: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
+        multipleDaysStartDate: addDays(new Date(), 1)
+          .toISOString()
+          .split('T')[0],
+        multipleDaysEndDate: addDays(new Date(), 10)
+          .toISOString()
+          .split('T')[0],
+        multipleDaysWeekDays: weekDays.map((d) => ({ ...d, checked: true })),
+      },
+      getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.SALON,
+        hasStocks: false,
+      })
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getByLabelText(/Aux horaires d’ouverture/))
+
+    expect(screen.getByRole('group', { name: 'Lundi' })).toBeInTheDocument()
   })
 })

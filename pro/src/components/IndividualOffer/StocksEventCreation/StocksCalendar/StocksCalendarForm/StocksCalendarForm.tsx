@@ -1,8 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  TimeSpan,
+} from 'apiClient/v1'
 import { useNotification } from 'commons/hooks/useNotification'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
@@ -11,13 +15,18 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
+import { weekDays } from '../../form/constants'
 import {
   DurationTypeOption,
   StocksCalendarFormValues,
   TimeSlotTypeOption,
 } from '../../form/types'
 import { validationSchema } from '../../form/validationSchema'
-import { getStocksForMultipleDays, getStocksForOneDay } from '../utils'
+import {
+  getStocksForMultipleDays,
+  getStocksForOneDay,
+  getWeekDayForDate,
+} from '../utils'
 
 import styles from './StocksCalendarForm.module.scss'
 import { StocksCalendarFormFooter } from './StocksCalendarFormFooter/StocksCalendarFormFooter'
@@ -39,6 +48,7 @@ export function StocksCalendarForm({
       durationType: DurationTypeOption.ONE_DAY,
       timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
       specificTimeSlots: [{ slot: '' }],
+      openingHours: {},
       pricingCategoriesQuantities: [
         {
           isUnlimited: true,
@@ -58,9 +68,58 @@ export function StocksCalendarForm({
     resolver: yupResolver(validationSchema),
   })
 
+  useEffect(() => {
+    //  When the checked week days change, update the list of time slots
+    const subscription = form.watch((value, { name }) => {
+      if (
+        name === 'multipleDaysWeekDays' ||
+        name === 'durationType' ||
+        name === 'oneDayDate'
+      ) {
+        const weekDaysIncluded =
+          value.durationType === DurationTypeOption.ONE_DAY && value.oneDayDate
+            ? [getWeekDayForDate(new Date(value.oneDayDate)).value]
+            : weekDays
+                .map((d) => d.value)
+                .filter((d) =>
+                  value.multipleDaysWeekDays
+                    ?.filter((wd) => wd?.checked)
+                    .map((wd) => wd?.value)
+                    .includes(d)
+                )
+
+        const newOpeningHours: StocksCalendarFormValues['openingHours'] = {}
+        for (const day of weekDaysIncluded) {
+          newOpeningHours[day] = (value.openingHours?.[day] || [
+            { open: '', close: '' },
+          ]) as TimeSpan[]
+        }
+
+        form.setValue('openingHours', newOpeningHours)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form, form.watch])
+
   const onSubmit = async () => {
     const departmentCode = getDepartmentCode(offer)
     const formValues = form.getValues()
+    if (formValues.timeSlotType === TimeSlotTypeOption.SPECIFIC_TIME) {
+      await onSubmitStocks({ formValues, departmentCode })
+    } else {
+      await onSubmitOpeningHours({ formValues, departmentCode })
+    }
+
+    onAfterValidate()
+  }
+
+  async function onSubmitStocks({
+    formValues,
+    departmentCode,
+  }: {
+    formValues: StocksCalendarFormValues
+    departmentCode: string
+  }) {
     const stocks =
       formValues.durationType === DurationTypeOption.ONE_DAY
         ? getStocksForOneDay(
@@ -88,8 +147,26 @@ export function StocksCalendarForm({
         'Une erreur est survenue lors de l’enregistrement de vos stocks.'
       )
     }
+  }
 
-    onAfterValidate()
+  async function onSubmitOpeningHours({
+    formValues,
+    departmentCode,
+  }: {
+    formValues: StocksCalendarFormValues
+    departmentCode: string
+  }) {
+    if (!formValues.multipleDaysStartDate) {
+      return;
+    }
+    try {
+      await api.postEventOpeningHours(offer.id, {
+        openingHours: formValues.openingHours,
+        startDatetime: formValues.multipleDaysStartDate,
+        endDatetime: formValues.multipleDaysEndDate,
+      })
+    }
+    console.log('success')
   }
 
   return (

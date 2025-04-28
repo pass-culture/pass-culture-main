@@ -1,4 +1,4 @@
-import { StocksOrderedBy } from 'apiClient/v1'
+import { StocksOrderedBy, TimeSpan } from 'apiClient/v1'
 
 export enum RecurrenceType {
   UNIQUE = 'UNIQUE',
@@ -8,13 +8,13 @@ export enum RecurrenceType {
 }
 
 export enum RecurrenceDays {
-  MONDAY = 'monday',
-  TUESDAY = 'tuesday',
-  WEDNESDAY = 'wednesday',
-  THURSDAY = 'thursday',
-  FRIDAY = 'friday',
-  SATURDAY = 'saturday',
-  SUNDAY = 'sunday',
+  MONDAY = 'MONDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY',
+  THURSDAY = 'THURSDAY',
+  FRIDAY = 'FRIDAY',
+  SATURDAY = 'SATURDAY',
+  SUNDAY = 'SUNDAY',
 }
 
 export enum MonthlyOption {
@@ -63,6 +63,7 @@ export type StocksCalendarFormValues = {
   }[]
   timeSlotType: TimeSlotTypeOption
   specificTimeSlots: { slot: string }[]
+  openingHours: { [key in RecurrenceDays]?: Array<TimeSpan> }
   pricingCategoriesQuantities: {
     quantity?: number
     isUnlimited?: boolean
