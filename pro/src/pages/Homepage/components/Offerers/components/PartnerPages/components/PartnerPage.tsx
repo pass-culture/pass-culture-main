@@ -17,9 +17,12 @@ import { UploadImageValues } from 'components/ImageUploader/components/ButtonIma
 import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import fullParametersIcon from 'icons/full-parameters.svg'
 import { VenueOfferSteps } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './PartnerPage.module.scss'
 import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
@@ -116,6 +119,13 @@ export const PartnerPage = ({
               {venue.address.postalCode} {venue.address.city}
             </address>
           )}
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullParametersIcon}
+            to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
+          >
+            Paramètres généraux
+          </ButtonLink>
         </div>
       </div>
 
