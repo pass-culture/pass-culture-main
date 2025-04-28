@@ -83,9 +83,7 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
         offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
+            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
             status_code=404,
         )
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
@@ -108,9 +106,7 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
         offer = educational_repository.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
+            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
             status_code=404,
         )
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
@@ -168,42 +164,36 @@ def create_collective_offer(
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
     try:
         offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
+
+    # venue / offerer errors
     except offerers_exceptions.CannotFindOffererSiren:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    except educational_exceptions.CulturalPartnerNotFoundException:
-        logger.info(
-            "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
-        )
-        raise ApiErrors({"offerer": "not found in adage"}, 403)
     except educational_exceptions.VenueIdDontExist:
         logger.info(
             "Could not create offer: the venue id does not exist",
             extra={"venue_id": body.venue_id, "offer_venue": body.offer_venue},
         )
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+
+    # adage errors
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        logger.info(
+            "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
+        )
+        raise ApiErrors({"offerer": "not found in adage"}, 403)
     except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)
+
+    # domains / national_program errors
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "domains": body.domains},
         )
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
-            status_code=404,
-        )
-    except educational_exceptions.CollectiveOfferTemplateNotFound:
-        logger.info(
-            "Could not create offer: collective offer template not found.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
-        )
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
-            status_code=404,
-        )
+        raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
     except educational_exceptions.NationalProgramNotFound:
         logger.info(
             "Could not create offer: national program not found",
@@ -222,11 +212,16 @@ def create_collective_offer(
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
+
+    # creation error
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"},
-            status_code=403,
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"}, status_code=403)
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
+        logger.info(
+            "Could not create offer: collective offer template not found.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
         )
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
@@ -252,20 +247,22 @@ def edit_collective_offer(
 
     try:
         educational_api_offer.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
+
+    # venue change errors
     except offers_exceptions.ForbiddenDestinationVenue:
         raise ApiErrors({"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}, 400)
     except offers_exceptions.OfferEventInThePast:
         raise ApiErrors({"offer": "This collective offer that has already started does not allow editing details"}, 403)
     except offers_exceptions.NoDestinationVenue:
         raise ApiErrors({"venueId": ["No venue with a pricing point found for the destination venue."]}, 400)
-    except educational_exceptions.CollectiveOfferForbiddenAction:
-        raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
+
+    # venue / offerer errors
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
-    except educational_exceptions.CollectiveOfferIsPublicApi:
-        raise ApiErrors({"global": ["Collective offer created by public API is only editable via API."]}, 403)
+
+    # domains / national_program errors
     except educational_exceptions.NationalProgramNotFound:
         raise ApiErrors({"global": ["National program not found"]}, 400)
     except educational_exceptions.IllegalNationalProgram:
@@ -286,6 +283,12 @@ def edit_collective_offer(
             extra={"collective_offer_id": offer_id, "domains": body.domains},
         )
         raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
+
+    # edition errors
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
+    except educational_exceptions.CollectiveOfferIsPublicApi:
+        raise ApiErrors({"global": ["Collective offer created by public API is only editable via API."]}, 403)
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 
@@ -314,14 +317,14 @@ def edit_collective_offer_template(
 
     try:
         educational_api_offer.update_collective_offer_template(offer_id=offer_id, body=body, user=current_user)
-    except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
-        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
-    except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
-        raise ApiErrors({err.field: err.msg}, 400)
+
+    # venue / offerer errors
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
+
+    # domains / national_program errors
     except educational_exceptions.NationalProgramNotFound:
         raise ApiErrors({"global": ["National program not found"]}, 400)
     except educational_exceptions.IllegalNationalProgram:
@@ -342,8 +345,14 @@ def edit_collective_offer_template(
             extra={"collective_offer_id": offer_id, "domains": body.domains},
         )
         raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
+
+    # edition errors
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
+    except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
+        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
+    except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
+        raise ApiErrors({err.field: err.msg}, 400)
     except offers_exceptions.CollectiveOfferContactRequestError as err:
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
@@ -545,36 +554,36 @@ def create_collective_offer_template(
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
     try:
         offer = educational_api_offer.create_collective_offer_template(offer_data=body, user=current_user)
+
+    # venue / offerer errors
     except offerers_exceptions.CannotFindOffererSiren:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    except educational_exceptions.CulturalPartnerNotFoundException:
-        logger.info(
-            "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
-        )
-        raise ApiErrors({"offerer": "not found in adage"}, 403)
     except educational_exceptions.VenueIdDontExist:
         logger.info(
             "Could not create offer: the venue id does not exist",
             extra={"venue_id": body.venue_id, "offer_venue": body.offer_venue},
         )
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+
+    # adage errors
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        logger.info(
+            "Could not create offer: This offerer has not been found in Adage", extra={"venue_id": body.venue_id}
+        )
+        raise ApiErrors({"offerer": "not found in adage"}, 403)
     except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"venue_id": body.venue_id})
         raise ApiErrors({"adage_api": "error"}, 500)
+
+    # domains / national_program errors
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not create offer: educational domains not found.",
             extra={"offer_name": body.name, "venue_id": body.venue_id, "domains": body.domains},
         )
         raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
-    except educational_exceptions.CollectiveOfferTemplateNotFound:
-        logger.info(
-            "Could not create offer: collective offer template not found.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id, "template_id": body.template_id},
-        )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
     except educational_exceptions.NationalProgramNotFound:
         logger.info(
             "Could not create offer: national program not found",
@@ -593,18 +602,10 @@ def create_collective_offer_template(
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
-    except offers_exceptions.UrlandFormBothSetError:
-        logger.info(
-            "Could not set both contact url and contact form",
-            extra={"offer_name": body.name},
-        )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"}, status_code=400)
-    except offers_exceptions.AllNullContactRequestDataError:
-        logger.info(
-            "At least one contact method should be set",
-            extra={"offer_name": body.name},
-        )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_CONTACT_NOT_SET"}, status_code=400)
+
+    # creation errors
+    except offers_exceptions.CollectiveOfferContactRequestError as err:
+        raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
