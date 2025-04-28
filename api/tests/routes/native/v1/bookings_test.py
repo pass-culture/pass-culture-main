@@ -874,13 +874,10 @@ class GetBookingsTest:
                     "name": used2.stock.offer.name,
                     "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",
                     "venue": {
-                        "address": "1 boulevard Poissonnière",
-                        "postalCode": "75002",
-                        "city": "Paris",
-                        "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "id": used2.venue.id,
                         "name": used2.venue.name,
                         "publicName": used2.venue.publicName,
+                        # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
                         "timezone": "Europe/Paris",
                         "bannerUrl": None,
                         "isOpenToPublic": False,

@@ -133,12 +133,8 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                     sa_orm.joinedload(offers_models.Offer.venue)
                     .load_only(
                         offerers_models.Venue.name,
-                        offerers_models.Venue.street,
-                        offerers_models.Venue.postalCode,
-                        offerers_models.Venue.city,
-                        offerers_models.Venue.latitude,
-                        offerers_models.Venue.longitude,
                         offerers_models.Venue.publicName,
+                        # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
                         offerers_models.Venue.timezone,
                         offerers_models.Venue.bannerUrl,
                         offerers_models.Venue.isOpenToPublic,
