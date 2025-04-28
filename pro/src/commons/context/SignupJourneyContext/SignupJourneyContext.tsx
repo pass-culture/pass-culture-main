@@ -16,6 +16,7 @@ export interface Offerer extends OffererFormValues, Address {
   legalCategoryCode?: string
   hasVenueWithSiret: boolean
   isOpenToPublic?: string
+  apeCode?: string
 }
 
 export interface ActivityContext

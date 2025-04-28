@@ -25,6 +25,7 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constan
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
+import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -47,6 +48,9 @@ export const Offerers = (): JSX.Element => {
   )
 
   const { offerer, setOfferer } = useSignupJourneyContext()
+  const isLocalAuthority = MAYBE_LOCAL_AUTHORITY_APE_CODE.includes(
+    offerer?.apeCode ?? ''
+  )
 
   /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
@@ -180,19 +184,24 @@ export const Offerers = (): JSX.Element => {
           Rejoindre cet espace
         </Button>
       </div>
-      <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
-        Vous souhaitez ajouter une nouvelle structure à cet espace ?
-      </div>
-      <Button
-        className={
-          /* istanbul ignore next: displaying changes */
-          isNewOffererLinkEnabled ? styles['button-add-new-offerer'] : ''
-        }
-        onClick={redirectToOnboarding}
-        variant={ButtonVariant.SECONDARY}
-      >
-        Ajouter une nouvelle structure
-      </Button>
+
+      {isLocalAuthority && (
+        <>
+          <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
+            Vous souhaitez ajouter une nouvelle structure à cet espace ?
+          </div>
+          <Button
+            className={
+              /* istanbul ignore next: displaying changes */
+              isNewOffererLinkEnabled ? styles['button-add-new-offerer'] : ''
+            }
+            onClick={redirectToOnboarding}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Ajouter une nouvelle structure
+          </Button>
+        </>
+      )}
       <ActionBar
         previousStepTitle="Retour"
         hideRightButton
