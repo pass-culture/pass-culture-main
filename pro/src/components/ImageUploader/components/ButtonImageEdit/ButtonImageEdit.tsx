@@ -1,6 +1,14 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
+import {
+  UploadImageValues,
+  UploaderModeEnum,
+} from 'commons/utils/imageUploadTypes'
+import {
+  ModalImageUpsertOrEdit,
+  OnImageUploadArgs,
+} from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -8,14 +16,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { UploaderModeEnum } from '../../types'
-import {
-  ModalImageEdit,
-  OnImageUploadArgs,
-} from '../ModalImageEdit/ModalImageEdit'
-
 import style from './ButtonImageEdit.module.scss'
-import { UploadImageValues } from './types'
 
 export type ButtonImageEditProps = {
   onImageUpload: (values: OnImageUploadArgs) => void
@@ -91,7 +92,7 @@ export const ButtonImageEdit = ({
           )
         }
       >
-        <ModalImageEdit
+        <ModalImageUpsertOrEdit
           mode={mode}
           onImageUpload={onImageUploadHandler}
           onImageDelete={handleImageDelete}

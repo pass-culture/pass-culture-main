@@ -13,8 +13,8 @@ import {
   sharedCurrentUserFactory,
   currentOffererFactory,
 } from 'commons/utils/factories/storeFactories'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import {
   ImageUploaderOffer,

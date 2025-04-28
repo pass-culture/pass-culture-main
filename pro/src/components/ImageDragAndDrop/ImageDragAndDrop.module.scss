@@ -32,7 +32,7 @@
     border: rem.torem(1px) dashed var(--color-border-default);
     z-index: 1;
 
-    &:not(&-error) {
+    &:not(&-error, &-disabled) {
       &:hover,
       &:focus,
       &:focus-visible {
@@ -42,6 +42,10 @@
 
     &-error {
       border: rem.torem(1px) dashed var(--color-border-error);
+    }
+
+    &-disabled {
+      cursor: default;
     }
 
     &::-webkit-file-upload-button {
@@ -55,7 +59,8 @@
 
   &-dragged-over,
   &-hovered,
-  &-focused {
+  &-focused,
+  &-disabled {
     background-color: var(--color-background-subtle);
   }
 

@@ -2,15 +2,15 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import * as apiHelpers from 'apiClient/helpers'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { ButtonImageEdit, ButtonImageEditProps } from '../ButtonImageEdit'
 
 const renderButtonImageEdit = (props: ButtonImageEditProps) =>
   renderWithProviders(<ButtonImageEdit {...props} />)
 
-describe('test ButtonImageEdit', () => {
+describe('ButtonImageEdit', () => {
   let props: ButtonImageEditProps
   beforeEach(() => {
     props = {
@@ -54,7 +54,7 @@ describe('test ButtonImageEdit', () => {
     )
     expect(
       await screen.findByRole('heading', {
-        name: /Ajouter une image/,
+        name: /Modifier une image/,
       })
     ).toBeInTheDocument()
   })

@@ -1,11 +1,14 @@
 import cn from 'classnames'
 
+import {
+  UploadImageValues,
+  UploaderModeEnum,
+} from 'commons/utils/imageUploadTypes'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+
 import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
 import { ButtonImageEdit } from './components/ButtonImageEdit/ButtonImageEdit'
-import { UploadImageValues } from './components/ButtonImageEdit/types'
-import { OnImageUploadArgs } from './components/ModalImageEdit/ModalImageEdit'
 import styles from './ImageUploader.module.scss'
-import { UploaderModeEnum } from './types'
 
 export interface ImageUploaderProps {
   className?: string

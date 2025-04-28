@@ -11,12 +11,12 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import {
-  OnImageUploadArgs,
   ModalImageUpsertOrEdit,
-} from 'components/ImageUploader/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
+  OnImageUploadArgs,
+} from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'

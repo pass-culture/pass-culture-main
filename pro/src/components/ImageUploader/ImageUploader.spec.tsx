@@ -2,10 +2,10 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { ImageUploader, ImageUploaderProps } from './ImageUploader'
-import { UploaderModeEnum } from './types'
 
 vi.mock('react-avatar-editor', () => {
   const MockAvatarEditor = forwardRef((props, ref) => {
@@ -119,19 +119,15 @@ describe('ImageUploader', () => {
 
     await userEvent.click(screen.getByText('Ajouter une image'))
 
-    // dialog: import img
-    const inputField = screen.getByLabelText(
-      'Importer une image depuis l’ordinateur'
-    )
-    await userEvent.upload(inputField, mockFile)
-
-    // dialog: crop img
+    // dialog: import & crop img
     expect(screen.getByText('Modifier une image')).toBeInTheDocument()
     expect(
       screen.getByText(
         'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci.'
       )
     ).toBeInTheDocument()
+    const inputField = screen.getByLabelText('Importez une image')
+    await userEvent.upload(inputField, mockFile)
 
     await userEvent.click(screen.getByText('Enregistrer'))
 

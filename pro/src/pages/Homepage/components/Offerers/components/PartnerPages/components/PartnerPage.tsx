@@ -12,11 +12,13 @@ import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import {
+  UploadImageValues,
+  UploaderModeEnum,
+} from 'commons/utils/imageUploadTypes'
 import { Card } from 'components/Card/Card'
-import { UploadImageValues } from 'components/ImageUploader/components/ButtonImageEdit/types'
-import { OnImageUploadArgs } from 'components/ImageUploader/components/ModalImageEdit/ModalImageEdit'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { VenueOfferSteps } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'

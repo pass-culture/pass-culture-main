@@ -40,6 +40,10 @@ const ImageConstraintCheck = ({
 
 interface ImageDragAndDropProps {
   /**
+   * Class name for the drag and drop area.
+   */
+  className?: string
+  /**
    * Callback triggered when the user clicks on the drag and drop area.
    */
   onClick?: () => void
@@ -51,12 +55,18 @@ interface ImageDragAndDropProps {
    * Callback triggered when an error occurs, e.g. wrong file type or size.
    */
   onError?: (err?: string) => void
+  /**
+   * Either if the drag and drop component is disabled or not.
+   */
+  disabled?: boolean
 }
 
 export const ImageDragAndDrop = ({
+  className,
   onClick,
   onDropOrSelected,
   onError,
+  disabled,
 }: ImageDragAndDropProps) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -98,6 +108,7 @@ export const ImageDragAndDrop = ({
   // restore input focusability to allow keyboard navigation,
   // and let us define input style.
   inputProps.tabIndex = 0
+  inputProps.disabled = disabled
   delete inputProps.style
 
   const errors = fileRejections.reduce(
@@ -117,16 +128,21 @@ export const ImageDragAndDrop = ({
   const hasError = errors.hasWrongSize || errors.hasWrongType
 
   return (
-    <div className={styles['image-drag-and-drop-container']}>
+    <div className={cn(styles['image-drag-and-drop-container'])}>
       <div
         data-testid="image-drag-and-drop"
         {...rootProps}
-        className={cn(styles['image-drag-and-drop'], {
-          [styles['image-drag-and-drop-dragged-over']]: isDraggedOver,
-          [styles['image-drag-and-drop-hovered']]: isHovered,
-          [styles['image-drag-and-drop-focused']]: isFocused,
-          [styles['image-drag-and-drop-error']]: hasError,
-        })}
+        className={cn(
+          styles['image-drag-and-drop'],
+          {
+            [styles['image-drag-and-drop-dragged-over']]: isDraggedOver,
+            [styles['image-drag-and-drop-hovered']]: isHovered,
+            [styles['image-drag-and-drop-focused']]: isFocused,
+            [styles['image-drag-and-drop-error']]: hasError,
+            [styles['image-drag-and-drop-disabled']]: disabled,
+          },
+          className
+        )}
       >
         {isDraggedOver ? (
           <SvgIcon src={fullValidateIcon} alt="" width="24" />
@@ -154,6 +170,7 @@ export const ImageDragAndDrop = ({
                   aria-invalid={hasError}
                   className={cn(styles['image-drag-and-drop-input'], {
                     [styles['image-drag-and-drop-input-error']]: hasError,
+                    [styles['image-drag-and-drop-input-disabled']]: disabled,
                   })}
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
