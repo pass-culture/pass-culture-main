@@ -33,12 +33,6 @@ class BookOfferResponse(BaseModel):
 
 class BookingVenueResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "coordinates":
-            return Coordinates(latitude=self._obj.latitude, longitude=self._obj.longitude)
-
-        if key == "address":
-            return self._obj.street
-
         if key == "name":
             return self._obj.common_name
 
@@ -47,13 +41,8 @@ class BookingVenueResponseGetterDict(GetterDict):
 
 class BookingVenueResponse(BaseModel):
     id: int
-    # TODO: (lixxday, 28/08/2024) Remove the following fields when the frontend is ready
-    address: str | None
-    postalCode: str | None
-    city: str | None
     name: str
     publicName: str | None
-    coordinates: Coordinates
     timezone: str
     bannerUrl: str | None
     isOpenToPublic: bool
