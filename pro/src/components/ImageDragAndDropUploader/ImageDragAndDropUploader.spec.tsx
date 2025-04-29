@@ -46,8 +46,8 @@ const renderImageUploader = (props: ImageDragAndDropUploaderProps) =>
 describe('ImageDragAndDropUploader', () => {
   it('should render an image preview, and options for an existing / prev. uploaded img file', () => {
     renderImageUploader({
-      onImageUpload: async () => {},
-      onImageDelete: async () => {},
+      onImageUpload: () => {},
+      onImageDelete: () => {},
       mode: UploaderModeEnum.OFFER,
       initialValues: {
         imageUrl: 'noimage.jpg',
@@ -79,8 +79,8 @@ describe('ImageDragAndDropUploader', () => {
 
   it('should render a drag and drop input when there is no existing / prev. uploaded img file', () => {
     renderImageUploader({
-      onImageUpload: async () => {},
-      onImageDelete: async () => {},
+      onImageUpload: () => {},
+      onImageDelete: () => {},
       mode: UploaderModeEnum.OFFER,
     })
 
@@ -97,13 +97,28 @@ describe('ImageDragAndDropUploader', () => {
       screen.queryByRole('button', { name: /Supprimer/i })
     ).not.toBeInTheDocument()
     expect(screen.getByLabelText('Importez une image')).toBeInTheDocument()
+    expect(screen.queryByText('Hauteur minimum :')).not.toBeInTheDocument()
+    expect(screen.queryByText('Largeur minimum :')).not.toBeInTheDocument()
+  })
+
+  it('should render dimension constraints on drag and drop input in collective offer mode', () => {
+    renderImageUploader({
+      onImageUpload: () => {},
+      onImageDelete: () => {},
+      mode: UploaderModeEnum.OFFER_COLLECTIVE,
+    })
+
+    expect(screen.getByText('Hauteur minimum :')).toBeInTheDocument()
+    expect(screen.getByText('400 px')).toBeInTheDocument()
+    expect(screen.getByText('Largeur minimum :')).toBeInTheDocument()
+    expect(screen.getByText('600 px')).toBeInTheDocument()
   })
 
   it('should hide options alongside the image preview when hideActionButtons is true', () => {
     renderImageUploader({
       hideActionButtons: true,
-      onImageUpload: async () => {},
-      onImageDelete: async () => {},
+      onImageUpload: () => {},
+      onImageDelete: () => {},
       mode: UploaderModeEnum.OFFER,
       initialValues: {
         imageUrl: 'noimage.jpg',
@@ -153,7 +168,7 @@ describe('ImageDragAndDropUploader', () => {
 
     renderImageUploader({
       onImageUpload: mockUpload,
-      onImageDelete: async () => {},
+      onImageDelete: () => {},
       mode: UploaderModeEnum.OFFER,
     })
 
@@ -189,7 +204,7 @@ describe('ImageDragAndDropUploader', () => {
     }))
 
     renderImageUploader({
-      onImageUpload: async () => {},
+      onImageUpload: () => {},
       onImageDelete: mockDelete,
       mode: UploaderModeEnum.OFFER,
       initialValues: {

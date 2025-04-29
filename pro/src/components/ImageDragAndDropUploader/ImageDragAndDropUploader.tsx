@@ -139,6 +139,14 @@ export const ImageDragAndDropUploader = ({
             setIsModalImageOpen(true)
           }}
           disabled={disabled}
+          {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
+            ? {
+                minSizes: {
+                  width: 400,
+                  height: 600,
+                },
+              }
+            : {})}
         />
       )}
     </div>
