@@ -61,9 +61,10 @@ class UserRole(enum.Enum):
     ADMIN = "ADMIN"
     ANONYMIZED = "ANONYMIZED"
     BENEFICIARY = "BENEFICIARY"
+    UNDERAGE_BENEFICIARY = "UNDERAGE_BENEFICIARY"
+    FREE_BENEFICIARY = "FREE_BENEFICIARY"
     PRO = "PRO"
     NON_ATTACHED_PRO = "NON_ATTACHED_PRO"
-    UNDERAGE_BENEFICIARY = "UNDERAGE_BENEFICIARY"
     TEST = "TEST"  # used to mark imported test users on staging
 
 
@@ -267,15 +268,8 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     def add_beneficiary_role(self) -> None:
         self.remove_underage_beneficiary_role()
+        self.remove_free_beneficiary_role()
         self._add_role(UserRole.BENEFICIARY)
-
-    def add_pro_role(self) -> None:
-        self.remove_non_attached_pro_role()
-        self._add_role(UserRole.PRO)
-
-    def add_non_attached_pro_role(self) -> None:
-        self.remove_pro_role()
-        self._add_role(UserRole.NON_ATTACHED_PRO)
 
     def add_underage_beneficiary_role(self) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -288,13 +282,49 @@ class User(PcObject, Base, Model, DeactivableMixin):
             )
             raise role_exception
 
+        self.remove_free_beneficiary_role()
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
+
+    def add_free_beneficiary_role(self) -> None:
+        self._add_role(UserRole.FREE_BENEFICIARY)
+
+    def add_pro_role(self) -> None:
+        self.remove_non_attached_pro_role()
+        self._add_role(UserRole.PRO)
+
+    def add_non_attached_pro_role(self) -> None:
+        self.remove_pro_role()
+        self._add_role(UserRole.NON_ATTACHED_PRO)
 
     def add_test_role(self) -> None:
         self._add_role(UserRole.TEST)
 
     def replace_roles_by_anonymized_role(self) -> None:
         self.roles = [UserRole.ANONYMIZED]
+
+    def remove_admin_role(self) -> None:
+        if self.has_admin_role:
+            self.roles.remove(UserRole.ADMIN)
+
+    def remove_underage_beneficiary_role(self) -> None:
+        if self.has_underage_beneficiary_role:
+            self.roles.remove(UserRole.UNDERAGE_BENEFICIARY)
+
+    def remove_beneficiary_role(self) -> None:
+        if self.has_beneficiary_role:
+            self.roles.remove(UserRole.BENEFICIARY)
+
+    def remove_free_beneficiary_role(self) -> None:
+        if self.has_free_beneficiary_role:
+            self.roles.remove(UserRole.BENEFICIARY)
+
+    def remove_pro_role(self) -> None:
+        if self.has_pro_role:
+            self.roles.remove(UserRole.PRO)
+
+    def remove_non_attached_pro_role(self) -> None:
+        if self.has_non_attached_pro_role:
+            self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
     def checkPassword(self, passwordToCheck: str) -> bool:
         return crypto.check_password(passwordToCheck, self.password)
@@ -319,26 +349,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     def get_id(self) -> str:  # required by flask-login
         return str(self.id)
-
-    def remove_admin_role(self) -> None:
-        if self.has_admin_role:
-            self.roles.remove(UserRole.ADMIN)
-
-    def remove_underage_beneficiary_role(self) -> None:
-        if self.has_underage_beneficiary_role:
-            self.roles.remove(UserRole.UNDERAGE_BENEFICIARY)
-
-    def remove_beneficiary_role(self) -> None:
-        if self.has_beneficiary_role:
-            self.roles.remove(UserRole.BENEFICIARY)
-
-    def remove_pro_role(self) -> None:
-        if self.has_pro_role:
-            self.roles.remove(UserRole.PRO)
-
-    def remove_non_attached_pro_role(self) -> None:
-        if self.has_non_attached_pro_role:
-            self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
     @property
     def clearTextPassword(self) -> str | None:
@@ -624,12 +634,14 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @hybrid_property
     def is_beneficiary(self) -> bool:
-        return self.has_beneficiary_role or self.has_underage_beneficiary_role
+        return self.has_beneficiary_role or self.has_underage_beneficiary_role or self.has_free_beneficiary_role
 
     @is_beneficiary.expression  # type: ignore[no-redef]
     def is_beneficiary(cls) -> BooleanClauseList:
         return expression.or_(
-            cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
+            cls.roles.contains([UserRole.BENEFICIARY]),
+            cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY]),
+            cls.roles.contains([UserRole.FREE_BENEFICIARY]),
         )
 
     @property
@@ -676,14 +688,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
-    def has_beneficiary_role(self) -> bool:
-        return UserRole.BENEFICIARY in self.roles
-
-    @has_beneficiary_role.expression  # type: ignore[no-redef]
-    def has_beneficiary_role(cls) -> BinaryExpression:
-        return cls.roles.contains([UserRole.BENEFICIARY])
-
-    @hybrid_property
     def has_pro_role(self) -> bool:
         return UserRole.PRO in self.roles
 
@@ -708,12 +712,28 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return expression.or_(cls.roles.contains([UserRole.PRO]), cls.roles.contains([UserRole.NON_ATTACHED_PRO]))
 
     @hybrid_property
+    def has_beneficiary_role(self) -> bool:
+        return UserRole.BENEFICIARY in self.roles
+
+    @has_beneficiary_role.expression  # type: ignore[no-redef]
+    def has_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.BENEFICIARY])
+
+    @hybrid_property
     def has_underage_beneficiary_role(self) -> bool:
         return UserRole.UNDERAGE_BENEFICIARY in self.roles
 
     @has_underage_beneficiary_role.expression  # type: ignore[no-redef]
     def has_underage_beneficiary_role(cls) -> BinaryExpression:
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
+
+    @hybrid_property
+    def has_free_beneficiary_role(self) -> bool:
+        return UserRole.FREE_BENEFICIARY in self.roles
+
+    @has_free_beneficiary_role.expression  # type: ignore[no-redef]
+    def has_free_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.FREE_BENEFICIARY])
 
     @hybrid_property
     def has_test_role(self) -> bool:

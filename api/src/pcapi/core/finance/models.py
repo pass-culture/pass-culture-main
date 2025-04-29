@@ -44,6 +44,7 @@ if typing.TYPE_CHECKING:
 
 class DepositType(enum.Enum):
     GRANT_17_18 = "GRANT_17_18"
+    GRANT_FREE = "GRANT_FREE"
     # legacy deposit types that are present in the database
     GRANT_15_17 = "GRANT_15_17"
     GRANT_18 = "GRANT_18"

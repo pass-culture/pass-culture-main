@@ -41,6 +41,9 @@ from . import models
 logger = logging.getLogger(__name__)
 
 
+FREE_ELIGIBILITY_DEPOSIT_SOURCE = "complétion du profil"
+
+
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     # ensure the FOR UPDATE lock is freed if anything arises
     with pcapi_repository.transaction():
@@ -51,37 +54,42 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
             .with_for_update()
             .one()
         )
-        subscription_state = get_user_subscription_state(user)
 
-        if not subscription_state.is_activable:
-            return False
-        if not subscription_state.identity_fraud_check:
-            return False
-        if subscription_state.identity_fraud_check.resultContent is None:
+        subscription_state_machine = subscription_machines.create_state_machine_to_current_state(user)
+        if (
+            subscription_state_machine.state
+            != subscription_machines.SubscriptionStates.SUBSCRIPTION_COMPLETED_BUT_NOT_BENEFICIARY_YET
+        ):
             return False
 
         eligibility_to_activate = eligibility_api.get_pre_decree_or_current_eligibility(user)
         if eligibility_to_activate is None:
             return False
 
-        duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(subscription_state.identity_fraud_check)
-        if duplicate_beneficiary:
-            fraud_api.invalidate_fraud_check_for_duplicate_user(
-                subscription_state.identity_fraud_check, duplicate_beneficiary.id
-            )
-            return False
+        should_have_checked_identity = subscription_state_machine.eligibility != users_models.EligibilityType.FREE
+        if should_have_checked_identity:
+            identity_fraud_check = subscription_state_machine.identity_fraud_check
+            if not identity_fraud_check or not identity_fraud_check.resultContent:
+                return False
 
-        source_data = typing.cast(
-            common_fraud_models.IdentityCheckContent, subscription_state.identity_fraud_check.source_data()
-        )
-        try:
-            users_api.update_user_information_from_external_source(user, source_data)
-        except sqlalchemy_exceptions.IntegrityError as e:
-            logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user.id})
-            return False
+            duplicate_beneficiary = fraud_api.get_duplicate_beneficiary(identity_fraud_check)
+            if duplicate_beneficiary:
+                fraud_api.invalidate_fraud_check_for_duplicate_user(identity_fraud_check, duplicate_beneficiary.id)
+                return False
+
+            source_data = typing.cast(common_fraud_models.IdentityCheckContent, identity_fraud_check.source_data())
+            try:
+                users_api.update_user_information_from_external_source(user, source_data)
+            except sqlalchemy_exceptions.IntegrityError as e:
+                logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user.id})
+                return False
+
+            deposit_source = identity_fraud_check.get_detailed_source()
+        else:
+            deposit_source = FREE_ELIGIBILITY_DEPOSIT_SOURCE
 
         try:
-            activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, eligibility_to_activate)
+            activate_beneficiary_for_eligibility(user, deposit_source, eligibility_to_activate)
         except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
             # this error may happen on identity provider concurrent requests
             logger.info("A deposit already exists for user %s", user.id)
@@ -92,13 +100,13 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
 
 def activate_beneficiary_for_eligibility(
     user: users_models.User,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    deposit_source: str,
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
     with pcapi_repository.transaction():
         deposit = deposit_api.upsert_deposit(
             user,
-            deposit_source=fraud_check.get_detailed_source(),
+            deposit_source=deposit_source,
             eligibility=eligibility,
         )
         add_eligibility_role(user, eligibility_api.get_activated_eligibility(deposit.type))
@@ -119,6 +127,8 @@ def add_eligibility_role(user: users_models.User, eligibility: users_models.Elig
         user.add_underage_beneficiary_role()
     elif eligibility_api.is_18_or_above_eligibility(eligibility, user.age) and not user.has_beneficiary_role:
         user.add_beneficiary_role()
+    elif eligibility == users_models.EligibilityType.FREE and not user.has_free_beneficiary_role:
+        user.add_free_beneficiary_role()
     else:
         raise exceptions.InvalidEligibilityTypeException()
 

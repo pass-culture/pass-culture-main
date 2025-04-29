@@ -64,27 +64,23 @@ class UpsertDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime.datetime(2021 - (age + 1) + 21, 12, 5, 11, 0, 0)
 
+    @time_machine.travel("2025-03-03")
     def test_create_underage_deposit_with_two_birthdays_since_registration(self):
-        age = 15
-        with time_machine.travel(
-            datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
-            - relativedelta(years=age + 2, months=1)  # 17 years and 1 month ago, user was born
-        ):
-            beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
+        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        beneficiary = users_factories.UserFactory(validatedBirthDate=seventeen_years_ago.date())
 
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=2)):
-            # User starts registration at 15 years and 11 months old
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=beneficiary,
-                status=fraud_models.FraudCheckStatus.STARTED,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                eligibilityType=users_models.EligibilityType.UNDERAGE,
-                resultContent=fraud_factories.EduconnectContentFactory(
-                    registration_datetime=datetime.datetime.utcnow()
-                ),
-            )
+        when_user_is_15_years_and_11_months_old = datetime.datetime.utcnow() - relativedelta(years=1, months=2)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=beneficiary,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                registration_datetime=when_user_is_15_years_and_11_months_old
+            ),
+        )
 
-        # Registration is completed 2 months later, when user is 17 years and 1 month old
+        # Registration is completed 1 year and 2 months later, when user is 17 years and 1 month old
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
             status=fraud_models.FraudCheckStatus.OK,
@@ -94,12 +90,14 @@ class UpsertDepositTest:
         )
 
         # Deposit is created right after the validation of the registration
-        deposit = api.upsert_deposit(beneficiary, "created by test", beneficiary.eligibility)
+        deposit = api.upsert_deposit(beneficiary, "created by test", users_models.EligibilityType.UNDERAGE)
 
         assert deposit.type == models.DepositType.GRANT_17_18
         assert deposit.version == 1
         assert deposit.user.id == beneficiary.id
+        assert deposit.amount == 20 + 0 + 50
 
+    @time_machine.travel("2025-03-03")
     def test_create_underage_deposit_with_birthday_since_registration(self):
         sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
         beneficiary = users_factories.UserFactory(
@@ -111,15 +109,16 @@ class UpsertDepositTest:
             type=fraud_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.EduconnectContentFactory(
-                registration_datetime=datetime.datetime.utcnow() - relativedelta(days=1)
+                registration_datetime=datetime.datetime.utcnow() - relativedelta(years=1)
             ),
         )
 
-        deposit = api.upsert_deposit(beneficiary, "created by test", beneficiary.eligibility)
+        deposit = api.upsert_deposit(beneficiary, "created by test", users_models.EligibilityType.UNDERAGE)
 
-        assert deposit.type == models.DepositType.GRANT_17_18
+        assert deposit.type == models.DepositType.GRANT_15_17
+        assert deposit.amount == 20
 
-    def test_create_18_years_old_deposit(self):
+    def test_create_18_years_old_pre_decree_deposit(self):
         beneficiary = users_factories.UserFactory(age=18)
 
         deposit = api.upsert_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
@@ -130,18 +129,43 @@ class UpsertDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate.date() == (beneficiary.dateOfBirth + relativedelta(years=21)).date()
 
-    def test_deposit_created_when_another_type_already_exist_for_user(self):
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=3)):
-            beneficiary = users_factories.UnderageBeneficiaryFactory(
-                deposit__expirationDate=datetime.datetime.utcnow() + relativedelta(years=2)
-            )
+    @time_machine.travel("2025-03-03")
+    def test_create_18_years_old_post_decree_deposit(self):
+        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2007, 1, 1))
 
-        api.upsert_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE17_18)
 
-        assert beneficiary.deposit.type == models.DepositType.GRANT_18
-        assert len(beneficiary.deposits) == 2
+        assert deposit.type == models.DepositType.GRANT_17_18
+        assert deposit.amount == 150
+        assert deposit.expirationDate.date() == datetime.date(2028, 1, 1)
+        assert deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
+        assert deposit.recredits[0].amount == 150
 
-    def test_cannot_recredit_grant_18_deposit(self):
+    @time_machine.travel("2025-03-03")
+    def test_create_17_years_old_post_decree_deposit(self):
+        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2008, 1, 1))
+
+        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE17_18)
+
+        assert deposit.type == models.DepositType.GRANT_17_18
+        assert deposit.amount == 50
+        assert deposit.expirationDate.date() == datetime.date(2029, 1, 1)
+        assert deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_17
+        assert deposit.recredits[0].amount == 50
+
+    def test_create_free_grant_deposit(self):
+        current_year = datetime.date.today().year
+        sixteen_years_ago = datetime.date(current_year - 16, 1, 1)
+        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=sixteen_years_ago)
+
+        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.FREE)
+
+        assert deposit.type == models.DepositType.GRANT_FREE
+        assert deposit.amount == 0
+        assert deposit.expirationDate.date() == sixteen_years_ago + relativedelta(years=21)
+        assert not deposit.recredits
+
+    def test_cannot_upsert_grant_18_deposit(self):
         AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow().replace(
             hour=0, minute=0, second=0, microsecond=0
         ) - relativedelta(years=18, months=2)
@@ -152,38 +176,6 @@ class UpsertDepositTest:
 
         assert models.Deposit.query.filter(models.Deposit.userId == beneficiary.id).count() == 1
 
-    @time_machine.travel("2025-03-03")
-    def test_compute_deposit_expiration_date(self):
-        user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
-        assert user.age == 18
-
-        expiration_date = api.compute_deposit_expiration_date(user)
-
-        assert expiration_date.date() == datetime.date(2028, 1, 1)
-
-    @time_machine.travel("2025-03-03")
-    def test_upsert_post_decree_deposit(self):
-        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2007, 1, 1))
-        assert user.age == 18
-
-        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE17_18)
-        assert deposit.expirationDate.date() == datetime.date(2028, 1, 1)
-        assert deposit.type == models.DepositType.GRANT_17_18
-        assert deposit.amount == 150
-
-        assert deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
-        assert deposit.recredits[0].amount == 150
-
-    @time_machine.travel("2025-03-03")
-    def test_upsert_age_18_deposit(self):
-        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2007, 1, 1))
-        assert user.age == 18
-
-        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE18)
-
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.amount == 300
-
     def test_upsert_deposit_age_18_expires_underage_deposit(self):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
@@ -191,27 +183,17 @@ class UpsertDepositTest:
         deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE18)
 
         assert deposit.type == models.DepositType.GRANT_18
+        assert len(user.deposits) == 2
         underage_deposit = min(*user.deposits, key=lambda d: d.id)
         assert underage_deposit.expirationDate < datetime.datetime.utcnow()
 
-    @time_machine.travel("2025-03-03")
-    def test_17yo_becomes_17_18_when(self):
-        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2008, 1, 1))
-        assert user.age == 17
+    def test_compute_deposit_expiration_date(self):
+        user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
+        assert user.age == 18
 
-        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.AGE17_18)
+        expiration_date = api.compute_deposit_expiration_date(user)
 
-        assert deposit.type == models.DepositType.GRANT_17_18
-
-    @time_machine.travel("2025-03-03")
-    def test_less_than_17_yo_keeps_underage(self):
-        user = users_factories.HonorStatementValidatedUserFactory(validatedBirthDate=datetime.date(2009, 1, 1))
-        assert user.age == 16
-
-        deposit = api.upsert_deposit(user, "created by test", users_models.EligibilityType.UNDERAGE)
-
-        assert deposit.type == models.DepositType.GRANT_15_17
-        assert deposit.amount == 30
+        assert expiration_date.date() == datetime.date(2028, 1, 1)
 
 
 class UserRecreditTest:

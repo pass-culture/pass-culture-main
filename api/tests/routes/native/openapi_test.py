@@ -744,7 +744,7 @@ def test_public_api(client):
                 },
                 "DepositType": {
                     "description": "An enumeration.",
-                    "enum": ["GRANT_17_18", "GRANT_15_17", "GRANT_18"],
+                    "enum": ["GRANT_17_18", "GRANT_FREE", "GRANT_15_17", "GRANT_18"],
                     "title": "DepositType",
                 },
                 "DomainsCredit": {
@@ -2594,9 +2594,10 @@ def test_public_api(client):
                         "ADMIN",
                         "ANONYMIZED",
                         "BENEFICIARY",
+                        "UNDERAGE_BENEFICIARY",
+                        "FREE_BENEFICIARY",
                         "PRO",
                         "NON_ATTACHED_PRO",
-                        "UNDERAGE_BENEFICIARY",
                         "TEST",
                     ],
                     "title": "UserRole",

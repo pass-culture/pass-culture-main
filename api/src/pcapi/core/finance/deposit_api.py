@@ -78,7 +78,7 @@ def recredit_users() -> None:
 
     user_ids = [
         result
-        for result, in (
+        for (result,) in (
             users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
             .filter(users_models.User.validatedBirthDate > lower_date)
             .filter(users_models.User.validatedBirthDate <= upper_date)
@@ -279,9 +279,14 @@ def _create_deposit(
     if beneficiary.has_active_deposit:
         raise exceptions.UserHasAlreadyActiveDeposit()
 
+    if eligibility == users_models.EligibilityType.FREE:
+        deposit_type = models.DepositType.GRANT_FREE
+    else:
+        deposit_type = models.DepositType.GRANT_17_18
+
     deposit = models.Deposit(
         version=1,
-        type=models.DepositType.GRANT_17_18,
+        type=deposit_type,
         amount=decimal.Decimal(0),
         source=deposit_source,
         user=beneficiary,
@@ -289,6 +294,9 @@ def _create_deposit(
     )
     db.session.add(deposit)
     db.session.flush()
+
+    if deposit_type == models.DepositType.GRANT_FREE:
+        return deposit
 
     latest_recredit = _recredit_user(beneficiary)
     if latest_recredit:

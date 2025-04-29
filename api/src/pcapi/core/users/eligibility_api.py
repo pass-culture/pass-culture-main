@@ -321,5 +321,7 @@ def get_activated_eligibility(deposit_type: DepositType) -> users_models.Eligibi
             return users_models.EligibilityType.UNDERAGE
         case DepositType.GRANT_18:
             return users_models.EligibilityType.AGE18
+        case DepositType.GRANT_FREE:
+            return users_models.EligibilityType.FREE
         case _:
             raise exceptions.UnknownDepositType(f"{deposit_type}")
