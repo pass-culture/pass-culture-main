@@ -16,7 +16,6 @@ from flask import request
 from flask import send_file
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
@@ -46,6 +45,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit

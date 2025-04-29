@@ -32,6 +32,12 @@ class BaseQuery(FlaskSQLAlchemyBaseQuery):
         obj = db.session.get(mapper, pk)
         return obj
 
+    def first_or_404(self) -> typing.Any:
+        obj = self.first()
+        if not obj:
+            raise NotFound()
+        return obj
+
 
 class DeletedRecordException(Exception):
     pass

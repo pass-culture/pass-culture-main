@@ -5,7 +5,6 @@ from functools import partial
 import logging
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -44,6 +43,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking

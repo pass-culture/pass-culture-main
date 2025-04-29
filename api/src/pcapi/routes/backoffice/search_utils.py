@@ -2,11 +2,11 @@ import datetime
 import re
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.users import models as users_models
+from pcapi.models.pc_object import BaseQuery
 from pcapi.routes.backoffice.forms import search as search_forms
 
 

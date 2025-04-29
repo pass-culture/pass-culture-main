@@ -1,6 +1,5 @@
 import typing
 
-import flask_sqlalchemy
 from sqlalchemy import exc as sa_exc
 
 from pcapi import settings
@@ -22,6 +21,7 @@ import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.local_providers.install import install_local_providers
+from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -31,7 +31,7 @@ from pcapi.models.feature import install_feature_flags
 
 # Order of table to clean matters because of foreign key constraints
 # They will be deleted in this order
-tables_to_clean: list[flask_sqlalchemy.Model] = [
+tables_to_clean: list[type[Model]] = [
     achievements_models.Achievement,
     artist_models.Artist,
     artist_models.ArtistAlias,

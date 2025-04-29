@@ -9,7 +9,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -22,6 +21,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
@@ -514,7 +514,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         to_datetime=date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_users_offerers: BaseQuery = users_offerers.order_by(
+    sorted_users_offerers: BaseQuery = users_offerers.order_by(  # type: ignore[assignment]
         getattr(getattr(offerers_models.UserOfferer, form.sort.data), form.order.data)()
     )
 

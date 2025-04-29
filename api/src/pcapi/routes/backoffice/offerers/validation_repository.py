@@ -16,6 +16,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import email as email_utils
 from pcapi.utils import siren as siren_utils
@@ -188,7 +189,7 @@ def list_offerers_to_be_validated(
     dms_adage_status: list[GraphQLApplicationStates] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
-) -> sa_orm.Query:
+) -> BaseQuery:
     # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
     # This replaces lookup for last comment in offerer.action_history after joining with all actions
     last_comment_subquery = (

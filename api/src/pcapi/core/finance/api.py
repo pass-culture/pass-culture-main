@@ -40,7 +40,6 @@ import zipfile
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask import render_template
-from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -71,6 +70,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import transaction
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid

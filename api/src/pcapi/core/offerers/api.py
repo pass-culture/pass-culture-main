@@ -12,7 +12,6 @@ import secrets
 import time
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import jwt
 from psycopg2.extras import NumericRange
 import pytz
@@ -62,6 +61,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -2007,7 +2007,7 @@ def get_offerer_total_revenue(offerer_id: int, only_current_year: bool = False) 
 
 
 def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
-    def _get_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
+    def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
@@ -2042,7 +2042,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
             .subquery()
         )
 
-    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
+    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
         return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
             sa.select(offer_class.id.label("offer_id"))
             .join(offerers_models.Venue, offer_class.venue)
@@ -2103,7 +2103,7 @@ def get_venue_total_revenue(venue_id: int) -> float:
 
 
 def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
-    def _get_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
+    def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
@@ -2139,7 +2139,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
             .subquery()
         )
 
-    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
+    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
         return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
             sa.select(offer_class.id.label("offer_id"))
             .filter(offer_class.venueId == venue_id)

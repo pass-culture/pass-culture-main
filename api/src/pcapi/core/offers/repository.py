@@ -4,7 +4,6 @@ import logging
 import operator
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -26,6 +25,7 @@ from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import custom_keys
 from pcapi.utils import string as string_utils
 from pcapi.utils.decorators import retry
@@ -782,7 +782,7 @@ def _filter_collective_offers_by_statuses(
 
 def add_last_booking_status_to_collective_offer_query(
     query: BaseQuery,
-) -> typing.Tuple[BaseQuery, BaseQuery]:
+) -> typing.Tuple[typing.Any, BaseQuery]:
     last_booking_query = (
         db.session.query(educational_models.CollectiveBooking)
         .with_entities(

@@ -4,7 +4,6 @@ from datetime import datetime
 from math import ceil
 
 from dateutil.relativedelta import relativedelta
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -14,6 +13,7 @@ from pcapi.core.external.sendinblue import add_contacts_to_list
 import pcapi.core.finance.models as finance_models
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 
 
 YIELD_COUNT_PER_DB_QUERY = 1000

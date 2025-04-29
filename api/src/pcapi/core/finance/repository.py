@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -15,6 +14,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 

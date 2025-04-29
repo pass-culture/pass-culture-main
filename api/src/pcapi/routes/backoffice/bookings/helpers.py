@@ -1,7 +1,6 @@
 import datetime
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi.core.bookings import models as bookings_models
@@ -10,6 +9,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
+from pcapi.models.pc_object import BaseQuery
 from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm
 from pcapi.routes.backoffice.bookings.forms import BookingStatus
 from pcapi.utils import date as date_utils

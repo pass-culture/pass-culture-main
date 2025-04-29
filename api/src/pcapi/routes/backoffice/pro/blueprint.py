@@ -7,7 +7,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from sqlalchemy import func
 from werkzeug.exceptions import NotFound
@@ -27,6 +26,7 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils

@@ -5,7 +5,6 @@ from datetime import timedelta
 from decimal import Decimal
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.sql.expression import extract
@@ -24,6 +23,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.utils.clean_accents import clean_accents
 
@@ -627,7 +627,7 @@ def _get_filtered_collective_bookings_query(
     venue_id: int | None = None,
     *,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> sa_orm.Query:
+) -> BaseQuery:
 
     collective_bookings_query = (
         db.session.query(educational_models.CollectiveBooking)
@@ -1058,9 +1058,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
     return query.filter(educational_models.CollectiveOffer.id == offer_id).one()
 
 
-def _get_collective_offer_template_by_id_for_adage_base_query() -> (
-    "sa_orm.Query[educational_models.CollectiveOfferTemplate]"
-):
+def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
     return (
         db.session.query(educational_models.CollectiveOfferTemplate)
         .filter(

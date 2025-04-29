@@ -6,7 +6,6 @@ from io import BytesIO
 from io import StringIO
 import typing
 
-from flask_sqlalchemy import BaseQuery
 from pydantic.v1 import root_validator
 import xlsxwriter
 
@@ -16,6 +15,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.pc_object import BaseQuery
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel

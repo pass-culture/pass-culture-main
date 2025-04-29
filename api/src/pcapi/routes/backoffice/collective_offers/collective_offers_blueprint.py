@@ -8,7 +8,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
@@ -33,6 +32,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils

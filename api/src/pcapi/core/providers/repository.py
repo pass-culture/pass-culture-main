@@ -2,7 +2,6 @@ import datetime
 from typing import Iterable
 from typing import Sequence
 
-from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
 from sqlalchemy import or_
 import sqlalchemy.orm as sa_orm
@@ -11,6 +10,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 
 from . import constants
 from . import models
