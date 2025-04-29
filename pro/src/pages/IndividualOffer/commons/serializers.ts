@@ -83,14 +83,21 @@ export const serializePatchOffer = ({
   }
 
   let addressValues = {}
-  if (!offer.isDigital) {
+  const allAddressFieldsAreNotNull =
+    sentValues.city &&
+    sentValues.latitude &&
+    sentValues.longitude &&
+    sentValues.postalCode &&
+    sentValues.street &&
+    sentValues.offerLocation
+  if (!offer.isDigital && allAddressFieldsAreNotNull) {
     addressValues = {
       address: {
-        city: removeQuotes(sentValues.city?.trim() ?? ''),
-        latitude: sentValues.latitude ?? '',
-        longitude: sentValues.longitude ?? '',
-        postalCode: sentValues.postalCode ?? '',
-        street: removeQuotes(sentValues.street?.trim() ?? ''),
+        city: removeQuotes(sentValues.city!.trim()), // checked in `allAddressFieldsAreNotNull`
+        latitude: sentValues.latitude,
+        longitude: sentValues.longitude,
+        postalCode: sentValues.postalCode,
+        street: removeQuotes(sentValues.street!.trim()), // checked in `allAddressFieldsAreNotNull`
         label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:

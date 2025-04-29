@@ -208,6 +208,22 @@ describe('IndividualOffer:commons:serializers', () => {
       ).toEqual(body)
     })
 
+    it('should serialize patchBody with empty address when address did not change', () => {
+      formValues = {
+        ...formValues,
+        city: undefined,
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { address, ...body } = patchBody
+
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(body)
+    })
+
     it('should send isVenueAddress flag set to true when user select the venue location', () => {
       formValues = {
         ...formValues,
