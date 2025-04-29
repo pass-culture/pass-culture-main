@@ -10,7 +10,13 @@ import style from './ImageEditor.module.scss'
 const CANVAS_MOBILE_BREAKPOINT = 744
 
 function clamp(input: number, min: number, max: number): number {
-  return input < min ? min : input > max ? max : input
+  if (input < min) {
+    return min
+  } else if (input > max) {
+    return max
+  } else {
+    return input
+  }
 }
 
 export function map(

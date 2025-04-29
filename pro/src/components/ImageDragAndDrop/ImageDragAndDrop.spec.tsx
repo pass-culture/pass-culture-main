@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { it } from 'vitest'
 
 import { ImageDragAndDrop } from './ImageDragAndDrop'
 
@@ -16,6 +15,13 @@ function mockData(files: File[]) {
     },
   }
 }
+
+const createObjectURLMock = vi.fn(() => 'mocked-url')
+const revokeObjectURLMock = vi.fn()
+vi.stubGlobal('URL', {
+  createObjectURL: createObjectURLMock,
+  revokeObjectURL: revokeObjectURLMock,
+})
 
 describe('ImageDragAndDrop', () => {
   it('should render the component with a drop zone and an input', () => {
@@ -102,5 +108,23 @@ describe('ImageDragAndDrop', () => {
     })
 
     expect(onError).toHaveBeenCalledWith('file-too-large')
+  })
+
+  describe('when dimension constraints are provided', () => {
+    it('should display them above the drop zone', () => {
+      render(
+        <ImageDragAndDrop
+          minSizes={{
+            width: 100,
+            height: 400,
+          }}
+        />
+      )
+
+      expect(screen.getByText(/Hauteur minimum :/)).toBeInTheDocument()
+      expect(screen.getByText(/Largeur minimum :/)).toBeInTheDocument()
+    })
+
+    it('should display the appropriate error message when the image has invalid dimensions', () => {})
   })
 })

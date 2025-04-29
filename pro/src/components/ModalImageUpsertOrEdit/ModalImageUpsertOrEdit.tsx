@@ -89,7 +89,7 @@ export const ModalImageUpsertOrEdit = ({
     x: xInitialPosition,
     y: yInitialPosition,
   })
-  const [credit, setCredit] = useState<string>(initialCredit || '')
+  const [credit, setCredit] = useState<string>(initialCredit ?? '')
   const [scale, setScale] = useState<number>(
     initalWidthCropPercent ? widthCropPercentToScale(initalWidthCropPercent) : 1
   )

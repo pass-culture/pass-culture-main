@@ -54,8 +54,6 @@ describe('ImageEditor', () => {
     const onChangeDone = vi.fn()
     render(<ImageEditor {...defaultProps} onChangeDone={onChangeDone} />)
 
-    screen.debug()
-
     const slider = screen.getByTestId('slider')
     fireEvent.change(slider, { target: { value: 2 } })
 
