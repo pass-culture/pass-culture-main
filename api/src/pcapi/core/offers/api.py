@@ -1849,6 +1849,7 @@ def move_offer(
         raise NotImplementedError("This feature is not yet available")
 
     offer_id = offer.id
+    original_venue = offer.venue
 
     venue_choices = check_can_move_offer(offer)
 
@@ -1884,6 +1885,14 @@ def move_offer(
         for price_category_label in original_price_category_labels
     }
     with transaction():
+        # Use a different OA if the offer uses the venue's OA
+        if offer.offererAddress and offer.offererAddress == original_venue.offererAddress:
+            destination_oa = offerers_api.get_or_create_offerer_address(
+                original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.common_name
+            )
+            db.session.add(destination_oa)
+            offer.offererAddress = destination_oa
+
         offer.venue = destination_venue
         db.session.add(offer)
 

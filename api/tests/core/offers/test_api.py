@@ -5059,9 +5059,35 @@ class MoveOfferTest:
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         assert offer.venue.current_pricing_point is None
         assert new_venue.current_pricing_point is None
+        assert offer.offererAddressId == offer.venue.offererAddressId
         assert offer.offererAddressId != new_venue.offererAddressId
 
         initial_offerer_address_id = offer.offererAddressId
+        initial_address_id = offer.offererAddress.addressId
+        initial_oa_label = offer.venue.common_name
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue == new_venue
+        # The address remains the same but OA is different and uses the source venue's common name
+        assert offer.offererAddressId != initial_offerer_address_id
+        assert offer.offererAddress.addressId == initial_address_id
+        assert offer.offererAddress.label == initial_oa_label
+
+    def test_move_physical_offer_that_has_a_dedicated_oa(self):
+        """Moving an offer that has a custom location from a venue to another venue
+        should not change its location."""
+        offerer = offerers_factories.OffererFactory()
+        offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer, label="Custom location")
+        venue_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offer = factories.OfferFactory(
+            venue__managingOfferer=offerer, offererAddress=offer_oa, venue__offererAddress=venue_oa
+        )
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        assert new_venue.current_pricing_point is None
+        assert offer.offererAddressId != new_venue.offererAddressId
+        initial_offerer_address_id = offer_oa.id
+
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)
