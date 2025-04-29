@@ -32,6 +32,8 @@ class ArtistProductLink(PcObject, Base, Model):
     product_id = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True)
 
     artist_type = sa.Column(MagicEnum(ArtistType))
+    date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
 
 class Artist(PcObject, Base, Model):
@@ -42,6 +44,8 @@ class Artist(PcObject, Base, Model):
     image_author = sa.Column(sa.Text)
     image_license = sa.Column(sa.Text)
     image_license_url = sa.Column(sa.Text)
+    date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
     products: list[sa_orm.Mapped["Product"]] = sa_orm.relationship(
         "Product", backref="artists", secondary=ArtistProductLink.__table__
@@ -62,3 +66,5 @@ class ArtistAlias(PcObject, Base, Model):
     artist_type = sa.Column(MagicEnum(ArtistType))
     artist_wiki_data_id = sa.Column(sa.Text)
     offer_category_id = sa.Column(sa.Text)
+    date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
