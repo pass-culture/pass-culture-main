@@ -29,11 +29,8 @@
     height: rem.torem(20px);
   }
 
-  &:hover {
-    background-color: var(--color-background-subtle);
-  }
-
+  &:hover,
   &:active {
-    background-color: var(--color-grey-medium);
+    background-color: var(--color-background-subtle);
   }
 }

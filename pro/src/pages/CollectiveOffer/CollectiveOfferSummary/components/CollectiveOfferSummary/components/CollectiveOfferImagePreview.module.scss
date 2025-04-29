@@ -13,11 +13,11 @@
   justify-content: center;
   align-items: center;
   border-radius: rem.torem(4px);
-  background: var(--color-adage-linear-gradient-image-preview);
+  background: var(--color-background-subtle);
 
   svg {
     height: rem.torem(60px);
     width: rem.torem(60px);
-    color: var(--color-grey-semi-dark);
+    color: var(--color-icon-subtle);
   }
 }

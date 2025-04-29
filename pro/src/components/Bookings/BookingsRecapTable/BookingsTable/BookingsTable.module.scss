@@ -32,8 +32,6 @@
 
 // <tbody>
 .table-body {
-  border-bottom: rem.torem(1px) solid var(--color-grey-medium);
-
   // In mobile-view, it takes labels from "data-label" in order to construct à left-column with that content
   .table-cell[data-label] {
     display: contents; // ignores <td> with [data-label], so their children can be used as grid items
@@ -57,7 +55,7 @@
 .table-row {
   display: grid;
   grid-template-columns: auto 1fr;
-  border-top: rem.torem(1px) solid var(--color-grey-medium);
+  border-top: rem.torem(1px) solid var(--color-border-subtle);
   padding: rem.torem(16px) 0;
 
   &:first-child {

@@ -97,13 +97,13 @@
 .separator {
   margin: rem.torem(16px) 0 0 0;
   background-image: none;
-  background-color: var(--color-grey-light);
+  background-color: var(--separator-color-subtle);
 }
 
 a[href^="mailto:"] {
   font-family: var(--font-semi-bold-family);
 
   &:hover {
-  text-decoration: underline;
+    text-decoration: underline;
   }
 }

@@ -17,7 +17,7 @@
       display: block;
       position: fixed;
       inset: 0;
-      background: rgb(from var(--color-black) r g b / 48%);
+      background: var(--color-background-overlay);
     }
 
     &-open {

@@ -57,12 +57,3 @@ export const ActiveButton: StoryObj<typeof ButtonFilter> = {
     children: 'Active Filter',
   },
 }
-
-export const DisabledButton: StoryObj<typeof ButtonFilter> = {
-  args: {
-    isOpen: false,
-    isActive: false,
-    disabled: true,
-    children: 'Disabled Filter',
-  },
-}

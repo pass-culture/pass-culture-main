@@ -1,6 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-@mixin focus-outline($offset: rem.torem(2px), $color: var(--color-black)) {
+@mixin focus-outline(
+  $offset: rem.torem(2px),
+  $color: var(--color-outline-default)
+) {
   outline: rem.torem(1px) solid $color;
   outline-offset: $offset;
 }

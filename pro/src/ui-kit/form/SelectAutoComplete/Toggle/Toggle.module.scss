@@ -8,7 +8,7 @@ $dropdown-icon-size: rem.torem(20px);
   cursor: pointer;
   background: none;
   border: none;
-  fill: var(--color-grey-light);
+  fill: var(--color-icon-subtle);
   position: absolute;
   right: rem.torem(16px);
   bottom: calc((size.$input-min-height - $dropdown-icon-size) / 2);

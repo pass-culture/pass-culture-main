@@ -19,7 +19,7 @@
     }
 
     &-burger {
-      border: 0.5px solid var(--color-white);
+      border: 0.5px solid var(--color-border-inverted);
       border-radius: rem.torem(8px);
       display: flex;
       align-items: center;
@@ -36,7 +36,7 @@
 
     &-header {
       padding: 0 rem.torem(16px);
-      color: var(--color-brand);
+      color: var(--color-text-brand-primary);
       height: rem.torem(48px);
       display: flex;
       align-items: center;

@@ -28,16 +28,16 @@ $action-gap: rem.torem(12px);
 
     text-align: center;
     border-radius: rem.torem(30px);
-    border: rem.torem(2px) solid var(--color-primary);
+    border: rem.torem(2px) solid var(--color-border-brand-primary);
     padding: 0 rem.torem(16px);
     min-height: rem.torem(40px);
     line-height: var(--typography-body-line-height);
-    background: var(--color-primary);
+    background-color: var(--color-background-brand-primary);
     cursor: pointer;
 
     &:hover {
-      background-color: var(--color-primary-dark);
-      border-color: var(--color-primary-dark);
+      background-color: var(--color-background-brand-primary-hover);
+      border-color: var(--color-border-brand-primary-hover);
     }
 
     &:focus-visible {
@@ -76,7 +76,7 @@ $action-gap: rem.torem(12px);
     &-description {
       margin-bottom: rem.torem(21px);
       padding-bottom: rem.torem(21px);
-      border-bottom: 1px solid var(--separator-color-subtle, #CBCDD2);
+      border-bottom: 1px solid var(--separator-color-subtle);
       color: var(--color-text-subtle);
 
       @include fonts.body;
@@ -181,7 +181,8 @@ $action-gap: rem.torem(12px);
 
         button {
           background: var(--color-background-default);
-          color: var(--color-primary);
+          color: var(--color-text-brand-primary);
+          border-color: var(--color-border-brand-primary);
           cursor: pointer;
           margin: 0;
 
@@ -196,9 +197,9 @@ $action-gap: rem.torem(12px);
           }
 
           &:hover {
-            color: var(--color-white);
-            background-color: var(--color-primary-dark);
-            border-color: var(--color-primary-dark);
+            color: var(--color-text-inverted);
+            background-color: var(--color-background-brand-primary-hover);
+            border-color: var(--color-border-brand-primary-hover);
           }
         }
       }
@@ -208,9 +209,10 @@ $action-gap: rem.torem(12px);
   .orejime-PurposeList {
     .orejime-Purpose {
       margin-top: 0;
-      grid-template: "empty description"
+      grid-template:
+        "empty description"
         "empty children"
-        "input label"/min-content auto;
+        "input label" / min-content auto;
 
       &-description {
         @include fonts.body;
@@ -225,8 +227,8 @@ $action-gap: rem.torem(12px);
       &-label {
         display: inline;
         border-radius: 4px;
-        background: var(--color-black, #161617);
-        color: var(--color-white, #fff);
+        background: var(--color-background-subtle);
+        color: var(--color-text-default);
         padding: rem.torem(4px) rem.torem(8px);
         width: fit-content;
         margin: rem.torem(8px) 0 0 rem.torem(37px);
@@ -237,7 +239,7 @@ $action-gap: rem.torem(12px);
       }
 
       &-title {
-        @include fonts.body-xs
+        @include fonts.body-xs;
       }
     }
 
@@ -246,15 +248,24 @@ $action-gap: rem.torem(12px);
     }
   }
 
+  .orejime-Env
+    .orejime-Purpose-children
+    .orejime-PurposeList
+    .orejime-PurposeList-item
+    .orejime-Purpose-title {
+    color: var(--color-text-default);
+  }
+
   .orejime-PurposeList-item {
     $initial-padding-left-item: 60px;
 
     border-radius: 8px;
-    border: 1px solid var(--color-border-subtle, #CBCDD2);
+    border: 1px solid var(--color-border-subtle);
     padding: rem.torem(12px) rem.torem(16px);
     margin-bottom: rem.torem(12px);
 
-    .orejime-Purpose-input, .orejime-Purpose-attribute {
+    .orejime-Purpose-input,
+    .orejime-Purpose-attribute {
       display: none;
     }
 
@@ -281,9 +292,10 @@ $action-gap: rem.torem(12px);
     }
 
     .orejime-Purpose {
-      grid-template: "input label"
+      grid-template:
+        "input label"
         "empty description"
-        "empty children"/min-content auto;
+        "empty children" / min-content auto;
     }
 
     .orejime-PurposeList .orejime-PurposeList-item {
@@ -299,7 +311,8 @@ $action-gap: rem.torem(12px);
         padding: 0;
       }
 
-      .orejime-Purpose-label,  .orejime-Purpose-title {
+      .orejime-Purpose-label,
+      .orejime-Purpose-title {
         @include fonts.body-accent;
 
         border-radius: initial;
@@ -307,17 +320,18 @@ $action-gap: rem.torem(12px);
         color: initial;
       }
 
-      .orejime-Purpose-input, .orejime-Purpose-attribute {
+      .orejime-Purpose-input,
+      .orejime-Purpose-attribute {
         display: initial;
       }
 
       .orejime-Purpose-input {
         appearance: none;
-        border: rem.torem(2px) solid var(--color-grey-dark);
+        border: rem.torem(2px) solid var(--color-border-default);
         border-radius: rem.torem(3px);
         transition:
-                border 150ms ease,
-                background 150ms ease;
+          border 150ms ease,
+          background 150ms ease;
         flex: 0 0 auto;
         margin-right: rem.torem(8px);
         outline: none;
@@ -329,7 +343,7 @@ $action-gap: rem.torem(12px);
         cursor: pointer;
 
         &:checked {
-          background-color: var(--color-secondary-light);
+          background-color: var(--color-background-brand-primary);
           border-color: var(--color-border-brand-primary);
 
           &::after {
@@ -350,5 +364,3 @@ $action-gap: rem.torem(12px);
     }
   }
 }
-
-

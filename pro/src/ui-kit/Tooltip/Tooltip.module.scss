@@ -24,7 +24,7 @@ $arrow-triangle-height: rem.torem(4px);
         height: 0;
         border-width: $arrow-triangle-height;
         border-style: solid;
-        border-color: var(--color-secondary-dark) transparent transparent
+        border-color: var(--color-icon-brand-primary) transparent transparent
           transparent;
         top: calc(-1.1 * ($arrow-triangle-height + rem.torem(2px)));
         left: 50%;

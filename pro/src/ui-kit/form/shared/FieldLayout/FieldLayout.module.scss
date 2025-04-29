@@ -3,6 +3,7 @@
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_outline.scss" as outline;
 
 .field-layout {
   width: 100%;
@@ -123,14 +124,14 @@ $icon-size: rem.torem(20px);
   }
 
   &:focus {
-    outline: 1px solid var(--color-black);
+    @include outline.focus-outline;
   }
 
   &:disabled {
     cursor: not-allowed;
 
     path {
-      fill: var(--color-grey-semi-dark);
+      fill: var(--color-icon-disabled);
     }
   }
 

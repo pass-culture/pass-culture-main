@@ -3,11 +3,11 @@
 
 .not-found {
   align-items: center;
-  background-color: var(--color-background-default);
+  background-color: var(--color-background-brand-primary);
   height: 100%;
   min-height: 100vh;
   position: relative;
-  color: var(--color-text-default);
+  color: var(--color-text-inverted);
   display: flex;
   flex-direction: column;
   justify-content: center;
