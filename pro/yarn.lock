@@ -4158,9 +4158,9 @@ dequal@^2.0.2, dequal@^2.0.3:
   resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
   integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
 
-"design-system@https://github.com/pass-culture/design-system.git#v0.0.28":
-  version "0.0.28"
-  resolved "https://github.com/pass-culture/design-system.git#c8db8c1139411edba18f00078db1d9c3357a59b8"
+"design-system@https://github.com/pass-culture/design-system.git#v0.0.29":
+  version "0.0.29"
+  resolved "https://github.com/pass-culture/design-system.git#c6227fff19989caf297744f81dc0a658e7ca8064"
 
 detect-libc@^1.0.3:
   version "1.0.3"
