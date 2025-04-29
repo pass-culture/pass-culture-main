@@ -8,6 +8,8 @@ import {
   SelectAutocompleteProps,
 } from './SelectAutocomplete'
 
+Element.prototype.scrollIntoView = vi.fn()
+
 describe('SelectAutocomplete', () => {
   const props: SelectAutocompleteProps = {
     label: 'Département',
@@ -169,6 +171,19 @@ describe('SelectAutocomplete', () => {
       })
 
       expect(screen.queryByTestId('list')).not.toBeInTheDocument()
+    })
+
+    it('should browse through the options with the keyboard when dropdown is open', async () => {
+      render(<SelectAutocomplete {...props} />)
+      await userEvent.click(screen.getByLabelText('Département *'))
+
+      expect(screen.getByTestId('list').children).toHaveLength(15)
+
+      const user = userEvent.setup()
+      await user.keyboard('{ArrowDown}{ArrowDown}{ArrowUp}{ArrowDown}')
+      await user.keyboard('{Enter}')
+
+      expect(screen.getByLabelText('Département *')).toHaveValue('Aisne')
     })
   })
 
