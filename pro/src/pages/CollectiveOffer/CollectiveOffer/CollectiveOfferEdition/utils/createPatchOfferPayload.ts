@@ -1,5 +1,6 @@
 import { OfferContactFormEnum } from 'apiClient/adage'
 import {
+  CollectiveLocationType,
   PatchCollectiveOfferBodyModel,
   PatchCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
@@ -90,25 +91,35 @@ const offerLocationSerializer = (
   payload: PatchCollectiveOfferBodyModel,
   offer: OfferEducationalFormValues
 ) => {
-  const newLocationPayload = {
+  if (offer.location.locationType === CollectiveLocationType.ADDRESS) {
+    const newLocationPayload = {
+      ...payload,
+      location: {
+        ...offer.location,
+        address: {
+          ...offer.location.address,
+          banId: offer.banId ?? '',
+          street: offer.street ?? '',
+          postalCode: offer.postalCode ?? '',
+          latitude: offer.latitude ?? '',
+          longitude: offer.longitude ?? '',
+          city: offer.city ?? '',
+          coords: offer.coords ?? '',
+        },
+      },
+    }
+
+    // remove id_oa key from location object as it is useful only on a form matter
+    delete newLocationPayload.location.address.id_oa
+    return newLocationPayload
+  }
+
+  return {
     ...payload,
     location: {
-      ...offer.location,
-      address: {
-        ...offer.location.address,
-        city: offer.city ?? '',
-        street: offer.street ?? '',
-        latitude: offer.latitude ?? '',
-        longitude: offer.longitude ?? '',
-        postalCode: offer.postalCode ?? '',
-        banId: offer.banId ?? '',
-        coords: offer.coords ?? '',
-      },
+      locationType: CollectiveLocationType.SCHOOL,
     },
   }
-  // remove id_oa key from location object as it useful only on a form matter
-  delete newLocationPayload.location.address.id_oa
-  return newLocationPayload
 }
 
 const locationFields: (keyof OfferEducationalFormValues)[] = [

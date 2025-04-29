@@ -203,12 +203,15 @@ export const computeInitialValuesFromOffer = (
     longitude: address?.longitude.toString(),
     banId: address?.banId,
     coords: `${address?.latitude}, ${address?.longitude}`,
-    ...(isVenueAddress || offerAddress?.isManualEdition
-      ? { addressAutocomplete: '', 'search-addressAutocomplete': '' }
-      : {
+    // if offer location is a specific address selected with address API we should fill address autocomplete fields
+    ...(offer.location?.locationType === CollectiveLocationType.ADDRESS &&
+    !isVenueAddress &&
+    !offerAddress?.isManualEdition
+      ? {
           addressAutocomplete: `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
           'search-addressAutocomplete': `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
-        }),
+        }
+      : { addressAutocomplete: '', 'search-addressAutocomplete': '' }),
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail

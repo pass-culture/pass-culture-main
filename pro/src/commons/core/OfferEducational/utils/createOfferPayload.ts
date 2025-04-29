@@ -4,6 +4,7 @@ import {
   PostCollectiveOfferTemplateBodyModel,
   PostCollectiveOfferBodyModel,
   OfferContactFormEnum,
+  CollectiveLocationType,
 } from 'apiClient/v1'
 import {
   formatBrowserTimezonedDateAsUTC,
@@ -52,12 +53,57 @@ export const serializeDates = (
   }
 }
 
-function getCommonOfferPayload(
+const getCommonOfferPayload = (
   offer: OfferEducationalFormValues,
   isCollectiveOaActive: boolean
-): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
+): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel => {
   // remove id_oa key from location object as it useful only on a form matter
   delete offer.location.address.id_oa
+
+  const getLocationPayload = () => {
+    if (!isCollectiveOaActive) {
+      return {
+        offerVenue: {
+          ...offer.eventAddress,
+          venueId: Number(offer.eventAddress.venueId),
+        },
+      }
+    }
+
+    if (offer.location.locationType === CollectiveLocationType.ADDRESS) {
+      return {
+        location: {
+          ...offer.location,
+          address: {
+            ...offer.location.address,
+            banId: offer.banId,
+            street: offer.street ?? '',
+            postalCode: offer.postalCode ?? '',
+            latitude: offer.latitude ?? '',
+            longitude: offer.longitude ?? '',
+            city: offer.city ?? '',
+            coords: offer.coords ?? '',
+          },
+        },
+      }
+    }
+
+    return {
+      location: { locationType: CollectiveLocationType.SCHOOL },
+    }
+  }
+
+  const getInterventionArea = () => {
+    if (!isCollectiveOaActive) {
+      return offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
+        ? []
+        : offer.interventionArea
+    }
+
+    return offer.location.locationType !== CollectiveLocationType.ADDRESS
+      ? offer.interventionArea
+      : []
+  }
 
   return {
     venueId: Number(offer.venueId),
@@ -67,33 +113,9 @@ function getCommonOfferPayload(
     durationMinutes: parseDuration(offer.duration),
     ...disabilityCompliances(offer.accessibility),
     students: serializeParticipants(offer.participants),
-    ...(isCollectiveOaActive
-      ? {
-          location: {
-            ...offer.location,
-            address: {
-              ...offer.location.address,
-              banId: offer.banId,
-              street: offer.street ?? '',
-              postalCode: offer.postalCode ?? '',
-              latitude: offer.latitude ?? '',
-              longitude: offer.longitude ?? '',
-              city: offer.city ?? '',
-              coords: offer.coords ?? '',
-            },
-          },
-        }
-      : {
-          offerVenue: {
-            ...offer.eventAddress,
-            venueId: Number(offer.eventAddress.venueId),
-          },
-        }),
+    ...getLocationPayload(),
     domains: offer.domains.map((domainIdString) => Number(domainIdString)),
-    interventionArea:
-      offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
-        ? []
-        : offer.interventionArea,
+    interventionArea: getInterventionArea(),
     nationalProgramId: Number(offer.nationalProgramId),
     formats: offer.formats,
   }

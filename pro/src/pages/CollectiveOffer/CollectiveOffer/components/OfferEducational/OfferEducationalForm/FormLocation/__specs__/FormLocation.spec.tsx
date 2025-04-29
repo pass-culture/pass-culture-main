@@ -48,7 +48,7 @@ const renderFormLocation = (
 
 describe('FormLocation', () => {
   const address = {
-    banId: null,
+    banId: '',
     city: 'Paris',
     departmentCode: '75',
     id: 1,
@@ -84,6 +84,7 @@ describe('FormLocation', () => {
     | 'postalCode'
     | 'street'
     | 'coords'
+    | 'interventionArea'
   > = {
     venueId: '1',
     'search-addressAutocomplete': '',
@@ -103,6 +104,7 @@ describe('FormLocation', () => {
         label: '',
       },
     },
+    interventionArea: [],
   }
 
   beforeEach(() => {
