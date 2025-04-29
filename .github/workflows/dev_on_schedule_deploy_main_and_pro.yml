@@ -41,14 +41,6 @@ jobs:
           echo "API_TAG=$API_TAG"
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
-      # Check checksum tag is not working well, we have a 401 during api call
-      - name: "pcapi"
-        id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -77,11 +69,18 @@ jobs:
           registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
-      - name: "pcapi-console"
+      - name: "check pcapi-console image exists"
         id: check-console-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi-console
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+      - name: "check pcapi image exists"
+        id: check-checksum-tag
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
           token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Summary"
