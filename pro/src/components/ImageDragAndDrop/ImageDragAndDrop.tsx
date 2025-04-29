@@ -50,7 +50,7 @@ interface ImageDragAndDropProps {
   /**
    * Callback triggered when an error occurs, e.g. wrong file type or size.
    */
-  onError?: (err?: string) => void
+  onError?: (err?: string[]) => void
   /**
    * Either if the drag and drop component is disabled or not.
    */
@@ -113,8 +113,8 @@ export const ImageDragAndDrop = ({
       },
       onDropRejected: (files) => {
         const file = files[0]
-        const error = file.errors[0].code
-        onError?.(error)
+        const errors = file.errors.map((e) => e.code)
+        onError?.(errors)
         setIsDraggedOver(false)
       },
       getFilesFromEvent: (event) => {
@@ -144,6 +144,7 @@ export const ImageDragAndDrop = ({
                   file.objectUrlToBeRevoked = image.src
                   resolve(file)
                 }
+
                 image.src = URL.createObjectURL(file)
               }
             )

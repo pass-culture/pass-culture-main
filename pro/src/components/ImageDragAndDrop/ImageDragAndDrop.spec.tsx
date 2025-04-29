@@ -88,7 +88,7 @@ describe('ImageDragAndDrop', () => {
       )
     })
 
-    expect(onError).toHaveBeenCalledWith('file-invalid-type')
+    expect(onError).toHaveBeenCalledWith(['file-invalid-type'])
   })
 
   it('should display the appropriate err message when the file is too large & call onError', async () => {
@@ -107,7 +107,7 @@ describe('ImageDragAndDrop', () => {
       )
     })
 
-    expect(onError).toHaveBeenCalledWith('file-too-large')
+    expect(onError).toHaveBeenCalledWith(['file-too-large'])
   })
 
   describe('when dimension constraints are provided', () => {
@@ -125,6 +125,49 @@ describe('ImageDragAndDrop', () => {
       expect(screen.getByText(/Largeur minimum :/)).toBeInTheDocument()
     })
 
-    it('should display the appropriate error message when the image has invalid dimensions', () => {})
+    it('should display the appropriate error message when the image has invalid dimensions', async () => {
+      const file = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' })
+      const data = mockData([file])
+      global.Image = class {
+        width = 10
+        height = 10
+        onload: (() => void) | null = null
+
+        set src(val: string) {
+          this._src = val
+          setTimeout(() => this.onload?.(), 0)
+        }
+
+        get src() {
+          return this._src
+        }
+
+        private _src = ''
+      } as unknown as typeof Image
+
+      const onError = vi.fn()
+      render(
+        <ImageDragAndDrop
+          minSizes={{
+            width: 400,
+            height: 600,
+          }}
+          onError={onError}
+        />
+      )
+
+      fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          /L’image doit faire au moins/
+        )
+      })
+
+      expect(onError).toHaveBeenCalledWith([
+        'file-invalid-dimensions-width',
+        'file-invalid-dimensions-height',
+      ])
+    })
   })
 })
