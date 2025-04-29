@@ -24,6 +24,7 @@ jobs:
     outputs: 
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
+      pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -96,6 +97,7 @@ jobs:
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [deploy-preview-env-init]
+    if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.sha }}
@@ -108,6 +110,7 @@ jobs:
   push-pcapi:
     name: "Push pcapi docker image to registry"
     needs: [deploy-preview-env-init, build-pcapi]
+    if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
