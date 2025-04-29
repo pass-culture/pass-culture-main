@@ -8,7 +8,6 @@ from io import BytesIO
 from io import StringIO
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 import xlsxwriter
@@ -27,6 +26,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 from pcapi.utils.token import random_token
 
 

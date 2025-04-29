@@ -13,7 +13,6 @@ from flask import flash
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 from sqlalchemy.dialects import postgresql
@@ -28,6 +27,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_all_regions
 

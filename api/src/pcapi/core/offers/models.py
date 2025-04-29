@@ -5,7 +5,6 @@ import enum
 import logging
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import psycopg2.extras
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -39,6 +38,7 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import ValidationMixin
+from pcapi.models.pc_object import BaseQuery
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin

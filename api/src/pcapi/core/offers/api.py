@@ -6,7 +6,6 @@ from functools import partial
 import logging
 import typing
 
-from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
@@ -65,6 +64,7 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.session_management import is_managed_transaction

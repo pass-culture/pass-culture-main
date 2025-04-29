@@ -1,7 +1,6 @@
 import calendar
 import datetime
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.sql.functions as sa_func
 
@@ -9,6 +8,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 
 
 INVOICE_LINE_INDIV_DICT = {

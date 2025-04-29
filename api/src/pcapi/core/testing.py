@@ -6,13 +6,13 @@ import types
 import typing
 
 import flask
-import flask_sqlalchemy
 import pytest
 import sqlalchemy.engine
 import sqlalchemy.event
 import sqlalchemy.orm
 
 from pcapi import settings
+from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.feature import Feature
 
@@ -240,7 +240,7 @@ class FeaturesContext:
 
 @contextlib.contextmanager
 def assert_model_count_delta(
-    model: flask_sqlalchemy.Model,
+    model: Model,
     delta: int,
 ) -> collections.abc.Generator[None, None, None]:
     start_count = db.session.query(model).count()

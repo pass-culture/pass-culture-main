@@ -1,12 +1,11 @@
 from datetime import datetime
 
-from flask_sqlalchemy import BaseQuery
-
 from pcapi.core.users import constants
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 
 
 def _query_ordered_email_update_entry(user: User) -> BaseQuery:

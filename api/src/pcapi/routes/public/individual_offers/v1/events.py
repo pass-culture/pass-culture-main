@@ -367,7 +367,7 @@ def get_event_price_categories(
     price_categories = offers_repository.get_offer_price_categories(
         offer.id,
         id_at_provider_list=query.ids_at_provider,  # type: ignore[arg-type]
-    )
+    ).all()
 
     return serialization.PriceCategoriesResponse.build_price_categories(price_categories)
 

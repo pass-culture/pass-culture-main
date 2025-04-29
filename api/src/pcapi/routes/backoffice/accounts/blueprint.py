@@ -12,7 +12,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -52,6 +51,7 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils

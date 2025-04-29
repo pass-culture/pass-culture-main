@@ -3,8 +3,6 @@ from itertools import groupby
 import logging
 from operator import attrgetter
 
-from flask_sqlalchemy import BaseQuery
-
 from pcapi.core.bookings.api import recompute_dnBookedQuantity
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -17,6 +15,7 @@ import pcapi.core.educational.repository as educational_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 
 
 logger = logging.getLogger(__name__)

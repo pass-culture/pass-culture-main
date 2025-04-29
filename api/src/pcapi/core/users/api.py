@@ -17,7 +17,6 @@ from flask import render_template
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 import sqlalchemy.orm as sa_orm
@@ -63,6 +62,7 @@ from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository

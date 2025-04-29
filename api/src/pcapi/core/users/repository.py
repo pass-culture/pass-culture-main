@@ -4,7 +4,6 @@ import logging
 import typing
 
 from dateutil.relativedelta import relativedelta
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
@@ -12,6 +11,7 @@ from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import crypto
 import pcapi.utils.email as email_utils
 

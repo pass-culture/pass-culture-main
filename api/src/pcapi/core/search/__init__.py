@@ -4,7 +4,6 @@ import enum
 import logging
 import typing
 
-from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -22,6 +21,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import requests
