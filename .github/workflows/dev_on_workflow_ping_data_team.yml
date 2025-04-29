@@ -36,7 +36,7 @@ jobs:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            channel_id: ${{ vars.SLACK_DB_CHANGES_CHANNEL_ID }}
+            channel-id: ${{ vars.SLACK_DB_CHANGES_CHANNEL_ID }}
             attachments:
               - color: "#008080"
                 blocks:
