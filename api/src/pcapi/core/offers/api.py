@@ -655,12 +655,18 @@ def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
         raise exceptions.CannotRemoveHeadlineOffer
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
+def _notify_pro_upon_stock_edit_for_event_offer(stock_id: int, booking_ids: list[int]) -> None:
+    stock = models.Stock.query.get(stock_id)
+    bookings = bookings_models.Bookings.query.filter(bookings_models.Booking.id.in_(booking_ids))
+
     if stock.offer.isEvent:
         transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
+def _notify_beneficiaries_upon_stock_edit(stock_id: int, booking_ids: list[int]) -> None:
+    stock = models.Stock.query.get(stock_id)
+    bookings = bookings_models.Bookings.query.filter(bookings_models.Booking.id.in_(booking_ids))
+
     if bookings:
         if stock.beginningDatetime is None:
             logger.error(
@@ -869,10 +875,10 @@ def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> Non
     for stock, is_beginning_datetime_updated in edited_stocks:
         if is_beginning_datetime_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+            booking_ids = {booking.id for booking in bookings}
 
-            on_commit(partial(_notify_pro_upon_stock_edit_for_event_offer, stock, bookings))
-
-            on_commit(partial(_notify_beneficiaries_upon_stock_edit, stock, bookings))
+            on_commit(partial(_notify_pro_upon_stock_edit_for_event_offer, stock.id, booking_ids))
+            on_commit(partial(_notify_beneficiaries_upon_stock_edit, stock.id, booking_ids))
 
 
 def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:

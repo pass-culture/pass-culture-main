@@ -280,11 +280,16 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             )  # type: ignore[call-arg]
             offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
             if body.image:
-                on_commit(partial(utils.save_image, body.image, offer))
+                on_commit(partial(save_image_on_commit, body, offer.id))
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
+
+
+def save_image_on_commit(body: serialization.EventOfferEdition, offer_id: int) -> None:
+    offer = models.Offer.query.get(offer_id)
+    utils.save_image(body.image, offer)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
