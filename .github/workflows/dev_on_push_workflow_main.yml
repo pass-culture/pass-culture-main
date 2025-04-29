@@ -99,28 +99,12 @@ jobs:
           registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
-      - name: "pcapi"
-        id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
-      - name: "pcapi-console"
-        id: check-console-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi-console
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Summary"
         run: |
           echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
           echo "[algolia] folder changed : ${{ steps.check-algolia-config-changes.outputs.any_modified }}"
           echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
           echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
-          echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
-          echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
 
   check-folders-changes:
     # Perform all changes checks at once to remove the need for multiple checkouts accross jobs

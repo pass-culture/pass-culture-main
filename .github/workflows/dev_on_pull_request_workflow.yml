@@ -101,13 +101,6 @@ jobs:
           registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
-      - name: "pcapi"
-        id: check-checksum-tag
-        run: bash ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Publish Summary"
         run: |
           {
@@ -119,8 +112,6 @@ jobs:
             echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
             echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
             echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
-            echo "| [pcapi] image tag                    | ${{ steps.pcapi-tags.outputs.checksum-tag }} |"
-            echo "| [pcapi] image already exists         | ${{ steps.check-checksum-tag.outputs.tag-exists }} |"
           } >> $GITHUB_STEP_SUMMARY
 
   build-pcapi-tests:

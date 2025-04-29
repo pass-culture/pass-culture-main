@@ -47,13 +47,6 @@ jobs:
           echo "API_TAG=$API_TAG"
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
-      - name: "pcapi"
-        id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -75,6 +68,13 @@ jobs:
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "pcapi"
+        id: check-checksum-tag
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
 
   deploy-pro-on-firebase-preview-env:
     name: "[PRO] Deploy PR version for validation pr preview backend"
