@@ -1,9 +1,6 @@
 :root {
   // GENERAL COLORS
   --color-white: #fff;
-  --color-grey-light: #f1f1f4;
-  --color-grey-medium: #cbcdd2;
-  --color-grey-semi-dark: #90949d;
   --color-grey-dark: #696a6f;
   --color-black: #161617;
 
@@ -11,14 +8,13 @@
   --color-medium-shadow: #67686b29;
   --color-large-shadow: #25026c26;
 
-  // BRAND & ACTIONS COLORS
-  --color-brand: #870087;
+  // OVERLAY
+  --color-background-overlay: rgb(
+    from var(--color-background-locked) r g b / 48%
+  );
+
+  // BRAND COLORS
   --color-primary: #320096;
-  --color-secondary-lighter: #c1a3ff;
-  --color-secondary-light: #6123df;
-  --color-secondary: #320096;
-  --color-secondary-dark: #25026c;
-  --color-primary-dark: #25026c;
 
   // STATE COLORS
   --color-accent: #06f;
@@ -28,22 +24,13 @@
   --color-alert-dark: #f9c030;
 
   // GRADIENTS COLORS
-  --color-grey-lighter-for-gradient: #e1e1e7;
-  --color-linear-gradient-to-right: linear-gradient(
-    to right,
-    var(--color-primary),
-    var(--color-secondary)
-  );
+  --color-grey-for-gradient-1: #e1e1e7;
+  --color-grey-for-gradient-2: #f1f1f4;
   --color-linear-gradient-skeleton: linear-gradient(
     191deg,
-    var(--color-grey-lighter-for-gradient),
-    var(--color-grey-light),
-    var(--color-grey-lighter-for-gradient)
-  );
-  --color-adage-linear-gradient-image-preview: linear-gradient(
-    207.06deg,
-    var(--color-grey-light) 43.41%,
-    var(--color-grey-lighter-for-gradient) 107.01%
+    var(--color-grey-for-gradient-1),
+    var(--color-grey-for-gradient-2),
+    var(--color-grey-for-gradient-1)
   );
 
   //  BACKGROUND COLORS
@@ -52,7 +39,6 @@
   // ADAGE COLORS
   // waiting for designer approval :
   --color-adage-purple: #4613ad;
-  --color-adage-blue: #448;
   --color-adage-orange-light: #fa9f16;
   --color-adage-orange-dark: #b85901;
   --color-adage-purple-light: #ad87ff;
@@ -66,6 +52,5 @@
   --color-adage-blue-light: #1fc5e9;
   --color-adage-blue-dark: #0e78b7;
   --color-adage-blue-external: #626fad;
-  --color-adage-salmon-light: #faeaf1;
   --color-adage-skeleton: #f0f0f0;
 }

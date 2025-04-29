@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   gap: rem.torem(16px);
-  border: 2px solid var(--color-grey-light);
+  border: 2px solid var(--color-border-subtle);
   border-radius: rem.torem(16px);
   transition: box-shadow 0.1s ease-out;
   position: relative;
@@ -77,7 +77,6 @@
     height: rem.torem(273px);
     border-radius: rem.torem(16px);
     overflow: hidden;
-    border: 1px solid var(--color-grey-light);
 
     &-img {
       object-fit: cover;
@@ -91,7 +90,7 @@
       align-items: center;
       justify-content: center;
       background-color: var(--color-background-subtle);
-      color: var(--color-grey-semi-dark);
+      color: var(--color-icon-subtle);
       width: 100%;
       height: 100%;
 
@@ -124,7 +123,7 @@
 .offer-headband {
   display: flex;
   justify-content: space-between;
-  background-color: var(--color-adage-salmon-light);
+  background-color: var(--color-background-error);
   padding: rem.torem(18px) rem.torem(16px);
   width: 100%;
   border-top-right-radius: rem.torem(14px);

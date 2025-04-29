@@ -44,16 +44,12 @@ $checkbox-size: rem.torem(40px);
   width: $checkbox-size;
   height: $checkbox-size;
   background-color: var(--color-background-default);
-  border: rem.torem(1px) solid var(--color-grey-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: 100%;
   cursor: pointer;
 
   &:focus-within {
     @include outline.focus-outline;
-  }
-
-  &:focus {
-    border-color: var(--color-grey-dark);
   }
 
   &:checked {

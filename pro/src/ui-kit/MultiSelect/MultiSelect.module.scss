@@ -70,8 +70,7 @@
   &:focus-visible {
     @include outline.focus-outline;
 
-    border-radius: rem.torem(8px);
-    border: 1px solid var(--color-grey-dark);
+    border: 1px solid var(--color-border-focused);
   }
 
   &-selected {
@@ -113,10 +112,10 @@
 .chevron {
   width: rem.torem(16px);
   height: rem.torem(16px);
-  color: var(--color-black);
+  color: var(--color-icon-default);
 
   &-disabled {
-    color: var(--color-grey-dark);
+    color: var(--color-icon-disabled);
   }
 }
 
@@ -189,6 +188,6 @@
 
 .separator {
   height: rem.torem(1px);
-  background: var(--color-grey-medium);
+  background: var(--separator-color-subtle);
   margin: 0 rem.torem(24px);
 }

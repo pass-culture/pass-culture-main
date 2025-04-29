@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
 
 .button {
   background-color: transparent;
@@ -14,7 +15,7 @@
   cursor: pointer;
 
   &:focus-visible {
-    outline: rem.torem(1px) solid var(--color-black);
+    @include outline.focus-outline;
   }
 
   &:active {
@@ -47,8 +48,6 @@
 .variant-primary {
   width: rem.torem(40px);
   height: rem.torem(40px);
-  background-color: rgb(from var(--color-primary) r g b / 5%);
-  color: var(--color-primary);
 
   &:hover:not(:disabled),
   &:focus-visible {
@@ -56,10 +55,14 @@
   }
 
   &:hover:not(:disabled) {
-    border: rem.torem(1px) solid var(--color-grey-dark);
+    border: rem.torem(1px) solid var(--color-border-default);
   }
 
   &:disabled {
     background-color: var(--color-background-disabled);
+  }
+
+  .button-icon {
+    color: var(--color-icon-brand-primary);
   }
 }

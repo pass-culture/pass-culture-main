@@ -212,7 +212,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 .separator {
   height: rem.torem(1px);
   width: 100%;
-  background-color: var(--color-grey-medium);
+  background-color: var(--separator-color-subtle);
 }
 
 .menu-item {

@@ -40,7 +40,7 @@
 
   &-input {
     appearance: none;
-    border: rem.torem(2px) solid var(--color-grey-dark);
+    border: rem.torem(2px) solid var(--color-border-default);
     border-radius: rem.torem(3px);
     transition:
       border 150ms ease,
@@ -93,7 +93,7 @@
     }
 
     &:hover .base-checkbox-input {
-      border-color: var(--color-grey-dark);
+      border-color: var(--color-border-default);
     }
   }
 
@@ -110,7 +110,7 @@
 
       &:checked,
       &:indeterminate {
-        background-color: var(--color-grey-medium);
+        background-color: var(--color-background-disabled);
       }
     }
   }
@@ -129,8 +129,12 @@
 
       &:checked,
       &:indeterminate {
-        border-color: var(--color-grey-dark);
-        background-color: var(--color-grey-dark);
+        background-color: var(--color-background-brand-primary-hover);
+      }
+
+      &:disabled {
+        background-color: var(--color-background-disabled);
+        border-color: var(--color-border-subtle);
       }
     }
   }
@@ -146,11 +150,6 @@
   &.is-checked {
     background-color: var(--color-background-info);
     border-color: var(--color-border-brand-primary);
-  }
-
-  &.is-disabled .base-checkbox-input:checked {
-    background-color: var(--color-grey-semi-dark);
-    border-color: var(--color-grey-semi-dark);
   }
 
   &.has-error {

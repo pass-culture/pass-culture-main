@@ -9,7 +9,7 @@
   width: rem.torem(186px);
   min-height: rem.torem(96px);
   border-radius: rem.torem(16px);
-  color: var(--color-white);
+  color: var(--color-text-locked);
 
   &:focus-visible {
     @include outline.focus-outline;

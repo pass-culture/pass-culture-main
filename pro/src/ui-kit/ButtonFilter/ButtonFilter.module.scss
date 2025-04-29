@@ -12,7 +12,7 @@
   width: auto;
   background-color: var(--color-background-default);
   padding: rem.torem(6px) rem.torem(8px);
-  border: rem.torem(1px) solid var(--color-grey-dark);
+  border: rem.torem(1px) solid var(--color-border-default);
   border-radius: rem.torem(8px);
   max-width: rem.torem(400px);
   color: var(--color-text-default);
@@ -40,7 +40,7 @@
   }
 
   &-open {
-    border: rem.torem(2px) solid var(--color-primary);
+    border: rem.torem(2px) solid var(--color-border-brand-primary);
   }
 
   &:focus-visible {

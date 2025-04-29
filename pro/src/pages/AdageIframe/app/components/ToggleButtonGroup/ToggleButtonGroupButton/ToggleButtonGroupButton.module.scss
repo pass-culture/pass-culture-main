@@ -23,11 +23,12 @@
   gap: rem.torem(4px);
   padding: rem.torem(8px) rem.torem(16px);
   background-color: var(--color-background-default);
-  border: 1px solid var(--color-grey-dark);
+  border: 1px solid var(--color-border-default);
   cursor: pointer;
+  color: var(--color-icon-default);
 
   &-active {
-    color: var(--color-primary);
+    color: var(--color-icon-brand-primary);
   }
 
   &:hover {
@@ -36,10 +37,6 @@
 
   &:focus-visible {
     @include outline.focus-outline(rem.torem(3px));
-  }
-
-  &:active:not(:disabled) {
-    color: var(--color-primary-dark);
   }
 
   &:disabled {
