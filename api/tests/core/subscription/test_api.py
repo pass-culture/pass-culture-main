@@ -1930,6 +1930,16 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert set(recredit_types) == {finance_models.RecreditType.RECREDIT_17, finance_models.RecreditType.RECREDIT_18}
         assert user.recreditAmountToShow == 200
 
+    def test_free_eligibility(self):
+        user = users_factories.ProfileCompletedUserFactory(age=16)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.has_free_beneficiary_role
+        assert user.deposit.type == finance_models.DepositType.GRANT_FREE
+        assert not user.deposit.recredits
+
     def test_user_with_old_fraud_checks_get_correct_deposit_and_role(self):
         """
         This test is inspired from real life data, and aims to reproduce a bug

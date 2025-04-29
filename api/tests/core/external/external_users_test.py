@@ -385,7 +385,9 @@ def test_get_user_attributes_double_beneficiary():
     # At 18 years old
     user = db.session.query(User).get(user.id)
     fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.OK)
-    user = subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, users_models.EligibilityType.AGE18)
+    user = subscription_api.activate_beneficiary_for_eligibility(
+        user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
+    )
     attributes = get_user_attributes(user)
 
     assert attributes.is_beneficiary

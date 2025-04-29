@@ -487,7 +487,7 @@ class CreateBeneficiaryTest:
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
-            user, fraud_check, users_models.EligibilityType.AGE18
+            user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
         )
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
@@ -504,7 +504,7 @@ class CreateBeneficiaryTest:
             resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
-            user, fraud_check, users_models.EligibilityType.UNDERAGE
+            user, fraud_check.get_detailed_source(), users_models.EligibilityType.UNDERAGE
         )
         assert user.has_underage_beneficiary_role
         assert len(user.deposits) == 1
@@ -527,7 +527,7 @@ class CreateBeneficiaryTest:
         )
         posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
         user = subscription_api.activate_beneficiary_for_eligibility(
-            user, fraud_check, users_models.EligibilityType.UNDERAGE
+            user, fraud_check.get_detailed_source(), users_models.EligibilityType.UNDERAGE
         )
 
         first_request, second_request, third_request = posted.request_history
@@ -573,7 +573,7 @@ class CreateBeneficiaryTest:
         )
         posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
         user = subscription_api.activate_beneficiary_for_eligibility(
-            user, fraud_check, users_models.EligibilityType.AGE18
+            user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
         )
 
         first_request, second_request = posted.request_history
@@ -604,7 +604,9 @@ class CreateBeneficiaryTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, users_models.EligibilityType.AGE18)
+        subscription_api.activate_beneficiary_for_eligibility(
+            user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
+        )
 
         assert len(batch_testing.requests) == 3
         assert len(sendinblue_testing.sendinblue_requests) == 1
@@ -629,7 +631,7 @@ class CreateBeneficiaryTest:
         )
 
         subscription_api.activate_beneficiary_for_eligibility(
-            fifteen_year_old, fraud_check, users_models.EligibilityType.UNDERAGE
+            fifteen_year_old, fraud_check.get_detailed_source(), users_models.EligibilityType.UNDERAGE
         )
 
         assert fifteen_year_old.is_beneficiary
@@ -660,7 +662,7 @@ class CreateBeneficiaryTest:
         fraud_factories.HonorStatementFraudCheckFactory(user=user)
 
         subscription_api.activate_beneficiary_for_eligibility(
-            user, id_fraud_check, users_models.EligibilityType.AGE17_18
+            user, id_fraud_check.get_detailed_source(), users_models.EligibilityType.AGE17_18
         )
 
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
