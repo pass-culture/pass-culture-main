@@ -74,33 +74,6 @@ jobs:
           echo "API_TAG=$API_TAG"
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
-        with:
-          secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - name: "OpenID Connect Authentication"
-        id: "openid-auth"
-        uses: "google-github-actions/auth@v2"
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: "Docker login"
-        id: "docker-login"
-        uses: "docker/login-action@v3"
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Publish Summary"
         run: |
           {
