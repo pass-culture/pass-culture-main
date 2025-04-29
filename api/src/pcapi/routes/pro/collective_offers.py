@@ -444,7 +444,7 @@ def patch_collective_offers_template_archive(
 ) -> None:
     collective_offer_templates = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
-    )
+    ).all()
 
     try:
         educational_api_offer.archive_collective_offers_template(
