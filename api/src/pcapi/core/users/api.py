@@ -1165,12 +1165,7 @@ def get_public_account_base_query() -> BaseQuery:
 def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     pro_accounts = (
         db.session.query(models.User)
-        .filter(
-            sa.or_(  # type: ignore[type-var]
-                models.User.has_non_attached_pro_role,
-                models.User.has_pro_role,
-            )
-        )
+        .filter(models.User.has_any_pro_role)
         .outerjoin(
             finance_models.Deposit,
             # load only the last deposit to avoid breaking line count
@@ -1192,10 +1187,7 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
 def get_pro_account_base_query(pro_id: int) -> BaseQuery:
     return db.session.query(models.User).filter(
         models.User.id == pro_id,
-        sa.or_(  # type: ignore[type-var]
-            models.User.has_non_attached_pro_role,
-            models.User.has_pro_role,
-        ),
+        models.User.has_any_pro_role,
     )
 
 
