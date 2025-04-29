@@ -6,6 +6,7 @@ import fullValidateIcon from 'icons/full-validate.svg'
 import strokePicture from 'icons/stroke-picture.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { ImageConstraintCheck } from './ImageConstraintCheck'
 import styles from './ImageDragAndDrop.module.scss'
 
 const ALLOWED_IMAGE_TYPES = [
@@ -26,36 +27,6 @@ const ALLOWED_IMAGE_TYPES = [
     extensions: ['.webp'],
   },
 ]
-
-const ImageConstraintCheck = ({
-  label,
-  constraint,
-  hasError,
-  errorMessage,
-}: {
-  label: string
-  constraint: string
-  hasError: boolean
-  errorMessage: string
-}) => {
-  const imageConstraint = (
-    <>
-      {`${label} : `}
-      <span className={styles['image-drag-and-drop-description-values']}>
-        {constraint}
-      </span>
-    </>
-  )
-
-  return hasError ? (
-    <span className={styles['image-drag-and-drop-description-error']}>
-      <span className={styles['visually-hidden']}>{errorMessage}</span>
-      {imageConstraint}
-    </span>
-  ) : (
-    <span>{imageConstraint}</span>
-  )
-}
 
 type FileWithDimensions = File & {
   width: number
