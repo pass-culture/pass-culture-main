@@ -22,8 +22,10 @@ env:
 jobs:
   pcapi-init-job:
     runs-on: ubuntu-latest
-    outputs:
-      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+    outputs: 
+        checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+        pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
+        pcapi-console-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,6 +97,7 @@ jobs:
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
+    if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.sha }}
@@ -107,7 +110,7 @@ jobs:
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
     needs: [pcapi-init-job]
-    if: |
+    if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.sha }}
@@ -120,6 +123,7 @@ jobs:
   push-pcapi:
     name: "Push pcapi docker image to registry"
     needs: [build-pcapi, pcapi-init-job]
+    if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
@@ -134,6 +138,7 @@ jobs:
     name: "Push pcapi-console docker image to registry"
     needs: [build-pcapi-console, pcapi-init-job]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
       commit-hash: ${{ github.sha }}
