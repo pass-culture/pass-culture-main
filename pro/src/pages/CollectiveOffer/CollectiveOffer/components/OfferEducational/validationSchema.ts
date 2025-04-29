@@ -211,7 +211,12 @@ export function getOfferEducationalValidationSchema(
       })
     ),
     interventionArea: isCollectiveOaActive
-      ? yup.mixed()
+      ? yup.array().when('location.locationType', {
+        is: (locationType: CollectiveLocationType) =>
+          locationType !== CollectiveLocationType.ADDRESS,
+        then: (schema) =>
+          schema.min(1, 'Veuillez renseigner au moins un département'),
+      })
       : yup.array().when('eventAddress', {
           is: (eventAddress: { addressType: OfferAddressType }) =>
             eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,

@@ -51,3 +51,11 @@
 
   margin-bottom: rem.torem(16px);
 }
+
+.school-departments {
+  @include fonts.body;
+}
+
+.intervention-area {
+  margin-top: rem.torem(16px);
+}
