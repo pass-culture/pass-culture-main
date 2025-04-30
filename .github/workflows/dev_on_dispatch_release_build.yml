@@ -146,4 +146,4 @@ jobs:
                   - type: "section"
                     text:
                       type: "mrkdwn"
-                      text: ${{ steps.slack-text.outputs.text }}
+                      text: "${{ steps.slack-text.outputs.text }}"
