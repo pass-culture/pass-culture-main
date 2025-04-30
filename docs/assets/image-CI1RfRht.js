@@ -1,0 +1,1 @@
+const i=async t=>(window.createImageBitmap||(window.createImageBitmap=a=>new Promise(c=>{const e=document.createElement("img");e.addEventListener("load",function(){c(this)}),e.src=URL.createObjectURL(a)})),await createImageBitmap(t).catch(()=>null));export{i as g};
