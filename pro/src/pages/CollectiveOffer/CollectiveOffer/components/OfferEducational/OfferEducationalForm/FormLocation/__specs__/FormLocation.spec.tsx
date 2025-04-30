@@ -35,9 +35,47 @@ vi.mock('apiClient/adresse', async () => {
   }
 })
 
+const initialValues: Pick<
+  OfferEducationalFormValues,
+  | 'location'
+  | 'venueId'
+  | 'search-addressAutocomplete'
+  | 'addressAutocomplete'
+  | 'city'
+  | 'latitude'
+  | 'longitude'
+  | 'postalCode'
+  | 'street'
+  | 'coords'
+  | 'interventionArea'
+> = {
+  venueId: '1',
+  'search-addressAutocomplete': '',
+  addressAutocomplete: '',
+  city: 'Paris',
+  latitude: '48.87004',
+  longitude: '2.3785',
+  postalCode: '75001',
+  street: '1 Rue de Paris',
+  coords: '48.87004, 2.3785',
+  location: {
+    locationType: CollectiveLocationType.ADDRESS,
+    address: {
+      id_oa: '889',
+      isVenueAddress: true,
+      isManualEdition: false,
+      label: '',
+    },
+  },
+  interventionArea: [],
+}
+
 const renderFormLocation = (
   props: FormLocationProps,
-  initialValues: Pick<OfferEducationalFormValues, 'location' | 'venueId'>
+  initialValues: Pick<
+    OfferEducationalFormValues,
+    'location' | 'venueId' | 'interventionArea'
+  >
 ) => {
   renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={() => {}}>
@@ -72,41 +110,6 @@ describe('FormLocation', () => {
     disableForm: false,
   }
 
-  const initialValues: Pick<
-    OfferEducationalFormValues,
-    | 'location'
-    | 'venueId'
-    | 'search-addressAutocomplete'
-    | 'addressAutocomplete'
-    | 'city'
-    | 'latitude'
-    | 'longitude'
-    | 'postalCode'
-    | 'street'
-    | 'coords'
-    | 'interventionArea'
-  > = {
-    venueId: '1',
-    'search-addressAutocomplete': '',
-    addressAutocomplete: '',
-    city: 'Paris',
-    latitude: '48.87004',
-    longitude: '2.3785',
-    postalCode: '75001',
-    street: '1 Rue de Paris',
-    coords: '48.87004, 2.3785',
-    location: {
-      locationType: CollectiveLocationType.ADDRESS,
-      address: {
-        id_oa: '889',
-        isVenueAddress: true,
-        isManualEdition: false,
-        label: '',
-      },
-    },
-    interventionArea: [],
-  }
-
   beforeEach(() => {
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
   })
@@ -123,11 +126,14 @@ describe('FormLocation', () => {
     expect(screen.getByText('À une adresse précise')).toBeInTheDocument()
   })
 
-  it('should display the selected venue address by default', async () => {
+  it('should select the venue address by default', () => {
     renderFormLocation(props, initialValues)
 
-    const addressText = 'Venue 1 - 1 Rue de Paris 75001 Paris'
-    expect(await screen.findByText(addressText)).toBeInTheDocument()
+    const venueAddressRadio = screen.getByLabelText(
+      'Venue 1 - 1 Rue de Paris 75001 Paris'
+    )
+
+    expect(venueAddressRadio).toBeChecked()
   })
 
   it('should update address fields when an address is selected from autocomplete', async () => {
@@ -158,8 +164,18 @@ describe('FormLocation', () => {
   it('should disable the form when disableForm prop is true', () => {
     renderFormLocation({ ...props, disableForm: true }, initialValues)
 
-    const radioInput = screen.getByLabelText('À une adresse précise')
-    expect(radioInput).toBeDisabled()
+    const addressInput = screen.getByLabelText('À une adresse précise')
+    const institutionInput = screen.getByLabelText('En établissement scolaire')
+    expect(addressInput).toBeDisabled()
+    expect(institutionInput).toBeDisabled()
+  })
+
+  it('should display the institution option', () => {
+    renderFormLocation(props, initialValues)
+
+    expect(
+      screen.getByLabelText('En établissement scolaire')
+    ).toBeInTheDocument()
   })
 
   it('should show manual address form when isManualEdition is true', () => {
@@ -266,5 +282,53 @@ describe('FormLocation', () => {
     expect(cityInput).toBeInTheDocument()
     expect(postalCodeInput).toBeInTheDocument()
     expect(coordsInput).toBeInTheDocument()
+  })
+
+  it('should show intervention area multiselect on press school option', async () => {
+    renderFormLocation(props, initialValues)
+
+    const schoolRadio = screen.getByLabelText('En établissement scolaire')
+    await userEvent.click(schoolRadio)
+
+    const interventionAreaMultiselect = screen.getByLabelText('Département(s)')
+    expect(interventionAreaMultiselect).toBeInTheDocument()
+  })
+
+  it('should show school radio checked with intervention areas selected when location type is SCHOOL', () => {
+    renderFormLocation(props, {
+      ...initialValues,
+      location: {
+        locationType: CollectiveLocationType.SCHOOL,
+      },
+      interventionArea: ['44'],
+    })
+
+    const schoolRadio = screen.getByLabelText('En établissement scolaire')
+    expect(schoolRadio).toBeChecked()
+
+    const departmentTag = screen.getByText('44 - Loire-Atlantique')
+    expect(departmentTag).toBeInTheDocument()
+  })
+
+  it('should reset default location on press new location type radio button', async () => {
+    renderFormLocation(props, {
+      ...initialValues,
+      location: {
+        locationType: CollectiveLocationType.SCHOOL,
+      },
+      interventionArea: ['44'],
+    })
+
+    const addressRadio = screen.getByLabelText('À une adresse précise')
+    expect(addressRadio).not.toBeChecked()
+
+    const schoolRadio = screen.getByLabelText('En établissement scolaire')
+    expect(schoolRadio).toBeChecked()
+
+    await userEvent.click(addressRadio)
+    const venueAddressRadio = screen.getByLabelText(
+      'Venue 1 - 1 Rue de Paris 75001 Paris'
+    )
+    expect(venueAddressRadio).toBeChecked()
   })
 })

@@ -6,6 +6,30 @@ import {
   createCollectiveOfferTemplatePayload,
 } from '../createOfferPayload'
 
+const offer = {
+  ...DEFAULT_EAC_FORM_VALUES,
+  location: {
+    locationType: CollectiveLocationType.ADDRESS,
+    address: {
+      isVenueAddress: true,
+      id_oa: '123',
+      isManualEdition: false,
+      label: '',
+    },
+  },
+  city: 'Paris',
+  latitude: '3',
+  longitude: '2',
+  postalCode: '75018',
+  street: 'rue de la paix',
+  eventAddress: {
+    addressType: OfferAddressType.OFFERER_VENUE,
+    otherAddress: '',
+    venueId: 4,
+  },
+  interventionArea: ['44'],
+}
+
 describe('createOfferPayload', () => {
   it('should remove dates from a template offer to create a non-template offer', () => {
     expect(
@@ -184,27 +208,11 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with location infos when OA FF is active', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
-        city: 'Paris',
-        latitude: '3',
-        longitude: '2',
-        postalCode: '75018',
-        street: 'rue de la paix',
+        ...offer,
         location: {
-          locationType: CollectiveLocationType.ADDRESS,
-          address: {
-            isVenueAddress: true,
-            id_oa: '123',
-            isManualEdition: false,
-            label: 'théâtre',
-          },
+          ...offer.location,
+          address: { ...offer.location.address, label: 'théâtre' },
         },
-        eventAddress: {
-          addressType: OfferAddressType.OFFERER_VENUE,
-          otherAddress: '',
-          venueId: 4,
-        },
-        interventionArea: ['44'],
       },
       true
     )
@@ -230,33 +238,29 @@ describe('createOfferPayload', () => {
     )
   })
 
-  it('should create a template offer payload with offerVenue infos when OA FF is active', () => {
+  it('should create a template offer payload with location infos when OA FF is active and locationType is SCHOOL', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...offer,
         location: {
-          locationType: CollectiveLocationType.ADDRESS,
-          address: {
-            isVenueAddress: true,
-            id_oa: '123',
-            isManualEdition: false,
-            label: '',
-          },
+          locationType: CollectiveLocationType.SCHOOL,
+          address: { isManualEdition: false, isVenueAddress: false, label: '' },
         },
-        city: 'Paris',
-        latitude: '3',
-        longitude: '2',
-        postalCode: '75018',
-        street: 'rue de la paix',
-        eventAddress: {
-          addressType: OfferAddressType.OFFERER_VENUE,
-          otherAddress: '',
-          venueId: 4,
-        },
-        interventionArea: ['44'],
       },
-      false
+      true
     )
+
+    expect(offerPayload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.SCHOOL,
+        },
+      })
+    )
+  })
+
+  it('should create a template offer payload with offerVenue infos when OA FF is active', () => {
+    const offerPayload = createCollectiveOfferTemplatePayload(offer, false)
 
     expect(offerPayload).toEqual(
       expect.objectContaining({
