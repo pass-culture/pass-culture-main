@@ -54,7 +54,6 @@ Le repo `main` contient les 4 projets suivants :
 
 #### Installer les CLI
 
-- Netlify: `npm install -g netlify-cli@1.2.3`
 - [kubectl](https://kubectl.docs.kubernetes.io/installation/kubectl/)
 - [gcloud](https://cloud.google.com/sdk/docs/install)
 
@@ -154,9 +153,14 @@ sa BDD locale via `pc restart-backend`. Sinon:
 
 ### Déployer dans l'environnement Testing
 
-Le déploiement se lance automatiquement lors d'un _merge_ sur la branche `master`
+La branche `master` est déployée sur testing toutes les heures.
 
-Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
+### Déployer dans un environnement de preview
+
+Il est nécessaire d'avoir la [CLI de github](https://cli.github.com/) installée.
+
+Pour déployer dans un environnement de preview, utilisez la commande `pc deploy-preview` (documentation complète dans le script [pc](./pc))
+
 
 ### Déployer dans les environnements Staging, Production et Integration
 
