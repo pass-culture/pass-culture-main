@@ -5221,6 +5221,29 @@ class MoveOfferTest:
         assert db.session.query(bookings_models.Booking).all()[0].venue == new_venue
         assert db.session.query(finance_models.FinanceEvent).all()[0].venue == venue
 
+    def test_move_physical_offer_with_booking_with_pricing_with_different_pricing_point(self):
+        """Moving an offer from a venue with a pricing point A
+        and a booking with a pricing with a different pricing point B
+        to another venue with the same pricing point A should work."""
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=offer.venue, pricingPoint=new_venue, timespan=[datetime.utcnow() - timedelta(days=7), None]
+        )
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=new_venue, pricingPoint=new_venue, timespan=[datetime.utcnow() - timedelta(days=7), None]
+        )
+        stock = factories.StockFactory(offer=offer, quantity=2)
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
+        finance_factories.PricingFactory(
+            pricingPoint=offerers_factories.VenueFactory(managingOfferer=new_venue.managingOfferer), booking=booking
+        )
+
+        api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue == new_venue
+
 
 @pytest.mark.usefixtures("db_session")
 class DeleteOffersStocksRelatedObjectsTest:
