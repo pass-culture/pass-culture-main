@@ -159,7 +159,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
     address = sa.Column(sa.Text, nullable=True)
     city = sa.Column(sa.String(100), nullable=True)
     civility = sa.Column(sa.VARCHAR(length=20), nullable=True)
-    clearTextPassword: str | None = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
     # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data
@@ -337,8 +336,15 @@ class User(PcObject, Base, Model, DeactivableMixin):
         if self.has_non_attached_pro_role:
             self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
+    @property
+    def clearTextPassword(self) -> str | None:
+        return getattr(self, "_clearTextPassword", None)
+
+    def setClearTextPassword(self, newpass: str) -> None:
+        self._clearTextPassword = newpass
+
     def setPassword(self, newpass: str) -> None:
-        self.clearTextPassword = newpass
+        self.setClearTextPassword(newpass)
         self.password = crypto.hash_password(newpass)
 
     @property

@@ -71,8 +71,13 @@ class BaseUserFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
-        kwargs.update(**cls._set_non_nullable_attributes(**kwargs))
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
+        kwargs["password"] = crypto.hash_password(password)
+
+        if "email" not in kwargs:
+            kwargs["email"] = f"{uuid.uuid4()}@to_override.com"
         instance = super()._create(model_class, *args, **kwargs)
+        instance.setClearTextPassword(password)
         cls.set_custom_attributes(instance, **kwargs)
         repository.save(instance)
         return instance
@@ -84,20 +89,15 @@ class BaseUserFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
-        kwargs.update(**cls._set_non_nullable_attributes(**kwargs))
-        instance = super()._build(model_class, *args, **kwargs)
-        cls.set_custom_attributes(instance, **kwargs)
-        return instance
-
-    @classmethod
-    def _set_non_nullable_attributes(cls, **kwargs: typing.Any) -> dict:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
-        kwargs["clearTextPassword"] = password
         kwargs["password"] = crypto.hash_password(password)
 
         if "email" not in kwargs:
             kwargs["email"] = f"{uuid.uuid4()}@to_override.com"
-        return kwargs
+        instance = super()._build(model_class, *args, **kwargs)
+        instance.setClearTextPassword(password)
+        cls.set_custom_attributes(instance, **kwargs)
+        return instance
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
@@ -445,7 +445,7 @@ class UserFactory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password) if password else None
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
     @classmethod
@@ -458,7 +458,7 @@ class UserFactory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
 
@@ -539,7 +539,7 @@ class AdminFactory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
     @classmethod
@@ -552,7 +552,7 @@ class AdminFactory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
 
@@ -588,7 +588,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         if "validatedBirthDate" not in kwargs:
             kwargs["validatedBirthDate"] = kwargs["dateOfBirth"]
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
     @classmethod
@@ -601,7 +601,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
     @factory.post_generation
@@ -933,7 +933,7 @@ class ProFactory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
     @classmethod
@@ -946,7 +946,7 @@ class ProFactory(BaseFactory):
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
+        instance.setClearTextPassword(settings.TEST_DEFAULT_PASSWORD)
         return instance
 
 
