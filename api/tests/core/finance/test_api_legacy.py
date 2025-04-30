@@ -2577,7 +2577,7 @@ class GenerateInvoiceTest:
             assert pricing.logs[1].statusBefore == models.PricingStatus.PROCESSED
             assert pricing.logs[1].statusAfter == models.PricingStatus.INVOICED
             assert pricing.logs[1].reason == models.PricingLogReason.GENERATE_INVOICE
-        get_statuses = lambda model: {s for s, in db.session.query(model).with_entities(getattr(model, "status"))}
+        get_statuses = lambda model: {s for (s,) in db.session.query(model).with_entities(getattr(model, "status"))}
         cashflow_statuses = get_statuses(models.Cashflow)
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
         pricing_statuses = get_statuses(models.Pricing)
@@ -2760,7 +2760,7 @@ class GenerateDebitNoteHtmlTest:
 
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°A240000001 du 28/01/2024";',
-            f'content: "Relevé n°{invoice.reference} du {(cashflows[0].batch.cutoff+ datetime.timedelta(days=2)).strftime("%d/%m/%Y")}";',
+            f'content: "Relevé n°{invoice.reference} du {(cashflows[0].batch.cutoff + datetime.timedelta(days=2)).strftime("%d/%m/%Y")}";',
         )
         assert expected_invoice_html == invoice_html
 
@@ -2897,7 +2897,7 @@ class GenerateInvoiceHtmlTest:
         start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
             "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels.",
-            f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels.',
+            f"Remboursement des réservations validées entre le {start_period.strftime('%d/%m/%y')} et le {end_period.strftime('%d/%m/%y')}, sauf cas exceptionnels.",
         )
         assert expected_invoice_html == invoice_html
 

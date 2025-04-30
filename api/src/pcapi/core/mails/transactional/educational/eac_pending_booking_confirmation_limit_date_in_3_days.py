@@ -10,9 +10,10 @@ def send_eac_pending_booking_confirmation_limit_date_in_3_days(booking: educatio
     if not booking.collectiveStock.collectiveOffer.bookingEmails:
         return
     data = get_data_pending_booking_confirmation_limit_date_in_3_days(booking)
-    main_recipient, bcc_recipients = [
-        booking.collectiveStock.collectiveOffer.bookingEmails[0]
-    ], booking.collectiveStock.collectiveOffer.bookingEmails[1:]
+    main_recipient, bcc_recipients = (
+        [booking.collectiveStock.collectiveOffer.bookingEmails[0]],
+        booking.collectiveStock.collectiveOffer.bookingEmails[1:],
+    )
     mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
 
 

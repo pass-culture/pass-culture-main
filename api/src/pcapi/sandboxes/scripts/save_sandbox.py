@@ -42,7 +42,7 @@ def _index_all_offers() -> None:
         .filter(offers_models.Offer.is_eligible_for_search)
         .with_entities(offers_models.Offer.id)
     )
-    search.reindex_offer_ids([offer_id for offer_id, in query])
+    search.reindex_offer_ids([offer_id for (offer_id,) in query])
 
     logger.info("Reindexing done")
 
@@ -55,5 +55,5 @@ def _index_all_venues() -> None:
         .filter(offerer_models.Venue.isPermanent.is_(True))
         .order_by(offerer_models.Venue.id)
     )
-    search.reindex_venue_ids([venue_id for venue_id, in query])
+    search.reindex_venue_ids([venue_id for (venue_id,) in query])
     logger.info("Reindexing done")

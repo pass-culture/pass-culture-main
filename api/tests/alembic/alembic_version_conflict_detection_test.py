@@ -30,10 +30,10 @@ def test_versions_are_up_to_date():
         pre_version_num_in_file = pre_version_line_in_file.split(" ")[0]
         post_version_num_in_file = post_version_line_in_file.split(" ")[0]
 
-    assert (
-        pre_version_num == pre_version_num_in_file
-    ), "The alembic_version_conflict_detection.txt file is not up to date. Modify pre version to match the database state"
+    assert pre_version_num == pre_version_num_in_file, (
+        "The alembic_version_conflict_detection.txt file is not up to date. Modify pre version to match the database state"
+    )
 
-    assert (
-        post_version_num == post_version_num_in_file
-    ), "The alembic_version_conflict_detection.txt file is not up to date. Modify post version to match the database state"
+    assert post_version_num == post_version_num_in_file, (
+        "The alembic_version_conflict_detection.txt file is not up to date. Modify post version to match the database state"
+    )

@@ -110,9 +110,9 @@ class CreateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert re.search(
-            rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
-        ), "clear api key secret not found"
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert), (
+            "clear api key secret not found"
+        )
 
         created_provider = (
             db.session.query(providers_models.Provider).order_by(providers_models.Provider.id.desc()).first()
@@ -156,9 +156,9 @@ class CreateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert re.search(
-            rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
-        ), "clear api key secret not found"
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert), (
+            "clear api key secret not found"
+        )
 
         created_provider = (
             db.session.query(providers_models.Provider).order_by(providers_models.Provider.id.desc()).first()
@@ -196,9 +196,9 @@ class CreateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert re.search(
-            rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
-        ), "clear api key secret not found"
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert), (
+            "clear api key secret not found"
+        )
 
         created_provider = (
             db.session.query(providers_models.Provider).order_by(providers_models.Provider.id.desc()).first()

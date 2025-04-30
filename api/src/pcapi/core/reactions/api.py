@@ -68,7 +68,6 @@ def update_or_create_reaction(
 
 
 def get_bookings_with_available_reactions(user_id: int) -> list[bookings_models.Booking]:
-
     bookings_loaded_query = db.session.query(bookings_models.Booking).options(
         sa_orm.joinedload(bookings_models.Booking.stock)
         .load_only(

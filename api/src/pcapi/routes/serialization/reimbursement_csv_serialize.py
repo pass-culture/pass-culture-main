@@ -108,7 +108,6 @@ class ReimbursementDetails:
     # typing for the whole method.
     @typing.no_type_check
     def __init__(self, payment_info: namedtuple):
-
         using_legacy_models = hasattr(payment_info, "transaction_label")
         is_collective = getattr(payment_info, "collective_booking_id", None) is not None
 

@@ -82,14 +82,14 @@ class ConfirmUserEmailUpdateTest:
 
         # ensure the access token is valid
         protected_response = client.get(
-            "/native/v1/me", headers={"Authorization": f'Bearer {response.json["accessToken"]}'}
+            "/native/v1/me", headers={"Authorization": f"Bearer {response.json['accessToken']}"}
         )
         assert protected_response.status_code == 200
 
         # ensure the refresh token is valid
         refresh_response = client.post(
             "/native/v1/refresh_access_token",
-            headers={"Authorization": f'Bearer {response.json["refreshToken"]}'},
+            headers={"Authorization": f"Bearer {response.json['refreshToken']}"},
         )
         assert refresh_response.status_code == 200
 

@@ -16,7 +16,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_offer_headline(self, mocked_async_index_offer_ids, client, caplog):
         pro_user = users_factories.ProFactory()
@@ -167,7 +166,6 @@ class Returns200Test:
 
 
 class Returns400Test:
-
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_several_headline_offers_should_fail(self, mocked_async_index_offer_ids, client):
         pro_user = users_factories.ProFactory()

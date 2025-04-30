@@ -395,7 +395,6 @@ class Returns403Test:
 
 
 class Returns400Test:
-
     def test_empty_formats(self, pro_client, payload):
         data = {**payload, "formats": []}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):

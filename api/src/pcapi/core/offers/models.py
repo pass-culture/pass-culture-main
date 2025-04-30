@@ -375,7 +375,6 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
 
     @hybrid_property
     def isSoldOut(self) -> bool:
-
         return (
             self.isSoftDeleted
             or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.utcnow())
@@ -806,13 +805,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls) -> UnaryExpression:
-        return (
-            ~sa.exists()
-            .where(Stock.offerId == cls.id)
-            .where(Stock.isSoftDeleted.is_(False))
-            .where(sa.or_(Stock.beginningDatetime > sa.func.now(), Stock.beginningDatetime.is_(None)))
-            .where(sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
-        )
+        return ~sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)).where(
+            sa.or_(Stock.beginningDatetime > sa.func.now(), Stock.beginningDatetime.is_(None))
+        ).where(sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
 
     @property
     def activeMediation(self) -> Mediation | None:

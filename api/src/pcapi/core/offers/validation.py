@@ -610,7 +610,6 @@ def check_offer_extra_data(
         or (not is_from_private_api and conditional_field.is_required_in_external_form)
     ]
     for field in mandatory_fields:
-
         if field == "ean":
             if not ean:
                 errors.add_error(field, "Ce champ est obligatoire")

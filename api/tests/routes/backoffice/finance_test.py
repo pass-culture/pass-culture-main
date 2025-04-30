@@ -758,7 +758,6 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
 
 
 class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
-
     endpoint = "backoffice_web.finance_incidents.get_batch_finance_incidents_validation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -838,7 +837,6 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
 
 
 class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
-
     endpoint = "backoffice_web.finance_incidents.get_batch_finance_incidents_cancellation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 

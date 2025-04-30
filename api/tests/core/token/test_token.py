@@ -245,9 +245,7 @@ class AsymetricTokenTest:
         assert token_tools.AsymetricToken.get_expiration_date(
             self.token_type,
             token.key_suffix,
-        ).isoformat(
-            timespec="hours"
-        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+        ).isoformat(timespec="hours") == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
 
     @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=wrong_private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_creating_and_verifying_signature_with_mismatch_private_and_public_keys(self):

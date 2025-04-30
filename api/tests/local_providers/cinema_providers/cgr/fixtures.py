@@ -12,14 +12,18 @@ def cgr_response_template(films_info: list[dict]) -> str:
             <SOAP-ENV:Body>
                 <ns1:GetSeancesPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
                     <GetSeancesPassCultureResult>
-                        {json.dumps({
-                            "CodeErreur": 0,
-                            "IntituleErreur": "",
-                            "ObjetRetour": {
-                                "NumCine": 999,
-                                "Films": film(films_info),
-                            },
-                        })}
+                        {
+        json.dumps(
+            {
+                "CodeErreur": 0,
+                "IntituleErreur": "",
+                "ObjetRetour": {
+                    "NumCine": 999,
+                    "Films": film(films_info),
+                },
+            }
+        )
+    }
                     </GetSeancesPassCultureResult>
                 </ns1:GetSeancesPassCultureResponse>
             </SOAP-ENV:Body>
@@ -38,12 +42,16 @@ def cgr_reservation_response_template(ticket_response: dict) -> str:
             <SOAP-ENV:Body>
                 <ns1:ReservationPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
                     <ReservationPassCultureResult>
-                        {json.dumps({
-                            "CodeErreur": 0,
-                            "IntituleErreur": "",
-                            "QrCode": ticket_response["QrCode"],
-                            "Placement": ticket_response["Placement"]
-                        })}
+                        {
+        json.dumps(
+            {
+                "CodeErreur": 0,
+                "IntituleErreur": "",
+                "QrCode": ticket_response["QrCode"],
+                "Placement": ticket_response["Placement"],
+            }
+        )
+    }
                     </ReservationPassCultureResult>
                 </ns1:ReservationPassCultureResponse>
             </SOAP-ENV:Body>
@@ -62,10 +70,14 @@ def cgr_annulation_response_template(success: bool = True, message_error: str = 
             <SOAP-ENV:Body>
                 <ns1:AnnulationPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
                     <AnnulationPassCultureResult>
-                        {json.dumps({
-                            "CodeErreur": 0 if success else 99,
-                            "IntituleErreur": "" if success else message_error,
-                        })}
+                        {
+        json.dumps(
+            {
+                "CodeErreur": 0 if success else 99,
+                "IntituleErreur": "" if success else message_error,
+            }
+        )
+    }
                     </AnnulationPassCultureResult>
                 </ns1:AnnulationPassCultureResponse>
             </SOAP-ENV:Body>

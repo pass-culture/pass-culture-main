@@ -59,7 +59,6 @@ class CheckCanInputIdAtProviderTest:
         validation.check_can_input_id_at_provider(provider, "an id at provider")
 
     def test_raise_when_id_at_provider_given_without_a_provider(self):
-
         with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
             validation.check_can_input_id_at_provider(None, "an id at provider")
 
@@ -647,7 +646,6 @@ class CheckOfferWithdrawalTest:
 
 
 class CheckOfferExtraDataTest:
-
     def test_invalid_ean_extra_data(self):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(

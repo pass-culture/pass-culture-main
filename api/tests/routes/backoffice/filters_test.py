@@ -78,7 +78,6 @@ class FormatRoleTest:
 
 
 class FormatDepositUsedTest:
-
     @pytest.mark.parametrize(
         "deposit_type, expected",
         [

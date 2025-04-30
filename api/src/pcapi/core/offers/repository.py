@@ -132,7 +132,8 @@ def get_capped_offers_for_filters(
             sa_orm.joinedload(models.Offer.venue)
             .joinedload(offerers_models.Venue.offererAddress)
             .with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+                offerers_models.OffererAddress._isLinkedToVenue,
+                offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
             ),
         )
         .options(
@@ -166,7 +167,8 @@ def get_capped_offers_for_filters(
         .options(
             sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+                offerers_models.OffererAddress._isLinkedToVenue,
+                offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
             ),
         )
         .limit(offers_limit)
@@ -1256,7 +1258,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             query = query.options(
                 sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
                 sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+                    offerers_models.OffererAddress._isLinkedToVenue,
+                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
                 ),
                 sa_orm.joinedload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
@@ -1264,7 +1267,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 sa_orm.joinedload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+                    offerers_models.OffererAddress._isLinkedToVenue,
+                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
                 ),
             )
         if "future_offer" in load_options:
@@ -1456,7 +1460,7 @@ def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
         .offset((page - 1) * batch_size)  # first page is 1, not 0
         .limit(batch_size)
     )
-    return [offer_id for offer_id, in query]
+    return [offer_id for (offer_id,) in query]
 
 
 def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0) -> list[int]:
@@ -1468,7 +1472,7 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0
         .offset(page * limit)  # first page is 0
         .limit(limit)
     )
-    return [offer_id for offer_id, in query]
+    return [offer_id for (offer_id,) in query]
 
 
 def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | None = None) -> BaseQuery:

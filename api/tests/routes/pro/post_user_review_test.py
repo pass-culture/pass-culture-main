@@ -13,7 +13,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.mark.features(ENABLE_PRO_FEEDBACK=True)
 class PostUserReviewTest:
-
     @mock.patch("pcapi.connectors.harvestr.create_message")
     def test_user_can_successfully_submit_review(self, harvestr_create_message, client, caplog):
         user = users_factories.ProFactory()

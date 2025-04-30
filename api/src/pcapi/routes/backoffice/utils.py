@@ -77,8 +77,14 @@ ALGOLIA_OPERATOR_DICT: dict[str, typing.Any] = {
     "NUMBER_EQUALS": lambda x, y: (f"{x}={y}", True),
     "GREATER_THAN_OR_EQUAL_TO": lambda x, y: (f"{x}>={y}", True),
     "LESS_THAN": lambda x, y: (f"{x}<{y}", True),
-    "DATE_FROM": lambda x, y: (f"{x}>={round(date_utils.date_to_localized_datetime(y, datetime.time.min).timestamp())}", True),  # type: ignore [union-attr]
-    "DATE_TO": lambda x, y: (f"{x}<={round(date_utils.date_to_localized_datetime(y, datetime.time.max).timestamp())}", True),  # type: ignore [union-attr]
+    "DATE_FROM": lambda x, y: (
+        f"{x}>={round(date_utils.date_to_localized_datetime(y, datetime.time.min).timestamp())}",  # type: ignore [union-attr]
+        True,
+    ),
+    "DATE_TO": lambda x, y: (
+        f"{x}<={round(date_utils.date_to_localized_datetime(y, datetime.time.max).timestamp())}",  # type: ignore [union-attr]
+        True,
+    ),
     "DATE_EQUALS": lambda x, y: (
         [ALGOLIA_OPERATOR_DICT["DATE_FROM"](x, y)[0], ALGOLIA_OPERATOR_DICT["DATE_TO"](x, y)[0]],
         True,

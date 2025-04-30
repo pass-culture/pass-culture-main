@@ -78,8 +78,14 @@ def _load_suspension_info(query: BaseQuery) -> BaseQuery:
     # So these expressions use a subquery so that result count is accurate, and the redirection well forced when a
     # single card would be displayed.
     return query.options(
-        sa_orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa_orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(
+            users_models.User.suspension_reason_expression,
+            users_models.User.suspension_reason.expression,  # type: ignore[attr-defined]
+        ),
+        sa_orm.with_expression(
+            users_models.User.suspension_date_expression,
+            users_models.User.suspension_date.expression,  # type: ignore[attr-defined]
+        ),
     )
 
 
@@ -332,7 +338,6 @@ def render_public_account_details(
     kwargs = {}
 
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
-
         if not edit_account_form:
             edit_account_form = account_forms.EditAccountForm(
                 last_name=user.lastName,

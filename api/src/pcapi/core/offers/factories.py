@@ -243,7 +243,6 @@ class ArtistProductLinkFactory(BaseFactory):
 
 
 def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) -> None:
-
     if kwargs.get("extraData") and "ean" in kwargs.get("extraData", {}):
         raise ValueError("'ean' key is no longer allowed in extraData. Use the ean column instead.")
     if kwargs.get("name") and kwargs.get("name") != product.name:

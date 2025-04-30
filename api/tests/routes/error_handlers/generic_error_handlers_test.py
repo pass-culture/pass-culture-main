@@ -50,13 +50,7 @@ class ImageRatioErrorTest:
         file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
 
         url = f"/venues/{venue.id}/banner"
-        url += (
-            "?x_crop_percent=0.0"
-            "&y_crop_percent=0.0"
-            "&height_crop_percent=0.1"
-            "&width_crop_percent=1.0"
-            "&image_credit=none"
-        )
+        url += "?x_crop_percent=0.0&y_crop_percent=0.0&height_crop_percent=0.1&width_crop_percent=1.0&image_credit=none"
 
         client = client.with_session_auth(email=user_offerer.user.email)
 

@@ -4,7 +4,6 @@ from pcapi import settings
 
 
 def install_routes(app: Flask) -> None:
-
     from . import auth
     from . import autocomplete
     from . import filters

@@ -920,7 +920,6 @@ class CollectiveOffer(
 
                 match last_booking_status:
                     case None:
-
                         if has_started:
                             return CollectiveOfferDisplayedStatus.CANCELLED
 
@@ -930,13 +929,11 @@ class CollectiveOffer(
                         return CollectiveOfferDisplayedStatus.PUBLISHED
 
                     case CollectiveBookingStatus.PENDING:
-
                         if has_booking_limit_passed:
                             return CollectiveOfferDisplayedStatus.EXPIRED
                         return CollectiveOfferDisplayedStatus.PREBOOKED
 
                     case CollectiveBookingStatus.CONFIRMED:
-
                         if has_ended:
                             return CollectiveOfferDisplayedStatus.ENDED
                         return CollectiveOfferDisplayedStatus.BOOKED

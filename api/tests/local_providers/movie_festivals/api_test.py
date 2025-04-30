@@ -8,7 +8,6 @@ from pcapi.local_providers.movie_festivals import api
 
 @pytest.mark.features(ENABLE_MOVIE_FESTIVAL_RATE=True)
 class ShouldApplyMovieFestivalRateTest:
-
     @pytest.mark.features(ENABLE_MOVIE_FESTIVAL_RATE=False)
     def should_return_false_because_feature_is_disabled(self):
         assert not api.should_apply_movie_festival_rate(1, datetime.date.today())

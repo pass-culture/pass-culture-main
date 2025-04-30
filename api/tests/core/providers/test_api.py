@@ -237,7 +237,6 @@ class ConnectVenueToAllocineTest:
 
 
 class UpdateProviderExternalUrlsTest:
-
     def test_should_raise_because_ticketing_urls_cannot_be_unset(self):
         provider = providers_factories.PublicApiProviderFactory()
         previous_booking_url = provider.bookingExternalUrl
@@ -385,7 +384,6 @@ class UpdateProviderExternalUrlsTest:
 
 
 class UpdateVenueProviderExternalUrlsTest:
-
     def test_should_raise_because_ticketing_urls_cannot_be_unset(self):
         provider_without_ticketing_urls = providers_factories.ProviderFactory()
         venue = offerers_factories.VenueFactory()

@@ -32,7 +32,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
 
         response = client.get(
-            f"/bookings/csv?page=1&offererId={offerer1.id}&bookingStatusFilter=booked&bookingPeriodBeginningDate={(booked_date-timedelta(days=1)).strftime('%Y-%m-%d')}&bookingPeriodEndingDate={(booked_date+timedelta(days=1)).strftime('%Y-%m-%d')}"
+            f"/bookings/csv?page=1&offererId={offerer1.id}&bookingStatusFilter=booked&bookingPeriodBeginningDate={(booked_date - timedelta(days=1)).strftime('%Y-%m-%d')}&bookingPeriodEndingDate={(booked_date + timedelta(days=1)).strftime('%Y-%m-%d')}"
         )
         reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
         rows = list(reader)

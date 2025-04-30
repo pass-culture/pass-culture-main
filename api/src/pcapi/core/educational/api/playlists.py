@@ -111,7 +111,7 @@ def synchronize_institution_playlist(
         requested_foreign_ids = {item[ctx.local_attr_name] for item in playlist_items_to_add}
         existing_foreign_ids = {
             id_
-            for id_, in db.session.query(ctx.foreign_class.id).filter(ctx.foreign_class.id.in_(requested_foreign_ids))  # type: ignore[attr-defined]
+            for (id_,) in db.session.query(ctx.foreign_class.id).filter(ctx.foreign_class.id.in_(requested_foreign_ids))  # type: ignore[attr-defined]
         }
         playlist_items_to_really_add = filter(
             lambda item: item[ctx.local_attr_name] in existing_foreign_ids,

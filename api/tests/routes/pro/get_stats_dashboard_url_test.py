@@ -42,7 +42,6 @@ class OffererStatsTest:
 
 
 class VenueStatsTest:
-
     def test_allowed_user(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer

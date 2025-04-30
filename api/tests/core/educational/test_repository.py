@@ -660,7 +660,6 @@ class FilterCollectiveOfferByStatusesTest:
 
 
 class HasCollectiveOffersForProgramAndVenueIdsTest:
-
     def test_has_collective_offers_for_program_and_venueids_test(self, app):
         program = educational_factories.EducationalInstitutionProgramFactory(name="program")
         other_program = educational_factories.EducationalInstitutionProgramFactory(name="other_program")

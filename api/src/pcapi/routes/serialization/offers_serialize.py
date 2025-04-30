@@ -210,7 +210,6 @@ def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressRespo
 
 
 class ListOffersOfferResponseModelsGetterDict(GetterDict):
-
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "stocks":
             # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly

@@ -42,7 +42,7 @@ def get_offers_for_each_subcategory(size_per_subcategory: int) -> set[int]:
             .limit(size_per_subcategory)
         )
         with log_elapsed(logger, f"offers for subcategory {subcategory.id}"):
-            result.update({offer_id for offer_id, in query})
+            result.update({offer_id for (offer_id,) in query})
     return result
 
 
@@ -60,7 +60,7 @@ def get_offers_with_gtl(size: int) -> set[int]:
         .limit(size)
     )
     with log_elapsed(logger, "offers with GTL"):
-        result = {offer_id for offer_id, in query}
+        result = {offer_id for (offer_id,) in query}
     return result
 
 
@@ -80,7 +80,7 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
             .limit(size_per_gtl)
         )
         with log_elapsed(logger, "offers for each GTL level 1"):
-            result.update({offer_id for offer_id, in query})
+            result.update({offer_id for (offer_id,) in query})
     return result
 
 
@@ -97,5 +97,5 @@ def get_random_offers(size: int, excluded_offer_ids: set[int]) -> set[int]:
         .limit(size)
     )
     with log_elapsed(logger, "random offers to complete the dataset"):
-        result = {offer_id for offer_id, in query}
+        result = {offer_id for (offer_id,) in query}
     return result

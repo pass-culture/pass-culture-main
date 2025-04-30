@@ -307,7 +307,6 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
     )
 
     if venues:
-
         all_venues += venues
         for venue in venues:
             offerers_names.add(venue.managingOfferer.name)
@@ -336,9 +335,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
     marketing_email_subscription = (
         # Force email subscription to True when email is used only as bookingEmail
         # Force to False when email has been removed from db, maybe replaced with another one in user and/or venue
-        user.get_notification_subscriptions().marketing_email
-        if user
-        else bool(venues)
+        user.get_notification_subscriptions().marketing_email if user else bool(venues)
     )
 
     venues_types = set()
@@ -392,7 +389,9 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
             offerers_models.Offerer.isValidated,
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.userId == user.id,
-            educational_models.CollectiveOffer.status.in_([CollectiveOfferStatus.ACTIVE, CollectiveOfferStatus.SOLD_OUT]),  # type: ignore[attr-defined]
+            educational_models.CollectiveOffer.status.in_(  # type: ignore[attr-defined]
+                [CollectiveOfferStatus.ACTIVE, CollectiveOfferStatus.SOLD_OUT]
+            ),
         )
         .exists()
     )

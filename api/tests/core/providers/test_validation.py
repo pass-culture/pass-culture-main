@@ -12,7 +12,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CheckTicketingUrlsAreCoherentlySetTest:
-
     def test_should_raise(self):
         with pytest.raises(exceptions.ProviderException):
             validation.check_ticketing_urls_are_coherently_set("https://coucou.com", None)
@@ -26,7 +25,6 @@ class CheckTicketingUrlsAreCoherentlySetTest:
 
 
 class CheckTicketingUrlsCanBeUnsetTest:
-
     def test_should_raise(self):
         provider = factories.PublicApiProviderFactory()
         venue = offerers_factories.VenueFactory()
@@ -41,7 +39,7 @@ class CheckTicketingUrlsCanBeUnsetTest:
 
         assert e.value.errors == {
             "ticketing_urls": [
-                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id ]}"
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id]}"
             ]
         }
 
@@ -71,7 +69,7 @@ class CheckTicketingUrlsCanBeUnsetTest:
 
         assert e.value.errors == {
             "ticketing_urls": [
-                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id ]}"
+                f"You cannot unset your `booking_url` and `cancel_url` because you have event(s) with stocks linked to your ticketing system. Blocking event ids: {[event_offer.id]}"
             ]
         }
 

@@ -288,7 +288,6 @@ class BankAccountStatusHistory(PcObject, Base, Model):
 
 
 class FinanceEvent(PcObject, Base, Model):
-
     creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     # In most cases, `valueDate` is `Booking.dateUsed` but it's useful
     # to denormalize it here: many queries use this column and we thus
@@ -388,7 +387,6 @@ class CashflowPricing(Base, Model):
 
 
 class Pricing(PcObject, Base, Model):
-
     status: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
@@ -479,7 +477,6 @@ class Pricing(PcObject, Base, Model):
 
 
 class PricingLine(PcObject, Base, Model):
-
     pricingId = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=True)
     pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
 
@@ -1093,7 +1090,6 @@ class FinanceIncident(PcObject, Base, Model):
 
 
 class BookingFinanceIncident(PcObject, Base, Model):
-
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking | None"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="incidents"

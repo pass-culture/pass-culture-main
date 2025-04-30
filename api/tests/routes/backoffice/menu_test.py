@@ -29,7 +29,6 @@ def permissions_fixture():
 
 @pytest.fixture(name="generate_user_with_bo_permissions")
 def generate_user_with_bo_permissions_fixture(permissions):
-
     def generate_user(permission_names: list[str]):
         user = users_factories.UserFactory(roles=["ADMIN"])
         role = perm_factories.RoleFactory(permissions=[permissions[name] for name in permission_names])

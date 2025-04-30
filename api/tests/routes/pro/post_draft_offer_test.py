@@ -273,7 +273,6 @@ class Returns201Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-
     @pytest.mark.parametrize(
         "partial_body,expected_status_code, expected_json",
         [

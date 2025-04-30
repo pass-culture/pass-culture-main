@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def process_batch(offer_ids: list[str]) -> None:
     logger.info("Bulk-re-activating offers", extra={"offers": offer_ids})
     offers = db.session.query(Offer).filter(Offer.id.in_(offer_ids))
-    offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id)]
+    offer_ids = [offer_id for (offer_id,) in offers.with_entities(Offer.id)]
     offers.update({"isActive": True}, synchronize_session=False)
     db.session.commit()
     search.reindex_offer_ids(offer_ids)  # type: ignore[arg-type]

@@ -50,7 +50,6 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
 
 
 class Returns200Test:
-
     def test_should_update_venue(self, client) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory(

@@ -120,7 +120,8 @@ class AlgoliaSerializationMixin:
         ):  # TODO (tcoudray-pass): update indexing strategy for event opening hours
             dates = {stock.beginningDatetime.timestamp() for stock in offer.searchableStocks}  # type: ignore[union-attr]
             times = {
-                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.searchableStocks  # type: ignore[arg-type]
+                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime)  # type: ignore[arg-type]
+                for stock in offer.searchableStocks
             }
         date_created = offer.dateCreated.timestamp()
         tags = [criterion.name for criterion in offer.criteria]

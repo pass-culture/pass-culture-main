@@ -128,9 +128,10 @@ def get_gtl(gtl_id: str) -> Gtl | None:
                 f"""{HEADER_DOCUMENTATION}
 {import_str}
 {method_str}
-GTLS: dict[str, Gtl] = {json.dumps(gtls).encode('ascii').decode('unicode-escape')}
+GTLS: dict[str, Gtl] = {json.dumps(gtls).encode("ascii").decode("unicode-escape")}
 """.replace(
-                    ": null", ": None"  # To replace all null (JSON) with None (Python)
+                    ": null",
+                    ": None",  # To replace all null (JSON) with None (Python)
                 ),
                 mode=black.FileMode(),
             )

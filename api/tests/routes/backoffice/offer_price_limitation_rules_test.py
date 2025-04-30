@@ -43,7 +43,6 @@ class ListRulesTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_rules(self, authenticated_client, offer_price_limitation_rules):
-
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200

@@ -214,7 +214,6 @@ class Return200Test:
 
 
 class Return400Test:
-
     @pytest.mark.usefixtures("db_session")
     def test_access_by_unauthorized_pro_user(self, client):
         pro = users_factories.ProFactory()

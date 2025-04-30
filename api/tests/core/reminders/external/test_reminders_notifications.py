@@ -12,7 +12,6 @@ from pcapi.notifications.push import testing as push_testing
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersFutureOfferActivatedTest:
     def test_notify_users_future_offer_activated(self):
-
         user_1 = users_factories.UserFactory()
         user_2 = users_factories.UserFactory()
         user_3 = users_factories.UserFactory()
@@ -64,7 +63,6 @@ class NotifyUsersFutureOfferActivatedTest:
         assert event_payload == expected_payload
 
     def test_notify_no_users_future_offer_activated(self, caplog):
-
         user_1 = users_factories.UserFactory()
 
         offer = offer_factories.OfferFactory()

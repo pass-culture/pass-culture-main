@@ -50,5 +50,6 @@ def post_cultural_survey_answers(user: users_models.User, body: serializers.Cult
         user.culturalSurveyFilledDate = datetime.datetime.utcnow()
 
     update_external_user(
-        user, cultural_survey_answers={answer.question_id: answer.answer_ids for answer in body.answers}  # type: ignore[misc]
+        user,
+        cultural_survey_answers={answer.question_id: answer.answer_ids for answer in body.answers},  # type: ignore[misc]
     )

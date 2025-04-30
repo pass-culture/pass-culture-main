@@ -413,7 +413,8 @@ def _get_offers_by_ids(
                         sa.case(
                             (
                                 sa.func.coalesce(
-                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)), 0  # type: ignore[attr-defined]
+                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)),  # type: ignore[attr-defined]
+                                    0,
                                 )
                                 == 0,
                                 sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
@@ -588,7 +589,8 @@ def _get_offers_by_ids(
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
                     sa_orm.with_expression(
-                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                        offerers_models.Offerer.isTopActeur,
+                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
                     ),
                 ),
                 sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
@@ -1133,7 +1135,8 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
                     sa_orm.with_expression(
-                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                        offerers_models.Offerer.isTopActeur,
+                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
                     ),
                 ),
                 sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
@@ -1245,7 +1248,7 @@ def _get_editable_stock(offer_id: int) -> set[int]:
             ),
         )
     )
-    return set(stock_id for stock_id, in raw_stock_ids)
+    return set(stock_id for (stock_id,) in raw_stock_ids)
 
 
 def _is_stock_editable(offer_id: int, stock_id: int) -> bool:

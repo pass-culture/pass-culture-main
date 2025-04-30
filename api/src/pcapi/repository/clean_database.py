@@ -164,9 +164,7 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
                                 EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
                             END IF;
                         END $$;
-                        """.format(
-                            table=table
-                        )
+                        """.format(table=table)
                     )
                 )
         except sa_exc.ProgrammingError:

@@ -1125,7 +1125,7 @@ def add_criteria_to_offers(
         .filter(models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True))
         .with_entities(models.Offer.id)
     )
-    offer_ids = {offer_id for offer_id, in offer_ids_query.all()}
+    offer_ids = {offer_id for (offer_id,) in offer_ids_query.all()}
 
     if not offer_ids:
         return False
@@ -1352,7 +1352,7 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
     while True:
         offers = offers_repository.get_expired_offers(interval)
         offers = offers.offset(page * limit).limit(limit)
-        offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id)]
+        offer_ids = [offer_id for (offer_id,) in offers.with_entities(models.Offer.id)]
 
         if not offer_ids:
             break
@@ -1569,7 +1569,7 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
 
 
 def batch_delete_draft_offers(query: BaseQuery) -> None:
-    offer_ids = [id_ for id_, in query.with_entities(models.Offer.id)]
+    offer_ids = [id_ for (id_,) in query.with_entities(models.Offer.id)]
     filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
     db.session.query(models.Mediation).filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
         synchronize_session=False

@@ -97,7 +97,6 @@ class Flask(Scaffold):
     redis_client: redis.Redis
     generate_error_response: GenerateErrorResponse
     # </change>
-
     def __init__(
         self,
         import_name: str,

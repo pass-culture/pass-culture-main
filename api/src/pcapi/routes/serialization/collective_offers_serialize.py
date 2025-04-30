@@ -744,7 +744,6 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         intervention_area: list[str] | None,
         values: dict,
     ) -> list[str] | None:
-
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
             location = values.get("location", None)
             if location is not None:

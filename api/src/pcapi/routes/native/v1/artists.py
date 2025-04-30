@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(response_model=serializers.ArtistResponse, api=blueprint.api, on_error_statuses=[404])
 @atomic()
 def get_artist(artist_id: str) -> serializers.ArtistResponse:
-
     artist = db.session.query(Artist).get_or_404(artist_id)
 
     return serializers.ArtistResponse.from_orm(artist)

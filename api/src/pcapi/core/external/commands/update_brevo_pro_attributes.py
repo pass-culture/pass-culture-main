@@ -26,7 +26,7 @@ def get_all_booking_emails() -> set[str]:
         .all()
     )
     logger.info("[update_brevo_pro] %d booking emails", len(rows))
-    return {email for email, in rows}
+    return {email for (email,) in rows}
 
 
 def get_all_pro_users_emails() -> set[str]:
@@ -40,7 +40,7 @@ def get_all_pro_users_emails() -> set[str]:
         .all()
     )
     logger.info("[update_brevo_pro] %d pro users emails", len(rows))
-    return {email for email, in rows}
+    return {email for (email,) in rows}
 
 
 def update_brevo_pro_attributes(start_index: int = 0) -> None:

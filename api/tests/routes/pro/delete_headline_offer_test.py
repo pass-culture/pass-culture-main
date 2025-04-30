@@ -14,7 +14,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns204Test:
-
     def test_delete_headline_offer(self, client, caplog):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()
@@ -77,7 +76,6 @@ class Returns204Test:
 
 
 class Returns401Test:
-
     def test_delete_headline_when_current_user_has_no_rights_on_offer(self, client, caplog):
         pro = users_factory.ProFactory()
         offer = offers_factories.OfferFactory()

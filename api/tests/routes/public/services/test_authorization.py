@@ -9,7 +9,6 @@ from pcapi.routes.public.services import authorization
 
 @pytest.mark.usefixtures("db_session")
 class GetVenueProviderOrRaise404Test:
-
     def should_raise_resource_not_found_error_when_no_venue_provider(self):
         venue = offerers_factories.VenueFactory()
         provider = providers_factories.ProviderFactory()

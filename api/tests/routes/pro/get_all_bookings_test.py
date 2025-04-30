@@ -272,7 +272,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
 
         response = client.get(
-            f"/bookings/pro?&offererId={offerer1.id}&bookingStatusFilter=booked&bookingPeriodBeginningDate={(booked_date-timedelta(days=1)).strftime('%Y-%m-%d')}&bookingPeriodEndingDate={(booked_date+timedelta(days=1)).strftime('%Y-%m-%d')}"
+            f"/bookings/pro?&offererId={offerer1.id}&bookingStatusFilter=booked&bookingPeriodBeginningDate={(booked_date - timedelta(days=1)).strftime('%Y-%m-%d')}&bookingPeriodEndingDate={(booked_date + timedelta(days=1)).strftime('%Y-%m-%d')}"
         )
         assert response.json["total"] == 1
         assert len(response.json["bookingsRecap"]) == 1

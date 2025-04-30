@@ -462,7 +462,6 @@ class SyncUserAccountUpdateRequestsTest:
                 ds_fixtures.DS_RESPONSE_UPDATE_STATE_ON_GOING_TO_WITHOUT_CONTINUATION,
             ],
         ) as mocked_execute_query:
-
             users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
 
             mocked_execute_query.assert_called()
@@ -639,9 +638,9 @@ class SyncUserAccountUpdateRequestsTest:
         )
         return_value = copy.deepcopy(ds_fixtures.DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION)
         return_value["demarche"]["dossiers"]["nodes"][0]["state"] = status.value
-        return_value["demarche"]["dossiers"]["nodes"][0][
-            "dateDerniereModificationChamps"
-        ] = date_derniere_modification_champs
+        return_value["demarche"]["dossiers"]["nodes"][0]["dateDerniereModificationChamps"] = (
+            date_derniere_modification_champs
+        )
         for message in return_value["demarche"]["dossiers"]["nodes"][0]["messages"]:
             if message["email"] == beneficiary.email:
                 if date_last_user_message is None:
@@ -658,7 +657,6 @@ class SyncUserAccountUpdateRequestsTest:
             "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
             return_value=return_value,
         ) as mocked_execute_query:
-
             users_ds.sync_user_account_update_requests(104118, None, set_without_continuation=True)
 
             mocked_execute_query.assert_called_once_with(

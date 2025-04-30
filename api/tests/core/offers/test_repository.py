@@ -1158,7 +1158,7 @@ class IncomingEventStocksTest:
         self.setup_stocks()
 
         query = repository.find_event_stocks_happening_in_x_days(number_of_days=1).with_entities(models.Stock.id)
-        assert {stock_id for stock_id, in query} == {self.stock_tomorrow.id}
+        assert {stock_id for (stock_id,) in query} == {self.stock_tomorrow.id}
 
     def test_find_event_stocks_happening_in_7_days(self):
         self.setup_stocks()
@@ -2031,7 +2031,6 @@ class GetStocksListFiltersTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetOfferPriceCategoriesFiltersTest:
-
     def test_should_return_all_price_categories_if_no_id_at_provider_given(self):
         offer = factories.OfferFactory()
         price_category_1 = factories.PriceCategoryFactory(offer=offer)

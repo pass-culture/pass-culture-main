@@ -153,7 +153,6 @@ class Returns200Test:
                 street=None,
             ),
         ):
-
             # User of offerer 2 create the exact same address but manually. Maybe the BAN API is down, maybe is though the
             # address wasn't knwon. Anyway this can happen and it should be handled.
             response = client_session.patch(f"/offers/{offer.id}", json=data)

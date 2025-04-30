@@ -151,7 +151,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == collective_offers[0].venue.name
         assert rows[0]["Ministère"] == "MENjs"
         first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
-        assert rows[0]["Année"] == f"{first_year}-{first_year+1}"
+        assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
 
     def test_list_collective_offers_without_fraud_permission(
         self,
@@ -199,7 +199,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == collective_offers[1].venue.name
         assert rows[0]["Ministère"] == "MENjs"
         first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
-        assert rows[0]["Année"] == f"{first_year}-{first_year+1}"
+        assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
 
     def test_list_collective_offers_by_several_filters(self, authenticated_client, collective_offers):
         collective_offer = collective_offers[2]
@@ -415,7 +415,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {collective_offers[index].id for index in expected_offer_indexes}
 
     def test_list_collective_offers_by_price(self, authenticated_client, collective_offers):
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -431,7 +430,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(collective_offers[2].id)
 
     def test_list_collective_offers_by_price_no_offer_found(self, authenticated_client, collective_offers):
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -1248,7 +1246,6 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
         assert len(non_existing_collective_offers) == 0
 
     def test_batch_validate_collective_offers_adage_exception(self, legit_user, authenticated_client):
-
         institution = educational_factories.EducationalInstitutionFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__validation=OfferValidationStatus.PENDING,

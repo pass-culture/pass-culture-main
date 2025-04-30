@@ -57,7 +57,6 @@ account_update_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_filtered_account_update_requests(form: account_forms.AccountUpdateRequestSearchForm) -> BaseQuery:
-
     aliased_instructor = sa_orm.aliased(users_models.User)
 
     query = (

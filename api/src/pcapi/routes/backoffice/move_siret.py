@@ -29,9 +29,9 @@ move_siret_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _validate_move_siret_form() -> (
-    tuple[pro_support_forms.MoveSiretForm, offerers_models.Venue | None, offerers_models.Venue | None]
-):
+def _validate_move_siret_form() -> tuple[
+    pro_support_forms.MoveSiretForm, offerers_models.Venue | None, offerers_models.Venue | None
+]:
     form = pro_support_forms.MoveSiretForm()
     if not form.validate():
         return form, None, None

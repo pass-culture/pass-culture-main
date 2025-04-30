@@ -60,7 +60,6 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
 
 
 with app.app_context():
-
     from pcapi.routes import error_handlers
     from pcapi.routes.backoffice import install_routes
     from pcapi.routes.backoffice.blueprint import backoffice_web

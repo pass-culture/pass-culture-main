@@ -41,7 +41,6 @@ class DecodeJWTPayloadRS256Test:
     def test_decode_jwt_payload_rs256_algorithm(self):
         payload = dict(data="value")
         with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
-
             valid_encoded_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
         with open(user_utils.JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
             public_key = reader.read()

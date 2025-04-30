@@ -28,7 +28,7 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         super().__init__()
         self.product_whitelist_eans = {
             ean
-            for ean, in db.session.query(fraud_models.ProductWhitelist)
+            for (ean,) in db.session.query(fraud_models.ProductWhitelist)
             .with_entities(fraud_models.ProductWhitelist.ean)
             .all()
         }

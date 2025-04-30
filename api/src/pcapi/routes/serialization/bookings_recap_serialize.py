@@ -94,7 +94,6 @@ def _serialize_booking_status_info(
 def serialize_booking_status_history(
     booking: Booking,
 ) -> list[BookingRecapResponseBookingStatusHistoryModel]:
-
     serialized_booking_status_history = [
         _serialize_booking_status_info(
             BookingRecapStatus.booked,

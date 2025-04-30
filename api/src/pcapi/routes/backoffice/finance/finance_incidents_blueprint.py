@@ -946,7 +946,6 @@ def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
     incidents_type = None
 
     if form.object_ids.data:
-
         finance_incidents = (
             db.session.query(finance_models.FinanceIncident)
             .filter(
@@ -1045,7 +1044,6 @@ def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
     incidents_type = None
 
     if form.object_ids.data:
-
         finance_incidents = (
             db.session.query(finance_models.FinanceIncident)
             .filter(

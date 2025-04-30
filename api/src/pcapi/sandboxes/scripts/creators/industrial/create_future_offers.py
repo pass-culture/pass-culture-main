@@ -33,7 +33,7 @@ def create_future_offers() -> None:
         _create_future_offer_factory(
             is_active=False,
             publication_date=publication_date,
-            name=f"Offre Coming Soon - planifiée n°{i+1}",
+            name=f"Offre Coming Soon - planifiée n°{i + 1}",
             description="Une offre coming soon pour tester la planification",
         )
 

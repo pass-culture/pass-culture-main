@@ -200,7 +200,6 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
 
 
 def send_users_reminders_for_offer(user_ids: list[int], offer: offers_models.Offer) -> None:
-
     event_name = BatchEvent.FUTURE_OFFER_ACTIVATED
     formatted_offer_attributes = _format_offer_attributes(offer)
 

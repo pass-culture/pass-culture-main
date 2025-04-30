@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class LocalBackend(BaseBackend):
-
     def __init__(
         self,
         project_id: str | None = None,

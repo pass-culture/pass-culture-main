@@ -80,7 +80,7 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
-            f"{len(queries)} queries executed, {expected_n_queries} expected\n" f"Captured queries were:\n{details}"
+            f"{len(queries)} queries executed, {expected_n_queries} expected\nCaptured queries were:\n{details}"
         )
     del flask._app_ctx_stack._query_logger  # type: ignore[attr-defined]
 

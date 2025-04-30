@@ -612,7 +612,6 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
 
 @venue_blueprint.route("/<int:venue_id>/collective-dms-applications", methods=["GET"])
 def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
-
     collective_dms_applications = (
         db.session.query(educational_models.CollectiveDmsApplication)
         .filter(

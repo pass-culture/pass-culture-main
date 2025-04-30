@@ -84,7 +84,6 @@ def test_get_allocine_theater():
 
 
 class GetFutureEventsRequiringTicketingSystemTest:
-
     def test_should_return_a_one_event_list(self):
         provider = factories.PublicApiProviderFactory()
         venue = offerers_factories.VenueFactory()

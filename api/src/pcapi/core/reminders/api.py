@@ -22,7 +22,6 @@ def get_reminders(user: User) -> list[FutureOfferReminder]:
 
 
 def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOfferReminder:
-
     query = db.session.query(FutureOffer).filter(FutureOffer.offerId == reminder_body.offer_id)
     future_offer = query.first_or_404()
 
@@ -47,7 +46,6 @@ def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOff
 
 
 def delete_reminder(user: User, reminder_id: int) -> None:
-
     reminder = db.session.query(FutureOfferReminder).filter_by(id=reminder_id, user=user).first_or_404()
 
     db.session.delete(reminder)

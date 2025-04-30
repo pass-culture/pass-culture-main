@@ -2,7 +2,6 @@ from flask import Flask
 
 
 def install_routes(app: Flask) -> None:
-
     from . import academies
     from . import authentication
     from . import bookings

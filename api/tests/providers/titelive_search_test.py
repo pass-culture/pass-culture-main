@@ -486,9 +486,9 @@ class TiteliveBookSearchTest:
 
     def test_handle_bad_product_by_truncating_it(self, requests_mock, settings):
         TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE = copy.deepcopy(fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
-        TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE["result"][0][
-            "titre"
-        ] = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la description"
+        TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE["result"][0]["titre"] = (
+            "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la description"
+        )
 
         self.setup_api_response_fixture(requests_mock, settings, TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE)
 
@@ -762,7 +762,6 @@ class TiteliveBookSearchTest:
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
     def test_should_reject_product_when_gtl_changes_to_extracurricular_related_product(self, requests_mock, settings):
-
         # Given
         self.setup_api_response_fixture(
             requests_mock,

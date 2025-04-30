@@ -156,9 +156,7 @@ class GenreType(Enum):
             type(self).MUSIC.name: MUSIC_TYPES,
             type(self).SHOW.name: SHOW_TYPES,
             type(self).MOVIE.name: MOVIE_TYPES,
-        }[
-            self.name
-        ]  # type: ignore[return-value]
+        }[self.name]  # type: ignore[return-value]
 
     def book_values(self) -> list[GenreTypeContent]:
         return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]

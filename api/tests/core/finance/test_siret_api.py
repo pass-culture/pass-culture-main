@@ -31,7 +31,7 @@ class DeleteSiretTest:
         assert venue.current_pricing_point_id is None
         assert dependent_venue.current_pricing_point_id is None
         assert db.session.query(models.Pricing).count() == 4
-        left_statuses = {status for status, in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
+        left_statuses = {status for (status,) in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
         assert left_statuses == initial_statuses - {models.PricingStatus.VALIDATED}
 
         actions = db.session.query(history_models.ActionHistory).all()
@@ -68,7 +68,7 @@ class DeleteSiretTest:
         assert venue.current_pricing_point_id == new_pricing_point.id
         assert dependent_venue.current_pricing_point_id is None
         assert db.session.query(models.Pricing).count() == 4
-        left_statuses = {status for status, in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
+        left_statuses = {status for (status,) in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
         assert left_statuses == initial_statuses - {models.PricingStatus.VALIDATED}
 
         assert finance_events[models.PricingStatus.VALIDATED].status == models.FinanceEventStatus.READY

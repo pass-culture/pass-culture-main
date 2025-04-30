@@ -202,7 +202,6 @@ class LocalProvider(Iterator):
         return object_in_current_chunk
 
     def updateObjects(self, limit: int | None = None) -> None:
-
         if self.venue_provider and not self.venue_provider.isActive:
             logger.info("Venue provider %s is inactive", self.venue_provider)
             return

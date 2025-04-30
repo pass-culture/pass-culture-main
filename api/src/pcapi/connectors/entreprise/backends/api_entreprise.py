@@ -41,7 +41,7 @@ class EntrepriseBackend(BaseBackend):
     @staticmethod
     def _get_lock_name(subpath: str) -> str:
         # result is "/v3/insee/", "/v4/dgfip/", etc. which keeps rate limit by provider
-        return f"cache:entreprise:{subpath[:-len(subpath.split('/', 3)[3])]}:lock"
+        return f"cache:entreprise:{subpath[: -len(subpath.split('/', 3)[3])]}:lock"
 
     def _check_rate_limit(self, subpath: str, headers: typing.Mapping[str, str]) -> None:
         """

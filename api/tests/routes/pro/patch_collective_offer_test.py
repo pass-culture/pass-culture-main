@@ -1068,7 +1068,6 @@ class Returns403Test:
         ],
     )
     def test_update_venue_updates_finance_events(self, auth_client, factory, venue, other_related_venue):
-
         offer = educational_factories.CollectiveOfferFactory(venue=other_related_venue)
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 

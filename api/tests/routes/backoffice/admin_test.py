@@ -695,7 +695,6 @@ class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.get_subcategories"
 
     def test_get_subcategories(self, authenticated_client):
-
         response = authenticated_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200

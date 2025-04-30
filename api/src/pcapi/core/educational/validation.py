@@ -22,21 +22,21 @@ def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
     if offer_venue.addressType == models.OfferAddressType.OFFERER_VENUE:
         if offer_venue.venueId is None:
             errors["offerVenue.venueId"] = (
-                "Ce champ est obligatoire si 'addressType' vaut " f"'{models.OfferAddressType.OFFERER_VENUE.value}'"
+                f"Ce champ est obligatoire si 'addressType' vaut '{models.OfferAddressType.OFFERER_VENUE.value}'"
             )
     elif offer_venue.venueId is not None:
         errors["offerVenue.venueId"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{models.OfferAddressType.OFFERER_VENUE.value}'"
+            f"Ce champ est interdit si 'addressType' ne vaut pas '{models.OfferAddressType.OFFERER_VENUE.value}'"
         )
 
     if offer_venue.addressType == models.OfferAddressType.OTHER:
         if not offer_venue.otherAddress:
             errors["offerVenue.otherAddress"] = (
-                "Ce champ est obligatoire si 'addressType' vaut " f"'{models.OfferAddressType.OTHER.value}'"
+                f"Ce champ est obligatoire si 'addressType' vaut '{models.OfferAddressType.OTHER.value}'"
             )
     elif offer_venue.otherAddress:
         errors["offerVenue.otherAddress"] = (
-            "Ce champ est interdit si 'addressType' ne vaut pas " f"'{models.OfferAddressType.OTHER.value}'"
+            f"Ce champ est interdit si 'addressType' ne vaut pas '{models.OfferAddressType.OTHER.value}'"
         )
     if errors:
         raise api_errors.ApiErrors(errors=errors, status_code=404)

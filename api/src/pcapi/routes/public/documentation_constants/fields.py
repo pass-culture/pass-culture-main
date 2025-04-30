@@ -22,7 +22,6 @@ LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR = "#tag/Collective-Offer-Attributes/operati
 
 
 class _FIELDS:
-
     def __getattribute__(self, name):  # type: ignore [no-untyped-def]
         """
         This is meant to avoid side-effects between classes that share a field.
