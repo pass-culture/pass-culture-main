@@ -64,7 +64,7 @@
 
     &-text {
       &-value {
-        color: var(--color-primary);
+        color: var(--color-text-brand-primary);
       }
 
       &-contact {
@@ -72,7 +72,7 @@
 
         display: block;
         margin-top: rem.torem(16px);
-        color: var(--color-primary);
+        color: var(--color-text-brand-primary);
       }
     }
   }

@@ -62,8 +62,7 @@ export const RedirectDialog = ({
             onCancel()
           }}
           data-testid="redirect-dialog-button-cancel"
-          variant={ButtonVariant.TERNARY}
-          className={styles['redirect-dialog-cancel-button']}
+          variant={ButtonVariant.TERNARYBRAND}
         >
           {cancelText}
         </Button>

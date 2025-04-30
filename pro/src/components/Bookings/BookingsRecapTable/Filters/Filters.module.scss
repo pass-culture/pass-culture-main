@@ -67,7 +67,7 @@
   vertical-align: middle;
 
   &.active {
-    color: var(--color-primary);
+    color: var(--color-icon-brand-primary);
   }
 }
 
@@ -75,6 +75,5 @@
   position: absolute;
   top: 0;
   right: 0;
-  border: solid rem.torem(3px) var(--color-primary);
   border-radius: rem.torem(4px);
 }

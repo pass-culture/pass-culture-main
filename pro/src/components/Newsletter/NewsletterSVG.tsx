@@ -11,6 +11,7 @@ export function NewsletterSVG({ className }: NewsletterSVGProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      aria-hidden="true"
     >
       <path
         fillRule="evenodd"

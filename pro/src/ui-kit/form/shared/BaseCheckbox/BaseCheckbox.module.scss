@@ -124,7 +124,7 @@
     }
 
     .base-checkbox-input {
-      border-color: var(--color-border-subtle);
+      border-color: var(--color-border-disabled);
       cursor: not-allowed;
 
       &:checked,
@@ -157,7 +157,7 @@
 
       &:disabled {
         background-color: var(--color-background-disabled);
-        border-color: var(--color-border-subtle);
+        border-color: var(--color-border-disabled);
       }
     }
   }
@@ -187,6 +187,10 @@
 
   .base-checkbox-input:focus-visible {
     outline: none;
+  }
+
+  .base-checkbox-input:disabled {
+    border-color: var(--color-border-subtle);
   }
 
   .base-checkbox-label {
