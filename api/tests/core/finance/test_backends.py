@@ -631,17 +631,6 @@ class CegidFinanceBackendTest:
         cashflow = finance_factories.CashflowFactory(pricings=[pricing1, pricing2])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account, date=now)
 
-        ####################################
-        # Mock the VendorLocation API call #
-        ####################################
-        request_vendor_location_matcher = requests_mock.register_uri(
-            "GET",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'{bank_account.id}'",
-            json=[{"LocationID": {"value": "MAIN"}}],
-            status_code=200,
-            headers={"content-type": "application/json"},
-        )
-
         #########################################
         # Mock the response from Cegid XRP Flex #
         #########################################
@@ -718,7 +707,7 @@ class CegidFinanceBackendTest:
             "Hold": {"value": False},
             "IsTaxValid": {},
             "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
-            "LocationID": {"value": "MAIN"},
+            "LocationID": {"value": "PRINCIPAL"},
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             "ReferenceNbr": {"value": "000014"},
             "Status": {"value": "Balanced"},
@@ -745,9 +734,6 @@ class CegidFinanceBackendTest:
         )
         with time_machine.travel("2025-01-25", tick=False):
             invoice_data = finance_backend.push_invoice(invoice.id)
-
-        # VendorLocation related calls
-        assert request_vendor_location_matcher.call_count == 1
 
         assert request_matcher.call_count == 1
         assert invoice_data == response_data
@@ -785,7 +771,7 @@ class CegidFinanceBackendTest:
         assert details2["UOM"] == {"value": "UNITE"}
 
         assert request_json["Hold"] == {"value": False}
-        assert request_json["LocationID"] == {"value": "MAIN"}
+        assert request_json["LocationID"] == {"value": "PRINCIPAL"}
         assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
         assert request_json["Status"] == {"value": "Open"}
         assert request_json["TaxTotal"] == {"value": "0"}
@@ -811,7 +797,7 @@ class CegidFinanceBackendTest:
                 "Hold": {"value": False},
                 "IsTaxValid": {},
                 "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
-                "LocationID": {"value": "MAIN"},
+                "LocationID": {"value": "PRINCIPAL"},
                 "PostPeriod": {"value": "122019"},
                 "ReferenceNbr": {"value": "000014"},
                 "Status": {"value": "Balanced"},
@@ -873,17 +859,6 @@ class CegidFinanceBackendTest:
             cashflows=[cashflow], bankAccount=bank_account, date=now, reference="A250000014"
         )
 
-        ####################################
-        # Mock the VendorLocation API call #
-        ####################################
-        request_vendor_location_matcher = requests_mock.register_uri(
-            "GET",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'{bank_account.id}'",
-            json=[{"LocationID": {"value": "MAIN"}}],
-            status_code=200,
-            headers={"content-type": "application/json"},
-        )
-
         #########################################
         # Mock the response from Cegid XRP Flex #
         #########################################
@@ -931,7 +906,7 @@ class CegidFinanceBackendTest:
             "Hold": {"value": False},
             "IsTaxValid": {},
             "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
-            "LocationID": {"value": "MAIN"},
+            "LocationID": {"value": "PRINCIPAL"},
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             "ReferenceNbr": {"value": "000014"},
             "Status": {"value": "Balanced"},
@@ -959,9 +934,6 @@ class CegidFinanceBackendTest:
         with time_machine.travel(test_date, tick=False):
             invoice_data = finance_backend.push_invoice(invoice.id)
 
-        # VendorLocation related calls
-        assert request_vendor_location_matcher.call_count == 1
-
         assert request_matcher.call_count == 1
         assert invoice_data == response_data
         request_json = request_matcher.request_history[0].json()
@@ -988,7 +960,7 @@ class CegidFinanceBackendTest:
         assert details_line["Description"] == {"value": "Réservations"}
 
         assert request_json["Hold"] == {"value": False}
-        assert request_json["LocationID"] == {"value": "MAIN"}
+        assert request_json["LocationID"] == {"value": "PRINCIPAL"}
         assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
         assert request_json["Status"] == {"value": "Open"}
         assert request_json["TaxTotal"] == {"value": "0"}
@@ -1025,45 +997,116 @@ class CegidFinanceBackendTest:
             status_code=200,
         )
 
-        request_matcher_get_vendor_location = requests_mock.register_uri(
+        response_data = [
+            {
+                "Amount": {"value": 1222.8},
+                "ApprovedForPayment": {"value": False},
+                "Balance": {"value": 1222.8},
+                "BranchID": {"value": "PASSCULT"},
+                "CashAccount": {},
+                "CurrencyID": {"value": "EUR"},
+                "Date": {"value": "2024-12-18T00:00:00+00:00"},
+                "Description": {"value": "Justificatif de remboursement"},
+                "Details": [],
+                "DueDate": {"value": "2025-01-17T00:00:00+00:00"},
+                "Hold": {"value": False},
+                "IsTaxValid": {},
+                "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
+                "LocationID": {"value": "PRINCIPAL"},
+                "PostPeriod": {"value": "122019"},
+                "ReferenceNbr": {"value": "000014"},
+                "Status": {"value": "Balanced"},
+                "TaxTotal": {"value": 0.0},
+                "Terms": {"value": "30J"},
+                "Type": {"value": "Bill"},
+                "Vendor": {"value": "200178"},  # BankAccount.id
+                "VendorRef": {"value": "F240000095"},  # Invoice.reference
+                "_links": {
+                    "files:put": "/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{filename}",
+                    "self": "/passculture/entity/INTERFACES/23.200.001/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
+                },
+                "custom": {},
+                "id": "7b89c293-62bd-ef11-a82c-000d3ae74153",
+                "note": {"value": ""},
+                "rowNumber": 1,
+            }
+        ]
+
+        request_matcher_get_invoice = requests_mock.register_uri(
             "GET",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'1'",
-            json=[],
+            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/Bill?$expand=Details&$filter=VendorRef%20eq%20'F240000095'",
+            json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},
         )
 
         backend = finance_backend.CegidFinanceBackend()
-        vendor_location = backend._get_vendor_location(1)
-        assert vendor_location == {}
+        invoice = backend.get_invoice("F240000095")
+        assert invoice["VendorRef"] == {"value": "F240000095"}
         assert request_matcher_auth.call_count == 1
-        assert request_matcher_get_vendor_location.call_count == 1
+        assert request_matcher_get_invoice.call_count == 1
         token = redis.get(cache_key)
         assert token == cegid_auth_token["access_token"]
 
-        vendor_location = backend._get_vendor_location(1)
-        assert vendor_location == {}
+        invoice = backend.get_invoice("F240000095")
+        assert invoice["VendorRef"] == {"value": "F240000095"}
         assert request_matcher_auth.call_count == 1
-        assert request_matcher_get_vendor_location.call_count == 2
+        assert request_matcher_get_invoice.call_count == 2
 
     def test_refresh_token(self, app, requests_mock, cegid_config, cegid_auth_token, mock_cegid_auth):
         redis = app.redis_client
         cache_key = "cache:cegid:token"
         backend = finance_backend.CegidFinanceBackend()
-        url = f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'1'"
+        url = f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/Bill?$expand=Details&$filter=VendorRef%20eq%20'F240000095'"
 
-        request_matcher_get_vendor_location = requests_mock.register_uri(
+        response_data = [
+            {
+                "Amount": {"value": 1222.8},
+                "ApprovedForPayment": {"value": False},
+                "Balance": {"value": 1222.8},
+                "BranchID": {"value": "PASSCULT"},
+                "CashAccount": {},
+                "CurrencyID": {"value": "EUR"},
+                "Date": {"value": "2024-12-18T00:00:00+00:00"},
+                "Description": {"value": "Justificatif de remboursement"},
+                "Details": [],
+                "DueDate": {"value": "2025-01-17T00:00:00+00:00"},
+                "Hold": {"value": False},
+                "IsTaxValid": {},
+                "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
+                "LocationID": {"value": "PRINCIPAL"},
+                "PostPeriod": {"value": "122019"},
+                "ReferenceNbr": {"value": "000014"},
+                "Status": {"value": "Balanced"},
+                "TaxTotal": {"value": 0.0},
+                "Terms": {"value": "30J"},
+                "Type": {"value": "Bill"},
+                "Vendor": {"value": "200178"},  # BankAccount.id
+                "VendorRef": {"value": "F240000095"},  # Invoice.reference
+                "_links": {
+                    "files:put": "/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.APInvoiceEntry/Document/7b89c293-62bd-ef11-a82c-000d3ae74153/{filename}",
+                    "self": "/passculture/entity/INTERFACES/23.200.001/Bill/7b89c293-62bd-ef11-a82c-000d3ae74153",
+                },
+                "custom": {},
+                "id": "7b89c293-62bd-ef11-a82c-000d3ae74153",
+                "note": {"value": ""},
+                "rowNumber": 1,
+            }
+        ]
+
+        request_matcher_get_invoice = requests_mock.register_uri(
             "GET",
             url,
-            json=[],
+            json=response_data,
             status_code=200,
             headers={"content-type": "application/json"},
         )
-        vendor_location = backend._get_vendor_location(1)
-        assert vendor_location == {}
+        invoice = backend.get_invoice("F240000095")
+        assert invoice["VendorRef"] == {"value": "F240000095"}
         token = redis.get(cache_key)
         assert token == cegid_auth_token["access_token"]
-        assert request_matcher_get_vendor_location.call_count == 1
+        assert request_matcher_get_invoice.call_count == 1
+
         requests_mock.reset()
         response_error = requests_mock.register_uri(
             "GET",
@@ -1073,19 +1116,18 @@ class CegidFinanceBackendTest:
                 {"json": [], "status_code": 200},
             ],
         )
-
-        vendor_location = backend._get_vendor_location(1)
-        assert vendor_location == {}
+        invoice = backend.get_invoice("F240000095")
+        assert invoice["VendorRef"] == {"value": "F240000095"}
         assert mock_cegid_auth.call_count == 1
         assert response_error.call_count == 2
 
     def test_unauthorized_request(self, requests_mock, cegid_config, mock_cegid_auth):
-        url = f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'1'"
+        url = f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/Bill?$expand=Details&$filter=VendorRef%20eq%20'F240000095'"
         requests_mock.reset()
         request_matcher = requests_mock.register_uri("GET", url, text="", status_code=401)
         backend = finance_backend.CegidFinanceBackend()
         with pytest.raises(finance_exceptions.FinanceBackendUnauthorized):
-            backend._get_vendor_location(1)
+            backend.get_invoice("F240000095")
 
         assert request_matcher.call_count == 2
         assert mock_cegid_auth.call_count == 2
@@ -1094,7 +1136,6 @@ class CegidFinanceBackendTest:
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         vendor_uuid = str(faker.uuid4())
-        vendor_location_uuid = str(faker.uuid4())
         main_contact_uuid = str(faker.uuid4())
 
         iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
@@ -1113,8 +1154,9 @@ class CegidFinanceBackendTest:
             "LastModifiedDateTime": {"value": iso_now},
             "LeadTimedays": {},
             "LegalName": {"value": offerer.name},
-            "LocationName": {"value": "Primary Location"},
+            "LocationName": {"value": "Emplacement principal"},
             "MainContact": {
+                "AddressID": {"value": "PRINCIPAL"},
                 "Address": None,
                 "custom": {},
                 "id": main_contact_uuid,
@@ -1128,6 +1170,22 @@ class CegidFinanceBackendTest:
             "PaymentBy": {"value": "Due Date"},
             "PaymentLeadTimedays": {"value": 0},
             "PaymentMethod": {"value": "VSEPA"},
+            "PaymentInstructions": [
+                {
+                    "Description": {"value": "IBAN"},
+                    "PaymentInstructionsID": {"value": "IBAN"},
+                    "PaymentMethod": {"value": "VSEPA"},
+                    "Value": {"value": bank_account.iban},
+                    "custom": {},
+                },
+                {
+                    "Description": {"value": "BIC"},
+                    "PaymentInstructionsID": {"value": "BIC"},
+                    "PaymentMethod": {"value": "VSEPA"},
+                    "Value": {},
+                    "custom": {},
+                },
+            ],
             "PrimaryContact": None,
             "PrintOrders": {"value": True},
             "ReceiptAction": {"value": "Accept but Warn"},
@@ -1168,49 +1226,16 @@ class CegidFinanceBackendTest:
             headers={"content-type": "application/json"},
         )
 
-        request_matcher_get_vendor_location = requests_mock.register_uri(
-            "GET",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'{bank_account.id}'",
-            json=[],
-            status_code=200,
-            headers={"content-type": "application/json"},
-        )
-
-        create_vendor_location_response_data = {
-            "LocationID": {"value": "MAIN"},
-            "RIB": [],
-            "Status": {"value": "Active"},
-            "VendorID": {"value": str(bank_account.id)},
-            "_links": {
-                "files:put": f"/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.VendorLocationMaint/Location/{vendor_location_uuid}/{{filename}}",
-                "self": f"/passculture/entity/INTERFACES/23.200.001/VendorLocation/{vendor_location_uuid}",
-            },
-            "custom": {},
-            "id": vendor_location_uuid,
-            "note": None,
-            "rowNumber": 1,
-        }
-
-        request_matcher_create_vendor_location = requests_mock.register_uri(
-            "PUT",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB",
-            json=create_vendor_location_response_data,
-            status_code=200,
-            headers={"content-type": "application/json"},
-        )
-
         finance_backend.push_bank_account(bank_account.id)
 
         assert request_matcher_create_vendor.call_count == 1
-        assert request_matcher_get_vendor_location.call_count == 1
-        assert request_matcher_create_vendor_location.call_count == 1
-
         request_json = request_matcher_create_vendor.request_history[0].json()
         assert request_json["CashAccount"] == {"value": "CD512000"}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["LegalName"] == {"value": "Association de coiffeurs"}
         assert request_json["MainContact"] == {
             "Address": {
+                "AddressID": {"value": "PRINCIPAL"},
                 "AddressLine1": {"value": offerer.street},
                 "City": {"value": offerer.city},
                 "Country": {"value": "FR"},
@@ -1233,55 +1258,12 @@ class CegidFinanceBackendTest:
         assert mock_cegid_auth.call_count == 1
 
     @pytest.mark.usefixtures("mock_cegid_auth")
-    def test_get_empty_vendor_location(self, requests_mock, cegid_config):
-        backend = finance_backend.CegidFinanceBackend()
-        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
-        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        request_matcher_get_vendor_location = requests_mock.register_uri(
-            "GET",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'{bank_account.id}'",
-            json=[],
-            status_code=200,
-            headers={"content-type": "application/json"},
-        )
-        vendor_list = backend._get_vendor_location(bank_account.id)
-        assert vendor_list == {}
-        assert request_matcher_get_vendor_location.call_count == 1
-
-    @pytest.mark.usefixtures("mock_cegid_auth")
     def test_get_bank_account(self, requests_mock, cegid_config, faker):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         vendor_uuid = str(faker.uuid4())
         iban_uuid = str(faker.uuid4())
         iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
-
-        response_vendor_location_data = [
-            {
-                "LocationID": {"value": "MAIN"},
-                "RIB": [
-                    {
-                        "Code": {"value": "IBAN"},
-                        "PaymentMethod": {"value": "VSEPA"},
-                        "Valeur": {"value": bank_account.iban},
-                        "custom": {},
-                        "id": iban_uuid,
-                        "note": None,
-                        "rowNumber": 1,
-                    },
-                ],
-                "Status": {"value": "Active"},
-                "VendorID": {"value": str(bank_account.id)},
-                "_links": {
-                    "files:put": f"/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.VendorLocationMaint/Location/{vendor_uuid}/{{filename}}",
-                    "self": f"/passculture/entity/INTERFACES/23.200.001/VendorLocation/{vendor_uuid}",
-                },
-                "custom": {},
-                "id": vendor_uuid,
-                "note": {"value": ""},
-                "rowNumber": 1,
-            }
-        ]
 
         response_vendor_data = {
             "APAccount": {"value": "401000"},
@@ -1326,7 +1308,6 @@ class CegidFinanceBackendTest:
             "VendorID": {"value": str(bank_account.id)},
             "VendorIsLaborUnion": {"value": False},
             "VendorIsTaxAgency": {"value": False},
-            "VendorLocations": response_vendor_location_data,
             "VendorName": {"value": offerer.name},
             "_links": {
                 "files:put": f"/passculture/entity/INTERFACES/23.200.001/files/PX.Objects.AP.VendorMaint/BAccount/{vendor_uuid}/{{filename}}",
@@ -1338,13 +1319,6 @@ class CegidFinanceBackendTest:
             "rowNumber": 1,
         }
 
-        request_matcher_get_vendor_location = requests_mock.register_uri(
-            "GET",
-            f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/VendorLocation?$expand=RIB&$filter=VendorID%20eq%20'{bank_account.id}'",
-            json=response_vendor_location_data,
-            status_code=200,
-            headers={"content-type": "application/json"},
-        )
         request_matcher_get_vendor = requests_mock.register_uri(
             "GET",
             f"{cegid_config.CEGID_URL}/entity/INTERFACES/23.200.001/Vendor/{bank_account.id}",
@@ -1355,7 +1329,6 @@ class CegidFinanceBackendTest:
 
         finance_backend.get_bank_account(bank_account.id)
         assert request_matcher_get_vendor.call_count == 1
-        assert request_matcher_get_vendor_location.call_count == 1
 
     def test_bank_account_not_found(self, cegid_config, mock_cegid_auth, requests_mock):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
