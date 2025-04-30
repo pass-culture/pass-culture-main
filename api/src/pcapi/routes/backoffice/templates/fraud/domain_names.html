@@ -12,7 +12,7 @@
 {% block main_content %}
   <div>
     {% set turbo_src = url_for("backoffice_web.users.get_batch_suspend_users_form") %}
-    <button class="btn btn-outline-primary lead fw-bold mt-2"
+    <button class="btn btn-outline-primary-subtle-bg mt-2"
             data-reset-modal-url="{{ turbo_src }}"
             data-bs-toggle="modal"
             data-bs-target="#batch-suspend-users-form"

@@ -15,7 +15,7 @@
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
           {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
-            <button class="btn btn-outline-primary lead fw-bold my-2"
+            <button class="btn btn-outline-primary-subtle-bg my-2"
                     data-bs-toggle="modal"
                     data-bs-target="#create-offer-venue-tag"
                     type="button">Créer un tag offres et partenaires culturels</button>

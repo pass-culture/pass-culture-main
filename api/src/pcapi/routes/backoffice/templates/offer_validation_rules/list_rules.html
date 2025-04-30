@@ -16,7 +16,7 @@
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("rules", active_tab == 'rules') %}
           {{ build_filters_form(form, dst) }}
-          <button class="btn btn-outline-primary lead fw-bold mt-2"
+          <button class="btn btn-outline-primary-subtle-bg mt-2"
                   data-bs-toggle="modal"
                   data-bs-target="#create-offer-validation-rule"
                   type="button">Créer une règle de validation d'offre</button>
