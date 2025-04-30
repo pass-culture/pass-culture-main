@@ -7,6 +7,7 @@ from types import TracebackType
 import typing
 
 from flask import g
+import sqlalchemy as sa
 from sqlalchemy.exc import InternalError
 
 from pcapi.models import Model
@@ -164,7 +165,7 @@ def _manage_session() -> None:
     g.pop("_on_commit_callbacks", None)
 
     try:
-        db.session.execute("SELECT NOW()")
+        db.session.execute(sa.text("SELECT NOW()"))
     except InternalError:
         db.session.rollback()
         raise

@@ -1,5 +1,6 @@
 import typing
 
+import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
 
 from pcapi import settings
@@ -156,14 +157,16 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
                 # Reset sequence id to 1 to have consistent ids in testing environment
                 # This is mandatory for EAC bookings which are used by Adage (external partner)
                 db.session.execute(
-                    """DO $$
-                    BEGIN
-                        IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = '{table.__tablename__}_id_seq') THEN
-                            EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
-                        END IF;
-                    END $$;
-                """.format(
-                        table=table
+                    sa.text(
+                        """DO $$
+                        BEGIN
+                            IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = '{table.__tablename__}_id_seq') THEN
+                                EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
+                            END IF;
+                        END $$;
+                        """.format(
+                            table=table
+                        )
                     )
                 )
         except sa_exc.ProgrammingError:
