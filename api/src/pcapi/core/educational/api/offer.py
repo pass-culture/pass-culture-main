@@ -1184,7 +1184,7 @@ def move_collective_offer_venue(
         # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
         # used for pricing (same as venue pricing point at the time pricing was processed)
         pricing = collective_booking.pricings[0] if collective_booking.pricings else None
-        if pricing and pricing.pricingPointId != destination_pricing_point_id:
+        if pricing and pricing.pricingPointId != destination_pricing_point_id and with_restrictions:
             raise offers_exceptions.BookingsHaveOtherPricingPoint()
 
         if with_restrictions:

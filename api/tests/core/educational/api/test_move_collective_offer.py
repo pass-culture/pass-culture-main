@@ -160,9 +160,8 @@ class MoveCollectiveOfferSuccessTest:
     def test_move_collective_offer_with_unused_bookings_without_reimbursment(self, venues_with_same_pricing_point):
         venue, destination_venue = venues_with_same_pricing_point
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stocks = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stocks, status=CollectiveBookingStatus.CONFIRMED
+            collectiveStock__collectiveOffer=collective_offer, status=CollectiveBookingStatus.CONFIRMED
         )
 
         collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
@@ -182,8 +181,9 @@ class MoveCollectiveOfferSuccessTest:
         """
         venue, destination_venue = venues_with_same_pricing_point
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stocks = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
-        collective_booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock=collective_stocks)
+        collective_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer=collective_offer
+        )
         finance_event = finance_api.add_event(
             finance_models.FinanceEventMotive.BOOKING_USED, booking=collective_booking
         )
@@ -198,14 +198,42 @@ class MoveCollectiveOfferSuccessTest:
         assert collective_booking.venue == destination_venue
         assert finance_event.venue == venue
 
+    def test_move_collective_offer_with_booking_with_pricing_with_different_pricing_point(
+        self, venues_with_same_pricing_point
+    ):
+        """Moving an offer from a venue with a pricing point A
+        and a booking with a pricing with a different pricing point B
+        to another venue with the same pricing point A should work."""
+        venue, destination_venue = venues_with_same_pricing_point
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        collective_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer=collective_offer
+        )
+        finance_event = finance_api.add_event(
+            finance_models.FinanceEventMotive.BOOKING_USED, booking=collective_booking
+        )
+        finance_factories.PricingFactory(
+            pricingPoint=offerers_factories.VenueFactory(managingOfferer=destination_venue.managingOfferer),
+            collectiveBooking=collective_booking,
+            event=finance_event,
+        )
+
+        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+
+        db.session.refresh(collective_offer)
+        db.session.refresh(collective_booking)
+        assert collective_offer.venue == destination_venue
+        assert collective_booking.venue == destination_venue
+
     def test_move_collective_offer_without_bank_account(self, venues_with_same_pricing_point):
         """
         A collective offer on a venue without bank account can be moved to another venue without bank account
         """
         venue, destination_venue = venues_with_same_pricing_point
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stocks = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
-        collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=collective_stocks)
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer=collective_offer
+        )
 
         collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
 
@@ -227,8 +255,9 @@ class MoveCollectiveOfferSuccessTest:
             timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=3)],
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stocks = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
-        collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=collective_stocks)
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer=collective_offer
+        )
 
         collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
 
@@ -253,8 +282,9 @@ class MoveCollectiveOfferSuccessTest:
             timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=3)],
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stocks = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
-        collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=collective_stocks)
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer=collective_offer
+        )
 
         collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
 

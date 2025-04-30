@@ -1846,11 +1846,6 @@ def move_offer(
     if destination_venue not in venue_choices:
         raise exceptions.ForbiddenDestinationVenue()
 
-    destination_pricing_point_link = destination_venue.current_pricing_point_link
-    destination_pricing_point_id = None
-    if destination_pricing_point_link:
-        destination_pricing_point_id = destination_pricing_point_link.pricingPointId
-
     bookings = (
         db.session.query(bookings_models.Booking)
         .join(bookings_models.Booking.stock)
@@ -1889,12 +1884,6 @@ def move_offer(
 
         for booking in bookings:
             booking.venueId = destination_venue.id
-
-            # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
-            # used for pricing (same as venue pricing point at the time pricing was processed)
-            pricing = booking.pricings[0] if booking.pricings else None
-            if pricing and pricing.pricingPointId != destination_pricing_point_id:
-                raise exceptions.BookingsHaveOtherPricingPoint()
 
     on_commit(
         partial(
