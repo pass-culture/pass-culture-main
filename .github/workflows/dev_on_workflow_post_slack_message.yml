@@ -8,7 +8,7 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
     inputs:
-      channel_id:
+      channel:
         type: string
         required: true
       color:
@@ -41,7 +41,7 @@ jobs:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            channel: ${{ inputs.channel_id }}
+            channel: ${{ inputs.channel }}
             attachments:
               - color: "${{ inputs.color }}"
                 blocks:
