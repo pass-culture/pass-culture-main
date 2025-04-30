@@ -1,6 +1,8 @@
+{% extends "layouts/connected.html" %}
+{% set page_title = "Accueil" %}
 {% macro stats_card(value, text_one, text_many, link) %}
   <div class="col">
-    <div class="card shadow h-100">
+    <div class="card h-100">
       <div class="card-body py-0 pt-3">
         <div class="fs-2">{{ value }}</div>
         <div class="text-muted">{{ value | pluralize(text_one, text_many) }}</div>
@@ -9,8 +11,8 @@
         {% if link %}
           <div class="d-flex flex-row-reverse mt-4">
             <a href="{{ link }}"
-               class="btn btn-md btn-outline-primary fw-bold">
-              <span class="d-none d-xl-inline-block">CONSULTER</span> <i class="bi bi-arrow-right"></i>
+               class="btn btn-md btn-outline-primary-subtle-bg">
+              <span class="d-none d-xl-inline-block">CONSULTER</span> <i class="ms-2 bi bi-arrow-right"></i>
             </a>
           </div>
         {% else %}
@@ -25,7 +27,6 @@
     </div>
   </div>
 {% endmacro %}
-{% extends "layouts/connected.html" %}
 {% block head %}
   <script>
     document.addEventListener("DOMContentLoaded", function() {
