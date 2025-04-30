@@ -142,7 +142,7 @@ jobs:
                         image_url: "https://github.com/${{github.actor}}.png"
                         alt_text: "image de profil Github de ${{github.actor}}"
                       - type: "mrkdwn"
-                        text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                        text: "*${{github.actor}}*"
                   - type: "section"
                     text:
                       type: "mrkdwn"

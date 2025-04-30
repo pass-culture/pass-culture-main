@@ -153,11 +153,11 @@ jobs:
                         image_url: "https://github.com/${{github.actor}}.png"
                         alt_text: "image de profil Github de ${{github.actor}}"
                       - type: "mrkdwn"
-                        text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                        text: "*${{github.actor}}*"
                   - type: "section"
                     text:
                       type: "mrkdwn"
-                      text: " Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
+                      text: "Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
       - name: "Post success on #shérif"
         if: env.WORKFLOW_CONCLUSION == 'success'
         uses: slackapi/slack-github-action@v2.0.0
@@ -179,6 +179,6 @@ jobs:
                   - type: "section"
                     text:
                       type: "mrkdwn"
-                      text: "La version `v${{ needs.version.outputs.APP_VERSION }}` a été déployée sur `${{ github.event.inputs.target_environment }}"
+                      text: "La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ github.event.inputs.target_environment }}`"
 
 
