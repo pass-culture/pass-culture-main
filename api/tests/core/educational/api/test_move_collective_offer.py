@@ -177,7 +177,8 @@ class MoveCollectiveOfferSuccessTest:
         A finance event is created when a collectiveBooking is used.
         Reimbursement does not create new finance event, only create CashFlow and Invoices.
         Link to venues is through BankAccount.
-        Because an offer can only be moved to a venue with the same bank account, it should not be a problem
+        Because an offer can only be moved to a venue with the same bank account, it should not be a problem.
+        FinanceEvent venue does not change to keep track of past actions (like pricing date).
         """
         venue, destination_venue = venues_with_same_pricing_point
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
@@ -195,7 +196,7 @@ class MoveCollectiveOfferSuccessTest:
         db.session.refresh(finance_event)
         assert collective_offer.venue == destination_venue
         assert collective_booking.venue == destination_venue
-        assert finance_event.venue == destination_venue
+        assert finance_event.venue == venue
 
     def test_move_collective_offer_without_bank_account(self, venues_with_same_pricing_point):
         """
