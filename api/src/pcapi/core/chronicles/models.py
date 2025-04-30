@@ -88,6 +88,7 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
         db_utils.TSVector(),
         db.Computed("to_tsvector('french', content)", persisted=True),
         nullable=False,
+        name="__content_ts_vector__",
     )
     __table_args__ = (sa.Index("ix_chronicle_content___ts_vector__", __content_ts_vector__, postgresql_using="gin"),)
 
