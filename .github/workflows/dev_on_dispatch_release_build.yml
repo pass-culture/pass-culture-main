@@ -132,9 +132,9 @@ jobs:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
           payload: |
-            channel_id: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
+            channel: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
             attachments:
-              - color: ${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}
+              - color: "${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
                 blocks:
                   - type: "context"
                     elements:
