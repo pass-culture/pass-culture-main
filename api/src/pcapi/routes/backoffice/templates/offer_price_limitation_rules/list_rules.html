@@ -1,67 +1,62 @@
-{% from "components/forms.html" import build_filters_form with context %}
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_filters_form_ng with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5">
-    <h1>Règles de modification de prix d'offres</h1>
-    <div class="mt-4">
-      {{ build_filters_form(form, dst) }}
-      <button class="btn btn-outline-primary-subtle-bg mt-2 mb-3"
-              data-bs-toggle="modal"
-              data-bs-target="#create-offer-price-limitation-rule"
-              type="button">Créer une règle de modification de prix d'offre</button>
-      {{ build_lazy_modal(url_for("backoffice_web.offer_price_limitation_rules.get_create_offer_price_limitation_rule_form") , "create-offer-price-limitation-rule", "lazy") }}
-      <div>
-        <table class="table mb-4">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">ID</th>
-              <th scope="col">Catégorie</th>
-              <th scope="col">Sous-catégorie</th>
-              <th scope="col">Limite de modification de prix</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for rule in rows %}
-              <tr>
-                <td>
-                  <div class="d-flex">
-                    <button type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            class="btn p-0">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li class="dropdown-item p-0">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#edit-offer-price-limitation-rule-{{ rule.id }}">Modifier</a>
-                      </li>
-                      <li class="dropdown-item p-0">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#delete-offer-price-limitation-rule-{{ rule.id }}">Supprimer</a>
-                      </li>
-                    </ul>
-                  </div>
-                </td>
-                <td>{{ rule.id }}</td>
-                <td>{{ rule.subcategoryId | format_offer_category }}</td>
-                <td>{{ rule.subcategoryId | format_offer_subcategory }}</td>
-                <td>± {{ rule.rate | format_rate_multiply_by_100 }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% for rule in rows %}
-          {{ build_lazy_modal(url_for("backoffice_web.offer_price_limitation_rules.get_edit_offer_price_limitation_rule_form", rule_id=rule.id) ,
-          "edit-offer-price-limitation-rule-" + rule.id|string) }}
-          {{ build_lazy_modal(url_for("backoffice_web.offer_price_limitation_rules.get_delete_offer_price_limitation_rule_form", rule_id=rule.id) ,
-          "delete-offer-price-limitation-rule-" + rule.id|string) }}
-        {% endfor %}
-      </div>
-    </div>
-  {% endblock %}
+{% set rows_count = rows|length %}
+{% block title %}Règles de modification de prix d'offres{% endblock %}
+{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  <div class="col-3 mt-4">
+    <button class="btn btn-outline-primary-subtle-bg"
+            data-bs-toggle="modal"
+            data-bs-target="#create-offer-price-limitation-rule"
+            type="button">Créer une règle de modification de prix d'offre</button>
+    {{ build_lazy_modal(url_for("backoffice_web.offer_price_limitation_rules.get_create_offer_price_limitation_rule_form") , "create-offer-price-limitation-rule", "lazy") }}
+  </div>
+{% endblock %}
+{% block table_header %}
+  <th>Action</th>
+  <th>ID</th>
+  <th>Catégorie</th>
+  <th>Sous-catégorie</th>
+  <th>Limite de modification de prix</th>
+{% endblock %}
+{% block table_body %}
+  {% for rule in rows %}
+    <tr>
+      <td>
+        <div class="d-flex">
+          <button type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  class="btn p-0">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item p-0">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#edit-offer-price-limitation-rule-{{ rule.id }}">Modifier</a>
+            </li>
+            <li class="dropdown-item p-0">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#delete-offer-price-limitation-rule-{{ rule.id }}">Supprimer</a>
+            </li>
+          </ul>
+        </div>
+      </td>
+      <td>{{ rule.id }}</td>
+      <td>{{ rule.subcategoryId | format_offer_category }}</td>
+      <td>{{ rule.subcategoryId | format_offer_subcategory }}</td>
+      <td>± {{ rule.rate | format_rate_multiply_by_100 }}</td>
+    </tr>
+  {% endfor %}
+{% endblock %}
+{% block after_table %}
+  {% for rule in rows %}
+    {{ build_lazy_modal(url_for("backoffice_web.offer_price_limitation_rules.get_edit_offer_price_limitation_rule_form", rule_id=rule.id) ,
+    "edit-offer-price-limitation-rule-" + rule.id|string) }}
+    {{ build_lazy_modal(url_for("backoffice_web.offer_price_limitation_rules.get_delete_offer_price_limitation_rule_form", rule_id=rule.id) ,
+    "delete-offer-price-limitation-rule-" + rule.id|string) }}
+  {% endfor %}
+{% endblock %}

@@ -87,7 +87,11 @@
       </div>
     </div>
     <div class="text-center d-flex justify-content-between">
-      {% if limit_fields %}{{ limit_fields[0] }}{% endif %}
+      {% if limit_fields %}
+        {{ limit_fields[0] }}
+      {% else %}
+        <div></div>
+      {% endif %}
       <button type="submit"
               class="btn py-2 px-3 btn-primary">
         Rechercher<i class="bi bi-search ms-2"></i>
