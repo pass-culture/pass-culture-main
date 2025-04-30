@@ -187,9 +187,7 @@ jobs:
     if: ${{ failure() }}
     needs: deploy-to-testing
     steps:
-      - uses: technote-space/workflow-conclusion-action@v3
       - name: "Slack Notification"
-        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v2.0.0
         with:
           method: chat.postMessage
