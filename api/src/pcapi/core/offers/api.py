@@ -888,7 +888,6 @@ def _format_publication_date(publication_date: datetime.datetime | None, timezon
 
 def publish_offer(
     offer: models.Offer,
-    user: users_models.User | None,
     publication_date: datetime.datetime | None = None,
 ) -> models.Offer:
     publication_date = _format_publication_date(publication_date, offer.venue.timezone)
@@ -896,8 +895,6 @@ def publish_offer(
 
     if ean := offer.ean:
         validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
-
-    update_offer_fraud_information(offer, user)
 
     if publication_date is not None:
         offer.isActive = False

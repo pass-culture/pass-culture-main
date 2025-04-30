@@ -76,7 +76,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingEmail is None
         assert created_offer.publicationDate is None
         assert created_offer.description is None
-        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
+        assert created_offer.status == offer_mixin.OfferStatus.DRAFT
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
@@ -218,7 +218,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.publicationDate is None
         assert created_offer.description == "Space is only noise if you can see"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
-        assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
+        assert created_offer.status == offer_mixin.OfferStatus.DRAFT
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
         assert created_offer.withdrawalDelay == None
@@ -266,7 +266,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
             "location": {"type": "physical", "venueId": venue_provider.venueId},
             "name": "Nicolas Jaar dans ton salon",
-            "status": "SOLD_OUT",
+            "status": "DRAFT",
             "priceCategories": [
                 {
                     "id": created_price_category.id,
