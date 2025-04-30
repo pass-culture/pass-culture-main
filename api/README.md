@@ -11,13 +11,11 @@ Plus de détails sur le lancement de l'infra docker compose sont accessibles dan
 Une documentation Swagger des APIs est générée selon l'OpenAPI Specification (OAS3) grâce à un schéma généré par
 Spectree :
 
-* [API Contremarque](https://backend.passculture.app/v2/swagger)
 * [App Native](https://backend.passculture.app/native/swagger)
 * [Adage](https://backend.passculture.app/adage-iframe/swagger)
-* [API privée et API publique dépréciée](https://backend.passculture.app/apidoc/swagger)
-* [API pro publique v2](https://backend.passculture.app/v2/swagger)
+* [API webhooks et cloud tasks](https://backend.passculture.app/apidoc/swagger)
 * [API pro privée](https://backend.passculture.app/pro/swagger)
-* [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
+* [API publique](https://developers.passculture.pro/rest-api)
 
 ## Liens des mocks API
 * [API "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
