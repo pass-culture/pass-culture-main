@@ -9,7 +9,7 @@ $connect-as-header-height: rem.torem(52px);
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--color-background-accent-light);
+  background-color: var(--color-background-subtle);
 }
 
 .page-layout {
@@ -90,7 +90,7 @@ $connect-as-header-height: rem.torem(52px);
         justify-content: space-between;
         min-width: size.$signup-side-min-width;
         width: 50%;
-        background-color: var(--color-primary);
+        background-color: var(--color-background-brand-primary);
         position: sticky;
         top: 0;
         overflow: hidden;
@@ -193,7 +193,7 @@ $connect-as-header-height: rem.torem(52px);
     display: flex;
 
     .logo-sign-up {
-      color: var(--color-primary);
+      color: var(--color-text-brand-primary);
       max-width: rem.torem(135px);
       align-self: center;
       margin-top: rem.torem(32px);

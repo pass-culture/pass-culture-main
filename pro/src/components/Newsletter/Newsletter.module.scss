@@ -5,7 +5,7 @@
   position: relative;
   display: flex;
   min-height: rem.torem(53px);
-  background: var(--color-border-brand-primary);
+  border: 2px solid var(--color-border-brand-primary);
   border-radius: 6px;
   width: 100%;
   padding: rem.torem(1px);
@@ -13,6 +13,7 @@
   .newsletter-img {
     position: absolute;
     right: rem.torem(16px);
+    top: rem.torem(1px);
     height: 100%;
     display: none;
 
@@ -22,7 +23,6 @@
   }
 
   .newsletter-link {
-    background-color: var(--color-background-default);
     width: 100%;
     border-radius: 5px;
     position: relative;

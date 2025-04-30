@@ -416,9 +416,8 @@ export const CollectiveTimeLine = ({
           Complétez vos informations bancaires pour débloquer le remboursement.
         </div>
         <ButtonLink
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERNARYBRAND}
           to={`remboursements/informations-bancaires?structure=${bookingDetails.offererId}`}
-          className={styles['button-important']}
         >
           Paramétrer les informations bancaires
         </ButtonLink>
