@@ -147,7 +147,7 @@ def detect_invalid_indexes() -> None:
       join pg_index on pg_index.indexrelid = pg_class.oid
       where pg_index.indisvalid = false
     """
-    res = db.session.execute(statement)
+    res = db.session.execute(sa.text(statement))
     rows = res.fetchall()
     if not rows:
         return
@@ -168,7 +168,7 @@ def detect_not_valid_constraints() -> None:
       left outer join pg_class on pg_class.oid = pg_constraint.conrelid
       where not convalidated
     """
-    res = db.session.execute(statement)
+    res = db.session.execute(sa.text(statement))
     rows = res.fetchall()
     if not rows:
         return
@@ -195,7 +195,7 @@ def export_pg_stat_user_indexes() -> None:
             relname,
             indexrelname DESC;
     """
-    res = db.session.execute(statement)
+    res = db.session.execute(sa.text(statement))
     rows = res.fetchall()
     _upload_as_csv_to_google_drive(
         "pg_stat_user_indexes", ("date", "relname", "indexrelname", "idx_scan", "idx_tup_read", "idx_tup_fetch"), rows
@@ -220,7 +220,7 @@ def export_pg_stat_user_tables() -> None:
         ORDER BY
             relname;
     """
-    res = db.session.execute(statement)
+    res = db.session.execute(sa.text(statement))
     rows = res.fetchall()
     _upload_as_csv_to_google_drive("pg_stat_user_tables", ("date", "relname", "seq_scan", "idx_scan"), rows)
     logger.info("Exported data from pg_stat_user_tables")
