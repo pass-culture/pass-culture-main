@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class AdageLoggerClient(AdageClient):
-
     def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation", data)
 

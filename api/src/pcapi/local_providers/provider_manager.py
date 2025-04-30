@@ -194,7 +194,7 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
 
         cinemas_aldready_activated = {
             cinema_id
-            for cinema_id, in (
+            for (cinema_id,) in (
                 db.session.query(provider_models.CinemaProviderPivot)
                 .join(
                     provider_models.EMSCinemaDetails,

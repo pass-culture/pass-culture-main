@@ -4725,7 +4725,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     expected_queries = 4  # session + user + targeted user with joined data + gdpr insert
 
     def test_extract_public_account(self, authenticated_client, legit_user):
-
         user = users_factories.BeneficiaryFactory()
 
         response = self.post_to_endpoint(
@@ -4786,7 +4785,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         )
 
     def test_extract_public_account_no_user_found(self, authenticated_client):
-
         response = self.post_to_endpoint(authenticated_client, user_id=42)
         assert response.status_code == 404
 

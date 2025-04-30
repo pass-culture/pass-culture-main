@@ -3,7 +3,6 @@ from pcapi.core.testing import assert_num_queries
 
 
 class GetArtistsTest:
-
     def test_get_artists(self, client):
         artist = artist_factories.ArtistFactory()
 

@@ -111,7 +111,7 @@ def get_ids_of_venues_with_offers(offererIds: list[int]) -> typing.Iterable[int]
             ),
         )
     ).with_entities(models.Venue.id)
-    return [venue_id for venue_id, in venues]
+    return [venue_id for (venue_id,) in venues]
 
 
 def get_filtered_venues(
@@ -156,7 +156,7 @@ def get_filtered_venues(
 def get_api_key_prefixes(offerer_id: int) -> list[str]:
     return [
         prefix
-        for prefix, in db.session.query(models.ApiKey)
+        for (prefix,) in db.session.query(models.ApiKey)
         .filter_by(offererId=offerer_id)
         .with_entities(models.ApiKey.prefix)
     ]
@@ -413,7 +413,7 @@ def get_emails_by_venue(venue: models.Venue) -> set[str]:
     """
     emails = {
         email
-        for email, in db.session.query(users_models.User)
+        for (email,) in db.session.query(users_models.User)
         .join(users_models.User.UserOfferers)
         .filter_by(offererId=venue.managingOffererId)
         .with_entities(users_models.User.email)
@@ -430,14 +430,14 @@ def get_emails_by_offerer(offerer: models.Offerer) -> set[str]:
     """
     emails = {
         email
-        for email, in db.session.query(users_models.User)
+        for (email,) in db.session.query(users_models.User)
         .join(users_models.User.UserOfferers)
         .filter_by(offererId=offerer.id)
         .with_entities(users_models.User.email)
     }
     emails |= {
         email
-        for email, in db.session.query(models.Venue)
+        for (email,) in db.session.query(models.Venue)
         .filter_by(managingOffererId=offerer.id)
         .with_entities(models.Venue.bookingEmail)
     }
@@ -1035,7 +1035,10 @@ def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> 
         db.session.query(models.OffererAddress)
         .where(models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id)
         .options(
-            sa_orm.with_expression(models.OffererAddress._isLinkedToVenue, models.OffererAddress.isLinkedToVenue.expression)  # type: ignore[attr-defined]
+            sa_orm.with_expression(
+                models.OffererAddress._isLinkedToVenue,
+                models.OffererAddress.isLinkedToVenue.expression,  # type: ignore[attr-defined]
+            )
         )
         .one_or_none()
     )

@@ -37,7 +37,6 @@ def _create_booking_for_statistics_offerer_multiple_venues() -> None:
     )
     offers = []
     for index in range(1, 4):
-
         offerer_multi_venues_venue = offerers_factories.VenueFactory.create(
             name=f"Lieu CA et CA prévisionnel {index}",
             pricing_point="self",

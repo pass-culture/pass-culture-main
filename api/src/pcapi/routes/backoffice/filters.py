@@ -1641,7 +1641,7 @@ def format_legal_category_code(code: int | str) -> str:
 def format_venue_provider_count(count: dict | None) -> str:
     actives = count.get("active", 0) if count else 0
     inactives = count.get("inactive", 0) if count else 0
-    return f"{actives} actif{'s' if actives>1 else ''} / {inactives} inactif{'s' if inactives>1 else ''}"
+    return f"{actives} actif{'s' if actives > 1 else ''} / {inactives} inactif{'s' if inactives > 1 else ''}"
 
 
 def build_pro_link(path: str) -> str:

@@ -212,7 +212,7 @@ class CaledonianVenueFactory(VenueFactory):
     postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "98800")
     city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Nouméa")
     siret = factory.LazyAttributeSequence(
-        lambda o, n: siren_utils.ridet_to_siret(f"{siren_utils.siren_to_rid7(o.managingOfferer.siren)}{n%100:03}")
+        lambda o, n: siren_utils.ridet_to_siret(f"{siren_utils.siren_to_rid7(o.managingOfferer.siren)}{n % 100:03}")
     )
     venueTypeCode = models.VenueTypeCode.BOOKSTORE
     adageId = None

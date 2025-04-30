@@ -145,7 +145,9 @@ def _format_pro_attributes(email: str, attributes: attributes_models.ProAttribut
             "dms_application": (
                 "Approuvé"
                 if attributes.dms_application_approved
-                else "Déposé" if attributes.dms_application_submitted else "Aucun"
+                else "Déposé"
+                if attributes.dms_application_submitted
+                else "Aucun"
             ),
         },
     }

@@ -1084,7 +1084,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     )
                     .with_entities(models.Pricing.id)
                 )
-                diff = {_pricing_id for _pricing_id, in diff.all()}
+                diff = {_pricing_id for (_pricing_id,) in diff.all()}
                 if diff:
                     logger.error(
                         "Found integrity error on booking prices vs. pricing lines",
@@ -1098,7 +1098,6 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
 
                 # The total is positive if the pro owes us more than we do.
                 if total > 0:
-
                     all_current_incidents = (
                         db.session.query(models.FinanceIncident)
                         .join(models.FinanceIncident.booking_finance_incidents)
@@ -1182,7 +1181,10 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 # to "invoiced".
                 cashflowed_pricings = db.session.query(models.CashflowPricing).filter_by(cashflowId=cashflow.id)
                 _mark_as_processed(
-                    {pricing_id for pricing_id, in cashflowed_pricings.with_entities(models.CashflowPricing.pricingId)}
+                    {
+                        pricing_id
+                        for (pricing_id,) in cashflowed_pricings.with_entities(models.CashflowPricing.pricingId)
+                    }
                 )
                 total_from_pricings = (
                     cashflowed_pricings.join(models.Pricing).with_entities(sa.func.sum(models.Pricing.amount)).scalar()
@@ -1791,7 +1793,8 @@ def _make_invoice_lines(
 
 def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     return (
-        query.filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW).outerjoin(
+        query.filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW)
+        .outerjoin(
             models.InvoiceCashflow,
             models.InvoiceCashflow.cashflowId == models.Cashflow.id,
         )
@@ -2854,7 +2857,7 @@ def merge_cashflow_batches(
     batch_ids_to_remove = [batch.id for batch in batches_to_remove]
     bank_account_ids = [
         id_
-        for id_, in db.session.query(models.Cashflow)
+        for (id_,) in db.session.query(models.Cashflow)
         .filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
         .with_entities(models.Cashflow.bankAccountId)
         .distinct()
@@ -3119,7 +3122,6 @@ def _recredit_user(user: users_models.User) -> models.Recredit | None:
 
 
 def _recredit_user_v3(user: users_models.User) -> models.Recredit | None:
-
     if not user.deposit or not user.age:
         return None
     if not (user_eligibility := user.eligibility):
@@ -3574,7 +3576,7 @@ def recredit_users() -> None:
 
     user_ids = [
         result
-        for result, in (
+        for (result,) in (
             db.session.query(users_models.User)
             .filter(users_models.User.has_underage_beneficiary_role)
             .filter(users_models.User.validatedBirthDate > lower_date)
@@ -3705,7 +3707,7 @@ def update_bank_account_venues_links(
     }
     if venues_linked_to_other_bank_account:
         raise exceptions.VenueAlreadyLinkedToAnotherBankAccount(
-            f"At least one venue {*venues_linked_to_other_bank_account,} is already linked to another bank account"
+            f"At least one venue {(*venues_linked_to_other_bank_account,)} is already linked to another bank account"
         )
 
     managed_venues_ids = {venue.id for venue in venues if venue.current_pricing_point_link}

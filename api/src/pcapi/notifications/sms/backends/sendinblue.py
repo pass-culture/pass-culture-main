@@ -69,8 +69,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
         mail_content = mails_models.TransactionalWithoutTemplateEmailData(
             subject="Code de validation du téléphone",
             html_content=(
-                f"<div>Le contenu suivant serait envoyé par sms au numéro {recipient}</div>"
-                f"<div>{content}</div></div>"
+                f"<div>Le contenu suivant serait envoyé par sms au numéro {recipient}</div><div>{content}</div></div>"
             ),
             sender=mails_models.TransactionalSender.SUPPORT_PRO,
         )

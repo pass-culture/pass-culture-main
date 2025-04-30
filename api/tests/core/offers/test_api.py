@@ -1310,7 +1310,6 @@ class UpdateDraftOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
-
     def test_create_digital_offer_from_scratch(
         self,
     ):
@@ -2361,7 +2360,6 @@ class ActivateFutureOffersAndRemindUsersTest:
 
 @pytest.mark.usefixtures("db_session")
 class HeadlineOfferTest:
-
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_new_offer_headline(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)

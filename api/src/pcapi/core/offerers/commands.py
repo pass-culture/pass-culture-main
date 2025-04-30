@@ -95,7 +95,7 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
     else:
         known_siren_list = [
             siren
-            for siren, in db.session.query(offerers_models.Offerer)
+            for (siren,) in db.session.query(offerers_models.Offerer)
             .filter(
                 offerers_models.Offerer.siren.in_(siren_list),
                 offerers_models.Offerer.isActive,

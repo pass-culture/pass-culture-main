@@ -14,7 +14,6 @@ down_revision = "2144f7e4df3c"
 
 def upgrade() -> None:
     with op.get_context().autocommit_block():
-
         op.execute("""SET SESSION statement_timeout = '2600s'""")
         op.execute(
             f"""

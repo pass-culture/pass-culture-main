@@ -14,7 +14,6 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=clickhouse_query_mock.AGGREGATED_TOTAL_VENUE_REVENUE,

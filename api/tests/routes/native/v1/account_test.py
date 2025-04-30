@@ -1875,7 +1875,6 @@ class EmailValidationRemainingResendsTest:
         self,
         client,
     ):
-
         expected_num_queries = 1  # user
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/email_validation_remaining_resends/test@example.com")

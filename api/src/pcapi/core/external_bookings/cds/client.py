@@ -423,7 +423,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             if cinema.id == self.cinema_id:
                 return cinema
         raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Cinema not found in Cine Digital Service API " f"for cinemaId={self.cinema_id} & url={self.api_url}"
+            f"Cinema not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
     @lru_cache

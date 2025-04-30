@@ -162,7 +162,9 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def partition_allowed_products(self, titelive_product_page: list[TiteliveWorkType]) -> tuple[
+    def partition_allowed_products(
+        self, titelive_product_page: list[TiteliveWorkType]
+    ) -> tuple[
         list[TiteliveWorkType],
         list[str],
     ]:

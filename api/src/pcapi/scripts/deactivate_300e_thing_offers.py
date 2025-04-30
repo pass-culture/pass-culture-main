@@ -14,7 +14,7 @@ def deactivate_300e_thing_offers() -> None:
         .all()
     ]
     offer_qs = db.session.query(Offer).filter(Offer.id.in_(stock_offer_ids))
-    offer_ids = [offer_id for offer_id, in offer_qs.with_entities(Offer.id)]
+    offer_ids = [offer_id for (offer_id,) in offer_qs.with_entities(Offer.id)]
     print("Nombre d'offres desactivées: ", len(offer_ids))
     with open("offer_ids_to_reject.csv", "w", encoding="utf-8") as out:
         out.write(",\n".join(str(offer_id) for offer_id in offer_ids))

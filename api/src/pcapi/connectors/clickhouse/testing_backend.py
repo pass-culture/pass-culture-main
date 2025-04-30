@@ -13,7 +13,6 @@ from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE
 
 
 class TestingBackend(BaseBackend):
-
     def _get_engine(self) -> engine.Engine:
         raise NotImplementedError
 

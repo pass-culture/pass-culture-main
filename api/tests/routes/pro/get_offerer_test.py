@@ -471,7 +471,6 @@ class GetOffererTest:
         assert offerer["hasBankAccountWithPendingCorrections"] is False
 
     def test_client_can_know_if_offerer_has_any_pending_bank_account(self, client):
-
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)

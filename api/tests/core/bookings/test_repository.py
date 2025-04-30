@@ -55,7 +55,6 @@ def test_find_all_ongoing_bookings(app):
 
 
 def test_find_not_cancelled_bookings_by_stock(app):
-
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory(price=0)
     bookings_factories.CancelledBookingFactory(user=user, stock=stock)
@@ -74,7 +73,6 @@ one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 class FindByProUserTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -177,7 +175,6 @@ class FindByProUserTest:
         assert bookings[0].bookingToken == reimbursed_booking_1.token
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -200,7 +197,6 @@ class FindByProUserTest:
         assert bookings[0].quantity == 2
 
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -245,7 +241,6 @@ class FindByProUserTest:
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
     ):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -272,7 +267,6 @@ class FindByProUserTest:
         assert bookings[0].isConfirmed
 
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -304,7 +298,6 @@ class FindByProUserTest:
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
         self, app: fixture
     ):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -335,7 +328,6 @@ class FindByProUserTest:
         assert not expected_booking.reimbursedAt
 
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -366,7 +358,6 @@ class FindByProUserTest:
         assert len(bookings) == 2
 
     def test_should_return_bookings_from_first_page(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -390,7 +381,6 @@ class FindByProUserTest:
         assert total == 2
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -410,7 +400,6 @@ class FindByProUserTest:
         assert bookings == []
 
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -432,7 +421,6 @@ class FindByProUserTest:
         assert total == 1
 
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -457,7 +445,6 @@ class FindByProUserTest:
         assert total == 2
 
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -484,7 +471,6 @@ class FindByProUserTest:
         assert bookings[0].bookedAt == booking_date
 
     def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -533,7 +519,6 @@ class FindByProUserTest:
         assert bookings[0].offerId == booking_1.stock.offer.id
 
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
-
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
 
@@ -554,7 +539,6 @@ class FindByProUserTest:
         assert expected_booking.bookingAmount == booking_two.amount
 
     def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
-
         user_offerer = offerers_factories.UserOffererFactory()
         event_date = datetime(2020, 12, 24, 10, 30)
         expected_booking = bookings_factories.BookingFactory(
@@ -630,7 +614,6 @@ class FindByProUserTest:
         assert mayotte_booking.token in bookings_tokens
 
     def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
-
         user_offerer = offerers_factories.UserOffererFactory()
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
@@ -659,7 +642,6 @@ class FindByProUserTest:
         assert bookings[0].bookedAt == expected_booking.dateCreated
 
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
-
         user_offerer = offerers_factories.UserOffererFactory()
         requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
@@ -810,7 +792,6 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -866,7 +847,6 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     def should_return_validated_bookings_for_offer_with_duo(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -913,7 +893,6 @@ class GetOfferBookingsByStatusCSVTest:
         )
 
     def should_return_all_bookings_for_offer(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -964,7 +943,6 @@ class GetOfferBookingsByStatusCSVTest:
         self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
     def should_return_all_bookings_for_offer_with_duo(self):
-
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1017,7 +995,6 @@ class GetOfferBookingsByStatusCSVTest:
 
 class FindSoonToBeExpiredBookingsTest:
     def test_should_return_only_soon_to_be_expired_individual_bookings(self, app: fixture):
-
         expired_creation_date = date.today() - timedelta(days=23)
         expired_creation_date = datetime.combine(expired_creation_date, time(12, 34, 17))
         non_expired_creation_date = date.today() - timedelta(days=24)

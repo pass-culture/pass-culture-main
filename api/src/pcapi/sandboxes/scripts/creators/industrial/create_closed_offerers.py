@@ -46,7 +46,6 @@ def create_closed_offerers() -> None:
 def _create_closed_offerer(
     name: str, email: str, beneficiary: users_models.User, with_bank_account: bool = False
 ) -> None:
-
     now = datetime.datetime.utcnow()
     siren_caduc_tag = db.session.query(offerers_models.OffererTag).filter_by(name="siren-caduc").one()
 

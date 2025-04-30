@@ -60,7 +60,7 @@ def users_ex_beneficiary_automation() -> bool:
 
     List: jeunes-ex-benefs
     """
-    user_emails = (email for email, in get_users_ex_beneficiary())
+    user_emails = (email for (email,) in get_users_ex_beneficiary())
     return add_contacts_to_list(user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID)
 
 
@@ -70,7 +70,7 @@ def get_email_for_users_created_one_year_ago_per_month() -> Iterable[str]:
 
     return (
         email
-        for email, in get_young_users_emails_query().filter(
+        for (email,) in get_young_users_emails_query().filter(
             User.dateCreated.between(
                 datetime.combine(first_day_of_month, datetime.min.time()),
                 datetime.combine(last_day_of_month, datetime.max.time()),

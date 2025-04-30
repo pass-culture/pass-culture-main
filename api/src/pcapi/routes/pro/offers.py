@@ -71,7 +71,6 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 )
 @atomic()
 def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
-
     load_all: offers_repository.OFFER_LOAD_OPTIONS = [
         "mediations",
         "product",

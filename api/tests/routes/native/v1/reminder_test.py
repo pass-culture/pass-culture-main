@@ -139,7 +139,6 @@ class DeleteReminderTest:
             assert response.status_code == 401
 
     def test_reminder_does_not_exist(self, client):
-
         user = users_factories.BeneficiaryFactory()
 
         num_queries = 1  # select user
@@ -153,7 +152,6 @@ class DeleteReminderTest:
             assert response.status_code == 404
 
     def test_reminder_is_not_users(self, client):
-
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
@@ -185,7 +183,6 @@ class DeleteReminderTest:
         assert len(user_2.future_offer_reminders) == 1
 
     def test_delete_reminder(self, client):
-
         user = users_factories.BeneficiaryFactory()
 
         offer_1 = offers_factories.OfferFactory(isActive=False)

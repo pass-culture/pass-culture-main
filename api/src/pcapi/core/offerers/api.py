@@ -635,7 +635,7 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
     }
     # delete offers and their dependencies
     packed_offers_id = db.session.query(offers_models.Offer.id).filter(offers_models.Offer.venueId == venue_id).all()
-    offers_id = [i for i, in packed_offers_id]  # an iterable are not enough here we really need a list in memory
+    offers_id = [i for (i,) in packed_offers_id]  # an iterable are not enough here we really need a list in memory
     offer_index = 0
     while offers_id_chunk := offers_id[offer_index : offer_index + STEP]:
         offer_index += STEP
@@ -644,7 +644,7 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         packed_stocks_id = (
             db.session.query(offers_models.Stock.id).filter(offers_models.Stock.offerId.in_(offers_id_chunk)).all()
         )
-        stocks_id = [i for i, in packed_stocks_id]  # an iterable are not enough here we really need a list in memory
+        stocks_id = [i for (i,) in packed_stocks_id]  # an iterable are not enough here we really need a list in memory
         stock_index = 0
         while stocks_id_chunk := stocks_id[stock_index : stock_index + STEP]:
             stock_index += STEP
@@ -689,7 +689,7 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
     packed_collective_offers_id = db.session.query(educational_models.CollectiveOffer.id).filter(
         educational_models.CollectiveOffer.venueId == venue_id
     )
-    collective_offers_id = [i for i, in packed_collective_offers_id]
+    collective_offers_id = [i for (i,) in packed_collective_offers_id]
     collective_offer_index = 0
     while collective_offers_id_chunk := collective_offers_id[collective_offer_index : collective_offer_index + STEP]:
         collective_offer_index += STEP
@@ -705,7 +705,7 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
     packed_collective_offer_templates_id = db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
         educational_models.CollectiveOfferTemplate.venueId == venue_id
     )
-    collective_offer_templates_id = [i for i, in packed_collective_offer_templates_id]
+    collective_offer_templates_id = [i for (i,) in packed_collective_offer_templates_id]
     collective_offer_template_index = 0
     while collective_offer_templates_id_chunk := collective_offer_templates_id[
         collective_offer_template_index : collective_offer_template_index + STEP
@@ -1817,7 +1817,7 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
             numeric_filter = sa.or_(numeric_filter, models.Offerer.siren == siren_utils.rid7_to_siren(search_query))
         offerers = offerers.filter(numeric_filter)
     else:
-        search_words = f'%{clean_accents(search_query).replace(" ", "%").replace("-", "%")}%'
+        search_words = f"%{clean_accents(search_query).replace(' ', '%').replace('-', '%')}%"
         offerers = offerers.filter(sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(search_words))
 
         # Always order by similarity when searching by name
@@ -1885,7 +1885,7 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> B
         elif dms_token_term := re.match(DMS_TOKEN_REGEX, search_query):
             venues = venues.filter(models.Venue.dmsToken == dms_token_term.group(1).lower())
         else:
-            search_words = f'%{clean_accents(search_query).replace(" ", "%").replace("-", "%")}%'
+            search_words = f"%{clean_accents(search_query).replace(' ', '%').replace('-', '%')}%"
             venues = venues.filter(
                 sa.or_(
                     sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(search_words),
@@ -2367,7 +2367,7 @@ def _update_external_offerer(
     on_commit(
         functools.partial(
             search.async_index_collective_offer_template_ids,
-            {i for i, in packed_collective_ids},
+            {i for (i,) in packed_collective_ids},
             reason=index_with_reason,
         )
     )

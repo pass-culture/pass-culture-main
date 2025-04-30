@@ -50,7 +50,6 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_gdpr_user_extract_data(self, authenticated_client, list_of_gdpr_user_extract_data):
-
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200

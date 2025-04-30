@@ -84,7 +84,7 @@ def delete_offerer_old_stats() -> None:
     index = 0
     step = 1000
     while offerers_ids_chunk := offerers_ids[index : index + step]:
-        offerers_ids_chunk = [offerer_id for offerer_id, in offerers_ids_chunk]
+        offerers_ids_chunk = [offerer_id for (offerer_id,) in offerers_ids_chunk]
         db.session.query(offerers_models.OffererStats).filter(
             offerers_models.OffererStats.offererId.in_(offerers_ids_chunk),
             offerers_models.OffererStats.syncDate < datetime.utcnow().date(),

@@ -370,7 +370,7 @@ class CaledonianBeneficiaryFactory(BeneficiaryFactory):
     city = "Nouméa"
     postalCode = "98800"
     departementCode = "988"
-    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n % 10000:04}")
 
 
 class Transition1718Factory(BeneficiaryFactory):
@@ -467,11 +467,10 @@ class CaledonianUserFactory(UserFactory):
     city = "Le Mont-Dore"
     postalCode = "98809"
     departementCode = "988"
-    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n % 10000:04}")
 
 
 class DiscordUserFactory(BaseFactory):
-
     class Meta:
         model = models.DiscordUser
 
@@ -729,7 +728,7 @@ class CaledonianUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
     city = "Païta"
     postalCode = "98889"
     departementCode = "988"
-    phoneNumber = factory.Sequence(lambda n: f"+68777{n%10000:04}")
+    phoneNumber = factory.Sequence(lambda n: f"+68777{n % 10000:04}")
 
 
 class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
@@ -1158,7 +1157,7 @@ class UserAccountUpdateRequestFactory(BaseFactory):
     status = dms_models.GraphQLApplicationStates.on_going
     firstName = "Jeune"
     lastName = "Demandeur"
-    email = factory.Sequence(lambda n: f"demandeur_{n+1}@example.com")
+    email = factory.Sequence(lambda n: f"demandeur_{n + 1}@example.com")
     birthDate = factory.Sequence(lambda n: date.today() - timedelta(days=18 * 366 + 10 * n))
     user = factory.SubFactory(
         BeneficiaryFactory,
@@ -1186,8 +1185,8 @@ class UserAccountUpdateRequestFactory(BaseFactory):
 class EmailUpdateRequestFactory(UserAccountUpdateRequestFactory):
     lastName = "Changeant d'Email"
     updateTypes = [models.UserAccountUpdateType.EMAIL]
-    oldEmail = factory.Sequence(lambda n: f"ancien_email_{n+1}@example.com")
-    newEmail = factory.Sequence(lambda n: f"nouvel_email_{n+1}@example.com")
+    oldEmail = factory.Sequence(lambda n: f"ancien_email_{n + 1}@example.com")
+    newEmail = factory.Sequence(lambda n: f"nouvel_email_{n + 1}@example.com")
 
 
 class PhoneNumberUpdateRequestFactory(UserAccountUpdateRequestFactory):

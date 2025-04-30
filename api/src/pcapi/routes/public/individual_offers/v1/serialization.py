@@ -775,7 +775,6 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
     @classmethod
     def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
-
         return cls(
             id=offer.id,
             booking_contact=offer.bookingContact,

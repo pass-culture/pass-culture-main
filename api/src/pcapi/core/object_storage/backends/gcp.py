@@ -43,7 +43,6 @@ class GCPBackend(BaseBackend):
         return Client(credentials=credentials, project=self.project_id)
 
     def get_gcp_storage_client_bucket(self) -> Bucket:
-
         storage_client = self.get_gcp_storage_client()
         return storage_client.bucket(self.bucket_name)
 

@@ -7,9 +7,7 @@ from pcapi.utils.string import u_nbsp
 @dataclasses.dataclass
 class UbbleError:
     detail_message: str = ""
-    not_retryable_user_message: str = (
-        "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
-    )
+    not_retryable_user_message: str = "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
     retryable_action_hint: str = "Tu peux réessayer"
     retryable_message_summary: str = "La vérification de ton identité a échoué."
     retryable_user_message: str = "La vérification de ton identité a échoué. Tu peux réessayer."

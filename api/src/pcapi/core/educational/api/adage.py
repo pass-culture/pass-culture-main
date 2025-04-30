@@ -321,10 +321,10 @@ def autocomplete_educational_redactor_for_uai(
     unaccented_candidate = clean_accents(candidate).upper()
     result = []
     for redactor in redactors:
-        if unaccented_candidate in f'{redactor["nom"]} {redactor["prenom"]}'.upper():
+        if unaccented_candidate in f"{redactor['nom']} {redactor['prenom']}".upper():
             result.append(redactor)
             continue
-        if unaccented_candidate in f'{redactor["prenom"]} {redactor["nom"]}'.upper():
+        if unaccented_candidate in f"{redactor['prenom']} {redactor['nom']}".upper():
             result.append(redactor)
             continue
         if use_email and unaccented_candidate in redactor["mail"].upper():

@@ -565,7 +565,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         )
         results = query_offer.union(query_collective).all()
 
-        return any(result for result, in results)
+        return any(result for (result,) in results)
 
     @property
     def nApprovedOffers(self) -> int:  # used in validation rule, do not remove
@@ -581,7 +581,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         )
         results = query_offer.union(query_collective).all()
 
-        return sum(result for result, in results)
+        return sum(result for (result,) in results)
 
     @property
     def thumbUrl(self) -> str:

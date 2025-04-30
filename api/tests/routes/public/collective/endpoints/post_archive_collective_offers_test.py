@@ -121,7 +121,6 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
-
     def test_archive_collective_offers_with_wrong_provider(self, db_session, public_client):
         provider2 = providers_factories.ProviderFactory()
         offer = educational_factories.CollectiveOfferFactory(provider=provider2)

@@ -13,7 +13,6 @@ from .. import testing
 
 
 class AdageSpyClient(AdageClient):
-
     def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation", "sent_data": data})
 

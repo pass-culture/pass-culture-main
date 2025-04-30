@@ -152,7 +152,7 @@ def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) 
         .with_entities(models.EMSCinemaDetails.id)
         .all()
     )
-    db.session.bulk_update_mappings(models.EMSCinemaDetails, [{"id": id, "lastVersion": version} for id, in ids])
+    db.session.bulk_update_mappings(models.EMSCinemaDetails, [{"id": id, "lastVersion": version} for (id,) in ids])
 
 
 def get_ems_oldest_sync_version() -> int:

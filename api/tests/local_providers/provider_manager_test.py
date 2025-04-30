@@ -27,7 +27,6 @@ def mock_init_provider(*arg):
 
 
 class SynchronizeVenueProviderTest:
-
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
     @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")

@@ -262,7 +262,6 @@ def install_logging() -> None:
     # process (so that the developer sees logs), and on the standard
     # output of the master process (for log gathering).
     if settings.RUNS_ON_KUBERNETES and sys.stdout.isatty():
-
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
         handlers.append(handler2)  # type: ignore[arg-type]

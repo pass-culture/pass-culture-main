@@ -98,7 +98,7 @@ class CloudTaskDecoratorTest:
                 http_request=tasks_v2.HttpRequest(
                     body=b'{"number": 12}',
                     headers={
-                        "AUTHORIZATION": "Bearer " "secret-token",
+                        "AUTHORIZATION": "Bearer secret-token",
                         "Content-type": "application/json",
                     },
                     http_method=tasks_v2.HttpMethod.POST,

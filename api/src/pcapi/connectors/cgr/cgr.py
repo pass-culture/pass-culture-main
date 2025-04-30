@@ -103,9 +103,7 @@ def get_movie_poster_from_api(image_url: str) -> bytes:
     api_response = requests.get(image_url)
 
     if api_response.status_code != 200:
-        raise CGRAPIException(
-            f"Error getting CGR API movie poster {image_url}" f" with code {api_response.status_code}"
-        )
+        raise CGRAPIException(f"Error getting CGR API movie poster {image_url} with code {api_response.status_code}")
 
     return api_response.content
 

@@ -357,7 +357,7 @@ def test_we_dont_cache_falsy_empty_response(mocked_redis_get, mocked_redis_set, 
     }
     response = api_adresse.get_address(address="3 Rue de Valois", postcode="75001", city="Paris")
     address_cache_key = f"cache:api:addresse:search:{md5(json.dumps(payload).encode()).hexdigest()}"
-    centroid_cache_key = f'cache:api:addresse:search:{md5(json.dumps({"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}).encode()).hexdigest()}'
+    centroid_cache_key = f"cache:api:addresse:search:{md5(json.dumps({'q': 'Paris', 'postcode': '75001', 'citycode': None, 'type': 'municipality', 'autocomplete': 0, 'limit': 1}).encode()).hexdigest()}"
 
     ### redis_client.get calls ###
     get_calls = [call(address_cache_key), call(centroid_cache_key)]
@@ -459,7 +459,7 @@ def test_we_dont_cache_falsy_empty_response_when_falling_back_on_centroid(
     with pytest.raises(api_adresse.NoResultException):
         api_adresse.get_address(address="3 Rue de Valois", postcode="75001", city="Paris")
     address_cache_key = f"cache:api:addresse:search:{md5(json.dumps(payload).encode()).hexdigest()}"
-    centroid_cache_key = f'cache:api:addresse:search:{md5(json.dumps({"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}).encode()).hexdigest()}'
+    centroid_cache_key = f"cache:api:addresse:search:{md5(json.dumps({'q': 'Paris', 'postcode': '75001', 'citycode': None, 'type': 'municipality', 'autocomplete': 0, 'limit': 1}).encode()).hexdigest()}"
 
     ### redis_client.get calls ###
     get_calls = [call(address_cache_key), call(centroid_cache_key)]

@@ -220,7 +220,6 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert chronicle.content in content_as_text
 
     def test_mininal(self, authenticated_client):
-
         chronicle = chronicles_factories.ChronicleFactory(isActive=False)
         url = url_for(self.endpoint, chronicle_id=chronicle.id)
 

@@ -1529,7 +1529,10 @@ assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
 )
 
-SubcategoryProLabelEnum = Enum("SubcategoryProLabelEnum", {subcategory.id: subcategory.pro_label for subcategory in ALL_SUBCATEGORIES})  # type: ignore[misc]
+SubcategoryProLabelEnum = Enum(  # type: ignore[misc]
+    "SubcategoryProLabelEnum",
+    {subcategory.id: subcategory.pro_label for subcategory in ALL_SUBCATEGORIES},
+)
 OnlineOfflinePlatformChoicesEnum = Enum(  # type: ignore[misc]
     "OnlineOfflinePlatformChoicesEnum",
     {choice: choice for choice in [c.value for c in OnlineOfflinePlatformChoices]},

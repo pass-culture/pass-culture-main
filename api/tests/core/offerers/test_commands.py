@@ -28,7 +28,8 @@ class CheckActiveOfferersTest:
         offerers_factories.ClosedOffererFactory(id=23 + 28 * 3)  # not checked because closed
         offerers_factories.RejectedOffererFactory(id=23 + 28 * 4, isActive=True)  # not checked because rejected
         offerers_factories.OffererFactory(
-            id=23 + 28 * 5, siren=siren_utils.rid7_to_siren("1234567")  # not checked because RID7 not in Sirene API
+            id=23 + 28 * 5,
+            siren=siren_utils.rid7_to_siren("1234567"),  # not checked because RID7 not in Sirene API
         )
 
         with time_machine.travel("2024-12-24 23:00:00"):

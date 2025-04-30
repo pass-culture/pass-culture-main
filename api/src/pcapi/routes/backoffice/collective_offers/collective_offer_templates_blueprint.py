@@ -77,7 +77,8 @@ def _get_collective_offer_templates(
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
                     sa_orm.with_expression(
-                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                        offerers_models.Offerer.isTopActeur,
+                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
                     ),
                 ),
                 sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
@@ -441,7 +442,8 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
                         offerers_models.OffererConfidenceRule.confidenceLevel
                     ),
                     sa_orm.with_expression(
-                        offerers_models.Offerer.isTopActeur, offerers_models.Offerer.is_top_acteur.expression  # type: ignore[attr-defined]
+                        offerers_models.Offerer.isTopActeur,
+                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
                     ),
                 ),
             )

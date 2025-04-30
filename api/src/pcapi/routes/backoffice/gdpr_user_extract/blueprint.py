@@ -31,7 +31,6 @@ gdpr_extract_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
-
     query = (
         db.session.query(users_models.GdprUserDataExtract)
         .options(

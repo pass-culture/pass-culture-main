@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
-
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:

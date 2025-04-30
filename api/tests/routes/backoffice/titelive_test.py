@@ -65,7 +65,7 @@ class SearchEanTest(GetEndpointHelper):
         assert card_ean
         assert BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
         assert soup.select(
-            f"div.pc-ean-result img[src=\"{BOOK_BY_SINGLE_EAN_FIXTURE['oeuvre']['article'][0]['imagesUrl']['recto']}\"]"
+            f'div.pc-ean-result img[src="{BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]["imagesUrl"]["recto"]}"]'
         )
         assert BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
         assert "EAN-13 : " + BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]

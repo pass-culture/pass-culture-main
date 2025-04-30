@@ -11,7 +11,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
-
     @pytest.mark.parametrize(
         "adage_id,collective_ds_application,is_onboarded",
         [

@@ -65,7 +65,7 @@ def get_inactive_venues_emails() -> Iterable[str]:
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
 
-    return (email for email, in query)
+    return (email for (email,) in query)
 
 
 def pro_inactive_venues_automation() -> bool:

@@ -103,7 +103,6 @@ class InstantiateCinemaApiClientTest:
 
 @pytest.mark.usefixtures("db_session")
 class BookEventTicketTest:
-
     def test_should_raise_because_no_ticketing_system_set(self):
         provider = providers_factories.ProviderFactory()
         offer = offers_factories.EventOfferFactory(
@@ -462,7 +461,6 @@ class BookEventTicketTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelEventTicketTest:
-
     def test_should_raise_an_error_because_there_is_no_ticketing_service_set(self):
         provider = providers_factories.ProviderFactory()
         offer = offers_factories.EventOfferFactory(
@@ -572,7 +570,6 @@ class CancelEventTicketTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendBookingNotificationToExternalServiceTest:
-
     @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
     def test_should_do_nothing_because_notification_info_not_properly_set(self, mock_test):
         provider = providers_factories.ProviderFactory()

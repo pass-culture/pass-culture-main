@@ -18,7 +18,11 @@ class SynchronizeVenueProvidersRequest(BaseModel):
     venue_provider_ids: list[int]
 
 
-@task(settings.GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME, "/providers/synchronize_venue_providers", task_request_timeout=30 * 60)  # type: ignore[arg-type]
+@task(
+    settings.GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME,  # type: ignore[arg-type]
+    "/providers/synchronize_venue_providers",
+    task_request_timeout=30 * 60,
+)
 def synchronize_venue_providers_task(payload: SynchronizeVenueProvidersRequest) -> None:
     provider_id = payload.provider_id
     venue_provider_ids = payload.venue_provider_ids

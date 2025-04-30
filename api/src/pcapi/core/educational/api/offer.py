@@ -1021,7 +1021,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         educational_models.CollectiveOffer.validation.in_(allowed_validation_status)
     ).with_entities(educational_models.CollectiveOffer.id)
 
-    collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    collective_offer_ids = [offer_id for (offer_id,) in collective_offer_ids_tuples]
     number_of_collective_offers_to_update = len(collective_offer_ids)
     batch_size = 1000
 
@@ -1052,7 +1052,7 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
-    collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    collective_offer_template_ids = [offer_id for (offer_id,) in collective_offer_ids_tuples]
     number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
     batch_size = 1000
 

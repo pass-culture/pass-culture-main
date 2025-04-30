@@ -448,7 +448,6 @@ def connect_as() -> utils.BackofficeResponse:
             case "user":
                 user_id = _check_user_for_user_id(form.object_id.data)
             case _:
-
                 raise ValueError(
                     Markup("{object_type} non supporté pour le connect as").format(object_type=form.object_type.data)
                 )

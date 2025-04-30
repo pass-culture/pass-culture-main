@@ -2341,7 +2341,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 .with_entities(offerers_models.OffererTag.id)
                 .all()
             )
-            tags_ids = [_id for _id, in tags]
+            tags_ids = [_id for (_id,) in tags]
 
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
@@ -3417,7 +3417,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             .with_entities(offerers_models.OffererTag.id)
             .all()
         )
-        tags_ids = [_id for _id, in tags]
+        tags_ids = [_id for (_id,) in tags]
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, tags=tags_ids, status=["NEW", "PENDING"]))

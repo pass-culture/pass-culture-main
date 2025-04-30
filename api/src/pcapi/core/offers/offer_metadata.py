@@ -57,7 +57,9 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
             "availability": (
                 "https://schema.org/InStock"
                 if offer.hasStocks
-                else "https://schema.org/SoldOut" if offer.isEvent else "https://schema.org/OutOfStock"
+                else "https://schema.org/SoldOut"
+                if offer.isEvent
+                else "https://schema.org/OutOfStock"
             ),
         }
 

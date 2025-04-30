@@ -211,7 +211,6 @@ class BookTicketTest:
 
 
 class CancelBookingTest:
-
     def test_should_cancel_booking_with_success(self, requests_mock):
         barcode = "sale-90577"
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")

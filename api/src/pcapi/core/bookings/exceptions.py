@@ -22,7 +22,7 @@ class PhysicalExpenseLimitHasBeenReached(ClientError):
     def __init__(self, celling_amount: int) -> None:
         super().__init__(
             "global",
-            f"Le plafond de {celling_amount} € pour les biens culturels ne vous permet pas " "de réserver cette offre.",
+            f"Le plafond de {celling_amount} € pour les biens culturels ne vous permet pas de réserver cette offre.",
         )
 
 
@@ -30,8 +30,7 @@ class DigitalExpenseLimitHasBeenReached(ClientError):
     def __init__(self, celling_amount: Decimal) -> None:
         super().__init__(
             "global",
-            f"Le plafond de {celling_amount} € pour les offres numériques ne vous permet pas "
-            "de réserver cette offre.",
+            f"Le plafond de {celling_amount} € pour les offres numériques ne vous permet pas de réserver cette offre.",
         )
 
 

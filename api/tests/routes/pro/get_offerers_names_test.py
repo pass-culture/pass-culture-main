@@ -62,7 +62,7 @@ class Returns200ForProUserTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select offerer
         with testing.assert_num_queries(num_queries):
-            response = client.get(f'/offerers/names?offerer_id={offerers["owned_offerer_validated"].id}')
+            response = client.get(f"/offerers/names?offerer_id={offerers['owned_offerer_validated'].id}")
             assert response.status_code == 200
 
         assert "offerersNames" in response.json

@@ -400,13 +400,15 @@ def get_paginated_collective_bookings_for_educational_year(
         )
         .options(
             # ... to fetch its venue...
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            .load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.timezone,
             )
             # ... to fetch its offerer.
-            .joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.name),
             # and the offer's domains
             sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
                 educational_models.EducationalDomain.id
@@ -628,7 +630,6 @@ def _get_filtered_collective_bookings_query(
     *,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
 ) -> BaseQuery:
-
     collective_bookings_query = (
         db.session.query(educational_models.CollectiveBooking)
         .join(educational_models.CollectiveBooking.offerer)
@@ -1277,7 +1278,7 @@ def get_paginated_active_collective_offer_template_ids(batch_size: int, page: in
         .offset((page - 1) * batch_size)  # first page is 1, not 0
         .limit(batch_size)
     )
-    return [offer_id for offer_id, in query]
+    return [offer_id for (offer_id,) in query]
 
 
 def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBankAccountLink | None:
@@ -1454,7 +1455,8 @@ def _get_collective_offer_template_address_joinedload_with_expression() -> tuple
             offerers_models.OffererAddress.address
         ),
         sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).with_expression(
-            offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+            offerers_models.OffererAddress._isLinkedToVenue,
+            offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
         ),
     )
 
@@ -1469,6 +1471,7 @@ def _get_collective_offer_address_joinedload_with_expression() -> tuple[sa_orm.L
             offerers_models.OffererAddress.address
         ),
         sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).with_expression(
-            offerers_models.OffererAddress._isLinkedToVenue, offerers_models.OffererAddress.isLinkedToVenue.expression  # type: ignore [attr-defined]
+            offerers_models.OffererAddress._isLinkedToVenue,
+            offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
         ),
     )

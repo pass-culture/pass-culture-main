@@ -309,7 +309,6 @@ class SendTest:
         template_class,
         expected_use_pro_subaccount,
     ):
-
         mock_template = template_class(id_prod=1, id_not_prod=10, send_to_ehp=False)
         data = models.TransactionalEmailData(template=mock_template)
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
@@ -341,7 +340,6 @@ class SendTest:
         enable_unsubscribe,
         expected_use_pro_subaccount,
     ):
-
         mock_template = template_class(
             id_prod=1, id_not_prod=10, send_to_ehp=False, enable_unsubscribe=enable_unsubscribe
         )

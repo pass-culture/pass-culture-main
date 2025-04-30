@@ -212,7 +212,7 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date | None = Non
     expired_on = expired_on or date.today()
     return [
         user_id
-        for user_id, in (
+        for (user_id,) in (
             db.session.query(User.id)
             .join(models.Booking, User.userBookings)
             .filter(
