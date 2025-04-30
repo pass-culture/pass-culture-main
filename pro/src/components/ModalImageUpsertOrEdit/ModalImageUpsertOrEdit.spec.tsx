@@ -2,6 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import * as imageUtils from 'commons/utils/image'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -59,6 +60,11 @@ describe('ModalImageUpsertOrEdit', () => {
 
   describe('when an image is loaded', () => {
     it('should render an image editor & a preview with the loaded image', async () => {
+      vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
+        width: 500,
+        height: 600,
+      } as ImageBitmap)
+
       const mockImageUrl = 'http://example.com/image.jpg'
       renderModalImageCrop({
         initialValues: {
@@ -71,6 +77,9 @@ describe('ModalImageUpsertOrEdit', () => {
       expect(screen.getByLabelText("Editeur d'image")).toBeInTheDocument()
       expect(screen.getByText('Page d’accueil')).toBeInTheDocument()
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(
+        screen.queryByText(/La qualité de votre image n’est pas optimale./)
+      ).not.toBeInTheDocument()
     })
 
     it('should display replace and delete buttons', async () => {
@@ -107,6 +116,68 @@ describe('ModalImageUpsertOrEdit', () => {
       await userEvent.type(creditInput, 'John Doe')
 
       expect(creditInput).toHaveValue('John Doe')
+    })
+
+    describe('when the image has small dimensions', () => {
+      it('should not display any warning message for venues', async () => {
+        vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
+          width: 10,
+          height: 10,
+        } as ImageBitmap)
+
+        const mockImageUrl = 'http://example.com/image.jpg'
+        renderModalImageCrop({
+          initialValues: {
+            imageUrl: mockImageUrl,
+            originalImageUrl: mockImageUrl,
+          },
+          mode: UploaderModeEnum.VENUE,
+        })
+        await waitForRender()
+        expect(
+          screen.queryByText(/La qualité de votre image n’est pas optimale./)
+        ).not.toBeInTheDocument()
+      })
+
+      it('should not display any warning message for collective offers', async () => {
+        vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
+          width: 10,
+          height: 10,
+        } as ImageBitmap)
+
+        const mockImageUrl = 'http://example.com/image.jpg'
+        renderModalImageCrop({
+          initialValues: {
+            imageUrl: mockImageUrl,
+            originalImageUrl: mockImageUrl,
+          },
+          mode: UploaderModeEnum.OFFER_COLLECTIVE,
+        })
+        await waitForRender()
+        expect(
+          screen.queryByText(/La qualité de votre image n’est pas optimale./)
+        ).not.toBeInTheDocument()
+      })
+
+      it('should display a warning message for individual offers', async () => {
+        vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
+          width: 10,
+          height: 10,
+        } as ImageBitmap)
+
+        const mockImageUrl = 'http://example.com/image.jpg'
+        renderModalImageCrop({
+          initialValues: {
+            imageUrl: mockImageUrl,
+            originalImageUrl: mockImageUrl,
+          },
+          mode: UploaderModeEnum.OFFER,
+        })
+        await waitForRender()
+        expect(
+          screen.getByText(/La qualité de votre image n’est pas optimale./)
+        ).toBeInTheDocument()
+      })
     })
 
     describe('when the replace button is clicked', () => {

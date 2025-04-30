@@ -37,6 +37,15 @@
     }
   }
 
+  &-callout {
+    margin-top: rem.torem(16px);
+
+    &-list {
+      list-style-type: disc;
+      padding-left: rem.torem(24px);
+    }
+  }
+
   &-actions {
     display: flex;
     flex-direction: column;

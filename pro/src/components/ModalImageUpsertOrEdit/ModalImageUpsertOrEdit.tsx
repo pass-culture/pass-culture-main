@@ -15,6 +15,8 @@ import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -99,6 +101,9 @@ export const ModalImageUpsertOrEdit = ({
 
   const shouldDisplayPreview =
     mode === UploaderModeEnum.OFFER && previewImageUrl
+  const shouldDisplayWarningCallout =
+    mode === UploaderModeEnum.OFFER &&
+    ((width && width < 400) || (height && height < 600))
 
   useEffect(() => {
     async function setImageFromUrl(url: string) {
@@ -228,7 +233,6 @@ export const ModalImageUpsertOrEdit = ({
                   >
                     Remplacer l’image
                   </Button>
-
                   <Dialog.Close asChild>
                     <Button
                       icon={fullTrashIcon}
@@ -244,6 +248,22 @@ export const ModalImageUpsertOrEdit = ({
                 <AppPreviewOffer imageUrl={previewImageUrl} />
               )}
             </div>
+            {shouldDisplayWarningCallout && (
+              <Callout
+                className={style['modal-image-crop-callout']}
+                variant={CalloutVariant.WARNING}
+              >
+                <div>
+                  La qualité de votre image n’est pas optimale.
+                  <br />
+                  Le format recommandé :
+                  <ul className={style['modal-image-crop-callout-list']}>
+                    <li>Largeur minimale de l’image : 400 px</li>
+                    <li>Hauteur minimale de l’image : 600 px</li>
+                  </ul>
+                </div>
+              </Callout>
+            )}
             <TextInput
               count={credit.length}
               className={cn(
