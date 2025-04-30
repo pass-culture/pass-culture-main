@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import type { StoryObj } from '@storybook/react'
-import { useState } from 'react'
+import { PropsWithChildren, useState } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -10,7 +10,7 @@ import { SelectAutocomplete } from './SelectAutocomplete'
 
 // <FormWrapper> provides a react-hook-form context, which is necessary for the storybook demo to work
 type WrapperFormValues = { departement: string }
-const FormWrapper = ({ children }: { children: React.ReactNode }) => {
+const FormWrapper = ({ children }: PropsWithChildren) => {
   const hookForm = useForm<WrapperFormValues>({
     defaultValues: { departement: '05' },
     resolver: yupResolver(
