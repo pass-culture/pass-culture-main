@@ -140,9 +140,9 @@ class ProductMediation(PcObject, Base, Model):
     __tablename__ = "product_mediation"
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType = sa.Column(sa.Enum(ImageType), nullable=False)
+    imageType: sa_orm.Mapped[ImageType] = sa.Column(sa.Enum(ImageType), nullable=False)
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
-    lastProvider: "Provider|None" = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
+    lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -173,8 +173,8 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
-    reactions: list["Reaction"] = sa_orm.relationship("Reaction", back_populates="product", uselist=True)
-    productMediations: sa_orm.Mapped[ProductMediation] = sa_orm.relationship(
+    reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="product", uselist=True)
+    productMediations: sa_orm.Mapped[list[ProductMediation]] = sa_orm.relationship(
         "ProductMediation",
         backref="product",
         cascade="all, delete-orphan",
@@ -213,7 +213,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
-    author: sa_orm.Mapped["User"] | None = sa_orm.relationship("User", backref="mediations")
+    author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", backref="mediations")
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -227,7 +227,9 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
 
     MAX_STOCK_QUANTITY = 1_000_000
 
-    activationCodes: sa_orm.Mapped["ActivationCode"] = sa_orm.relationship("ActivationCode", back_populates="stock")
+    activationCodes: sa_orm.Mapped[list["ActivationCode"]] = sa_orm.relationship(
+        "ActivationCode", back_populates="stock"
+    )
     beginningDatetime: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
@@ -653,7 +655,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     MAX_STOCKS_PER_OFFER = 2_500
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-    author: sa_orm.Mapped["User"] | None = relationship(
+    author: sa_orm.Mapped["User | None"] = relationship(
         "User", backref="offers", foreign_keys=[authorId], uselist=False
     )
     bookingContact = sa.Column(sa.String(120), nullable=True)
@@ -661,7 +663,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     compliance: sa_orm.Mapped["OfferCompliance | None"] = sa_orm.relationship(
         "OfferCompliance", back_populates="offer", uselist=False
     )
-    criteria: sa_orm.Mapped["Criterion"] = sa_orm.relationship(
+    criteria: sa_orm.Mapped[list["Criterion"]] = sa_orm.relationship(
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
     )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -677,12 +679,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
-    flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
+    flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa_orm.relationship(
         "OfferValidationRule", secondary=ValidationRuleOfferLink.__table__, back_populates="offers"
     )
 
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
-    lastProvider: "Provider|None" = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
+    lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     idAtProvider = sa.Column(
         sa.Text,
         sa.CheckConstraint(
@@ -713,7 +715,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(
         "FutureOffer", back_populates="offer", uselist=False
     )
-    reactions: list["Reaction"] = sa_orm.relationship(
+    reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship(
         "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
     headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
@@ -1327,15 +1329,15 @@ class OfferValidationSubRule(PcObject, Base, Model):
 class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "offer_validation_rule"
     name: str = sa.Column(sa.Text, nullable=False)
-    offers: list["Offer"] = sa_orm.relationship(
+    offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", secondary=ValidationRuleOfferLink.__table__, back_populates="flaggingValidationRules"
     )
-    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer",
         secondary=ValidationRuleCollectiveOfferLink.__table__,
         back_populates="flaggingValidationRules",
     )
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa_orm.relationship(
+    collectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa_orm.relationship(
         "CollectiveOfferTemplate",
         secondary=ValidationRuleCollectiveOfferTemplateLink.__table__,
         back_populates="flaggingValidationRules",
@@ -1438,7 +1440,7 @@ class BookMacroSection(PcObject, Base, Model):
 
 class PriceCategoryLabel(PcObject, Base, Model):
     label: str = sa.Column(sa.Text(), nullable=False)
-    priceCategory: sa_orm.Mapped["PriceCategory"] = sa_orm.relationship(
+    priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship(
         "PriceCategory", back_populates="priceCategoryLabel"
     )
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -1463,7 +1465,7 @@ class PriceCategory(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=False
     )
     priceCategoryLabel: sa_orm.Mapped["PriceCategoryLabel"] = sa_orm.relationship(
-        "PriceCategoryLabel", back_populates="priceCategory"
+        "PriceCategoryLabel", foreign_keys=[priceCategoryLabelId], back_populates="priceCategories"
     )
     stocks: sa_orm.Mapped[list["Stock"]] = relationship("Stock", back_populates="priceCategory", cascade="all")
     idAtProvider = sa.Column(sa.Text, nullable=True)

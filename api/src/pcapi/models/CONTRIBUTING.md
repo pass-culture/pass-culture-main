@@ -43,13 +43,14 @@
 
   - Exemple :
     ```python
-    product: Product = sa_orm.relationship(Product, back_populates="offers") # product est de type Product
+    product: sa_orm.Mapped[Product] = sa_orm.relationship(Product, back_populates="offers") # product est de type Product
     ```
 
 ### Quand utiliser Mapped ?
 
 Dans certains cas, on peut avoir besoin de typer avec `sqlalchemy.orm.Mapped`.
 Notamment quand on a besoin d'appliquer une fonction à l'attribut de classe (Généralement dans une query).
+Toutes les `relationship` ont besoin de `Mapped` avec sqlalchemy 2.0.
 
 - Exemple:
 

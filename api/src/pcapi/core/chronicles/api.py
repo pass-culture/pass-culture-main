@@ -102,7 +102,7 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
     ean = _extract_book_club_ean(answer_dict.get(constants.BookClub.BOOK_EAN_ID.value, EMPTY_ANSWER))
     ean_choice_id = answer_dict.get(constants.BookClub.BOOK_EAN_ID.value, EMPTY_ANSWER).choice_id
 
-    products: list[sa_orm.Mapped[offers_models.Product]] = []
+    products: list[offers_models.Product] = []
     if ean:
         products = db.session.query(offers_models.Product).filter(offers_models.Product.ean == ean).all()
 
@@ -120,7 +120,7 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
-                products=products,
+                products=products,  # type: ignore[arg-type]
                 userId=user_id,
                 isActive=False,
             )

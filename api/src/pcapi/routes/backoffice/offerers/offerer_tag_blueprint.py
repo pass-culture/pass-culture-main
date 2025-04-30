@@ -93,7 +93,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
             name=form.name.data,
             label=form.label.data,
             description=form.description.data,
-            categories=new_categories,
+            categories=new_categories,  # type: ignore[arg-type]
         )
         db.session.add(tag)
         db.session.flush()

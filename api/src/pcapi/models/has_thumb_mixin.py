@@ -14,7 +14,7 @@ class HasThumbMixin:
     # in its own functions.
     id: sa_orm.Mapped[int]
 
-    thumbCount: int = Column(Integer(), nullable=False, default=0)
+    thumbCount: sa_orm.Mapped[int] = Column(Integer(), nullable=False, default=0)
 
     @property
     def thumb_path_component(self) -> str:

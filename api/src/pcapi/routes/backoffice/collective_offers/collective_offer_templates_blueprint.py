@@ -116,7 +116,7 @@ def _get_collective_offer_templates(
         base_query = base_query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
 
     if form.status.data:
-        base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))  # type: ignore[attr-defined]
+        base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))
 
     if form.only_validated_offerers.data:
         base_query = base_query.filter(offerers_models.Offerer.isValidated)

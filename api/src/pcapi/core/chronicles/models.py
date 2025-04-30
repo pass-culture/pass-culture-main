@@ -75,10 +75,10 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     isSocialMediaDiffusible: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    products: list[sa_orm.Mapped["Product"]] = sa_orm.relationship(
+    products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", backref="chronicles", secondary=ProductChronicle.__table__
     )
-    offers: sa_orm.Mapped["Offer"] = sa_orm.relationship(
+    offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", backref="chronicles", secondary=OfferChronicle.__table__
     )
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True, index=True)

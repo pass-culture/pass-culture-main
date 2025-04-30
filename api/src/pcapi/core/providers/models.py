@@ -40,7 +40,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     hmacKey: str = sa.Column(sa.Text(), nullable=True)
     pricesInCents: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
 
-    collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="provider"
     )
 
@@ -49,7 +49,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     )
 
     # presence of this field signifies the provider implements pass Culture's individual offers API
-    apiKeys: sa_orm.Mapped["offerers_models.ApiKey"] = sa_orm.relationship("ApiKey", back_populates="provider")
+    apiKeys: sa_orm.Mapped[list["offerers_models.ApiKey"]] = sa_orm.relationship("ApiKey", back_populates="provider")
 
     @property
     def isAllocine(self) -> bool:

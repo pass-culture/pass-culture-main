@@ -166,7 +166,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)  # declared at signup
     departementCode = sa.Column(sa.String(3), nullable=True)
-    discordUser: DiscordUser = sa_orm.relationship(
+    discordUser: sa_orm.Mapped[DiscordUser] = sa_orm.relationship(
         "DiscordUser", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True
     )
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
@@ -197,16 +197,20 @@ class User(PcObject, Base, Model, DeactivableMixin):
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
-    UserOfferers: list["UserOfferer"] = sa_orm.relationship("UserOfferer", back_populates="user")
+    UserOfferers: sa_orm.Mapped[list["UserOfferer"]] = sa_orm.relationship("UserOfferer", back_populates="user")
     roles: list[UserRole] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
-    trusted_devices: list["TrustedDevice"] = sa_orm.relationship("TrustedDevice", back_populates="user")
-    login_device_history: list["LoginDeviceHistory"] = sa_orm.relationship("LoginDeviceHistory", back_populates="user")
-    single_sign_ons: list["SingleSignOn"] = sa_orm.relationship("SingleSignOn", back_populates="user", cascade="delete")
+    trusted_devices: sa_orm.Mapped[list["TrustedDevice"]] = sa_orm.relationship("TrustedDevice", back_populates="user")
+    login_device_history: sa_orm.Mapped[list["LoginDeviceHistory"]] = sa_orm.relationship(
+        "LoginDeviceHistory", back_populates="user"
+    )
+    single_sign_ons: sa_orm.Mapped[list["SingleSignOn"]] = sa_orm.relationship(
+        "SingleSignOn", back_populates="user", cascade="delete"
+    )
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"
@@ -216,7 +220,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     gdprUserDataExtract: sa_orm.Mapped["GdprUserDataExtract"] = sa_orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
-    reactions: list["Reaction"] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
+    reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
     # immutable_unaccent is a wrapper so that index uses an immutable function.
@@ -1100,7 +1104,7 @@ class TrustedDevice(PcObject, Base, Model):
     __tablename__ = "trusted_device"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = sa_orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
+    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
 
     deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -1113,7 +1117,7 @@ class LoginDeviceHistory(PcObject, Base, Model):
     __tablename__ = "login_device_history"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = sa_orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
+    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
 
     deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -1127,7 +1131,7 @@ class SingleSignOn(PcObject, Base, Model):
     __tablename__ = "single_sign_on"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = sa_orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
+    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
 
     ssoProvider: str = sa.Column(sa.Text, nullable=False)
     ssoUserId: str = sa.Column(sa.Text, nullable=False)
@@ -1157,7 +1161,7 @@ class GdprUserDataExtract(PcObject, Base, Model):
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId])
 
     authorUserId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    authorUser: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[authorUserId])
+    authorUser: sa_orm.Mapped[sa_orm.Mapped[User]] = sa_orm.relationship(User, foreign_keys=[authorUserId])
 
     @hybrid_property
     def expirationDate(self) -> datetime:
@@ -1177,4 +1181,4 @@ class GdprUserAnonymization(PcObject, Base, Model):
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId])
+    user: sa_orm.Mapped[sa_orm.Mapped[User]] = sa_orm.relationship(User, foreign_keys=[userId])

@@ -204,7 +204,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
 
     longitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
 
-    venueProviders: list["providers_models.VenueProvider"] = sa_orm.relationship(
+    venueProviders: sa_orm.Mapped[list["providers_models.VenueProvider"]] = sa_orm.relationship(
         "VenueProvider", back_populates="venue"
     )
 
@@ -258,11 +258,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         nullable=True,
     )
 
-    collectiveOffers: list[educational_models.CollectiveOffer] = sa_orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list[educational_models.CollectiveOffer]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="venue"
     )
 
-    collectiveOfferTemplates: list[educational_models.CollectiveOfferTemplate] = sa_orm.relationship(
+    collectiveOfferTemplates: sa_orm.Mapped[list[educational_models.CollectiveOfferTemplate]] = sa_orm.relationship(
         "CollectiveOfferTemplate", back_populates="venue"
     )
 
@@ -299,7 +299,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
 
     thumb_path_component = "venues"
 
-    criteria: list["criteria_models.Criterion"] = sa_orm.relationship(
+    criteria: sa_orm.Mapped[list["criteria_models.Criterion"]] = sa_orm.relationship(
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary=VenueCriterion.__table__
     )
 
@@ -346,7 +346,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     collectivePhone = sa.Column(sa.Text, nullable=True)
     collectiveEmail = sa.Column(sa.Text, nullable=True)
 
-    collective_playlists: list[educational_models.CollectivePlaylist] = sa_orm.relationship(
+    collective_playlists: sa_orm.Mapped[list[educational_models.CollectivePlaylist]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="venue"
     )
 
@@ -358,7 +358,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "VenueRegistration", back_populates="venue", uselist=False
     )
 
-    bankAccountLinks: list["VenueBankAccountLink"] = sa_orm.relationship(
+    bankAccountLinks: sa_orm.Mapped[list["VenueBankAccountLink"]] = sa_orm.relationship(
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
 
@@ -366,7 +366,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "AccessibilityProvider", back_populates="venue", uselist=False
     )
 
-    adage_addresses: sa_orm.Mapped[typing.Sequence[educational_models.AdageVenueAddress]] = sa_orm.relationship(
+    adage_addresses: sa_orm.Mapped[list[educational_models.AdageVenueAddress]] = sa_orm.relationship(
         "AdageVenueAddress", back_populates="venue"
     )
 
@@ -379,7 +379,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
 
-    headlineOffers: list["offers_models.HeadlineOffer"] = sa_orm.relationship("HeadlineOffer", back_populates="venue")
+    headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
+        "HeadlineOffer", back_populates="venue"
+    )
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -939,7 +941,9 @@ class VenueEducationalStatus(Base, Model):
     __tablename__ = "venue_educational_status"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: str = sa.Column(sa.String(256), nullable=False)
-    venues = sa_orm.relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
+    venues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship(
+        Venue, back_populates="venueEducationalStatus", uselist=True
+    )
 
 
 class VenueRegistration(PcObject, Base, Model):
@@ -986,7 +990,7 @@ class Offerer(
 
     sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin")
 
-    UserOfferers: list["UserOfferer"] = sa_orm.relationship(
+    UserOfferers: sa_orm.Mapped[list["UserOfferer"]] = sa_orm.relationship(
         "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"
     )
 
@@ -996,7 +1000,7 @@ class Offerer(
 
     dateValidated = sa.Column(sa.DateTime, nullable=True, default=None)
 
-    tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary=OffererTagMapping.__table__)
+    tags: sa_orm.Mapped[list["OffererTag"]] = sa_orm.relationship("OffererTag", secondary=OffererTagMapping.__table__)
 
     # use an expression instead of joinedload(tags) to avoid multiple SQL rows returned
     isTopActeur: sa_orm.Mapped["bool"] = sa_orm.query_expression()
@@ -1016,10 +1020,12 @@ class Offerer(
             .exists()
         )
 
-    offererProviders: list["OffererProvider"] = sa_orm.relationship("OffererProvider", back_populates="offerer")
+    offererProviders: sa_orm.Mapped[list["OffererProvider"]] = sa_orm.relationship(
+        "OffererProvider", back_populates="offerer"
+    )
     thumb_path_component = "offerers"
 
-    bankAccounts: list[finance_models.BankAccount] = sa_orm.relationship(
+    bankAccounts: sa_orm.Mapped[list[finance_models.BankAccount]] = sa_orm.relationship(
         finance_models.BankAccount,
         back_populates="offerer",
         passive_deletes=True,
@@ -1116,7 +1122,9 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
         "User", foreign_keys=[userId], back_populates="UserOfferers"
     )
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False)
-    offerer: Offerer = sa_orm.relationship(Offerer, foreign_keys=[offererId], back_populates="UserOfferers")
+    offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship(
+        Offerer, foreign_keys=[offererId], back_populates="UserOfferers"
+    )
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1181,7 +1189,7 @@ class OffererTag(PcObject, Base, Model):
     label: str = sa.Column(sa.String(140))
     description: str = sa.Column(sa.Text)
 
-    categories: list["OffererTagCategory"] = sa_orm.relationship(
+    categories: sa_orm.Mapped[list["OffererTagCategory"]] = sa_orm.relationship(
         "OffererTagCategory", secondary=OffererTagCategoryMapping.__table__
     )
 
@@ -1210,7 +1218,9 @@ class OffererProvider(PcObject, Base, Model):
     offererId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    offerer: Offerer = sa_orm.relationship("Offerer", foreign_keys=[offererId], back_populates="offererProviders")
+    offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship(
+        "Offerer", foreign_keys=[offererId], back_populates="offererProviders"
+    )
     providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), index=True, nullable=False)
     provider: sa_orm.Mapped["providers_models.Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=[providerId], back_populates="offererProvider"
@@ -1224,7 +1234,7 @@ class OffererInvitation(PcObject, Base, Model):
     offererId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    offerer: Offerer = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     email: str = sa.Column(sa.Text, nullable=False)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False, index=True)
@@ -1293,7 +1303,7 @@ class OffererStats(PcObject, Base, Model):
 
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), nullable=False)
     sa.Index("ix_offerer_stats_offererId", offererId)
-    offerer: Offerer = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
 
     syncDate: datetime = sa.Column(sa.DateTime, nullable=False)
     table: str = sa.Column(sa.String(120), nullable=False)
@@ -1313,7 +1323,7 @@ class OffererAddress(PcObject, Base, Model):
     address: sa_orm.Mapped[geography_models.Address] = sa_orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    venues: sa_orm.Mapped[typing.Sequence["Venue"]] = sa_orm.relationship("Venue", back_populates="offererAddress")
+    venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship("Venue", back_populates="offererAddress")
 
     __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
 

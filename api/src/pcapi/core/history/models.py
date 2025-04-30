@@ -126,7 +126,7 @@ class ActionHistory(PcObject, Base, Model):
     # nullable because of old actions without known author migrated here or lines which must be kept in case an admin
     # author is removed; but the author is mandatory for any new action
     authorUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
-    authorUser: users_models.User | None = sa_orm.relationship("User", foreign_keys=[authorUserId])
+    authorUser: sa_orm.Mapped[users_models.User | None] = sa_orm.relationship("User", foreign_keys=[authorUserId])
 
     extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
 
@@ -134,7 +134,7 @@ class ActionHistory(PcObject, Base, Model):
     userId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
     )
-    user: users_models.User | None = sa_orm.relationship(
+    user: sa_orm.Mapped[users_models.User | None] = sa_orm.relationship(
         "User",
         foreign_keys=[userId],
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
