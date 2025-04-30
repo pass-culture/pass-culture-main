@@ -21,28 +21,55 @@ type CustomEvent<T extends 'change' | 'blur'> = {
   target: { name: string; value: string }
 }
 
+/**
+ * Base props for the SelectAutocomplete component
+ */
 type CommonProps = {
+  /** Name of the field, used for form submission and accessibility */
   name: string
+  /** Label displayed above the input */
   label: string | JSX.Element
+  /** List of available options */
   options: SelectOption[]
 
+  /** Helper text displayed below the input */
   description?: string
+  /** Disables the input and prevents interaction */
   disabled?: boolean
+  /** Indicates if the field is optional */
   isOptional?: boolean
+  /** Additional CSS class names */
   className?: string
+  /** Error message to display */
   error?: string
+  /** Hides the dropdown arrow */
   hideArrow?: boolean
+  /** Called when the selected value changes */
   onChange?(e: CustomEvent<'change'>): void
+  /** Called when the input loses focus */
   onBlur?(e: CustomEvent<'blur'>): void
+  /** Called when the search input changes */
   onSearch?(pattern: string): void
+  /** Custom function to filter options based on search pattern */
   searchInOptions?(options: SelectOption[], pattern: string): SelectOption[]
 }
+
+/**
+ * Props for when resetOnOpen is true
+ */
 type WithResetOnOpen = {
+  /** Resets the input value when dropdown opens. */
   resetOnOpen?: true
+  /** Called when the input is reset. */
   onReset?(): void
 }
+
+/**
+ * Props for when resetOnOpen is false
+ */
 type WithoutResetOnOpen = {
   resetOnOpen?: false
+  /** (cannot be provided when `resetOnOpen` is `false`) */
   onReset?: never
 }
 
@@ -76,7 +103,7 @@ export const SelectAutocomplete = forwardRef(
   ): JSX.Element => {
     const [searchField, setSearchField] = useState('') // Represents the <input type="search"> value while typing (e.g. "Alpes de Ha…")
     const [field, setField] = useState('') // Represents the actual selected <option>’s "value" attribute among the options (e.g. "04")
-    const [isOpen, setIsOpen] = useState(false) // Represents the state of the dropdown options list
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
       null
     ) // Represents the index of the hovered option while using keyboard (for a11y), useful for the "aria-activedescendant" attribute
@@ -102,19 +129,19 @@ export const SelectAutocomplete = forwardRef(
 
     // Handles "resetOnOpen" behavior
     useEffect(() => {
-      if (resetOnOpen && isOpen && searchField !== '') {
+      if (resetOnOpen && isDropdownOpen && searchField !== '') {
         setField('')
         setSearchField('')
         onReset()
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, resetOnOpen])
+    }, [isDropdownOpen, resetOnOpen])
 
     // Clicking outside the container will close the dropdown
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent): void => {
         if (!containerRef.current?.contains(e.target as Node)) {
-          setIsOpen(false)
+          setIsDropdownOpen(false)
         }
       }
       if (containerRef.current) {
@@ -158,8 +185,8 @@ export const SelectAutocomplete = forwardRef(
               nextHoveredElement?.scrollIntoView({ block: 'nearest' })
             }
           }
-          if (!isOpen) {
-            setIsOpen(true)
+          if (!isDropdownOpen) {
+            setIsDropdownOpen(true)
           }
           break
         case 'ArrowDown':
@@ -178,14 +205,14 @@ export const SelectAutocomplete = forwardRef(
               listRef.current?.getElementsByTagName('li')[newIndex]
             nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
-          if (!isOpen) {
-            setIsOpen(true)
+          if (!isDropdownOpen) {
+            setIsDropdownOpen(true)
           }
           break
-        case ' ': //  Space key
+        case ' ':
         case 'Enter':
           if (
-            isOpen &&
+            isDropdownOpen &&
             hoveredOptionIndex !== null &&
             filteredOptions[hoveredOptionIndex]
           ) {
@@ -197,11 +224,11 @@ export const SelectAutocomplete = forwardRef(
           break
         case 'Escape':
           setHoveredOptionIndex(null)
-          setIsOpen(false)
+          setIsDropdownOpen(false)
           break
         case 'Tab':
           setHoveredOptionIndex(null)
-          setIsOpen(false)
+          setIsDropdownOpen(false)
           break
         default:
           break
@@ -210,37 +237,33 @@ export const SelectAutocomplete = forwardRef(
 
     // When an option is chosen
     const selectOption = (value: string) => {
-      // Update selected value and search text internally
       setField(value)
       setSearchField(optionsLabelById.current?.get(value) ?? '')
 
-      // Then notify changes up to the parent component
+      // Notify changes up to the parent component
       onChange({ type: 'change', target: { name, value } })
       onBlur({ type: 'blur', target: { name, value } })
 
-      // Close dropdown and reset hovered index (a11y)
-      setIsOpen(false)
+      setIsDropdownOpen(false)
       setHoveredOptionIndex(null)
     }
 
-    // Dropdown open
-    const open = () => {
-      if (!isOpen) {
-        setIsOpen(true)
+    const openDropdown = () => {
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true)
       }
     }
 
-    // Dropdown toggle
-    const toggle = () => {
-      if (!isOpen) {
-        setIsOpen(true)
+    const toggleDropdown = () => {
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true)
       } else {
-        setIsOpen(false)
+        setIsDropdownOpen(false)
         setSearchField('')
       }
     }
 
-    // When the inputRef’s value changes externally, associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
+    // When the inputRef's value changes externally, associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
     useEffect(() => {
       setSearchField(
         optionsLabelById.current?.get(inputRef.current?.value ?? '') ?? ''
@@ -274,8 +297,8 @@ export const SelectAutocomplete = forwardRef(
             {...(hoveredOptionIndex !== null && {
               'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
             })}
-            onClick={open}
-            onFocus={open}
+            onClick={openDropdown}
+            onFocus={openDropdown}
             className={styles['multi-select-autocomplete-placeholder-input']}
             hasError={!!error}
             type="search"
@@ -283,7 +306,7 @@ export const SelectAutocomplete = forwardRef(
             aria-autocomplete="list"
             aria-controls={`list-${name}`}
             aria-describedby={`help-${name}`}
-            aria-expanded={isOpen}
+            aria-expanded={isDropdownOpen}
             aria-haspopup="listbox"
             aria-required={!isOptional}
             role="combobox"
@@ -316,7 +339,7 @@ export const SelectAutocomplete = forwardRef(
           >
             {field !== '' &&
               `Option sélectionnée : ${optionsLabelById.current?.get(field) ?? ''}. `}
-            {isOpen
+            {isDropdownOpen
               ? `${filteredOptions.length} options ${
                   searchField === ''
                     ? 'disponibles. '
@@ -344,11 +367,11 @@ export const SelectAutocomplete = forwardRef(
             {!hideArrow && (
               <Toggle
                 disabled={disabled}
-                isOpen={isOpen}
-                toggleField={toggle}
+                isOpen={isDropdownOpen}
+                toggleField={toggleDropdown}
               />
             )}
-            {isOpen && (
+            {isDropdownOpen && (
               <OptionsList
                 className={className}
                 fieldName={name}

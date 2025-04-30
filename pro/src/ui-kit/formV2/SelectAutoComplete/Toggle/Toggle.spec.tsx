@@ -60,7 +60,6 @@ describe('<Toggle />', () => {
       toggleField: vi.fn(),
     })
 
-    // querySelector est l'opposé de closest() pour chercher dans les descendants plutôt que les ancêtres
     expect(screen.getByRole('button').querySelector('svg')).toHaveAttribute(
       'aria-label',
       'Masquer les options'
