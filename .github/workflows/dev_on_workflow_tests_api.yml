@@ -520,7 +520,7 @@ jobs:
     if: always() && github.ref == 'refs/heads/master' && contains(needs.*.result, 'failure')
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
-      channel_id: ${{vars.SLACK_DEV_CHANNEL_ID}}
+      channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
       color: "#A30002"
       message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Tests api> a échoué sur `master`"
     secrets:
