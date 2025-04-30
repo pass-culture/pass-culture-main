@@ -32,7 +32,6 @@ jobs:
   ask-for-review-on-slack:
     name: "Ask for deployment review on Slack"
     needs: check-workflow-ref
-    continue-on-error: true
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
@@ -144,7 +143,7 @@ jobs:
           payload: |
             channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
             attachments:
-              - color: ${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}
+              - color: "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}"
                   blocks:
                       - type: "context"
                         elements:
