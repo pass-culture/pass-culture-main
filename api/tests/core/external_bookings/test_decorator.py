@@ -57,7 +57,7 @@ class CatchCinemaProviderRequestTimeoutTest:
         client = FakeExternalBookingClientAPI(cinema_id=1, connector=Mock())
 
         with pytest.raises(TypeError) as exception:
-            # We ignore the pylint error because we test incorrect args here
+            # We ignore the pytest error because we test incorrect args here
             client.get_film_showtimes_stocks(12, show_id=1)
             assert (
                 str(exception.value)

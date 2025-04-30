@@ -287,7 +287,6 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             if row["ID offre"] == searched_id:
                 break
         else:
-            row_index, row = 0, {}  # for pylint
             assert False, f"Expected offer {searched_id} not found in results"
         assert row["ID résa"] == str(bookings[2].id)
         assert row["Contremarque"] == "ELBEIT"

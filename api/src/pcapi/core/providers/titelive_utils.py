@@ -24,7 +24,7 @@ FILENAME = "titelive_gtl.py"
 FILE_PATH = DIRECTORY / FILENAME
 
 HEADER_DOCUMENTATION = """
-# pylint: skip-file
+# ruff: noqa
 # This source was generated
 # DO NOT EDIT !
 #

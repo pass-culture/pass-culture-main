@@ -34,7 +34,6 @@ CACHE_DURATION = datetime.timedelta(hours=6)
 PASS_CULTURE_CONTEXT = "Vérification des acteurs culturels inscrits sur le pass Culture"
 
 
-# pylint: disable=abstract-method
 class EntrepriseBackend(BaseBackend):
     # less than 1-minute nginx timeout
     timeout = 50

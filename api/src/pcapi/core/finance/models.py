@@ -1067,7 +1067,7 @@ class FinanceIncident(PcObject, Base, Model):
 
     @property
     def invoice_url(self) -> str | None:
-        # flatten finance events to avoid pylint's too many nested blocks warning
+        # flatten finance events to avoid linter's too many nested blocks warning
         finance_events: list = sum(
             [booking_finance_incident.finance_events for booking_finance_incident in self.booking_finance_incidents], []
         )

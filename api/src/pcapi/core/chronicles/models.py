@@ -96,5 +96,5 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
         return self.isActive and self.isSocialMediaDiffusible
 
     @isPublished.expression  # type: ignore[no-redef]
-    def isPublished(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def isPublished(cls) -> BinaryExpression:
         return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))

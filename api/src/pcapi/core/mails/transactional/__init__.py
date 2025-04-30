@@ -1,4 +1,3 @@
-# pylint: disable: unused-imptr
 from .bookings.booking_cancellation import send_booking_cancellation_confirmation_by_pro_to_pro_email
 from .bookings.booking_cancellation import send_booking_cancellation_emails_to_user_and_offerer
 from .bookings.booking_cancellation_by_beneficiary import send_booking_cancellation_by_beneficiary_email

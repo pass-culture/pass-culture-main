@@ -1,4 +1,4 @@
-# pylint: skip-file
+# ruff: noqa
 # This source was generated
 # DO NOT EDIT !
 #

@@ -120,7 +120,6 @@ class PublicAPIEndpointBaseHelper:
         return offerers_factories.VenueFactory()
 
 
-# pylint: disable=abstract-method
 class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
     """
     For Public API endpoints that require an active `VenueProvider`
