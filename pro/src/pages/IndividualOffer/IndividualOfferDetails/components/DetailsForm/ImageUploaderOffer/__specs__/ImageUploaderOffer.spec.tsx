@@ -40,6 +40,7 @@ describe('ImageUploaderOffer', () => {
       undefined
     )
   })
+
   it('should render when an image is given', async () => {
     props.imageOffer = {
       originalUrl: 'https://test.url',

@@ -9,6 +9,8 @@ import {
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   isCollectiveOffer,
   Mode,
@@ -18,6 +20,7 @@ import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCol
 import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -76,6 +79,7 @@ export const OfferEducationalForm = ({
   isSubmitting,
   venues,
 }: OfferEducationalFormProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
   const isCollectiveOaActive = useActiveFeature(
@@ -138,6 +142,13 @@ export const OfferEducationalForm = ({
     })
   }, [userOfferer?.id])
 
+  const logOnImageDropOrSelected = () => {
+    logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
+      imageType: UploaderModeEnum.OFFER_COLLECTIVE,
+      imageCreationStage: 'add image',
+    })
+  }
+
   return (
     <>
       <ScrollToFirstErrorAfterSubmit />
@@ -177,6 +188,7 @@ export const OfferEducationalForm = ({
                 <FormImageUploader
                   onImageDelete={onImageDelete}
                   onImageUpload={onImageUpload}
+                  onImageDropOrSelected={logOnImageDropOrSelected}
                   imageOffer={imageOffer}
                   disableForm={!canEditDetails}
                   isTemplate={isTemplate}
