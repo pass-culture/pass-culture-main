@@ -1,0 +1,16 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.image-preview-shell {
+  position: absolute;
+  width: rem.torem(92px);
+  z-index: 0;
+}
+
+.image-preview-home-preview {
+  position: absolute;
+  top: rem.torem(18px);
+  left: rem.torem(4px);
+  width: rem.torem(46px);
+  background-color: var(--color-background-default);
+  border-radius: rem.torem(1.49px);
+}

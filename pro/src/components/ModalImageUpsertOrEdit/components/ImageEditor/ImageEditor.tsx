@@ -7,7 +7,7 @@ import { Slider } from 'ui-kit/form/Slider/Slider'
 import { CanvasTools } from './canvas'
 import style from './ImageEditor.module.scss'
 
-const CANVAS_MOBILE_BREAKPOINT = 744
+const CANVAS_MOBILE_BREAKPOINT = 600
 
 function clamp(input: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, input))

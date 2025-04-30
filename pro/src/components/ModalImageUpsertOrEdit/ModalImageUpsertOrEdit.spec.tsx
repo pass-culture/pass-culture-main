@@ -271,7 +271,7 @@ describe('ModalImageUpsertOrEdit', () => {
       })
     })
 
-    describe('when it is used in other modes than OFFER (individual offer)', () => {
+    describe('when it is used in COLLECTIVE OFFER mode', () => {
       it('should not display the preview', async () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
@@ -279,7 +279,7 @@ describe('ModalImageUpsertOrEdit', () => {
             imageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
-          mode: UploaderModeEnum.VENUE,
+          mode: UploaderModeEnum.OFFER_COLLECTIVE,
         })
         await waitForRender()
 

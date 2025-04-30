@@ -22,6 +22,10 @@
   &-shell {
     height: rem.torem(192px);
   }
+
+  @media (max-width: size.$tablet) {
+    display: none;
+  }
 }
 
 .image-preview-previews-wrapper {
