@@ -250,7 +250,7 @@ jobs:
     if: always() && needs.cypress-run.result == 'failure' && github.ref == 'refs/heads/master'
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
-      channel_id: ${{vars.SLACK_DEV_CHANNEL_ID}}
+      channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
       color: "#A30002"
       message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro E2E Tests> a échoué sur `master`"
     secrets:
