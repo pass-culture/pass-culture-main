@@ -119,7 +119,6 @@ describe('ImageUploader', () => {
 
     await userEvent.click(screen.getByText('Ajouter une image'))
 
-    // dialog: import & crop img
     expect(screen.getByText('Modifier une image')).toBeInTheDocument()
     expect(
       screen.getByText(

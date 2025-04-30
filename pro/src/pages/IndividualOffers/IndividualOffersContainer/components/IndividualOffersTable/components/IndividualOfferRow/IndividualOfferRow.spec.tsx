@@ -332,14 +332,12 @@ describe('IndividualOfferRow', () => {
         })
         await userEvent.click(makeHeadlineOfferButton)
 
-        // dialog : add an img to make han headline offer
         expect(
           screen.getByText('Ajoutez une image pour mettre votre offre à la une')
         ).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Ajouter une image'))
 
-        // dialog: import & crop img
         expect(screen.getByText('Modifier une image')).toBeInTheDocument()
         const inputField = screen.getByLabelText('Importez une image')
         await userEvent.upload(inputField, mockFile)
@@ -389,7 +387,6 @@ describe('IndividualOfferRow', () => {
 
         await userEvent.click(screen.getByText('Ajouter une image'))
 
-        // dialog: import & crop img
         expect(screen.getByText('Modifier une image')).toBeInTheDocument()
         const inputField = screen.getByLabelText('Importez une image')
         await userEvent.upload(inputField, mockFile)
