@@ -37,7 +37,9 @@ jobs:
       channel: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
       color: "#D4AD3B"
       message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}`"
-
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   version:
     name: "Version"
@@ -144,18 +146,18 @@ jobs:
             channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
             attachments:
               - color: "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}"
-                  blocks:
-                      - type: "context"
-                        elements:
-                          - type: "image"
-                            image_url: "https://github.com/${{github.actor}}.png"
-                            alt_text: "image de profil Github de ${{github.actor}}"
-                          - type: "mrkdwn"
-                            text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
-                          - type: "section"
-                        text:
-                          type: "mrkdwn"
-                          text: " Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: " Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
       - name: "Post success on #shérif"
         if: env.WORKFLOW_CONCLUSION == 'success'
         uses: slackapi/slack-github-action@v2.0.0
@@ -165,7 +167,7 @@ jobs:
           payload: |
             channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
             attachments:
-              -  color: "#36A64F"
+              - color: "#36A64F"
                 blocks:
                   - type: "context"
                     elements:

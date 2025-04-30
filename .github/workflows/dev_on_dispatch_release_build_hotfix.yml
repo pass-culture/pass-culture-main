@@ -142,15 +142,15 @@ jobs:
             channel: ${{ vars.SLACK_SHERIF_CHANNEL_ID }}
             attachments:
               - color: "${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
-                 blocks:
-                   - type: "context"
-                     elements:
-                       - type: "image"
-                         image_url: "https://github.com/${{github.actor}}.png"
-                         alt_text: "image de profil Github de ${{github.actor}}"
-                       - type: "mrkdwn"
-                         text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
-                   - type: "section"
-                     text:
-                       type: "mrkdwn"
-                       text: ${{ steps.slack-text.outputs.text }}
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: "${{ steps.slack-text.outputs.text }}"
