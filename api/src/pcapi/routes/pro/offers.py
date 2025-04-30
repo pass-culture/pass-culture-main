@@ -401,7 +401,8 @@ def patch_publish_offer(
         raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
 
     try:
-        offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
+        offers_api.update_offer_fraud_information(offer, user=current_user)
+        offers_api.publish_offer(offer, publication_date=body.publicationDate)
     except exceptions.FutureOfferException as exc:
         raise api_errors.ApiErrors(exc.errors, status_code=400)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:

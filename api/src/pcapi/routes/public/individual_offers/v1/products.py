@@ -304,7 +304,8 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 utils.save_image(body.image, product)
 
             _create_stock(product=product, body=body)
-            offers_api.publish_offer(product, user=None)
+            offers_api.update_offer_fraud_information(product, user=None)
+            offers_api.publish_offer(product)
     except ExistingVenueWithIdAtProviderError as error:
         raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
     except CreateProductError as error:

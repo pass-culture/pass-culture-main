@@ -130,7 +130,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             if body.image:
                 utils.save_image(body.image, created_offer)
 
-            offers_api.publish_offer(created_offer, user=None, publication_date=body.publication_date)
+            offers_api.publish_offer(created_offer, publication_date=body.publication_date)
 
     except (
         offers_exceptions.OfferCreationBaseException,
@@ -497,6 +497,8 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
                         id_at_provider=date.id_at_provider,
                     )
                 )
+            if not existing_stocks_count and body.dates:
+                offers_api.update_offer_fraud_information(offer, user=None)
     except (
         offers_exceptions.OfferCreationBaseException,
         offers_exceptions.OfferEditionBaseException,
