@@ -2,7 +2,7 @@
 {% macro build_comment_modal(dst, form) %}
   {% set add_comment_modal_label_id = random_hash() %}
   {% if has_permission("MANAGE_PRO_ENTITY") %}
-    <button class="btn btn-outline-primary lead fw-bold mt-2"
+    <button class="btn btn-outline-primary-subtle-bg mt-2"
             data-bs-toggle="modal"
             data-bs-target=".pc-add-comment-pro-user-modal"
             type="button">Ajouter un commentaire</button>
