@@ -93,14 +93,12 @@ describe('SelectAutocomplete', () => {
       expect(screen.queryByTestId('list')).not.toBeInTheDocument()
     })
 
-    describe('Simple', () => {
-      it('should replace single option', async () => {
-        render(<SelectAutocomplete {...props} />)
-        await userEvent.click(screen.getByLabelText('Département *'))
-        const list = screen.getByTestId('list')
-        await userEvent.click(await within(list).findByText('Aveyron'))
-        expect(screen.queryByTestId('select')).toHaveValue('12')
-      })
+    it('should replace single option', async () => {
+      render(<SelectAutocomplete {...props} />)
+      await userEvent.click(screen.getByLabelText('Département *'))
+      const list = screen.getByTestId('list')
+      await userEvent.click(await within(list).findByText('Aveyron'))
+      expect(screen.queryByTestId('select')).toHaveValue('12')
     })
   })
 
