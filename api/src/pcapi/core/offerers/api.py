@@ -2028,7 +2028,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
                     ),
                     sa.and_(
                         sa.not_(offer_class.isActive),
-                        offer_class.validation.in_(  # type: ignore[attr-defined]
+                        offer_class.validation.in_(
                             [
                                 offers_models.OfferValidationStatus.APPROVED.value,
                                 offers_models.OfferValidationStatus.PENDING.value,
@@ -2125,7 +2125,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
                     sa.and_(
                         sa.not_(offer_class.isActive),
                         offer_class.venueId == venue_id,
-                        offer_class.validation.in_(  # type: ignore[attr-defined]
+                        offer_class.validation.in_(
                             [
                                 offers_models.OfferValidationStatus.APPROVED.value,
                                 offers_models.OfferValidationStatus.PENDING.value,

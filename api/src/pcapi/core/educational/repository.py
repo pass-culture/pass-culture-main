@@ -699,7 +699,7 @@ def list_public_collective_offers(
     ]
 
     if status:
-        filters.append(educational_models.CollectiveOffer.status == status)
+        filters.append(educational_models.CollectiveOffer.status == status)  # type: ignore[arg-type]
     if venue_id:
         filters.append(educational_models.CollectiveOffer.venueId == venue_id)
     if period_beginning_date:

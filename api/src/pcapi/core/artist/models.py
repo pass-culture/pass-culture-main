@@ -47,7 +47,7 @@ class Artist(PcObject, Base, Model):
     date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
-    products: list[sa_orm.Mapped["Product"]] = sa_orm.relationship(
+    products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", backref="artists", secondary=ArtistProductLink.__table__
     )
 

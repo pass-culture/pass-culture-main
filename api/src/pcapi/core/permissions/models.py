@@ -146,9 +146,9 @@ class RolePermission(PcObject, Base, Model):
 class Permission(PcObject, Base, Model):
     __tablename__ = "permission"
 
-    name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
-    category = sa.Column(sa.String(140), nullable=True, default=None)
-    roles: sa_orm.Mapped["Role"] = sa_orm.relationship(
+    name: sa_orm.Mapped[str] = sa.Column(sa.String(length=140), nullable=False, unique=True)
+    category: sa_orm.Mapped[str] = sa.Column(sa.String(140), nullable=True, default=None)
+    roles: sa_orm.Mapped[list["Role"]] = sa_orm.relationship(
         "Role", secondary=RolePermission.__table__, back_populates="permissions"
     )
 
@@ -197,11 +197,11 @@ def sync_db_roles(session: sa_orm.Session) -> None:
 class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
-    name: str = sa.Column(sa.String(140), nullable=False, unique=True)
-    permissions: sa_orm.Mapped["Permission"] = sa_orm.relationship(
-        Permission, secondary=RolePermission.__table__, back_populates="roles"
+    name: sa_orm.Mapped[str] = sa.Column(sa.String(140), nullable=False, unique=True)
+    permissions: sa_orm.Mapped[list["Permission"]] = sa_orm.relationship(
+        "Permission", secondary=RolePermission.__table__, back_populates="roles"
     )
-    profiles: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
+    profiles: sa_orm.Mapped[list["BackOfficeUserProfile"]] = sa_orm.relationship(
         "BackOfficeUserProfile", secondary="role_backoffice_profile", back_populates="roles"
     )
 
@@ -215,15 +215,15 @@ class Role(PcObject, Base, Model):
 class BackOfficeUserProfile(Base, Model):
     __tablename__ = "backoffice_user_profile"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId: int = sa.Column(
+    userId: sa_orm.Mapped[int] = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     user: sa_orm.Mapped["User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
     )
-    roles: sa_orm.Mapped["list[Role]"] = sa_orm.relationship(
+    roles: sa_orm.Mapped[list[Role]] = sa_orm.relationship(
         "Role", secondary="role_backoffice_profile", back_populates="profiles"
     )
 
@@ -235,7 +235,7 @@ class BackOfficeUserProfile(Base, Model):
     )
 
     # instructor id on Démarches Simplifiées, used to change application status
-    dsInstructorId: str = sa.Column(sa.Text, nullable=True, index=True, unique=True)
+    dsInstructorId: sa_orm.Mapped[str] = sa.Column(sa.Text, nullable=True, index=True, unique=True)
 
     @property
     def permissions(self) -> typing.Collection[Permissions]:

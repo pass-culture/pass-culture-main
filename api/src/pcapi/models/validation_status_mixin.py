@@ -2,6 +2,7 @@ import enum
 
 import sqlalchemy as sa
 import sqlalchemy.ext.hybrid as sa_hybrid
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declarative_mixin
 from sqlalchemy.sql.elements import BinaryExpression
 
@@ -17,7 +18,9 @@ class ValidationStatus(enum.Enum):
 
 @declarative_mixin
 class ValidationStatusMixin:
-    validationStatus: ValidationStatus = sa.Column(sa.Enum(ValidationStatus, create_constraint=False), nullable=False)
+    validationStatus: sa_orm.Mapped[ValidationStatus] = sa.Column(
+        sa.Enum(ValidationStatus, create_constraint=False), nullable=False
+    )
 
     @sa_hybrid.hybrid_property
     def isNew(self) -> bool:

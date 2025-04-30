@@ -661,7 +661,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         standardRule=rule.description if not isinstance(rule, models.CustomReimbursementRule) else "",
         customRuleId=rule.id if isinstance(rule, models.CustomReimbursementRule) else None,
         revenue=new_revenue,
-        lines=lines,
+        lines=lines,  # type: ignore[arg-type]
         bookingId=pricing_booking_id,
         collectiveBookingId=pricing_collective_booking_id,
         eventId=event.id,

@@ -54,9 +54,9 @@ class Deposit(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user: "users_models.User" = sa_orm.relationship("User", foreign_keys=[userId], backref="deposits")
+    user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="deposits")
 
-    bookings: list["bookings_models.Booking"] = sa_orm.relationship("Booking", back_populates="deposit")
+    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="deposit")
 
     source: str = sa.Column(sa.String(300), nullable=False)
 
@@ -74,7 +74,7 @@ class Deposit(PcObject, Base, Model):
         server_default=DepositType.GRANT_18.value,
     )
 
-    recredits: list["Recredit"] = sa_orm.relationship(
+    recredits: sa_orm.Mapped[list["Recredit"]] = sa_orm.relationship(
         "Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit"
     )
 
@@ -135,7 +135,9 @@ class RecreditType(enum.Enum):
 class Recredit(PcObject, Base, Model):
     depositId: int = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
-    deposit: Deposit = sa_orm.relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")
+    deposit: sa_orm.Mapped[Deposit] = sa_orm.relationship(
+        "Deposit", foreign_keys=[depositId], back_populates="recredits"
+    )
 
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
@@ -241,13 +243,15 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     iban: str = sa.Column(sa.String(27), nullable=False)
     bic: str = sa.Column(sa.String(11), nullable=False)
     dsApplicationId: int | None = sa.Column(sa.BigInteger, nullable=True, unique=True)
-    status: BankAccountApplicationStatus = sa.Column(sa.Enum(BankAccountApplicationStatus), nullable=False)
+    status: sa_orm.Mapped[BankAccountApplicationStatus] = sa.Column(
+        sa.Enum(BankAccountApplicationStatus), nullable=False
+    )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     dateLastStatusUpdate: datetime.datetime = sa.Column(sa.DateTime)
     venueLinks: sa_orm.Mapped[list["offerers_models.VenueBankAccountLink"]] = sa_orm.relationship(
         "VenueBankAccountLink", back_populates="bankAccount", passive_deletes=True
     )
-    statusHistory: list["BankAccountStatusHistory"] = sa_orm.relationship(
+    statusHistory: sa_orm.Mapped[list["BankAccountStatusHistory"]] = sa_orm.relationship(
         "BankAccountStatusHistory",
         back_populates="bankAccount",
         foreign_keys="BankAccountStatusHistory.bankAccountId",
@@ -427,11 +431,13 @@ class Pricing(PcObject, Base, Model):
     # It is zero or positive.
     revenue: int = sa.Column(sa.Integer, nullable=False)
 
-    cashflows: list["Cashflow"] = sa_orm.relationship(
+    cashflows: sa_orm.Mapped[list["Cashflow"]] = sa_orm.relationship(
         "Cashflow", secondary=CashflowPricing.__table__, back_populates="pricings"
     )
-    lines: list["PricingLine"] = sa_orm.relationship("PricingLine", back_populates="pricing", order_by="PricingLine.id")
-    logs: list["PricingLog"] = sa_orm.relationship(
+    lines: sa_orm.Mapped[list["PricingLine"]] = sa_orm.relationship(
+        "PricingLine", back_populates="pricing", order_by="PricingLine.id"
+    )
+    logs: sa_orm.Mapped[list["PricingLog"]] = sa_orm.relationship(
         "PricingLog", back_populates="pricing", order_by="PricingLog.timestamp"
     )
 
@@ -475,7 +481,7 @@ class Pricing(PcObject, Base, Model):
 class PricingLine(PcObject, Base, Model):
 
     pricingId = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=True)
-    pricing: Pricing = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
+    pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
 
     # See the note about `amount` at the beginning of this module.
     amount: int = sa.Column(sa.Integer, nullable=False)
@@ -489,7 +495,7 @@ class PricingLog(PcObject, Base, Model):
     """
 
     pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=False)
-    pricing: Pricing = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
+    pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
 
     timestamp: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     statusBefore: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), nullable=False)
@@ -721,10 +727,12 @@ class Cashflow(PcObject, Base, Model):
     bankAccountId: int = sa.Column(
         "bankAccountId", sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=True
     )
-    bankAccount: BankAccount = sa_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
+    bankAccount: sa_orm.Mapped[BankAccount] = sa_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
 
     batchId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
-    batch: "CashflowBatch" = sa_orm.relationship("CashflowBatch", foreign_keys=[batchId], backref="cashflows")
+    batch: sa_orm.Mapped["CashflowBatch"] = sa_orm.relationship(
+        "CashflowBatch", foreign_keys=[batchId], backref="cashflows"
+    )
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
@@ -732,13 +740,13 @@ class Cashflow(PcObject, Base, Model):
     # generated. Positive (incoming) cashflows are manually created.
     amount: int = sa.Column(sa.Integer, nullable=False)
 
-    logs: list["CashflowLog"] = sa_orm.relationship(
+    logs: sa_orm.Mapped[list["CashflowLog"]] = sa_orm.relationship(
         "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
     )
-    pricings: list[Pricing] = sa_orm.relationship(
+    pricings: sa_orm.Mapped[list[Pricing]] = sa_orm.relationship(
         "Pricing", secondary=CashflowPricing.__table__, back_populates="cashflows"
     )
-    invoices: list["Invoice"] = sa_orm.relationship(
+    invoices: sa_orm.Mapped[list["Invoice"]] = sa_orm.relationship(
         "Invoice", secondary=InvoiceCashflow.__table__, back_populates="cashflows"
     )
 
@@ -749,7 +757,9 @@ class CashflowLog(PcObject, Base, Model):
     """
 
     cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, nullable=False)
-    cashflow: list[Cashflow] = sa_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")
+    cashflow: sa_orm.Mapped[Cashflow] = sa_orm.relationship(
+        "Cashflow", foreign_keys=[cashflowId], back_populates="logs"
+    )
     timestamp: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     statusBefore: CashflowStatus = sa.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
     statusAfter: CashflowStatus = sa.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
@@ -770,7 +780,7 @@ class CashflowBatch(PcObject, Base, Model):
 
 class InvoiceLine(PcObject, Base, Model):
     invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, nullable=False)
-    invoice: "Invoice" = sa_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
+    invoice: sa_orm.Mapped["Invoice"] = sa_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
     label: str = sa.Column(sa.Text, nullable=False)
     # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
     group: dict = sa.Column(sa_psql.JSONB, nullable=False)
@@ -818,12 +828,12 @@ class Invoice(PcObject, Base, Model):
     date: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     reference: str = sa.Column(sa.Text, nullable=False, unique=True)
     bankAccountId = sa.Column(sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=True)
-    bankAccount: BankAccount = sa_orm.relationship("BankAccount", foreign_keys=[bankAccountId])
+    bankAccount: sa_orm.Mapped[BankAccount] = sa_orm.relationship("BankAccount", foreign_keys=[bankAccountId])
     # See the note about `amount` at the beginning of this module.
     amount: int = sa.Column(sa.Integer, nullable=False)
     token: str = sa.Column(sa.Text, unique=True, nullable=False)
-    lines: list[InvoiceLine] = sa_orm.relationship("InvoiceLine", back_populates="invoice")
-    cashflows: list[Cashflow] = sa_orm.relationship(
+    lines: sa_orm.Mapped[list[InvoiceLine]] = sa_orm.relationship("InvoiceLine", back_populates="invoice")
+    cashflows: sa_orm.Mapped[list[Cashflow]] = sa_orm.relationship(
         "Cashflow", secondary=InvoiceCashflow.__table__, back_populates="invoices"
     )
     status: InvoiceStatus = sa.Column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
@@ -848,9 +858,11 @@ class Invoice(PcObject, Base, Model):
 # by `Pricing`, `Cashflow` and other models listed above.
 class Payment(PcObject, Base, Model):
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
-    booking: "bookings_models.Booking" = sa_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
+    booking: sa_orm.Mapped["bookings_models.Booking"] = sa_orm.relationship(
+        "Booking", foreign_keys=[bookingId], backref="payments"
+    )
     collectiveBookingId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True)
-    collectiveBooking: "educational_models.CollectiveBooking" = sa_orm.relationship(
+    collectiveBooking: sa_orm.Mapped["educational_models.CollectiveBooking"] = sa_orm.relationship(
         "CollectiveBooking",
         foreign_keys=[collectiveBookingId],
         backref="payments",
@@ -863,7 +875,7 @@ class Payment(PcObject, Base, Model):
         sa.BigInteger,
         sa.ForeignKey("custom_reimbursement_rule.id"),
     )
-    customReimbursementRule: CustomReimbursementRule | None = sa_orm.relationship(
+    customReimbursementRule: sa_orm.Mapped[CustomReimbursementRule | None] = sa_orm.relationship(
         "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
     )
     recipientName: str = sa.Column(sa.String(140), nullable=False)
@@ -882,7 +894,7 @@ class Payment(PcObject, Base, Model):
     transactionEndToEndId: UUID = sa.Column(sa_psql.UUID(as_uuid=True), nullable=True)
     transactionLabel = sa.Column(sa.String(140), nullable=True)
     paymentMessageId = sa.Column(sa.BigInteger, sa.ForeignKey("payment_message.id"), nullable=True)
-    paymentMessage: "PaymentMessage" = sa_orm.relationship(
+    paymentMessage: sa_orm.Mapped["PaymentMessage"] = sa_orm.relationship(
         "PaymentMessage", foreign_keys=[paymentMessageId], backref=sa_orm.backref("payments")
     )
     batchDate = sa.Column(sa.DateTime, nullable=True, index=True)
@@ -920,7 +932,7 @@ class TransactionStatus(enum.Enum):
 # further details.
 class PaymentStatus(PcObject, Base, Model):
     paymentId: int = sa.Column(sa.BigInteger, sa.ForeignKey("payment.id"), index=True, nullable=False)
-    payment: Payment = sa_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
+    payment: sa_orm.Mapped[Payment] = sa_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
     date: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )

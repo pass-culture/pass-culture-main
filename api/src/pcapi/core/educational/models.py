@@ -311,7 +311,9 @@ class HasImageMixin:
 
     id: sa_orm.Mapped[int]
     imageId = sa.Column(sa.Text, nullable=True)
-    imageCrop: dict | None = sa.Column(sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=True)
+    imageCrop: sa_orm.Mapped[dict | None] = sa.Column(
+        sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=True
+    )
     imageCredit = sa.Column(sa.Text, nullable=True)
     # Whether or not we also stored the original image in the storage bucket.
     imageHasOriginal = sa.Column(sa.Boolean, nullable=True)
@@ -551,7 +553,7 @@ class CollectiveOffer(
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author: sa_orm.Mapped["User"] | None = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
+    author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     # the venueId is the billing address.
     # To find where the offer takes place, check offerVenue.
@@ -611,7 +613,7 @@ class CollectiveOffer(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: list["EducationalDomain"] = sa_orm.relationship(
+    domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
         "EducationalDomain", secondary=CollectiveOfferDomain.__table__, back_populates="collectiveOffers"
     )
 
@@ -653,7 +655,7 @@ class CollectiveOffer(
         "Provider", foreign_keys=providerId, back_populates="collectiveOffers"
     )
 
-    flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
+    flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa_orm.relationship(
         "OfferValidationRule", secondary=ValidationRuleCollectiveOfferLink.__table__, back_populates="collectiveOffers"
     )
 
@@ -1070,7 +1072,7 @@ class CollectiveOfferTemplate(
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author: sa_orm.Mapped["User"] | None = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
+    author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
@@ -1112,21 +1114,17 @@ class CollectiveOfferTemplate(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
-    domains: list["EducationalDomain"] = sa_orm.relationship(
+    domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
         "EducationalDomain",
         secondary=CollectiveOfferTemplateDomain.__table__,
         back_populates="collectiveOfferTemplates",
     )
 
-    collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="template"
     )
 
-    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = sa_orm.relationship(
-        "CollectiveOfferRequest", back_populates="collectiveOfferTemplate"
-    )
-
-    flaggingValidationRules: list["OfferValidationRule"] = sa_orm.relationship(
+    flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa_orm.relationship(
         "OfferValidationRule",
         secondary=ValidationRuleCollectiveOfferTemplateLink.__table__,
         back_populates="collectiveOfferTemplates",
@@ -1156,7 +1154,7 @@ class CollectiveOfferTemplate(
         postgresql.ARRAY(sa.Enum(EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
-    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
+    collective_playlists: sa_orm.Mapped[list["CollectivePlaylist"]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="collective_offer_template"
     )
 
@@ -1430,7 +1428,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         "CollectiveOffer", foreign_keys=[collectiveOfferId], uselist=False, back_populates="collectiveStock"
     )
 
-    collectiveBookings: list["CollectiveBooking"] = sa_orm.relationship(
+    collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
         "CollectiveBooking", back_populates="collectiveStock"
     )
 
@@ -1557,15 +1555,13 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
 
     phoneNumber: str = sa.Column(sa.String(30), nullable=False)
 
-    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship("CollectiveOffer", back_populates="institution")
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
+        "CollectiveOffer", back_populates="institution"
+    )
 
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
-    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = sa_orm.relationship(
-        "CollectiveOfferRequest", back_populates="educationalInstitution"
-    )
-
-    programAssociations: sa_orm.Mapped["list[EducationalInstitutionProgramAssociation]"] = sa_orm.relationship(
+    programAssociations: sa_orm.Mapped[list["EducationalInstitutionProgramAssociation"]] = sa_orm.relationship(
         "EducationalInstitutionProgramAssociation", back_populates="institution"
     )
 
@@ -1573,7 +1569,7 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
         db_utils.MagicEnum(InstitutionRuralLevel), nullable=True, default=None
     )
 
-    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = sa_orm.relationship(
+    collective_playlists: sa_orm.Mapped[list["CollectivePlaylist"]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="institution"
     )
 
@@ -1617,7 +1613,7 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
-    educationalInstitution: EducationalInstitution = sa_orm.relationship(
+    educationalInstitution: sa_orm.Mapped[EducationalInstitution] = sa_orm.relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
@@ -1674,14 +1670,12 @@ class EducationalRedactor(PcObject, models.Base, models.Model):
 
     preferences: sa_orm.Mapped[dict] = sa.Column(postgresql.JSONB(), server_default="{}", default={}, nullable=False)
 
-    collectiveBookings: list["CollectiveBooking"] = sa_orm.relationship(
+    collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
 
-    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship("CollectiveOffer", back_populates="teacher")
-
-    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = sa_orm.relationship(
-        "CollectiveOfferRequest", back_populates="educationalRedactor"
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
+        "CollectiveOffer", back_populates="teacher"
     )
 
     favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa_orm.relationship(
@@ -2012,11 +2006,11 @@ class EducationalDomain(PcObject, models.Base, models.Model):
     venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
         "Venue", back_populates="collectiveDomains", secondary=EducationalDomainVenue.__table__
     )
-    collectiveOffers: list["CollectiveOffer"] = sa_orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer", secondary=CollectiveOfferDomain.__table__, back_populates="domains"
     )
 
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa_orm.relationship(
+    collectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa_orm.relationship(
         "CollectiveOfferTemplate", secondary=CollectiveOfferTemplateDomain.__table__, back_populates="domains"
     )
     nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa_orm.relationship(
@@ -2098,7 +2092,7 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
 
     educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
-        "EducationalRedactor", foreign_keys=educationalRedactorId, back_populates="collectiveOfferRequest"
+        "EducationalRedactor", foreign_keys=educationalRedactorId
     )
 
     collectiveOfferTemplateId: int = sa.Column(
@@ -2106,7 +2100,7 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
     )
 
     collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
-        "CollectiveOfferTemplate", foreign_keys=collectiveOfferTemplateId, back_populates="collectiveOfferRequest"
+        "CollectiveOfferTemplate", foreign_keys=collectiveOfferTemplateId
     )
 
     educationalInstitutionId: int = sa.Column(
@@ -2114,7 +2108,7 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
     )
 
     educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
-        "EducationalInstitution", foreign_keys=educationalInstitutionId, back_populates="collectiveOfferRequest"
+        "EducationalInstitution", foreign_keys=educationalInstitutionId
     )
 
     @hybrid_property

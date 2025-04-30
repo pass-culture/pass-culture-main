@@ -25,7 +25,7 @@ class Criterion(PcObject, Base, Model):
     startDateTime = sa.Column(sa.DateTime, nullable=True)
     endDateTime = sa.Column(sa.DateTime, nullable=True)
 
-    categories: list["CriterionCategory"] = sa_orm.relationship(
+    categories: sa_orm.Mapped[list["CriterionCategory"]] = sa_orm.relationship(
         "CriterionCategory", secondary=CriterionCategoryMapping.__table__
     )
 

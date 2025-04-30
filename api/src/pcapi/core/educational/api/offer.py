@@ -336,7 +336,7 @@ def create_collective_offer_template(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
-        domains=educational_domains,
+        domains=educational_domains,  # type: ignore[arg-type]
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
@@ -402,7 +402,7 @@ def create_collective_offer(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
-        domains=educational_domains,
+        domains=educational_domains,  # type: ignore[arg-type]
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
@@ -599,7 +599,7 @@ def create_collective_offer_public(
         description=body.description,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
-        domains=educational_domains,
+        domains=educational_domains,  # type: ignore[arg-type]
         durationMinutes=body.duration_minutes,
         students=typing.cast(  # type transformation done by the validator (and not detected by mypy)
             list[educational_models.StudentLevels], body.students
@@ -873,7 +873,7 @@ def duplicate_offer_and_stock(
         contactPhone=original_offer.contactPhone,
         offerVenue=original_offer.offerVenue,
         interventionArea=original_offer.interventionArea,
-        domains=original_offer.domains,
+        domains=original_offer.domains,  # type: ignore[arg-type]
         template=original_offer.template,  # type: ignore[arg-type]
         lastValidationDate=None,
         lastValidationType=None,
@@ -1041,7 +1041,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         )
 
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOffer.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
+        educational_models.CollectiveOffer.validation.in_(allowed_validation_status)
     ).with_entities(educational_models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
@@ -1072,7 +1072,7 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         )
 
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
+        educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
