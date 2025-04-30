@@ -5221,6 +5221,7 @@ class MoveOfferTest:
         assert offer.venue == new_venue
         assert db.session.query(bookings_models.Booking).count() == 1
         assert db.session.query(bookings_models.Booking).all()[0].venue == new_venue
+        assert db.session.query(finance_models.FinanceEvent).all()[0].venue == venue
 
 
 @pytest.mark.usefixtures("db_session")

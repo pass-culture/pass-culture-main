@@ -1858,16 +1858,6 @@ def move_offer(
         db.session.query(bookings_models.Booking)
         .join(bookings_models.Booking.stock)
         .outerjoin(
-            # max 1 row joined thanks to idx_uniq_individual_booking_id
-            finance_models.FinanceEvent,
-            sa.and_(
-                finance_models.FinanceEvent.bookingId == bookings_models.Booking.id,
-                finance_models.FinanceEvent.status.in_(
-                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
-                ),
-            ),
-        )
-        .outerjoin(
             # max 1 row joined thanks to idx_uniq_booking_id
             finance_models.Pricing,
             sa.and_(
@@ -1877,7 +1867,6 @@ def move_offer(
         )
         .options(
             sa_orm.load_only(bookings_models.Booking.status),
-            sa_orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
             sa_orm.contains_eager(bookings_models.Booking.pricings).load_only(
                 finance_models.Pricing.pricingPointId, finance_models.Pricing.status
             ),
@@ -1909,17 +1898,6 @@ def move_offer(
             pricing = booking.pricings[0] if booking.pricings else None
             if pricing and pricing.pricingPointId != destination_pricing_point_id:
                 raise exceptions.BookingsHaveOtherPricingPoint()
-
-            finance_event = booking.finance_events[0] if booking.finance_events else None
-            if finance_event:
-                pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
-                finance_event.venueId = destination_venue.id
-                finance_event.pricingPointId = destination_pricing_point_id
-                if finance_event.status == finance_models.FinanceEventStatus.PENDING:
-                    finance_event.status = finance_models.FinanceEventStatus.READY
-                    finance_event.pricingOrderingDate = pricingOrderingDate
-                db.session.add(finance_event)
-            db.session.add(booking)
 
     on_commit(
         partial(
