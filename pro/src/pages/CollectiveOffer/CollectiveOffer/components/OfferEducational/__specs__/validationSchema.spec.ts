@@ -196,6 +196,41 @@ describe('validationSchema OfferEducational', () => {
         ],
         isCollectiveOaActive: true,
       },
+      {
+        description:
+          'invalid form with wrong gps coordinates in manual address when OA FF is active',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              id_oa: 'SPECIFIC_ADDRESS',
+              isManualEdition: true,
+              isVenueAddress: false,
+              label: '',
+            },
+          },
+          street: '1 rue du chemin',
+          city: 'Brest',
+          postalCode: '29000',
+          coords: 'blabla',
+        },
+        expectedErrors: ['Veuillez respecter le format attendu'],
+        isCollectiveOaActive: true,
+      },
+      {
+        description:
+          'invalid form when school location is selected without departments when OA FF is active',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.SCHOOL,
+          },
+          interventionArea: [],
+        },
+        expectedErrors: ['Veuillez renseigner au moins un département'],
+        isCollectiveOaActive: true,
+      },
     ]
 
     cases.forEach(
