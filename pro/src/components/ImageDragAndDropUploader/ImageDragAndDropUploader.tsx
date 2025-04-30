@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 
 import { useNotification } from 'commons/hooks/useNotification'
 import {
@@ -8,8 +8,8 @@ import {
 } from 'commons/utils/imageUploadTypes'
 import { ImageDragAndDrop } from 'components/ImageDragAndDrop/ImageDragAndDrop'
 import {
-  OnImageUploadArgs,
   ModalImageUpsertOrEdit,
+  OnImageUploadArgs,
 } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -139,11 +139,11 @@ export const ImageDragAndDropUploader = ({
             setIsModalImageOpen(true)
           }}
           disabled={disabled}
-          {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
+          {...(mode !== UploaderModeEnum.OFFER
             ? {
                 minSizes: {
-                  width: 400,
-                  height: 600,
+                  width: 600,
+                  height: 400,
                 },
               }
             : {})}

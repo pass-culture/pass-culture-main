@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
-import { useRef, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
@@ -27,6 +27,7 @@ import {
   widthCropPercentToScale,
 } from './components/ImageEditor/utils'
 import { AppPreviewOffer } from './components/ImagePreview/components/AppPreviewOffer/AppPreviewOffer'
+import { AppPreviewVenue } from './components/ImagePreview/components/AppPreviewVenue/AppPreviewVenue'
 import style from './ModalImageUpsertOrEdit.module.scss'
 import { getImageEditorConfig } from './utils/getImageEditorConfig'
 
@@ -99,11 +100,15 @@ export const ModalImageUpsertOrEdit = ({
   const { width, height } = useGetImageBitmap(image)
   const imageEditorConfig = getImageEditorConfig(width, height, mode)
 
-  const shouldDisplayPreview =
-    mode === UploaderModeEnum.OFFER && previewImageUrl
   const shouldDisplayWarningCallout =
     mode === UploaderModeEnum.OFFER &&
     ((width && width < 400) || (height && height < 600))
+
+  const AppPreview = {
+    [UploaderModeEnum.VENUE]: AppPreviewVenue,
+    [UploaderModeEnum.OFFER]: AppPreviewOffer,
+    [UploaderModeEnum.OFFER_COLLECTIVE]: () => <></>,
+  }[mode]
 
   useEffect(() => {
     async function setImageFromUrl(url: string) {
@@ -244,9 +249,7 @@ export const ModalImageUpsertOrEdit = ({
                   </Dialog.Close>
                 </div>
               </div>
-              {shouldDisplayPreview && (
-                <AppPreviewOffer imageUrl={previewImageUrl} />
-              )}
+              {previewImageUrl && <AppPreview imageUrl={previewImageUrl} />}
             </div>
             {shouldDisplayWarningCallout && (
               <Callout
@@ -282,6 +285,14 @@ export const ModalImageUpsertOrEdit = ({
         {!image && (
           <ImageDragAndDrop
             onDropOrSelected={onImageReplacementDropOrSelected}
+            {...(mode !== UploaderModeEnum.OFFER
+              ? {
+                  minSizes: {
+                    width: 600,
+                    height: 400,
+                  },
+                }
+              : {})}
           />
         )}
       </div>

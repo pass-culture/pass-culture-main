@@ -1,30 +1,21 @@
 import { render, screen } from '@testing-library/react'
 
-import { RootState } from 'commons/store/rootReducer'
-
-import { AppPreviewOffer, AppPreviewOfferProps } from './AppPreviewOffer'
-
-interface RenderAppPreviewOfferProps {
-  storeOverride?: Partial<RootState>
-  props: AppPreviewOfferProps
-}
-const renderAppPreviewOffer = ({ props }: RenderAppPreviewOfferProps) => {
-  return render(<AppPreviewOffer {...props} />)
-}
+import { AppPreviewOffer } from './AppPreviewOffer'
 
 describe('AppPreviewOffer', () => {
-  let props: AppPreviewOfferProps
+  const testImageUrl = 'https://example.com/test-image.jpg'
 
-  beforeEach(() => {
-    props = {
-      imageUrl: '/noimage.jpg',
-    }
+  it('renders home preview image', () => {
+    render(<AppPreviewOffer imageUrl={testImageUrl} />)
+    const homeImage = screen.getByTestId('app-preview-offer-img-home')
+    expect(homeImage).toBeInTheDocument()
+    expect(homeImage).toHaveAttribute('src', testImageUrl)
   })
 
-  it('should render app preview offer', () => {
-    renderAppPreviewOffer({ props })
-
-    expect(screen.getByTestId('app-preview-offer-img-home')).toBeInTheDocument()
-    expect(screen.getByTestId('app-preview-offer-img')).toBeInTheDocument()
+  it('renders offer preview image', () => {
+    render(<AppPreviewOffer imageUrl={testImageUrl} />)
+    const offerImage = screen.getByTestId('app-preview-offer-img')
+    expect(offerImage).toBeInTheDocument()
+    expect(offerImage).toHaveAttribute('src', testImageUrl)
   })
 })

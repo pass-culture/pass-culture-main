@@ -1,18 +1,18 @@
-import homeShell from '../../assets/offer-home-shell.png'
-import offerShell from '../../assets/offer-shell.png'
+import homeShell from '../../assets/partner-home-shell.png'
+import partnerShell from '../../assets/partner-shell.png'
 import { ImagePreview } from '../../ImagePreview'
 import { ImagePreviewsWrapper } from '../../ImagePreviewsWrapper'
 
 import homeStyle from './HomeScreenPreview.module.scss'
 import offerStyle from './OfferScreenPreview.module.scss'
 
-interface AppPreviewOfferProps {
+interface AppPreviewVenueProps {
   imageUrl: string
 }
 
-export const AppPreviewOffer = ({
+export const AppPreviewVenue = ({
   imageUrl,
-}: AppPreviewOfferProps): JSX.Element => (
+}: AppPreviewVenueProps): JSX.Element => (
   <ImagePreviewsWrapper>
     <ImagePreview title="Page d’accueil">
       <img
@@ -32,14 +32,8 @@ export const AppPreviewOffer = ({
     <ImagePreview title="Détails de l’offre">
       <img
         alt=""
-        className={offerStyle['image-preview-blur-offer-preview']}
-        src={imageUrl}
-        role="presentation"
-      />
-      <img
-        alt=""
         className={offerStyle['image-preview-shell']}
-        src={offerShell}
+        src={partnerShell}
         role="presentation"
       />
       <img
