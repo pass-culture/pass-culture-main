@@ -10,6 +10,7 @@ import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageU
 export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
+  onImageDropOrSelected?: () => void
   imageOffer: OfferCollectiveImage | null
   disableForm: boolean
   isTemplate: boolean
@@ -26,6 +27,7 @@ const buildInitialValues = (
 export const FormImageUploader = ({
   onImageUpload,
   onImageDelete,
+  onImageDropOrSelected,
   imageOffer,
   disableForm,
   isTemplate,
@@ -42,6 +44,7 @@ export const FormImageUploader = ({
       <ImageDragAndDropUploader
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
+        onImageDropOrSelected={onImageDropOrSelected}
         initialValues={buildInitialValues(imageOffer)}
         mode={UploaderModeEnum.OFFER_COLLECTIVE}
         disabled={disableForm}

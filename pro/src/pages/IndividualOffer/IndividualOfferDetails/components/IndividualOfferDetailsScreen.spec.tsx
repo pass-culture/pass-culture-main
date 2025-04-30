@@ -33,6 +33,7 @@ import {
   sharedCurrentUserFactory,
   currentOffererFactory,
 } from 'commons/utils/factories/storeFactories'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -527,6 +528,23 @@ describe('IndividualOfferDetails', () => {
       await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
       const error = screen.getByText('Veuillez sélectionner une catégorie')
       expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('about image', () => {
+    it('should log an event when an image is uploaded (drag or selected)', async () => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      renderDetailsScreen({ contextValue })
+
+      const imageInput = screen.getByLabelText('Importez une image')
+      await userEvent.upload(imageInput, new File(['fake img'], 'fake_img.jpg'))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
+        imageType: UploaderModeEnum.OFFER,
+        imageCreationStage: 'add image',
+      })
     })
   })
 
