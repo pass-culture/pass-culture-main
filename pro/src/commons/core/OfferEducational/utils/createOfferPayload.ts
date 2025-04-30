@@ -62,7 +62,7 @@ function getCommonOfferPayload(
   return {
     venueId: Number(offer.venueId),
     name: offer.title,
-    bookingEmails: offer.notificationEmails,
+    bookingEmails: offer.notificationEmails ?? [''],
     description: offer.description,
     durationMinutes: parseDuration(offer.duration),
     ...disabilityCompliances(offer.accessibility),

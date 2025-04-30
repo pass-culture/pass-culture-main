@@ -51,8 +51,6 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
     mental: false,
     none: false,
   },
-  phone: '',
-  email: '',
   notificationEmails: [''],
   domains: [],
   'search-domains': '',

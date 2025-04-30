@@ -25,7 +25,7 @@ export const FormNotifications = ({
       <FieldArray name="notificationEmails">
         {({ remove, push }) => (
           <>
-            {values.notificationEmails.map((email, index, self) => (
+            {values.notificationEmails?.map((email, index, self) => (
               <EmailInputRow
                 disableForm={disableForm}
                 displayTrash={index > 0}
@@ -52,7 +52,11 @@ export const FormNotifications = ({
               onClick={() => {
                 push('')
               }}
-              disabled={values.notificationEmails.length >= 5 || disableForm}
+              disabled={
+                (values.notificationEmails &&
+                  values.notificationEmails.length >= 5) ||
+                disableForm
+              }
               className={styles['add-notification-button']}
             >
               Ajouter un email de notification

@@ -44,12 +44,12 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
     [K in StudentLevels]: boolean
   }
   accessibility: AccessibilityFormValues
-  phone: string
-  email: string
+  phone?: string
+  email?: string
   contactFormType?: 'form' | 'url'
   contactUrl?: string | null
   contactOptions?: { phone: boolean; email: boolean; form: boolean }
-  notificationEmails: string[]
+  notificationEmails?: string[]
   domains: string[]
   'search-domains'?: string
   'search-interventionArea'?: string
