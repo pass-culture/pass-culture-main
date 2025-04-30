@@ -1163,16 +1163,6 @@ def move_collective_offer_venue(
         assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
         destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
-    finance_event_statuses = [finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY]
-    if not with_restrictions:
-        finance_event_statuses.extend(
-            [
-                finance_models.FinanceEventStatus.PRICED,
-                finance_models.FinanceEventStatus.CANCELLED,
-                finance_models.FinanceEventStatus.NOT_TO_BE_PRICED,
-            ]
-        )
-
     collective_bookings = (
         db.session.query(educational_models.CollectiveBooking)
         .join(educational_models.CollectiveBooking.collectiveStock)
@@ -1181,7 +1171,9 @@ def move_collective_offer_venue(
             finance_models.FinanceEvent,
             sa.and_(
                 finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
-                finance_models.FinanceEvent.status.in_(finance_event_statuses),
+                finance_models.FinanceEvent.status.in_(
+                    [finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY]
+                ),
             ),
         )
         .outerjoin(
@@ -1219,17 +1211,14 @@ def move_collective_offer_venue(
             raise offers_exceptions.BookingsHaveOtherPricingPoint()
 
         if with_restrictions:
-            finance_events = [collective_booking.finance_events[0]] if collective_booking.finance_events else []
-        else:
-            finance_events = collective_booking.finance_events if collective_booking.finance_events else []
-
-        for finance_event in finance_events:
-            finance_event.venueId = destination_venue.id
-            finance_event.pricingPointId = destination_pricing_point_id
-            if finance_event.status == finance_models.FinanceEventStatus.PENDING:
-                finance_event.status = finance_models.FinanceEventStatus.READY
-                finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
-            db.session.add(finance_event)
+            finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
+            if finance_event:
+                finance_event.venueId = destination_venue.id
+                finance_event.pricingPointId = destination_pricing_point_id
+                if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                    finance_event.status = finance_models.FinanceEventStatus.READY
+                    finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
+                db.session.add(finance_event)
 
     db.session.flush()
 
