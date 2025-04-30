@@ -63,7 +63,7 @@ class MagicEnum(sa_types.TypeDecorator):
         else:
             raise ValueError(f"Unsupported type of value for {enum_class}")
 
-    # Avoid pylint `abstract-method` warning. It's not actually required
+    # Avoid linter warning. It's not actually required
     # to implement this method.
     process_literal_param = sa_types.TypeDecorator.process_literal_param
 

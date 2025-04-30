@@ -10,7 +10,6 @@ from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-# pylint: disable=abstract-method
 class AdageMockEndpointHelper(PublicAPIRestrictedEnvEndpointHelper):
     default_factory = factories.PendingCollectiveBookingFactory
 
