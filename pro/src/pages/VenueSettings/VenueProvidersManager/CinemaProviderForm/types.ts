@@ -1,4 +1,4 @@
 export interface CinemaProviderFormValues {
-  isDuo: boolean
-  isActive: boolean
+  isDuo?: boolean
+  isActive?: boolean
 }

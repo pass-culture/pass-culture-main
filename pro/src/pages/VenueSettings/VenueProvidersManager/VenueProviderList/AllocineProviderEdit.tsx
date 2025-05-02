@@ -14,9 +14,12 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
-import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
+import {
+  AllocineProviderForm,
+  FormValuesProps,
+} from '../AllocineProviderForm/AllocineProviderForm'
 
-import { AllocineProviderFormDialog } from './AllocineProviderFormDialog'
+import styles from './AllocineProviderEdit.module.scss'
 
 export interface AllocineProviderEditProps {
   venueProvider: VenueProviderResponse
@@ -75,13 +78,20 @@ export const AllocineProviderEdit = ({
         </Button>
       }
     >
-      <AllocineProviderFormDialog
-        initialValues={initialValues}
-        onConfirm={onConfirmDialog}
-        providerId={venueProvider.provider.id}
-        venueId={venueProvider.venueId}
-        offererId={offererId}
-      />
+      <div className={styles['allocine-provider-form']}>
+        <div className={styles['explanation']}>
+          Les modifications s’appliqueront uniquement aux nouvelles offres
+          créées. La modification doit être faite manuellement pour les offres
+          existantes.
+        </div>
+        <AllocineProviderForm
+          initialValues={initialValues}
+          saveVenueProvider={onConfirmDialog}
+          providerId={venueProvider.provider.id}
+          venueId={venueProvider.venueId}
+          offererId={offererId}
+        />
+      </div>
     </DialogBuilder>
   )
 }

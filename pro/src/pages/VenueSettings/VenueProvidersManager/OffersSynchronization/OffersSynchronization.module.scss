@@ -2,10 +2,11 @@
 
 .venue-providers {
   display: flex;
+  gap: rem.torem(16px);
   flex-flow: row wrap;
-  width: 100%;
+  margin-bottom: rem.torem(20px);
 }
 
-.venue-providers-section {
-  max-width: 100%;
+.venue-providers-synchro {
+  max-width: rem.torem(486px);
 }

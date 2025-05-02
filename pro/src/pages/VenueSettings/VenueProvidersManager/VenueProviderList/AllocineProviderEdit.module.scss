@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.allocine-provider-form-dialog {
+.allocine-provider-form {
   display: flex;
   flex-direction: column;
   flex-grow: 1;

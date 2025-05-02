@@ -1,7 +1,12 @@
+import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
+import {
+  GetVenueResponseModel,
+  PostVenueProviderBody,
+  VenueProviderResponse,
+} from 'apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useNotification } from 'commons/hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
@@ -9,8 +14,9 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
-import { CinemaProviderFormDialog } from './CinemaProviderFormDialog'
-import { CinemaProviderParametersValues } from './types'
+import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
+
+import styles from './CinemaProviderEdit.module.scss'
 
 export interface CinemaProviderEditProps {
   venueProvider: VenueProviderResponse
@@ -25,9 +31,10 @@ export const CinemaProviderEdit = ({
 }: CinemaProviderEditProps): JSX.Element => {
   const notification = useNotification()
   const { mutate } = useSWRConfig()
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const editVenueProvider = async (
-    payload: CinemaProviderParametersValues
+    payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
       await api.updateVenueProvider(payload)
@@ -44,18 +51,21 @@ export const CinemaProviderEdit = ({
   }
 
   const onConfirmDialog = async (
-    payload: CinemaProviderParametersValues
+    payload: PostVenueProviderBody
   ): Promise<boolean> => {
     const isSuccess = await editVenueProvider({
       ...payload,
       isActive: venueProvider.isActive,
     })
 
+    setIsDialogOpen(false)
+
     return isSuccess
   }
 
-  const initialValues = {
+  const initialValues: any = {
     isDuo: venueProvider.isDuo,
+    isActive: venueProvider.isActive,
   }
 
   return (
@@ -67,14 +77,23 @@ export const CinemaProviderEdit = ({
           Paramétrer
         </Button>
       }
+      open={isDialogOpen}
+      onOpenChange={setIsDialogOpen}
     >
-      <CinemaProviderFormDialog
-        initialValues={initialValues}
-        onConfirm={onConfirmDialog}
-        providerId={venueProvider.provider.id}
-        venueId={venueProvider.venueId}
-        offererId={offererId}
-      />
+      <div className={styles['cinema-provider-form-dialog']}>
+        <div className={styles['explanation']}>
+          Les modifications s’appliqueront uniquement aux nouvelles offres
+          créées. La modification doit être faite manuellement pour les offres
+          existantes.
+        </div>
+        <CinemaProviderForm
+          initialValues={initialValues}
+          saveVenueProvider={onConfirmDialog}
+          providerId={venueProvider.provider.id}
+          venueId={venueProvider.venueId}
+          offererId={offererId}
+        />
+      </div>
     </DialogBuilder>
   )
 }

@@ -1,5 +1,3 @@
-import cn from 'classnames'
-
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { AddVenueProviderButton } from 'pages/VenueSettings/VenueProvidersManager/AddVenueProviderButton'
@@ -21,9 +19,7 @@ export const OffersSynchronization = ({
         title="Gestion des synchronisations"
         description={`Vous pouvez synchroniser votre structure avec un logiciel tiers afin de faciliter la gestion de vos offres et de vos réservations.`}
       >
-        <FormLayout.Row
-          className={cn(style['venue-providers'], 'form-layout-actions')}
-        >
+        <FormLayout.Row className={style['venue-providers']}>
           {venueProviders.map((venueProvider) => (
             <VenueProviderCard
               key={venueProvider.id}
@@ -34,7 +30,7 @@ export const OffersSynchronization = ({
             />
           ))}
         </FormLayout.Row>
-        <FormLayout.Row>
+        <FormLayout.Row className={style['venue-providers-synchro']}>
           <AddVenueProviderButton
             venue={venue}
             linkedProviders={venueProviders.map(({ provider }) => provider)}
