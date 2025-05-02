@@ -1,8 +1,8 @@
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
 import {
-  PostVenueProviderBody,
   GetVenueResponseModel,
+  PostVenueProviderBody,
   ProviderResponse,
 } from 'apiClient/v1'
 import {
@@ -10,7 +10,6 @@ import {
   isCinemaProvider,
 } from 'commons/core/Providers/utils/utils'
 import { useNotification } from 'commons/hooks/useNotification'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'
 import { CinemaProviderForm } from './CinemaProviderForm/CinemaProviderForm'
@@ -47,19 +46,13 @@ export const VenueProviderForm = ({
   }
 
   return displayAllocineProviderForm ? (
-    <DialogBuilder
-      variant="drawer"
-      title="Modifier les paramètres de vos offres"
-      defaultOpen={displayAllocineProviderForm}
-    >
-      <AllocineProviderForm
-        isCreatedEntity
-        providerId={Number(provider.id)}
-        saveVenueProvider={createVenueProvider}
-        venueId={venue.id}
-        offererId={venue.managingOfferer.id}
-      />
-    </DialogBuilder>
+    <AllocineProviderForm
+      isCreatedEntity
+      providerId={Number(provider.id)}
+      saveVenueProvider={createVenueProvider}
+      venueId={venue.id}
+      offererId={venue.managingOfferer.id}
+    />
   ) : displayCDSProviderForm ? (
     <CinemaProviderForm
       isCreatedEntity
