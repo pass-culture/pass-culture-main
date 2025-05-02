@@ -580,6 +580,8 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
     inactive_headline_offers = offers_repository.get_inactive_headline_offers()
     for headline_offer in inactive_headline_offers:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        if headline_offer.offer.product:
+            headline_offer.offer.product.headlinesCount -= 1
         logger.info(
             "Headline Offer Deactivation",
             extra={
@@ -620,6 +622,8 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     offers_validation.check_offer_is_eligible_to_be_headline(offer)
     try:
         headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue, timespan=(datetime.datetime.utcnow(),))
+        if offer.product:
+            offer.product.headlinesCount += 1
         db.session.add(headline_offer)
         # Note: We use flush and not commit to be compliant with atomic. At this moment,
         # the timespan is a str because the __init__ overloaded method of HeadlineOffer calls
@@ -648,6 +652,8 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
     try:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        if headline_offer.offer.product:
+            headline_offer.offer.product.headlinesCount -= 1
         on_commit(
             partial(
                 search.async_index_offer_ids,
