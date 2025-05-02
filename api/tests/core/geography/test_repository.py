@@ -177,3 +177,27 @@ class SearchAddressesTest:
         )
         assert len(result3) == 1
         assert result3[0] == address2
+
+
+class GetCoordinatesFromAddressTest:
+    @patch(
+        "pcapi.connectors.api_adresse.get_address",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="unused",
+            score=1,
+            latitude=17.900710,
+            longitude=-62.834786,
+            city="unused",
+            street=None,
+        ),
+    )
+    def test_get_coordinates_from_address(self, _mock_get_address):
+        result = repository.get_coordinates_from_address("whatever", "97133")
+        assert result == {"latitude": 17.900710, "longitude": -62.834786}
+
+    def test_returns_none_if_no_postcode(self):
+        result = repository.get_coordinates_from_address("1 rue du hasard", None)
+        assert result is None
