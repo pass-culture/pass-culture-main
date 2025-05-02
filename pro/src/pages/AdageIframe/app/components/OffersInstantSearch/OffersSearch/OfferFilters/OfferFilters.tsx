@@ -14,12 +14,12 @@ import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { Slider } from 'ui-kit/form/Slider/Slider'
 import {
   AdageMultiselect,
   ItemProps,
-} from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { Slider } from 'ui-kit/form/Slider/Slider'
+} from 'ui-kit/formV2/AdageMultiselect/AdageMultiselect'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
@@ -151,6 +151,13 @@ export const OfferFilters = ({
           value !== 'Écoles Marseille - CM1, CM2'
       )
 
+  const setMultiselectValue = async (
+    name: string,
+    value: ItemProps['value'][]
+  ) => {
+    await formik.setFieldValue(name, value)
+  }
+
   return (
     <FormikProvider value={formik}>
       <Form onSubmit={formik.handleSubmit} className={className}>
@@ -277,6 +284,10 @@ export const OfferFilters = ({
                       label="Rechercher un département"
                       options={departmentOptions}
                       isOpen={modalOpenStatus['localisation']}
+                      selectedOptions={formik.values.departments}
+                      onSelectedOptionsChanged={(selectedItems) =>
+                        setMultiselectValue('departments', selectedItems)
+                      }
                     />
                   </ModalFilterLayout>
                 )}
@@ -294,6 +305,10 @@ export const OfferFilters = ({
                       label="Rechercher une académie"
                       options={academiesOptions}
                       isOpen={modalOpenStatus['localisation']}
+                      selectedOptions={formik.values.academies}
+                      onSelectedOptionsChanged={(selectedItems) =>
+                        setMultiselectValue('academies', selectedItems)
+                      }
                     />
                   </ModalFilterLayout>
                 )}
@@ -340,6 +355,10 @@ export const OfferFilters = ({
                     label="Rechercher un domaine artistique"
                     options={domainsOptions}
                     isOpen={modalOpenStatus['domains']}
+                    selectedOptions={formik.values.domains}
+                    onSelectedOptionsChanged={(selectedItems) =>
+                      setMultiselectValue('domains', selectedItems)
+                    }
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
@@ -363,6 +382,10 @@ export const OfferFilters = ({
                     label="Rechercher un format"
                     options={formatsOptions}
                     isOpen={modalOpenStatus['formats']}
+                    selectedOptions={formik.values.formats}
+                    onSelectedOptionsChanged={(selectedItems) =>
+                      setMultiselectValue('formats', selectedItems)
+                    }
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
@@ -386,6 +409,10 @@ export const OfferFilters = ({
                     label="Rechercher un niveau scolaire"
                     options={studentsOptionsFiltered}
                     isOpen={modalOpenStatus['students']}
+                    selectedOptions={formik.values.students}
+                    onSelectedOptionsChanged={(selectedItems) =>
+                      setMultiselectValue('students', selectedItems)
+                    }
                     sortOptions={(options, selectedOptions) => {
                       //  Implement custom sort to not sort results alphabetically
                       return [...options].sort((option1, option2) => {
