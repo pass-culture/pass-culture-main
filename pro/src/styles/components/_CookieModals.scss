@@ -46,23 +46,23 @@ $action-gap: rem.torem(12px);
   }
 
   .orejime-Banner {
+    padding: 0;
+    width: 100%;
+
     @media (min-width: size.$tablet) {
       padding: rem.torem(24px);
       width: initial;
     }
 
-    padding: 0;
-    width: 100%;
-
     &-body {
-      @media (min-width: size.$tablet) {
-        max-width: rem.torem(439px);
-      }
-
       border-radius: rem.torem(6px);
       padding: rem.torem(21px);
       max-width: initial;
       width: 100%;
+
+      @media (min-width: size.$tablet) {
+        max-width: rem.torem(439px);
+      }
     }
 
     &-title {
