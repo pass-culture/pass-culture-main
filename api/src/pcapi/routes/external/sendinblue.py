@@ -5,8 +5,10 @@ from flask import abort
 from flask import request
 from sqlalchemy.orm import joinedload
 
+from pcapi import settings
 import pcapi.connectors.recommendation as recommendation_api
 from pcapi.core.external.attributes.api import update_external_user
+import pcapi.core.geography.repository as geography_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users.models import User
@@ -90,13 +92,7 @@ def sendinblue_notify_importcontacts(list_id: int, iteration: int) -> None:
     on_success_status=200, response_model=serializers.BrevoOffersResponse, on_error_statuses=[404, 500, 502, 504]
 )
 def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResponse:
-    """
-    This route is called by Brevo on sending an email to a user to get recommended offers.
-    This is currently a POC.
-    In the final version, instead of calling recommendation API,
-    offers will be fetched from BigQuery tables.
-    For now, we want to limit the number of offers fetched, just to prove integration with Brevo.
-    """
+    """This route is called by Brevo on sending an email to a user to get recommended offers."""
 
     if not FeatureToggle.WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE.is_active():
         abort(404)
@@ -105,8 +101,12 @@ def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersRespo
     if not user:
         abort(404)
 
+    user_location = geography_repository.get_coordinates_from_address(user.address, user.postalCode)
+    if not user_location:
+        logger.info("Couldn't find user location", extra={"user_id": user.id})
+
     try:
-        raw_response = recommendation_api.get_playlist(user)
+        raw_response = recommendation_api.get_playlist(user, params=user_location)
     except recommendation_api.RecommendationApiTimeoutException:
         raise ApiErrors(status_code=504)
     except recommendation_api.RecommendationApiException:
@@ -118,7 +118,8 @@ def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersRespo
         logger.error("Failed decoding recommendation API response: %s", str(exc))
         raise ApiErrors(status_code=500)
 
-    offer_ids = [int(offer_id) for offer_id in decoded.get("playlist_recommended_offers", [])][:5]
+    offer_ids = [int(offer_id) for offer_id in decoded.get("playlist_recommended_offers", [])]
+    offer_ids = offer_ids[: settings.BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED]
     offers = (
         db.session.query(offers_models.Offer)
         .filter(offers_models.Offer.id.in_(offer_ids))

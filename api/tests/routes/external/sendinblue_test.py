@@ -159,21 +159,21 @@ class GetUserRecommendationsTest:
         assert response.status_code == 404
 
     @patch("pcapi.connectors.recommendation.get_playlist", return_value=b"invalid JSON}")
-    def test_fails_on_decode_error(self, get_playlist_mock, client):
+    def test_fails_on_decode_error(self, _get_playlist_mock, client):
         user_id = UserFactory(id=1).id
         response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
         assert response.status_code == 500
 
     @patch("pcapi.connectors.recommendation.get_playlist", side_effect=RecommendationApiException)
-    def test_fails_on_api_error(self, get_playlist_mock, client):
+    def test_fails_on_api_error(self, _get_playlist_mock, client):
         user_id = UserFactory(id=1).id
         response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
         assert response.status_code == 502
 
     @patch("pcapi.connectors.recommendation.get_playlist", side_effect=RecommendationApiTimeoutException)
-    def test_fails_on_api_timeout(self, get_playlist_mock, client):
+    def test_fails_on_api_timeout(self, _get_playlist_mock, client):
         user_id = UserFactory(id=1).id
         response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 

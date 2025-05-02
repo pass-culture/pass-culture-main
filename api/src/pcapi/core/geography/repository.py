@@ -17,21 +17,41 @@ def get_iris_from_coordinates(*, lon: float, lat: float) -> geography_models.Iri
     )
 
 
-def get_iris_from_address(
-    address: str, postcode: str | None = None, *, city: str | None = None, threshold: float = 0.45
-) -> geography_models.IrisFrance | None:
+def _get_address_info(
+    address: str, postcode: str | None = None, *, city: str | None = None
+) -> api_adresse.AddressInfo | None:
+    address_info = None
     try:
         # Avoid {"code":400,"message":"q must contain between 3 and 200 chars and start with a number or a letter"}
         if len(address) < 3 or not re.match(r"^\d|\w", address[0]):
-            result_address = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
+            address_info = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
         else:
             try:
-                result_address = api_adresse.get_address(address=address, postcode=postcode, city=city)
+                address_info = api_adresse.get_address(address=address, postcode=postcode, city=city)
             except api_adresse.AdresseException:  # No result, unexpected input, server error...
-                result_address = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
+                address_info = api_adresse.get_municipality_centroid(postcode=postcode, city=city or "")
     except api_adresse.NoResultException:
-        return None
+        address_info = None
 
+    return address_info
+
+
+def get_coordinates_from_address(address: str | None, postcode: str | None) -> dict[str, float] | None:
+    coordinates = None
+    if postcode:
+        address_info = _get_address_info(address or "", postcode)
+        if address_info:
+            coordinates = {"latitude": address_info.latitude, "longitude": address_info.longitude}
+
+    return coordinates
+
+
+def get_iris_from_address(
+    address: str, postcode: str | None = None, *, city: str | None = None, threshold: float = 0.45
+) -> geography_models.IrisFrance | None:
+    result_address = _get_address_info(address=address, postcode=postcode, city=city)
+    if not result_address:
+        return None
     if result_address.score < threshold:
         pass
     iris = get_iris_from_coordinates(
