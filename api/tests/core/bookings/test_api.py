@@ -1634,14 +1634,6 @@ class CancelForFraudTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelBookingTest:
-    # Test `_cancel_booking()` internal function.
-
-    # The following test fails because `pytest_flask_sqlalchemy`
-    # introduces extra `SAVEPOINT` queries that change the behaviour
-    # of `ROLLBACK` queries. When run in tests, the `ROLLBACK` in
-    # `_cancel_booking()` does not roll back anything. When run
-    # outside tests, though, the `ROLLBACK` works well.
-    @pytest.mark.xfail
     def test_cancel_already_used_no_override(self):
         finance_event = finance_factories.UsedBookingFinanceEventFactory(
             status=finance_models.FinanceEventStatus.PRICED,
