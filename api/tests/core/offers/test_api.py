@@ -20,6 +20,7 @@ from factory.faker import faker
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
@@ -5568,3 +5569,43 @@ class DeleteUnbookableUnusedOldOffersTest:
 
         assert db.session.get(models.Offer, old_bookable_offer.id) is not None
         assert db.session.get(models.Offer, recent_offer.id) is not None
+
+
+@pytest.mark.usefixtures("db_session")
+class ProductCountsConsistencyTest:
+    def test_chronicles_count(self) -> None:
+        product_1 = factories.ProductFactory()
+        product_2 = factories.ProductFactory()
+        chronicles_factories.ChronicleFactory.create(products=[product_1, product_2])
+
+        product_1.chroniclesCount = 0
+
+        assert api.fetch_inconsistent_products() == {product_1.id}
+
+    def test_headlines_count(self) -> None:
+        product_1 = factories.ProductFactory()
+        product_2 = factories.ProductFactory()
+        factories.HeadlineOfferFactory(offer__product=product_1)
+        factories.HeadlineOfferFactory(offer__product=product_2)
+
+        product_1.headlinesCount = 0
+
+        assert api.fetch_inconsistent_products() == {product_1.id}
+
+    def test_likes_count(self) -> None:
+        product = factories.ProductFactory()
+        reactions_factories.ReactionFactory(product=product, reactionType=reactions_models.ReactionTypeEnum.LIKE)
+
+        product.likesCount = 0
+
+        assert api.fetch_inconsistent_products() == {product.id}
+
+    def test_ids_are_unique(self) -> None:
+        product = factories.ProductFactory()
+        chronicles_factories.ChronicleFactory.create(products=[product])
+        reactions_factories.ReactionFactory(product=product, reactionType=reactions_models.ReactionTypeEnum.LIKE)
+
+        product.chroniclesCount = 0
+        product.likesCount = 0
+
+        assert api.fetch_inconsistent_products() == {product.id}

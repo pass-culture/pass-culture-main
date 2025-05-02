@@ -23,6 +23,7 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
@@ -32,6 +33,7 @@ import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
+import pcapi.core.reactions.models as reactions_models
 import pcapi.core.users.models as users_models
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
@@ -2350,3 +2352,65 @@ def delete_unbookable_unbooked_old_offers(
     log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
     log_extra["deleted_offers_count"] = count
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
+
+
+def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
+    product_ids = set()
+    start = 0
+    product_max_id = db.session.execute(sa.select(sa.func.max(models.Product.id))).scalar()
+    while start < product_max_id:
+        end = start + batch_size
+        batch_result = fetch_inconsistent_products_on_column(_chronicles_count_query(start, end), "chroniclesCount")
+        batch_result += fetch_inconsistent_products_on_column(_headlines_count_query(start, end), "headlinesCount")
+        batch_result += fetch_inconsistent_products_on_column(_likes_count_query(start, end), "likesCount")
+
+        product_ids.update(batch_result)
+        start += batch_size
+
+    return product_ids
+
+
+def fetch_inconsistent_products_on_column(count_query: sa.sql.expression.Select, col_name: str) -> list[int]:
+    subquery = count_query.subquery()
+    query = (
+        sa.select(models.Product.id)
+        .where(models.Product.id == subquery.c.product_id)
+        .where(getattr(models.Product, col_name) != subquery.c.total)
+    )
+    product_ids = db.session.execute(query).scalars().all()
+    return product_ids
+
+
+def _chronicles_count_query(start: int, end: int) -> sa.sql.expression.Select:
+    return (
+        sa.select(
+            chronicles_models.ProductChronicle.productId.label("product_id"),
+            sa.func.count(chronicles_models.ProductChronicle.productId).label("total"),
+        )
+        .where(
+            chronicles_models.ProductChronicle.productId >= start, chronicles_models.ProductChronicle.productId < end
+        )
+        .group_by(chronicles_models.ProductChronicle.productId)
+    )
+
+
+def _headlines_count_query(start: int, end: int) -> sa.sql.expression.Select:
+    return (
+        sa.select(models.Offer.productId.label("product_id"), sa.func.count(models.Offer.productId).label("total"))
+        .select_from(models.HeadlineOffer)
+        .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
+        .where(models.Offer.productId >= start, models.Offer.productId < end)
+        .group_by(models.Offer.productId)
+    )
+
+
+def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
+    return (
+        sa.select(
+            reactions_models.Reaction.productId.label("product_id"),
+            sa.func.count(reactions_models.Reaction.productId).label("total"),
+        )
+        .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
+        .where(reactions_models.Reaction.productId >= start, reactions_models.Reaction.productId < end)
+        .group_by(reactions_models.Reaction.productId)
+    )

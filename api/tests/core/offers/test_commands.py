@@ -1,8 +1,10 @@
 import datetime
+import logging
 
 import pytest
 import sqlalchemy
 
+import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db
@@ -33,3 +35,16 @@ class OfferCommandsTest:
         with pytest.raises(sqlalchemy.exc.InvalidRequestError, match="not persistent within this Session"):
             # Trying to refresh the offer should fail because it is deleted from the database
             db.session.refresh(offer)
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_command_check_product_counts_consistency(self, app, caplog):
+        product_1 = offers_factories.ProductFactory()
+        product_2 = offers_factories.ProductFactory()
+        chronicles_factories.ChronicleFactory.create(products=[product_1, product_2])
+
+        product_1.chroniclesCount = 0
+        product_2.chroniclesCount = 0
+        with caplog.at_level(logging.ERROR):
+            run_command(app, "check_product_counts_consistency")
+
+        assert caplog.records[0].extra["product_ids"] == {product_1.id, product_2.id}
