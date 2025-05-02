@@ -468,13 +468,13 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         # clause through `filter()`.
         db.session.query(offers_models.Offer)
         .outerjoin(
-            offers_models.Stock,
-            (offers_models.Stock.offerId == offers_models.Offer.id) & offers_models.Stock._bookable,
-        )
-        .outerjoin(
             offers_models.FutureOffer,
             (offers_models.FutureOffer.offerId == offers_models.Offer.id)
             & offers_models.FutureOffer.isWaitingForPublication,
+        )
+        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
+        .outerjoin(
+            offers_models.Stock, (offers_models.Stock.offerId == offers_models.Offer.id) & offers_models.Stock._bookable
         )
         .options(
             sa_orm.contains_eager(offers_models.Offer.stocks).load_only(
@@ -488,7 +488,12 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                 offers_models.Stock.quantity,
             )
         )
-        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
+        .options(sa_orm.joinedload(offers_models.Offer.headlineOffers))
+        .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
+        .options(sa_orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
+        .options(
+            sa_orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
         .options(
             sa_orm.joinedload(offers_models.Offer.venue)
             .load_only(
@@ -503,27 +508,17 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.venueTypeCode,
             )
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.isActive,
-                offerers_models.Offerer.validationStatus,
+            .options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                    offerers_models.Offerer.name,
+                    offerers_models.Offerer.isActive,
+                    offerers_models.Offerer.validationStatus,
+                )
             )
-        )
-        .options(
-            sa_orm.joinedload(offers_models.Offer.venue)
-            .joinedload(offerers_models.Venue.googlePlacesInfo)
-            .load_only(offerers_models.GooglePlacesInfo.bannerUrl)
-        )
-        .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
-        .options(sa_orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
-        .options(
-            sa_orm.joinedload(offers_models.Offer.product)
-            .joinedload(offers_models.Product.productMediations)
-            .load_only(
-                offers_models.ProductMediation.id,
-                offers_models.ProductMediation.imageType,
-                offers_models.ProductMediation.uuid,
+            .options(
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo).load_only(
+                    offerers_models.GooglePlacesInfo.bannerUrl
+                )
             )
         )
         .options(
@@ -536,23 +531,27 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                 offers_models.Product.description,
                 offers_models.Product.thumbCount,
             )
-            .joinedload(offers_models.Product.artists)
-            .load_only(artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image)
-        )
-        .options(sa.orm.joinedload(offers_models.Offer.headlineOffers))
-        .options(
-            sa_orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
+            .options(
+                sa_orm.joinedload(offers_models.Product.productMediations).load_only(
+                    offers_models.ProductMediation.id,
+                    offers_models.ProductMediation.imageType,
+                    offers_models.ProductMediation.uuid,
+                )
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Product.artists).load_only(
+                    artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image
+                )
+            )
+            .options(
+                sa_orm.with_expression(
+                    offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
+                )
+            )
         )
         .options(
             sa_orm.with_expression(
                 offers_models.Offer.likesCount, offers_repository.get_offer_reaction_count_subquery()
-            )
-        )
-        .options(
-            sa_orm.joinedload(offers_models.Offer.product).options(
-                sa_orm.with_expression(
-                    offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
-                )
             )
         )
     )
