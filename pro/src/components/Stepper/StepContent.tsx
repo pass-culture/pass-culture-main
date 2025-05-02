@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { Step } from './Stepper'
 import styles from './Stepper.module.scss'

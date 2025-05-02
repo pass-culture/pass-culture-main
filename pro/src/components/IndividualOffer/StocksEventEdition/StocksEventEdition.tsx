@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -299,6 +299,7 @@ export const StocksEventEdition = ({
     )
 
     if (isFormEmpty || !formik.dirty) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -324,6 +325,7 @@ export const StocksEventEdition = ({
     }
 
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(nextStepUrl)
     notify.success(getSuccessMessage(mode))
     setIsStocksEventConfirmModal(false)
@@ -414,6 +416,7 @@ export const StocksEventEdition = ({
 
   const handleBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,

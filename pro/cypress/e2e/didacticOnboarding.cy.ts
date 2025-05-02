@@ -191,6 +191,7 @@ describe('Didactic Onboarding feature', () => {
         // ---------------------------
 
         // Minimal required fields are already filled by default in this step, so we can directly go to the next step
+        cy.url().should('contain', '/creation/pratiques')
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
 
         // ----------------------
@@ -198,6 +199,7 @@ describe('Didactic Onboarding feature', () => {
         // ----------------------
 
         // Set price
+        cy.url().should('contain', '/creation/stocks')
         cy.findByTestId('input-price').type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()

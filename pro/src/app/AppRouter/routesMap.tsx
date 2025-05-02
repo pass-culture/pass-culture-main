@@ -1,7 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 
@@ -34,10 +34,17 @@ export const routes: RouteConfig[] = [
     title: 'Espace acteurs culturels',
   },
   {
-    lazy: () => import('pages/AdageIframe/app/App'),
     path: '/adage-iframe/*',
     meta: { public: true },
     title: 'ADAGE',
+    children: [
+      {
+        path: '*',
+        meta: { public: true },
+        title: 'ADAGE',
+        lazy: () => import('pages/AdageIframe/app/App'),
+      },
+    ],
   },
   {
     lazy: () =>
@@ -107,6 +114,13 @@ export const routes: RouteConfig[] = [
     lazy: () => import('pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId/page-partenaire',
     title: 'Gérer ma page sur l’application',
+    children: [
+      {
+        lazy: () => import('pages/VenueEdition/VenueEdition'),
+        path: '*',
+        title: 'Gérer ma page sur l’application',
+      },
+    ],
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),

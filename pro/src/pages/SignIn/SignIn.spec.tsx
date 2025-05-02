@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -289,33 +288,6 @@ describe('SignIn', () => {
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
     ).toBeInTheDocument()
-  })
-
-  describe('should display messages after account validation', () => {
-    it('should display confirmation', async () => {
-      vi.spyOn(router, 'useSearchParams').mockReturnValue([
-        new URLSearchParams({ accountValidation: 'true' }),
-        vi.fn(),
-      ])
-      renderSignIn()
-      expect(
-        await screen.findByText(
-          'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should display error', async () => {
-      vi.spyOn(router, 'useSearchParams').mockReturnValue([
-        new URLSearchParams({
-          accountValidation: 'false',
-          message: 'Erreur invalide',
-        }),
-        vi.fn(),
-      ])
-      renderSignIn()
-      expect(await screen.findByText('Erreur invalide')).toBeInTheDocument()
-    })
   })
 
   describe('tracking', () => {

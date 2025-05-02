@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -28,8 +28,8 @@ vi.mock('repository/pcapi/pcapi', () => ({
   postCollectiveOfferImage: vi.fn(),
 }))
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
 

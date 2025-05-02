@@ -1,11 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  generatePath,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -77,6 +72,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   useEffect(() => {
     if (selectedOffererId?.toString() !== offererId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/accueil')
     }
   }, [selectedOffererId, offererId])
@@ -96,9 +92,11 @@ export const VenueEdition = (): JSX.Element | null => {
         if (filteredVenues.length > 0) {
           const fallbackVenueId = filteredVenues[0]?.id.toString()
 
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate(getPathToNavigateTo(offerer.id, fallbackVenueId))
           dispatch(setSelectedPartnerPageId(fallbackVenueId))
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/accueil')
         }
       }
@@ -180,6 +178,7 @@ export const VenueEdition = (): JSX.Element | null => {
                         offererId as string,
                         venueId
                       )
+                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       navigate(path)
                     }}
                   />
@@ -214,6 +213,6 @@ export const VenueEdition = (): JSX.Element | null => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = VenueEdition

@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'

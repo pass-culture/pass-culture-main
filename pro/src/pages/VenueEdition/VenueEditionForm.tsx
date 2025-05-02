@@ -1,5 +1,5 @@
 import { Form, Formik, FormikConfig, FormikConsumer, FormikProps } from 'formik'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -84,6 +84,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
       const path = getPathToNavigateTo(venue.managingOfferer.id, venue.id)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(path)
 
       logEvent(Events.CLICKED_SAVE_VENUE, {

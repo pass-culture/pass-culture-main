@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { generatePath } from 'react-router-dom'
+import { generatePath } from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'

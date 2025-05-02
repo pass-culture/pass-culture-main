@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import stroke404Icon from 'icons/stroke-404.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -47,6 +47,6 @@ export const NotFound = ({ redirect = '/accueil' }: NotFoundProps) => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = NotFound

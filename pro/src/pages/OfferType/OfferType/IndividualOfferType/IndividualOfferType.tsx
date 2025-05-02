@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { useFormContext } from 'react-hook-form'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import strokeDateIcon from 'icons/stroke-date.svg'

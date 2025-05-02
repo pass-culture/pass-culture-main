@@ -33,7 +33,7 @@ const OfferTypeIndividualForm = (): JSX.Element => {
   )
 }
 
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   useLocation: () => ({
     pathname: '/offre/creation',
   }),

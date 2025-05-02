@@ -1,5 +1,5 @@
 import { ComponentType } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

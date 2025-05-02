@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react'
 import { useEffect } from 'react'
-import { useRouteError } from 'react-router-dom'
+import { useRouteError } from 'react-router'
 
 import { Unavailable } from 'pages/Errors/Unavailable/Unavailable'
 

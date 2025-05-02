@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import * as reactRedux from 'react-redux'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'

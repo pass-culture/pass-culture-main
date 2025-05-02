@@ -1,11 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import {
   AdageFrontRoles,
@@ -36,6 +31,7 @@ export type AdageOfferListCardProps = {
   viewType?: 'grid' | 'list'
   onCardClicked?: () => void
 }
+
 export function AdageOfferListCard({
   offer,
   afterFavoriteChange,
@@ -131,6 +127,7 @@ export function AdageOfferListCard({
                 onCardClicked?.()
                 if (!e.metaKey) {
                   e.preventDefault()
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
                     state: { offer },
                   })

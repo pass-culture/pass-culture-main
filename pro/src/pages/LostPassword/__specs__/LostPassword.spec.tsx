@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 
@@ -38,10 +38,13 @@ describe('LostPassword', () => {
         screen.getByLabelText(/Adresse email */),
         'coucou@example.com'
       )
+      await userEvent.tab()
       await userEvent.click(screen.getByText(/Valider/))
 
       // he has been redirected to next step
-      expect(screen.getByText(/Merci/)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/Merci/)).toBeInTheDocument()
+      })
     })
 
     describe('WIP_2025_SIGN_UP alternatives', () => {
@@ -69,8 +72,12 @@ describe('LostPassword', () => {
           screen.getByLabelText(/Adresse email */),
           'coucou@example.com'
         )
+        await userEvent.tab()
         await userEvent.click(screen.getByText(/Valider/))
-        expect(screen.getByText(/Merci/)).toBeInTheDocument()
+
+        await waitFor(() => {
+          expect(screen.getByText(/Merci/)).toBeInTheDocument()
+        })
       })
 
       it('should display the right texts with the FF', async () => {
@@ -88,10 +95,13 @@ describe('LostPassword', () => {
           screen.getByLabelText(/Adresse email */),
           'coucou@example.com'
         )
+        await userEvent.tab()
         await userEvent.click(screen.getByText(/Réinitialiser/))
-        expect(
-          screen.getByText(/Vous allez recevoir un email !/)
-        ).toBeInTheDocument()
+        await waitFor(() => {
+          expect(
+            screen.getByText(/Vous allez recevoir un email !/)
+          ).toBeInTheDocument()
+        })
       })
     })
   })

@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -216,10 +216,12 @@ describe('screens:StocksThing', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
-    expect(
-      screen.getByText(/This is the read only route content/)
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
+      expect(
+        screen.getByText(/This is the read only route content/)
+      ).toBeInTheDocument()
+    })
   })
 
   it('should not display any message when user delete empty stock', async () => {

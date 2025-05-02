@@ -5,7 +5,7 @@ import {
   within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -25,8 +25,10 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+//FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
+
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
 

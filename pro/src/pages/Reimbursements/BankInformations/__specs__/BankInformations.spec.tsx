@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Outlet, Route, Routes } from 'react-router-dom'
+import { Outlet, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'

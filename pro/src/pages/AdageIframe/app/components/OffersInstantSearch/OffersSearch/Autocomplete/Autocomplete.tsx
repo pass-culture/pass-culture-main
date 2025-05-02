@@ -5,7 +5,7 @@ import {
 import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions'
 import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
-import algoliasearch from 'algoliasearch/lite'
+import { liteClient } from 'algoliasearch/lite'
 import { FormikContext } from 'formik'
 import {
   BaseSyntheticEvent,
@@ -140,7 +140,7 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
     },
   })
 
-  const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
+  const searchClient = liteClient(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
   // provides search suggestions based on existing partners
   /* istanbul ignore next: We dont want to test algolia implementation */

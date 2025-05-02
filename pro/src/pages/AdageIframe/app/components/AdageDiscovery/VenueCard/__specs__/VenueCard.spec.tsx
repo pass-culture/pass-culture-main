@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
@@ -16,6 +16,11 @@ const mockVenue: LocalOfferersPlaylistOffer = {
   id: 28,
   city: 'Paris',
 }
+
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useSearchParams: () => [],
+}))
 
 const renderVenueCard = ({
   venue,

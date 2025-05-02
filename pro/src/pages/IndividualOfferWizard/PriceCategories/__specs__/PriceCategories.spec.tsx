@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router'
 
 import {
   IndividualOfferContextValues,

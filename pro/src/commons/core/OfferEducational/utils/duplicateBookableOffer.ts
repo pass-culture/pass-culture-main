@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -46,6 +46,7 @@ export const duplicateBookableOffer = async (
     const response = await api.duplicateCollectiveOffer(offerId)
     await postCollectiveOfferImage({ initialValues, notify, id: response.id })
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(`/offre/collectif/${response.id}/creation?structure=${offererId}`)
   } catch (error) {
     const message =

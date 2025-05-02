@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { Navigate, useLocation } from 'react-router-dom'
+import { useLocation, Navigate } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
@@ -37,6 +37,6 @@ export const OfferType = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = OfferType

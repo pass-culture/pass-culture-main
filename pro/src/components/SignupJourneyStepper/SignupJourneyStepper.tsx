@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { defaultActivityValues } from 'commons/context/SignupJourneyContext/constants'

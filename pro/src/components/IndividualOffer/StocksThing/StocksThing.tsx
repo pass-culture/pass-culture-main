@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -122,6 +122,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     // Return when saving in edition with an empty form
     const isFormEmpty = formik.values === STOCK_THING_FORM_DEFAULT_VALUES
     if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -130,6 +131,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     // Return when there is nothing to save
     const isStockAlreadySaved = formik.values.stockId !== undefined
     if (isStockAlreadySaved && !formik.dirty) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -146,6 +148,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
 
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(nextStepUrl)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
@@ -171,6 +174,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     if (mode === OFFER_WIZARD_MODE.EDITION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
@@ -180,6 +184,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         })
       )
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,

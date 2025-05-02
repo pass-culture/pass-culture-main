@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router'
 
 import { Mode } from 'commons/core/OfferEducational/types'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -71,7 +71,7 @@ export const CollectiveOfferSummaryCreation = ({
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
   CollectiveOfferSummaryCreation

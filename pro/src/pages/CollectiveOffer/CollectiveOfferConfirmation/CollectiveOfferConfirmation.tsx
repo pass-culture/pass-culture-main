@@ -1,4 +1,3 @@
-
 import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
@@ -39,7 +38,7 @@ const CollectiveOfferConfirmation = ({
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
   CollectiveOfferConfirmation

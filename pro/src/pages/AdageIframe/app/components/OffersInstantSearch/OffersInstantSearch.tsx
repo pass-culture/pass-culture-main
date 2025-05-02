@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch/lite'
+import { liteClient } from 'algoliasearch/lite'
 import { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
 import { useSelector } from 'react-redux'
@@ -26,7 +26,7 @@ import {
   adageFiltersToFacetFilters,
 } from './utils'
 
-const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
+const searchClient = liteClient(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
 export const MAIN_INDEX_ID = 'main_offers_index'
 

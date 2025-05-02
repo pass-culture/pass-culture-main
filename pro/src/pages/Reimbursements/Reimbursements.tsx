@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
@@ -41,6 +41,6 @@ export const Reimbursements = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = Reimbursements

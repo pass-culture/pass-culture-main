@@ -1,7 +1,7 @@
 import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -74,6 +74,7 @@ export const CollectiveDataForm = ({
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`
       )

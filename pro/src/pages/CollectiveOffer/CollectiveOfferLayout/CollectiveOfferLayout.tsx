@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router'
 
 import {
   GetCollectiveOfferResponseModel,

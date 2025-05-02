@@ -1,8 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import { Route } from 'react-router'
-import { Routes } from 'react-router-dom'
+import { Route , Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'

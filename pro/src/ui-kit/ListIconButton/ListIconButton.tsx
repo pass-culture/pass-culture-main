@@ -1,7 +1,7 @@
 /* istanbul ignore file : no need to test styled html tag  */
 import cn from 'classnames'
 import React, { MouseEvent, forwardRef, ForwardedRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip, TooltipProps } from 'ui-kit/Tooltip/Tooltip'

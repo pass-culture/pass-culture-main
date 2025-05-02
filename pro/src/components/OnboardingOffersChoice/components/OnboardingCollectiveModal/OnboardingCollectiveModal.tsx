@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'

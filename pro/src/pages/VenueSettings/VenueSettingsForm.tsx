@@ -1,5 +1,5 @@
 import { useField, useFormikContext } from 'formik'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import {
   GetOffererResponseModel,

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { Audience } from 'commons/core/shared/types'
 import { parseUrlParams } from 'commons/utils/parseUrlParams'

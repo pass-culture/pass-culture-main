@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
@@ -152,6 +152,7 @@ export const Offerer = (): JSX.Element => {
           : '/parcours-inscription/identification',
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(redirection.path)
 
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router'
 
 import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
 import strokePassIcon from 'icons/stroke-pass.svg'

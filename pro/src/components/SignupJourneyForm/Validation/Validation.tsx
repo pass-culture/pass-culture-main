@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -71,6 +71,7 @@ export const Validation = (): JSX.Element => {
 
   useEffect(() => {
     if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/identification')
       return
     }
@@ -78,6 +79,7 @@ export const Validation = (): JSX.Element => {
       activity === null ||
       activity === defaultActivityValues(isNewSignupEnabled)
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,12 +162,15 @@ export const Validation = (): JSX.Element => {
         const { isOnboarded } = await api.getOfferer(response.id)
         dispatch(updateOffererIsOnboarded(isOnboarded))
         if (!isOnboarded) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/onboarding')
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/accueil')
         }
       } else {
         notify.success('Votre structure a bien été créée')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate('/accueil')
       }
     } catch (error) {
@@ -179,6 +184,7 @@ export const Validation = (): JSX.Element => {
   }
 
   const handlePreviousStep = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/activite')
   }
 
