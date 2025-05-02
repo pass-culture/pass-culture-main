@@ -1,9 +1,14 @@
+import logging
+
 import click
 
 import pcapi.core.offers.api as offers_api
+from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 
+
+logger = logging.getLogger(__name__)
 
 blueprint = Blueprint(__name__, __name__)
 
@@ -26,4 +31,9 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 @click.argument("offer_chunk_size", required=False, type=int, default=16)
 @log_cron_with_transaction
 def delete_unbookable_unbooked_old_offers(min_offer_id: int, max_offer_id: int | None, offer_chunk_size: int) -> None:
-    offers_api.delete_unbookable_unbooked_old_offers(min_offer_id, max_offer_id, offer_chunk_size)
+    if FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP.is_active():
+        offers_api.delete_unbookable_unbooked_old_offers(min_offer_id, max_offer_id, offer_chunk_size)
+    else:
+        logger.info(
+            "Feature '%s' is not active. Skipping offer cleanup.", FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP.name
+        )
