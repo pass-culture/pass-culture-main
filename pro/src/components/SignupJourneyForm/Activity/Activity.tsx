@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -84,6 +84,7 @@ export const Activity = (): JSX.Element => {
 
   const onSubmitActivity = (formValues: ActivityFormValues) => {
     setActivity(serializeActivityFormToSubmit(formValues))
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/validation')
   }
 
@@ -95,6 +96,7 @@ export const Activity = (): JSX.Element => {
   })
 
   const handlePreviousStep = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/identification')
   }
 

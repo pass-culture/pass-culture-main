@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
@@ -51,6 +51,7 @@ const CollectiveOfferVisibility = ({
     payload: GetCollectiveOfferResponseModel
   }) => {
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         payload.id,
@@ -81,7 +82,7 @@ const CollectiveOfferVisibility = ({
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
   CollectiveOfferVisibility

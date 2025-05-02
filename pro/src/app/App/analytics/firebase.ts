@@ -5,17 +5,22 @@ import {
   isSupported,
   logEvent as analyticsLogEvent,
   setUserId,
-  setUserProperties
-} from "@firebase/analytics";
-import * as firebase from "@firebase/app";
-import { fetchAndActivate, getAll, getRemoteConfig, RemoteConfig } from "@firebase/remote-config";
-import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+  setUserProperties,
+} from '@firebase/analytics'
+import * as firebase from '@firebase/app'
+import {
+  fetchAndActivate,
+  getAll,
+  getRemoteConfig,
+  RemoteConfig,
+} from '@firebase/remote-config'
+import { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import { firebaseConfig } from "commons/config/firebase";
-import { useUtmQueryParams } from "commons/hooks/useUtmQueryParams";
-import { selectCurrentOffererId } from "commons/store/offerer/selectors";
-import { selectCurrentUser } from "commons/store/user/selectors";
+import { firebaseConfig } from 'commons/config/firebase'
+import { useUtmQueryParams } from 'commons/hooks/useUtmQueryParams'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 
 let firebaseApp: firebase.FirebaseApp | undefined
 let firebaseRemoteConfig: RemoteConfig | undefined

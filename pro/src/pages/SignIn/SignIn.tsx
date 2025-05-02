@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
@@ -149,6 +149,6 @@ export const SignIn = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = SignIn

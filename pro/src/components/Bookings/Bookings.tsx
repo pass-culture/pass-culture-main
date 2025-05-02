@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -224,6 +224,7 @@ export const BookingsContainer = <
       ...urlParams,
       ...partialUrlInfo,
     })
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       `/reservations${
         audience === Audience.COLLECTIVE ? '/collectives' : ''

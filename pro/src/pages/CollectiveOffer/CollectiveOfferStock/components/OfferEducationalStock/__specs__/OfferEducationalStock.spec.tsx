@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format } from 'date-fns'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { CollectiveOfferAllowedAction } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
@@ -35,8 +35,8 @@ const initialValuesNotEmpty = {
   priceDetail: 'Détail du prix',
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
 

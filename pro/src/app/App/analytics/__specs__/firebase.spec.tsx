@@ -36,12 +36,12 @@ const FakeApp = ({
 }): JSX.Element => {
   useFirebase(isCookieEnabled)
 
-  return <h1>Fake App</h1>
+  return <h1>Fake App {isCookieEnabled ? 'yes' : 'no'}</h1>
 }
 
 const user = sharedCurrentUserFactory()
 const renderFakeApp = ({ isCookieEnabled }: { isCookieEnabled: boolean }) => {
-  return renderWithProviders(<FakeApp isCookieEnabled={isCookieEnabled} />, {
+  renderWithProviders(<FakeApp isCookieEnabled={isCookieEnabled} />, {
     user,
   })
 }
@@ -130,13 +130,13 @@ describe('useFirebase', () => {
       automaticDataCollectionEnabled: true,
     })
 
-    const { rerender } = renderFakeApp({ isCookieEnabled: true })
+    renderFakeApp({ isCookieEnabled: true })
 
     await waitFor(() => {
       expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
     })
 
-    rerender(<FakeApp isCookieEnabled={false} />)
+    renderFakeApp({ isCookieEnabled: false })
 
     await waitFor(() => {
       expect(firebase.deleteApp).toHaveBeenCalled()

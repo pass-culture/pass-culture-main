@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import * as reactRedux from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 
@@ -9,8 +9,8 @@ import { useRedirectLoggedUser } from '../useRedirectLoggedUser'
 const mockNavigate = vi.fn()
 const mockDispatch = vi.fn()
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
   return {
     ...actual,
     useNavigate: () => mockNavigate,

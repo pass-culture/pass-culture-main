@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from 'apiClient/adresse/apiAdresse'
@@ -163,7 +163,9 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
-    expect(screen.getByText('Activity screen')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Activity screen')).toBeInTheDocument()
+    })
   })
 
   it('should display offerer screen on submit', async () => {

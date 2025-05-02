@@ -21,8 +21,8 @@ export const URL_FOR_MAINTENANCE =
   import.meta.env.VITE_URL_FOR_MAINTENANCE || ''
 export const LOGS_DATA = import.meta.env.VITE_LOGS_DATA === 'true'
 
-export const ALGOLIA_APP_ID = import.meta.env.VITE_ALGOLIA_APP_ID ?? ''
-export const ALGOLIA_API_KEY = import.meta.env.VITE_ALGOLIA_API_KEY ?? ''
+export const ALGOLIA_APP_ID = import.meta.env.VITE_ALGOLIA_APP_ID ?? 'KEY'
+export const ALGOLIA_API_KEY = import.meta.env.VITE_ALGOLIA_API_KEY ?? 'KEY'
 export const ALGOLIA_COLLECTIVE_OFFERS_INDEX =
   import.meta.env.VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX ?? ''
 export const ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX =

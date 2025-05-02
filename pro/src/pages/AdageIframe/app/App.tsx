@@ -86,6 +86,6 @@ export const App = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = App

@@ -1,4 +1,3 @@
-
 import strokeWipIcon from 'icons/stroke-wip.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -22,6 +21,6 @@ export const Unavailable = () => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = Unavailable

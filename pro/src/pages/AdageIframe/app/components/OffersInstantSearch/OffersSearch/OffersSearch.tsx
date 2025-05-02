@@ -2,7 +2,7 @@ import { FormikContext, useFormik } from 'formik'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router'
 import useSWRMutation from 'swr/mutation'
 
 import { AdageFrontRoles, TrackingFilterBody } from 'apiClient/adage'

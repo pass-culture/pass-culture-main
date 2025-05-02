@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
@@ -58,6 +58,7 @@ export const createOfferFromTemplate = async (
         id: response.id,
       })
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         `/offre/collectif/${response.id}/creation?structure=${offererId}${
           requestId ? `&requete=${requestId}` : ''

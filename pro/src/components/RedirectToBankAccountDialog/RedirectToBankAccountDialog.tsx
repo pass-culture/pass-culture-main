@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
@@ -38,6 +38,7 @@ export const RedirectToBankAccountDialog = ({
         if (isOnboarding) {
           dispatch(updateOffererIsOnboarded(true))
         }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(cancelRedirectUrl)
       }}
       title="Félicitations, vous avez créé votre offre !"

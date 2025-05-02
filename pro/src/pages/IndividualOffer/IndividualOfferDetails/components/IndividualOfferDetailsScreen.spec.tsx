@@ -1,8 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
-import { Route, Routes } from 'react-router-dom'
-import { beforeEach } from 'vitest'
+import * as router from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -71,8 +70,8 @@ const DEFAULTS = {
   submitButtonLabel: 'Enregistrer et continuer',
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
 const mockNavigate = vi.fn()

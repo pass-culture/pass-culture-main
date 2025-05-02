@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -39,6 +39,7 @@ export function StocksCalendarActionsBar({
 
   function handlePreviousStep() {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offerId,
@@ -49,6 +50,7 @@ export function StocksCalendarActionsBar({
       )
       return
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
@@ -67,6 +69,7 @@ export function StocksCalendarActionsBar({
     }
 
     await mutate([GET_OFFER_QUERY_KEY, offerId])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,

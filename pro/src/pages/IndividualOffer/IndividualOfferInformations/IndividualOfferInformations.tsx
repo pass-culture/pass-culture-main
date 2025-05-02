@@ -26,6 +26,6 @@ const IndividualOfferInformations = (): JSX.Element | null => {
   )
 }
 
-// Below exports are used by react-router-dom
+// Below exports are used by react-router
 // ts-unused-exports:disable-next-line
 export const Component = IndividualOfferInformations

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -59,8 +59,8 @@ describe('<OnboardingCollectiveModal />', () => {
   })
 
   describe('API calls', () => {
-    vi.mock('react-router-dom', async () => ({
-      ...(await vi.importActual('react-router-dom')),
+    vi.mock('react-router', async () => ({
+      ...(await vi.importActual('react-router')),
       useNavigate: vi.fn(),
     }))
 

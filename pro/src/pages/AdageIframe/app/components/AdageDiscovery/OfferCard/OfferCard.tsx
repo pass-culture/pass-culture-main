@@ -1,9 +1,4 @@
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
@@ -50,6 +45,7 @@ export const OfferCardComponent = ({
           onCardClicked()
           if (!e.metaKey) {
             e.preventDefault()
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
               state: { offer, playlistId },
             })

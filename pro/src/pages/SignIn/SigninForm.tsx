@@ -1,5 +1,5 @@
 import { Form, useFormContext } from 'react-hook-form'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'

@@ -21,8 +21,8 @@ import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/C
 
 import { CollectiveOfferPreviewCreation } from '../CollectiveOfferPreviewCreation'
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useParams: () => ({
     requestId: vi.fn(),
     requete: '1',

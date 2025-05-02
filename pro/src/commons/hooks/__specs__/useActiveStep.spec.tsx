@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react'
-import * as router from 'react-router-dom'
+import * as router from 'react-router'
 
 import { useActiveStep } from '../useActiveStep'
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router', () => ({
+  ...vi.importActual('react-router'),
   useLocation: () => ({
     pathname: '',
   }),

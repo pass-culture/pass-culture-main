@@ -1,6 +1,6 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs'
 import cn from 'classnames'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 

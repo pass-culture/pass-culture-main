@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
@@ -36,6 +36,7 @@ export const ResetPassword = (): JSX.Element => {
 
   const invalidTokenHandler = useCallback(() => {
     notify.error('Le lien a expiré. Veuillez recommencer.')
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/demande-mot-de-passe')
   }, [navigate, notify])
 
@@ -55,6 +56,7 @@ export const ResetPassword = (): JSX.Element => {
 
       if (is2025SignUpEnabled) {
         notify.success('Mot de passe modifié.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate('/connexion')
       } else {
         setPasswordChanged(true)
@@ -121,6 +123,6 @@ export const ResetPassword = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = ResetPassword

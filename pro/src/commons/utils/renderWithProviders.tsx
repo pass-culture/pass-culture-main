@@ -1,13 +1,16 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { render } from "@testing-library/react";
-import { ReactNode } from "react";
-import { Provider } from "react-redux";
-import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import { SWRConfig } from "swr";
+import { render } from '@testing-library/react'
+import { ReactNode } from 'react'
+import { Provider } from 'react-redux'
+import { createMemoryRouter, RouterProvider } from 'react-router'
+import { SWRConfig } from 'swr'
 
-import { FeatureResponseModel, SharedCurrentUserResponseModel } from "apiClient/v1";
-import { RootState } from "commons/store/rootReducer";
-import { configureTestStore } from "commons/store/testUtils";
+import {
+  FeatureResponseModel,
+  SharedCurrentUserResponseModel,
+} from 'apiClient/v1'
+import { RootState } from 'commons/store/rootReducer'
+import { configureTestStore } from 'commons/store/testUtils'
 
 export type RenderWithProvidersOptions = {
   storeOverrides?: Partial<RootState>
@@ -23,6 +26,14 @@ const createRouterFromOverrides = (
 ) =>
   createMemoryRouter([{ path: initialPath, element: component }], {
     initialEntries: overrides?.initialRouterEntries,
+    future: {
+      //v7_relativeSplatPath: true,
+      //v7_startTransition: true,
+      //v7_fetcherPersist: true,
+      //v7_normalizeFormMethod: true,
+      //v7_partialHydration: true,
+      //v7_skipActionErrorRevalidation: true,
+    },
   })
 
 export const renderWithProviders = (

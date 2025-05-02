@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useId } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'

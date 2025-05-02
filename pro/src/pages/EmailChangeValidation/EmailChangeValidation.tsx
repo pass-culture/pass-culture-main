@@ -1,7 +1,7 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
@@ -52,6 +52,6 @@ const EmailChangeValidation = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = EmailChangeValidation

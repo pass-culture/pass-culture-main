@@ -28,8 +28,8 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 
 import { Offers, OffersProps } from '../Offers'
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
   useParams: () => ({
     venueId: '',
     siret: '',

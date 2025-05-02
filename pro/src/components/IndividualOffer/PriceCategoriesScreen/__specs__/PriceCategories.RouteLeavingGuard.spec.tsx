@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { generatePath, Route, Routes } from 'react-router-dom'
+import { generatePath, Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -118,9 +118,11 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(
-      screen.getByText('There is the stock create route content')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByText('There is the stock create route content')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should let going to recap when form has been filled in edition', async () => {

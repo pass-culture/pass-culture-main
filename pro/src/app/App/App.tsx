@@ -6,7 +6,7 @@ import {
   useLocation,
   useNavigate,
   useSearchParams,
-} from 'react-router-dom'
+} from 'react-router'
 import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -129,6 +129,7 @@ export const App = (): JSX.Element | null => {
         value={{
           onError: (error) => {
             if (isErrorAPIError(error) && error.status === 404) {
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               navigate('/404')
               return
             }

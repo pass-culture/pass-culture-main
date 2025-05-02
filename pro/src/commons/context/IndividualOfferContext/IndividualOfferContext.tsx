@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -63,6 +63,7 @@ export const IndividualOfferContextProvider = ({
     {
       onError: (error, key) => {
         if (error.status === 404) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/404', { state: { from: 'offer' } })
           return
         }

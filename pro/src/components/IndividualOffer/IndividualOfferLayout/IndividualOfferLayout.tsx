@@ -1,6 +1,5 @@
 import cn from 'classnames'
-import { Navigate } from 'react-router'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
@@ -85,6 +84,7 @@ export const IndividualOfferLayout = ({
       return
     }
     notify.success('Votre brouillon a bien été supprimé')
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/offres')
   }
 

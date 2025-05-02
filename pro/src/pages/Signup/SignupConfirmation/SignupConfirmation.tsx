@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
