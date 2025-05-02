@@ -543,11 +543,6 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                     artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image
                 )
             )
-            .options(
-                sa_orm.with_expression(
-                    offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
-                )
-            )
         )
         .options(
             sa_orm.with_expression(
