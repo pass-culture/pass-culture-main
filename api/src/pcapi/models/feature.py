@@ -76,6 +76,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
+    ENABLE_OFFERS_AUTO_CLEANUP = "Active la suppression automatique des offres obsolètes"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
@@ -205,6 +206,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_MOVIE_FESTIVAL_RATE,
+    FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP,
     FeatureToggle.ENABLE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_PRO_FEEDBACK,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
