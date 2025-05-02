@@ -1,4 +1,12 @@
-import { Chart } from 'chart.js/auto'
+import {
+  Chart,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  TimeSeriesScale,
+  Tooltip,
+} from 'chart.js'
 import 'chartjs-adapter-date-fns'
 import * as designSystemTokens from 'design-system/dist/build/pro/index.light.web'
 
@@ -8,6 +16,14 @@ export const chartColors = {
   primary: '#870087',
   black: '#151515',
 }
+Chart.register(
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  TimeSeriesScale,
+  Tooltip
+)
 
 // We have only one chart for now so I put here all the options that I think
 // should be defaults but we can adapt these defaults when we add more charts
@@ -28,5 +44,3 @@ Chart.defaults.scales.time.grid = { drawTicks: false }
 Chart.defaults.scales.linear.ticks.font = { weight: 600 }
 Chart.defaults.scales.linear.ticks.color = chartColors.black
 Chart.defaults.scales.linear.grid = { drawTicks: false }
-
-Chart.defaults.plugins.legend.display = false
