@@ -3,13 +3,17 @@ import datetime
 import decimal
 import typing
 
+from flask import url_for
+from markupsafe import Markup
 from pydantic.v1.utils import GetterDict
 
 from pcapi import settings
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
+from pcapi.core.operations import models as operations_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -331,3 +335,74 @@ class AccountCreatedAction(AccountAction):
     @property
     def authorUser(self) -> users_models.User | None:
         return self._user
+
+
+class BeneficiaryActivity(abc.ABC):
+    """
+    Used to put all user's chronicles, special events, etc in one table
+    """
+
+    @property
+    @abc.abstractmethod
+    def activityType(self) -> str:
+        pass
+
+    @property
+    def activityDate(self) -> datetime.datetime | None:
+        return None
+
+    @property
+    def comment(self) -> str | None:
+        return None
+
+
+class SpecialEventActivity(BeneficiaryActivity):
+    def __init__(self, special_event_response: operations_models.SpecialEventResponse):
+        self._special_event_response = special_event_response
+
+    @property
+    def activityType(self) -> str:
+        return "Opération spéciale"
+
+    @property
+    def activityDate(self) -> datetime.datetime | None:
+        return self._special_event_response.dateSubmitted
+
+    @property
+    def comment(self) -> str | None:
+        from pcapi.routes.backoffice.filters import format_special_event_response_status  # avoid circular import
+
+        comment = Markup(
+            """Candidature à l'opération spéciale <a class="link-primary" href="{url}">{title}</a> : {status}"""
+        ).format(
+            url=url_for(
+                "backoffice_web.operations.get_event_details", special_event_id=self._special_event_response.eventId
+            ),
+            title=self._special_event_response.title,
+            status=format_special_event_response_status(self._special_event_response.status),
+        )
+        return comment
+
+
+class ChronicleActivity(BeneficiaryActivity):
+    def __init__(self, chronicle: chronicles_models.Chronicle):
+        self._chronicle = chronicle
+
+    @property
+    def activityType(self) -> str:
+        return "Chronique"
+
+    @property
+    def activityDate(self) -> datetime.datetime | None:
+        return self._chronicle.dateCreated
+
+    @property
+    def comment(self) -> str | None:
+        comment = Markup(
+            """Rédaction d'une chronique sur <a class="link-primary" href="{url}">{title}</a> : {status}"""
+        ).format(
+            url=url_for("backoffice_web.chronicles.details", chronicle_id=self._chronicle.id),
+            title=self._chronicle.title or "une œuvre",
+            status="publiée" if self._chronicle.isPublished else "non publiée",
+        )
+        return comment
