@@ -14,6 +14,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -24,6 +25,8 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.operations import factories as operations_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
@@ -1177,6 +1180,78 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         available_button = html_parser.extract(response.data, tag="button")
         assert "Anonymiser" not in available_button
+
+
+class GetUserActivityTest(GetEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_public_account_activity"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
+
+    # - session + authenticated user (2 queries)
+    # - special events (1 query)
+    # - chronicles (1 query)
+    expected_num_queries = 4
+
+    def test_get_beneficiary_activity(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        first_chronicle = chronicles_factories.ChronicleFactory(
+            user=user,
+            ean="9782370730541",
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            products=[offers_factories.ProductFactory(ean="9782370730541", name="Le Backoffice pour les nuls")],
+        )
+
+        special_event_response = operations_factories.SpecialEventResponseFactory(
+            user=user,
+            dateSubmitted=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            event__title="Jeu concours",
+        )
+        no_ean_chronicle = chronicles_factories.ChronicleFactory(
+            user=user,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        last_chronicle = chronicles_factories.ChronicleFactory(
+            user=user,
+            ean="12345678954321",
+            isActive=True,
+            isSocialMediaDiffusible=True,
+            dateCreated=datetime.datetime.utcnow(),
+        )
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        activity = html_parser.extract_table_rows(response.data)
+        assert len(activity) == 4
+
+        assert activity[0]["Type d'activité"] == "Chronique"
+        assert activity[0]["Date"].startswith(last_chronicle.dateCreated.strftime("%d/%m/%Y"))
+        assert activity[0]["Commentaire"] == "Rédaction d'une chronique sur 12345678954321 : publiée"
+
+        assert activity[1]["Type d'activité"] == "Chronique"
+        assert activity[1]["Date"].startswith(no_ean_chronicle.dateCreated.strftime("%d/%m/%Y"))
+        assert activity[1]["Commentaire"] == "Rédaction d'une chronique sur une œuvre : non publiée"
+
+        assert activity[2]["Type d'activité"] == "Opération spéciale"
+        assert activity[2]["Date"].startswith(special_event_response.dateSubmitted.strftime("%d/%m/%Y"))
+        assert activity[2]["Commentaire"] == "Candidature à l'opération spéciale Jeu concours : Nouvelle"
+
+        assert activity[3]["Type d'activité"] == "Chronique"
+        assert activity[3]["Date"].startswith(first_chronicle.dateCreated.strftime("%d/%m/%Y"))
+        assert activity[3]["Commentaire"] == "Rédaction d'une chronique sur Le Backoffice pour les nuls : non publiée"
+
+    def test_get_beneficiary_activity_empty(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert not html_parser.extract_table_rows(response.data)
+        assert "Aucune activité à ce jour" in response.data.decode("utf-8")
 
 
 class UpdatePublicAccountTest(PostEndpointHelper):

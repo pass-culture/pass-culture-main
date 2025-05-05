@@ -20,6 +20,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import exceptions as finance_exceptions
@@ -32,6 +33,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -2096,6 +2098,59 @@ def get_public_account_history(
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 
     return history
+
+
+@public_accounts_blueprint.route("/<int:user_id>/activity", methods=["GET"])
+def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
+    activity: list[serialization.BeneficiaryActivity] = []
+
+    special_event_responses = (
+        db.session.query(
+            operations_models.SpecialEventResponse.id,
+            operations_models.SpecialEventResponse.dateSubmitted,
+            operations_models.SpecialEventResponse.status,
+            operations_models.SpecialEventResponse.eventId,
+            operations_models.SpecialEvent.title.label("title"),
+        )
+        .select_from(operations_models.SpecialEventResponse)
+        .join(operations_models.SpecialEvent)
+        .filter(operations_models.SpecialEventResponse.userId == user_id)
+    ).all()
+
+    for special_event_response in special_event_responses:
+        activity.append(serialization.SpecialEventActivity(special_event_response))
+
+    chronicles = (
+        db.session.query(
+            chronicles_models.Chronicle.id,
+            chronicles_models.Chronicle.dateCreated,
+            chronicles_models.Chronicle.ean,
+            chronicles_models.Chronicle.isPublished,
+            sa.func.coalesce(
+                offers_models.Product.name,
+                chronicles_models.Chronicle.ean,
+                "",
+            ).label("title"),
+        )
+        .select_from(chronicles_models.Chronicle)
+        .outerjoin(
+            chronicles_models.ProductChronicle,
+            chronicles_models.Chronicle.id == chronicles_models.ProductChronicle.chronicleId,
+        )
+        .outerjoin(offers_models.Product, chronicles_models.ProductChronicle.productId == offers_models.Product.id)
+        .filter(chronicles_models.Chronicle.userId == user_id)
+    ).all()
+
+    for chronicle in chronicles:
+        activity.append(serialization.ChronicleActivity(chronicle))
+
+    activity = sorted(activity, key=lambda item: item.activityDate or datetime.datetime.min, reverse=True)
+
+    return render_template(
+        "accounts/get/details/activity.html",
+        user_id=user_id,
+        activity=activity,
+    )
 
 
 @public_accounts_blueprint.route("/<int:user_id>/gdpr-extract", methods=["POST"])

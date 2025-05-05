@@ -2,6 +2,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% call build_details_tabs_wrapper() %}
   {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
   {% if eligibility_history is defined %}
@@ -9,6 +10,7 @@
   {% endif %}
   {% if bookings is defined %}{{ build_details_tab("bookings", "Suivi des réservations", active_tab == "bookings") }}{% endif %}
   {% if roles is defined %}{{ build_details_tab("roles", "Rôles BackOffice", active_tab == "roles") }}{% endif %}
+  {{ build_details_tab("activity", "Activité", active_tab == "activity") }}
 {% endcall %}
 {% call build_details_tabs_content_wrapper() %}
   {% call build_details_tab_content("history", active_tab == "history") %}
@@ -29,4 +31,9 @@
       {% include "accounts/get/details/roles.html" %}
     {% endcall %}
   {% endif %}
+  {% call build_details_tab_content("activity", active_tab == 'activity') %}
+    <turbo-frame data-turbo="false" id="user_activity_frame" loading="lazy" src="{{ url_for('backoffice_web.public_accounts.get_public_account_activity', user_id=user.id) }}">
+    {{ build_loading_spinner() }}
+    </turbo-frame>
+  {% endcall %}
 {% endcall %}
