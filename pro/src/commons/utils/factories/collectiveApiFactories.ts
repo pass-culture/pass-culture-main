@@ -127,7 +127,7 @@ export const getCollectiveOfferFactory = (
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
     allowedActions: [],
     location: {
-      locationType: CollectiveLocationType.ADDRESS
+      locationType: CollectiveLocationType.ADDRESS,
     },
     ...customCollectiveOffer,
   }
@@ -314,6 +314,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   dmsToken: 'fakeDmsToken',
   hasAdageId: true,
   hasOffers: true,
+  hasActiveIndividualOffer: true,
   isOpenToPublic: true,
   isVirtual: false,
   managingOfferer: {

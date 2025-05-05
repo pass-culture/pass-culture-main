@@ -226,6 +226,20 @@ class VenueIsEligibleForSearchTest:
         assert venue.is_eligible_for_search == is_eligible_for_search
 
 
+class VenueHasActiveIndividualOffersTest:
+    def test_has_active_individual_offer_property(self):
+        venue = factories.VenueFactory()
+        offers_factories.EventStockFactory(offer__venue=venue)
+
+        assert venue.hasActiveIndividualOffer == True
+
+    def test_has_not_active_individual_offer_property(self):
+        venue = factories.VenueFactory()
+        offers_factories.EventStockFactory(offer__venue=venue, offer__isActive=False)
+
+        assert venue.hasActiveIndividualOffer == False
+
+
 class OffererDepartementCodePropertyTest:
     def test_metropole_postal_code(self):
         offerer = factories.OffererFactory.build(postalCode="75000")

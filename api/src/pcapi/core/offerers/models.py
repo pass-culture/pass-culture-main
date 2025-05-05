@@ -62,7 +62,6 @@ if typing.TYPE_CHECKING:
     import pcapi.core.criteria.models as criteria_models
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
-    from pcapi.core.providers.models import Provider
     import pcapi.core.users.models as users_models
 
 logger = logging.getLogger(__name__)
@@ -470,6 +469,24 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         import pcapi.core.offers.models as offers_models
 
         return sa.exists().where(offers_models.Offer.venueId == cls.id)
+
+    @property
+    def hasActiveIndividualOffer(self) -> bool:
+        import pcapi.core.offers.models as offers_models
+
+        return db.session.query(
+            sa.select(1)
+            .select_from(offers_models.Offer)
+            .join(Venue, offers_models.Offer.venueId == Venue.id)
+            .join(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
+            .where(
+                offers_models.Stock.offerId == offers_models.Offer.id,
+                offers_models.Stock.isSoftDeleted.is_(False),
+                offers_models.Offer.isActive.is_(True),
+                Venue.id == self.id,
+            )
+            .exists()
+        ).scalar()
 
     @property
     def is_eligible_for_search(self) -> bool:

@@ -44,6 +44,7 @@ export type GetVenueResponseModel = {
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   externalAccessibilityId?: string | null;
   externalAccessibilityUrl?: string | null;
+  hasActiveIndividualOffer: boolean;
   hasAdageId: boolean;
   hasOffers: boolean;
   id: number;

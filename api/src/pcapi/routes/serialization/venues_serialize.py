@@ -235,6 +235,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     isVisibleInApp: bool = True
     hasOffers: bool
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    hasActiveIndividualOffer: bool
 
     class Config:
         orm_mode = True
