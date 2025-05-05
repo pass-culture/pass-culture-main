@@ -118,21 +118,6 @@ types-requests = "2.32.0.20250328"
 types-urllib3 = "^1.26.25.14"
 
 
-[tool.isort]
-combine_as_imports = true
-ensure_newline_before_comments = true
-force_grid_wrap = 0
-force_single_line = true
-force_sort_within_sections = true
-include_trailing_comma = true
-known_tests = ["tests"]
-line_length = 120
-lines_after_imports = 2
-multi_line_output = 3
-sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,TESTS,LOCALFOLDER"
-use_parentheses = true
-
-
 [tool.mypy]
 python_version = "3.11"
 mypy_path = "stubs/"
@@ -230,7 +215,7 @@ extend-select = [
   # "PLR0913",  # too-many-arguments
   # "PLR0914",  # too-many-locals
   # "PLR0915"  # too-many-statements
-  "S704", # unsafe-markup-use
+  "S704",   # unsafe-markup-use
   "TID251", # banned-api (requests)
 ]
 
@@ -247,6 +232,31 @@ ignore = [
 [tool.ruff.lint.flake8-tidy-imports]
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "requests".msg = "Use `pcapi.utils.requests` instead."
+
+[tool.ruff.lint.isort]
+# combine-as-imports = true # deleted, conflicts with force-single-line
+# ensure-newline-before-comments = true # deleted, already in lines-after-imports
+force-single-line = true
+force-sort-within-sections = true # may be deleted
+# include-trailing-comma = true # deleted, default behavior of ruff
+# known-tests = ["tests"] # deleted, replaced by 
+# line-length = 120 # already configured in ruff tool.ruff.lint.isort.sections
+lines-after-imports = 2
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "tests",
+  "local-folder",
+]
+case-sensitive = true
+order-by-type = false
+# relative-imports-order = "closest-to-furthest"
+# use_parentheses = true # may be deleted
+
+[tool.ruff.lint.isort.sections]
+tests = ["tests"]
 
 [tool.pytest.ini_options]
 addopts = [
