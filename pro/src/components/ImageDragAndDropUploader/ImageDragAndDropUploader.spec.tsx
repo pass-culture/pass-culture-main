@@ -189,6 +189,8 @@ describe('ImageDragAndDropUploader', () => {
     expect(mockNotifySuccess).toHaveBeenCalledWith(
       'Votre image a bien été enregistrée'
     )
+
+    expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()
   })
 
   it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {

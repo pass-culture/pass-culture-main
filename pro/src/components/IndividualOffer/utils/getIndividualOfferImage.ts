@@ -2,8 +2,12 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 
 export const getIndividualOfferImage = (
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModel | null
 ): IndividualOfferImage | undefined => {
+  if (!offer) {
+    return undefined
+  }
+
   if (offer.activeMediation) {
     if (offer.activeMediation.thumbUrl) {
       return {
@@ -20,5 +24,6 @@ export const getIndividualOfferImage = (
       credit: '',
     }
   }
+
   return undefined
 }
