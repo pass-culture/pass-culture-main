@@ -150,21 +150,16 @@ def spectree_serialize(
             tags=tags,
         )
         def sync_validate(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
-            try:
-                body_params = flask.request.get_json()
-            except BadRequest:
-                if "/v2/bookings" in flask.request.path:
-                    # FIXME (mageoffray 26-06-2023): because of historical reasons we need to
-                    # not throw error when some invalid json in provided for V2 bookings api.
-                    body_params = None
-                else:
+            query_params = flask.request.args
+            form = flask.request.form
+            if body_in_kwargs:
+                try:
+                    body_params = flask.request.get_json()
+                except BadRequest:
                     # Since pydantic validator is applied before this method and use a silent json parser,
                     # the only case we should end here is with an PATCH/POST with no validator for body params
                     # or a GET request with a invalid body.
                     raise
-            query_params = flask.request.args
-            form = flask.request.form
-            if body_in_kwargs:
                 try:
                     kwargs["body"] = body_in_kwargs(**(body_params or {}))
                 except pydantic.v1.ValidationError:
