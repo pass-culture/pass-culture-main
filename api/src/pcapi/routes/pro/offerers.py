@@ -172,12 +172,12 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
         # As this endpoint does not only allow to create an offerer, but also handles
         # a large part of `user_offerer` business logic (see `api.create_offerer` below)
         # That check is needed here. Otherwise, we might try to create an already existing user_offerer
-        raise ApiErrors(errors={"user_offerer": ["This user already belongs to this offerer"]})
+        raise ApiErrors(errors={"user_offerer": ["Votre compte est déjà rattaché à cette structure."]})
 
     try:
         user_offerer = api.create_offerer(current_user, body)
     except offerers_exceptions.NotACollectivity:
-        raise ApiErrors(errors={"user_offerer": ["Attachment is allowed only for collectivity"]})
+        raise ApiErrors(errors={"user_offerer": ["Le rattachement est permis seulement pour les collectivités"]})
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
