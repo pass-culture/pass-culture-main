@@ -32,6 +32,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
+import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
@@ -58,6 +59,7 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
+import pcapi.core.reactions.models as reactions_models
 from pcapi.core.reminders.external import reminders_notifications
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -580,6 +582,8 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
     inactive_headline_offers = offers_repository.get_inactive_headline_offers()
     for headline_offer in inactive_headline_offers:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        if headline_offer.offer.product:
+            headline_offer.offer.product.headlinesCount -= 1
         logger.info(
             "Headline Offer Deactivation",
             extra={
@@ -620,6 +624,8 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     offers_validation.check_offer_is_eligible_to_be_headline(offer)
     try:
         headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue, timespan=(datetime.datetime.utcnow(),))
+        if offer.product:
+            offer.product.headlinesCount += 1
         db.session.add(headline_offer)
         # Note: We use flush and not commit to be compliant with atomic. At this moment,
         # the timespan is a str because the __init__ overloaded method of HeadlineOffer calls
@@ -648,6 +654,8 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
     try:
         headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        if headline_offer.offer.product:
+            headline_offer.offer.product.headlinesCount -= 1
         on_commit(
             partial(
                 search.async_index_offer_ids,
@@ -2307,3 +2315,75 @@ def delete_unbookable_unbooked_old_offers(
 
     log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
+
+
+def check_products_counts_consistency() -> None:
+    inconsistent_products = set(
+        list(_get_inconsistent_products_on_chronicles_count()),
+        list(_get_inconsistent_products_on_headlines_count()),
+        list(_get_inconsistent_products_on_likes_count()),
+    )
+
+    if inconsistent_products:
+        logger.error("Inconsistent product counts found", extra={"product_ids": inconsistent_products})
+
+
+def _get_inconsistent_products_on_chronicles_count() -> list[int]:
+    chronicles_count_cte = (
+        sa.select(
+            chronicles_models.ProductChronicle.productId.label("productId"),
+            sa.func.count(chronicles_models.ProductChronicle.productId).label("total"),
+        )
+        .group_by(chronicles_models.ProductChronicle.productId)
+        .cte()
+    )
+    return (
+        db.session.query(models.Product)
+        .join(chronicles_count_cte, models.Product.id == chronicles_count_cte.c.productId)
+        .filter(
+            models.Product.chroniclesCount != chronicles_count_cte.c.total,
+        )
+        .with_entities(models.Product.id)
+    )
+
+
+def _get_inconsistent_products_on_headlines_count() -> list[int]:
+    headlines_count_cte = (
+        sa.select(models.Offer.productId.label("productId"), sa.func.count(models.Offer.productId).label("total"))
+        .select_from(models.HeadlineOffer)
+        .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
+        .where(models.Offer.productId.is_not(None))
+        .group_by(models.Offer.productId)
+        .cte()
+    )
+    return (
+        db.session.query(models.Product)
+        .join(headlines_count_cte, models.Product.id == headlines_count_cte.c.productId)
+        .filter(
+            models.Product.chroniclesCount != headlines_count_cte.c.total,
+        )
+        .with_entities(models.Product.id)
+    )
+
+
+def _get_inconsistent_products_on_likes_count() -> list[int]:
+    likes_count_cte = (
+        sa.select(
+            reactions_models.Reaction.productId.label("productId"),
+            sa.func.count(reactions_models.Reaction.productId).label("total"),
+        )
+        .where(
+            reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE,
+            reactions_models.Reaction.productId.is_not(None),
+        )
+        .group_by(reactions_models.Reaction.productId)
+        .cte()
+    )
+    return (
+        db.session.query(models.Product)
+        .join(likes_count_cte, models.Product.id == likes_count_cte.c.productId)
+        .filter(
+            models.Product.chroniclesCount != likes_count_cte.c.total,
+        )
+        .with_entities(models.Product.id)
+    )

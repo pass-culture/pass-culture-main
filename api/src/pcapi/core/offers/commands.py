@@ -27,3 +27,9 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 @log_cron_with_transaction
 def delete_unbookable_unbooked_old_offers(min_offer_id: int, max_offer_id: int | None, offer_chunk_size: int) -> None:
     offers_api.delete_unbookable_unbooked_old_offers(min_offer_id, max_offer_id, offer_chunk_size)
+
+
+@blueprint.cli.command("check_products_counts_consistency")
+@log_cron_with_transaction
+def check_products_counts_consistency() -> None:
+    offers_api.check_products_counts_consistency()

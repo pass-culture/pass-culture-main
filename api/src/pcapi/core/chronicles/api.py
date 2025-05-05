@@ -124,6 +124,8 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
                 userId=user_id,
                 isActive=False,
             )
+            for product in products:
+                product.chroniclesCount += 1
             db.session.add(chronicle)
             db.session.flush()
             logger.info(
