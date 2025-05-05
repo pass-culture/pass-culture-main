@@ -11,11 +11,9 @@ import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import bullImage from './assets/bull.svg'
+import { BubbleSVG } from './assets/BubbleSVG'
+import { CitationSVG } from './assets/CitationSVG'
 import macStudioImage from './assets/mac-studio.svg'
-import engagementImage1 from './assets/texte-1.svg'
-import engagementImage2 from './assets/texte-2.svg'
-import engagementImage3 from './assets/texte-3.svg'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
@@ -68,33 +66,29 @@ export const Layout = ({
   const navPanel = useRef<HTMLDivElement>(null)
 
   const isConnected = !!currentUser
-  const isBackToNavLinkDisplayed = areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
+  const isBackToNavLinkDisplayed =
+    areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
 
   const mainHeadingWrapper = mainHeading ? (
     <div
-      className={cn(
-        styles['main-heading-wrapper'],
-        {
-          [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
-        }
-      )}
+      className={cn(styles['main-heading-wrapper'], {
+        [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
+      })}
     >
       <h1 className={styles['main-heading-title']}>
         {mainHeading}
-        {mainSubHeading &&
+        {mainSubHeading && (
           <span className={styles['main-heading-subtitle']}>
             {mainSubHeading}
           </span>
-        }
+        )}
       </h1>
       {isConnected && (
         <BackToNavLink
-          className={cn(
-            styles['main-heading-back-to-nav-link'],
-            {
-              [styles['main-heading-back-to-nav-link-with-subtitle']]: mainSubHeading,
-            }
-          )}
+          className={cn(styles['main-heading-back-to-nav-link'], {
+            [styles['main-heading-back-to-nav-link-with-subtitle']]:
+              mainSubHeading,
+          })}
         />
       )}
     </div>
@@ -187,28 +181,29 @@ export const Layout = ({
                 data-testid="sign-up-header"
               >
                 <div className={styles['image-engagements']}>
-                  <img
-                    src={engagementImage1}
-                    className={styles['image-engagements-1']}
-                    alt="Plus de 4 millions de jeunes scolarisés ont participé à une sortie scolaire"
-                  />
-                  <img
-                    src={engagementImage2}
-                    className={styles['image-engagements-2']}
-                    alt="Plus de 36 000 acteurs culturels déjà inscrits"
-                  />
-                  <img
-                    src={engagementImage3}
-                    className={styles['image-engagements-3']}
-                    alt="Plus de 2 millions de jeunes ont déjà réservé une offre via l’application"
-                  />
+                  <p className={styles['image-engagements-text-1']}>
+                    + de 4 millions de jeunes scolarisés ont participé à une
+                    sortie scolaire
+                    <span className={styles['citation-icon-1']}>
+                      <CitationSVG />
+                    </span>
+                  </p>
+                  <p className={styles['image-engagements-text-2']}>
+                    + de 36 000 acteurs culturels déjà inscrits
+                    <span className={styles['citation-icon-2']}>
+                      <CitationSVG />
+                    </span>
+                  </p>
+                  <p className={styles['image-engagements-text-3']}>
+                    + de 2 millions de jeunes ont déjà réservé une offre via
+                    l’application
+                    <span className={styles['citation-icon-3']}>
+                      <CitationSVG />
+                    </span>
+                  </p>
                 </div>
                 <div className={styles['image-laptop']}>
-                  <img
-                    src={bullImage}
-                    alt=""
-                    className={styles['image-laptop-bull']}
-                  />
+                  <BubbleSVG />
                   <img
                     src={macStudioImage}
                     alt=""
