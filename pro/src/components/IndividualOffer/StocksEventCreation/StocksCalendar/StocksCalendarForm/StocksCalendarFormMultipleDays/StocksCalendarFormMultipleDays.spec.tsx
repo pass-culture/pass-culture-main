@@ -43,7 +43,7 @@ function renderStocksCalendarFormMultipleDays(
         durationType: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
         timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
         specificTimeSlots: [{ slot: '' }],
-        pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
+        pricingCategoriesQuantities: [{ priceCategory: '' }],
         oneDayDate: '',
         multipleDaysWeekDays: weekDays.map((d) => ({
           label: d.label,

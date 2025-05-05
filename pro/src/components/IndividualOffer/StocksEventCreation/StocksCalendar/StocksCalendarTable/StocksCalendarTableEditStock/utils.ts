@@ -45,7 +45,6 @@ export function getStockFormDefaultValues(
       stock.quantity === null || stock.quantity === undefined
         ? undefined
         : stock.quantity - stock.bookingsQuantity,
-    isUnlimited: stock.quantity === null,
   }
 }
 

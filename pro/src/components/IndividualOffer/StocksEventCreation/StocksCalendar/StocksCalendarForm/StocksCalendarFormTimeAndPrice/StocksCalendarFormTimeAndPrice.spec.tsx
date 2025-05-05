@@ -36,7 +36,7 @@ function renderStocksCalendarFormTimeAndPrice(
         durationType: DurationTypeOption.ONE_DAY,
         timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
         specificTimeSlots: [{ slot: '' }],
-        pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
+        pricingCategoriesQuantities: [{ priceCategory: '' }],
         oneDayDate: '',
         ...defaultOptions,
       },

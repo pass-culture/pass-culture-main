@@ -145,7 +145,7 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
   const defaultValues: StocksCalendarFormValues = {
     durationType: DurationTypeOption.ONE_DAY,
     oneDayDate: addDays(new Date(), 1).toISOString().split('T')[0],
-    pricingCategoriesQuantities: [{ priceCategory: '1', isUnlimited: true }],
+    pricingCategoriesQuantities: [{ priceCategory: '1' }],
     specificTimeSlots: [{ slot: '00:00' }],
     timeSlotType: TimeSlotTypeOption.SPECIFIC_TIME,
     multipleDaysStartDate: addDays(new Date(), 1).toISOString().split('T')[0],
@@ -206,7 +206,7 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
       description: 'invalid form for missing price category',
       formValues: {
         ...defaultValues,
-        pricingCategoriesQuantities: [{ isUnlimited: true, priceCategory: '' }],
+        pricingCategoriesQuantities: [{ quantity: 12, priceCategory: '' }],
       },
       expectedErrors: ['Veuillez renseigner un tarif'],
     },
@@ -228,18 +228,6 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
       },
       expectedErrors: [
         'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million',
-      ],
-    },
-    {
-      description: 'invalid form for missing quantity',
-      formValues: {
-        ...defaultValues,
-        pricingCategoriesQuantities: [
-          { quantity: undefined, isUnlimited: false, priceCategory: '1' },
-        ],
-      },
-      expectedErrors: [
-        'Veuillez indiquer un nombre de places, ou bien cocher la case "Illimité"',
       ],
     },
     {

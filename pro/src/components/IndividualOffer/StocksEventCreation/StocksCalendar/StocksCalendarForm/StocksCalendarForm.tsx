@@ -45,7 +45,6 @@ export function StocksCalendarForm({
       specificTimeSlots: [{ slot: '' }],
       pricingCategoriesQuantities: [
         {
-          isUnlimited: true,
           //  If there's only one price category, the default should be that one
           priceCategory:
             offer.priceCategories?.length === 1
@@ -107,7 +106,11 @@ export function StocksCalendarForm({
 
   return (
     <FormProvider {...form}>
-      <form className={styles['form']} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={styles['form']}
+        onSubmit={form.handleSubmit(onSubmit)}
+        noValidate
+      >
         <ScrollToFirstHookFormErrorAfterSubmit />
         <div className={styles['form-content']}>
           <MandatoryInfo />

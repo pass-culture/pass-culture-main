@@ -10,7 +10,6 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
     date: addDays(new Date(), 2).toISOString().split('T')[0],
     bookingLimitDate: addDays(new Date(), 1).toISOString().split('T')[0],
     quantity: 12,
-    isUnlimited: false,
     priceCategory: '1',
     time: '12:12',
   }

@@ -65,7 +65,6 @@ export type StocksCalendarFormValues = {
   specificTimeSlots: { slot: string }[]
   pricingCategoriesQuantities: {
     quantity?: number
-    isUnlimited?: boolean
     priceCategory: string
   }[]
   bookingLimitDateInterval?: number

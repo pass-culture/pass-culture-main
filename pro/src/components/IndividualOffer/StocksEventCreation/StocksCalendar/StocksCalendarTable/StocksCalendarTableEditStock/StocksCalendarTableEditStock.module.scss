@@ -52,21 +52,4 @@
   align-items: center;
   gap: rem.torem(16px);
   display: flex;
-
-  &-quantity {
-    width: rem.torem(150px);
-
-    &-label {
-      margin-bottom: rem.torem(8px);
-      display: inline-block;
-    }
-  }
-
-  &-unlimited {
-    margin-top: calc(var(--typography-body-line-height) + rem.torem(8px));
-  }
-}
-
-.error {
-  margin-top: rem.torem(8px);
 }

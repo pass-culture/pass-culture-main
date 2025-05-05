@@ -27,26 +27,4 @@
   &-legend {
     @include a11y.visually-hidden;
   }
-
-  &-quantity {
-    width: rem.torem(150px);
-
-    &-label {
-      margin-bottom: rem.torem(8px);
-      display: inline-block;
-    }
-
-    &-error {
-      margin-top: rem.torem(8px);
-    }
-  }
-
-  &-category {
-    flex-grow: 1;
-  }
-
-  &-unlimited,
-  &-trash {
-    margin-top: calc(var(--typography-body-line-height) + rem.torem(8px));
-  }
 }

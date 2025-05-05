@@ -34,13 +34,5 @@ export const validationSchema = yup.object<EditStockFormValues>().shape({
     .max(
       MAX_STOCKS_QUANTITY,
       'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
-    )
-    .when('isUnlimited', {
-      is: false,
-      then: (schema) =>
-        schema.required(
-          'Veuillez indiquer un nombre de places, ou bien cocher la case "Illimité"'
-        ),
-    }),
-  isUnlimited: yup.boolean().required(),
+    ),
 })
