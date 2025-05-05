@@ -19,7 +19,7 @@ const handleApiError = async (
   return (await response.json()) as AdresseApiJson
 }
 
-function formatAdressApiResponse(response: AdresseApiJson) {
+function formatAdressApiResponse(response: AdresseApiJson): Array<AdresseData> {
   return response.features.map((f) => ({
     address: f.properties.name,
     city: f.properties.city,
@@ -29,6 +29,7 @@ function formatAdressApiResponse(response: AdresseApiJson) {
     longitude: f.geometry.coordinates[0],
     label: f.properties.label,
     postalCode: f.properties.postcode,
+    inseeCode: f.properties.citycode,
   }))
 }
 

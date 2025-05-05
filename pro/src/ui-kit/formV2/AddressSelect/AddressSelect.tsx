@@ -11,7 +11,7 @@ import {
 } from 'components/Address/constants'
 import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 
-export type AddressSelectProps = {
+type AddressSelectProps = {
   name: string
   label?: string
   onChange(event: React.ChangeEvent<HTMLInputElement>): void
@@ -129,6 +129,7 @@ export const AddressSelect = forwardRef(
               // @ts-expect-error : idem
               longitude: '',
               postalCode: '',
+              inseeCode: '',
             })
           }
           // @ts-expect-error
