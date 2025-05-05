@@ -14,21 +14,26 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
-import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
+import {
+  GenericCinemaProviderForm,
+  GenericCinemaProviderFormValues,
+} from '../GenericCinemaProviderForm/GenericCinemaProviderForm'
 
-import styles from './CinemaProviderEdit.module.scss'
+import styles from './GenericCinemaProviderEdit.module.scss'
 
-export interface CinemaProviderEditProps {
+export interface GenericCinemaProviderEditProps {
   venueProvider: VenueProviderResponse
   venue: GetVenueResponseModel
   offererId: number
+  showAdvancedFields: boolean
 }
 
-export const CinemaProviderEdit = ({
+export const GenericCinemaProviderEdit = ({
   venueProvider,
   venue,
   offererId,
-}: CinemaProviderEditProps): JSX.Element => {
+  showAdvancedFields = false,
+}: GenericCinemaProviderEditProps): JSX.Element => {
   const notification = useNotification()
   const { mutate } = useSWRConfig()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -63,8 +68,10 @@ export const CinemaProviderEdit = ({
     return isSuccess
   }
 
-  const initialValues: any = {
-    isDuo: venueProvider.isDuo,
+  const initialValues: GenericCinemaProviderFormValues = {
+    price: venueProvider.price,
+    quantity: venueProvider.quantity,
+    isDuo: venueProvider.isDuo ?? false,
     isActive: venueProvider.isActive,
   }
 
@@ -86,7 +93,8 @@ export const CinemaProviderEdit = ({
           créées. La modification doit être faite manuellement pour les offres
           existantes.
         </div>
-        <CinemaProviderForm
+        <GenericCinemaProviderForm
+          showAdvancedFields={showAdvancedFields}
           initialValues={initialValues}
           saveVenueProvider={onConfirmDialog}
           providerId={venueProvider.provider.id}

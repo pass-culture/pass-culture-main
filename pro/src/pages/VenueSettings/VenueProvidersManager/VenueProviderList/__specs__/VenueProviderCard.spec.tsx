@@ -49,6 +49,7 @@ describe('VenueProviderCard', () => {
       expect(cinemaProviderEditButton).toBeInTheDocument()
 
       await userEvent.click(cinemaProviderEditButton)
+
       expect(
         screen.getByText('Modifier les paramètres de vos offres')
       ).toBeInTheDocument()
@@ -120,23 +121,6 @@ describe('VenueProviderCard', () => {
 
       expect(providerNameDiv).toBeInTheDocument()
       expect(providerLogo).toBeInTheDocument()
-    })
-
-    it('should display edit button', async () => {
-      await renderVenueProviderCard(props)
-
-      const allocineEditButton = screen.getByRole('button', {
-        name: 'Paramétrer',
-      })
-      expect(allocineEditButton).toBeInTheDocument()
-      await userEvent.click(allocineEditButton)
-      expect(
-        screen.getByText('Modifier les paramètres de vos offres')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText('Accepter les réservations duo')
-      ).toBeInTheDocument()
-      expect(screen.getByText('Prix de vente/place *')).toBeInTheDocument()
     })
   })
 

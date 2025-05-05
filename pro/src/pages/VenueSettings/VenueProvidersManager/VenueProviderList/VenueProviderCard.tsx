@@ -6,9 +6,8 @@ import {
 } from 'commons/core/Providers/utils/utils'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 
-import { AllocineProviderEdit } from './AllocineProviderEdit'
-import { CinemaProviderEdit } from './CinemaProviderEdit'
 import { DeleteVenueProviderButton } from './DeleteVenueProviderButton'
+import { GenericCinemaProviderEdit } from './GenericCinemaProviderEdit'
 import { ToggleVenueProviderStatusButton } from './ToggleVenueProviderStatusButton'
 import style from './VenueProviderCard.module.scss'
 
@@ -31,6 +30,9 @@ export const VenueProviderCard = ({
   const providerInfo = getProviderInfo(provider.name)
 
   const isPublicAPIProvider = venueProvider.provider.hasOffererProvider
+  const isCinemaCase =
+    isCinemaProvider(venueProvider.provider) ||
+    isAllocineProvider(venueProvider.provider)
 
   return (
     <div className={style['venue-provider-card']}>
@@ -86,16 +88,9 @@ export const VenueProviderCard = ({
         </div>
       )}
       <div className={style['provider-actions-container']}>
-        {isAllocineProvider(venueProvider.provider) && (
-          <AllocineProviderEdit
-            venueProvider={venueProvider}
-            venue={venue}
-            offererId={offererId}
-          />
-        )}
-
-        {isCinemaProvider(venueProvider.provider) && (
-          <CinemaProviderEdit
+        {isCinemaCase && (
+          <GenericCinemaProviderEdit
+            showAdvancedFields={isAllocineProvider(venueProvider.provider)}
             venueProvider={venueProvider}
             venue={venue}
             offererId={offererId}
