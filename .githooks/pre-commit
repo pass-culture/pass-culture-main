@@ -193,17 +193,16 @@ done
 
 if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",isort," ]]; then
-    echo -ne "\033[0;96mRunning isort to organize imports...\033[0m"
-    isort $LINTED_FILES --check-only --settings-file pyproject.toml 2>/dev/null
+    echo -ne "\033[0;96mRunning ruff to organize imports...\033[0m"
+    ruff check $LINTED_FILES --select I --silent --config pyproject.toml
     if [[ "$?" != 0 ]]; then
-      edited_files=$(isort $LINTED_FILES --settings-file pyproject.toml | sed -E "s/Fixing (.*)/  - \\1/g")
-      # Go up 1 line to overwrite "Running..." line
-      echo -e "\033[1F"
-      echo -e "\033[0;91misort: Add edited files to your commit:"
+      edited_files=$(ruff check $LINTED_FILES --select I --diff --quiet --config pyproject.toml | grep -e "^+++" | sed -E "s/\+\+\+ (.*)/  - \\1/g")
+      ruff check $LINTED_FILES --select I --silent --config pyproject.toml --fix
+      echo -e "\033[0;91mruff check --select I: Add edited files to your commit:"
       echo -e "${edited_files}\033[0m"
       counter=$((counter + 1))
     else
-      echo -e "\033[2K\r\033[0;92misort: Imports correctly sorted\033[0m"
+      echo -e "\033[2K\r\033[0;92mruff: Imports correctly sorted\033[0m"
     fi
   fi
 
@@ -212,12 +211,10 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     ruff format $LINTED_FILES --check --quiet --config pyproject.toml
     if [[ "$?" != 0 ]]; then
       edited_files=$(ruff format $LINTED_FILES --check --config pyproject.toml 2>&1 | grep "^Would reformat: " | sed -E "s/Would reformat: (.*)/  - \\1/g")
-      ruff format $LINTED_FILES --config pyproject.toml
-      counter=$((counter + 1))
-      # Go up 1 line to overwrite "Running..." line
-      echo -e "\033[1F"
+      ruff format $LINTED_FILES --silent --config pyproject.toml
       echo -e "\033[0;91mruff: Add edited files to your commit:"
       echo -e "${edited_files}\033[0m"
+      counter=$((counter + 1))
     else
       echo -e "\033[2K\r\033[0;92mruff: Code correctly formatted\033[0m"
     fi
