@@ -13,10 +13,8 @@ import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventE
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/formV2/Select/Select'
 import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 
@@ -33,7 +31,6 @@ export type EditStockFormValues = {
   priceCategory: string
   bookingLimitDate: string
   quantity?: number
-  isUnlimited: boolean
 }
 
 export type StocksCalendarTableEditStockProps = {
@@ -60,13 +57,18 @@ export function StocksCalendarTableEditStock({
     )
   }
 
-  const quantityInputId = useId()
   const descriptionId = useId()
+
+  const quantity = form.watch(`quantity`)
 
   return (
     <FormProvider {...form}>
       <MandatoryInfo />
-      <form className={styles['form']} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={styles['form']}
+        onSubmit={form.handleSubmit(onSubmit)}
+        noValidate
+      >
         <div className={styles['content']}>
           <div className={styles['row']}>
             <DatePicker
@@ -88,41 +90,17 @@ export function StocksCalendarTableEditStock({
           <h2 className={styles['title']}>Places et tarifs</h2>
           <div className={styles['row']}>
             <div className={styles['price-category-row']}>
-              <div className={styles['price-category-row-quantity']}>
-                <label
-                  htmlFor={quantityInputId}
-                  className={styles['price-category-row-quantity-label']}
-                >
-                  Nombre de places
-                </label>
-                <BaseInput
-                  type="number"
-                  min={0}
-                  id={quantityInputId}
-                  {...form.register('quantity')}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      form.setValue('isUnlimited', false)
-                    }
-                  }}
-                />
-                <div role="alert">
-                  {form.formState.errors.quantity && (
-                    <FieldError name="quantity" className={styles['error']}>
-                      {form.formState.errors.quantity.message}
-                    </FieldError>
-                  )}
-                </div>
-              </div>
-              <BaseCheckbox
-                label="Illimité"
-                className={styles['price-category-row-unlimited']}
-                {...form.register('isUnlimited')}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    form.setValue('quantity', undefined)
-                  }
-                }}
+              <QuantityInput
+                minimum={0}
+                error={form.formState.errors.quantity?.message}
+                label="Nombre de places"
+                value={quantity}
+                onChange={(e) =>
+                  form.setValue(
+                    `quantity`,
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
               />
             </div>
             <Select

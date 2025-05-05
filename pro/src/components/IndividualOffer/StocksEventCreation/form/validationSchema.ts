@@ -263,7 +263,6 @@ export const validationSchema = yup.object().shape({
     .of(
       yup.object().shape({
         priceCategory: yup.string().required('Veuillez renseigner un tarif'),
-        isUnlimited: yup.bool(),
         quantity: yup
           .number()
           .transform((value) => (Number.isNaN(value) ? undefined : value))
@@ -271,14 +270,7 @@ export const validationSchema = yup.object().shape({
           .max(
             MAX_STOCKS_QUANTITY,
             'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
-          )
-          .when('isUnlimited', {
-            is: false,
-            then: (schema) =>
-              schema.required(
-                'Veuillez indiquer un nombre de places, ou bien cocher la case "Illimité"'
-              ),
-          }),
+          ),
       })
     ),
   bookingLimitDateInterval: yup
