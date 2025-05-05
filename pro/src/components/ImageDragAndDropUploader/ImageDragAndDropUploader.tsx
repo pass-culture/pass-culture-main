@@ -43,16 +43,18 @@ export const ImageDragAndDropUploader = ({
   hideActionButtons = false,
   disabled = false,
 }: ImageDragAndDropUploaderProps) => {
+  const notify = useNotification()
   const updateImageRef = useRef<HTMLButtonElement>(null)
   const { imageUrl, originalImageUrl } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
-  const notify = useNotification()
 
   const hasImage = imageUrl && originalImageUrl
-  const shouldDisplayActions = imageUrl && !hideActionButtons
+  const shouldDisplayActions = hasImage && !hideActionButtons
 
   const onImageDeleteHandler = () => {
+    setIsModalImageOpen(false)
+    setDraftImage(undefined)
     onImageDelete()
     notify.success('L’image a bien été supprimée')
   }

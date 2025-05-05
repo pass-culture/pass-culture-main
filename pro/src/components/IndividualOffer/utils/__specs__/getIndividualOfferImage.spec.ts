@@ -37,6 +37,7 @@ describe('getIndividualOfferImage', () => {
       },
     },
   ]
+
   it.each(serializeOfferApiImageDataSet)(
     'using image from mediation',
     ({ activeMediation, expectedImage }) => {
@@ -59,5 +60,9 @@ describe('getIndividualOfferImage', () => {
       url: 'https://image.url',
       credit: '',
     })
+  })
+
+  it('should return undefined when no image is available', () => {
+    expect(getIndividualOfferImage(null)).toBeUndefined()
   })
 })

@@ -8,18 +8,18 @@ import { buildInitialValues } from './buildInitialValues'
 import styles from './ImageUploaderOffer.module.scss'
 
 export interface ImageUploaderOfferProps {
-  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
-  onImageDelete: () => Promise<void>
+  displayedImage?: IndividualOfferImage | OnImageUploadArgs
+  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageDelete: () => void
   onImageDropOrSelected?: () => void
-  imageOffer?: IndividualOfferImage
   hideActionButtons?: boolean
 }
 
 export const ImageUploaderOffer = ({
+  displayedImage,
   onImageUpload,
   onImageDelete,
   onImageDropOrSelected,
-  imageOffer,
   hideActionButtons,
 }: ImageUploaderOfferProps) => (
   <FormLayout.Section title="Illustrez votre offre">
@@ -32,7 +32,7 @@ export const ImageUploaderOffer = ({
         className={styles['image-uploader']}
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
-        initialValues={buildInitialValues(imageOffer)}
+        initialValues={buildInitialValues(displayedImage)}
         mode={UploaderModeEnum.OFFER}
         onImageDropOrSelected={onImageDropOrSelected}
         hideActionButtons={hideActionButtons}

@@ -32,10 +32,10 @@ type DetailsFormProps = {
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readOnlyFields: string[]
-  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
-  onImageDelete: () => Promise<void>
-  imageOffer?: IndividualOfferImage
   categoryStatus: CATEGORY_STATUS
+  displayedImage?: IndividualOfferImage | OnImageUploadArgs
+  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageDelete: () => void
 }
 
 export const DetailsForm = ({
@@ -45,10 +45,10 @@ export const DetailsForm = ({
   filteredCategories,
   filteredSubcategories,
   readOnlyFields,
+  categoryStatus,
+  displayedImage,
   onImageUpload,
   onImageDelete,
-  imageOffer,
-  categoryStatus,
 }: DetailsFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const { values, handleChange } = useFormikContext<DetailsFormValues>()
@@ -158,10 +158,10 @@ export const DetailsForm = ({
         )}
       </FormLayout.Section>
       <ImageUploaderOffer
+        displayedImage={displayedImage}
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
         onImageDropOrSelected={logOnImageDropOrSelected}
-        imageOffer={imageOffer}
         hideActionButtons={isProductBased}
       />
       {!showAddVenueBanner && (
