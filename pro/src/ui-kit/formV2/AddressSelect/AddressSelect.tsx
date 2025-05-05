@@ -13,7 +13,7 @@ import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutoc
 
 type AddressSelectProps = {
   name: string
-  label?: string
+  label: string | JSX.Element
   onChange(event: React.ChangeEvent<HTMLInputElement>): void
   onBlur(event: React.FocusEvent<HTMLInputElement>): void
   onAddressChosen(data: AdresseData): void
@@ -23,21 +23,24 @@ type AddressSelectProps = {
   onlyTypes?: FeaturePropertyType[]
   error?: string
   suggestionLimit?: number
+  isOptional?: boolean
 }
 
 export const AddressSelect = forwardRef(
   (
     {
+      label,
       description,
       suggestionLimit = DEFAULT_SUGGESTION_LIMIT,
       onlyTypes,
       disabled = false,
       className,
-      onAddressChosen,
+      onAddressChosen = () => {},
       error,
       name,
-      onChange,
-      onBlur,
+      onChange = () => {},
+      onBlur = () => {},
+      isOptional,
     }: AddressSelectProps,
     ref: Ref<HTMLInputElement>
   ) => {
@@ -99,7 +102,7 @@ export const AddressSelect = forwardRef(
     return (
       <SelectAutocomplete
         name={name}
-        label="Adresse postale"
+        label={label}
         options={options}
         hideArrow={true}
         resetOnOpen={false}
@@ -140,6 +143,7 @@ export const AddressSelect = forwardRef(
         className={className}
         ref={inputRef}
         error={error}
+        isOptional={isOptional}
       />
     )
   }

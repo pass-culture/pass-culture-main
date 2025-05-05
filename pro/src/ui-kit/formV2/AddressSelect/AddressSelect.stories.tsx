@@ -90,7 +90,6 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
 
   return (
     <FormProvider {...hookForm}>
-      <form>{children}</form>
       <div style={demoStyles['wrapper']}>
         Selected value in the form: <br />
         <pre style={demoStyles['pre']}>
@@ -111,11 +110,65 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
           banId = {banId}
         </pre>
       </div>
+      <form>{children}</form>
     </FormProvider>
   )
 }
 
 export const Default: StoryObj<typeof AddressSelect> = {
+  args: {
+    name: 'addressText',
+    label: 'Adresse postale',
+  },
+}
+
+export const withLimitOf15Suggestions: StoryObj<typeof AddressSelect> = {
+  args: {
+    name: 'addressText',
+    label: 'Adresse postale',
+    suggestionLimit: 15,
+    ref: (ref) => {
+      if (ref) {
+        ref.defaultValue = '8 Rue'
+      }
+      return ref
+    },
+  },
+}
+
+export const Disabled: StoryObj<typeof AddressSelect> = {
+  args: {
+    name: 'addressText',
+    label: 'Adresse postale',
+    disabled: true,
+  },
+}
+
+export const optionalWithDescription: StoryObj<typeof AddressSelect> = {
+  args: {
+    name: 'addressText',
+    label: 'Adresse postale',
+    description: 'Uniquement si vous souhaitez préciser l’adresse exacte',
+    isOptional: true,
+  },
+}
+
+export const onlyMunicipality: StoryObj<typeof AddressSelect> = {
+  args: {
+    name: 'cityName',
+    label: 'Nom de la ville',
+    onlyTypes: ['municipality'],
+    ref: (ref) => {
+      if (ref) {
+        ref.defaultValue = 'Noisy'
+      }
+      return ref
+    },
+    suggestionLimit: 50,
+  },
+}
+
+export const WithinFormValidation: StoryObj<typeof AddressSelect> = {
   decorators: [
     (Story: any) => (
       <FormWrapper>
@@ -133,6 +186,7 @@ export const Default: StoryObj<typeof AddressSelect> = {
 
     return (
       <AddressSelect
+        label="Adresse postale"
         {...register('addressText')}
         error={errors.addressText?.message}
         onAddressChosen={(addressData) => {
