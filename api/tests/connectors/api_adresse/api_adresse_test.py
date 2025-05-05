@@ -71,6 +71,7 @@ def test_municipality_centroid_with_city_less_than_3_characters(requests_mock):
         longitude=2.991219,
         score=0.924650909090909,
         city="Y",
+        street="Y",
     )
 
 
@@ -97,6 +98,7 @@ def test_fallback_to_municipality(requests_mock):
         longitude=2.348679,
         score=0.2084164031620553,
         city="Paris 18e Arrondissement",
+        street="Paris 18e Arrondissement",
     )
 
 
@@ -429,7 +431,7 @@ def test_we_dont_cache_falsy_empty_response(mocked_redis_get, mocked_redis_set, 
         latitude=48.859,
         longitude=2.347,
         score=0.10937561497326202,
-        street=None,
+        street="Paris",
         city="Paris",
     )
 
