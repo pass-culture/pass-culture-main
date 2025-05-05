@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useEffect, useState, useRef } from 'react'
 
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
@@ -5,46 +6,49 @@ import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './QuantityInput.module.scss'
 
-/**
- * Props for the QuantityInput component.
- *
- * @extends Pick<TextInputProps, 'disabled' | 'className' | 'classNameFooter' | 'isLabelHidden' | 'required'>
- */
 export type QuantityInputProps = Pick<
   TextInputProps,
   | 'disabled'
   | 'className'
-  | 'isLabelHidden'
   | 'required'
+  | 'asterisk'
   | 'smallLabel'
   | 'className'
 > & {
   /**
-   * A label for the input, also used as the aria-label for the group.
+   * A label for the text input.
    */
-  label?: string
+  label: string
   /**
    * The name of the input, mind what's being used in the form.
    */
   name?: string
   /**
    * A callback when the quantity changes.
-   * If not provided, the value will be set in the form, otherwise, setFieldValue must be called manually.
-   * This is to support custom logic when the quantity changes.
    */
-  onChange?: (quantity: string) => void
+  onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
+  /**
+   * A callback when the quantity text input is blurred.
+   */
+  onBlur?: React.InputHTMLAttributes<HTMLInputElement>['onBlur']
+  /**
+   * The quantity value. Should be `undefined` if the quantity is unlimited.
+   */
+  value?: number
   /**
    * The minimum value allowed for the quantity. Make sure it matches validation schema.
    */
-  min?: string
+  minimum?: number
+  /**
+   * The maximum value allowed for the quantity. Make sure it matches validation schema.
+   */
+  maximum?: number
+  error?: string
 }
 
 /**
  * The QuantityInput component is a combination of a TextInput and a BaseCheckbox to define quantities.
- * It integrates with for form state management and is used when an undefined quantity is meant to be interpreted as unlimited.
- *
- * @param {QuantityInputProps} props - The props for the QuantityInput component.
- * @returns {JSX.Element} The rendered QuantityInput component.
+ * An undefined quantity is meant to be interpreted as unlimited.
  *
  * @example
  * <QuantityInput
@@ -53,20 +57,20 @@ export type QuantityInputProps = Pick<
  *   min={0}
  *   onChange={(value) => console.log(value)}
  * />
- *
- * @accessibility
- * - **Labels**: Always provide a meaningful label using the `label` prop for screen readers. This helps users understand the purpose of the input.
  */
 export const QuantityInput = ({
   label = 'Quantité',
   name = 'quantity',
   onChange,
+  onBlur,
   disabled,
   className,
-  isLabelHidden,
   required,
-  min = '0',
-  smallLabel,
+  asterisk,
+  minimum = 0,
+  maximum = 1_000_000,
+  value,
+  error,
 }: QuantityInputProps) => {
   const quantityName = name
   const quantityRef = useRef<HTMLInputElement>(null)
@@ -74,9 +78,7 @@ export const QuantityInput = ({
   const unlimitedName = `${name}.unlimited`
   const unlimitedRef = useRef<HTMLInputElement>(null)
 
-  const isEmptyValue =
-    quantityRef.current?.value === '' ||
-    quantityRef.current?.value === undefined
+  const isEmptyValue = value !== 0 && !value
   const [isUnlimited, setIsUnlimited] = useState(isEmptyValue)
 
   useEffect(() => {
@@ -89,30 +91,29 @@ export const QuantityInput = ({
   }, [isUnlimited])
 
   const onQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const nextValue = event.target.value || ''
-    setIsUnlimited(nextValue === '')
-    onChange?.(nextValue)
+    onChange?.(event)
+
+    setIsUnlimited(event.target.value === '')
   }
 
   const onCheckboxChange = () => {
-    const nextIsUnlimitedState = !isUnlimited
-    setIsUnlimited(nextIsUnlimitedState)
-
-    let nextFieldValue = min
-    if (nextIsUnlimitedState) {
+    let nextFieldValue = `${minimum}`
+    if (!isUnlimited) {
       // If the checkbox is going to be checked,
       // we need to clear the quantity field as an empty
       // string means unlimited quantity.
       nextFieldValue = ''
     }
 
-    if (onChange) {
-      onChange(nextFieldValue)
-    } else {
-      if (quantityRef.current) {
-        quantityRef.current.value = nextFieldValue
-      }
+    onChange?.({
+      target: { value: nextFieldValue },
+    } as React.ChangeEvent<HTMLInputElement>)
+
+    if (quantityRef.current) {
+      quantityRef.current.value = nextFieldValue
     }
+
+    setIsUnlimited((unlimited) => !unlimited)
   }
 
   const inputExtension = (
@@ -129,21 +130,22 @@ export const QuantityInput = ({
   return (
     <TextInput
       ref={quantityRef}
-      className={className}
-      labelClassName={smallLabel ? styles['input-layout-small-label'] : ''}
+      className={classNames(styles['quantity-row'], className)}
       name={quantityName}
       label={label}
       required={required}
-      asterisk={required}
+      asterisk={asterisk}
       disabled={disabled}
       type="number"
       hasDecimal={false}
-      min={min}
-      max={1_000_000}
-      isLabelHidden={isLabelHidden}
+      min={minimum}
+      max={maximum}
       step={1}
       InputExtension={inputExtension}
       onChange={onQuantityChange}
+      onBlur={onBlur}
+      value={isUnlimited ? '' : value === 0 ? '0' : value || ''}
+      error={error}
     />
   )
 }
