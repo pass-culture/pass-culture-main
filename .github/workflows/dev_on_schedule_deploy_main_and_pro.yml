@@ -182,31 +182,14 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   slack-notify:
-    name: "Slack notification"
-    runs-on: ubuntu-22.04
-    if: ${{ failure() }}
+    name: "Post failure notification on #alertes-deploiement"
     needs: deploy-to-testing
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: "Slack Notification"
-        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          method: chat.postMessage
-          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
-          payload: |
-            channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-            attachments:
-              - color: "#36A64F"
-                blocks:
-                  - type: "context"
-                    elements:
-                      - type: "image"
-                        image_url: "https://github.com/${{github.actor}}.png"
-                        alt_text: "image de profil Github de ${{github.actor}}"
-                      - type: "mrkdwn"
-                        text: "*${{github.actor}}*"
-                  - type: "section"
-                    text:
-                      type: "mrkdwn"
-                      text: ":github-failure: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `master` sur `testing` a échoué"
+    if: ${{ needs.deploy-to-testing.result='failure' }}
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#A30002"
+      message: ":github-failure: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `master` sur `testing` a échoué"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
