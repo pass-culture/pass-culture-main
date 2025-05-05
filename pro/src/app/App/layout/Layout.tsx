@@ -13,7 +13,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BubbleSVG } from './assets/BubbleSVG'
 import { CitationSVG } from './assets/CitationSVG'
-import macStudioImage from './assets/mac-studio.svg'
+import macStudioImage from './assets/mac-studio.png'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
