@@ -14,8 +14,8 @@ def _get_cluster_length(cluster: str) -> tuple[int, int]:
     count = 0
     char_length = 0
     for char in cluster:
-        # Skip zero-width joiners and variation selectors
-        if char in {"\u200d", "\ufe0f"}:
+        # Skip zero-width joiners only
+        if char == "\u200d":
             continue
         # Skip skin tone modifiers (range U+1F3FB to U+1F3FF)
         if 0x1F3FB <= ord(char) <= 0x1F3FF:
