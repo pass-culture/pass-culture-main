@@ -31,7 +31,7 @@ def test_batch_length_complex_emojis():
     # Each complex emoji sequence counts differently:
     # 👨‍👩‍👧‍👦 (family) = 8 (4 people joined)
     # 👩🏽‍💻 (woman technologist with medium skin tone) = 4
-    # 🏳️‍🌈 (rainbow flag) = 4
+    # 🏳️‍🌈 (rainbow flag) = 4 (+ 1 for the variation selector)
     # 👨🏾‍🦰 (man with afro and medium-dark skin tone) = 4
     # 🫂 (people hugging) = 2
     # 🇫🇷 (flag) = 4
@@ -39,8 +39,8 @@ def test_batch_length_complex_emojis():
     # 🦾 (mechanical arm) = 2
     # 🧬 (dna) = 2
     # 🎭 (performing arts) = 2
-    # Total expected length = 34
-    assert batch_length(s) == 34
+    # Total expected length = 35
+    assert batch_length(s) == 35
 
 
 def test_shorten_for_batch_no_truncation():
@@ -107,3 +107,13 @@ def test_shorten_for_batch_complex_emojis():
     max_length = 20
     result = shorten_for_batch(s, max_length, preserve_words=True)
     assert result == "👨‍👩‍👧‍👦👩🏽‍💻🏳️‍🌈..."
+
+
+def test_shorten_for_batch_variation_selector():
+    assert batch_length("🗝️") == 3  # 2 for the keycap and 1 for the variation selector
+    s = "🗝️Escape Game à Paris - Entretien avec Gustave Eiffel | Tarif sur le site de l'offre"
+    max_length = 64
+    result = shorten_for_batch(s, max_length)
+    assert result.endswith("...")
+    assert result == "🗝️Escape Game à Paris - Entretien avec Gustave Eiffel | Tari..."
+    assert batch_length(result) <= max_length
