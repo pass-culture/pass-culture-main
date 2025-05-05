@@ -139,7 +139,7 @@ jobs:
     name: "Deploy pullrequest"
     runs-on: ubuntu-latest
     needs: [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
-    if: inputs.front-only == false
+    if: always() && !failure() && !cancelled() && inputs.front-only == false
     environment: pullrequest
     permissions:
       id-token: write
