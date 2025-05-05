@@ -44,6 +44,18 @@ def spectree_post_test_endpoint():
     endpoint_method()
 
 
+@test_blueprint.route("/test-with-pydantic-model-for-body", methods=["GET"])
+@spectree_serialize(on_success_status=204)
+def spectree_get_test_with_pydantic_model_endpoint(body: TestBodyModel):
+    endpoint_method()
+
+
+@test_blueprint.route("/test-with-pydantic-model-for-body", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def spectree_post_test_with_pydantic_model_endpoint(body: TestBodyModel):
+    endpoint_method()
+
+
 _active_ff_mock = Mock()
 _active_ff_mock.is_active.return_value = True
 
@@ -183,12 +195,14 @@ class SerializationDecoratorTest:
         assert response.status_code == 204
 
     def test_get_with_content_type_but_without_body_throws_error(self, client):
-        response = client.get("/test-blueprint/test", headers={"Content-Type": "application/json"})
+        response = client.get(
+            "/test-blueprint/test-with-pydantic-model-for-body", headers={"Content-Type": "application/json"}
+        )
         assert response.status_code == 400
 
     def test_post_with_content_type_with_invalid_body_throw_error(self, client, caplog):
         response = client.post(
-            "/test-blueprint/test",
+            "/test-blueprint/test-with-pydantic-model-for-body",
             headers={"Content-Type": "application/json"},
             raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
         )
