@@ -10,7 +10,6 @@
     "-s",
     "-W ignore::DeprecationWarning"
   ],
-  "black-formatter.importStrategy": "fromEnvironment",
   "liveshare.languages.allowGuestCommandControl": true,
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,

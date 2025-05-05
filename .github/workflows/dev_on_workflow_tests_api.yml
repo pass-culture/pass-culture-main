@@ -76,11 +76,6 @@ jobs:
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           run: pip freeze
-      - name: "Check imports are well organized with isort"
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ steps.compute-image-name.outputs.image_name }}
-          run: isort . --check-only
       - name: "Run mypy"
         uses: addnab/docker-run-action@v3
         with:
@@ -92,14 +87,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-      - name: "Run ruff formatter"
-        uses: astral-sh/ruff-action@v3
-        with:
-          args: "format --check --diff"
-          src: "./api"
       - name: "Run ruff linter"
         uses: astral-sh/ruff-action@v3
         with:
+          src: "./api"
+      - name: "Run ruff formatter"
+        if: always() && !cancelled()
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "format --check --diff"
           src: "./api"
 
   tests-database:
