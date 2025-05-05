@@ -183,7 +183,9 @@ def get_capped_offers_for_filters(
     return offers
 
 
-def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> tuple[BaseQuery, BaseQuery]:
+def get_offers_by_publication_date(
+    publication_date: datetime.datetime | None = None,
+) -> tuple[BaseQuery, BaseQuery]:
     if publication_date is None:
         publication_date = datetime.datetime.utcnow()
 
@@ -196,7 +198,10 @@ def get_offers_by_publication_date(publication_date: datetime.datetime | None = 
         sa.not_(models.FutureOffer.isSoftDeleted),
     )
     offer_ids_future = [future_offer.offerId for future_offer in future_offers_subquery]
-    return db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids_future)), future_offers_subquery
+    return (
+        db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids_future)),
+        future_offers_subquery,
+    )
 
 
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> BaseQuery:
@@ -206,7 +211,10 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> BaseQuer
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
             .join(offerers_models.UserOfferer)
-            .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+            .filter(
+                offerers_models.UserOfferer.userId == user.id,
+                offerers_models.UserOfferer.isValidated,
+            )
         )
     query = query.filter(models.Offer.id.in_(offer_ids))
     return query
@@ -250,7 +258,11 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
     for offer in offers:
         if offer.id in offer_data_by_id:
             merged_data = {
-                **{"offerName": offer.name, "image": offer.image, "isHeadlineOffer": offer.is_headline_offer},
+                **{
+                    "offerName": offer.name,
+                    "image": offer.image,
+                    "isHeadlineOffer": offer.is_headline_offer,
+                },
                 **offer_data_by_id[offer.id],
             }
             merged_data_list.append(merged_data)
@@ -313,7 +325,9 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
-                offerers_models.Offerer.name, offerers_models.Offerer.validationStatus, offerers_models.Offerer.isActive
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.validationStatus,
+                offerers_models.Offerer.isActive,
             )
         )
         .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
@@ -342,7 +356,10 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
         .options(sa_orm.joinedload(models.Offer.headlineOffers))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
-        .filter(models.Offer.id.in_(offer_ids), models.Offer.validation == models.OfferValidationStatus.APPROVED)
+        .filter(
+            models.Offer.id.in_(offer_ids),
+            models.Offer.validation == models.OfferValidationStatus.APPROVED,
+        )
     )
 
 
@@ -367,7 +384,10 @@ def get_offers_by_filters(
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
             .join(offerers_models.UserOfferer)
-            .filter(offerers_models.UserOfferer.userId == user_id, offerers_models.UserOfferer.isValidated)
+            .filter(
+                offerers_models.UserOfferer.userId == user_id,
+                offerers_models.UserOfferer.isValidated,
+            )
         )
     if offerer_id is not None:
         if user_is_admin:
@@ -400,9 +420,13 @@ def get_offers_by_filters(
             db.session.query(models.Stock)
             .join(offer_alias)
             .outerjoin(
-                offerers_models.OffererAddress, offer_alias.offererAddressId == offerers_models.OffererAddress.id
+                offerers_models.OffererAddress,
+                offer_alias.offererAddressId == offerers_models.OffererAddress.id,
             )
-            .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
+            .join(
+                geography_models.Address,
+                offerers_models.OffererAddress.addressId == geography_models.Address.id,
+            )
             .filter(models.Stock.isSoftDeleted.is_(False))
             .filter(models.Stock.offerId == models.Offer.id)
         )
@@ -449,7 +473,10 @@ def get_collective_offers_by_filters(
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
             .join(offerers_models.UserOfferer)
-            .filter(offerers_models.UserOfferer.userId == user_id, offerers_models.UserOfferer.isValidated)
+            .filter(
+                offerers_models.UserOfferer.userId == user_id,
+                offerers_models.UserOfferer.isValidated,
+            )
         )
 
     if offerer_id is not None:
@@ -513,7 +540,10 @@ def get_collective_offers_by_filters(
             subquery = (
                 subquery.join(offerers_models.Offerer)
                 .join(offerers_models.UserOfferer)
-                .filter(offerers_models.UserOfferer.userId == user_id, offerers_models.UserOfferer.isValidated)
+                .filter(
+                    offerers_models.UserOfferer.userId == user_id,
+                    offerers_models.UserOfferer.isValidated,
+                )
             )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.collectiveOfferId == educational_models.CollectiveOffer.id)
@@ -549,7 +579,10 @@ def get_collective_offers_template_by_filters(
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
             .join(offerers_models.UserOfferer)
-            .filter(offerers_models.UserOfferer.userId == user_id, offerers_models.UserOfferer.isValidated)
+            .filter(
+                offerers_models.UserOfferer.userId == user_id,
+                offerers_models.UserOfferer.isValidated,
+            )
         )
     if offerer_id is not None:
         if user_is_admin:
@@ -600,7 +633,8 @@ def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
 
 
 def _filter_collective_offers_by_statuses(
-    query: BaseQuery, statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None
+    query: BaseQuery,
+    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None,
 ) -> BaseQuery:
     """
     Filter a SQLAlchemy query for CollectiveOffers based on a list of statuses.
@@ -803,7 +837,10 @@ def add_last_booking_status_to_collective_offer_query(
             educational_models.CollectiveBooking.status,
             educational_models.CollectiveBooking.cancellationReason,
         )
-        .outerjoin(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
+        .outerjoin(
+            educational_models.CollectiveBooking,
+            educational_models.CollectiveStock.collectiveBookings,
+        )
         .join(
             last_booking_query,
             sa.and_(
@@ -823,7 +860,9 @@ def add_last_booking_status_to_collective_offer_query(
     return subquery, query_with_booking
 
 
-def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, models.Product]:
+def get_products_map_by_provider_reference(
+    id_at_providers: list[str],
+) -> dict[str, models.Product]:
     products = (
         db.session.query(models.Product)
         .filter(models.Product.can_be_synchronized)
@@ -850,7 +889,10 @@ def get_offers_map_by_id_at_provider(id_at_provider_list: list[str], venue: offe
     offers_map = {}
     for offer_id, offer_id_at_provider in (
         db.session.query(models.Offer.id, models.Offer.idAtProvider)
-        .filter(models.Offer.idAtProvider.in_(id_at_provider_list), models.Offer.venue == venue)
+        .filter(
+            models.Offer.idAtProvider.in_(id_at_provider_list),
+            models.Offer.venue == venue,
+        )
         .all()
     ):
         offers_map[offer_id_at_provider] = offer_id
@@ -863,7 +905,10 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
     offer_id: int
     for offer_id, offer_id_at_provider in (
         db.session.query(models.Offer.id, models.Offer.idAtProvider)
-        .filter(models.Offer.venueId == venue_id, models.Offer.idAtProvider.in_(id_at_provider_list))
+        .filter(
+            models.Offer.venueId == venue_id,
+            models.Offer.idAtProvider.in_(id_at_provider_list),
+        )
         .all()
     ):
         offers_map[custom_keys.compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
@@ -1158,8 +1203,14 @@ def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
 def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
     return (
         db.session.query(models.HeadlineOffer)
-        .join(offerers_models.Venue, models.HeadlineOffer.venueId == offerers_models.Venue.id)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .join(
+            offerers_models.Venue,
+            models.HeadlineOffer.venueId == offerers_models.Venue.id,
+        )
+        .join(
+            offerers_models.Offerer,
+            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
+        )
         .filter(
             offerers_models.Offerer.id == offerer_id,
             models.HeadlineOffer.timespan.contains(datetime.datetime.utcnow()),
@@ -1174,7 +1225,10 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
         .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
         .outerjoin(models.Mediation, models.Mediation.offerId == models.Offer.id)
         .outerjoin(models.Product, models.Offer.productId == models.Product.id)
-        .outerjoin(models.ProductMediation, models.ProductMediation.productId == models.Product.id)
+        .outerjoin(
+            models.ProductMediation,
+            models.ProductMediation.productId == models.Product.id,
+        )
         .filter(
             sa.or_(
                 models.Offer.status != offer_mixin.OfferStatus.ACTIVE,
@@ -1229,7 +1283,11 @@ def get_active_offer_by_venue_id_and_ean(venue_id: int, ean: str) -> models.Offe
     if len(offers) > 1:
         logger.warning(
             "EAN shared by more than one offer across a venue",
-            extra={"ean": ean, "venue_id": venue_id, "offers_ids": [offer.id for offer in offers]},
+            extra={
+                "ean": ean,
+                "venue_id": venue_id,
+                "offers_ids": [offer.id for offer in offers],
+            },
         )
 
     return offers[0]
@@ -1240,7 +1298,11 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         query = db.session.query(models.Offer).filter(models.Offer.id == offer_id)
         if "stock" in load_options:
             query = query.outerjoin(
-                models.Stock, sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted))
+                models.Stock,
+                sa.and_(
+                    models.Stock.offerId == offer_id,
+                    sa.not_(models.Stock.isSoftDeleted),
+                ),
             ).options(sa_orm.contains_eager(models.Offer.stocks))
         if "mediations" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.mediations))
@@ -1289,7 +1351,10 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             query = query.outerjoin(models.Offer.futureOffer).options(sa_orm.contains_eager(models.Offer.futureOffer))
         if "pending_bookings" in load_options:
             query = query.options(
-                sa_orm.with_expression(models.Offer.hasPendingBookings, get_pending_bookings_subquery(offer_id))
+                sa_orm.with_expression(
+                    models.Offer.hasPendingBookings,
+                    get_pending_bookings_subquery(offer_id),
+                )
             )
         if "event_opening_hours" in load_options:
             query = query.outerjoin(
@@ -1314,7 +1379,10 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
     return (
         db.session.query(models.Offer)
         .filter(models.Offer.id == offer_id)
-        .outerjoin(models.Stock, sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)))
+        .outerjoin(
+            models.Stock,
+            sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)),
+        )
         .options(sa_orm.contains_eager(models.Offer.stocks))
         .options(sa_orm.joinedload(models.Offer.mediations))
         .options(sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
@@ -1411,14 +1479,16 @@ def get_filtered_stocks(
         query = query.filter(
             sa.cast(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
+                    offerers_models.Venue.timezone,
+                    sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 ),
                 sa.Time,
             )
             >= address_time.replace(second=0),
             sa.cast(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
+                    offerers_models.Venue.timezone,
+                    sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 ),
                 sa.Time,
             )
@@ -1434,7 +1504,13 @@ def hard_delete_filtered_stocks(
     time: datetime.time | None = None,
     price_category_id: int | None = None,
 ) -> None:
-    subquery = get_filtered_stocks(offer=offer, venue=venue, date=date, time=time, price_category_id=price_category_id)
+    subquery = get_filtered_stocks(
+        offer=offer,
+        venue=venue,
+        date=date,
+        time=time,
+        price_category_id=price_category_id,
+    )
     subquery = subquery.with_entities(models.Stock.id)
     db.session.query(models.Stock).filter(models.Stock.id.in_(subquery)).delete(synchronize_session=False)
     db.session.flush()
@@ -1531,7 +1607,9 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, off
         # We should never be there (an ean or an ean must be given), in case we are alert sentry.
         logger.error("Could not search for an offer without ean")
     base_query = db.session.query(models.Offer).filter(
-        models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.ean == ean
+        models.Offer.venue == venue,
+        models.Offer.isActive.is_(True),
+        models.Offer.ean == ean,
     )
 
     if offer_id is not None:
@@ -1552,7 +1630,12 @@ def _log_deletion_error(_to_keep: models.Product, to_delete: models.Product) -> 
     logger.info("Failed to delete product %d", to_delete.id)
 
 
-@retry(exception=sa_exc.IntegrityError, exception_handler=_log_deletion_error, logger=logger, max_attempts=3)
+@retry(
+    exception=sa_exc.IntegrityError,
+    exception_handler=_log_deletion_error,
+    logger=logger,
+    max_attempts=3,
+)
 def merge_products(to_keep: models.Product, to_delete: models.Product) -> models.Product:
     # It has already happened that an offer is created by another SQL session
     # in between the transfer of the offers and the product deletion.
@@ -1571,7 +1654,9 @@ def merge_products(to_keep: models.Product, to_delete: models.Product) -> models
     return to_keep
 
 
-def venues_have_individual_and_collective_offers(venue_ids: list[int]) -> tuple[bool, bool]:
+def venues_have_individual_and_collective_offers(
+    venue_ids: list[int],
+) -> tuple[bool, bool]:
     return (
         db.session.query(
             db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId.in_(venue_ids)).exists()
@@ -1613,57 +1698,52 @@ def get_unbookable_unbooked_old_offer_ids(
     cancelled).
     * An old offer is an offer that has been created more than a year ago.
     """
-    today = datetime.date.today()
-    a_year_ago = today - datetime.timedelta(days=365)
-
-    # find offer that MIGHT match: the outer join will also return
-    # some bookable stocks or even bookings. This query needs to be
-    # filtered.
-    old_offer_base_query = (
-        models.Offer.query.outerjoin(models.Offer.stocks)
-        .outerjoin(models.Stock.bookings)
-        .filter(models.Offer.dateUpdated < a_year_ago)
-        .filter(
-            sa.or_(
-                models.Stock.bookingLimitDatetime.is_(None),
-                models.Stock.isExpired.is_(True),  # type: ignore[attr-defined]
-                models.Stock.isSoldOut.is_(True),  # type: ignore[attr-defined]
-                models.Stock.id == None,
+    query = """
+        SELECT
+            offer.id
+        FROM
+            offer
+        WHERE
+            offer.id >= :min_id
+            AND offer.id < :max_id
+            AND offer."dateUpdated" < now() - interval '1 year'
+            -- offers without any bookable stock (either no stocks
+            -- at all, or no one with a quantity > 0)
+            AND offer.id NOT IN (
+                SELECT
+                    distinct(stock."offerId")
+                FROM
+                    stock
+                WHERE
+                    stock."offerId" >= :min_id
+                    AND stock."offerId" < :max_id
+                    AND stock."isSoftDeleted" IS NOT TRUE
+                    AND stock.quantity > 0
+                    AND (
+                        stock."bookingLimitDatetime" IS NULL
+                        OR stock."bookingLimitDatetime" > now()
+                    )
             )
-        )
-        .filter(bookings_models.Booking.id == None)
-        .with_entities(models.Offer.id)
-    )
-
-    # reverse query: find offer ids that have bookable stock or even
-    # a booking to filter `old_offer_base_query` results.
-    old_bookable_or_booked_offers_base_query = (
-        models.Offer.query.outerjoin(models.Offer.stocks)
-        .outerjoin(models.Stock.bookings)
-        .filter(models.Offer.dateUpdated < a_year_ago)
-        .filter(
-            sa.or_(
-                models.Stock.isExpired.is_(False),  # type: ignore[attr-defined]
-                models.Stock.isSoldOut.is_(False),  # type: ignore[attr-defined]
-                bookings_models.Booking.id.is_not(None),
+            -- offers without any linked booking
+            -- (event cancelled ones)
+            AND offer.id NOT IN (
+                SELECT
+                    distinct(stock."offerId")
+                FROM
+                    stock
+                LEFT JOIN
+                    booking on booking."stockId" = stock.id
+                WHERE
+                    stock."offerId" >= :min_id
+                    AND stock."offerId" < :max_id
+                    AND booking.id IS NOT NULL
             )
-        )
-        .filter(models.Stock.isSoftDeleted.is_not(True))
-        .filter(models.Stock.id.is_not(None))
-        .with_entities(models.Offer.id)
-    )
+    """
 
     if max_id is None:
         max_id = models.Offer.query.order_by(models.Offer.id).first().id
 
     while min_id < max_id:
-        _filter = [models.Offer.id >= min_id, models.Offer.id < min_id + batch_size]
-
-        filtering_query = old_bookable_or_booked_offers_base_query.filter(*_filter)
-        offer_ids_to_filter = {row[0] for row in filtering_query}
-
-        query = old_offer_base_query.filter(*_filter)
-        query = query.filter(models.Offer.id.notin_(offer_ids_to_filter))
-
-        yield from {row[0] for row in query}
+        rows = db.session.execute(sa.text(query), {"min_id": min_id, "max_id": max_id + batch_size})
+        yield from {row[0] for row in rows}
         min_id += batch_size

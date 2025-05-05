@@ -52,7 +52,9 @@ class GetCappedOffersForFiltersTest:
         # 1 to get offers
         with assert_num_queries(3):
             offers = repository.get_capped_offers_for_filters(
-                user_id=user_offerer.user.id, user_is_admin=user_offerer.user.has_admin_role, offers_limit=50
+                user_id=user_offerer.user.id,
+                user_is_admin=user_offerer.user.has_admin_role,
+                offers_limit=50,
             )
 
         assert len(offers) == 5
@@ -121,11 +123,13 @@ class GetCappedOffersForFiltersTest:
     def should_return_offers_of_given_subcategory_id(self):
         user_offerer = offerers_factories.UserOffererFactory()
         requested_offer = factories.OfferFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue__managingOfferer=user_offerer.offerer
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            venue__managingOfferer=user_offerer.offerer,
         )
         # other offer
         factories.OfferFactory(
-            subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id, venue__managingOfferer=user_offerer.offerer
+            subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         offers = repository.get_capped_offers_for_filters(
@@ -167,12 +171,16 @@ class GetCappedOffersForFiltersTest:
         assert offers[0].id == synced_offer.id
 
     @pytest.mark.usefixtures("db_session")
-    def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
+    def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(
+        self,
+    ):
         # given
         pro = users_factories.ProFactory()
         offer_in_requested_time_period = factories.OfferFactory()
         factories.EventStockFactory(
-            offer=offer_in_requested_time_period, beginningDatetime=datetime.datetime(2020, 1, 2), isSoftDeleted=True
+            offer=offer_in_requested_time_period,
+            beginningDatetime=datetime.datetime(2020, 1, 2),
+            isSoftDeleted=True,
         )
 
         # When
@@ -372,7 +380,9 @@ class GetCappedOffersForFiltersTest:
             assert offer_for_requested_venue.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
-        def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
+        def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(
+            self,
+        ):
             # given
             pro = users_factories.ProFactory()
             offer_for_requested_offerer = factories.OfferFactory()
@@ -416,7 +426,9 @@ class GetCappedOffersForFiltersTest:
 
     class NameOrIsbnFilterTest:
         @pytest.mark.usefixtures("db_session")
-        def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(self):
+        def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(
+            self,
+        ):
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(name="ocs", venue__managingOfferer=user_offerer.offerer)
@@ -441,7 +453,8 @@ class GetCappedOffersForFiltersTest:
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(name="seras-tu là", venue__managingOfferer=user_offerer.offerer)
             another_expected_offer = factories.OfferFactory(
-                name="François, seras-tu là ?", venue__managingOfferer=user_offerer.offerer
+                name="François, seras-tu là ?",
+                venue__managingOfferer=user_offerer.offerer,
             )
             other_offer = factories.OfferFactory(name="étais-tu là", venue__managingOfferer=user_offerer.offerer)
 
@@ -508,7 +521,9 @@ class GetCappedOffersForFiltersTest:
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(
-                name="seras-tu là", venue__managingOfferer=user_offerer.offerer, ean="1234567891234"
+                name="seras-tu là",
+                venue__managingOfferer=user_offerer.offerer,
+                ean="1234567891234",
             )
             # other offer
             factories.OfferFactory(
@@ -541,32 +556,46 @@ class GetCappedOffersForFiltersTest:
                 venue=self.other_venue, description="sold_out_offer_on_other_venue"
             )
             self.inactive_thing_offer_with_stock_with_remaining_quantity = factories.ThingOfferFactory(
-                venue=self.venue, isActive=False, description="inactive_thing_offer_with_stock_with_remaining_quantity"
+                venue=self.venue,
+                isActive=False,
+                description="inactive_thing_offer_with_stock_with_remaining_quantity",
             )
             self.inactive_thing_offer_without_remaining_quantity = factories.ThingOfferFactory(
-                venue=self.venue, isActive=False, description="inactive_thing_offer_without_remaining_quantity"
+                venue=self.venue,
+                isActive=False,
+                description="inactive_thing_offer_without_remaining_quantity",
             )
             self.inactive_thing_offer_without_stock = factories.ThingOfferFactory(
-                venue=self.venue, isActive=False, description="inactive_thing_offer_without_stock"
+                venue=self.venue,
+                isActive=False,
+                description="inactive_thing_offer_without_stock",
             )
             self.inactive_expired_event_offer = factories.EventOfferFactory(
-                venue=self.venue, isActive=False, description="inactive_expired_event_offer"
+                venue=self.venue,
+                isActive=False,
+                description="inactive_expired_event_offer",
             )
             self.active_thing_offer_with_one_stock_with_remaining_quantity = factories.ThingOfferFactory(
-                venue=self.venue, isActive=True, description="active_thing_offer_with_one_stock_with_remaining_quantity"
+                venue=self.venue,
+                isActive=True,
+                description="active_thing_offer_with_one_stock_with_remaining_quantity",
             )
             self.active_thing_offer_with_all_stocks_without_quantity = factories.ThingOfferFactory(
-                venue=self.venue, isActive=True, description="active_thing_offer_with_all_stocks_without_quantity"
+                venue=self.venue,
+                isActive=True,
+                description="active_thing_offer_with_all_stocks_without_quantity",
             )
             self.active_event_offer_with_stock_in_the_future_without_quantity = factories.EventOfferFactory(
-                venue=self.venue, description="active_event_offer_with_stock_in_the_future_without_quantity"
+                venue=self.venue,
+                description="active_event_offer_with_stock_in_the_future_without_quantity",
             )
             self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity = factories.EventOfferFactory(
                 venue=self.venue,
                 description="active_event_offer_with_one_stock_in_the_future_with_remaining_quantity",
             )
             self.sold_old_thing_offer_with_all_stocks_empty = factories.ThingOfferFactory(
-                venue=self.venue, description="sold_old_thing_offer_with_all_stocks_empty"
+                venue=self.venue,
+                description="sold_old_thing_offer_with_all_stocks_empty",
             )
             self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity = (
                 factories.EventOfferFactory(
@@ -581,10 +610,12 @@ class GetCappedOffersForFiltersTest:
                 venue=self.venue, description="sold_out_event_offer_without_stock"
             )
             self.sold_out_event_offer_with_only_one_stock_soft_deleted = factories.EventOfferFactory(
-                venue=self.venue, description="sold_out_event_offer_with_only_one_stock_soft_deleted"
+                venue=self.venue,
+                description="sold_out_event_offer_with_only_one_stock_soft_deleted",
             )
             self.expired_event_offer_with_stock_in_the_past_without_quantity = factories.EventOfferFactory(
-                venue=self.venue, description="expired_event_offer_with_stock_in_the_past_without_quantity"
+                venue=self.venue,
+                description="expired_event_offer_with_stock_in_the_past_without_quantity",
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity = factories.EventOfferFactory(
                 venue=self.venue,
@@ -610,12 +641,17 @@ class GetCappedOffersForFiltersTest:
             beneficiary = users_factories.BeneficiaryGrant18Factory(email="jane.doe@example.com")
             factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             factories.ThingStockFactory(
-                offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5
+                offer=self.active_thing_offer_with_one_stock_with_remaining_quantity,
+                quantity=5,
             )
             factories.ThingStockFactory(
-                offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=0
+                offer=self.active_thing_offer_with_one_stock_with_remaining_quantity,
+                quantity=0,
             )
-            factories.ThingStockFactory(offer=self.active_thing_offer_with_all_stocks_without_quantity, quantity=None)
+            factories.ThingStockFactory(
+                offer=self.active_thing_offer_with_all_stocks_without_quantity,
+                quantity=None,
+            )
             factories.EventStockFactory(
                 offer=self.expired_event_offer_with_stock_in_the_past_without_quantity,
                 beginningDatetime=five_days_ago,
@@ -686,7 +722,10 @@ class GetCappedOffersForFiltersTest:
                 price=0,
             )
             bookings_factories.BookingFactory(user=beneficiary, stock=stock_all_booked)
-            factories.ThingStockFactory(offer=self.inactive_thing_offer_with_stock_with_remaining_quantity, quantity=4)
+            factories.ThingStockFactory(
+                offer=self.inactive_thing_offer_with_stock_with_remaining_quantity,
+                quantity=4,
+            )
             factories.EventStockFactory(
                 offer=self.active_event_offer_with_stock_in_the_future_without_quantity,
                 beginningDatetime=five_days_ago,
@@ -701,7 +740,9 @@ class GetCappedOffersForFiltersTest:
             )
             factories.ThingStockFactory(offer=self.inactive_thing_offer_without_remaining_quantity, quantity=0)
             factories.EventStockFactory(
-                offer=self.sold_out_event_offer_with_only_one_stock_soft_deleted, quantity=10, isSoftDeleted=True
+                offer=self.sold_out_event_offer_with_only_one_stock_soft_deleted,
+                quantity=10,
+                isSoftDeleted=True,
             )
             factories.ThingStockFactory(
                 offer=self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity,
@@ -722,7 +763,9 @@ class GetCappedOffersForFiltersTest:
                 quantity=10,
             )
             self.draft_offer = factories.EventOfferFactory(
-                venue=self.venue, validation=offer_mixin.OfferValidationStatus.DRAFT, description="draft event offer"
+                venue=self.venue,
+                validation=offer_mixin.OfferValidationStatus.DRAFT,
+                description="draft event offer",
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -732,7 +775,10 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="ACTIVE"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=5,
+                status="ACTIVE",
             )
 
             # then
@@ -766,7 +812,10 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="INACTIVE"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=5,
+                status="INACTIVE",
             )
 
             # then
@@ -800,7 +849,10 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=10, status="SOLD_OUT"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=10,
+                status="SOLD_OUT",
             )
 
             # then
@@ -833,7 +885,10 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=10, status="SOLD_OUT"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=10,
+                status="SOLD_OUT",
             )
 
             # then
@@ -842,13 +897,18 @@ class GetCappedOffersForFiltersTest:
             assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(self):
+        def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(
+            self,
+        ):
             # given
             self.init_test_data()
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=5,
+                status="SOLD_OUT",
             )
 
             # then
@@ -856,13 +916,18 @@ class GetCappedOffersForFiltersTest:
             assert self.sold_old_thing_offer_with_all_stocks_empty.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_with_no_remaining_quantity_in_the_future_when_requesting_sold_out_status(self):
+        def should_return_offers_with_no_remaining_quantity_in_the_future_when_requesting_sold_out_status(
+            self,
+        ):
             # given
             self.init_test_data()
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=5,
+                status="SOLD_OUT",
             )
 
             # then
@@ -870,13 +935,18 @@ class GetCappedOffersForFiltersTest:
             assert self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
-        def should_exclude_offers_with_cancelled_bookings_when_requesting_sold_out_status(self):
+        def should_exclude_offers_with_cancelled_bookings_when_requesting_sold_out_status(
+            self,
+        ):
             # given
             self.init_test_data()
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=5,
+                status="SOLD_OUT",
             )
 
             # then
@@ -890,7 +960,10 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="EXPIRED"
+                user_id=self.pro.id,
+                user_is_admin=self.pro.has_admin_role,
+                offers_limit=5,
+                status="EXPIRED",
             )
 
             # then
@@ -948,7 +1021,9 @@ class GetCappedOffersForFiltersTest:
             unexpired_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
 
             rejected_offer = factories.ThingOfferFactory(
-                validation=offer_mixin.OfferValidationStatus.REJECTED, name="Offre rejetée", isActive=False
+                validation=offer_mixin.OfferValidationStatus.REJECTED,
+                name="Offre rejetée",
+                isActive=False,
             )
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=rejected_offer)
 
@@ -996,7 +1071,9 @@ class GetCappedOffersForFiltersTest:
             assert len(offers) == 1
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(self):
+        def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(
+            self,
+        ):
             # given
             self.init_test_data()
 
@@ -1043,7 +1120,8 @@ class GetOffersByPublicationDateTest:
         )
         offer_to_publish_2 = factories.OfferFactory()
         future_offer_to_publish_2 = factories.FutureOfferFactory(
-            offer=offer_to_publish_2, publicationDate=publication_date - datetime.timedelta(minutes=13)
+            offer=offer_to_publish_2,
+            publicationDate=publication_date - datetime.timedelta(minutes=13),
         )
         # Simulates an Offer manually published then unpublished with a publicationDate within the range of 15 minutes considered, should not be returned by the function
         offer_manually_published = factories.OfferFactory()
@@ -1061,7 +1139,10 @@ class GetOffersByPublicationDateTest:
         assert offers_query.count() == 2
         assert offers_query.all() == [offer_to_publish_1, offer_to_publish_2]
         assert future_offers_query.count() == 2
-        assert future_offers_query.all() == [future_offer_to_publish_1, future_offer_to_publish_2]
+        assert future_offers_query.all() == [
+            future_offer_to_publish_1,
+            future_offer_to_publish_2,
+        ]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1132,14 +1213,18 @@ class IncomingEventStocksTest:
 
         offerer_address = offerers_factories.OffererAddressFactory(address=address_paris)
         offer = factories.OfferFactory(
-            venue__departementCode="75", venue__postalCode="75002", offererAddress=offerer_address
+            venue__departementCode="75",
+            venue__postalCode="75002",
+            offererAddress=offerer_address,
         )
         self.stock_today = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
 
         overseas_offerer_address = offerers_factories.OffererAddressFactory(address=address_overseas)
         offer = factories.OfferFactory(
-            venue__departementCode="97", venue__postalCode="97180", offererAddress=overseas_offerer_address
+            venue__departementCode="97",
+            venue__postalCode="97180",
+            offererAddress=overseas_offerer_address,
         )
         self.stock_today_overseas = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory(stock=self.stock_today_overseas)
@@ -1193,7 +1278,9 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today_overseas.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue(self):
+    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue(
+        self,
+    ):
         self.setup_stocks()
 
         today_min = datetime.datetime(2024, 10, 15, 8, 00)
@@ -1206,7 +1293,9 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today_overseas.id, self.stock_today.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_2(self):
+    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_2(
+        self,
+    ):
         self.setup_stocks()
 
         today_min = datetime.datetime(2024, 10, 15, 8, 00)
@@ -1219,7 +1308,9 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today_overseas.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_3(self):
+    def test_find_today_event_stock_ids_by_departments_with_address_different_than_the_venue_3(
+        self,
+    ):
         self.setup_stocks()
 
         today_min = datetime.datetime(2024, 10, 15, 8, 00)
@@ -1232,7 +1323,9 @@ class IncomingEventStocksTest:
         assert set(stock_ids) == {self.stock_today.id}
 
     @time_machine.travel("2024-10-15 15:00:00")
-    def test_find_today_digital_stock_ids_by_departments_with_address_different_than_the_venue(self):
+    def test_find_today_digital_stock_ids_by_departments_with_address_different_than_the_venue(
+        self,
+    ):
         self.setup_stocks()
 
         # add digital offer
@@ -1253,7 +1346,10 @@ class IncomingEventStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetExpiredOffersTest:
-    interval = [datetime.datetime(2021, 1, 1, 0, 0), datetime.datetime(2021, 1, 2, 0, 0)]
+    interval = [
+        datetime.datetime(2021, 1, 1, 0, 0),
+        datetime.datetime(2021, 1, 2, 0, 0),
+    ]
     dt_before = datetime.datetime(2020, 12, 31)
     dt_within = datetime.datetime(2021, 1, 1)
     dt_after = datetime.datetime(2021, 1, 3)
@@ -1308,7 +1404,8 @@ class AvailableActivationCodeTest:
         stock = booking.stock
         factories.ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         factories.ActivationCodeFactory(
-            stock=stock, expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            stock=stock,
+            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )  # expired code
 
         # WHEN THEN
@@ -1387,7 +1484,10 @@ class GetPaginatedActiveOfferIdsTest:
         offer2 = factories.OfferFactory(venue=venue)
         offer3 = factories.OfferFactory(venue=venue)
 
-        assert repository.get_paginated_active_offer_ids(batch_size=2, page=1) == [offer1.id, offer2.id]
+        assert repository.get_paginated_active_offer_ids(batch_size=2, page=1) == [
+            offer1.id,
+            offer2.id,
+        ]
         assert repository.get_paginated_active_offer_ids(batch_size=2, page=2) == [offer3.id]
 
     def test_exclude_inactive_offers(self):
@@ -1433,7 +1533,8 @@ class GetFilteredCollectiveOffersTest:
             status=educational_models.CollectiveBookingStatus.CANCELLED.value,
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_prebooked, status=educational_models.CollectiveBookingStatus.PENDING.value
+            collectiveStock=collective_stock_prebooked,
+            status=educational_models.CollectiveBookingStatus.PENDING.value,
         )
 
         collective_offer_cancelled = educational_factories.CollectiveOfferFactory(
@@ -1443,7 +1544,8 @@ class GetFilteredCollectiveOffersTest:
             collectiveOffer=collective_offer_cancelled
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_cancelled, status=educational_models.CollectiveBookingStatus.PENDING.value
+            collectiveStock=collective_stock_cancelled,
+            status=educational_models.CollectiveBookingStatus.PENDING.value,
         )
         educational_factories.CollectiveBookingFactory(
             collectiveStock=collective_stock_cancelled,
@@ -1463,10 +1565,12 @@ class GetFilteredCollectiveOffersTest:
             venue__managingOfferer=user_offerer.offerer
         )
         collective_stock_ended = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_ended, startDatetime=datetime.datetime(year=2000, month=1, day=1)
+            collectiveOffer=collective_offer_ended,
+            startDatetime=datetime.datetime(year=2000, month=1, day=1),
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_ended, status=educational_models.CollectiveBookingStatus.USED.value
+            collectiveStock=collective_stock_ended,
+            status=educational_models.CollectiveBookingStatus.USED.value,
         )
 
         offers = repository.get_collective_offers_by_filters(
@@ -1482,7 +1586,8 @@ class GetFilteredCollectiveOffersTest:
             venue__managingOfferer=user_offerer.offerer, formats=[EacFormat.CONCERT]
         )
         educational_factories.CollectiveOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, formats=[EacFormat.CONFERENCE_RENCONTRE]
+            venue__managingOfferer=user_offerer.offerer,
+            formats=[EacFormat.CONFERENCE_RENCONTRE],
         )
 
         offers = repository.get_collective_offers_by_filters(
@@ -1515,7 +1620,8 @@ class GetFilteredCollectiveOffersTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         collective_offer_draft = educational_factories.CollectiveOfferFactory(
-            validation=offer_mixin.OfferValidationStatus.DRAFT.value, venue__managingOfferer=user_offerer.offerer
+            validation=offer_mixin.OfferValidationStatus.DRAFT.value,
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         offers = repository.get_collective_offers_by_filters(user_id=user_offerer.userId, user_is_admin=False)
@@ -1538,20 +1644,26 @@ class GetFilteredCollectiveOffersTest:
 
         # expired offer without booking
         collective_offer_expired = educational_factories.CollectiveOfferFactory(
-            validation=offer_mixin.OfferValidationStatus.APPROVED.value, venue__managingOfferer=user_offerer.offerer
+            validation=offer_mixin.OfferValidationStatus.APPROVED.value,
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_expired, startDatetime=future, bookingLimitDatetime=past
+            collectiveOffer=collective_offer_expired,
+            startDatetime=future,
+            bookingLimitDatetime=past,
         )
 
         # expired offer with pending booking
         collective_offer_prebooked_expired = educational_factories.CollectiveOfferFactory(
-            validation=offer_mixin.OfferValidationStatus.APPROVED.value, venue__managingOfferer=user_offerer.offerer
+            validation=offer_mixin.OfferValidationStatus.APPROVED.value,
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         collective_stock_prebooked_expired = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_prebooked_expired, startDatetime=future, bookingLimitDatetime=past
+            collectiveOffer=collective_offer_prebooked_expired,
+            startDatetime=future,
+            bookingLimitDatetime=past,
         )
 
         educational_factories.CollectiveBookingFactory(
@@ -1568,7 +1680,10 @@ class GetFilteredCollectiveOffersTest:
         )
         offers_list = offers.all()
         assert len(offers_list) == 2
-        assert set(offers_list) == {collective_offer_expired, collective_offer_prebooked_expired}
+        assert set(offers_list) == {
+            collective_offer_expired,
+            collective_offer_prebooked_expired,
+        }
 
     @pytest.mark.parametrize(
         "offer_status",
@@ -1668,7 +1783,10 @@ class GetStocksListFiltersTest:
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         offer = factories.OfferFactory()
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(days=1))
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(days=1),
+        )
         # When
         stocks = repository.get_filtered_stocks(
             venue=offer.venue,
@@ -1709,8 +1827,14 @@ class GetStocksListFiltersTest:
         )
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(hours=1))
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(minutes=1))
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(hours=1),
+        )
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(minutes=1),
+        )
 
         # When
         stocks = repository.get_filtered_stocks(
@@ -1748,7 +1872,9 @@ class GetStocksListFiltersTest:
         assert stocks.count() == 2
 
     @time_machine.travel("2020-02-20 01:00:00")
-    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(self):
+    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(
+        self,
+    ):
         # Given
         beginning_datetime_1 = datetime.datetime(2021, 3, 27, 2, 0, 0)
         beginning_datetime_2 = datetime.datetime(2021, 3, 28, 1, 0, 0)
@@ -1778,7 +1904,9 @@ class GetStocksListFiltersTest:
         assert stocks.count() == 3
 
     @time_machine.travel("2020-06-20 01:00:00")
-    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(self):
+    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(
+        self,
+    ):
         # Given
         beginning_datetime_1 = datetime.datetime(2021, 3, 13, 11, 0, 0)
         beginning_datetime_2 = datetime.datetime(2021, 3, 14, 10, 0, 0)
@@ -1813,10 +1941,12 @@ class GetStocksListFiltersTest:
         offer = factories.OfferFactory()
         first_stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         second_stock = factories.EventStockFactory(
-            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1)
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1),
         )
         third_stock = factories.EventStockFactory(
-            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2)
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2),
         )
 
         # When
@@ -1834,9 +1964,15 @@ class GetStocksListFiltersTest:
         stocks_limit_per_page = 1
         current_page = 2
         offer = factories.OfferFactory()
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime - datetime.timedelta(seconds=1))
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime - datetime.timedelta(seconds=1),
+        )
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=30))
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=30),
+        )
 
         # When
         filtered_stocks = repository.get_filtered_stocks(
@@ -1845,7 +1981,9 @@ class GetStocksListFiltersTest:
             order_by="BEGINNING_DATETIME",
         )
         stocks = repository.get_paginated_stocks(
-            stocks_query=filtered_stocks, stocks_limit_per_page=stocks_limit_per_page, page=current_page
+            stocks_query=filtered_stocks,
+            stocks_limit_per_page=stocks_limit_per_page,
+            page=current_page,
         )
 
         # Then
@@ -2118,7 +2256,9 @@ class GetHeadlineOfferFiltersTest:
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == []
 
-    def test_get_inactive_headline_offers_should_not_return_already_deactivated_headline_offer(self):
+    def test_get_inactive_headline_offers_should_not_return_already_deactivated_headline_offer(
+        self,
+    ):
         inactive_offer = factories.OfferFactory(isActive=False)
         inactive_offer_headline_offer = factories.HeadlineOfferFactory(offer=inactive_offer)
 
@@ -2139,7 +2279,8 @@ class GetHeadlineOfferFiltersTest:
         )
 
         headline_offer_query_result = sorted(
-            repository.get_inactive_headline_offers(), key=lambda headline_offer: headline_offer.id
+            repository.get_inactive_headline_offers(),
+            key=lambda headline_offer: headline_offer.id,
         )
 
         assert headline_offer_query_result == sorted(
@@ -2164,7 +2305,9 @@ class GetHeadlineOfferFiltersTest:
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == [headline_offer_without_mediation]
 
-    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_active_offer(self):
+    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_active_offer(
+        self,
+    ):
         offer = factories.OfferFactory(isActive=True)
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -2172,7 +2315,9 @@ class GetHeadlineOfferFiltersTest:
         headline_offer_query_result = repository.get_current_headline_offer(user_offerer.offerer.id)
         assert headline_offer_query_result == headline_offer
 
-    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_inactive_offer(self):
+    def test_get_offerer_active_headline_offer_even_not_yet_disabled_by_cron_for_inactive_offer(
+        self,
+    ):
         offer = factories.OfferFactory(isActive=True)
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -2246,7 +2391,10 @@ class GetActiveOfferByVenueIdAndEanTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.models.db.session.delete", side_effect=(sa_exc.IntegrityError(None, None, None), None))
+@patch(
+    "pcapi.models.db.session.delete",
+    side_effect=(sa_exc.IntegrityError(None, None, None), None),
+)
 def test_handles_offer_creation_while_product_merging(delete_mock):
     to_keep = factories.ProductFactory()
     to_delete = factories.ProductFactory()
@@ -2269,6 +2417,38 @@ class GetUnbookableUnbookedOldOfferIdsTest:
         ids = list(repository.get_unbookable_unbooked_old_offer_ids())
         assert ids == [offer.id]
 
+    def test_get_old_offer_with_an_expired_stock_with_quantity_is_matched(self):
+        offer = factories.StockFactory(
+            quantity=10,
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2),
+            offer__dateCreated=self.a_year_ago,
+            offer__dateUpdated=self.a_year_ago,
+        ).offer
+
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert ids == [offer.id]
+
+    def test_get_old_offer_with_an_ongoing_stock_without_any_quantity_is_matched(self):
+        offer = factories.StockFactory(
+            quantity=0,
+            offer__dateCreated=self.a_year_ago,
+            offer__dateUpdated=self.a_year_ago,
+        ).offer
+
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert ids == [offer.id]
+
+    def test_get_old_offer_with_a_soft_deleted_stock_is_matched(self):
+        offer = factories.StockFactory(
+            isSoftDeleted=True,
+            quantity=10,
+            offer__dateCreated=self.a_year_ago,
+            offer__dateUpdated=self.a_year_ago,
+        ).offer
+
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert ids == [offer.id]
+
     def test_get_old_offer_with_an_ongoing_stock_is_ignored(self):
         factories.StockFactory(offer__dateCreated=self.a_year_ago, offer__dateUpdated=self.a_year_ago)
         assert not list(repository.get_unbookable_unbooked_old_offer_ids())
@@ -2281,7 +2461,9 @@ class GetUnbookableUnbookedOldOfferIdsTest:
 
         assert not list(repository.get_unbookable_unbooked_old_offer_ids())
 
-    def test_get_old_offer_with_unbookable_and_bookable_stocks_and_a_booking_is_ignored(self):
+    def test_get_old_offer_with_unbookable_and_bookable_stocks_and_a_booking_is_ignored(
+        self,
+    ):
         offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
 
         # unbookable stock with an old booking
@@ -2294,14 +2476,16 @@ class GetUnbookableUnbookedOldOfferIdsTest:
 
     def test_get_old_offer_with_a_booking_is_ignored(self):
         bookings_factories.BookingFactory(
-            stock__offer__dateCreated=self.a_year_ago, stock__offer__dateUpdated=self.a_year_ago
+            stock__offer__dateCreated=self.a_year_ago,
+            stock__offer__dateUpdated=self.a_year_ago,
         )
 
         assert not list(repository.get_unbookable_unbooked_old_offer_ids())
 
     def test_get_old_offer_with_a_cancelled_booking_is_ignored(self):
         bookings_factories.CancelledBookingFactory(
-            stock__offer__dateCreated=self.a_year_ago, stock__offer__dateUpdated=self.a_year_ago
+            stock__offer__dateCreated=self.a_year_ago,
+            stock__offer__dateUpdated=self.a_year_ago,
         )
 
         assert not list(repository.get_unbookable_unbooked_old_offer_ids())
@@ -2315,7 +2499,8 @@ class GetUnbookableUnbookedOldOfferIdsTest:
 
         factories.OfferFactory()
         bookings_factories.BookingFactory(
-            stock__offer__dateCreated=self.a_year_ago, stock__offer__dateUpdated=self.a_year_ago
+            stock__offer__dateCreated=self.a_year_ago,
+            stock__offer__dateUpdated=self.a_year_ago,
         )
 
         ids = list(repository.get_unbookable_unbooked_old_offer_ids())
