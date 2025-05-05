@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 import pytest
 
@@ -70,7 +71,8 @@ def test_user_cant_create_same_offerer_twice(client):
     second_response = client.post("/offerers", json=body)
 
     assert second_response.status_code == 400
-    assert "This user already belongs to this offerer" in str(second_response.data)
+    response_json = json.loads(second_response.data.decode())
+    assert "Votre compte est déjà rattaché à cette structure." in response_json["user_offerer"][0]
 
 
 def test_user_can_create_rejected_offerer_again(client):
