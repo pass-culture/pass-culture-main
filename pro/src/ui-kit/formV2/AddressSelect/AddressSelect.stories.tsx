@@ -35,6 +35,8 @@ type AddressFormValues = {
   city: string
   latitude: string
   longitude: string
+  inseeCode: string
+  banId: string
 }
 // <FormWrapper> provides a react-hook-form context, which is necessary for the storybook demo to work
 const FormWrapper = ({ children }: PropsWithChildren) => {
@@ -46,6 +48,8 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
       city: 'Nîmes',
       latitude: '43.828539',
       longitude: '4.375801',
+      inseeCode: '30000',
+      banId: '30189_7810_00019',
     },
     resolver: yupResolver(
       yup.object().shape({
@@ -57,20 +61,32 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
         city: yup.string().default(''),
         latitude: yup.string().default(''),
         longitude: yup.string().default(''),
+        inseeCode: yup.string().default(''),
+        banId: yup.string().default(''),
       })
     ),
     mode: 'onBlur',
   })
 
-  const [street, city, postalCode, latitude, longitude, addressText] =
-    hookForm.watch([
-      'street',
-      'city',
-      'postalCode',
-      'latitude',
-      'longitude',
-      'addressText',
-    ])
+  const [
+    street,
+    city,
+    postalCode,
+    latitude,
+    longitude,
+    addressText,
+    inseeCode,
+    banId,
+  ] = hookForm.watch([
+    'street',
+    'city',
+    'postalCode',
+    'latitude',
+    'longitude',
+    'addressText',
+    'inseeCode',
+    'banId',
+  ])
 
   return (
     <FormProvider {...hookForm}>
@@ -90,6 +106,9 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
           <br />
           longitude = {longitude}
           <br />
+          inseeCode = {inseeCode}
+          <br />
+          banId = {banId}
         </pre>
       </div>
     </FormProvider>
@@ -122,6 +141,8 @@ export const Default: StoryObj<typeof AddressSelect> = {
           setValue('city', addressData.city)
           setValue('latitude', String(addressData.latitude))
           setValue('longitude', String(addressData.longitude))
+          setValue('banId', addressData.id)
+          setValue('inseeCode', addressData.inseeCode)
         }}
       />
     )

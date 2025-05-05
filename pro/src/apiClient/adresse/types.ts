@@ -44,4 +44,5 @@ export interface AdresseData {
   longitude: number
   label: string
   postalCode: string
+  inseeCode: string
 }

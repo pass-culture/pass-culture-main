@@ -13,7 +13,7 @@ const mockApiResponse: Partial<AdresseApiJson> = {
       properties: {
         name: '15 Rue des Tests',
         city: 'Paris',
-        id: '123',
+        id: '00000_0000_00000',
         label: '15 Rue des Tests 75001 Paris',
         postcode: '75001',
         type: 'housenumber' as FeaturePropertyType,
@@ -48,7 +48,7 @@ const mockCityApiResponse: Partial<AdresseApiJson> = {
       properties: {
         name: 'Paris',
         city: 'Paris',
-        id: '75056',
+        id: '11111_1111_11111',
         label: 'Paris',
         postcode: '75001',
         type: 'municipality' as FeaturePropertyType,
@@ -92,7 +92,7 @@ describe('apiAdresse', () => {
         {
           address: '15 Rue des Tests',
           city: 'Paris',
-          id: '123',
+          id: '00000_0000_00000',
           latitude: 48.9,
           longitude: 2.4,
           label: '15 Rue des Tests 75001 Paris',
@@ -123,7 +123,7 @@ describe('apiAdresse', () => {
         {
           address: 'Paris',
           city: 'Paris',
-          id: '75056',
+          id: '11111_1111_11111',
           latitude: 48.9,
           longitude: 2.4,
           label: 'Paris',
@@ -159,7 +159,7 @@ describe('apiAdresse', () => {
         {
           address: '15 Rue des Tests',
           city: 'Paris',
-          id: '123',
+          id: '00000_0000_00000',
           latitude: 48.9,
           longitude: 2.4,
           label: '15 Rue des Tests 75001 Paris',
