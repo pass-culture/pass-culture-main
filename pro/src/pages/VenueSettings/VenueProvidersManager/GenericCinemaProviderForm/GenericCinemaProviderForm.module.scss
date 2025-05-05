@@ -16,3 +16,20 @@
     gap: rem.torem(16px);
   }
 }
+
+.form-layout-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: rem.torem(24px);
+  margin-bottom: rem.torem(16px);
+}
+
+.price-input,
+.nb-places-input {
+  width: rem.torem(220px);
+}
+
+.allocine-provider-form-banner {
+  margin: rem.torem(32px) 0;
+}

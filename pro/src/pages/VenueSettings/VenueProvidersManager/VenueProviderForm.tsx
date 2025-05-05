@@ -10,9 +10,9 @@ import {
   isCinemaProvider,
 } from 'commons/core/Providers/utils/utils'
 import { useNotification } from 'commons/hooks/useNotification'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
-import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'
-import { CinemaProviderForm } from './CinemaProviderForm/CinemaProviderForm'
+import { GenericCinemaProviderForm } from './GenericCinemaProviderForm/GenericCinemaProviderForm'
 import { StocksProviderForm } from './StocksProviderForm/StocksProviderForm'
 
 interface VenueProviderFormProps {
@@ -26,8 +26,6 @@ export const VenueProviderForm = ({
   provider,
   venue,
 }: VenueProviderFormProps) => {
-  const displayAllocineProviderForm = isAllocineProvider(provider)
-  const displayCDSProviderForm = isCinemaProvider(provider)
   const notify = useNotification()
   const createVenueProvider = async (
     payload?: PostVenueProviderBody
@@ -45,22 +43,24 @@ export const VenueProviderForm = ({
     }
   }
 
-  return displayAllocineProviderForm ? (
-    <AllocineProviderForm
-      isCreatedEntity
-      providerId={Number(provider.id)}
-      saveVenueProvider={createVenueProvider}
-      venueId={venue.id}
-      offererId={venue.managingOfferer.id}
-    />
-  ) : displayCDSProviderForm ? (
-    <CinemaProviderForm
-      isCreatedEntity
-      providerId={Number(provider.id)}
-      saveVenueProvider={createVenueProvider}
-      venueId={venue.id}
-      offererId={venue.managingOfferer.id}
-    />
+  const shouldDisplayCinemaDrawer =
+    isAllocineProvider(provider) || isCinemaProvider(provider)
+
+  return shouldDisplayCinemaDrawer ? (
+    <DialogBuilder
+      variant="drawer"
+      title="Modifier les paramètres de vos offres"
+      defaultOpen={shouldDisplayCinemaDrawer}
+    >
+      <GenericCinemaProviderForm
+        isCreatedEntity
+        showAdvancedFields={isAllocineProvider(provider)}
+        providerId={Number(provider.id)}
+        saveVenueProvider={createVenueProvider}
+        venueId={venue.id}
+        offererId={venue.managingOfferer.id}
+      />
+    </DialogBuilder>
   ) : (
     <StocksProviderForm
       providerId={Number(provider.id)}

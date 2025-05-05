@@ -94,15 +94,9 @@ describe('AddVenueProviderButton', () => {
     expect(options.length).toBe(5)
 
     const providerSelect = screen.getByTestId('provider-select')
-    await userEvent.selectOptions(providerSelect, 'Allociné')
-    expect(screen.getByTestId('allocine-provider-form')).toBeInTheDocument()
 
     await userEvent.selectOptions(providerSelect, 'Ticket Buster')
     expect(screen.getByTestId('stocks-provider-form')).toBeInTheDocument()
-
-    await userEvent.selectOptions(providerSelect, 'Ciné Office')
-    expect(screen.getByTestId('cinema-provider-form')).toBeInTheDocument()
-    expect(screen.getByTestId('cinema-provider-form')).toBeInTheDocument()
 
     await userEvent.selectOptions(providerSelect, 'Ticket Ultra Mega Buster')
     expect(screen.getByTestId('stocks-provider-form')).toBeInTheDocument()
