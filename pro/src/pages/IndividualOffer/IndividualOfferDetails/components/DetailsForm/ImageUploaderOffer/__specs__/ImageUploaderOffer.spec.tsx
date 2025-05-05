@@ -41,7 +41,7 @@ describe('ImageUploaderOffer', () => {
     )
   })
   it('should render when an image is given', async () => {
-    props.imageOffer = {
+    props.displayedImage = {
       originalUrl: 'https://test.url',
       url: 'https://test.url',
       credit: 'John Do',
@@ -54,7 +54,7 @@ describe('ImageUploaderOffer', () => {
       })
     ).toBeInTheDocument()
     expect(imageUploaderOfferUtils.buildInitialValues).toHaveBeenCalledWith(
-      props.imageOffer
+      props.displayedImage
     )
   })
 })

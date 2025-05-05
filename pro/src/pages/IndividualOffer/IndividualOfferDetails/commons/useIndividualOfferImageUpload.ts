@@ -1,146 +1,96 @@
 import { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
-import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { useNotification } from 'commons/hooks/useNotification'
-import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
-const imageFileToDataUrl = (image: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.addEventListener(
-      'load',
-      () => {
-        resolve(reader.result as string)
-      },
-      false
-    )
-    reader.addEventListener(
-      'error',
-      () => reject(new Error('Unable to read file', { cause: reader.error })),
-      false
-    )
-    reader.readAsDataURL(image)
-  })
+type IndividualImageOfferContextValues = {
+  displayedImage?: IndividualOfferImage | OnImageUploadArgs
+  hasUpsertedImage: boolean
+  onImageUpload: (args: OnImageUploadArgs) => void
+  onImageDelete: () => void
+  handleEanImage: (imageUrl?: string) => void
+  handleImageOnSubmit: (offerId: number) => Promise<void>
 }
 
-export const useIndividualOfferImageUpload = () => {
-  const notify = useNotification()
-  const { offer } = useIndividualOfferContext()
-
-  const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
-    OnImageUploadArgs | undefined
-  >(undefined)
+export const useIndividualOfferImageUpload = (
+  initialImageOffer?: IndividualOfferImage
+): IndividualImageOfferContextValues => {
+  const [hasUpsertedImage, setHasUpsertedImage] = useState(false)
   const [imageOffer, setImageOffer] = useState<
     IndividualOfferImage | undefined
-  >(offer ? getIndividualOfferImage(offer) : undefined)
+  >(initialImageOffer)
+  const [imageToUpsert, setImageToUpsert] = useState<
+    OnImageUploadArgs | undefined
+  >(undefined)
+  const displayedImage = hasUpsertedImage ? imageToUpsert : imageOffer
+
+  const handleEanImage = useCallback((imageUrl?: string) => {
+    if (imageUrl) {
+      // There is nothing to upload, since the same image
+      // will be used by offer based on a shared EAN.
+      // We still need to set the image offer to be able to
+      // display it as preview.
+      setImageOffer({
+        originalUrl: imageUrl,
+        url: imageUrl,
+        // Credit isn't defined in Product - images property,
+        // is not needed for the preview anyway.
+        credit: null,
+      })
+    } else {
+      setImageOffer(undefined)
+    }
+  }, [])
 
   const handleImageOnSubmit = useCallback(
-    async (
-      imageOfferId: number,
-      imageEditionCreationArgs?: OnImageUploadArgs
-    ) => {
-      // Param is passed through state when the offer is not created yet and through param
-      // in edition, which is not ideal. We should only have one flow here
-      const creationArgs = imageOfferCreationArgs ?? imageEditionCreationArgs
-      if (creationArgs === undefined) {
-        return
+    async (offerId: number) => {
+      const shouldUploadThumbnail = hasUpsertedImage && !!imageToUpsert
+      const shouldDeleteThumbnail = hasUpsertedImage && !imageToUpsert
+
+      if (shouldUploadThumbnail) {
+        const { imageFile: thumb, credit, cropParams } = imageToUpsert
+        const {
+          height: croppingRectHeight,
+          width: croppingRectWidth,
+          x: croppingRectX,
+          y: croppingRectY,
+        } = cropParams ?? {}
+
+        const thumbnail = {
+          thumb,
+          credit: credit ?? '',
+          croppingRectHeight,
+          croppingRectWidth,
+          croppingRectX,
+          croppingRectY,
+          offerId,
+        }
+
+        await api.createThumbnail(thumbnail)
+      } else if (shouldDeleteThumbnail) {
+        await api.deleteThumbnail(offerId)
       }
-      const { imageFile, credit, cropParams } = creationArgs
-
-      const response = await api.createThumbnail({
-        // TODO This TS error will be removed when spectree is updated to the latest
-        // version (dependant on Flask update) which will include files in the generated schema
-        // @ts-expect-error
-        thumb: imageFile,
-        credit: credit ?? '',
-        croppingRectHeight: cropParams?.height,
-        croppingRectWidth: cropParams?.width,
-        croppingRectX: cropParams?.x,
-        croppingRectY: cropParams?.y,
-        offerId: imageOfferId,
-      })
-
-      setImageOffer({
-        originalUrl: response.url,
-        url: response.url,
-        credit: response.credit ?? null,
-      })
-
-      return Promise.resolve()
     },
-    [imageOfferCreationArgs]
+    [hasUpsertedImage, imageToUpsert]
   )
 
-  const onImageUpload = async ({
-    imageFile,
-    imageCroppedDataUrl,
-    credit,
-    cropParams,
-  }: OnImageUploadArgs) => {
-    const creationArgs = {
-      imageFile,
-      credit,
-      cropParams,
-    }
-    if (offer === null) {
-      setImageOfferCreationArgs(creationArgs)
-      try {
-        const imageUrl = await imageFileToDataUrl(imageFile)
-        setImageOffer({
-          originalUrl: imageUrl,
-          url: imageCroppedDataUrl || imageUrl,
-          credit,
-          cropParams: cropParams
-            ? {
-                xCropPercent: cropParams.x,
-                yCropPercent: cropParams.y,
-                heightCropPercent: cropParams.height,
-                widthCropPercent: cropParams.width,
-              }
-            : undefined,
-        })
-      } catch {
-        notify.error(
-          'Une erreur est survenue lors du téléchargement de l’image.'
-        )
-      }
-    } else {
-      try {
-        await handleImageOnSubmit(offer.id, creationArgs)
-      } catch {
-        notify.error(SENT_DATA_ERROR_MESSAGE)
-      }
-    }
-  }
+  const onImageUpload = useCallback((image: OnImageUploadArgs) => {
+    setHasUpsertedImage(true)
+    setImageToUpsert(image)
+  }, [])
 
-  const onImageDelete = async () => {
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!offer) {
-      /* istanbul ignore next: DEBT, TO FIX */
-      setImageOffer(undefined)
-      /* istanbul ignore next: DEBT, TO FIX */
-      setImageOfferCreationArgs(undefined)
-    } else {
-      try {
-        await api.deleteThumbnail(offer.id)
-        setImageOffer(undefined)
-      } catch {
-        notify.error(
-          'Une erreur est survenue lors de la suppression de votre image. Merci de réessayer plus tard.'
-        )
-      }
-    }
-  }
+  const onImageDelete = useCallback(() => {
+    setHasUpsertedImage(true)
+    setImageToUpsert(undefined)
+  }, [])
 
   return {
-    imageOffer,
-    setImageOffer,
+    displayedImage,
+    hasUpsertedImage,
     onImageUpload,
     onImageDelete,
+    handleEanImage,
     handleImageOnSubmit,
   }
 }
