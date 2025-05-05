@@ -19,7 +19,7 @@ const mockAdressData = [
     longitude: -11.1,
     label: '12 rue des lilas 69002 Lyon',
     postalCode: '69002',
-    inseeCode: '69002',
+    inseeCode: '69382',
   },
   {
     address: '12 rue des tournesols',
@@ -29,7 +29,7 @@ const mockAdressData = [
     longitude: -2.22,
     label: '12 rue des tournesols 75003 Paris',
     postalCode: '75003',
-    inseeCode: '75003',
+    inseeCode: '75103',
   },
 ]
 
