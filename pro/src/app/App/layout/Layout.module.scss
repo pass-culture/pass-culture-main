@@ -101,36 +101,58 @@ $connect-as-header-height: rem.torem(52px);
           flex-direction: column;
           width: 80%;
           gap: 5.05vh;
+          color: var(--color-text-inverted);
 
-          &-1 {
+          &-text-1 {
+            @include fonts.title4;
+
             width: rem.torem(223px);
             align-self: flex-start;
+            position: relative;
           }
 
-          &-2 {
+          &-text-2 {
+            @include fonts.title4;
+
             width: rem.torem(265px);
             align-self: flex-end;
+            position: relative;
           }
 
-          &-3 {
+          &-text-3 {
+            @include fonts.title4;
+
             width: rem.torem(240px);
             align-self: flex-start;
+            position: relative;
           }
 
           @media (max-height: rem.torem(740px)) {
             margin: 4vh auto;
           }
+
+          .citation-icon-1 {
+            position: absolute;
+            bottom: rem.torem(-1rem);
+            right: rem.torem(1rem);
+          }
+
+          .citation-icon-2 {
+            position: absolute;
+            bottom: rem.torem(-1rem);
+            left: rem.torem(-2rem);
+            transform: rotate(90deg);
+          }
+
+          .citation-icon-3 {
+            position: absolute;
+            top: rem.torem(-1rem);
+            right: rem.torem(-2rem);
+            transform: rotate(-90deg);
+          }
         }
 
         .image-laptop {
-          &-blob {
-            position: absolute;
-            bottom: rem.torem(-100px);
-            left: rem.torem(-200px);
-            width: 100%;
-            max-width: rem.torem(800px);
-          }
-
           &-macstudio {
             width: 100%;
             bottom: rem.torem(-140px);
