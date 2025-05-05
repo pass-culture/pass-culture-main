@@ -430,11 +430,6 @@ class ApiAdresseBackend(BaseBackend):
         # https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.1
         coordinates = data["geometry"]["coordinates"]
         properties = data["properties"]
-        street = None
-        if properties["type"] != "municipality":
-            # If the API return a complete address, not only a municipality centroid
-            # We want the full format of the street (with the housenumber and so on)
-            street = properties["name"]
 
         return AddressInfo(
             id=properties["id"],
@@ -445,7 +440,7 @@ class ApiAdresseBackend(BaseBackend):
             postcode=properties.get("postcode") or self._get_missing_postal_code(properties["citycode"]),
             citycode=properties["citycode"],
             city=properties["city"],
-            street=street,
+            street=properties["name"],
         )
 
     def search_address(self, address: str, limit: int) -> list[AddressInfo]:
