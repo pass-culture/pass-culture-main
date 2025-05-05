@@ -73,6 +73,7 @@ class Returns200Test:
         dmsapplication = educational_factories.CollectiveDmsApplicationFactory(
             venue=venue,
         )
+        offers_factories.EventStockFactory(offer__venue=venue)
         expected_serialized_venue = {
             "street": venue.street,
             "banId": venue.banId,
@@ -123,6 +124,7 @@ class Returns200Test:
             },
             "externalAccessibilityId": "accessibility-slug",
             "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
+            "hasActiveIndividualOffer": True,
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
@@ -217,7 +219,7 @@ class Returns200Test:
                 "isManualEdition": False,
             },
             "isVisibleInApp": True,
-            "hasOffers": False,
+            "hasOffers": True,
             "isOpenToPublic": True,
         }
         db.session.expire_all()
@@ -232,6 +234,7 @@ class Returns200Test:
         num_queries += 1  # select opening_hours
         num_queries += 1  # select venue_bank_account_link
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -259,6 +262,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -294,6 +298,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -326,6 +331,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -351,6 +357,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -379,6 +386,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -421,6 +429,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -454,6 +463,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -491,6 +501,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -520,6 +531,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -551,6 +563,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -581,6 +594,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -608,6 +622,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -636,6 +651,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -662,6 +678,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -717,6 +734,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -765,6 +783,7 @@ class Returns200Test:
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
+        num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
