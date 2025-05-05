@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { isError } from 'apiClient/helpers'
+import { getHumanReadableApiError } from 'apiClient/helpers'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -117,9 +117,10 @@ export const Offerers = (): JSX.Element => {
       navigate('/parcours-inscription/structure/rattachement/confirmation')
     } catch (e) {
       notify.error(
-        isError(e)
-          ? e.message
-          : 'Impossible de lier votre compte à cette structure.'
+        getHumanReadableApiError(
+          e,
+          'Impossible de lier votre compte à cette structure.'
+        )
       )
     }
   }
