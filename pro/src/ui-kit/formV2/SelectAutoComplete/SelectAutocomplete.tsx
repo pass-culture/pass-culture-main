@@ -265,9 +265,8 @@ export const SelectAutocomplete = forwardRef(
 
     // When the inputRef's value changes externally, associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
     useEffect(() => {
-      setSearchField(
-        optionsLabelById.current?.get(inputRef.current?.value ?? '') ?? ''
-      )
+      const labelValue = inputRef.current?.value ?? ''
+      setSearchField(optionsLabelById.current?.get(labelValue) ?? labelValue)
       setField(inputRef.current?.value ?? '') // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
     }, [inputRef])
 
