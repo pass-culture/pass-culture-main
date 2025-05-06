@@ -58,7 +58,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
 def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.GetVenueListResponseModel:
     if current_user.has_admin_role and not query.offerer_id:
         return venues_serialize.GetVenueListResponseModel(venues=[])
-
+    print(settings.IS_E2E_TESTS)
     venue_list = offerers_repository.get_filtered_venues(
         pro_user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
