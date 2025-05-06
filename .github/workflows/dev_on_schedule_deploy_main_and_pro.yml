@@ -184,7 +184,7 @@ jobs:
   slack-notify:
     name: "Post failure notification on #alertes-deploiement"
     needs: deploy-to-testing
-    if: ${{ needs.deploy-to-testing.result == 'failure' }}
+    if: ${{ always() && needs.deploy-to-testing.result == 'failure' }}
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
