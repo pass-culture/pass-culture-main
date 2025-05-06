@@ -120,9 +120,6 @@ class SharedLoginUserResponseModel(BaseModel):
     email: str
     firstName: str | None
     hasSeenProTutorials: bool | None
-    # FIXME (mageoffray, 2022-04-04): Optional can be removed after
-    # post-deploy migrations have been done
-    hasSeenProRgs: bool | None
     hasUserOfferer: bool | None
     id: int
     isAdmin: bool
@@ -162,7 +159,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     externalIds: dict | None
     firstName: str | None
     hasSeenProTutorials: bool | None
-    hasSeenProRgs: bool | None
     hasUserOfferer: bool | None
     id: int
     idPieceNumber: str | None

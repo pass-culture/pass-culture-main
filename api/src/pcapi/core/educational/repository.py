@@ -781,7 +781,6 @@ def find_collective_bookings_by_pro_user(
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> tuple[int, list[educational_models.CollectiveBooking]]:
-    # FIXME (gvanneste, 2022-04-01): Ne calculer le total que la première fois. À faire quand on branchera le front
     total_collective_bookings = (
         _get_filtered_collective_bookings_query(
             pro_user=user,

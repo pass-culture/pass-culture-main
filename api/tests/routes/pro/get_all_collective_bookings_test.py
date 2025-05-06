@@ -591,7 +591,6 @@ class Returns200Test:
             assert response.status_code == 200
 
         # Then
-        # FIXME (gvanneste) : voir pour pouvoir fixer la date limtie d'annulation qu'on souhaite (ici event - 1 jour)
         expected_bookings_recap = [
             {
                 "stock": {
