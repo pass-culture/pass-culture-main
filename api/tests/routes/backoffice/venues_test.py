@@ -1509,21 +1509,21 @@ class UpdateVenueTest(PostEndpointHelper):
         )
         original_offerer_address_id = venue.offererAddressId
         original_address_id = venue.offererAddress.addressId
+        original_street = venue.offererAddress.address.street
 
         data = self._get_current_data(venue)
         data["is_manual_address"] = "on"
         data["street"] = None
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-        assert response.status_code == 303
+        assert response.status_code == 400
 
         db.session.refresh(venue)
 
-        assert venue.offererAddressId != original_offerer_address_id
-        assert venue.offererAddress.addressId != original_address_id
-        assert venue.offererAddress.address.isManualEdition is True
-        assert venue.offererAddress.address.street is None
-        assert venue.offererAddress.address.banId is None
+        assert venue.offererAddressId == original_offerer_address_id
+        assert venue.offererAddress.addressId == original_address_id
+        assert venue.offererAddress.address.isManualEdition is False
+        assert venue.offererAddress.address.street == original_street
 
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
