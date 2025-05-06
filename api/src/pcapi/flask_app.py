@@ -135,7 +135,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "method": request.method,
         "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
         "path": request.path,
-        "queryParams": request.query_string.decode(request.url_charset, errors="backslashreplace"),
+        "queryParams": request.query_string,
         "size": response.headers.get("Content-Length", type=int),
         "deviceId": request.headers.get("device-id"),
         "sourceIp": request.remote_addr,
@@ -201,7 +201,8 @@ if not settings.JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY not found in env")
 
 app.secret_key = settings.FLASK_SECRET
-app.json_encoder = EnumJSONEncoder
+app.json_provider_class = EnumJSONEncoder
+app.json = EnumJSONEncoder(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
