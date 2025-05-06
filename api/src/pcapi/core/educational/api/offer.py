@@ -197,14 +197,35 @@ class CollectiveOfferLocation:
 
 
 def get_location_from_offer_venue(
-    offer_venue: educational_models.OfferVenueDict, venue: offerers_models.Venue | None
+    offer_venue: educational_models.OfferVenueDict,
+    location_venue: offerers_models.Venue | None,
+    is_offer_located_at_venue: bool,
 ) -> CollectiveOfferLocation:
+    """
+    location_venue corresponds to offer_venue["venueId"]
+    is_offer_located_at_venue is True if it is the same venue as offer.venue
+
+    When is_offer_located_at_venue is False (offer located at a different venue), we get or create a dedicated OA
+    """
     match offer_venue["addressType"]:
         case educational_models.OfferAddressType.OFFERER_VENUE:
+            assert location_venue is not None
+            assert location_venue.offererAddress is not None
+
+            if is_offer_located_at_venue:
+                offerer_address = location_venue.offererAddress
+            else:
+                # offer is located at a different venue -> get or create a specific OA with same address and offerer as this venue
+                offerer_address = offerers_api.get_or_create_offerer_address(
+                    offerer_id=location_venue.managingOffererId,
+                    address_id=location_venue.offererAddress.addressId,
+                    label=location_venue.common_name,
+                )
+
             return CollectiveOfferLocation(
                 location_type=educational_models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
-                offerer_address=venue.offererAddress if venue else None,
+                offerer_address=offerer_address,
             )
 
         case educational_models.OfferAddressType.SCHOOL:
@@ -590,7 +611,11 @@ def create_collective_offer_public(
 
         location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, requested_id)
 
-    location = get_location_from_offer_venue(offer_venue=offer_venue, venue=location_venue)
+    location = get_location_from_offer_venue(
+        offer_venue=offer_venue,
+        location_venue=location_venue,
+        is_offer_located_at_venue=offer_venue["venueId"] == venue.id,
+    )
 
     collective_offer = educational_models.CollectiveOffer(
         venue=venue,
@@ -712,7 +737,11 @@ def edit_collective_offer_public(
         if "otherAddress" in offer_venue:
             offer_venue["otherAddress"] = offer_venue["otherAddress"] or ""
 
-        location = get_location_from_offer_venue(offer_venue=offer_venue, venue=location_venue)
+        location = get_location_from_offer_venue(
+            offer_venue=offer_venue,
+            location_venue=location_venue,
+            is_offer_located_at_venue=offer_venue["venueId"] == offer.venue.id,
+        )
 
         new_values["locationType"] = location.location_type
         new_values["locationComment"] = location.location_comment
