@@ -12,7 +12,7 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'pages/IndividualOffer/commons/filterCategories'
-import { Tabs } from 'ui-kit/Tabs/Tabs'
+import { NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferNavigation.module.scss'
@@ -162,11 +162,12 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
         />
       ) : (
         <div className={styles['tabs']}>
-          <Tabs
-            tabs={stepList.map(({ id, label, url }) => ({
+          <NavLinkItems
+            navLabel="Sous menu - offre individuelle"
+            links={stepList.map(({ id, label, url }) => ({
               key: id,
               label,
-              url,
+              url: url || '#',
             }))}
             selectedKey={activeStep}
           />
