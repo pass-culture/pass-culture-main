@@ -196,6 +196,10 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.collectiveStock.price == decimal.Decimal(payload["totalPrice"])
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
+        json = response.json
+        assert json["name"] == "Some offer"
+        assert "location" in json
+
     @time_machine.travel(time_travel_str)
     def test_post_offers_without_end_datetime(self, public_client, payload):
         del payload["endDatetime"]

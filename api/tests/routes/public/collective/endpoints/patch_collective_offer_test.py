@@ -1113,6 +1113,37 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "global": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]
         }
 
+    def test_patch_offer_with_school_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        collective_offer = educational_factories.CollectiveOfferOnSchoolLocationFactory(
+            venue=venue, provider=venue_provider.provider
+        )
+
+        payload = {
+            "name": "New name",
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{collective_offer.id}", json=payload
+            )
+        assert response.status_code == 200
+
+        assert "location" in response.json
+
+        assert response.json["location"] == {
+            "type": "SCHOOL",
+            "addressLabel": None,
+            "addressId": None,
+            "comment": None,
+            "isVenueAddress": False,
+        }
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.name == "New name"
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):

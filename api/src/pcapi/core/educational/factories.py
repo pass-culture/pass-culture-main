@@ -65,7 +65,7 @@ class CollectiveOfferFactory(BaseFactory):
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmails = ["collectiveofferfactory+booking@example.com", "collectiveofferfactory+booking@example2.com"]
     contactPhone = "+33199006328"
-    offerVenue = {
+    offerVenue: factory.declarations.BaseDeclaration | dict = {
         "addressType": "other",
         "otherAddress": "1 rue des polissons, Paris 75017",
         "venueId": None,
@@ -551,6 +551,56 @@ class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
         ReimbursedCollectiveBookingFactory.create(collectiveStock=stock)
+
+
+class CollectiveOfferOnSchoolLocationFactory(PublishedCollectiveOfferFactory):
+    locationType = models.CollectiveLocationType.SCHOOL
+    interventionArea = ["33", "75", "93"]
+    offerVenue = {
+        "addressType": models.OfferAddressType.SCHOOL.value,
+        "otherAddress": "",
+        "venueId": None,
+    }
+
+
+class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFactory):
+    locationType = models.CollectiveLocationType.ADDRESS
+    offererAddress = factory.SelfAttribute("venue.offererAddress")
+
+    offerVenue = factory.LazyAttribute(
+        lambda o: {
+            "addressType": models.OfferAddressType.OFFERER_VENUE.value,
+            "otherAddress": "",
+            "venueId": o.venue.id,
+        }
+    )
+
+
+class CollectiveOfferOnOtherAddressLocationFactory(PublishedCollectiveOfferFactory):
+    locationType = models.CollectiveLocationType.ADDRESS
+    offererAddress = factory.SubFactory(
+        offerers_factories.OffererAddressFactory, offerer=factory.SelfAttribute("venue.managingOfferer")
+    )
+
+    offerVenue = factory.LazyAttribute(
+        lambda o: {
+            "addressType": models.OfferAddressType.OTHER.value,
+            "otherAddress": o.offererAddress.address.fullAddress,
+            "venueId": None,
+        }
+    )
+
+
+class CollectiveOfferOnToBeDefinedLocationFactory(PublishedCollectiveOfferFactory):
+    locationType = models.CollectiveLocationType.TO_BE_DEFINED
+    locationComment = "In space"
+    interventionArea = ["33", "75", "93"]
+
+    offerVenue = {
+        "addressType": models.OfferAddressType.OTHER.value,
+        "otherAddress": "In space",
+        "venueId": None,
+    }
 
 
 def create_collective_offer_by_status(

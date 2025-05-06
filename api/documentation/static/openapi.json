@@ -1708,6 +1708,62 @@
                 ],
                 "title": "CollectiveBookingStatus"
             },
+            "CollectiveLocationType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "SCHOOL",
+                    "ADDRESS",
+                    "TO_BE_DEFINED"
+                ],
+                "title": "CollectiveLocationType"
+            },
+            "CollectiveOfferLocationModel": {
+                "additionalProperties": false,
+                "properties": {
+                    "addressId": {
+                        "description": "Address id in the pass Culture DB (only if type=ADDRESS)",
+                        "example": 1,
+                        "nullable": true,
+                        "title": "Addressid",
+                        "type": "integer"
+                    },
+                    "addressLabel": {
+                        "description": "Adresse label (only if type=ADDRESS)",
+                        "example": "Z\u00e9nith Paris",
+                        "nullable": true,
+                        "title": "Addresslabel",
+                        "type": "string"
+                    },
+                    "comment": {
+                        "description": "Comment (only if type=TO_BE_DEFINED)",
+                        "example": "Lieu \u00e0 d\u00e9finir avec l'organisateur",
+                        "nullable": true,
+                        "title": "Comment",
+                        "type": "string"
+                    },
+                    "isVenueAddress": {
+                        "description": "Whether the offer is located at the address of the venue",
+                        "example": true,
+                        "title": "Isvenueaddress",
+                        "type": "boolean"
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveLocationType"
+                            }
+                        ],
+                        "description": "Type of location: SCHOOL, TO_BE_DEFINED, or ADDRESS",
+                        "example": "SCHOOL"
+                    }
+                },
+                "required": [
+                    "type",
+                    "isVenueAddress"
+                ],
+                "title": "CollectiveOfferLocationModel",
+                "type": "object"
+            },
             "CollectiveOfferStatus": {
                 "description": "An enumeration.",
                 "enum": [
@@ -4302,6 +4358,15 @@
                         "example": false,
                         "title": "Issoldout",
                         "type": "boolean"
+                    },
+                    "location": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationModel"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "CollectiveOfferLocationModel"
                     },
                     "mentalDisabilityCompliant": {
                         "description": "Is accessible for people with mental or cognitive disability",

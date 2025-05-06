@@ -15,6 +15,10 @@ title: Pass Culture API change logs
 
 ## May 2025
 
+- The response of the following endpoints now includes a new `location` field:
+  - [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
+  - [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
+  - [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
 - A new endpoint has been added to archive collective offers : [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers). See the following for details on the different collective offer statuses [**here**](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).
 
 ## February 2025
@@ -77,7 +81,7 @@ New endpoints allow you to specify that your offer is available at a location di
 ### EANs availability check
 - You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
 
-### Collective booking status (integration only) 
+### Collective booking status (integration only)
 It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](/rest-api#tag/Adage-Mock-(Collective-Bookings))
 
 :::warning

@@ -2,7 +2,9 @@ from operator import itemgetter
 
 import pytest
 
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.testing import assert_num_queries
@@ -51,6 +53,114 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             assert response.status_code == 200
 
         assert sort_response_offer_json(response.json) == expected_serialized_offer(offer)
+
+    def test_get_offer_on_school_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        offer = educational_factories.CollectiveOfferOnSchoolLocationFactory(
+            provider=venue_provider.provider,
+        )
+
+        offer_id = offer.id
+
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/v2/collective/offers/{offer_id}"
+            )
+            assert response.status_code == 200
+
+        assert "location" in response.json
+
+        assert response.json["location"] == {
+            "type": "SCHOOL",
+            "addressLabel": None,
+            "addressId": None,
+            "comment": None,
+            "isVenueAddress": False,
+        }
+
+    def test_get_offer_on_address_venue_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory(
+            provider=venue_provider.provider,
+            venue=venue,
+        )
+
+        offer_id = offer.id
+        oa = venue.offererAddress
+
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/v2/collective/offers/{offer_id}"
+            )
+            assert response.status_code == 200
+
+        assert response.json["location"] == {
+            "type": "ADDRESS",
+            "addressLabel": oa.label,
+            "addressId": oa.addressId,
+            "comment": None,
+            "isVenueAddress": True,
+        }
+
+    def test_get_offer_on_other_address_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
+            provider=venue_provider.provider,
+            venue=venue,
+            offererAddress=offerer_address,
+        )
+
+        offer_id = offer.id
+        oa = offerer_address
+        offer.offerVenue
+
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/v2/collective/offers/{offer_id}"
+            )
+            assert response.status_code == 200
+
+        assert response.json["location"] == {
+            "type": "ADDRESS",
+            "addressLabel": oa.label,
+            "addressId": oa.addressId,
+            "comment": None,
+            "isVenueAddress": False,
+        }
+
+    def test_get_offer_on_to_be_defined_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        offer = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory(
+            provider=venue_provider.provider,
+        )
+
+        offer_id = offer.id
+
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/v2/collective/offers/{offer_id}"
+            )
+            assert response.status_code == 200
+
+        assert response.json["location"] == {
+            "type": "TO_BE_DEFINED",
+            "comment": "In space",
+            "addressLabel": None,
+            "addressId": None,
+            "isVenueAddress": False,
+        }
 
     def test_offer_does_not_exists(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
@@ -175,4 +285,5 @@ def expected_serialized_offer(offer):
         "nationalProgram": {"id": offer.nationalProgram.id, "name": offer.nationalProgram.name},
         "bookings": bookings,
         "formats": [fmt.value for fmt in offer.formats],
+        "location": None,
     }
