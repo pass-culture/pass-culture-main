@@ -62,6 +62,3 @@ docs-build/
 
 allure-results/
 allure-report/
-
-# proxy environement management
-/proxy/build
