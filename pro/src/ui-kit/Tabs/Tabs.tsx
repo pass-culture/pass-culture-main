@@ -2,18 +2,13 @@ import * as TabsPrimitive from '@radix-ui/react-tabs'
 import cn from 'classnames'
 import { Link } from 'react-router'
 
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-
 import styles from './Tabs.module.scss'
 
-/**
- * Represents a single tab in the Tabs component.
- */
 export interface Tab {
   /**
-   * The label of the tab, which can be either a string or a React node.
+   * The label of the tab.
    */
-  label: string | React.ReactNode
+  label: React.ReactNode
   /**
    * The unique key identifying the tab.
    */
@@ -22,10 +17,6 @@ export interface Tab {
    * The URL for the tab, if applicable. Used for navigation.
    */
   url?: string
-  /**
-   * A flag to display a "new" tag next to the tab.
-   */
-  isNew?: boolean
 }
 
 /**
@@ -67,7 +58,6 @@ interface TabsProps {
  *     key: 'home',
  *     label: 'Home',
  *     url: '/home',
- *     isNew: true,
  *   }, {
  *     key: 'profile',
  *     label: 'Profile',
@@ -92,7 +82,7 @@ export const Tabs = ({
       value={selectedKey}
     >
       <TabsPrimitive.List className={styles['tabs']}>
-        {tabs.map(({ key, label, url, isNew = false }) => (
+        {tabs.map(({ key, label, url }) => (
           <TabsPrimitive.Trigger
             className={cn(styles['tabs-tab'], {
               [styles['is-selected']]: selectedKey === key,
@@ -103,14 +93,6 @@ export const Tabs = ({
           >
             <Link to={url ?? '#'} className={styles['tabs-tab-link']}>
               <span className={styles['tabs-tab-label']}>{label}</span>
-              {isNew && (
-                <Tag
-                  className={styles['tabs-tab-new']}
-                  variant={TagVariant.BLUE}
-                >
-                  Nouveau
-                </Tag>
-              )}
             </Link>
           </TabsPrimitive.Trigger>
         ))}
