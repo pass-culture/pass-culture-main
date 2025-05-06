@@ -1,7 +1,9 @@
 import datetime
 import logging
+import typing
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
@@ -133,8 +135,8 @@ def _get_existing_offers(
         db.session.query(
             sa.func.max(offers_models.Offer.id).label("max_id"),
         )
-        .filter(offers_models.Offer.isEvent == False)
-        .filter(offers_models.Offer.venue == venue)
+        .filter(typing.cast(sa_orm.Mapped[bool], offers_models.Offer.isEvent) == False)
+        .filter(offers_models.Offer.venueId == venue.id)
         .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
         .group_by(
             offers_models.Offer.ean,
@@ -229,6 +231,9 @@ def _create_or_update_ean_offers(
                 )
             for product in existing_products:
                 try:
+                    if offerer_address is None:
+                        # FIXME(PC-37261): change workflow to make this case impossible.
+                        raise Exception("offerer_address should not be None here")
                     stock_data = serialized_products_stocks[product.ean]
                     created_offer = _create_offer_from_product(
                         venue,

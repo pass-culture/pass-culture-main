@@ -55,6 +55,7 @@ def _format_date(date_time, tz):
 
 class Returns200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select collective_offer ids
     num_queries += 1  # select collective_offer
     num_queries_with_bookings = num_queries + 1  # selectinload collective_booking
 
@@ -188,7 +189,8 @@ class Returns200Test:
         user = ProFactory()
 
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.num_queries):
+        # no request to get collective offers as there are no ids
+        with assert_num_queries(self.num_queries - 1):
             response = client.get("/collective/offers/excel")
             assert response.status_code == 200
 

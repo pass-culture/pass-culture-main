@@ -6,17 +6,18 @@ import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
-class LatestDmsImport(PcObject, Base, Model):
+class LatestDmsImport(PcObject, Model):
     __tablename__ = "latest_dms_import"
-    procedureId = sa.Column(sa.Integer, nullable=False)
-    latestImportDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
-    isProcessing = sa.Column(sa.Boolean, nullable=False)
-    processedApplications: list[int] = sa.Column(postgresql.ARRAY(sa.Integer), nullable=False, default=[])
+    procedureId = sa.orm.mapped_column(sa.Integer, nullable=False)
+    latestImportDatetime: sa.orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
+    isProcessing = sa.orm.mapped_column(sa.Boolean, nullable=False)
+    processedApplications: sa.orm.Mapped[list[int]] = sa.orm.mapped_column(
+        postgresql.ARRAY(sa.Integer), nullable=False, default=[]
+    )
 
 
 def parse_dms_datetime(value: datetime.datetime | None) -> datetime.datetime | None:

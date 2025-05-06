@@ -158,7 +158,7 @@ class GetProUserTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
+        expected_url = url_for("backoffice_web.pro.search_pro")
         assert response.location == expected_url
 
     def test_get_pro_user_with_null_names(self, authenticated_client, db_session):
@@ -347,7 +347,7 @@ class CommentProUserTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.pro_user.get", user_id=pro_user.id, _external=True)
+        expected_url = url_for("backoffice_web.pro_user.get", user_id=pro_user.id)
         assert response.location == expected_url
 
         assert len(pro_user.action_history) == 1
@@ -496,7 +496,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro.search_pro", _external=True)
+        assert response.location == url_for("backoffice_web.pro.search_pro")
 
         mails_api.delete_contact.assert_called_once_with(user_email, True)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
@@ -524,7 +524,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro.search_pro", _external=True)
+        assert response.location == url_for("backoffice_web.pro.search_pro")
 
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
@@ -552,7 +552,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data) == "L'email saisi ne correspond pas à celui du compte"
@@ -585,7 +585,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id)
         redirected_response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(redirected_response.data) == "Le compte est rattaché à une entité juridique"
 

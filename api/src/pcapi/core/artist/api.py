@@ -11,7 +11,7 @@ from pcapi.models import db
 def get_artist_image_url(artist: Artist) -> str | None:
     image_url = artist.image
     if not image_url:
-        most_popular_product_mediation: ProductMediation = (
+        most_popular_product_mediation: ProductMediation | None = (
             db.session.query(ProductMediation)
             .join(Product)
             .filter(

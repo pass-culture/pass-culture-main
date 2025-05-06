@@ -4,6 +4,7 @@ import datetime
 import decimal
 import enum
 import io
+import typing
 
 import sqlalchemy.orm as sa_orm
 import xlsxwriter
@@ -150,17 +151,31 @@ def _get_collective_offer_export_data(
 
 def _get_query_with_loading_for_export(
     collective_offers_query: "sa_orm.Query[models.CollectiveOffer]",
-) -> "sa_orm.Query[models.CollectiveOffer]":
-    return collective_offers_query.options(
-        sa_orm.joinedload(models.CollectiveOffer.venue)
-        .joinedload(offerers_models.Venue.offererAddress)
-        .joinedload(offerers_models.OffererAddress.address),
-        sa_orm.joinedload(models.CollectiveOffer.collectiveStock)
-        .selectinload(models.CollectiveStock.collectiveBookings)
-        .joinedload(models.CollectiveBooking.educationalRedactor),
-        sa_orm.joinedload(models.CollectiveOffer.institution),
-        sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-    )
+) -> "typing.Iterator[models.CollectiveOffer]":
+    CHUNK_SIZE = 1000
+    all_ids = [c.id for c in collective_offers_query.with_entities(models.CollectiveOffer.id).all()]
+
+    start = 0
+    while ids := all_ids[start : start + CHUNK_SIZE]:
+        start += CHUNK_SIZE
+        yield from (
+            collective_offers_query.filter(
+                models.CollectiveOffer.id.in_(ids),
+            )
+            .options(
+                sa_orm.joinedload(models.CollectiveOffer.venue)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address),
+                sa_orm.joinedload(models.CollectiveOffer.collectiveStock)
+                .selectinload(models.CollectiveStock.collectiveBookings)
+                .joinedload(models.CollectiveBooking.educationalRedactor),
+                sa_orm.joinedload(models.CollectiveOffer.institution),
+                sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
+            )
+            .all()
+        )
 
 
 def generate_csv_for_collective_offers(
@@ -176,9 +191,9 @@ def generate_csv_for_collective_offers(
     )
     writer.writeheader()
 
-    collective_offers_query = _get_query_with_loading_for_export(collective_offers_query)
+    collective_offers = _get_query_with_loading_for_export(collective_offers_query)
 
-    for collective_offer in collective_offers_query.yield_per(1000):
+    for collective_offer in collective_offers:
         offer_data = _get_collective_offer_export_data(collective_offer)
 
         writer.writerow({header.value: getattr(offer_data, header.name) for header in CollectiveOfferExportHeader})
@@ -209,10 +224,10 @@ def generate_excel_for_collective_offers(
     price_index = COLLECTIVE_OFFERS_EXPORT_HEADER.index(CollectiveOfferExportHeader.price.value)
     worksheet.set_column(first_col=price_index, last_col=price_index, cell_format=currency_format)
 
-    collective_offers_query = _get_query_with_loading_for_export(collective_offers_query)
+    collective_offers = _get_query_with_loading_for_export(collective_offers_query)
 
     row = 1
-    for collective_offer in collective_offers_query.yield_per(1000):
+    for collective_offer in collective_offers:
         offer_data = _get_collective_offer_export_data(collective_offer)
 
         worksheet.write_row(

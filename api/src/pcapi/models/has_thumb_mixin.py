@@ -1,7 +1,7 @@
 import sqlalchemy.orm as sa_orm
-from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy.orm import declarative_mixin
+from sqlalchemy.orm import mapped_column
 
 from pcapi import settings
 from pcapi.utils.human_ids import humanize
@@ -14,7 +14,7 @@ class HasThumbMixin:
     # in its own functions.
     id: sa_orm.Mapped[int]
 
-    thumbCount: sa_orm.Mapped[int] = Column(Integer(), nullable=False, default=0)
+    thumbCount: sa_orm.Mapped[int] = mapped_column(Integer(), nullable=False, default=0)
 
     @property
     def thumb_path_component(self) -> str:

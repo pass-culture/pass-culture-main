@@ -15,4 +15,6 @@ def list_features() -> features_serialize.ListFeatureResponseModel:
     features = db.session.query(Feature).all()
     # Pydantic manages to convert a list of Feature to a list of FeatureResponseModel, with orm_mode=True
     # This apparently confuses mypy
-    return features_serialize.ListFeatureResponseModel(__root__=features)
+    return features_serialize.ListFeatureResponseModel(
+        __root__=[features_serialize.FeatureResponseModel.from_orm(f) for f in features]
+    )

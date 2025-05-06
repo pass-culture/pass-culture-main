@@ -1,4 +1,5 @@
 import datetime
+import typing
 from functools import partial
 
 import sqlalchemy as sa
@@ -78,7 +79,7 @@ def _get_account_update_requests_query() -> sa_orm.Query:
                 users_models.User.firstName,
                 users_models.User.lastName,
                 users_models.User.email,
-                users_models.User.phoneNumber,
+                typing.cast(sa_orm.QueryableAttribute[str], users_models.User.phoneNumber),
                 users_models.User.dateOfBirth,
                 users_models.User.validatedBirthDate,
                 users_models.User.departementCode,
@@ -117,8 +118,8 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
             pass  # term can't be a phone number
         else:
             term_filters.append(
-                sa.or_(  # type: ignore[type-var]
-                    users_models.User.phoneNumber == term_as_phone_number,
+                sa.or_(
+                    typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == term_as_phone_number,
                     users_models.UserAccountUpdateRequest.newPhoneNumber == term_as_phone_number,
                 )
             )
@@ -376,7 +377,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _render_account_update_requests()
 
-    update_request: users_models.UserAccountUpdateRequest = (
+    update_request: users_models.UserAccountUpdateRequest | None = (
         db.session.query(users_models.UserAccountUpdateRequest)
         .filter_by(dsApplicationId=ds_application_id)
         .populate_existing()
@@ -386,7 +387,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
     if not update_request:
         raise NotFound()
 
-    user: users_models.User = (
+    user: users_models.User | None = (
         db.session.query(users_models.User)
         .filter_by(id=update_request.userId)
         .populate_existing()
@@ -524,7 +525,7 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
-    update_request: users_models.UserAccountUpdateRequest = (
+    update_request: users_models.UserAccountUpdateRequest | None = (
         db.session.query(users_models.UserAccountUpdateRequest)
         .filter_by(dsApplicationId=ds_application_id)
         .populate_existing()
@@ -595,7 +596,7 @@ def identity_theft(ds_application_id: int) -> utils.BackofficeResponse:
     if not current_user.backoffice_profile.dsInstructorId:
         raise Forbidden()
 
-    update_request: users_models.UserAccountUpdateRequest = (
+    update_request: users_models.UserAccountUpdateRequest | None = (
         db.session.query(users_models.UserAccountUpdateRequest)
         .filter_by(dsApplicationId=ds_application_id)
         .populate_existing()

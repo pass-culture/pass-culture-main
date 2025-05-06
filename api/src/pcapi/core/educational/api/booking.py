@@ -472,7 +472,7 @@ def update_collective_bookings_for_new_institution(
     offers = offers.join(educational_models.CollectiveStock)
     offers = offers.join(educational_models.CollectiveBooking)
     offers = offers.filter(educational_models.CollectiveBooking.id.in_(booking_ids))
-    offers = offers.filter(educational_models.CollectiveBooking.educationalInstitution == institution_source)
+    offers = offers.filter(educational_models.CollectiveBooking.educationalInstitutionId == institution_source.id)
     offer_ids = offers.with_entities(educational_models.CollectiveOffer.id)
 
     offers = db.session.query(educational_models.CollectiveOffer)

@@ -256,7 +256,7 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
     deposits = (
         db.session.query(models.Deposit)
         .filter(
-            models.Deposit.user == user,
+            models.Deposit.userId == user.id,
             models.Deposit.expirationDate > datetime.datetime.utcnow(),
         )
         .with_for_update()
