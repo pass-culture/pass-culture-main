@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 )
 @atomic()
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
+    print("run CI")
     paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
