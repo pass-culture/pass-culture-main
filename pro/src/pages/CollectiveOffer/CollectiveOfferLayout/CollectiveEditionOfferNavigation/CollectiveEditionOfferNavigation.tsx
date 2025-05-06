@@ -38,7 +38,7 @@ import fullShowIcon from 'icons/full-show.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
+import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 
 import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 
@@ -132,7 +132,7 @@ export const CollectiveEditionOfferNavigation = ({
       CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
     )
 
-  const tabs: Tab[] = [
+  const tabs: NavLinkItem[] = [
     {
       key: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',
@@ -221,9 +221,10 @@ export const CollectiveEditionOfferNavigation = ({
         )}
       </div>
       {!isTemplate && canEditOffer && (
-        <Tabs
-          tabs={tabs}
+        <NavLinkItems
+          links={tabs}
           selectedKey={activeStep}
+          navLabel="Sous menu - offre collective"
           className={cn(styles['tabs'], {
             [styles['tabs-active']]: [
               CollectiveOfferStep.DETAILS,

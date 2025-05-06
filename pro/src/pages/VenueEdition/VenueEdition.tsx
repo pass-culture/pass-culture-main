@@ -18,8 +18,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
 import { getPathToNavigateTo } from './context'
 import styles from './VenueEdition.module.scss'
@@ -118,7 +118,7 @@ export const VenueEdition = (): JSX.Element | null => {
     )
   }
 
-  const tabs: Tab[] = [
+  const tabs: NavLinkItem[] = [
     {
       key: 'individual',
       label: 'Pour le grand public',
@@ -196,8 +196,9 @@ export const VenueEdition = (): JSX.Element | null => {
         />
 
         {!venue.isPermanent && (
-          <Tabs
-            tabs={tabs}
+          <NavLinkItems
+            links={tabs}
+            navLabel={`Sous menu - ${titleText}`}
             selectedKey={context === 'collective' ? 'collective' : 'individual'}
             className={styles['tabs']}
           />

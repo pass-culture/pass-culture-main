@@ -2,48 +2,27 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
+@use "styles/mixins/_a11y.scss" as a11y;
 
-.tabs {
+.menu-list {
   display: flex;
   flex-direction: column;
   margin-bottom: rem.torem(32px);
   gap: rem.torem(16px);
 
-  &-tab {
+  &-item {
     @include fonts.body-accent;
 
     font-size: rem.torem(16px);
-    border-bottom: rem.torem(2px) solid var(--color-border-default);
+    border-bottom: rem.torem(2px) solid transparent;
     padding-bottom: rem.torem(8px);
 
-    &-label {
-      display: flex;
-
-      &:hover {
-        text-decoration: underline;
-      }
+    &:hover {
+      border-bottom: rem.torem(2px) solid var(--color-border-default);
     }
 
-    &-new {
-      margin-left: rem.torem(8px);
-    }
-
-    &-icon {
-      fill: var(--color-icon-default);
-      color: var(--color-icon-default);
-      width: rem.torem(20px);
-      height: auto;
-      margin-right: rem.torem(12px);
-    }
-
-    &-link {
-      display: flex;
-
-      &:focus-visible {
-        @include outline.focus-outline;
-
-        border-radius: rem.torem(4px);
-      }
+    &:focus-visible {
+      @include outline.focus-outline;
     }
 
     &.is-selected {
@@ -55,12 +34,12 @@
 }
 
 @media (min-width: size.$tablet) {
-  .tabs {
+  .menu-list {
     flex-direction: row;
     gap: rem.torem(32px);
-
-    &-tab {
-      border-color: transparent;
-    }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
