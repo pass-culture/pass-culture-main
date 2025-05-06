@@ -78,6 +78,7 @@ with app.app_context():
 if __name__ == "__main__":
     port = settings.FLASK_BACKOFFICE_PORT
     is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
+    use_reloader = not is_debugger_enabled or settings.IS_E2E_TESTS
     if is_debugger_enabled:
         import debugpy
 
@@ -92,4 +93,4 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=use_reloader)
