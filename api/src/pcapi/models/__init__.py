@@ -1,6 +1,5 @@
 import functools
 import json
-import typing
 
 import flask_sqlalchemy
 import pydantic.v1 as pydantic_v1
