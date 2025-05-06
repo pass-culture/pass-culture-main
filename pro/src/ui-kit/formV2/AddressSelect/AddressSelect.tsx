@@ -11,7 +11,7 @@ import {
 } from 'components/Address/constants'
 import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 
-type AddressSelectProps = {
+export type AddressSelectProps = {
   name: string
   label: string | JSX.Element
   onChange?(event: React.ChangeEvent<HTMLInputElement>): void
