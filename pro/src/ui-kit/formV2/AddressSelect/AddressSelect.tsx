@@ -14,9 +14,9 @@ import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutoc
 type AddressSelectProps = {
   name: string
   label: string | JSX.Element
-  onChange(event: React.ChangeEvent<HTMLInputElement>): void
-  onBlur(event: React.FocusEvent<HTMLInputElement>): void
-  onAddressChosen(data: AdresseData): void
+  onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+  onBlur?(event: React.FocusEvent<HTMLInputElement>): void
+  onAddressChosen?(data: AdresseData): void
   disabled?: boolean
   className?: string
   description?: string
