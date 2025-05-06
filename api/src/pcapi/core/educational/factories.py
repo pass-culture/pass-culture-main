@@ -49,6 +49,18 @@ class EducationalInstitutionFactory(BaseFactory):
     longitude = 2.3522
 
 
+class OfferVenueFactory(factory.DictFactory):
+    addressType: str = "other"
+    otherAddress: str = "1 rue des polissons, Paris 75017"
+    venueId: int | None = None
+
+
+class OfferVenueInVenueFactory(OfferVenueFactory):
+    addressType = "offererVenue"
+    otherAddress = ""
+    venueId = 0
+
+
 class CollectiveOfferFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOffer
@@ -65,13 +77,15 @@ class CollectiveOfferFactory(BaseFactory):
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmails = ["collectiveofferfactory+booking@example.com", "collectiveofferfactory+booking@example2.com"]
     contactPhone = "+33199006328"
-    offerVenue = {
-        "addressType": "other",
-        "otherAddress": "1 rue des polissons, Paris 75017",
-        "venueId": None,
-    }
+    offerVenue = factory.SubFactory(OfferVenueFactory)
+    locationType = models.CollectiveLocationType.ADDRESS
     interventionArea = ["93", "94", "95"]
     formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
+    offererAddress = factory.Maybe(
+        factory.LazyAttribute(lambda x: x.locationType == models.CollectiveLocationType.ADDRESS),
+        yes_declaration=factory.SubFactory(offerers_factories.OffererAddressFactory),
+        no_declaration=None,
+    )
 
     @classmethod
     def _create(
@@ -85,6 +99,14 @@ class CollectiveOfferFactory(BaseFactory):
                 OfferValidationStatus.REJECTED,
                 OfferValidationStatus.PENDING,
             )
+        if (
+            kwargs["offerVenue"]["addressType"] == "offererVenue"
+            and "offererAddress" not in kwargs
+            and "offererAddressId" not in kwargs
+        ):
+            venue = kwargs.get("venue")
+            if venue:
+                kwargs["offererAddress"] = venue.offererAddress
 
         return super()._create(model_class, *args, **kwargs)
 
@@ -551,6 +573,12 @@ class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
         ReimbursedCollectiveBookingFactory.create(collectiveStock=stock)
+
+
+class InVenueCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    locationType = models.CollectiveLocationType.ADDRESS
+    offerVenue = factory.SubFactory(OfferVenueInVenueFactory, venueId=factory.SelfAttribute("..venue.id"))
+    offererAddress = factory.SelfAttribute(".venue.offererAddress")  # type: ignore[assignment]
 
 
 def create_collective_offer_by_status(
