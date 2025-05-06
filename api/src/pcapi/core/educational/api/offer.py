@@ -1182,6 +1182,15 @@ def move_collective_offer_venue(
         .all()
     )
 
+    # OA: update offerer address
+    source_venue = collective_offer.venue
+    if collective_offer.offererAddress and collective_offer.offererAddress == source_venue.offererAddress:
+        assert source_venue.offererAddress.addressId  # helps mypy
+        destination_oa = offerers_api.get_or_create_offerer_address(
+            source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.common_name
+        )
+        db.session.add(destination_oa)
+        collective_offer.offererAddress = destination_oa
     collective_offer.venue = destination_venue
     db.session.add(collective_offer)
 
