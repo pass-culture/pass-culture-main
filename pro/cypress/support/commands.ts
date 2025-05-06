@@ -161,7 +161,7 @@ Cypress.Commands.add(
       url,
       retryOnNetworkFailure: true,
       failOnStatusCode: false,
-      timeout: 1000 * 120, // With test parralelization, the api could be slower, so, we'll wait a little.
+      timeout: 1000 * 360, // With test parralelization, the api could be slower, so, we'll wait a little.
     }).then((response) => {
       if (response.status === 200) {
         onRequest(response)
