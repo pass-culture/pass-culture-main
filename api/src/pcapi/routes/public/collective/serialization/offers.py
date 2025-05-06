@@ -11,6 +11,7 @@ from pydantic.v1 import validator
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
@@ -213,6 +214,34 @@ class CollectiveOffersListResponseModel(BaseModel):
     __root__: list[CollectiveOffersResponseModel]
 
 
+class CollectiveOfferLocationModel(BaseModel):
+    type: CollectiveLocationType = fields.COLLECTIVE_OFFER_LOCATION_TYPE
+    # TODO: when we add POST and PATCH routes, this model will take into account the location type
+    addressLabel: str | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL
+    addressId: int | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_ID
+    comment: str | None = fields.COLLECTIVE_OFFER_LOCATION_COMMENT
+    isVenueAddress: bool = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+    @classmethod
+    def from_offer(cls, offer: CollectiveOffer) -> "CollectiveOfferLocationModel | None":
+        if offer.locationType is None:
+            return None
+
+        oa = offer.offererAddress
+
+        return CollectiveOfferLocationModel(
+            type=offer.locationType,
+            comment=offer.locationComment,
+            addressLabel=oa.label if oa else None,
+            addressId=oa.addressId if oa else None,
+            isVenueAddress=(offer.offererAddressId == offer.venue.offererAddressId),
+        )
+
+
 class GetPublicCollectiveOfferResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
     status: str = fields.COLLECTIVE_OFFER_STATUS
@@ -242,7 +271,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
+    # offerVenue will be replaced with location, for now we send both
     offerVenue: OfferVenueModel
+    location: CollectiveOfferLocationModel | None
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageUrl: str | None = fields.IMAGE_URL
     bookings: Sequence[CollectiveBookingResponseModel]
@@ -263,6 +294,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
         bookings = [
             CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
         ]
+
+        location = CollectiveOfferLocationModel.from_offer(offer)
+
         return cls(
             id=offer.id,
             status=offer.status.name,
@@ -302,6 +336,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             bookings=bookings,
             nationalProgram=national_program,
             formats=offer.formats,
+            location=location,
         )
 
 

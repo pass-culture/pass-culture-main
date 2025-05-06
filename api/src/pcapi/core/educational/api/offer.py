@@ -243,7 +243,7 @@ def get_location_from_offer_venue(
             )
 
         case _:
-            raise ValueError("Unexpected addressType received")
+            raise ValueError(f"Unexpected addressType received: {offer_venue['addressType']}")
 
 
 def check_venue_user_access(venue_id: int, user: User) -> None:
