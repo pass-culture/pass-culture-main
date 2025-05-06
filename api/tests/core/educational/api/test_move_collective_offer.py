@@ -62,6 +62,58 @@ def create_offer_by_booking_state(venue, state):
 
 
 class MoveCollectiveOfferSuccessTest:
+    def test_move_collective_offer_with_its_own_OA(self):
+        """
+        Ensure the collective offer with its own OA keeps it once moved.
+        """
+        collective_offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        source_venue = collective_offer.venue
+        assert collective_offer.offererAddress != source_venue.offererAddress
+        offer_OA_id = collective_offer.offererAddressId
+
+        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.offererAddressId == offer_OA_id
+
+    def test_move_collective_offer_with_venue_OA_gets_a_new_OA(self):
+        """
+        Ensure the collective offer using the venue's OA get a new OA once moved if that OA did not exist before.
+        """
+        collective_offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory()
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        source_venue = collective_offer.venue
+        assert collective_offer.offererAddress == source_venue.offererAddress
+
+        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+
+        db.session.refresh(collective_offer)
+        # Same address, different OA, label is venue's common name
+        assert collective_offer.offererAddress != source_venue.offererAddress
+        assert collective_offer.offererAddress.addressId == source_venue.offererAddress.addressId
+        assert collective_offer.offererAddress.label == source_venue.common_name
+
+    def test_move_collective_offer_with_venue_OA_can_resuse_non_venue_OA(self):
+        """
+        Ensure the collective offer using the venue's OA can fit in an existing OA once moved.
+        """
+        collective_offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory()
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        source_venue = collective_offer.venue
+        destination_OA = offerers_factories.OffererAddressFactory(
+            offerer=source_venue.managingOfferer,
+            label=source_venue.common_name,
+            address=source_venue.offererAddress.address,
+        )
+        assert collective_offer.offererAddress == source_venue.offererAddress
+        assert destination_OA != collective_offer.offererAddress
+
+        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.offererAddress == destination_OA
+
     def test_move_collective_offer_without_pricing_points(self):
         """
         A collective offer on a venue without pricing point can be moved to another venue without pricing point
