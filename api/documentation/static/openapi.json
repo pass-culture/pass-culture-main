@@ -2575,7 +2575,7 @@
                         "type": "string"
                     },
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",
@@ -2800,7 +2800,7 @@
                         "type": "string"
                     },
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",
@@ -3041,7 +3041,7 @@
                         "type": "string"
                     },
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",
@@ -6568,7 +6568,7 @@
                         "type": "string"
                     },
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",
@@ -6779,7 +6779,7 @@
                         "type": "string"
                     },
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",
@@ -7092,7 +7092,7 @@
                         "type": "string"
                     },
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",
@@ -7233,7 +7233,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "location": {
-                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **two options** for the location:\n\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
+                        "description": "\nIndicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.\n\nYou have **three options** for the location:\n\n- `\"digital\"`: Use this if the offer is a digital product and does not have a physical location\n- `\"physical\"`: Use this if the offer will be available at your venue\n- `\"address\"`: Use this if the offer takes place at a different location from your venue\n",
                         "discriminator": {
                             "mapping": {
                                 "address": "#/components/schemas/AddressLocation",

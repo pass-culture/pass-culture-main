@@ -34,8 +34,9 @@ In the case of a collective offer, there is stock for only one booking ; if the 
 OFFER_LOCATION_DESCRIPTION = """
 Indicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.
 
-You have **two options** for the location:
+You have **three options** for the location:
 
+- `"digital"`: Use this if the offer is a digital product and does not have a physical location
 - `"physical"`: Use this if the offer will be available at your venue
 - `"address"`: Use this if the offer takes place at a different location from your venue
 """
