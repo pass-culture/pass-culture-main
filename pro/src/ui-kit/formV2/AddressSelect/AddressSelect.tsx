@@ -12,17 +12,29 @@ import {
 import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 
 export type AddressSelectProps = {
+  /** Name of the field, used for form submission and accessibility */
   name: string
+  /** Label displayed above the input */
   label: string | JSX.Element
+  /** Called when the input value changes */
   onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+  /** Called when the input loses focus */
   onBlur?(event: React.FocusEvent<HTMLInputElement>): void
+  /** Called when an address is chosen from the suggestions */
   onAddressChosen?(data: AdresseData): void
+  /** Disables the input and prevents interaction */
   disabled?: boolean
+  /** Additional CSS class names */
   className?: string
+  /** Helper text displayed below the input */
   description?: string
+  /** Filters the address suggestions by type (e.g., "municipality", "street") */
   onlyTypes?: FeaturePropertyType[]
+  /** Error message to display */
   error?: string
+  /** Maximum number of address suggestions to display */
   suggestionLimit?: number
+  /** Indicates if the field is optional */
   isOptional?: boolean
 }
 
@@ -52,7 +64,7 @@ export const AddressSelect = forwardRef(
 
     // Handles the "Adresse API" call when searchField change (debounced), and updates the address suggestions
     const onSearchFieldChange = async () => {
-      // "Adresse API" search’s minimum is 3 characters
+      // "Adresse API" search's minimum is 3 characters
       if (searchField.trim().length < 3) {
         setOptions([])
         return
@@ -96,7 +108,7 @@ export const AddressSelect = forwardRef(
           )
       )
 
-    // Connect the external reference to the internal one "inputRef", allowing to get the input’s initial value if applicable
+    // Connect the external reference to the internal one "inputRef", allowing to get the input's initial value if applicable
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
     return (
