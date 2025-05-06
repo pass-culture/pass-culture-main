@@ -14,7 +14,9 @@ To manage those offers you will be mainly using the **[product offers endpoints]
 
 ### General description
 
-**`Products`** are cultural goods that are not linked to a date.
+**`Products`** are cultural goods that are not linked to a date. They can be :
+- **physical** : _for instance a book or or a CD_
+- **digital** : _for instance a subscription to a music streaming service_
 
 ### Creation rules
 
@@ -71,6 +73,10 @@ This play can have several performances and for each performance they can be sev
 
 Therefore, you will have **`(number of performances)*(number of categories)`** stocks linked to this event.
 :::
+
+`Events` can be :
+- **physical:** _for instance a concert or a theater performance_
+- **digital:** _for instance a online painting lesson_
 
 ### Creation rules
 
@@ -190,6 +196,20 @@ Example of the **`Location`** object for a **`"address"`** type:
   "venueId": 535,
   "addressId": 123,
   "addressLabel": "L'Olympia Paris"
+}
+```
+
+#### 3. `Location` of type `"digital"`
+
+A **`"digital"`** location signifies that the offer is digital and does not have a physical location. Instead, it includes a URL.
+
+Example of the **`Location`** object for a **`"digital"`** type:
+
+```json
+{
+  "type": "digital",
+  "venueId": 535,
+  "url": "https://link.to/my/offer"
 }
 ```
 
