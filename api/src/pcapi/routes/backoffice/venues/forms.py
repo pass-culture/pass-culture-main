@@ -58,7 +58,11 @@ class EditVenueForm(EditVirtualVenueForm):
     )
     street = fields.PCHiddenField(
         "Adresse",
-        validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
+        validators=(
+            wtforms.validators.Length(
+                min=1, max=200, message="L'adresse doit contenir entre %(min)d et %(max)d caractères"
+            ),
+        ),
     )
     postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
     city = fields.PCHiddenField(
@@ -122,12 +126,6 @@ class EditVenueForm(EditVirtualVenueForm):
                 )
 
         return siret
-
-    def validate_street(self, street: fields.PCStringField) -> fields.PCStringField:
-        # database constraint: check_is_virtual_xor_has_address
-        if not street.data and not self.siret.data:
-            raise validators.ValidationError("L'adresse est obligatoire pour un partenaire culturel sans SIRET")
-        return street
 
     def validate_latitude(self, latitude: fields.PCOptHiddenField) -> fields.PCOptHiddenField:
         try:
