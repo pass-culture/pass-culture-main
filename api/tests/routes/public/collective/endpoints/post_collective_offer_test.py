@@ -279,7 +279,9 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.status_code == 200
         assert offer.offerVenue == payload["offerVenue"]
 
-        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
+        assert offer.offererAddress.offererId == other_venue.offererAddress.offererId
+        assert offer.offererAddress.label == other_venue.common_name
         assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 

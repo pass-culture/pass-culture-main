@@ -3056,8 +3056,7 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     return offerer_address
 
 
-def create_offerer_address(offerer_id: int, address_id: int | None, label: str | None = None) -> models.OffererAddress:
-    assert offerer_id
+def create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
     try:
         offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)

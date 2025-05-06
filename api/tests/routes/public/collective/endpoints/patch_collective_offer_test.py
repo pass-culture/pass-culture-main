@@ -1164,7 +1164,9 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
             expected=expected,
         )
 
-        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
+        assert offer.offererAddress.offererId == other_venue.offererAddress.offererId
+        assert offer.offererAddress.label == other_venue.common_name
         assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
