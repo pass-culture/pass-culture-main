@@ -10,6 +10,7 @@ from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -110,10 +111,9 @@ def create_venue_provider(
     except exceptions.NoPriceSpecified:
         raise ApiErrors({"price": ["Il est obligatoire de saisir un prix."]})
 
-    # We don't want to start a synchronization for providers linked to an offerer
-    # since creating a venue_provider in this case only delegate the right for an
-    # offerer to create offers for this venue. (we don't synchronize anything ourselves)
-    if not new_venue_provider.provider.hasOffererProvider:
+    # venue_provider_job only handles movie providers now.
+    movie_provider_names = {"AllocineStocks"} | set(CINEMA_PROVIDER_NAMES)
+    if new_venue_provider.provider.localClass in movie_provider_names:
         on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
 
     return venue_provider_serialize.VenueProviderResponse.from_orm(new_venue_provider)
