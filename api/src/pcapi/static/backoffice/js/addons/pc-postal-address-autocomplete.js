@@ -13,6 +13,7 @@
  *   "Adresse",
  *   street="street", // the name of your address field within your form, for its autocomplete to work
  *   banId="banId" // the unique id in the National Address Database (Base d'Adresses Nationale)
+ *   inseeCode="inseeCode" // the code of the city (or code INSEE) in the National Address Database (Base d'Adresses Nationale)
  *   city="city", // the name of your city field within your form, for its autocomplete to work
  *   postalCode="postalCode", // the name of your postalCode field within your form, for its autocomplete to work
  *   latitude="latitude", // the name of your latitude field within your form, for its autocomplete to work
@@ -58,6 +59,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       const $city = this.#getCity($autoComplete)
       const $street = this.#getStreet($autoComplete)
       const $banId = this.#getBanId($autoComplete)
+      const $inseeCode = this.#getInseeCode($autoComplete)
       const $latitude = this.#getLatitude($autoComplete)
       const $longitude = this.#getLongitude($autoComplete)
       const $isManualAddress = this.#getIsManualAddress($autoComplete)
@@ -69,6 +71,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
           ...($city ? { city: $city.value } : {}),
           ...($street ? { street: $street.value } : {}),
           ...($banId ? { banId: $banId.value } : {}),
+          ...($inseeCode ? { inseeCode: $inseeCode.value } : {}),
           ...($latitude ? { latitude: $latitude.value } : {}),
           ...($longitude ? { longitude: $longitude.value } : {}),
           ...($isManualAddress ? { isManualAddress: $isManualAddress.value } : {}),
@@ -162,6 +165,11 @@ class PcPostalAddressAutocomplete extends PcAddOn {
   #getBanId($autoComplete) {
     const { banIdInputName } = $autoComplete.dataset
     return $autoComplete.form[banIdInputName]
+  }
+
+  #getInseeCode($autoComplete) {
+    const { inseeCodeInputName } = $autoComplete.dataset
+    return $autoComplete.form[inseeCodeInputName]
   }
 
   #getPostalCode($autoComplete) {
@@ -337,7 +345,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $dropdown = this.#getDropdown($autoComplete)
     $dropdown.innerHTML = '';
     features.forEach(({ geometry, properties }) => {
-      const { label, city, postcode: postalCode, name: street, id: banId } = properties
+      const { label, city, postcode: postalCode, name: street, id: banId, citycode: inseeCode } = properties
       const [longitude, latitude] = geometry.coordinates
       const li = document.createElement('li')
       const a = document.createElement('a')
@@ -345,6 +353,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       a.setAttribute('role', 'button')
       a.dataset.street = street
       a.dataset.banId = banId
+      a.dataset.inseeCode = inseeCode
       a.dataset.postalCode = postalCode
       a.dataset.name = name
       a.dataset.city = city
@@ -363,7 +372,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
 
   _onSelectFeature = (event) => {
     event.preventDefault()
-    const { street, banId, postalCode, city, latitude, longitude } = event.target.dataset
+    const { street, banId, inseeCode, postalCode, city, latitude, longitude } = event.target.dataset
     const $autoComplete = this.#getAutocompleteFromAnchorChoice(event.target)
     this.#getDropdown($autoComplete).classList.remove('show')
 
@@ -379,6 +388,11 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $banId = this.#getBanId($autoComplete)
     if ($banId) {
       $banId.value = banId
+    }
+
+    const $inseeCode = this.#getInseeCode($autoComplete)
+    if ($inseeCode) {
+      $inseeCode.value = inseeCode
     }
 
     const $postalCode = this.#getPostalCode($autoComplete)
@@ -435,6 +449,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       city,
       street,
       banId,
+      inseeCode,
       latitude,
       longitude,
       isManualAddress,
@@ -446,6 +461,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $city = this.#getCity($autoComplete)
     const $street = this.#getStreet($autoComplete)
     const $banId = this.#getBanId($banId)
+    const $inseeCode = this.#getInseeCode($inseeCode)
     const $latitude = this.#getLatitude($autoComplete)
     const $longitude = this.#getLongitude($autoComplete)
     const $isManualAddress = this.#getIsManualAddress($autoComplete)
@@ -462,6 +478,9 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     }
     if ($banId) {
       $banId.value = banId
+    }
+    if ($inseeCode) {
+      $inseeCode.value = inseeCode
     }
     if ($latitude) {
       $latitude.value = latitude
@@ -488,6 +507,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $city = this.#getCity($autoComplete)
     const $street = this.#getStreet($autoComplete)
     const $banId = this.#getBanId($autoComplete)
+    const $inseeCode = this.#getInseeCode($autoComplete)
     const $latitude = this.#getLatitude($autoComplete)
     const $longitude = this.#getLongitude($autoComplete)
     const $isManualAddress = this.#getIsManualAddress($autoComplete)
@@ -513,6 +533,9 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     }
     if ($banId) {
       $banId.parentElement.classList.add('d-none')
+    }
+    if ($inseeCode) {
+      $inseeCode.parentElement.classList.add('d-none')
     }
     if ($latitude) {
       $latitude.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')

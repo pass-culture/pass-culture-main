@@ -243,6 +243,7 @@ def create_offerer() -> utils.BackofficeResponse:
         comment="Entité juridique créée depuis le backoffice",
         ds_dossier_id=form.ds_id.data,
     )
+    # TODO: add inseeCode in transfered information when AddressBodyModel is updated
     address_body_model = offerers_schemas.AddressBodyModel(
         street=offerers_schemas.VenueAddress(address.street),
         city=offerers_schemas.VenueCity(address.city),
