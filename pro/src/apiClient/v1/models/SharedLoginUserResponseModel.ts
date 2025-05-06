@@ -14,7 +14,6 @@ export type SharedLoginUserResponseModel = {
   departementCode?: string | null;
   email: string;
   firstName?: string | null;
-  hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
   hasUserOfferer?: boolean | null;
   id: number;

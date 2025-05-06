@@ -67,7 +67,6 @@ class Returns200Test:
             "externalIds": {},
             "firstName": "Jean",
             "hasSeenProTutorials": True,
-            "hasSeenProRgs": False,
             "hasUserOfferer": False,
             "id": user.id,
             "idPieceNumber": None,

@@ -137,7 +137,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
     @time_machine.travel(time_travel_str)
     def test_post_offers(self, public_client, payload, venue_provider, domain, institution, national_program, venue):
-        # TODO(jeremieb): it seems that we have a lot of queries...
         num_queries = 1  # fetch api key
         num_queries += 1  # fetch feature flag
         num_queries += 1  # fetch venue

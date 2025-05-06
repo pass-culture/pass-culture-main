@@ -292,27 +292,6 @@ class Returns200Test:
         assert response_json["lastBookingId"] == booking.id
         assert response_json["lastBookingStatus"] == booking.status.value
 
-    def test_offer_venue_has_an_empty_string_venue_id(self, client):
-        # TODO(jeremieb): remove this test once there is no empty
-        # string stored as a venueId
-        offer = educational_factories.CollectiveOfferFactory(
-            offerVenue={"venueId": "", "addressType": "offererVenue", "otherAddress": "some address"}
-        )
-
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        client = client.with_session_auth(email="user@example.com")
-        offer_id = offer.id
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
-            assert response.status_code == 200
-
-        assert response.json["offerVenue"] == {
-            "venueId": None,
-            "addressType": "offererVenue",
-            "otherAddress": "some address",
-        }
-
     def test_dates_on_offer(self, client):
         beginningDate = datetime.utcnow() + timedelta(days=100)
         endDate = datetime.utcnow() + timedelta(days=125)
