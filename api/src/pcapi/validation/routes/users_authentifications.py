@@ -160,6 +160,5 @@ def basic_authentication() -> User | None:
         extra={"route": str(request.url_rule), "username": auth.username, "avoid_current_user": True},
     )
     # push the user to the current context - similar to flask-login
-    ctx = _request_ctx_stack.top
-    ctx.user = user
+    g.user = user
     return user
