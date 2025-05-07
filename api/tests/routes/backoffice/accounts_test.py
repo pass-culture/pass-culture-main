@@ -1439,7 +1439,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 303
 
         expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history", _external=True
+            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history"
         )
         assert response.location == expected_url
 
@@ -1509,7 +1509,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 303
 
         expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history", _external=True
+            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history"
         )
         assert response.location == expected_url
 
@@ -1899,7 +1899,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -1925,7 +1925,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -1977,7 +1977,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -2016,7 +2016,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -4798,7 +4798,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.firstName is None
@@ -4831,7 +4831,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
@@ -4854,7 +4854,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles != [users_models.UserRole.ANONYMIZED]
@@ -4928,7 +4928,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
@@ -4948,7 +4948,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
@@ -5016,7 +5016,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         )
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         extract_data = db.session.query(users_models.GdprUserDataExtract).one()
@@ -5052,7 +5052,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         expected_url = url_for(
             "backoffice_web.public_accounts.get_public_account",
             user_id=expired_gdpr_data_extract.user.id,
-            _external=True,
         )
 
         assert response.status_code == 302

@@ -60,7 +60,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         response = client_method(self.path, form=self.form)
 
         assert response.status_code in (302, 303)
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
 
     def test_missing_csrf_token(self, client):
         user = users_factories.UserFactory()
