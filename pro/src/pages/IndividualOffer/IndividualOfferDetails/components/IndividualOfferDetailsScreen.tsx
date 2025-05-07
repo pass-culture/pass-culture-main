@@ -22,6 +22,7 @@ import {
 } from 'commons/core/Offers/utils/typology'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -68,13 +69,6 @@ export const IndividualOfferDetailsScreen = ({
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
   const mode = useOfferWizardMode()
-  const {
-    imageOffer,
-    setImageOffer,
-    onImageDelete,
-    onImageUpload,
-    handleImageOnSubmit,
-  } = useIndividualOfferImageUpload()
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
@@ -82,6 +76,15 @@ export const IndividualOfferDetailsScreen = ({
 
   const { categories, subCategories, offer, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
+  const initialImageOffer = getIndividualOfferImage(offer)
+  const {
+    displayedImage,
+    hasUpsertedImage,
+    onImageDelete,
+    onImageUpload,
+    handleEanImage,
+    handleImageOnSubmit,
+  } = useIndividualOfferImageUpload(initialImageOffer)
   const isDirtyDraftOffer = !offer
 
   const [filteredCategories, filteredSubcategories] = filterCategories(
@@ -112,7 +115,6 @@ export const IndividualOfferDetailsScreen = ({
       })
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
-    // Submit
     try {
       // Draft offer PATCH requests are useless for product-based offers
       // and synchronized / provider offers since neither of the inputs displayed in
@@ -126,7 +128,6 @@ export const IndividualOfferDetailsScreen = ({
           serializeDetailsPostData(formValues)
         )
       } else if (!shouldNotPatchData) {
-        // Draft offer PATCH requests are useless for product-based offers and synchronized / provider offers since neither of the inputs displayed in DetailsScreen can be edited at all
         response = await api.patchDraftOffer(
           offer.id,
           serializeDetailsPatchData(formValues)
@@ -257,11 +258,7 @@ export const IndividualOfferDetailsScreen = ({
 
     const imageUrl = images.recto
     if (imageUrl) {
-      setImageOffer({
-        originalUrl: imageUrl,
-        url: imageUrl,
-        credit: null,
-      })
+      handleEanImage(imageUrl)
     }
 
     let gtl_id = ''
@@ -287,7 +284,7 @@ export const IndividualOfferDetailsScreen = ({
   }
 
   const onEanReset = () => {
-    setImageOffer(undefined)
+    handleEanImage()
     formik.resetForm()
   }
 
@@ -316,11 +313,11 @@ export const IndividualOfferDetailsScreen = ({
               filteredCategories={filteredCategories}
               filteredSubcategories={filteredSubcategories}
               readOnlyFields={readOnlyFields}
-              onImageUpload={onImageUpload}
-              onImageDelete={onImageDelete}
-              imageOffer={imageOffer}
               venuesOptions={availableVenuesOptions}
               categoryStatus={categoryStatus}
+              displayedImage={displayedImage}
+              onImageUpload={onImageUpload}
+              onImageDelete={onImageDelete}
             />
           </FormLayout>
           <ActionBar
@@ -335,7 +332,7 @@ export const IndividualOfferDetailsScreen = ({
           />
         </Form>
         <RouteLeavingGuardIndividualOffer
-          when={formik.dirty && !formik.isSubmitting}
+          when={(formik.dirty || hasUpsertedImage) && !formik.isSubmitting}
         />
       </FormikProvider>
     </>

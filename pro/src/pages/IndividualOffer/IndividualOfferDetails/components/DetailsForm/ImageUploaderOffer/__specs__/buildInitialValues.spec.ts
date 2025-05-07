@@ -1,4 +1,5 @@
 import { IndividualOfferImage } from 'commons/core/Offers/types'
+import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 import { buildInitialValues } from '../buildInitialValues'
 
@@ -17,7 +18,8 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
       },
     })
   })
-  it('should build initial values for given data', () => {
+
+  it('should build initial values for previously saved image', () => {
     const imageOffer: IndividualOfferImage = {
       originalUrl: 'https://cropped.test.url',
       url: 'https://test.url',
@@ -39,6 +41,32 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
         yCropPercent: 0.5,
         heightCropPercent: 0.5,
         widthCropPercent: 0.5,
+      },
+    })
+  })
+
+  it('should build initial values for uploaded image', () => {
+    const imageOffer: OnImageUploadArgs = {
+      imageFile: new File([''], 'test.jpg'),
+      imageCroppedDataUrl: 'https://cropped.test.url',
+      cropParams: {
+        x: 0.5,
+        y: 0.5,
+        width: 100,
+        height: 100,
+      },
+      credit: 'John Do',
+    }
+    const initialValues = buildInitialValues(imageOffer)
+    expect(initialValues).toEqual({
+      imageUrl: imageOffer.imageCroppedDataUrl,
+      originalImageUrl: imageOffer.imageCroppedDataUrl,
+      credit: imageOffer.credit,
+      cropParams: {
+        xCropPercent: 1,
+        yCropPercent: 1,
+        heightCropPercent: 0,
+        widthCropPercent: 0,
       },
     })
   })
