@@ -138,7 +138,7 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Post outcome on #alertes-deploiement"
         if: always()
-        uses: slackapi/slack-github-action@v2.0.0
+        uses: slackapi/slack-github-action@v2.1.0
         with:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
@@ -160,7 +160,7 @@ jobs:
                       text: "Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
       - name: "Post success on #shérif"
         if: env.WORKFLOW_CONCLUSION == 'success'
-        uses: slackapi/slack-github-action@v2.0.0
+        uses: slackapi/slack-github-action@v2.1.0
         with:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
