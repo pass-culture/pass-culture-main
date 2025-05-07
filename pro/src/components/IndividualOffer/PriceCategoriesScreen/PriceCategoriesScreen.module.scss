@@ -10,7 +10,6 @@
 
 .price-input {
   width: rem.torem(200px);
-  max-width: fit-content;
 }
 
 .duo-section {
@@ -58,17 +57,11 @@
     }
   }
 
-  .price-input {
-    margin-top: calc(
-      forms.$label-space-before-input + forms.$input-description-min-height
-    );
-  }
-
   .delete-icon {
     margin-top: calc(
       forms.$label-space-before-input + forms.$input-description-min-height +
         forms.$input-label-min-height + forms.$label-small-space-before-input +
-        (size.$input-min-height / 2) - (rem.torem(24px) / 2)
+        (size.$input-min-height / 2) - (rem.torem(16px) / 2)
     );
   }
 
