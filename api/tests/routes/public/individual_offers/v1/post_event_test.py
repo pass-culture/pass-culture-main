@@ -315,11 +315,10 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.json["categoryRelatedFields"] == {
             "author": "Ray Charles",
             "category": "CONCERT",
-            "musicType": "OTHER",
+            "musicType": "MUSIQUE_CLASSIQUE",
             "performer": "Nicolas Jaar",
         }
 
-    @pytest.mark.features(ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT=True)
     def test_event_creation_with_titelive_type_with_active_serialization(self, client, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
@@ -395,7 +394,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.json["categoryRelatedFields"] == {
             "author": None,
             "category": "CONCERT",
-            "musicType": "OTHER",
+            "musicType": "AUTRES",  # The music type is inferred from gtl_id
             "performer": None,
         }
 

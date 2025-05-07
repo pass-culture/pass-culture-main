@@ -278,36 +278,33 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
         serialized_data["ean"] = offer.ean
 
     # Convert musicSubType (resp showSubType) code to musicType slug (resp showType slug)
+
+    OTHER_TYPE_CODE = "-1"
+    music_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value, None)
     music_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value, None)
+    gtl_id = serialized_data.pop(subcategories.ExtraDataFieldEnum.GTL_ID.value, None)
 
     # FIXME (mageoffray, 2023-12-14): some historical offers have no musicSubType and only musicType.
     # We should migrate our musicType|musicSubType to titelive music types. This migration will include
     # offers without musicSubType
-    music_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value, None)
     if music_type and not music_sub_type:
-        music_sub_type = "-1"  # Use 'Other' when not filled
+        music_sub_type = OTHER_TYPE_CODE
 
-    gtl_id = serialized_data.pop(subcategories.ExtraDataFieldEnum.GTL_ID.value, None)
+    if music_sub_type == OTHER_TYPE_CODE and gtl_id is not None:
+        # Infer more precise music type from gtl_id
+        serialized_data["musicType"] = TiteliveMusicTypeEnum(
+            constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id[:2] + "0" * 6]
+        )
+    elif music_sub_type is not None:
+        serialized_data["musicType"] = MusicTypeEnum(music.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
 
     # FIXME (mageoffray, 2023-12-14): some historical offers have no showSubType and only showType.
     show_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value, None)
     show_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_TYPE.value, None)
     if show_type and not show_sub_type:
-        show_sub_type = "-1"  # Use 'Other' when not filled
-
-    if music_sub_type:
-        serialized_data["musicType"] = MusicTypeEnum(music.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
+        show_sub_type = OTHER_TYPE_CODE
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
-
-    if (
-        gtl_id
-        and offer.subcategoryId in subcategories.MUSIC_SUBCATEGORIES
-        and FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT.is_active()
-    ):
-        serialized_data["musicType"] = TiteliveMusicTypeEnum(
-            constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id[:2] + "0" * 6]
-        )  # Only take the first level of the GTL ID
 
     return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore[misc, call-arg]
 
