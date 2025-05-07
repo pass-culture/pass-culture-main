@@ -12,8 +12,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.models import db
-from pcapi.models.offer_mixin import CollectiveOfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -36,41 +34,6 @@ def venues_with_same_pricing_point_fixture():
         timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
     )
     return venue, destination_venue
-
-
-def create_offer_by_offer_state(venue, state):
-    collective_offer = None
-    if state == OfferValidationStatus.DRAFT:
-        collective_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, validation=OfferValidationStatus.DRAFT
-        )
-    if state == OfferValidationStatus.PENDING:
-        collective_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, validation=OfferValidationStatus.PENDING
-        )
-    if state == OfferValidationStatus.REJECTED:
-        collective_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, validation=OfferValidationStatus.REJECTED
-        )
-
-    if state == CollectiveOfferStatus.ACTIVE:
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-    if state == CollectiveOfferStatus.EXPIRED:
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer, startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        )
-    if state == CollectiveOfferStatus.SOLD_OUT:
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-        collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
-        educational_factories.UsedCollectiveBookingFactory(collectiveStock=collective_stock)
-    if state == CollectiveOfferStatus.INACTIVE:
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, isActive=False)
-    if state == CollectiveOfferStatus.ARCHIVED:
-        collective_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateArchived=datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        )
-    return collective_offer
 
 
 def create_offer_by_booking_state(venue, state):
@@ -293,21 +256,12 @@ class MoveCollectiveOfferSuccessTest:
 
     @pytest.mark.parametrize(
         "state",
-        [
-            OfferValidationStatus.DRAFT,
-            OfferValidationStatus.PENDING,
-            OfferValidationStatus.REJECTED,
-            CollectiveOfferStatus.ACTIVE,
-            CollectiveOfferStatus.EXPIRED,
-            CollectiveOfferStatus.SOLD_OUT,
-            CollectiveOfferStatus.INACTIVE,
-            CollectiveOfferStatus.ARCHIVED,
-        ],
+        set(educational_models.CollectiveOfferDisplayedStatus),
     )
     def test_move_collective_offer_with_different_statuses(self, state):
         venue = offerers_factories.VenueFactory()
         destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        collective_offer = create_offer_by_offer_state(venue, state)
+        collective_offer = educational_factories.create_collective_offer_by_status(state, venue=venue)
 
         collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
 
