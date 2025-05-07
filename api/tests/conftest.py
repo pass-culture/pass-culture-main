@@ -92,6 +92,10 @@ def build_backoffice_app():
         app.test_client_class = FlaskLoginClient
         app.config["TESTING"] = True
 
+        @app.teardown_request
+        def clean_g_between_requests(exc: BaseException | None = None) -> None:
+            g.pop("_login_user", default=None)
+
         @app.route("/signin/<int:user_id>", methods=["POST"])
         @csrf.exempt
         def signin(user_id: int):
@@ -122,6 +126,10 @@ def build_main_app():
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
+
+    @app.teardown_request
+    def clean_g_between_requests(exc: BaseException | None = None) -> None:
+        g.pop("_login_user", default=None)
 
     app.config.from_mapping(
         CELERY=dict(
