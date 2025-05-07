@@ -9,7 +9,10 @@ import {
   DEBOUNCE_TIME_BEFORE_REQUEST,
   DEFAULT_SUGGESTION_LIMIT,
 } from 'components/Address/constants'
-import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
+import {
+  type CustomEvent,
+  SelectAutocomplete,
+} from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 
 export type AddressSelectProps = {
   /** Name of the field, used for form submission and accessibility */
@@ -17,9 +20,11 @@ export type AddressSelectProps = {
   /** Label displayed above the input */
   label: string | JSX.Element
   /** Called when the input value changes */
-  onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+  onChange?(event: CustomEvent<'change'>): void
   /** Called when the input loses focus */
-  onBlur?(event: React.FocusEvent<HTMLInputElement>): void
+  onBlur?(event: CustomEvent<'blur'>): void
+  /** Value of the input */
+  value?: string
   /** Called when an address is chosen from the suggestions */
   onAddressChosen?(data: AdresseData): void
   /** Disables the input and prevents interaction */
@@ -52,6 +57,7 @@ export const AddressSelect = forwardRef(
       name,
       onChange = () => {},
       onBlur = () => {},
+      value: inputValue,
       isOptional,
     }: AddressSelectProps,
     ref: Ref<HTMLInputElement>
@@ -119,12 +125,12 @@ export const AddressSelect = forwardRef(
         hideArrow={true}
         resetOnOpen={false}
         description={description}
+        value={inputValue}
         onSearch={(searchText) => {
           setSearchField(searchText)
           void debouncedOnSearch()
         }}
         onChange={(event) => {
-          // @ts-expect-error
           onChange(event)
           const addressData = addressesMap.current.get(event.target.value)
           if (addressData) {
@@ -147,7 +153,6 @@ export const AddressSelect = forwardRef(
               inseeCode: '',
             })
           }
-          // @ts-expect-error
           onBlur(event)
         }}
         searchInOptions={searchInOptions}

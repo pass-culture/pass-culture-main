@@ -229,7 +229,7 @@ describe('SelectAutocomplete', () => {
       type: 'blur',
       target: { name: 'departement', value: '' },
     })
-    expect(onChange).not.toHaveBeenCalled()
+    expect(onChange).toHaveBeenCalled()
   })
 
   it('should not clear the input on focus if "resetOnOpen" is false', async () => {

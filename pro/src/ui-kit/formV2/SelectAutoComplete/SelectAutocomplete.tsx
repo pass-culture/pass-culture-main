@@ -16,7 +16,7 @@ import { OptionsList } from './OptionsList/OptionsList'
 import styles from './SelectAutocomplete.module.scss'
 import { Toggle } from './Toggle/Toggle'
 
-type CustomEvent<T extends 'change' | 'blur'> = {
+export type CustomEvent<T extends 'change' | 'blur'> = {
   type: T
   target: { name: string; value: string }
 }
@@ -48,6 +48,8 @@ type CommonProps = {
   onChange?(e: CustomEvent<'change'>): void
   /** Called when the input loses focus */
   onBlur?(e: CustomEvent<'blur'>): void
+  /** Value of the input */
+  value?: string
   /** Called when the search input changes */
   onSearch?(pattern: string): void
   /** Custom function to filter options based on search pattern */
@@ -92,6 +94,7 @@ export const SelectAutocomplete = forwardRef(
       error,
       onChange = () => {},
       onBlur = () => {},
+      value: inputValue,
       onSearch = () => {},
       searchInOptions = (options, pattern) =>
         options.filter((opt) =>
@@ -102,7 +105,7 @@ export const SelectAutocomplete = forwardRef(
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const [searchField, setSearchField] = useState('') // Represents the <input type="search"> value while typing (e.g. "Alpes de Ha…")
-    const [field, setField] = useState('') // Represents the actual selected <option>’s "value" attribute among the options (e.g. "04")
+    const [field, setField] = useState(inputValue ?? '') // Represents the actual selected <option>’s "value" attribute among the options (e.g. "04")
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
       null
@@ -263,12 +266,18 @@ export const SelectAutocomplete = forwardRef(
       }
     }
 
-    // When the inputRef's value changes externally, associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
+    // When the inputRef's value changes externally
     useEffect(() => {
-      const labelValue = inputRef.current?.value ?? ''
-      setSearchField(optionsLabelById.current?.get(labelValue) ?? labelValue)
-      setField(inputRef.current?.value ?? '') // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
-    }, [inputRef])
+      // get the value from either the "value" prop or via the inputRef
+      const externalValue = (inputValue || inputRef.current?.value) ?? ''
+
+      // associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
+      // fallback to the external value if the inputRef's value is not in the options
+      setSearchField(
+        optionsLabelById.current?.get(externalValue) ?? externalValue
+      )
+      setField(externalValue) // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
+    }, [inputRef, inputValue])
 
     // Connect the external reference to the internal one "inputRef", so we can read it's value in the "useEffect" above
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
@@ -313,7 +322,14 @@ export const SelectAutocomplete = forwardRef(
             autoComplete="off"
             ref={inputRef}
             name={name}
-            onChange={(e) => setSearchField(e.target.value)}
+            onChange={(e) => {
+              setSearchField(e.target.value)
+
+              onChange({
+                type: 'change',
+                target: { name, value: e.target.value },
+              })
+            }}
             onBlur={(e) => {
               setSearchField(e.target.value)
 
