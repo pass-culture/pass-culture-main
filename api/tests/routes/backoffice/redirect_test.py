@@ -24,7 +24,7 @@ class SafeRedirectTest:
     def test_redirect_as_anonymous(self, client):
         response = client.get(url_for("backoffice_web.safe_redirect", url="https://example.com"))
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     @patch("pcapi.connectors.virustotal.check_url_is_safe")
