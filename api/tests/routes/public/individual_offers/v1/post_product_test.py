@@ -435,6 +435,28 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
 
     @pytest.mark.usefixtures("db_session")
+    def test_offer_with_description_more_than_10000_characters_long_is_not_accepted(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "digital",
+                    "venueId": venue_provider.venue.id,
+                    "url": "https://monebook.com/le-visible",
+                },
+                "categoryRelatedFields": {"category": "LIVRE_NUMERIQUE"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Jean Tartine est de retour",
+                "description": "A" * 10_001,
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["description"] == ["ensure this value has at most 10000 characters"]
+
+    @pytest.mark.usefixtures("db_session")
     def test_venue_allowed(self, client):
         utils.create_offerer_provider_linked_to_venue()
         not_allowed_venue = offerers_factories.VenueFactory()

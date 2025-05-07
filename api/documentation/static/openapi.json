@@ -2514,7 +2514,7 @@
                     "description": {
                         "description": "Offer description",
                         "example": "A great book for kids and old kids.",
-                        "maxLength": 1000,
+                        "maxLength": 10000,
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
@@ -2749,7 +2749,7 @@
                     "description": {
                         "description": "Offer description",
                         "example": "A great book for kids and old kids.",
-                        "maxLength": 1000,
+                        "maxLength": 10000,
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
@@ -6520,7 +6520,7 @@
                     "description": {
                         "description": "Offer description",
                         "example": "A great book for kids and old kids.",
-                        "maxLength": 1000,
+                        "maxLength": 10000,
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
@@ -6736,6 +6736,7 @@
                     "description": {
                         "description": "Offer description",
                         "example": "A great book for kids and old kids.",
+                        "maxLength": 10000,
                         "nullable": true,
                         "title": "Description",
                         "type": "string"

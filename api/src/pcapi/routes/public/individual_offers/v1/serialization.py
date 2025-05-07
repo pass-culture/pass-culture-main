@@ -632,7 +632,7 @@ class ProductOfferEdition(OfferEditionBase):
     )
     stock: StockEdition | None = STOCK_EDITION_FIELD
     name: OfferName | None = fields.OFFER_NAME
-    description: str | None = fields.OFFER_DESCRIPTION
+    description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 
     class Config:

@@ -140,7 +140,7 @@ class _FIELDS:
     OFFER_DESCRIPTION_WITH_MAX_LENGTH = Field(
         description="Offer description",
         example="A great book for kids and old kids.",
-        max_length=1000,
+        max_length=10000,
     )
     OFFER_BOOKING_EMAIL = Field(
         description="Recipient email for notifications about bookings, cancellations, etc.",

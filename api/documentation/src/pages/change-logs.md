@@ -16,6 +16,7 @@ title: Pass Culture API change logs
 ## May 2025
 
 - A new endpoint has been added to archive collective offers : [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers). See the following for details on the different collective offer statuses [**here**](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).
+- You can now specify a `description` that is up to 10 000 characters long (endpoints : [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer), [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent), [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer), [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct))
 
 ## February 2025
 
