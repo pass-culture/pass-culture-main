@@ -3330,8 +3330,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
             db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
         )
         role = perm_factories.RoleFactory(permissions=[read_offers, manage_offers])
-        user = users_factories.UserFactory()
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+        user = users_factories.AdminFactory()
+        user.backoffice_profile.roles = [role]
+        db.session.flush()
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
@@ -3355,8 +3356,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
             db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
         )
         role = perm_factories.RoleFactory(permissions=[read_offers, pro_fraud_actions])
-        user = users_factories.UserFactory()
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+        user = users_factories.AdminFactory()
+        user.backoffice_profile.roles = [role]
+        db.session.flush()
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)

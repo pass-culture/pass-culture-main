@@ -280,8 +280,7 @@ def authenticated_client_fixture(client, legit_user) -> "TestClient":
 
 @pytest.fixture(scope="function", name="read_only_bo_user")
 def read_only_bo_user_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory(roles=["ADMIN"])
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    user = users_factories.AdminFactory()
     backoffice_api.upsert_roles(user, {perm_models.Roles.LECTURE_SEULE})
     db.session.flush()
     return user
@@ -289,7 +288,7 @@ def read_only_bo_user_fixture(roles_with_permissions: None) -> users_models.User
 
 @pytest.fixture(scope="function", name="support_pro_n2_admin")
 def support_pro_n2_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory(roles=["ADMIN"])
+    user = users_factories.AdminFactory()
     backoffice_api.upsert_roles(user, {perm_models.Roles.SUPPORT_PRO, perm_models.Roles.SUPPORT_PRO_N2})
     db.session.flush()
     return user
@@ -297,7 +296,7 @@ def support_pro_n2_fixture(roles_with_permissions: None) -> users_models.User:
 
 @pytest.fixture(scope="function", name="pro_fraud_admin")
 def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory(roles=["ADMIN"])
+    user = users_factories.AdminFactory()
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
     db.session.flush()
     return user
@@ -305,7 +304,7 @@ def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
 
 @pytest.fixture
 def codir_admin(roles_with_permissions):
-    user = users_factories.UserFactory(roles=["ADMIN"])
+    user = users_factories.AdminFactory()
     backoffice_api.upsert_roles(user, {perm_models.Roles.CODIR_ADMIN})
     db.session.flush()
     return user
