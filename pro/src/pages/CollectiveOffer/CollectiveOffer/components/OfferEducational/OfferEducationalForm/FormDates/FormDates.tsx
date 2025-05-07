@@ -5,7 +5,6 @@ import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
@@ -56,10 +55,7 @@ export const FormDates = ({
             value: 'specific_dates',
             childrenOnChecked: (
               <>
-                <Callout
-                  variant={CalloutVariant.INFO}
-                  className={styles.banner}
-                >
+                <Callout className={styles.banner}>
                   Votre offre sera mise en pause automatiquement à l’issue des
                   dates précisées ci-dessous.
                 </Callout>

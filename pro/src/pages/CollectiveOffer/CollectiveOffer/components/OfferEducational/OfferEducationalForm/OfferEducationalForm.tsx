@@ -28,7 +28,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import { DomainOption } from '../useOfferEducationalFormData'
 
@@ -150,10 +149,7 @@ export const OfferEducationalForm = ({
           </BannerPublicApi>
         )}
         {!selectedOfferer?.allowedOnAdage ? (
-          <Callout
-            variant={CalloutVariant.INFO}
-            className={styles['no-offerer-callout']}
-          >
+          <Callout className={styles['no-offerer-callout']}>
             Vous ne pouvez pas créer d’offre collective tant que votre entité
             juridique n’est pas validée.
           </Callout>

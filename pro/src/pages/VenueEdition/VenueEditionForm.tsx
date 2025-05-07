@@ -16,7 +16,6 @@ import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -203,7 +202,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                           />
                           <Callout
                             testId="address-callout"
-                            variant={CalloutVariant.INFO}
                             className={
                               styles['opening-hours-subsubsection-callout']
                             }

@@ -9,7 +9,6 @@ import fullMailIcon from 'icons/full-mail.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './LegalInfos.module.scss'
@@ -30,10 +29,7 @@ export const LegalInfos = ({
   const DPOMail = 'dpo@passculture.app'
 
   const componentData = isNewSignupEnabled ? (
-    <Callout
-      variant={CalloutVariant.DEFAULT}
-      className={cn(styles['legal-infos-callout'], className)}
-    >
+    <Callout className={cn(styles['legal-infos-callout'], className)}>
       <p className={styles['legal-infos-paragraph']}>
         En cliquant sur S’inscrire, vous acceptez nos{' '}
         <ButtonLink

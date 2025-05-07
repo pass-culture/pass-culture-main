@@ -1,6 +1,5 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import { hasOffererAtLeastOnePhysicalVenue } from '../VenueList/venueUtils'
 
@@ -20,7 +19,6 @@ export const OffererBanners = ({
   if (!isUserOffererValidated) {
     return (
       <Callout
-        variant={CalloutVariant.INFO}
         className={styles['banner']}
         links={[
           {
@@ -47,7 +45,6 @@ export const OffererBanners = ({
   if (!offerer?.isValidated) {
     return (
       <Callout
-        variant={CalloutVariant.INFO}
         className={styles['banner']}
         links={[
           {
@@ -84,7 +81,6 @@ export const OffererBanners = ({
   if (!hasAtLeastOnePhysicalVenue) {
     return (
       <Callout
-        variant={CalloutVariant.INFO}
         className={styles['banner']}
         links={[
           {

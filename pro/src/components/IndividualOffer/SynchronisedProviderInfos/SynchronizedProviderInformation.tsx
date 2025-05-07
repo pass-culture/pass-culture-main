@@ -1,6 +1,5 @@
 import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import styles from './SynchronizedProviderInformation.module.scss'
 
@@ -17,7 +16,7 @@ export const SynchronizedProviderInformation = ({
   }
 
   return (
-    <Callout variant={CalloutVariant.INFO}>
+    <Callout>
       <div className={styles['banner-content']}>
         {providerInfo.logo && (
           <img

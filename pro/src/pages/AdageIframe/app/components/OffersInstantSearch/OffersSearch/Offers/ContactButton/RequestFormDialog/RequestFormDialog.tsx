@@ -9,7 +9,6 @@ import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import { DefaultFormContact } from './DefaultFormContact'
@@ -207,10 +206,7 @@ export const RequestFormDialog = ({
             <hr className={styles['separator']} />
             <MandatoryInfo className={styles['form-mandatory']} />
             {isPreview && (
-              <Callout
-                variant={CalloutVariant.INFO}
-                className={styles['contact-callout']}
-              >
+              <Callout className={styles['contact-callout']}>
                 Vous ne pouvez pas envoyer de demande de contact car ceci est un
                 aperçu de test du formulaire que verront les enseignants une
                 fois l’offre publiée.
@@ -253,10 +249,7 @@ export const RequestFormDialog = ({
           </span>
           <MandatoryInfo className={styles['form-mandatory']} />
           {isPreview && (
-            <Callout
-              variant={CalloutVariant.INFO}
-              className={styles['contact-callout']}
-            >
+            <Callout className={styles['contact-callout']}>
               Vous ne pouvez pas envoyer de demande de contact car ceci est un
               aperçu de test du formulaire que verront les enseignants une fois
               l’offre publiée.
@@ -269,10 +262,7 @@ export const RequestFormDialog = ({
           />
         </>
       ) : (
-        <Callout
-          variant={CalloutVariant.INFO}
-          className={styles['contact-readonly']}
-        >
+        <Callout className={styles['contact-readonly']}>
           Vous ne pouvez voir les informations de contact du partenaire car vous
           n’avez pas les droits ADAGE adaptés
         </Callout>

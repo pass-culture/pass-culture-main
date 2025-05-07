@@ -22,7 +22,6 @@ import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { DisplayOfferInAppLink } from '../SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
@@ -61,7 +60,14 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
       text: offerData.venuePublicName || offerData.venueName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: !offerData.description ? '' : <Markdown markdownText={offerData.description} /> },
+    {
+      title: 'Description',
+      text: !offerData.description ? (
+        ''
+      ) : (
+        <Markdown markdownText={offerData.description} />
+      ),
+    },
   ].concat(
     offer.isDigital
       ? {
@@ -156,7 +162,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     <SummaryLayout>
       <SummaryContent>
         {cannotEditDetails && (
-          <Callout variant={CalloutVariant.INFO}>
+          <Callout>
             Les informations de cette page ne sont pas modifiables car elles
             sont liées à l’EAN renseigné.
           </Callout>

@@ -30,7 +30,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 
@@ -146,7 +145,6 @@ export const OfferEducationalStock = <
                   isExternal: true,
                 },
               ]}
-              variant={CalloutVariant.INFO}
             >
               Vous pouvez modifier ces informations en fonction de vos échanges
               avec l’établissement scolaire tant que le chef d’établissement n’a

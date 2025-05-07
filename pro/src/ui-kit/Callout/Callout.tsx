@@ -50,8 +50,6 @@ export const Callout = ({
       calloutIcon = { src: fullErrorIcon, alt: 'Erreur' }
       break
     case CalloutVariant.INFO:
-    case CalloutVariant.DEFAULT:
-    default:
       calloutIcon = { src: fullInfoIcon, alt: 'Information' }
       break
   }
