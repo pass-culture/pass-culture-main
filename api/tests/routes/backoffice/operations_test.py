@@ -90,8 +90,9 @@ class CreateEventTest(PostEndpointHelper):
 
     # - authenticated user
     # - user session
+    expected_num_queries_when_no_query = 2
     # - insert into special_event or rollback
-    expected_num_queries = 3
+    expected_num_queries = expected_num_queries_when_no_query + 1
     # - get special event
     # - get special event questions
     # - insert into special_event_questions
@@ -133,7 +134,7 @@ class CreateEventTest(PostEndpointHelper):
                 "typeform_id": "abCd1234",
                 "event_date": datetime.date.today().isoformat(),
             },
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries_when_no_query,
         )
         assert response.status_code == 303
 
@@ -150,7 +151,7 @@ class CreateEventTest(PostEndpointHelper):
                 "typeform_id": "1a2b3c4d5e",
                 "event_date": datetime.date.today().isoformat(),
             },
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries_when_no_query,
         )
         assert response.status_code == 303
 

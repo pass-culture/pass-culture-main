@@ -230,7 +230,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Tag des offres ⚠️ 3 offres actives associées à cet EAN-13 seront affectées" in right_card
 
     def test_search_product_from_ean_with_invalid_ean(self, authenticated_client):
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url_for(self.endpoint, ean="978-3-16-14840-0"))
             assert response.status_code == 400
 

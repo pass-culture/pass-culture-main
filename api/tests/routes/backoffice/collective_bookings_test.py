@@ -395,7 +395,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         authenticated_client,
         collective_bookings,
     ):
-        with assert_num_queries(3):  # user_session + user + rollback
+        with assert_num_queries(2):  # user_session + user
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
