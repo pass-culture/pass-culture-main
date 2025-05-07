@@ -44,7 +44,7 @@ export const applyVenueDefaultsToFormValues = (
   }
   const isVenueAddress =
     values.location.locationType === CollectiveLocationType.ADDRESS &&
-    values.location.address.isVenueAddress
+    values.location.address?.isVenueAddress
 
   if (isOfferCreated) {
     //  In this case we are re-opening the first step during creation
