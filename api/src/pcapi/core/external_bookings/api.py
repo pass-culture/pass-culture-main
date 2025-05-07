@@ -174,7 +174,7 @@ def book_event_ticket(
     beneficiary: users_models.User,
 ) -> tuple[list[external_bookings_models.Ticket], int | None]:
     assert stock.offer.lastProviderId  # helps mypy
-    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
+    provider = providers_repository.get_active_provider_by_id(stock.offer.lastProviderId)
 
     if not provider:
         raise providers_exceptions.InactiveProvider()

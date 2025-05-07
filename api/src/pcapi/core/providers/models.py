@@ -27,6 +27,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     localClass = sa.Column(sa.String(60), nullable=True, unique=True)
 
+    # bool meant for hiding custom provider (for instance, FNAC provider) in the pro Interface (if set to False)
     enabledForPro: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
 
     enableParallelSynchronization: bool = sa.Column(
