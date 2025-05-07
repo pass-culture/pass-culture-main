@@ -29,7 +29,6 @@ function formatAdressApiResponse(response: AdresseApiJson): Array<AdresseData> {
     longitude: f.geometry.coordinates[0],
     label: f.properties.label,
     postalCode: f.properties.postcode,
-    inseeCode: f.properties.citycode,
   }))
 }
 

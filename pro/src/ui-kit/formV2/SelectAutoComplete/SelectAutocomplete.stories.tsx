@@ -84,12 +84,7 @@ export const NoResetOnOpen: StoryObj<typeof SelectAutocomplete> = {
     options,
     isOptional: true,
     resetOnOpen: false,
-    ref: (ref) => {
-      if (ref) {
-        ref.defaultValue = '05'
-      }
-      return ref
-    },
+    value: '05',
   },
 }
 
