@@ -146,8 +146,6 @@ export const PartnerPage = ({
           venueId={venue.id}
           venueName={venue.name}
           offererId={offerer.id}
-          isVisibleInApp={Boolean(venue.isVisibleInApp)}
-          isDisplayedInHomepage
         />
       )}
       <PartnerPageCollectiveSection

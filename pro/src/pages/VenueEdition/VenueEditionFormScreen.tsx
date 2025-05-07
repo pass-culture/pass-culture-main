@@ -1,9 +1,8 @@
 import { useLocation } from 'react-router'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { PartnerPageIndividualSection } from 'pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageIndividualSection'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
@@ -16,9 +15,8 @@ interface VenueEditionProps {
 export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
-  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
-  const shouldDisplayPartnerPageSection = !isOpenToPublicEnabled
-
+  const shouldDisplayAccessToPageWarning =
+    venue.isPermanent && venue.hasOffers && !venue.hasActiveIndividualOffer
   const location = useLocation()
 
   if (venue.isVirtual) {
@@ -33,21 +31,14 @@ export const VenueEditionFormScreen = ({
 
   return (
     <>
-      {venue.isPermanent && (
+      {shouldDisplayAccessToPageWarning && (
         <>
           <div className={styles['page-status']}>
-            <Callout>
-              Les informations que vous renseignez ci-dessous sont affichées
-              dans votre page partenaire, visible sur l’application pass Culture
+            <Callout variant={CalloutVariant.WARNING}>
+              Sans offre publiée, les jeunes n’ont pas accès à votre page sur
+              l’application.
             </Callout>
-            {shouldDisplayPartnerPageSection && <PartnerPageIndividualSection
-              venueId={venue.id}
-              venueName={venue.name}
-              offererId={venue.managingOfferer.id}
-              isVisibleInApp={Boolean(venue.isVisibleInApp)}
-            />}
           </div>
-          {shouldDisplayPartnerPageSection && <hr className={styles['separator']} />}
         </>
       )}
 

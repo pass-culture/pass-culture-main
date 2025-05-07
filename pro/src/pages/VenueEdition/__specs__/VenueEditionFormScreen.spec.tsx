@@ -142,16 +142,21 @@ const baseVenue: GetVenueResponseModel = {
 }
 
 describe('VenueEditionFormScreen', () => {
-  it('should display the partner info', async () => {
-    renderForm(baseVenue)
+  it('should display access to partner page is impossible warning', () => {
+    const venue: GetVenueResponseModel = {
+      ...defaultGetVenue,
+      isPermanent: true,
+      hasOffers: true,
+      hasActiveIndividualOffer: false,
+    }
+
+    renderForm(venue)
 
     expect(
-      await screen.findByText('À propos de votre activité')
+      screen.getByText(
+        'Sans offre publiée, les jeunes n’ont pas accès à votre page sur l’application.'
+      )
     ).toBeInTheDocument()
-    expect(
-      screen.getByText('État de votre page partenaire sur l’application :')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Non visible')).toBeInTheDocument()
   })
 
   it('should mention "structure" instead of "lieu"', () => {
@@ -167,21 +172,6 @@ describe('VenueEditionFormScreen', () => {
         /Cette structure vous permet uniquement de créer des offres numériques, elle/
       )
     ).toBeInTheDocument()
-  })
-
-  describe('when open to public feature is enabled', () => {
-    it('should no longer display the partner info', async () => {
-      renderForm(baseVenue, {
-        features: ['WIP_IS_OPEN_TO_PUBLIC'],
-      })
-
-      expect(
-        await screen.findByText('À propos de votre activité')
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText('État de votre page partenaire sur l’application :')
-      ).not.toBeInTheDocument()
-    })
   })
 
   describe('on readonly (VenueEditionReadOnly)', () => {
