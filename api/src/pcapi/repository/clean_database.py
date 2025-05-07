@@ -82,6 +82,7 @@ tables_to_clean: list[type[Model]] = [
     criteria_models.OfferCriterion,
     criteria_models.VenueCriterion,
     criteria_models.Criterion,
+    criteria_models.CriterionCategory,
     educational_models.CollectiveOffer,
     educational_models.CollectiveOfferTemplate,
     offers_models.Offer,
