@@ -113,10 +113,10 @@ class UpdateRoleTest(PostEndpointHelper):
         assert response.location == expected_url
 
         role_to_edit = db.session.query(perm_models.Role).filter_by(id=role_to_edit.id).one()
-        assert role_to_edit.permissions == new_perms
+        assert set(role_to_edit.permissions) == set(new_perms)
 
         role_not_to_edit = db.session.query(perm_models.Role).filter_by(id=role_not_to_edit.id).one()
-        assert role_not_to_edit.permissions == old_perms
+        assert set(role_not_to_edit.permissions) == set(old_perms)
 
     def test_update_role_with_empty_permissions(self, authenticated_client):
         role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
