@@ -131,12 +131,12 @@ Also, the validation process is not the same as individual offers since these of
 
 ### ⚠️ Upcoming changes
 
-A collective offer can have different statuses, depending on the event dates and the related booking status. You can check the current possible status values in the [Get Collective Offer endpoint response schema](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic).
+A collective offer can have different statuses, depending on the event dates and the related booking status. You can check the current possible status values in the [Get Collective Offer endpoint response schema](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic) -> `status` field.
 
 :::warning
 The collective offer status will be changed in the coming months. You can find below the new statuses list.
 
-To avoid confusion and to ease the migration, those statuses will be made available in a dedicated attribute.
+To allow the migration, this new status is available in the dedicated attribute `offerStatus`.
 
 In addition, the offer status will determine the actions that are allowed on the offer (which fields can be updated, whether the booking can be cancelled...). You can find below a table showing which actions are allowed for each new status.
 :::
@@ -175,3 +175,5 @@ Here are the allowed actions depending on the offer status:
 Those limitations are currently enforced **only** on the following endpoints :
 
 * [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers)
+
+The new status is available in the `offerStatus` field.

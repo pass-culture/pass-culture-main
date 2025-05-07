@@ -685,6 +685,7 @@ def list_public_collective_offers(
     *,
     required_id: int,
     status: offer_mixin.CollectiveOfferStatus | None = None,
+    displayedStatus: educational_models.CollectiveOfferDisplayedStatus | None = None,
     venue_id: int | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
@@ -702,7 +703,7 @@ def list_public_collective_offers(
         educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
     ]
 
-    if status:
+    if status is not None:
         filters.append(educational_models.CollectiveOffer.status == status)  # type: ignore[arg-type]
     if venue_id:
         filters.append(educational_models.CollectiveOffer.venueId == venue_id)
@@ -732,6 +733,9 @@ def list_public_collective_offers(
             educational_models.CollectiveBooking.dateCreated,
         )
     )
+
+    if displayedStatus is not None:
+        query = offers_repository._filter_collective_offers_by_statuses(query, statuses=[displayedStatus])
 
     query = query.order_by(educational_models.CollectiveOffer.id)
     query = query.limit(limit)

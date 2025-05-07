@@ -13,6 +13,9 @@ LIMIT_DESCRIPTION = "Number of items per page"
 
 # Paths to docusaurus pages
 CURSOR_PAGINATION_PAGE = "/docs/understanding-our-api/resources/cursor-pagination"
+COLLECTIVE_OFFER_STATUS_PAGE = (
+    "/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions"
+)
 # Anchors
 GET_OFFERER_VENUES_ANCHOR = "#tag/Venues/operation/GetOffererVenues"
 LIST_EDUCATIONAL_DOMAINS_ANCHOR = "#tag/Collective-Offer-Attributes/operation/ListEducationalDomains"
@@ -231,6 +234,9 @@ class _FIELDS:
     COLLECTIVE_OFFER_STATUS = Field(
         description=descriptions.COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE"
     )
+    COLLECTIVE_OFFER_OFFER_STATUS = Field(
+        description=f"Collective offer status - [see this page]({COLLECTIVE_OFFER_STATUS_PAGE})", example="PUBLISHED"
+    )
     COLLECTIVE_OFFER_NAME = Field(description="Collective offer name", example="Atelier de peinture")
     COLLECTIVE_OFFER_DESCRIPTION = Field(
         description="Collective offer description", example="Atelier de peinture à la gouache pour élèves de 5ème"
@@ -256,8 +262,8 @@ class _FIELDS:
         description=f"Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**]({LIST_STUDENTS_LEVELS_ANCHOR})",
         example=["GENERAL2", "GENERAL1", "GENERAL0"],
     )
-    COLLECTIVE_OFFER_IS_ACTIVE = Field(description="[DEPRECATED] Is your offer active", example=True)
-    COLLECTIVE_OFFER_IS_SOLD_OUT = Field(description="[DEPRECATED] Is your offer sold out", example=False)
+    COLLECTIVE_OFFER_IS_ACTIVE = Field(description="[⚠️ DEPRECATED] Is your offer active", example=True)
+    COLLECTIVE_OFFER_IS_SOLD_OUT = Field(description="[⚠️ DEPRECATED] Is your offer sold out", example=False)
     COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID = Field(
         description=f"Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)]({GET_NATIONAL_PROGRAMS_ANCHOR})**",
     )
