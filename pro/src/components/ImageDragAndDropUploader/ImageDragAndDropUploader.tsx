@@ -27,7 +27,7 @@ export interface ImageDragAndDropUploaderProps {
   onImageDelete: () => void
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
-  onClickButtonImageAdd?: () => void
+  onImageDropOrSelected?: () => void
   hideActionButtons?: boolean
   disabled?: boolean
 }
@@ -39,7 +39,7 @@ export const ImageDragAndDropUploader = ({
   onImageDelete,
   initialValues = {},
   mode,
-  onClickButtonImageAdd,
+  onImageDropOrSelected,
   hideActionButtons = false,
   disabled = false,
 }: ImageDragAndDropUploaderProps) => {
@@ -128,18 +128,13 @@ export const ImageDragAndDropUploader = ({
       {!hasImage && (
         <ImageDragAndDrop
           className={dragAndDropClassName}
-          onClick={() => {
-            // FIXME: This is used to log the event / equivalent of old
-            // "Ajouter une image" button click. It should probably
-            // be readapted.
-            onClickButtonImageAdd?.()
-          }}
           onDropOrSelected={(draftImage) => {
+            onImageDropOrSelected?.()
             setDraftImage(draftImage)
             setIsModalImageOpen(true)
           }}
           disabled={disabled}
-          {...(mode !== UploaderModeEnum.OFFER
+          {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
             ? {
                 minSizes: {
                   width: 600,

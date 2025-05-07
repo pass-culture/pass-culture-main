@@ -47,6 +47,10 @@ const renderPartnerPages = (
 
 describe('VenueEditionHeader', () => {
   it('should display image upload if no image', async () => {
+    const mockFile = new File(['fake img'], 'fake_img.jpg', {
+      type: 'image/jpeg',
+    })
+
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -60,9 +64,9 @@ describe('VenueEditionHeader', () => {
 
     const imageInput = screen.getByLabelText('Importez une image')
     expect(imageInput).toBeInTheDocument()
-    await userEvent.click(imageInput)
+    await userEvent.upload(imageInput, mockFile)
 
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
       offererId: '1',
       venueId: defaultGetVenue.id,
       imageType: UploaderModeEnum.VENUE,

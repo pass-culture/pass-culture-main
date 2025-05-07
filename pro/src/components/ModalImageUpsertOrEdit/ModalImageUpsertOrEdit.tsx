@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
@@ -51,6 +53,7 @@ export const ModalImageUpsertOrEdit = ({
   onImageDelete,
   initialValues = {},
 }: ModalImageUpsertOrEditProps): JSX.Element | null => {
+  const { logEvent } = useAnalytics()
   const { draftImage, ...previouslyUploadedImage } = initialValues
   const defaultPositions = {
     x: 0.5,
@@ -147,6 +150,11 @@ export const ModalImageUpsertOrEdit = ({
     croppedRect: CroppedRect
   ) => {
     if (image) {
+      logEvent(Events.CLICKED_SAVE_IMAGE, {
+        imageType: mode,
+        imageCreationStage: 'save',
+      })
+
       onImageUpload({
         imageFile: image,
         imageCroppedDataUrl: imageDataUrl,

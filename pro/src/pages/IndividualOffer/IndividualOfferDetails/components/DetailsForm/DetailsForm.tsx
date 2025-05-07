@@ -1,9 +1,12 @@
 import { useFormikContext } from 'formik'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -47,6 +50,7 @@ export const DetailsForm = ({
   imageOffer,
   categoryStatus,
 }: DetailsFormProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const { values, handleChange } = useFormikContext<DetailsFormValues>()
   const { subcategoryId } = values
   const { offer } = useIndividualOfferContext()
@@ -55,6 +59,13 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
   const showAddVenueBanner = venuesOptions.length === 0
+
+  const logOnImageDropOrSelected = () => {
+    logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
+      imageType: UploaderModeEnum.OFFER,
+      imageCreationStage: 'add image',
+    })
+  }
 
   return (
     <>
@@ -149,6 +160,7 @@ export const DetailsForm = ({
       <ImageUploaderOffer
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
+        onImageDropOrSelected={logOnImageDropOrSelected}
         imageOffer={imageOffer}
         hideActionButtons={isProductBased}
       />

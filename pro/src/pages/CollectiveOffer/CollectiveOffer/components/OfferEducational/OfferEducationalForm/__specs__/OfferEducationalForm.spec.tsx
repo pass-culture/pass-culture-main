@@ -1,8 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import { describe, expect } from 'vitest'
 
 import { CollectiveOfferTemplateAllowedAction } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import {
   Mode,
@@ -15,6 +18,7 @@ import {
   managedVenueFactory,
   userOffererFactory,
 } from 'commons/utils/factories/userOfferersFactories'
+import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -45,6 +49,8 @@ const renderOfferEducationalForm = (
     options
   )
 }
+
+const mockLogEvent = vi.fn()
 
 const defaultProps: OfferEducationalFormProps = {
   userOfferer: userOffererFactory({
@@ -188,5 +194,25 @@ describe('OfferEducationalForm', () => {
     expect(
       await screen.findByRole('radio', { name: 'Dans votre structure' })
     ).toBeInTheDocument()
+  })
+
+  it('should log an event when an image is uploaded (drag or selected)', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    renderOfferEducationalForm(defaultProps)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Importez une image')).toBeInTheDocument()
+    })
+
+    const imageInput = screen.getByLabelText('Importez une image')
+    await userEvent.upload(imageInput, new File(['fake img'], 'fake_img.jpg'))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
+      imageType: UploaderModeEnum.OFFER_COLLECTIVE,
+      imageCreationStage: 'add image',
+    })
   })
 })

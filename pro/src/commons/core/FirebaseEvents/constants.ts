@@ -59,6 +59,8 @@ export enum Events {
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
   CLICKED_CREATE_OFFER_FROM_REQUEST = 'hasClickedCreateOfferFromRequest',
   CLICKED_ADD_IMAGE = 'hasClickedAddImage',
+  DRAG_OR_SELECTED_IMAGE = 'hasDragOrSelectedImage',
+  CLICKED_SAVE_IMAGE = 'hasClickedSaveImage',
   CLICKED_DELETE_STOCK = 'hasClickedDeleteStock',
   CLICKED_BULK_DELETE_STOCK = 'hasClickedBulkDeleteStock',
   CLICKED_DOWNLOAD_OFFER_BOOKINGS = 'hasDownloadedBookings',

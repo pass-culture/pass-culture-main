@@ -114,7 +114,7 @@ export const VenueEditionHeader = ({
   }
 
   const logButtonAddClick = () => {
-    logEvent(Events.CLICKED_ADD_IMAGE, {
+    logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
       offererId: selectedOffererId?.toString(),
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
@@ -133,7 +133,7 @@ export const VenueEditionHeader = ({
         initialValues={imageValues}
         mode={UploaderModeEnum.VENUE}
         hideActionButtons
-        onClickButtonImageAdd={logButtonAddClick}
+        onImageDropOrSelected={logButtonAddClick}
       />
 
       <div className={styles['venue-details']}>
