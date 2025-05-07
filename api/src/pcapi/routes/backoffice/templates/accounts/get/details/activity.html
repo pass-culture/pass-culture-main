@@ -1,0 +1,25 @@
+{% import "components/links.html" as links with context %}
+<turbo-frame id="user_activity_frame">
+{% if activity %}
+  <table class="table mb-4 get-details-activity-view">
+    <thead>
+      <tr>
+        <th scope="col">Type d'activité</th>
+        <th scope="col">Date</th>
+        <th scope="col">Commentaire</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+      {% for user_activity in activity %}
+        <tr>
+          <td>{{ user_activity.activityType }}</td>
+          <td>{{ user_activity.activityDate | format_date_time }}</td>
+          <td>{{ user_activity.comment }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="m-5">Aucune activité à ce jour</p>
+{% endif %}
+</turbo-frame>
