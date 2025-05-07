@@ -5,67 +5,43 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_size.scss" as size;
 
-.text-input {
-  &-wrapper {
-    width: 100%;
-  }
-
-  &-readonly {
-    min-height: rem.torem(40px);
-  }
-
-  &-group {
-    display: flex;
-    align-items: center;
-
-    &-extension {
-      display: flex;
-      margin-left: 1rem;
-    }
-  }
+.grid-layout-input-container {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr);
+  grid-template-rows: repeat(3, auto);
+  grid-gap: rem.torem(8px) rem.torem(16px);
+  align-items: center;
 }
 
-.input-layout {
-  width: 100%;
+.grid-layout-label {
+  @include fonts.body;
 
-  &-label {
-    @include fonts.body;
+  grid-area: 1;
+  display: flex;
+  align-items: center;
 
-    margin-bottom: rem.torem(8px);
-    display: flex;
-    align-items: center;
-
-    @media screen and (min-width: size.$tablet) {
-      white-space: nowrap;
-    }
-
-    &-asterisk {
-      margin-left: rem.torem(8px);
-    }
-  }
-
-  &.has-description {
-    .input-layout-label {
-      margin-bottom: 0;
-    }
-  }
-
-  &-footer {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  &-error {
-    margin-top: rem.torem(8px);
-  }
-
-  &-input-description {
+  &-description {
     @include fonts.body-xs;
 
     display: block;
     color: var(--color-text-subtle);
-    margin-bottom: rem.torem(4px);
   }
+}
+
+.grid-layout-input {
+  grid-area: 2 / 1;
+}
+
+.grid-input-extension {
+  grid-area: 2 / 2;
+  display: flex;
+}
+
+.grid-layout-footer {
+  grid-area: 3 / 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .visually-hidden {

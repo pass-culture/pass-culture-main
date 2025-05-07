@@ -193,15 +193,17 @@ export const Collaborators = (): JSX.Element | null => {
                     required={true}
                     asterisk={false}
                     {...register('email')}
+                    InputExtension={
+                      <Button
+                        type="submit"
+                        isLoading={isSubmitting}
+                        className={styles['add-member-button']}
+                        data-error={errors.email?.message ? 'true' : 'false'}
+                      >
+                        Inviter
+                      </Button>
+                    }
                   />
-                  <Button
-                    type="submit"
-                    isLoading={isSubmitting}
-                    className={styles['add-member-button']}
-                    data-error={errors.email?.message ? 'true' : 'false'}
-                  >
-                    Inviter
-                  </Button>
                 </FormLayout.Row>
               </FormLayout>
             </form>

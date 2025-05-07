@@ -139,68 +139,59 @@ export const TextInput = React.forwardRef(
 
     return (
       <div
-        className={cn(
-          styles['input-layout'],
-          { [styles['has-description']]: Boolean(description) },
-          className
-        )}
+        className={cn(styles['grid-layout-input-container'], className)}
         data-testid={`wrapper-${name}`}
       >
-        <div
-          className={cn(styles['input-layout-label-container'], {
-            [styles['visually-hidden']]: isLabelHidden,
-          })}
-        >
-          <label
-            className={cn(styles['input-layout-label'], labelClassName)}
-            htmlFor={name}
+        <div className={styles['grid-layout-label']}>
+          <div
+            className={cn({
+              [styles['visually-hidden']]: isLabelHidden,
+            })}
           >
-            {label} {required && asterisk && '*'}
-          </label>
-          {description && (
-            <span
-              id={`description-${name}`}
-              data-testid={`description-${name}`}
-              className={styles['input-layout-input-description']}
-            >
-              {description}
-            </span>
-          )}
+            <label className={labelClassName} htmlFor={name}>
+              {label} {required && asterisk && '*'}
+            </label>
+            {description && (
+              <span
+                id={`description-${name}`}
+                data-testid={`description-${name}`}
+                className={styles['grid-layout-label-description']}
+              >
+                {description}
+              </span>
+            )}
+          </div>
         </div>
         {readOnly ? (
-          <span className={styles['text-input-readonly']}>{props.value}</span>
+          <span className={cn(styles['grid-layout-input'])}>{props.value}</span>
         ) : (
           <>
-            <div
-              className={styles[`text-input${InputExtension ? '-group' : ''}`]}
-            >
-              {input}
-              {InputExtension && (
-                <div className={styles['text-input-group-extension']}>
-                  {InputExtension}
-                </div>
-              )}
-              <div className={styles['input-layout-footer']}>
-                <div role="alert" id={errorId}>
-                  {error && (
-                    <FieldError
-                      name={name}
-                      className={styles['input-layout-error']}
-                    >
-                      {error}
-                    </FieldError>
-                  )}
-                </div>
-
-                {count !== undefined && (
-                  <FieldLayoutCharacterCount
-                    count={count}
-                    maxLength={maxLength}
+            <div className={styles['grid-layout-input']}>{input}</div>
+            <div className={styles['grid-layout-footer']}>
+              <div role="alert" id={errorId}>
+                {error && (
+                  <FieldError
                     name={name}
-                  />
+                    className={styles['input-layout-error']}
+                  >
+                    {error}
+                  </FieldError>
                 )}
               </div>
+
+              {count !== undefined && (
+                <FieldLayoutCharacterCount
+                  count={count}
+                  maxLength={maxLength}
+                  name={name}
+                />
+              )}
             </div>
+            {InputExtension && (
+              <div className={styles['grid-input-extension']}>
+                {InputExtension}
+              </div>
+            )}
           </>
         )}
       </div>

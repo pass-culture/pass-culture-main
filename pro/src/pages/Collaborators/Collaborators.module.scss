@@ -38,16 +38,6 @@
   margin-bottom: rem.torem(8px);
 }
 
-.add-member-button {
-  margin-bottom: rem.torem(32px);
-
-  @media (width <= 414px) {
-    &[data-error="true"] {
-      margin-bottom: rem.torem(48px);
-    }
-  }
-}
-
 .members-container {
   margin-bottom: rem.torem(24px);
 }
