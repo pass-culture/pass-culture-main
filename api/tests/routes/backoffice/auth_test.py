@@ -24,7 +24,7 @@ class LoginPageTest:
         response = client.get(url_for("backoffice_web.login"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
 
 
 class AuthorizePageTest:
@@ -40,7 +40,7 @@ class AuthorizePageTest:
         response = client.get(url_for("backoffice_web.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
 
     @pytest.mark.settings(
         BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0,
@@ -74,7 +74,7 @@ class AuthorizePageTest:
             response = client.get(url_for("backoffice_web.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         assert "Successful authentication attempt" in caplog.messages
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -114,7 +114,7 @@ class AuthorizePageTest:
         assert user is not None
         assert user.has_admin_role
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         assert "Successful authentication attempt" in caplog.messages
 
     @pytest.mark.settings(
@@ -141,7 +141,7 @@ class AuthorizePageTest:
             response = client.get(url_for("backoffice_web.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.user_not_found", _external=True)
+        assert response.location == url_for("backoffice_web.user_not_found")
         assert "Failed authentication attempt" in caplog.messages
 
     @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
@@ -151,7 +151,7 @@ class AuthorizePageTest:
         response = client.get(url_for("backoffice_web.authorize"))
 
         assert response.status_code == 302
-        assert response.location == url_for("backoffice_web.login", _external=True)
+        assert response.location == url_for("backoffice_web.login")
 
 
 class LogoutTest(PostEndpointWithoutPermissionHelper):
@@ -162,7 +162,7 @@ class LogoutTest(PostEndpointWithoutPermissionHelper):
         response = self.post_to_endpoint(authenticated_client)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
 
 
 class UserNotFoundPageTest:
