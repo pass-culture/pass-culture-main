@@ -127,7 +127,7 @@ jobs:
           fi
       - name: "Post on #shérif"
         if: always()
-        uses: slackapi/slack-github-action@v2.0.0
+        uses: slackapi/slack-github-action@v2.1.0
         with:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
