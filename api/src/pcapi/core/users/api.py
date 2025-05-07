@@ -1469,7 +1469,7 @@ def notify_users_before_deletion_of_suspended_account() -> None:
 
 
 def has_unprocessed_extract(user: models.User) -> bool:
-    for extract in user.gdprUserDataExtract:
+    for extract in user.gdprUserDataExtracts:
         if not extract.is_expired and not extract.dateProcessed:
             return True
     return False
@@ -1523,7 +1523,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
     for deposit in user.deposits:
         deposit.source = "Anonymized"
 
-    for extract in user.gdprUserDataExtract:
+    for extract in user.gdprUserDataExtracts:
         delete_gdpr_extract(extract.id)
 
     db.session.query(models.GdprUserAnonymization).filter(models.GdprUserAnonymization.userId == user.id).delete()

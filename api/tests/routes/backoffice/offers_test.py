@@ -32,6 +32,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
@@ -972,7 +973,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-category": pro_categories.LIVRE.id,
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -984,7 +985,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1007,7 +1008,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1023,7 +1024,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1038,7 +1039,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-criteria": "A",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1050,7 +1051,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "OUT",
             "search-0-category": "13",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1072,7 +1073,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": value,
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1380,7 +1381,7 @@ class EditOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        expected_url = url_for("backoffice_web.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_edit)
@@ -1425,7 +1426,7 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_get_empty_edit_form_test(self, legit_user, authenticated_client):
-        form_url = url_for(self.endpoint, _external=True)
+        form_url = url_for(self.endpoint)
 
         with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(form_url)
@@ -1782,7 +1783,7 @@ class ValidateOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        expected_url = url_for("backoffice_web.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_validate)
@@ -1835,7 +1836,7 @@ class RejectOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_reject.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        expected_url = url_for("backoffice_web.offer.list_offers")
         assert response.location == expected_url
 
         assert offer_to_reject.isActive is False
@@ -1864,7 +1865,7 @@ class GetRejectOfferFormTest(GetEndpointHelper):
     def test_get_edit_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        form_url = url_for(self.endpoint, offer_id=offer.id)
 
         with assert_num_queries(3):  # session + current user + tested_query
             response = authenticated_client.get(form_url)
@@ -2622,7 +2623,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2652,7 +2653,7 @@ class EditOfferStockTest(PostEndpointHelper):
             form={"price": 50.1},
         )
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2685,7 +2686,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2720,7 +2721,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2758,7 +2759,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2799,7 +2800,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2837,7 +2838,7 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
         assert response.location == expected_url
 
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
@@ -2996,7 +2997,7 @@ class ActivateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        expected_url = url_for("backoffice_web.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_activate)
@@ -3042,7 +3043,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        expected_url = url_for("backoffice_web.offer.list_offers")
         assert response.location == expected_url
 
         db.session.refresh(offer_to_deactivate)
@@ -3141,7 +3142,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             compliance_score=55,
             compliance_reasons=["stock_price", "offer_subcategory_id", "offer_description"],
         )
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3177,7 +3178,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_detail_offer_with_product(self, authenticated_client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
         offer = offers_factories.OfferFactory(product=product)
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3254,7 +3255,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             visualDisabilityCompliant=False,
         )
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
 
         response = authenticated_client.get(url)
         assert response.status_code == 200
@@ -3301,7 +3302,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             lastValidationAuthor=legit_user,
         )
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3316,7 +3317,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             extraData={"showType": 1510},
         )
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3330,11 +3331,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
             db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
         )
         role = perm_factories.RoleFactory(permissions=[read_offers, manage_offers])
-        user = users_factories.UserFactory()
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+        user = users_factories.AdminFactory()
+        user.backoffice_profile.roles = [role]
+        db.session.flush()
 
         authenticated_client = client.with_bo_session_auth(user)
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3355,11 +3357,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
             db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
         )
         role = perm_factories.RoleFactory(permissions=[read_offers, pro_fraud_actions])
-        user = users_factories.UserFactory()
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+        user = users_factories.AdminFactory()
+        user.backoffice_profile.roles = [role]
+        db.session.flush()
 
         authenticated_client = client.with_bo_session_auth(user)
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3377,7 +3380,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             lastValidationAuthor=legit_user,
         )
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3397,7 +3400,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(query_count):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3430,7 +3433,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(query_count):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3476,7 +3479,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(query_count):
             response = authenticated_client.get(url)
             assert response.status_code == 200
@@ -3597,7 +3600,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offerers_factories.VenueFactory.create_batch(2, managingOfferer=venue.managingOfferer, pricing_point=venue)
         offer = offers_factories.EventOfferFactory(venue=venue)
 
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        url = url_for(self.endpoint, offer_id=offer.id)
         # Additional queries to check if "Modifier le partenaire culturel" should be displayed or not":
         # - _get_editable_stock
         # - count stocks with beginningDatetime in the past

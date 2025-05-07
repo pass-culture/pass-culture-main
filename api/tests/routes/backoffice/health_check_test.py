@@ -3,7 +3,10 @@ from unittest.mock import patch
 import pytest
 
 
-pytestmark = pytest.mark.backoffice
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice,
+]
 
 
 class Returns200Test:
