@@ -3581,7 +3581,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3594,7 +3594,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     def test_venue_not_found(self, authenticated_client):
         url = url_for(self.endpoint, venue_id=1)
 
-        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
@@ -3604,7 +3604,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
@@ -3614,7 +3614,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

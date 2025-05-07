@@ -1341,7 +1341,7 @@ class GetIncidentTest(GetEndpointHelper):
         offerers_factories.VenueBankAccountLinkFactory(venue=incident.venue, bankAccount=bank_account)
         url = url_for(self.endpoint, finance_incident_id=incident.id)
 
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
@@ -1662,8 +1662,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
         # (CREATED, VALIDATED)
-        # but adds 1 query for the rollback
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert (
@@ -1680,8 +1679,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
         # (CREATED, VALIDATED)
-        # but adds 1 query for rollback
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert (
@@ -1946,8 +1944,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
         # (CREATED, VALIDATED)
-        # but adds 1 query for rollback
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert (
@@ -1959,8 +1956,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         booking1, booking2 = bookings_factories.CancelledBookingFactory.create_batch(2)
         object_ids = f"{booking1.id},{booking2.id}"
 
-        # add 1 query for rollback
-        with assert_num_queries(self.expected_num_queries + 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert (
