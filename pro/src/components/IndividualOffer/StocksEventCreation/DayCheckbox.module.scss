@@ -16,6 +16,7 @@ $checkbox-size: rem.torem(40px);
   background-color: var(--color-background-default);
   border: rem.torem(1px) solid var(--color-border-default);
   border-radius: 50%;
+  color: var(--color-text-default);
   transition:
     border 150ms ease,
     background 150ms ease;
@@ -24,7 +25,7 @@ $checkbox-size: rem.torem(40px);
   &:focus,
   &:checked {
     &::after {
-      background-image: none;
+      content: none;
     }
   }
 
@@ -52,6 +53,10 @@ $checkbox-size: rem.torem(40px);
       border: rem.torem(2px) solid var(--color-border-brand-primary);
       border-radius: 50%;
       background-color: var(--color-background-info);
+    }
+
+    &:hover {
+      color: var(--color-text-locked);
     }
   }
 
