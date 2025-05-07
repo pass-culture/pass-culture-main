@@ -13,6 +13,7 @@ from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import CollectiveOfferStatus
@@ -28,6 +29,7 @@ from pcapi.utils import email as email_utils
 
 class ListCollectiveOffersQueryModel(BaseModel):
     status: CollectiveOfferStatus | None = fields.COLLECTIVE_OFFER_STATUS
+    offerStatus: CollectiveOfferDisplayedStatus | None = fields.COLLECTIVE_OFFER_OFFER_STATUS
     venue_id: int | None = fields.VENUE_ID
     period_beginning_date: str | None = fields.PERIOD_BEGINNING_DATE
     period_ending_date: str | None = fields.PERIOD_ENDING_DATE
@@ -189,6 +191,7 @@ class CollectiveOffersResponseModel(BaseModel):
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
     status: str = fields.COLLECTIVE_OFFER_STATUS
+    offerStatus: str = fields.COLLECTIVE_OFFER_OFFER_STATUS
     venueId: int = fields.VENUE_ID
     bookings: Sequence[CollectiveBookingResponseModel]
 
@@ -197,16 +200,14 @@ class CollectiveOffersResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOffersResponseModel":
-        bookings = [
-            CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
-        ]
         return cls(
             id=offer.id,
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             status=offer.status.value,
+            offerStatus=offer.displayedStatus.value,
             venueId=offer.venueId,
-            bookings=bookings,
+            bookings=offer.collectiveStock.collectiveBookings,
         )
 
 
@@ -245,6 +246,7 @@ class CollectiveOfferLocationModel(BaseModel):
 class GetPublicCollectiveOfferResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
     status: str = fields.COLLECTIVE_OFFER_STATUS
+    offerStatus: str = fields.COLLECTIVE_OFFER_OFFER_STATUS
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
     bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
@@ -286,20 +288,12 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
-        if offer.nationalProgram:
-            national_program = NationalProgramModel.from_orm(offer.nationalProgram)
-        else:
-            national_program = None
-
-        bookings = [
-            CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
-        ]
-
         location = CollectiveOfferLocationModel.from_offer(offer)
 
         return cls(
             id=offer.id,
             status=offer.status.name,
+            offerStatus=offer.displayedStatus.value,
             name=offer.name,
             description=offer.description,
             bookingEmails=offer.bookingEmails,
@@ -333,8 +327,8 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             },
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
-            bookings=bookings,
-            nationalProgram=national_program,
+            bookings=offer.collectiveStock.collectiveBookings,
+            nationalProgram=offer.nationalProgram,
             formats=offer.formats,
             location=location,
         )

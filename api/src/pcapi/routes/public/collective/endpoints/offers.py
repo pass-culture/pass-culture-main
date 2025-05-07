@@ -54,10 +54,11 @@ def get_collective_offers_public(
     (collective offers created manually in the pro interface will not show up).
     """
 
-    offers = educational_api_offer.list_public_collective_offers(
+    offers = educational_repository.list_public_collective_offers(
         required_id=current_api_key.providerId,
         venue_id=query.venue_id,
         status=query.status,
+        displayedStatus=query.offerStatus,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
     )

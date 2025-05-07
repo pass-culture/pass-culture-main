@@ -54,6 +54,24 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         assert sort_response_offer_json(response.json) == expected_serialized_offer(offer)
 
+    def test_get_offer_no_program_no_booking(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__nationalProgram=None,
+        )
+        offer_id = stock.collectiveOffer.id
+
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/v2/collective/offers/{offer_id}"
+            )
+            assert response.status_code == 200
+
+        assert response.json["nationalProgram"] is None
+        assert response.json["bookings"] == []
+
     def test_get_offer_on_school_location(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
 
@@ -269,6 +287,7 @@ def expected_serialized_offer(offer):
         "isSoldOut": offer.isSoldOut,
         "numberOfTickets": offer.collectiveStock.numberOfTickets,
         "status": offer.status.name,
+        "offerStatus": offer.displayedStatus.value,
         "students": [student.name for student in offer.students],
         "totalPrice": float(offer.collectiveStock.price),
         "hasBookingLimitDatetimesPassed": offer.hasBookingLimitDatetimesPassed,
