@@ -4,7 +4,6 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import fullMailIcon from 'icons/full-mail.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import emailIcon from '../../LostPassword/assets/email.svg'
 
@@ -34,7 +33,7 @@ export const SignupConfirmation = () => {
           </>
         )}
       </p>
-      <Callout variant={CalloutVariant.DEFAULT}>
+      <Callout>
         <p className={styles['signup-confirmation-info']}>
           Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams ou cliquez
           ici pour le recevoir à nouveau.

@@ -86,7 +86,7 @@ export const AddressManual = ({
 
       {coords.value && !coordsMeta.error && (
         <>
-          <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
+          <Callout className={styles['callout']}>
             <ButtonLink
               to={`https://google.com/maps/place/${decodeURIComponent(coords.value)}`}
               variant={ButtonVariant.TERNARY}

@@ -15,7 +15,6 @@ import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
@@ -108,10 +107,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
 
       {getValues('offer.offerType') === OFFER_TYPES.EDUCATIONAL &&
         !offerer?.isValidated && (
-          <Callout
-            variant={CalloutVariant.INFO}
-            className={styles['pending-offerer-callout']}
-          >
+          <Callout className={styles['pending-offerer-callout']}>
             Votre structure est en cours de validation par les équipes pass
             Culture.
           </Callout>
@@ -119,7 +115,6 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
 
       {!offerer?.allowedOnAdage && lastDmsApplication && (
         <Callout
-          variant={CalloutVariant.INFO}
           links={[
             {
               href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,

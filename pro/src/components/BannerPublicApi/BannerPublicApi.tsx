@@ -2,7 +2,6 @@ import React from 'react'
 
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerPublicApi.module.scss'
@@ -16,7 +15,7 @@ export const BannerPublicApi = ({
   children,
   className,
 }: Props): JSX.Element => (
-  <Callout variant={CalloutVariant.INFO} className={className}>
+  <Callout className={className}>
     <div className={styles['banner-container']}>
       <SvgIcon
         src={logoPassCultureIcon}

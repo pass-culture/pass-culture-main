@@ -32,10 +32,7 @@ export const OfferStatusBanner = ({
     )
   } else if (status === OfferStatus.PENDING) {
     return (
-      <Callout
-        variant={CalloutVariant.INFO}
-        className={styles['callout-offre-validation']}
-      >
+      <Callout className={styles['callout-offre-validation']}>
         Nous vérifions actuellement l’éligibilité de votre offre.
         <b>
           {' '}

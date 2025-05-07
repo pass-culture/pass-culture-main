@@ -9,7 +9,6 @@ import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ContactButton } from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton/ContactButton'
@@ -92,7 +91,7 @@ export function AdageOfferPartnerPanel({
 
       <div className={styles['partner-panel-location']}>
         {(venue.city || venue.postalCode || distanceToSchool || isPreview) && (
-          <Callout variant={CalloutVariant.INFO}>
+          <Callout>
             Ce partenaire est situé{' '}
             {(venue.city || venue.postalCode) &&
               `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}

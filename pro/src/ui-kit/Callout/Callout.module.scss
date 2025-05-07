@@ -8,19 +8,11 @@
   border-radius: rem.torem(8px);
   padding: rem.torem(16px);
 
-  &-default {
+  &-info {
     background-color: var(--color-background-info);
 
     .icon {
       color: var(--color-icon-brand-primary);
-    }
-  }
-
-  &-info {
-    background-color: var(--color-background-accent-light);
-
-    .icon {
-      color: var(--color-accent);
     }
   }
 

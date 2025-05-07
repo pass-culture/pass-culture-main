@@ -1,7 +1,6 @@
 import cn from 'classnames'
 
 import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Link } from 'ui-kit/LinkNodes/LinkNodes'
 
 import style from './FormLayout.module.scss'
@@ -33,7 +32,6 @@ export const FormLayoutDescription = ({
         )}
       >
         <Callout
-          variant={CalloutVariant.INFO}
           className={style['form-layout-section-description-content']}
           links={links}
         >
