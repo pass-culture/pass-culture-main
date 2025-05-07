@@ -1,0 +1,1 @@
+const o=e=>n(e).replace(/[^\w ]/,""),n=e=>e.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""),h=(e,l,a)=>{const t=[];for(let r=0;r<e.length&&!(a&&t.length>=a);r++){const s=e[r].normalizedLabel??n(e[r].label);n(l||"").split(" ").every(c=>s.includes(c))&&t.push(e[r])}return t};export{o as n,h as s};
