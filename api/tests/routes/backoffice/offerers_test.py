@@ -2441,7 +2441,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert [int(row["ID"]) for row in rows] == [uo.offerer.id for uo in (user_offerer_3, user_offerer_2)]
 
         def test_list_filtering_by_invalid_date(self, authenticated_client):
-            with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
+            with assert_num_queries(self.expected_num_queries_when_no_query):
                 response = authenticated_client.get(
                     url_for(
                         "backoffice_web.validation.list_offerers_to_validate",
@@ -2514,7 +2514,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         @pytest.mark.parametrize("search_filter", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
         def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search_filter):
-            with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
+            with assert_num_queries(self.expected_num_queries_when_no_query):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
                 )
@@ -2594,7 +2594,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             offerers_factories.ClosedOffererFactory(name="Z")
 
             expected_num_queries = (
-                self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
+                self.expected_num_queries if expected_status == 200 else self.expected_num_queries_when_no_query
             )
             with assert_num_queries(expected_num_queries):
                 response = authenticated_client.get(
@@ -2707,7 +2707,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             offerers_to_be_validated,
         ):
             expected_num_queries = (
-                self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
+                self.expected_num_queries if expected_status == 200 else self.expected_num_queries_when_no_query
             )
             with assert_num_queries(expected_num_queries):
                 response = authenticated_client.get(
@@ -3332,7 +3332,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         self, authenticated_client, status_filter, expected_status, expected_users_emails, user_offerer_to_be_validated
     ):
         if expected_status == 400:
-            expected_num_queries = self.expected_num_queries_when_no_query + 1
+            expected_num_queries = self.expected_num_queries_when_no_query
         else:
             expected_num_queries = self.expected_num_queries
         with assert_num_queries(expected_num_queries):
@@ -3423,7 +3423,9 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         expected_users_emails,
         user_offerer_to_be_validated,
     ):
-        with assert_num_queries(self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1):
+        with assert_num_queries(
+            self.expected_num_queries if expected_status == 200 else self.expected_num_queries_when_no_query
+        ):
             response = authenticated_client.get(
                 url_for(self.endpoint, offerer_status=offerer_status_filter, status=["NEW", "PENDING"])
             )
@@ -4788,7 +4790,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback transaction
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4801,7 +4803,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     def test_offerer_not_found(self, authenticated_client):
         url = url_for(self.endpoint, offerer_id=1)
 
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback transaction
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
@@ -4811,7 +4813,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
 
         db.session.expire_all()
 
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback transaction
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
