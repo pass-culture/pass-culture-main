@@ -31,10 +31,10 @@ class CreateTagTest(PostEndpointHelper):
     def test_create_tag(self, authenticated_client):
         form = {"name": "my-tag", "description": "description"}
 
-        response = self.post_to_endpoint(authenticated_client, form=form)
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
 
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Le nouveau tag offres et partenaires culturels a été créé"
 
         tag = db.session.query(criteria_models.Criterion).first()
 
@@ -44,21 +44,22 @@ class CreateTagTest(PostEndpointHelper):
         assert not tag.endDateTime
 
     def test_create_tag_with_categories(self, authenticated_client):
-        form = {"name": "my-tag", "description": "description", "categories": [2]}
+        category = criteria_factories.CriterionCategoryFactory()
+        form = {"name": "my-tag", "description": "description", "categories": [category.id]}
 
-        response = self.post_to_endpoint(authenticated_client, form=form)
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
 
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Le nouveau tag offres et partenaires culturels a été créé"
 
-        tag = db.session.query(criteria_models.Criterion).first()
+        tag = db.session.query(criteria_models.Criterion).one()
 
         assert tag.name == "my-tag"
         assert tag.description == "description"
         assert not tag.startDateTime
         assert not tag.endDateTime
         assert len(tag.categories) == 1
-        assert tag.categories[0].label == "Comptage partenaire EPN"
+        assert tag.categories[0].label == category.label
 
 
 class DeleteTagTest(PostEndpointHelper):
@@ -85,6 +86,7 @@ class UpdateTagTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
     def test_update_tag(self, authenticated_client):
+        categories = criteria_factories.CriterionCategoryFactory.create_batch(2)
         tag = criteria_factories.CriterionFactory(description="desc", startDateTime=None, endDateTime=None)
 
         new_tag_name = f"{tag.name}-update"
@@ -97,13 +99,13 @@ class UpdateTagTest(PostEndpointHelper):
             "description": new_tag_description,
             "start_date": new_start_date,
             "end_date": new_end_date,
-            "categories": [2, 3],
+            "categories": [category.id for category in categories],
         }
 
-        response = self.post_to_endpoint(authenticated_client, tag_id=tag.id, form=form)
+        response = self.post_to_endpoint(authenticated_client, tag_id=tag.id, form=form, follow_redirects=True)
 
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Informations mises à jour"
 
         db.session.refresh(tag)
 
@@ -112,8 +114,7 @@ class UpdateTagTest(PostEndpointHelper):
         assert tag.startDateTime.date() == new_start_date
         assert tag.endDateTime.date() == new_end_date
         assert len(tag.categories) == 2
-        assert tag.categories[0].label == "Comptage partenaire EPN"
-        assert tag.categories[1].label == "Playlist lieux et offres"
+        assert set(tag.categories) == set(categories)
 
 
 class ListTagsTest(GetEndpointHelper):
