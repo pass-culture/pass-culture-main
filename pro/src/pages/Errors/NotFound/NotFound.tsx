@@ -5,8 +5,6 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { BackgroundGradientSVG } from '../BackgroundGradientSVG'
-
 import styles from './NotFound.module.scss'
 
 type NotFoundProps = {
@@ -18,10 +16,6 @@ export const NotFound = ({ redirect = '/accueil' }: NotFoundProps) => {
 
   return (
     <main className={styles['not-found']} id="content">
-      <div className={styles['not-found-gradient-container']}>
-        <BackgroundGradientSVG />
-      </div>
-
       <div className={styles['not-found-content']}>
         <SvgIcon
           src={stroke404Icon}
