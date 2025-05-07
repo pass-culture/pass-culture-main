@@ -450,7 +450,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
@@ -473,7 +473,7 @@ class SuspendOffererTest(DeactivateOffererHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
@@ -499,7 +499,7 @@ class UnsuspendOffererTest(ActivateOffererHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
@@ -532,7 +532,7 @@ class DeleteOffererTest(PostEndpointHelper):
             == 0
         )
 
-        expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
+        expected_url = url_for("backoffice_web.pro.search_pro")
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -553,7 +553,7 @@ class DeleteOffererTest(PostEndpointHelper):
             == 1
         )
 
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_delete.id, _external=True)
+        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_delete.id)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -600,7 +600,7 @@ class GenerateOffererAPIKeyTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         api_key = db.session.query(offerers_models.ApiKey).filter_by(offererId=offerer.id).one()
         alert = html_parser.extract_alert(response.data)
@@ -615,7 +615,7 @@ class GenerateOffererAPIKeyTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         response = authenticated_client.get(response.location)
         alert = html_parser.extract_alert(response.data)
         assert alert == "Le nombre maximal de clés a été atteint"
@@ -660,7 +660,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # Test redirection
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_edit.id, _external=True)
+        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_edit.id)
         assert response.location == expected_url
 
         # Test region update
@@ -2009,7 +2009,7 @@ class CommentOffererTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         assert response.location == expected_url
 
         db.session.refresh(offerer)
@@ -4259,7 +4259,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # Test redirection
-        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags", _external=True)
+        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags")
         assert response.location == expected_url
 
         response = authenticated_client.get(expected_url)
@@ -4285,7 +4285,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags", _external=True)
+        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags")
         assert response.location == expected_url
 
         response = authenticated_client.get(expected_url)
@@ -4310,7 +4310,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags", _external=True)
+        expected_url = url_for("backoffice_web.offerer_tag.list_offerer_tags")
         response = authenticated_client.get(expected_url)
 
         assert html_parser.extract_alert(response.data) == "Ce nom de tag existe déjà"
@@ -4337,7 +4337,7 @@ class CreateOffererTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer_tag.list_offerer_tags", _external=True)
+        assert response.location == url_for("backoffice_web.offerer_tag.list_offerer_tags")
 
         created_tag = db.session.query(offerers_models.OffererTag).one()
         assert created_tag.name == name
@@ -4406,9 +4406,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
 
         assert response.status_code == 303
-        assert response.location == url_for(
-            "backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories", _external=True
-        )
+        assert response.location == url_for("backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories")
 
         created_category = db.session.query(offerers_models.OffererTagCategory).one()
         assert created_category.name == form_data["name"]
@@ -4592,7 +4590,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offerer.id)
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription", _external=True
+            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription"
         )
         assert user_offerer.offerer.individualSubscription is not None
         individual_subscription = user_offerer.offerer.individualSubscription
@@ -4625,7 +4623,7 @@ class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offerer.id)
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription", _external=True
+            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription"
         )
 
         assert individual_subscription.isEmailSent is True
@@ -4691,7 +4689,7 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription", _external=True
+            "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription"
         )
         self._assert_data(individual_subscription, form_data)
 

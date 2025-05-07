@@ -34,7 +34,7 @@ class CreateTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.location == url_for("backoffice_web.tags.list_tags")
 
         tag = db.session.query(criteria_models.Criterion).first()
 
@@ -49,7 +49,7 @@ class CreateTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.location == url_for("backoffice_web.tags.list_tags")
 
         tag = db.session.query(criteria_models.Criterion).first()
 
@@ -74,7 +74,7 @@ class DeleteTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, tag_id=tag.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.location == url_for("backoffice_web.tags.list_tags")
 
         assert db.session.query(criteria_models.Criterion).count() == 0
 
@@ -103,7 +103,7 @@ class UpdateTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, tag_id=tag.id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", _external=True)
+        assert response.location == url_for("backoffice_web.tags.list_tags")
 
         db.session.refresh(tag)
 
@@ -247,7 +247,7 @@ class CreateTagCategoryTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.tags.list_tags", active_tab="categories", _external=True)
+        assert response.location == url_for("backoffice_web.tags.list_tags", active_tab="categories")
 
         assert db.session.query(criteria_models.CriterionCategory).filter_by(label=form_data["label"]).one_or_none()
 
