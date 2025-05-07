@@ -1360,7 +1360,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
         .options(
             # Venue info
-            sa_orm.joinedload(offerers_models.Venue, finance_models.FinanceIncident.venue)
+            sa_orm.contains_eager(finance_models.FinanceIncident.venue)
             .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName)
             .options(
                 sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
@@ -1372,9 +1372,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 ),
             ),
             # Booking incidents info
-            sa_orm.joinedload(
-                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-            )
+            sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)
             .load_only(
                 finance_models.BookingFinanceIncident.id,
                 finance_models.BookingFinanceIncident.newTotalAmount,
