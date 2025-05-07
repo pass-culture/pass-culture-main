@@ -114,7 +114,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         .filter_by(id=user_id)
         .options(
             sa_orm.joinedload(users_models.User.deposits),
-            sa_orm.joinedload(users_models.User.gdprUserDataExtract),
+            sa_orm.joinedload(users_models.User.gdprUserDataExtracts),
         )
         .one_or_none()
     )
@@ -296,7 +296,7 @@ def render_public_account_details(
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
             sa_orm.joinedload(users_models.User.email_history),
-            sa_orm.joinedload(users_models.User.gdprUserDataExtract),
+            sa_orm.joinedload(users_models.User.gdprUserDataExtracts),
         )
         .one_or_none()
     )
@@ -2163,7 +2163,7 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
         )
         .options(
             sa_orm.load_only(users_models.User.firstName, users_models.User.lastName, users_models.User.roles),
-            sa_orm.joinedload(users_models.User.gdprUserDataExtract),
+            sa_orm.joinedload(users_models.User.gdprUserDataExtracts),
         )
         .one_or_none()
     )
@@ -2192,9 +2192,9 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
 
 
 def has_gdpr_extract(user: users_models.User) -> bool:
-    if not user.gdprUserDataExtract:
+    if not user.gdprUserDataExtracts:
         return False
-    return any(not extract.is_expired for extract in user.gdprUserDataExtract)
+    return any(not extract.is_expired for extract in user.gdprUserDataExtracts)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])

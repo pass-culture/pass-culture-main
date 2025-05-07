@@ -218,7 +218,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
-    gdprUserDataExtract: sa_orm.Mapped["GdprUserDataExtract"] = sa_orm.relationship(
+    gdprUserDataExtracts: sa_orm.Mapped[list["GdprUserDataExtract"]] = sa_orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)

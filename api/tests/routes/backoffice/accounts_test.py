@@ -4611,12 +4611,12 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         storage_folder,
     ):
         user = users_factories.UserFactory(
-            gdprUserDataExtract=[
+            gdprUserDataExtracts=[
                 users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.today())
             ]
         )
 
-        with open(storage_folder / f"{user.gdprUserDataExtract[0].id}.zip", "wb"):
+        with open(storage_folder / f"{user.gdprUserDataExtracts[0].id}.zip", "wb"):
             pass
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
@@ -4639,7 +4639,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         authenticated_client,
     ):
         user = users_factories.UserFactory(
-            gdprUserDataExtract=[users_factories.GdprUserDataExtractBeneficiaryFactory()]
+            gdprUserDataExtracts=[users_factories.GdprUserDataExtractBeneficiaryFactory()]
         )
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)

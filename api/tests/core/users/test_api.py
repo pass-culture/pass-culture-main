@@ -2501,7 +2501,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             firstName="user_beneficiary_to_anonymize",
             age=18,
             lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            gdprUserDataExtract=[
+            gdprUserDataExtracts=[
                 users_factories.GdprUserDataExtractBeneficiaryFactory(
                     dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=1)
                 )
@@ -2512,7 +2512,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             firstName="user_beneficiary_to_anonymize",
             age=18,
             lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            gdprUserDataExtract=[
+            gdprUserDataExtracts=[
                 users_factories.GdprUserDataExtractBeneficiaryFactory(
                     dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
                 )
@@ -2549,7 +2549,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         iris = db.session.query(geography_models.IrisFrance).first()
 
         with open(
-            self.storage_folder / f"{user_with_expired_gdpr_extract_to_anonymize.gdprUserDataExtract[0].id}.zip", "wb"
+            self.storage_folder / f"{user_with_expired_gdpr_extract_to_anonymize.gdprUserDataExtracts[0].id}.zip", "wb"
         ):
             pass
 
@@ -2695,7 +2695,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             firstName="user_beneficiary_to_anonymize",
             age=18,
             lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            gdprUserDataExtract=[users_factories.GdprUserDataExtractBeneficiaryFactory()],
+            gdprUserDataExtracts=[users_factories.GdprUserDataExtractBeneficiaryFactory()],
             deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
         )
 
