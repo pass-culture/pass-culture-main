@@ -36,7 +36,7 @@ export const FormLocation = ({
   const formik = useFormikContext<OfferEducationalFormValues>()
   const setFieldValue = formik.setFieldValue
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
-    useState(formik.values.location.address.isManualEdition)
+    useState(formik.values.location.address?.isManualEdition)
 
   const selectedVenue = venues.find(
     (v) => v.id.toString() === formik.values.venueId.toString()

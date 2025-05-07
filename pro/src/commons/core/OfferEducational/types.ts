@@ -28,11 +28,11 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   }
   location: {
     locationType: CollectiveLocationType
-    address: {
+    address?: {
       id_oa?: string
-      isManualEdition: boolean
-      isVenueAddress: boolean
-      label: string
+      isManualEdition?: boolean
+      isVenueAddress?: boolean
+      label?: string
     }
   }
   interventionArea: string[]

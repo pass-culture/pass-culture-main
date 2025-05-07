@@ -58,7 +58,7 @@ const getCommonOfferPayload = (
   isCollectiveOaActive: boolean
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel => {
   // remove id_oa key from location object as it useful only on a form matter
-  delete offer.location.address.id_oa
+  delete offer.location.address?.id_oa
 
   const getLocationPayload = () => {
     if (!isCollectiveOaActive) {
