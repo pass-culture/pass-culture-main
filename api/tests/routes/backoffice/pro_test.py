@@ -236,7 +236,7 @@ class SearchProUserTest:
     def test_search_pro_with_percent_is_forbidden(self, authenticated_client):
         self._create_accounts()
 
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, q="%terms", pro_type=TypeOptions.USER.name))
             assert response.status_code == 400
 
@@ -314,7 +314,7 @@ class SearchProUserTest:
     def test_search_pro_with_empty_content(self, authenticated_client, pro_type):
         self._create_accounts()
 
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, q=" ", pro_type=pro_type))
             assert response.status_code == 400
 
@@ -1050,8 +1050,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CONNECT_AS_PRO
     # session
     # current user
+    expected_num_queries_when_no_query = 2
     # pro user data
-    expected_num_queries = 3
+    expected_num_queries = expected_num_queries_when_no_query + 1
 
     @pytest.mark.parametrize("roles", [[users_models.UserRole.PRO], [users_models.UserRole.NON_ATTACHED_PRO]])
     def test_connect_as_user(self, authenticated_client, legit_user, roles):
@@ -1085,7 +1086,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries_when_no_query,
         )
 
         # check url form
@@ -1105,7 +1106,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries_when_no_query,
         )
 
         # check url form
@@ -1122,7 +1123,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
         assert response.status_code == 404
 
@@ -1133,7 +1134,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1165,7 +1166,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for transaction rollback
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1205,8 +1206,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 1,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1222,8 +1222,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 1,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1245,8 +1244,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 1,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1275,8 +1273,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            # +1 for rollback query
-            expected_num_queries=self.expected_num_queries + 1,
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1339,7 +1336,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1355,7 +1352,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1375,7 +1372,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1402,7 +1399,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1468,7 +1465,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1484,7 +1481,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1507,7 +1504,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1537,7 +1534,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1601,7 +1598,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1617,7 +1614,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1639,7 +1636,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1668,7 +1665,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1734,7 +1731,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1750,7 +1747,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1773,7 +1770,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1803,7 +1800,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1869,7 +1866,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1885,7 +1882,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1908,7 +1905,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1938,7 +1935,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
