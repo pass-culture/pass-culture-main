@@ -41,6 +41,10 @@ def get_provider_enabled_for_pro_by_id(provider_id: int | None) -> models.Provid
     return db.session.query(models.Provider).filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
 
 
+def get_active_provider_by_id(provider_id: int) -> models.Provider | None:
+    return db.session.query(models.Provider).filter_by(id=provider_id, isActive=True).one_or_none()
+
+
 def get_provider_by_local_class(local_class: str) -> models.Provider:
     return db.session.query(models.Provider).filter_by(localClass=local_class).one_or_none()
 

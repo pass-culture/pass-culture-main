@@ -1139,7 +1139,7 @@ def cancel_unstored_external_bookings() -> None:
             booking_type = external_booking_info.get("booking_type")
             if booking_type == constants.RedisExternalBookingType.EVENT:
                 provider_id = external_booking_info["cancel_event_info"]["provider_id"]
-                provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
+                provider = providers_repository.get_active_provider_by_id(provider_id)
                 stock_id = external_booking_info["cancel_event_info"]["stock_id"]
                 stock = db.session.query(offers_models.Stock).filter_by(id=stock_id).one_or_none()
                 if not stock or not provider:

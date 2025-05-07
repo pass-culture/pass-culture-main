@@ -115,10 +115,24 @@ class BookEventTicketTest:
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
             book_event_ticket(booking, stock, user)
 
+    def test_should_raise_because_provider_is_inactive(self):
+        booking_creation_date = datetime.datetime(2024, 5, 12)
+        provider = providers_factories.PublicApiProviderFactory(isActive=False)
+        offer = offers_factories.EventOfferFactory(lastProviderId=provider.id)
+        stock = offers_factories.EventStockFactory(offer=offer)
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=booking_creation_date, quantity=2)
+        user = user_factories.BeneficiaryFactory()
+
+        with pytest.raises(providers_exceptions.InactiveProvider):
+            book_event_ticket(booking, stock, user)
+
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
-        provider = providers_factories.PublicApiProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory(
+            enabledForPro=False,  # should not have any impact
+        )
+
         offer = offers_factories.EventOfferFactory(
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             lastProviderId=provider.id,
