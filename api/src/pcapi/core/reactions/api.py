@@ -25,6 +25,8 @@ def bulk_update_or_create_reaction(user: User, reactions: list[PostOneReactionRe
             sa_orm.contains_eager(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer, innerjoin=True)
             .load_only(offers_models.Offer.id, offers_models.Offer.subcategoryId, offers_models.Offer.productId)
+            .joinedload(offers_models.Offer.product)
+            .load_only(offers_models.Product.likesCount),
         )
     )
 
@@ -52,6 +54,17 @@ def update_or_create_reaction(
         existing_reaction = next((reaction for reaction in user.reactions if reaction.offerId == offer.id), None)
 
     if existing_reaction:
+        if offer.productId:
+            if (
+                existing_reaction.reactionType != reactions_models.ReactionTypeEnum.LIKE
+                and reaction_type == reactions_models.ReactionTypeEnum.LIKE
+            ):
+                offer.product.likesCount += 1
+            elif (
+                existing_reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE
+                and reaction_type != reactions_models.ReactionTypeEnum.LIKE
+            ):
+                offer.product.likesCount -= 1
         existing_reaction.reactionType = reaction_type
         db.session.flush()
         return existing_reaction
@@ -63,6 +76,8 @@ def update_or_create_reaction(
         productId=offer.productId,
     )
     db.session.add(reaction)
+    if offer.productId and reaction_type == reactions_models.ReactionTypeEnum.LIKE:
+        offer.product.likesCount += 1
 
     return reaction
 
