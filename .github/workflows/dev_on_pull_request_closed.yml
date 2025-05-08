@@ -143,7 +143,7 @@ jobs:
           fi
 
       # Delete pro firebase deployment
-      - uses: w9jds/firebase-action@v13.32.0
+      - uses: w9jds/firebase-action@v14.3.0
         if: steps.test-channel-existence.outputs.should_delete == 'true'
         with:
           args: hosting:channel:delete ${{ steps.pro-channel-name.outputs.channel-name }} --force
