@@ -893,15 +893,15 @@
     "@eslint/core" "^0.13.0"
     levn "^0.4.1"
 
-"@firebase/analytics@^0.10.12":
-  version "0.10.12"
-  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.12.tgz#b49b9351b8cb19da007320a52932b953fff90d71"
-  integrity sha512-iDCGnw6qdFqwI5ywkgece99WADJNoymu+nLIQI4fZM/vCZ3bEo4wlpEetW71s1HqGpI0hQStiPhqVjFxDb2yyw==
+"@firebase/analytics@^0.10.13":
+  version "0.10.13"
+  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.13.tgz#57569e44a8f97b6d4366037df76525667c6011e4"
+  integrity sha512-X+6wMOPgA9l0AeeMdMcMfaCP4XKPvrhx55MGuMrfHvUrOvFKldpzBum7KkoGJMoexKmqmKP+mCmJMY9Fb8K6Hw==
   dependencies:
-    "@firebase/component" "0.6.13"
-    "@firebase/installations" "0.6.13"
+    "@firebase/component" "0.6.14"
+    "@firebase/installations" "0.6.14"
     "@firebase/logger" "0.4.4"
-    "@firebase/util" "1.11.0"
+    "@firebase/util" "1.11.1"
     tslib "^2.1.0"
 
 "@firebase/app@^0.11.5":
