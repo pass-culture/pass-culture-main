@@ -23,13 +23,11 @@
   --color-alert-dark: #f9c030;
 
   // GRADIENTS COLORS
-  --color-grey-for-gradient-1: #e1e1e7;
-  --color-grey-for-gradient-2: #f1f1f4;
-  --color-linear-gradient-skeleton: linear-gradient(
-    191deg,
-    var(--color-grey-for-gradient-1),
-    var(--color-grey-for-gradient-2),
-    var(--color-grey-for-gradient-1)
+  --color-loading-skeleton: linear-gradient(
+    90deg,
+    #f1f1f4 25%,
+    #e1e1e7 50%,
+    #f1f1f4 75%
   );
 
   //  BACKGROUND COLORS

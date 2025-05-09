@@ -12,7 +12,7 @@
   &-image {
     width: rem.torem(175px);
     height: rem.torem(250px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     margin-right: rem.torem(20px);
     border-radius: rem.torem(16px);
   }
@@ -24,14 +24,14 @@
   &-title {
     width: 75%;
     height: rem.torem(32px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     margin-bottom: rem.torem(24px);
   }
 
   &-tag {
     width: 15%;
     height: rem.torem(24px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     border-radius: rem.torem(33px);
   }
 
@@ -56,7 +56,7 @@
     width: rem.torem(40px);
     height: rem.torem(40px);
     border-radius: 50%;
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
   }
 }
 
@@ -67,7 +67,7 @@
   &-image {
     width: rem.torem(215px);
     height: rem.torem(275px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     border-radius: rem.torem(16px);
   }
 
@@ -81,14 +81,14 @@
   &-tag {
     width: 40%;
     height: rem.torem(24px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     border-radius: rem.torem(33px);
   }
 
   &-title {
     width: 100%;
     height: rem.torem(32px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     margin-bottom: rem.torem(16px);
   }
 }
@@ -96,26 +96,26 @@
 .line {
   width: 100%;
   height: rem.torem(15px);
-  background-color: var(--color-adage-skeleton);
+  background-color: var(--color-background-subtle);
   margin-bottom: rem.torem(24px);
 
   &-25 {
     width: 25%;
     height: rem.torem(15px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     margin-bottom: rem.torem(24px);
   }
 
   &-50 {
     width: 50%;
     height: rem.torem(15px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
   }
 
   &-description {
     width: 100%;
     height: rem.torem(15px);
-    background-color: var(--color-adage-skeleton);
+    background-color: var(--color-background-subtle);
     margin-bottom: rem.torem(8px);
   }
 }
