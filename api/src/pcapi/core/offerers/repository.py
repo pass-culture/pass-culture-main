@@ -408,7 +408,10 @@ def get_venues_by_ids(ids: typing.Collection[int]) -> typing.Collection[models.V
     return (
         db.session.query(models.Venue)
         .filter(models.Venue.id.in_(ids))
-        .options(sa_orm.joinedload(models.Venue.googlePlacesInfo))
+        .options(
+            sa_orm.joinedload(models.Venue.googlePlacesInfo),
+            sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address),
+        )
     )
 
 
