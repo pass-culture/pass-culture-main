@@ -85,6 +85,16 @@ STATUSES_NOT_ALLOWING_ARCHIVE_OFFER_TEMPLATE = (
     models.CollectiveOfferDisplayedStatus.ARCHIVED,
 )
 
+STATUSES_ALLOWING_CANCEL = (
+    models.CollectiveOfferDisplayedStatus.PREBOOKED,
+    models.CollectiveOfferDisplayedStatus.BOOKED,
+)
+
+STATUSES_NOT_ALLOWING_CANCEL = tuple(
+    set(models.CollectiveOfferDisplayedStatus)
+    - {*STATUSES_ALLOWING_CANCEL, models.CollectiveOfferDisplayedStatus.HIDDEN}
+)
+
 ADDRESS_DICT = {
     "isVenueAddress": False,
     "isManualEdition": False,

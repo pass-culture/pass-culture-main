@@ -553,6 +553,11 @@ class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         ReimbursedCollectiveBookingFactory.create(collectiveStock=stock)
 
 
+class ArchivedReimbursedCollectiveOfferFactory(ReimbursedCollectiveOfferFactory):
+    isActive = False
+    dateArchived = factory.LazyFunction(datetime.datetime.utcnow)
+
+
 class CollectiveOfferOnSchoolLocationFactory(PublishedCollectiveOfferFactory):
     locationType = models.CollectiveLocationType.SCHOOL
     interventionArea = ["33", "75", "93"]

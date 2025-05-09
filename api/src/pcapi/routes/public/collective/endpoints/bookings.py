@@ -5,6 +5,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models
+from pcapi.core.educational import validation
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
@@ -48,6 +49,18 @@ def cancel_collective_booking(booking_id: int) -> None:
     booking = _get_booking(booking_id)
     if not booking:
         raise NotFound()
+
+    offer = booking.collectiveStock.collectiveOffer
+    try:
+        validation.check_collective_offer_action_is_allowed(
+            offer=offer, action=models.CollectiveOfferAllowedAction.CAN_CANCEL
+        )
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise ForbiddenError(
+            {
+                "booking": f"Impossible d'annuler cette réservation car le statut de l'offre est {offer.displayedStatus.value}"
+            }
+        )
 
     try:
         reason = models.CollectiveBookingCancellationReasons.PUBLIC_API

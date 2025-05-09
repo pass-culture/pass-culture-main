@@ -2,23 +2,13 @@ import pytest
 
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
-from pcapi.core.educational import testing as adage_api_testing
+from pcapi.core.educational import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
-
-STATUSES_ALLOWING_CANCEL = (
-    models.CollectiveOfferDisplayedStatus.PREBOOKED,
-    models.CollectiveOfferDisplayedStatus.BOOKED,
-)
-
-STATUSES_NOT_ALLOWING_CANCEL = tuple(
-    set(models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_ALLOWING_CANCEL, models.CollectiveOfferDisplayedStatus.HIDDEN}
-)
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -42,9 +32,9 @@ class Returns204Test:
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
 
         expected_payload = serialize_collective_booking(collective_booking)
-        assert len(adage_api_testing.adage_requests) == 1
-        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
-        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
+        assert len(testing.adage_requests) == 1
+        assert testing.adage_requests[0]["sent_data"] == expected_payload
+        assert testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
 
     def test_cancel_confirmed_booking(self, client):
         user = user_factories.ProFactory()
@@ -64,9 +54,9 @@ class Returns204Test:
         assert collective_booking.cancellationUser == user
 
         expected_payload = serialize_collective_booking(collective_booking)
-        assert len(adage_api_testing.adage_requests) == 1
-        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
-        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
+        assert len(testing.adage_requests) == 1
+        assert testing.adage_requests[0]["sent_data"] == expected_payload
+        assert testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
 
     def test_cancel_confirmed_booking_user_connect_as(self, client):
         user = user_factories.ProFactory()
@@ -97,7 +87,7 @@ class Returns204Test:
         assert collective_booking.status == models.CollectiveBookingStatus.CANCELLED
         assert collective_booking.cancellationUser == admin
 
-    @pytest.mark.parametrize("status", STATUSES_ALLOWING_CANCEL)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_CANCEL)
     def test_cancel_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
@@ -132,7 +122,7 @@ class Returns404Test:
             "code": "NO_COLLECTIVE_OFFER_FOUND",
             "message": "No collective offer has been found with this id",
         }
-        assert len(adage_api_testing.adage_requests) == 0
+        assert len(testing.adage_requests) == 0
 
 
 class Returns403Test:
@@ -151,9 +141,9 @@ class Returns403Test:
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
-        assert len(adage_api_testing.adage_requests) == 0
+        assert len(testing.adage_requests) == 0
 
-    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_CANCEL)
+    @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_CANCEL)
     def test_cancel_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
