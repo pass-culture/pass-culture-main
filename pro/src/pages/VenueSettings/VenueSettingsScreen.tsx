@@ -1,5 +1,6 @@
-import { FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -16,9 +17,9 @@ import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
 
 import { serializeEditVenueBodyModel } from './serializers'
+import { generateSiretValidationSchema } from './SiretOrCommentFields/validationSchema'
 import { VenueSettingsFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
@@ -45,7 +46,22 @@ export const VenueSettingsScreen = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
 
-  const onSubmit = async (values: VenueSettingsFormValues) => {
+  const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
+    generateSiretValidationSchema(
+      venue.isVirtual,
+      isSiretValued,
+      offerer.siren,
+      initialValues.siret
+    )
+  )
+
+  const form = useForm<VenueSettingsFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(formValidationSchema),
+    mode: 'onBlur',
+  })
+
+  const onSubmit: SubmitHandler<VenueSettingsFormValues> = async (values) => {
     try {
       await api.editVenue(
         venue.id,
@@ -85,8 +101,10 @@ export const VenueSettingsScreen = ({
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
-        formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
-        formik.setStatus('apiError')
+        const serializedErrors = serializeApiErrors(formErrors, apiFieldsMap)
+        for (const field in serializedErrors) {
+          form.setError(field, { message: serializedErrors[field] })
+        }
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
@@ -96,26 +114,12 @@ export const VenueSettingsScreen = ({
       })
     }
   }
-  const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
-    generateSiretValidationSchema(
-      venue.isVirtual,
-      isSiretValued,
-      offerer.siren,
-      initialValues.siret
-    )
-  )
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit: onSubmit,
-    validationSchema: formValidationSchema,
-  })
 
   return (
     <>
       <MandatoryInfo />
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} noValidate>
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <VenueSettingsForm
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
@@ -124,7 +128,7 @@ export const VenueSettingsScreen = ({
             offerer={offerer}
           />
         </form>
-      </FormikProvider>
+      </FormProvider>
     </>
   )
 }

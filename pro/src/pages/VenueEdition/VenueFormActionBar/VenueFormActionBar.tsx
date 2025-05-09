@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
@@ -20,15 +20,18 @@ export const VenueFormActionBar = ({
   venue,
   disableFormSubmission,
 }: VenueFormActionBarProps) => {
-  const { isSubmitting } = useFormikContext<
-    VenueEditionFormValues | VenueSettingsFormValues
-  >()
+  const {
+    formState: { isSubmitting },
+  } = useFormContext<VenueEditionFormValues | VenueSettingsFormValues>()
 
   return (
     <div className={styles['action-bar']}>
       <ButtonLink
         variant={ButtonVariant.SECONDARY}
-        to={getPathToNavigateTo(venue?.managingOfferer.id as number, venue?.id as number)}
+        to={getPathToNavigateTo(
+          venue?.managingOfferer.id as number,
+          venue?.id as number
+        )}
       >
         Annuler
       </ButtonLink>
