@@ -233,6 +233,7 @@ describe('computeInitialValuesFromOffer', () => {
             id_oa: 'SPECIFIC_ADDRESS',
             label: 'théâtre de savoie',
           },
+          locationComment: '',
           locationType: 'ADDRESS',
         },
       })

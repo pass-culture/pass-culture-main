@@ -27,6 +27,7 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
       isManualEdition: false,
       isVenueAddress: false,
     },
+    locationComment: '',
   },
   latitude: '',
   longitude: '',

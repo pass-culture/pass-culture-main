@@ -73,7 +73,7 @@ const getCommonOfferPayload = (
     if (offer.location.locationType === CollectiveLocationType.ADDRESS) {
       return {
         location: {
-          ...offer.location,
+          locationType: CollectiveLocationType.ADDRESS,
           address: {
             ...offer.location.address,
             banId: offer.banId,
@@ -84,6 +84,15 @@ const getCommonOfferPayload = (
             city: offer.city ?? '',
             coords: offer.coords ?? '',
           },
+        },
+      }
+    }
+
+    if (offer.location.locationType === CollectiveLocationType.TO_BE_DEFINED) {
+      return {
+        location: {
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
+          locationComment: offer.location.locationComment,
         },
       }
     }

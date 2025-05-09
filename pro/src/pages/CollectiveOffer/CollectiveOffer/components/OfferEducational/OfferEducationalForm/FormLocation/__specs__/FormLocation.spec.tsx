@@ -294,6 +294,20 @@ describe('FormLocation', () => {
     expect(interventionAreaMultiselect).toBeInTheDocument()
   })
 
+  it('should show intervention area multiselect and comment text area on press "à déterminer" option', async () => {
+    renderFormLocation(props, initialValues)
+
+    const toBeDefinedRadio = screen.getByLabelText(
+      'À déterminer avec l’enseignant'
+    )
+    await userEvent.click(toBeDefinedRadio)
+
+    const interventionAreaMultiselect = screen.getByLabelText('Département(s)')
+    expect(interventionAreaMultiselect).toBeInTheDocument()
+    const commentTextArea = screen.getByLabelText('Commentaire')
+    expect(commentTextArea).toBeInTheDocument()
+  })
+
   it('should show school radio checked with intervention areas selected when location type is SCHOOL', () => {
     renderFormLocation(props, {
       ...initialValues,
@@ -308,6 +322,27 @@ describe('FormLocation', () => {
 
     const departmentTag = screen.getByText('44 - Loire-Atlantique')
     expect(departmentTag).toBeInTheDocument()
+  })
+
+  it('should show "à déterminer" radio checked with intervention areas selected when location type is TO_BE_DEFINED', () => {
+    renderFormLocation(props, {
+      ...initialValues,
+      location: {
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
+        locationComment: 'quelque part',
+      },
+      interventionArea: ['44'],
+    })
+
+    const toBeDefinedRadio = screen.getByLabelText(
+      'À déterminer avec l’enseignant'
+    )
+    expect(toBeDefinedRadio).toBeChecked()
+
+    const departmentTag = screen.getByText('44 - Loire-Atlantique')
+    expect(departmentTag).toBeInTheDocument()
+
+    expect(screen.getByText('quelque part')).toBeInTheDocument()
   })
 
   it('should reset default location on press new location type radio button', async () => {
