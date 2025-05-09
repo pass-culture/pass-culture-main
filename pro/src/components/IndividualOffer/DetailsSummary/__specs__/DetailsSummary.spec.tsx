@@ -150,4 +150,28 @@ describe('DetailsSummaryScreen', () => {
     expect(screen.getByText(/Structure/)).toBeInTheDocument()
     expect(screen.getByText('TATA')).toBeInTheDocument()
   })
+
+  it('should show the description of the offer', () => {
+    const offer = getIndividualOfferFactory({
+      name: 'Offre de test',
+      description: 'my description',
+    })
+
+    renderDetailsSummaryScreen(offer)
+
+    //  The description is displayed twice : once in the summary and once in the preview
+    expect(screen.getAllByText('my description')).toHaveLength(2)
+    expect(screen.getAllByTestId('markdown-content')).toHaveLength(2)
+  })
+
+  it('should not show the description if the offer has no description', () => {
+    const offer = getIndividualOfferFactory({
+      name: 'Offre de test',
+      description: '',
+    })
+
+    renderDetailsSummaryScreen(offer)
+
+    expect(screen.queryByTestId('markdown-content')).not.toBeInTheDocument()
+  })
 })
