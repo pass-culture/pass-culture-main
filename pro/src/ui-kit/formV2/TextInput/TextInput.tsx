@@ -137,9 +137,18 @@ export const TextInput = React.forwardRef(
       />
     )
 
+    //  The footer must remain in the DOM because elements will role "alert" and "status"
+    //  should already be in the DOM when their content changes. But the display of the footer div
+    //  must change when it's empty so that the grid does not add unnecessary gaps.
+    const hasFooter = error || count !== undefined
+
     return (
       <div
-        className={cn(styles['grid-layout-input-container'], className)}
+        className={cn(
+          styles['grid-layout-input-container'],
+          { [styles['has-footer']]: hasFooter },
+          className
+        )}
         data-testid={`wrapper-${name}`}
       >
         <div className={styles['grid-layout-label']}>
