@@ -29,7 +29,9 @@ def get_venue_provider_list(venue_id: int) -> list[models.VenueProvider]:
     )
 
 
-def get_active_venue_providers_by_provider(provider_id: int) -> list[models.VenueProvider]:
+def get_active_venue_providers_by_provider(
+    provider_id: int,
+) -> list[models.VenueProvider]:
     return db.session.query(models.VenueProvider).filter_by(providerId=provider_id, isActive=True).all()
 
 
@@ -37,7 +39,9 @@ def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int
     return db.session.query(models.VenueProvider).filter_by(venueId=venue_id, providerId=provider_id).one_or_none()
 
 
-def get_provider_enabled_for_pro_by_id(provider_id: int | None) -> models.Provider | None:
+def get_provider_enabled_for_pro_by_id(
+    provider_id: int | None,
+) -> models.Provider | None:
     return db.session.query(models.Provider).filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
 
 
@@ -85,7 +89,9 @@ def get_allocine_pivot(venue: Venue) -> models.AllocinePivot | None:
     return db.session.query(models.AllocinePivot).filter_by(venue=venue).one_or_none()
 
 
-def get_cinema_provider_pivot_for_venue(venue: Venue) -> models.CinemaProviderPivot | None:
+def get_cinema_provider_pivot_for_venue(
+    venue: Venue,
+) -> models.CinemaProviderPivot | None:
     return db.session.query(models.CinemaProviderPivot).filter_by(venue=venue).one_or_none()
 
 
@@ -151,7 +157,10 @@ def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) 
     ids: list[Sequence[int]] = (
         db.session.query(models.EMSCinemaDetails)
         .join(models.CinemaProviderPivot)
-        .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
+        .join(
+            models.VenueProvider,
+            models.CinemaProviderPivot.providerId == models.VenueProvider.providerId,
+        )
         .filter(models.VenueProvider.id.in_(venues_provider_to_sync))
         .with_entities(models.EMSCinemaDetails.id)
         .all()
@@ -170,7 +179,10 @@ def get_ems_oldest_sync_version() -> int:
     version = (
         db.session.query(func.min(models.EMSCinemaDetails.lastVersion))
         .join(models.CinemaProviderPivot)
-        .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
+        .join(
+            models.VenueProvider,
+            models.CinemaProviderPivot.providerId == models.VenueProvider.providerId,
+        )
         .filter(models.VenueProvider.isActive)
         .scalar()
     )
