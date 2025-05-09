@@ -11,6 +11,14 @@
   grid-template-rows: repeat(3, auto);
   grid-gap: rem.torem(8px) rem.torem(16px);
   align-items: center;
+
+  &:not(.has-footer) {
+    grid-template-rows: repeat(2, auto);
+
+    .grid-layout-footer {
+      grid-area: unset;
+    }
+  }
 }
 
 .grid-layout-label {
