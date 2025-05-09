@@ -49,11 +49,9 @@ logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
-    from pcapi.core.bookings.models import BookingStatus
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
-    from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider

@@ -2,7 +2,6 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.connectors import api_adresse
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 import pcapi.core.offerers.factories as offerers_factories

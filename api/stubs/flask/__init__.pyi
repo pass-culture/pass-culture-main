@@ -1,8 +1,8 @@
 # isort: off
 # This is a copy of `flask/__init__.py`
 
-from markupsafe import escape
-from markupsafe import Markup
+from markupsafe import escape  # noqa F401
+from markupsafe import Markup  # noqa F401
 from werkzeug.exceptions import abort as abort
 from werkzeug.utils import redirect as redirect
 
