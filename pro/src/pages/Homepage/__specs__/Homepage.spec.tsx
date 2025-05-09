@@ -1,7 +1,4 @@
-import {
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'

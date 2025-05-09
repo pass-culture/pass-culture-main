@@ -17,7 +17,7 @@ export interface DialogProps {
   hideIcon?: boolean
   extraClassNames?: string
   trigger?: React.ReactNode | React.ReactNode[]
-  open?: boolean
+  open: boolean
 }
 
 export const Dialog = ({

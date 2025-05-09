@@ -15,7 +15,7 @@ type ConfirmDialogProps = DialogProps & {
   isLoading?: boolean
   leftButtonAction?: () => void
   confirmButtonDisabled?: boolean
-  open?: boolean
+  open: boolean
 }
 
 export const ConfirmDialog = ({

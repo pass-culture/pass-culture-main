@@ -7,7 +7,7 @@ import styles from './CollectiveBudgetInformation.module.scss'
 
 type CollectiveBudgetDialogProps = {
   onClose: () => void
-  open?: boolean
+  open: boolean
 }
 
 export const CollectiveBudgetDialog = ({
