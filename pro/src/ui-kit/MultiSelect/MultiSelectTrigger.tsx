@@ -12,7 +12,6 @@ type MultiSelectTriggerProps = {
   selectedCount: number
   toggleDropdown: () => void
   buttonLabel: string
-  fieldLabel: string
   disabled?: boolean
   error?: string
 }
@@ -23,13 +22,11 @@ export const MultiSelectTrigger = ({
   selectedCount,
   toggleDropdown,
   buttonLabel,
-  fieldLabel,
   disabled,
   error,
 }: MultiSelectTriggerProps): JSX.Element => {
   return (
     <>
-      <legend className={styles['visually-hidden']}>{fieldLabel}</legend>
       <button
         type="button"
         className={cn(styles['trigger'], {
