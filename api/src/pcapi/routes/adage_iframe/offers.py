@@ -25,7 +25,6 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import Authent
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.favorites import serialize_collective_offer
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -40,7 +39,7 @@ def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_by_id_for_adage(offer_id)
+        offer = educational_repository.get_collective_offer_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
@@ -64,7 +63,7 @@ def get_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferTemplateResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id_for_adage(offer_id)
+        offer = educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
@@ -131,7 +130,7 @@ def create_collective_request(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.CollectiveRequestResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id_for_adage(offer_id)
+        offer = educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
@@ -176,6 +175,7 @@ def _get_offer_venue(offer: CollectiveOffer | CollectiveOfferTemplate) -> Venue 
     offer_venue_id = offer.offerVenue.get("venueId", None)
     if offer_venue_id:
         return get_venue_by_id(offer_venue_id)
+
     return None
 
 
@@ -213,6 +213,11 @@ def get_collective_offers_for_my_institution(
         if offer.isBookable
     ]
 
-    serialized_favorite_offers = [serialize_collective_offer(offer) for offer in offers]
+    offers_venues = _get_all_offer_venues(offers)
 
-    return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)
+    return serializers.ListCollectiveOffersResponseModel(
+        collectiveOffers=[
+            serializers.CollectiveOfferResponseModel.build(offer=offer, offerVenue=offers_venues[offer.id])
+            for offer in offers
+        ]
+    )

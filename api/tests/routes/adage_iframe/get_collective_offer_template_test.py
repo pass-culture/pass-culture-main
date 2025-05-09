@@ -10,12 +10,11 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import db as db_utils
 from pcapi.utils.date import format_into_utc_date
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
 
 EMAIL = "toto@mail.com"
 IMG_URL = "http://localhost/some/picture.png"
@@ -43,10 +42,11 @@ def offer_fixture():
 def expected_serialized_offer(offer, redactor, offer_venue=None):
     national_program = offer.nationalProgram
     is_favorite = offer.id in {offer.id for offer in redactor.favoriteCollectiveOfferTemplates}
-    address = offer.venue.offererAddress.address
+    venue_address = offer.venue.offererAddress.address
+    offer_venue_address = offer_venue.offererAddress.address if offer_venue and offer_venue.offererAddress else None
     coordinates = {
-        "longitude": float(address.longitude),
-        "latitude": float(address.latitude),
+        "longitude": float(venue_address.longitude),
+        "latitude": float(venue_address.latitude),
     }
 
     return {
@@ -57,16 +57,16 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "name": offer.name,
         "venue": {
             "adageId": offer.venue.adageId,
-            "address": address.street,
-            "city": address.city,
+            "address": venue_address.street,
+            "city": venue_address.city,
             "coordinates": coordinates,
             "distance": None,
             "id": offer.venue.id,
             "imgUrl": offer.venue.bannerUrl,
             "managingOfferer": {"name": offer.venue.managingOfferer.name},
             "name": offer.venue.name,
-            "postalCode": address.postalCode,
-            "departmentCode": address.departmentCode,
+            "postalCode": venue_address.postalCode,
+            "departmentCode": venue_address.departmentCode,
             "publicName": offer.venue.publicName,
         },
         "interventionArea": offer.interventionArea,
@@ -83,11 +83,11 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "addressType": offer.offerVenue["addressType"],
             "venueId": offer.offerVenue["venueId"],
             "otherAddress": offer.offerVenue["otherAddress"],
-            "address": offer_venue.street if offer_venue else None,
-            "city": offer_venue.city if offer_venue else None,
+            "address": offer_venue_address.street if offer_venue_address else None,
+            "city": offer_venue_address.city if offer_venue_address else None,
             "distance": None,
             "name": offer_venue.name if offer_venue else None,
-            "postalCode": offer_venue.postalCode if offer_venue else None,
+            "postalCode": offer_venue_address.postalCode if offer_venue_address else None,
             "publicName": offer_venue.publicName if offer_venue else None,
         },
         "location": None,
@@ -107,6 +107,7 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
     }
 
 
+@pytest.mark.usefixtures("clean_database")
 class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -125,17 +126,21 @@ class CollectiveOfferTemplateTest:
         )
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+        expected = expected_serialized_offer(offer, redactor, venue)
 
-        # 1. fetch redactor
-        # 2. fetch collective offer and related data
-        # 3. fetch the offerVenue's details (Venue)
-        # 4. find out if its a redactor's favorite
+        # we need to clear the session, otherwise some items will be loaded with unexpected relations
+        db.session.expunge_all()
+
+        # 1. fetch collective offer and related data
+        # 2. fetch redactor
+        # 3. find out if its a redactor's favorite
+        # 4. fetch the offerVenue's details (Venue)
         with assert_num_queries(4):
             response = eac_client.get(url)
 
         assert response.status_code == 200
         assert offer.status == "ACTIVE"
-        assert response.json == expected_serialized_offer(offer, redactor, venue)
+        assert response.json == expected
 
     def test_get_collective_offer_template_if_inactive(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -158,6 +163,9 @@ class CollectiveOfferTemplateTest:
         )
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+
+        # we need to clear the session, otherwise some items will be loaded with unexpected relations
+        db.session.expunge_all()
 
         # 1. fetch collective offer and related data
         # 2. fetch redactor
@@ -187,6 +195,9 @@ class CollectiveOfferTemplateTest:
         )
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+
+        # we need to clear the session, otherwise some items will be loaded with unexpected relations
+        db.session.expunge_all()
 
         # 1. fetch collective offer and related data
         # 2. fetch redactor
@@ -273,6 +284,7 @@ class CollectiveOfferTemplateTest:
         assert response.status_code == 200
 
 
+@pytest.mark.usefixtures("db_session")
 class GetCollectiveOfferTemplatesTest:
     endpoint = "adage_iframe.get_collective_offer_templates"
 
