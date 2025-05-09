@@ -95,7 +95,7 @@ const offerLocationSerializer = (
     const newLocationPayload = {
       ...payload,
       location: {
-        ...offer.location,
+        locationType: CollectiveLocationType.ADDRESS,
         address: {
           ...offer.location.address,
           banId: offer.banId ?? '',
@@ -112,6 +112,16 @@ const offerLocationSerializer = (
     // remove id_oa key from location object as it is useful only on a form matter
     delete newLocationPayload.location.address.id_oa
     return newLocationPayload
+  }
+
+  if (offer.location.locationType === CollectiveLocationType.TO_BE_DEFINED) {
+    return {
+      ...payload,
+      location: {
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
+        locationComment: offer.location.locationComment,
+      },
+    }
   }
 
   return {

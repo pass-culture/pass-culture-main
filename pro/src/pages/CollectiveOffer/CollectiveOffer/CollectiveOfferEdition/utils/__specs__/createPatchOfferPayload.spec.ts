@@ -239,6 +239,34 @@ describe('createPatchOfferPayload', () => {
     )
   })
 
+  it('should return patch offer payload with location key when OA FF is active and locationType is TO_BE_DEFINED', () => {
+    const payload = createPatchOfferPayload(
+      {
+        ...offer,
+        location: {
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
+          address: {
+            isManualEdition: false,
+            isVenueAddress: false,
+            label: '',
+          },
+          locationComment: 'toto',
+        },
+      },
+      initialValues,
+      true
+    )
+
+    expect(payload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
+          locationComment: 'toto',
+        },
+      })
+    )
+  })
+
   it('should return patch offer payload with offerVenue key when OA FF is inactive', () => {
     const payload = createPatchOfferPayload(offer, initialValues, false)
 

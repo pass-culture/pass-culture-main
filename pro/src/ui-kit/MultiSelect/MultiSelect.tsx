@@ -44,7 +44,7 @@ type MultiSelectProps = {
   /** Whether the MultiSelect is disabled */
   disabled?: boolean
   /** Callback function called when selected options change,
-   *  Multiple selections can be made by selecting only one item (ex: interventionAreaMultiSelect.ts)
+   *  Multiple selections can be made by selecting only one item (ex: selectInterventionAreas.ts)
    */
   onSelectedOptionsChanged: (
     selectedOptions: Option[],
