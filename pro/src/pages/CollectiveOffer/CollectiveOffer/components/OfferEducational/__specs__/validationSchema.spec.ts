@@ -231,6 +231,19 @@ describe('validationSchema OfferEducational', () => {
         expectedErrors: ['Veuillez renseigner au moins un département'],
         isCollectiveOaActive: true,
       },
+      {
+        description:
+          'invalid form when to_be_defined location is selected without departments when OA FF is active',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+          },
+          interventionArea: [],
+        },
+        expectedErrors: ['Veuillez renseigner au moins un département'],
+        isCollectiveOaActive: true,
+      },
     ]
 
     cases.forEach(
