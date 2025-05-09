@@ -1,4 +1,3 @@
-from contextlib import suppress
 import copy
 
 import sqlalchemy as sa
