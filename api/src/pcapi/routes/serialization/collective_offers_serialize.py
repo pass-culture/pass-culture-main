@@ -295,6 +295,23 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
         allow_population_by_field_name = True
 
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveOfferVenueResponseModel":
+        if venue.offererAddress is not None:
+            department_code = venue.offererAddress.address.departmentCode
+        else:
+            # TODO(OA): remove this when the virtual venues are migrated
+            department_code = None
+
+        return cls(
+            departementCode=department_code,
+            id=venue.id,
+            managingOfferer=venue.managingOfferer,
+            name=venue.name,
+            publicName=venue.publicName,
+            imgUrl=venue.bannerUrl,
+        )
+
 
 class CollectiveOfferOfferVenueResponseModel(BaseModel):
     addressType: educational_models.OfferAddressType
