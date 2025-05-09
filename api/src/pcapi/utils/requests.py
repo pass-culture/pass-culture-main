@@ -29,8 +29,8 @@ import zeep
 # isort: off
 # Allow our code to access `requests` exceptions and models directly
 # from this wrapper module.
-from requests import Response  # noqa: TID251
-from requests import exceptions  # noqa: TID251
+from requests import Response  # noqa: TID251 F401
+from requests import exceptions  # noqa: TID251 F401
 # isort: on
 # fmt: on
 

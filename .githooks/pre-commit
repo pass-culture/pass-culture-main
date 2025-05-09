@@ -240,14 +240,6 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       counter=$((counter + 1))
     fi
   fi
-
-  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",ruff-unused-imports," ]]; then
-    echo -e "\033[0;96mRunning ruff for unused imports...\033[0m"
-    ruff check $LINTED_FILES --select F401 --fix --exit-non-zero-on-fix  
-    if [[ "$?" != 0 ]]; then
-      counter=$((counter + 1))
-    fi
-  fi
 fi
 if [[ $counter > 0 ]]; then
   echo -e "\033[0;96mIf you want to bypass these checks, add --no-verify option when committing.\033[0m"

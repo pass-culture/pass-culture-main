@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 
 from pcapi.core.finance import factories as finance_factories

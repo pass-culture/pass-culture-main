@@ -11,7 +11,7 @@ from . import cli as cli, json as json
 from .blueprints import Blueprint as Blueprint
 from .config import Config as Config, ConfigAttribute as ConfigAttribute
 from .ctx import AppContext as AppContext, RequestContext as RequestContext
-from .globals import g as g, session
+from .globals import g as g, session  # noqa F401
 from .helpers import (
     get_debug_flag as get_debug_flag,
     get_env as get_env,

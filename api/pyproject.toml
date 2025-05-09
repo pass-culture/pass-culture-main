@@ -224,12 +224,13 @@ extend-select = [
   "PLW2101", # useless-with-lock
   "PLW3301", # nested-min-max
   # "E501",  # line-too-long
-  # "PLR0904",  # too-many-public-methods
+  # "PLR0904",  # too-many-public-methods -> preview mode only
   # "PLR0911",  # too-many-return-statements
   # "PLR0912",  # too-many-branches
   # "PLR0913",  # too-many-arguments
-  # "PLR0914",  # too-many-locals
-  # "PLR0915"  # too-many-statements
+  # "PLR0914",  # too-many-locals -> preview mode only
+  # "PLR0915",  # too-many-statements
+  # "PLR0917",  # too-many-positional-arguments -> preview mode only
   "S704", # unsafe-markup-use
   "TID251", # banned-api (requests)
 ]
@@ -239,14 +240,16 @@ ignore = [
   # New rules
   "E731", # Do not assign a `lambda` expression, use a `def`
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert)
-  "E711", # Use 'is' instead of '==' to test for None -> several imcompatibilities with SQLAlchemy
+  "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy
   "E402", # Module level import not at top of file
-  "F401", # FIXME: Unused import -> will required a dedicated work
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "requests".msg = "Use `pcapi.utils.requests` instead."
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["F401"]
 
 [tool.pytest.ini_options]
 addopts = [

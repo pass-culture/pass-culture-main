@@ -3,7 +3,6 @@ import decimal
 import typing
 
 from pydantic.v1 import Field
-from pydantic.v1 import validator
 
 from pcapi.core.offers import models
 from pcapi.routes.serialization import BaseModel

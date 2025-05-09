@@ -1,10 +1,5 @@
 import datetime
 import enum
-import typing
-
-
-if typing.TYPE_CHECKING:
-    from pcapi.core.offers.models import Stock
 
 
 class RedisExternalBookingType(str, enum.Enum):

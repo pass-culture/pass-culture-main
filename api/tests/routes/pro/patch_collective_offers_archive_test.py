@@ -1,7 +1,6 @@
 import pytest
 
 from pcapi.core.educational import factories
-from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries

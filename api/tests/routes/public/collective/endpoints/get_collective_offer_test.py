@@ -2,9 +2,7 @@ from operator import itemgetter
 
 import pytest
 
-from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.testing import assert_num_queries

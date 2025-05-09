@@ -5,7 +5,6 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors import acceslibre as acceslibre_connector
-from pcapi.connectors.api_adresse import AddressInfo
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing

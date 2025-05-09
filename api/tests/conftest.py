@@ -53,11 +53,6 @@ from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
 
 
-if typing.TYPE_CHECKING:
-    from _pytest.config import Config as PytestConfig
-    from _pytest.nodes import Item
-
-
 def run_migrations():
     from pcapi import settings as pcapi_settings
 

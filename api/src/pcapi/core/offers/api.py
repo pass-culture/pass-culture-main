@@ -90,9 +90,6 @@ from . import schemas as offers_schemas
 from . import validation
 
 
-if typing.TYPE_CHECKING:
-    from pcapi.routes.serialization import collective_offers_serialize
-
 logger = logging.getLogger(__name__)
 
 AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer

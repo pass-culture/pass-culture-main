@@ -60,11 +60,11 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
 
 
 with app.app_context():
-    from pcapi.routes import error_handlers
+    from pcapi.routes import error_handlers  # noqa F401
     from pcapi.routes.backoffice import install_routes
     from pcapi.routes.backoffice.blueprint import backoffice_web
-    import pcapi.routes.backoffice.error_handlers
-    import pcapi.utils.login_manager
+    import pcapi.routes.backoffice.error_handlers  # noqa F401
+    import pcapi.utils.login_manager  # noqa F401
 
     static_utils.generate_bundles()
     install_routes(app)
