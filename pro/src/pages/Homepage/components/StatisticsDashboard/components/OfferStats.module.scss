@@ -18,17 +18,6 @@
   }
 }
 
-.skeleton {
-  height: rem.torem(80px);
-  border-radius: rem.torem(8px);
-
-  // The trick is to "slide" the gradient with background-position
-  // while the actual background is 3x the size of the actual block
-  background: var(--color-linear-gradient-skeleton);
-  background-size: 300% 300%;
-  animation: loadinggradient 2s ease infinite;
-}
-
 @keyframes loadinggradient {
   0% {
     background-position: 0% 50%;
