@@ -47,6 +47,7 @@ from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
+from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.utils import image_conversion
@@ -577,26 +578,67 @@ def create_collective_offer_public(
     end_datetime = body.end_datetime or body.start_datetime
     validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
 
-    offer_venue: educational_models.OfferVenueDict = {
-        "venueId": body.offer_venue.venueId,
-        "addressType": body.offer_venue.addressType,
-        "otherAddress": body.offer_venue.otherAddress or "",
-    }
+    location: CollectiveOfferLocation | None = None
+    body_location = body.location
 
-    # when we receive offerVenue, we also write to OA fields
-    location_venue = None
-    if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
-        venue_id = offer_venue["venueId"]
-        if venue_id is None:
-            raise exceptions.VenueIdDontExist()
+    if body.offer_venue is not None:
+        offer_venue: educational_models.OfferVenueDict = {
+            "venueId": body.offer_venue.venueId,
+            "addressType": body.offer_venue.addressType,
+            "otherAddress": body.offer_venue.otherAddress or "",
+        }
 
-        location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, requested_id)
+        # when we receive offerVenue, we also write to OA fields
+        location_venue = None
+        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+            venue_id = offer_venue["venueId"]
+            if venue_id is None:
+                raise exceptions.VenueIdDontExist()
 
-    location = get_location_from_offer_venue(
-        offer_venue=offer_venue,
-        location_venue=location_venue,
-        is_offer_located_at_venue=offer_venue["venueId"] == venue.id,
-    )
+            location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, requested_id)
+
+        location = get_location_from_offer_venue(
+            offer_venue=offer_venue,
+            location_venue=location_venue,
+            is_offer_located_at_venue=offer_venue["venueId"] == venue.id,
+        )
+
+    elif body_location is not None:
+        if body_location.type == educational_models.CollectiveLocationType.ADDRESS.value:
+            if body_location.isVenueAddress:
+                offerer_address = venue.offererAddress
+            else:
+                assert body_location.addressId is not None
+
+                public_utils.get_address_or_raise_404(body_location.addressId)
+
+                offerer_address = offerers_api.get_or_create_offerer_address(
+                    offerer_id=venue.managingOffererId,
+                    address_id=body_location.addressId,
+                    label=body_location.addressLabel,
+                )
+        else:
+            offerer_address = None
+
+        location = CollectiveOfferLocation(
+            location_type=educational_models.CollectiveLocationType(body_location.type),
+            location_comment=body_location.comment
+            if body_location.type == educational_models.CollectiveLocationType.TO_BE_DEFINED.value
+            else None,
+            offerer_address=offerer_address,
+        )
+
+        offer_venue = get_offer_venue_from_location(
+            location_type=location.location_type,
+            location_comment=location.location_comment,
+            offerer_address=location.offerer_address,
+            is_venue_address=body_location.isVenueAddress
+            if body_location.type == educational_models.CollectiveLocationType.ADDRESS.value
+            else False,
+            venue_id=body.venue_id,
+        )
+    else:
+        raise ValueError("Location is required")
 
     collective_offer = educational_models.CollectiveOffer(
         venue=venue,
@@ -613,7 +655,6 @@ def create_collective_offer_public(
         mentalDisabilityCompliant=body.mental_disability_compliant,
         motorDisabilityCompliant=body.motor_disability_compliant,
         visualDisabilityCompliant=body.visual_disability_compliant,
-        offerVenue={**offer_venue, "addressType": offer_venue["addressType"].value},
         interventionArea=[],
         institution=institution,
         providerId=requested_id,
@@ -623,6 +664,7 @@ def create_collective_offer_public(
         locationType=location.location_type,
         locationComment=location.location_comment,
         offererAddressId=location.offerer_address.id if location.offerer_address else None,
+        offerVenue={**offer_venue, "addressType": offer_venue["addressType"].value},
     )
 
     collective_stock = educational_models.CollectiveStock(

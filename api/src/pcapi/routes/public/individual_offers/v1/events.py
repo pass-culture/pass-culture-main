@@ -18,6 +18,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services import authorization
@@ -81,7 +82,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             offerer_address = venue.offererAddress  # default offerer_address
 
             if body.location.type == "address":
-                address = utils.get_address_or_raise_404(body.location.address_id)
+                address = public_utils.get_address_or_raise_404(body.location.address_id)
                 offerer_address = offerers_api.get_or_create_offerer_address(
                     offerer_id=venue.managingOffererId,
                     address_id=address.id,

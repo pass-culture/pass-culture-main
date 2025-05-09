@@ -1708,15 +1708,6 @@
                 ],
                 "title": "CollectiveBookingStatus"
             },
-            "CollectiveLocationType": {
-                "description": "An enumeration.",
-                "enum": [
-                    "SCHOOL",
-                    "ADDRESS",
-                    "TO_BE_DEFINED"
-                ],
-                "title": "CollectiveLocationType"
-            },
             "CollectiveOfferDisplayedStatus": {
                 "description": "An enumeration.",
                 "enum": [
@@ -1735,28 +1726,20 @@
                 ],
                 "title": "CollectiveOfferDisplayedStatus"
             },
-            "CollectiveOfferLocationModel": {
-                "additionalProperties": false,
+            "CollectiveOfferLocationAddressModel": {
                 "properties": {
                     "addressId": {
-                        "description": "Address id in the pass Culture DB (only if type=ADDRESS)",
+                        "description": "Address id in the pass Culture DB",
                         "example": 1,
                         "nullable": true,
                         "title": "Addressid",
                         "type": "integer"
                     },
                     "addressLabel": {
-                        "description": "Adresse label (only if type=ADDRESS)",
+                        "description": "Adresse label",
                         "example": "Z\u00e9nith Paris",
                         "nullable": true,
                         "title": "Addresslabel",
-                        "type": "string"
-                    },
-                    "comment": {
-                        "description": "Comment (only if type=TO_BE_DEFINED)",
-                        "example": "Lieu \u00e0 d\u00e9finir avec l'organisateur",
-                        "nullable": true,
-                        "title": "Comment",
                         "type": "string"
                     },
                     "isVenueAddress": {
@@ -1766,20 +1749,53 @@
                         "type": "boolean"
                     },
                     "type": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/CollectiveLocationType"
-                            }
+                        "default": "ADDRESS",
+                        "enum": [
+                            "ADDRESS"
                         ],
-                        "description": "Type of location: SCHOOL, TO_BE_DEFINED, or ADDRESS",
-                        "example": "SCHOOL"
+                        "title": "Type",
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "type",
                     "isVenueAddress"
                 ],
-                "title": "CollectiveOfferLocationModel",
+                "title": "CollectiveOfferLocationAddressModel",
+                "type": "object"
+            },
+            "CollectiveOfferLocationSchoolModel": {
+                "properties": {
+                    "type": {
+                        "default": "SCHOOL",
+                        "enum": [
+                            "SCHOOL"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "title": "CollectiveOfferLocationSchoolModel",
+                "type": "object"
+            },
+            "CollectiveOfferLocationToBeDefinedModel": {
+                "properties": {
+                    "comment": {
+                        "description": "Comment",
+                        "example": "Lieu \u00e0 d\u00e9finir avec l'organisateur",
+                        "nullable": true,
+                        "title": "Comment",
+                        "type": "string"
+                    },
+                    "type": {
+                        "default": "TO_BE_DEFINED",
+                        "enum": [
+                            "TO_BE_DEFINED"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "title": "CollectiveOfferLocationToBeDefinedModel",
                 "type": "object"
             },
             "CollectiveOfferStatus": {
@@ -4385,13 +4401,28 @@
                         "type": "boolean"
                     },
                     "location": {
-                        "anyOf": [
+                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "discriminator": {
+                            "mapping": {
+                                "ADDRESS": "#/components/schemas/CollectiveOfferLocationAddressModel",
+                                "SCHOOL": "#/components/schemas/CollectiveOfferLocationSchoolModel",
+                                "TO_BE_DEFINED": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                            },
+                            "propertyName": "type"
+                        },
+                        "nullable": true,
+                        "oneOf": [
                             {
-                                "$ref": "#/components/schemas/CollectiveOfferLocationModel"
+                                "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
                             }
                         ],
-                        "nullable": true,
-                        "title": "CollectiveOfferLocationModel"
+                        "title": "Location"
                     },
                     "mentalDisabilityCompliant": {
                         "description": "Is accessible for people with mental or cognitive disability",
@@ -6216,6 +6247,30 @@
                         "title": "Isactive",
                         "type": "boolean"
                     },
+                    "location": {
+                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "discriminator": {
+                            "mapping": {
+                                "ADDRESS": "#/components/schemas/CollectiveOfferLocationAddressModel",
+                                "SCHOOL": "#/components/schemas/CollectiveOfferLocationSchoolModel",
+                                "TO_BE_DEFINED": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                            },
+                            "propertyName": "type"
+                        },
+                        "nullable": true,
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
+                            }
+                        ],
+                        "title": "Location"
+                    },
                     "mentalDisabilityCompliant": {
                         "default": false,
                         "description": "Is accessible for people with mental disability",
@@ -6249,7 +6304,13 @@
                         "type": "integer"
                     },
                     "offerVenue": {
-                        "$ref": "#/components/schemas/OfferVenueModel"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferVenueModel"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "OfferVenueModel"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -6301,7 +6362,6 @@
                     "contactPhone",
                     "domains",
                     "students",
-                    "offerVenue",
                     "isActive",
                     "startDatetime",
                     "bookingLimitDatetime",
