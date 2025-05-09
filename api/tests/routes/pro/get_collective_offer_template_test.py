@@ -36,6 +36,7 @@ class Returns200Test:
         assert "iban" not in response_json["venue"]["managingOfferer"]
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationStatus" not in response_json["venue"]["managingOfferer"]
+        assert response_json["venue"]["departementCode"] == offer.venue.offererAddress.address.departmentCode
         assert "stock" not in response_json
         assert "dateCreated" in response_json
         assert "educationalPriceDetail" in response_json
