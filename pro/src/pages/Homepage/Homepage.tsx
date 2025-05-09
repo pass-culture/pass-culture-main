@@ -148,7 +148,9 @@ export const Homepage = (): JSX.Element => {
         </section>
       </Layout>
       <CollectiveBudgetDialog
-        open={isCollectiveDialogOpen && shouldShowCollectiveBudgetDialog}
+        open={Boolean(
+          isCollectiveDialogOpen && shouldShowCollectiveBudgetDialog
+        )}
         onClose={onCloseCollectiveBudgetDialog}
       />
     </>
