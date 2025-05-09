@@ -2,17 +2,17 @@ import { mainlandOptions } from 'commons/core/shared/interventionOptions'
 import { MAINLAND_OPTION_VALUE } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { Option } from 'ui-kit/MultiSelect/MultiSelect'
 
-type InterventionAreaMultiSelectProps = {
+type SelectInterventionAreasParams = {
   selectedOption: Option[]
   addedOptions: Option[]
   removedOptions: Option[]
 }
 
-export const interventionAreaMultiSelect = ({
+export const selectInterventionAreas = ({
   selectedOption,
   addedOptions,
   removedOptions,
-}: InterventionAreaMultiSelectProps) => {
+}: SelectInterventionAreasParams) => {
   const newSelectedOptions = new Set(selectedOption.map((op) => op.id))
 
   if (addedOptions.map((op) => op.id).includes('mainland')) {

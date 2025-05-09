@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
+import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import styles from '../OfferEducationalForm.module.scss'
@@ -26,7 +26,7 @@ export const InterventionAreaMultiSelect = ({
       addedOptions: Option[],
       removedOptions: Option[]
     ) => {
-      const newSelectedOptions = interventionAreaMultiSelect({
+      const newSelectedOptions = selectInterventionAreas({
         selectedOption,
         addedOptions,
         removedOptions,
