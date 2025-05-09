@@ -137,70 +137,70 @@ export const TextInput = React.forwardRef(
       />
     )
 
+    //  The footer must remain in the DOM because elements will role "alert" and "status"
+    //  should already be in the DOM when their content changes. But the display of the footer div
+    //  must change when it's empty so that the grid does not add unnecessary gaps.
+    const hasFooter = error || count !== undefined
+
     return (
       <div
         className={cn(
-          styles['input-layout'],
-          { [styles['has-description']]: Boolean(description) },
+          styles['grid-layout-input-container'],
+          { [styles['has-footer']]: hasFooter },
           className
         )}
         data-testid={`wrapper-${name}`}
       >
-        <div
-          className={cn(styles['input-layout-label-container'], {
-            [styles['visually-hidden']]: isLabelHidden,
-          })}
-        >
-          <label
-            className={cn(styles['input-layout-label'], labelClassName)}
-            htmlFor={name}
+        <div className={styles['grid-layout-label']}>
+          <div
+            className={cn({
+              [styles['visually-hidden']]: isLabelHidden,
+            })}
           >
-            {label} {required && asterisk && '*'}
-          </label>
-          {description && (
-            <span
-              id={`description-${name}`}
-              data-testid={`description-${name}`}
-              className={styles['input-layout-input-description']}
-            >
-              {description}
-            </span>
-          )}
+            <label className={labelClassName} htmlFor={name}>
+              {label} {required && asterisk && '*'}
+            </label>
+            {description && (
+              <span
+                id={`description-${name}`}
+                data-testid={`description-${name}`}
+                className={styles['grid-layout-label-description']}
+              >
+                {description}
+              </span>
+            )}
+          </div>
         </div>
         {readOnly ? (
-          <span className={styles['text-input-readonly']}>{props.value}</span>
+          <span className={cn(styles['grid-layout-input'])}>{props.value}</span>
         ) : (
           <>
-            <div
-              className={styles[`text-input${InputExtension ? '-group' : ''}`]}
-            >
-              {input}
-              {InputExtension && (
-                <div className={styles['text-input-group-extension']}>
-                  {InputExtension}
-                </div>
-              )}
-              <div className={styles['input-layout-footer']}>
-                <div role="alert" id={errorId}>
-                  {error && (
-                    <FieldError
-                      name={name}
-                      className={styles['input-layout-error']}
-                    >
-                      {error}
-                    </FieldError>
-                  )}
-                </div>
-
-                {count !== undefined && (
-                  <FieldLayoutCharacterCount
-                    count={count}
-                    maxLength={maxLength}
+            <div className={styles['grid-layout-input']}>{input}</div>
+            <div className={styles['grid-layout-footer']}>
+              <div role="alert" id={errorId}>
+                {error && (
+                  <FieldError
                     name={name}
-                  />
+                    className={styles['input-layout-error']}
+                  >
+                    {error}
+                  </FieldError>
                 )}
               </div>
+
+              {count !== undefined && (
+                <FieldLayoutCharacterCount
+                  count={count}
+                  maxLength={maxLength}
+                  name={name}
+                />
+              )}
             </div>
+            {InputExtension && (
+              <div className={styles['grid-input-extension']}>
+                {InputExtension}
+              </div>
+            )}
           </>
         )}
       </div>
