@@ -1,13 +1,11 @@
 import { useFormikContext } from 'formik'
-import { useCallback, useId, useState } from 'react'
+import { useId, useState } from 'react'
 
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
 import { resetAddressFields } from 'commons/utils/resetAddressFields'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
@@ -18,10 +16,12 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import styles from '../OfferEducationalForm.module.scss'
+
+import { InterventionAreaMultiSelect } from './InterventionAreaMultiSelect'
 export interface FormLocationProps {
   disableForm: boolean
   venues: VenueListItemResponseModel[]
@@ -32,7 +32,6 @@ export const FormLocation = ({
   disableForm,
 }: FormLocationProps): JSX.Element => {
   const specificAddressId = useId()
-  const radioInstitutionId = useId()
   const formik = useFormikContext<OfferEducationalFormValues>()
   const setFieldValue = formik.setFieldValue
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
@@ -85,23 +84,6 @@ export const FormLocation = ({
     await setFieldValue('location.address.isVenueAddress', false)
     await setFieldValue('location.address.isManualEdition', false)
   }
-
-  const handleInterventionAreaChange = useCallback(
-    (
-      selectedOption: Option[],
-      addedOptions: Option[],
-      removedOptions: Option[]
-    ) => {
-      const newSelectedOptions = interventionAreaMultiSelect({
-        selectedOption,
-        addedOptions,
-        removedOptions,
-      })
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      setFieldValue('interventionArea', Array.from(newSelectedOptions))
-    },
-    [setFieldValue]
-  )
 
   const locationTypeRadios = [
     {
@@ -174,35 +156,32 @@ export const FormLocation = ({
       ),
     },
     {
-      label: <span id={radioInstitutionId}>En établissement scolaire</span>,
+      label: 'En établissement scolaire',
       value: CollectiveLocationType.SCHOOL,
       childrenOnChecked: (
-        <MultiSelect
+        <InterventionAreaMultiSelect
           label="Indiquez aux enseignants les départements dans lesquels vous
             proposez votre offre."
-          required
-          name="interventionArea"
-          buttonLabel="Département(s)"
-          options={offerInterventionOptions}
-          selectedOptions={offerInterventionOptions.filter((op) =>
-            formik.values.interventionArea.includes(op.id)
-          )}
-          defaultOptions={offerInterventionOptions.filter((option) =>
-            formik.values.interventionArea.includes(option.id)
-          )}
           disabled={disableForm}
-          hasSearch
-          searchLabel="Rechercher un département"
-          hasSelectAllOptions
-          onSelectedOptionsChanged={handleInterventionAreaChange}
-          onBlur={() => formik.setFieldTouched('interventionArea', true)}
-          error={
-            formik.touched.interventionArea && formik.errors.interventionArea
-              ? String(formik.errors.interventionArea)
-              : undefined
-          }
-          className={styles['intervention-area']}
         />
+      ),
+    },
+    {
+      label: 'À déterminer avec l’enseignant',
+      value: CollectiveLocationType.TO_BE_DEFINED,
+      childrenOnChecked: (
+        <>
+          <InterventionAreaMultiSelect
+            label="Même si le lieu reste à définir, précisez aux enseignants les départements dans lesquels vous proposez votre offre."
+            disabled={disableForm}
+          />
+          <TextArea
+            label="Commentaire"
+            name="location.locationComment"
+            maxLength={200}
+            isOptional
+          />
+        </>
       ),
     },
   ]

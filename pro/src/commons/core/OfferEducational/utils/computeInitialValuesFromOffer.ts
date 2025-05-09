@@ -149,6 +149,9 @@ export const computeInitialValuesFromOffer = (
         : 'SPECIFIC_ADDRESS',
       isManualEdition: !!offer.location?.address?.isManualEdition,
     },
+    locationComment:
+      offer.location?.locationComment ??
+      DEFAULT_EAC_FORM_VALUES.location.locationComment,
   }
 
   const participants = {

@@ -34,6 +34,7 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
       isVenueAddress?: boolean
       label?: string
     }
+    locationComment?: string
   }
   interventionArea: string[]
   participants: {
