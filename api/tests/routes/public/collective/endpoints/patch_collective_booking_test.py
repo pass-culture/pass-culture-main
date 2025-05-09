@@ -58,28 +58,87 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
         assert len(educational_testing.adage_requests) == 1
         assert len(mails_testing.outbox) == 1
 
-    @pytest.mark.parametrize(
-        "booking_factory,expected_json",
-        [
-            (
-                educational_factories.CancelledCollectiveBookingFactory,
-                {"booking": "Impossible d'annuler une réservation déjà annulée"},
-            ),
-            (
-                educational_factories.ReimbursedCollectiveBookingFactory,
-                {"booking": "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"},
-            ),
-            (
-                educational_factories.UsedCollectiveBookingFactory,
-                {"booking": "Cette réservation a déjà été utilisée et ne peut être annulée"},
-            ),
-        ],
-    )
-    def test_should_raise_403_when_status_is_not_confirmed(self, client: TestClient, booking_factory, expected_json):
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_CANCEL)
+    def test_allowed_action(self, client, status):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        booking = booking_factory(collectiveStock__collectiveOffer__venue=venue_provider.venue)
+        offer = educational_factories.create_collective_offer_by_status(status, venue=venue_provider.venue)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
+        assert response.status_code == 204
+
+        db.session.refresh(booking)
+        assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
+        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+
+    def test_cancel_offer_ended(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.EndedCollectiveOfferFactory(venue=venue_provider.venue, booking_is_confirmed=True)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
+        assert response.status_code == 204
+
+        db.session.refresh(booking)
+        assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
+        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+
+    @pytest.mark.parametrize(
+        "status",
+        (
+            educational_models.CollectiveOfferDisplayedStatus.ENDED,
+            educational_models.CollectiveOfferDisplayedStatus.EXPIRED,
+            educational_models.CollectiveOfferDisplayedStatus.REIMBURSED,
+        ),
+    )
+    def test_cancel_unallowed_action(self, client, status):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(status, venue=venue_provider.venue)
+        [booking] = offer.collectiveStock.collectiveBookings
 
         with assert_attribute_does_not_change(booking, "status"):
             response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
-            assert response.status_code == 403
-            assert response.json == expected_json
+
+        assert response.status_code == 403
+        assert response.json == {
+            "booking": f"Impossible d'annuler cette réservation car le statut de l'offre est {status.value}"
+        }
+
+    def test_cancel_offer_cancelled(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.CancelledWithBookingCollectiveOfferFactory(venue=venue_provider.venue)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        with assert_attribute_does_not_change(booking, "status"):
+            response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
+
+        assert response.status_code == 403
+        assert response.json == {
+            "booking": "Impossible d'annuler cette réservation car le statut de l'offre est CANCELLED"
+        }
+
+    def test_cancel_offer_ended_booking_used(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.EndedCollectiveOfferFactory(venue=venue_provider.venue)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        with assert_attribute_does_not_change(booking, "status"):
+            response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
+
+        assert response.status_code == 403
+        assert response.json == {"booking": "Impossible d'annuler cette réservation car le statut de l'offre est ENDED"}
+
+    def test_cancel_offer_archived(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.ArchivedReimbursedCollectiveOfferFactory(venue=venue_provider.venue)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        with assert_attribute_does_not_change(booking, "status"):
+            response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))
+
+        assert response.status_code == 403
+        assert response.json == {
+            "booking": "Impossible d'annuler cette réservation car le statut de l'offre est ARCHIVED"
+        }
