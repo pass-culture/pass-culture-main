@@ -13,6 +13,7 @@ import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { isOfferAllocineSynchronized } from 'commons/core/Offers/utils/typology'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { isEqual } from 'commons/utils/isEqual'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
@@ -62,6 +63,11 @@ const hasFieldChange = (
     return initialpriceCategory[field] !== priceCategory[field]
   })
 
+/**
+ * @function arePriceCategoriesChanged
+ * Returns `true` if at least one of the initial price categories has changed
+ * and `false` otherwise (even if there are additional price cateogires in the values).
+ * */
 export const arePriceCategoriesChanged = (
   initialValues: PriceCategoriesFormValues,
   values: PriceCategoriesFormValues
@@ -158,8 +164,9 @@ export const PriceCategoriesScreen = ({
       isOnboarding,
     })
 
-    // Return when saving in edition with an empty form
-    const isFormEmpty = !arePriceCategoriesChanged(defaultValues, values)
+    // Return when saving in edition with no change and no addition to the list of price categories
+    const isFormEmpty = isEqual(defaultValues, values)
+
     if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
