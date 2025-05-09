@@ -24,9 +24,7 @@ from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_venue_provider_is_successfully_created(
-        self, mock_synchronize_venue_provider, client
-    ):
+    def test_when_venue_provider_is_successfully_created(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
@@ -59,15 +57,11 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_movie_provider_is_successfully_created(
-        self, mock_synchronize_venue_provider, client
-    ):
+    def test_when_movie_provider_is_successfully_created(self, mock_synchronize_venue_provider, client):
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
-        provider = providers_factories.CGRCinemaProviderPivotFactory(
-            venue=venue
-        ).provider
+        provider = providers_factories.CGRCinemaProviderPivotFactory(venue=venue).provider
 
         venue_provider_data = {"providerId": provider.id, "venueId": venue.id}
         auth_request = client.with_session_auth(email=user.email)
@@ -113,13 +107,9 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    def test_when_add_allocine_stocks_provider_for_venue_without_siret(
-        self, mock_synchronize_venue_provider, client
-    ):
+    def test_when_add_allocine_stocks_provider_for_venue_without_siret(self, mock_synchronize_venue_provider, client):
         # Given
-        venue = offerers_factories.VenueWithoutSiretFactory(
-            managingOfferer__siren="775671464"
-        )
+        venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer__siren="775671464")
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         providers_factories.AllocinePivotFactory(venue=venue)
@@ -148,9 +138,7 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_no_regression_on_format(
-        self, mock_synchronize_venue_provider, client
-    ):
+    def test_when_no_regression_on_format(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
@@ -192,9 +180,7 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(
-        self, mock_synchronize_venue_provider, client
-    ):
+    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(self, mock_synchronize_venue_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
@@ -225,13 +211,9 @@ class Returns201Test:
     def test_when_add_same_provider(self, client):
         # Given
         provider = providers_factories.PublicApiProviderFactory()
-        venue_provider = providers_factories.VenueProviderFactory(
-            provider=provider, venueIdAtOfferProvider=None
-        )
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venueIdAtOfferProvider=None)
         user = user_factories.ProFactory()
-        offerers_factories.UserOffererFactory(
-            user=user, offerer=venue_provider.venue.managingOfferer
-        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue_provider.venue.managingOfferer)
 
         client = client.with_session_auth(email=user.email)
         venue_provider_data = {
@@ -248,32 +230,20 @@ class Returns201Test:
         assert venue_provider.venue.venueProviders == [venue_provider]
 
     @pytest.mark.usefixtures("db_session")
-    @patch(
-        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows"
-    )
-    @patch(
-        "pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies"
-    )
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def test_create_venue_provider_for_cds_cinema(
-        self, mock_get_venue_movies, mock_get_shows, requests_mock, client
-    ):
+    def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, requests_mock, client):
         # Given
         venue = offerers_factories.VenueFactory()
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         client = client.with_session_auth(email=user.email)
-        provider = (
-            db.session.query(Provider)
-            .filter(Provider.localClass == "CDSStocks")
-            .first()
-        )
+        provider = db.session.query(Provider).filter(Provider.localClass == "CDSStocks").first()
 
         cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
         providers_factories.CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cds_pivot,
-            cinemaApiToken="test_token",
-            accountId="test_account",
+            cinemaProviderPivot=cds_pivot, cinemaApiToken="test_token", accountId="test_account"
         )
 
         venue_provider_data = {
@@ -317,14 +287,10 @@ class Returns201Test:
                     remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[
-                        ShowTariffCDS(tariff=IdObjectCDS(id=4))
-                    ],
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
                     screen=IdObjectCDS(id=1),
                     media=IdObjectCDS(id=123),
-                    shows_mediaoptions_collection=[
-                        ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))
-                    ],
+                    shows_mediaoptions_collection=[ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))],
                 ),
                 "price": 5,
                 "price_label": "pass Culture",
@@ -339,14 +305,10 @@ class Returns201Test:
                     remaining_place=78,
                     internet_remaining_place=11,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[
-                        ShowTariffCDS(tariff=IdObjectCDS(id=4))
-                    ],
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
                     screen=IdObjectCDS(id=1),
                     media=IdObjectCDS(id=51),
-                    shows_mediaoptions_collection=[
-                        ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))
-                    ],
+                    shows_mediaoptions_collection=[ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))],
                 ),
                 "price": 6,
                 "price_label": "pass Culture",
@@ -362,16 +324,12 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
-    def test_create_venue_provider_for_ems_cinema(
-        self, mocked_synchronize_ems_venue_provider, requests_mock, client
-    ):
+    def test_create_venue_provider_for_ems_cinema(self, mocked_synchronize_ems_venue_provider, requests_mock, client):
         venue = offerers_factories.VenueFactory()
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
-        pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue, provider=ems_provider
-        )
+        pivot = providers_factories.CinemaProviderPivotFactory(venue=venue, provider=ems_provider)
         providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pivot)
 
         client = client.with_session_auth(email=user.email)
@@ -546,9 +504,7 @@ class Returns404Test:
 class ConnectProviderToVenueTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api.connect_venue_to_provider")
-    def test_should_inject_the_appropriate_repository_to_the_usecase(
-        self, mocked_connect_venue_to_provider, client
-    ):
+    def test_should_inject_the_appropriate_repository_to_the_usecase(self, mocked_connect_venue_to_provider, client):
         # Given
         venue = offerers_factories.VenueFactory(siret="12345678912345")
         user = user_factories.ProFactory()
@@ -612,23 +568,16 @@ class ConnectProviderToVenueTest:
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         provider = providers_factories.ProviderFactory(
-            name="Technical provider",
-            localClass=None,
-            isActive=True,
-            enabledForPro=True,
+            name="Technical provider", localClass=None, isActive=True, enabledForPro=True
         )
-        providers_factories.OffererProviderFactory(
-            offerer=venue.managingOfferer, provider=provider
-        )
+        providers_factories.OffererProviderFactory(offerer=venue.managingOfferer, provider=provider)
 
         venue_provider_data = {
             "providerId": provider.id,
             "venueId": venue.id,
         }
 
-        response = client.with_session_auth(email=user.email).post(
-            "/venueProviders", json=venue_provider_data
-        )
+        response = client.with_session_auth(email=user.email).post("/venueProviders", json=venue_provider_data)
 
         assert response.status_code == 201
         assert len(venue.venueProviders) == 1
@@ -647,23 +596,16 @@ class ConnectProviderToVenueTest:
         user = user_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
         provider = providers_factories.ProviderFactory(
-            name="Technical provider",
-            localClass=None,
-            isActive=True,
-            enabledForPro=True,
+            name="Technical provider", localClass=None, isActive=True, enabledForPro=True
         )
-        providers_factories.OffererProviderFactory(
-            offerer=venue.managingOfferer, provider=provider
-        )
+        providers_factories.OffererProviderFactory(offerer=venue.managingOfferer, provider=provider)
 
         venue_provider_data = {
             "providerId": provider.id,
             "venueId": venue.id,
         }
 
-        response = client.with_session_auth(email=user.email).post(
-            "/venueProviders", json=venue_provider_data
-        )
+        response = client.with_session_auth(email=user.email).post("/venueProviders", json=venue_provider_data)
 
         assert response.status_code == 201
         assert len(venue.venueProviders) == 1
