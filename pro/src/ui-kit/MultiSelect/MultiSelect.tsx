@@ -207,17 +207,14 @@ export const MultiSelect = forwardRef(
 
     return (
       <fieldset className={styles.container} onBlur={onBlur} ref={forwardedRef}>
-        {label && (
-          <label className={styles['container-label']}>
-            {label} {required && asterisk && '*'}
-          </label>
-        )}
+        <legend className={styles['container-label']}>
+          {label} {required && asterisk && '*'}
+        </legend>
         <div className={cn(className, styles['container-input'])}>
           <div ref={containerRef}>
             <MultiSelectTrigger
               id={id}
               buttonLabel={buttonLabel}
-              fieldLabel={label}
               isOpen={isOpen}
               toggleDropdown={toggleDropdown}
               selectedCount={selectedItems.length}

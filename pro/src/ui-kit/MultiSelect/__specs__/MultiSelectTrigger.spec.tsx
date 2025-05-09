@@ -20,7 +20,6 @@ describe('<MultiSelectTrigger />', () => {
       <MultiSelectTrigger
         id="1"
         toggleDropdown={mockToggleDropdown}
-        fieldLabel={'Select Options'}
         buttonLabel={'Options Label'}
         disabled={disabled}
         isOpen={isOpen}
