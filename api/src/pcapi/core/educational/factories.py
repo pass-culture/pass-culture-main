@@ -584,7 +584,7 @@ class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFacto
 class CollectiveOfferOnOtherAddressLocationFactory(PublishedCollectiveOfferFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory, offerer=factory.SelfAttribute("venue.managingOfferer")
+        offerers_factories.OffererAddressFactory, offerer=factory.SelfAttribute("..venue.managingOfferer")
     )
 
     offerVenue = factory.LazyAttribute(
