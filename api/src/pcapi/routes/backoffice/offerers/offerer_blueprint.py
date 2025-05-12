@@ -779,7 +779,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             pc_pro_path="/",
         )
 
-    users_invited_formatted = [
+    users_invited_formatted: list[dict] = [
         {
             "id": None,
             "firstName": None,

@@ -33,7 +33,7 @@ class EMSContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditPivotForm:
-        pivot: providers_models.EMSCinemaDetails = (
+        pivot: providers_models.EMSCinemaDetails | None = (
             db.session.query(providers_models.EMSCinemaDetails).filter_by(id=pivot_id).one_or_none()
         )
         if not pivot:
@@ -98,7 +98,7 @@ class EMSContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditEMSForm, pivot_id: int) -> bool:
-        pivot: providers_models.EMSCinemaDetails = (
+        pivot: providers_models.EMSCinemaDetails | None = (
             db.session.query(providers_models.EMSCinemaDetails).filter_by(id=pivot_id).one_or_none()
         )
         if not pivot:
