@@ -29,7 +29,7 @@
 .image-preview {
   object-fit: cover;
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(4px);
+  border-radius: var(--border-radius-s);
   box-shadow: 0 rem.torem(1px) rem.torem(8px)
     rgb(from var(--color-large-shadow) r g b / 15%);
 

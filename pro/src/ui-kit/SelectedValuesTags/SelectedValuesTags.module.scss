@@ -12,7 +12,7 @@
 .tag-extra-count {
   @include fonts.body-accent-xs;
 
-  border-radius: rem.torem(4px);
+  border-radius: var(--border-radius-s);
   background-color: var(--color-background-info);
   color: var(--color-text-default);
   padding: rem.torem(4px) rem.torem(8px);
@@ -26,7 +26,7 @@
   align-items: center;
   cursor: pointer;
   background-color: var(--color-background-info);
-  border-radius: rem.torem(4px);
+  border-radius: var(--border-radius-s);
   border: none;
   white-space: normal;
   text-align: left;

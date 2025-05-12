@@ -7,7 +7,7 @@
 
 .preview-on-home-screen {
   background-color: var(--color-background-default);
-  border-radius: rem.torem(2px);
+  border-radius: var(--border-radius-xs);
   left: rem.torem(5.88px);
   position: absolute;
   top: rem.torem(86.75px);
@@ -31,7 +31,7 @@
 
 .preview-on-offer-screen {
   background-color: var(--color-background-default);
-  border-radius: rem.torem(2px);
+  border-radius: var(--border-radius-xs);
   left: rem.torem(16.15px);
   position: absolute;
   top: rem.torem(29.44px);

@@ -32,7 +32,7 @@
         padding: rem.torem(10px);
         color: var(--color-text-default);
         border: solid rem.torem(1px) var(--color-border-default);
-        border-radius: rem.torem(10px);
+        border-radius: var(--border-radius-xl);
 
         &:hover,
         &:focus {

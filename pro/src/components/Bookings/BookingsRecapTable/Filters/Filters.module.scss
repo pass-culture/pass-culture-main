@@ -19,7 +19,7 @@
 
   .bs-filter-tooltip {
     background-color: var(--color-background-default);
-    border-radius: rem.torem(4px);
+    border-radius: var(--border-radius-s);
     box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 var(--color-large-shadow);
     left: rem.torem(-90px);
     margin-top: rem.torem(8px);
@@ -69,11 +69,4 @@
   &.active {
     color: var(--color-icon-brand-primary);
   }
-}
-
-.status-badge-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  border-radius: rem.torem(4px);
 }

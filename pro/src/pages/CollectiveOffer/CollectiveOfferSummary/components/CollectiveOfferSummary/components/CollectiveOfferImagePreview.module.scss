@@ -12,7 +12,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: rem.torem(4px);
+  border-radius: var(--border-radius-s);
   background: var(--color-background-subtle);
 
   svg {

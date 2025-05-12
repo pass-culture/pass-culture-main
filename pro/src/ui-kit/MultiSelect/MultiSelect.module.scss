@@ -47,7 +47,7 @@
   padding: rem.torem(8px) rem.torem(12px);
   background-color: var(--color-background-default);
   border: 1px solid var(--color-border-default);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   width: 100%;
   cursor: pointer;
   height: rem.torem(42px);
@@ -151,7 +151,7 @@
   top: rem.torem(42px);
   box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
   padding-top: rem.torem(16px);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
 }
 
 .panel-scrollable {

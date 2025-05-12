@@ -15,7 +15,7 @@
   padding: rem.torem(16px);
   background: var(--color-background-subtle);
   color: var(--color-text-subtle);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   word-break: break-word;
 }
 

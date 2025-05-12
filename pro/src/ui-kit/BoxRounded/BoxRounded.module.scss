@@ -3,7 +3,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .expandable-box-container {
-  border-radius: rem.torem(6px);
+  border-radius: var(--border-radius-m);
   border: rem.torem(1px) solid var(--color-border-subtle);
   padding: rem.torem(16px);
 }

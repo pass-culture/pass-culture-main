@@ -31,7 +31,7 @@
   gap: rem.torem(8px);
   padding: rem.torem(8px);
   background-color: var(--color-background-default);
-  border-radius: rem.torem(6px);
+  border-radius: var(--border-radius-m);
   border: rem.torem(1px) solid var(--color-border-subtle);
 }
 

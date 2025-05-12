@@ -89,7 +89,7 @@
 .radio:focus-within {
   @include outline.focus-outline(rem.torem(4px));
 
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
 }
 
 @supports selector(:has(*)) {
@@ -100,7 +100,7 @@
   .radio:has(.base-radio-input:focus-visible) {
     @include outline.focus-outline(rem.torem(4px));
 
-    border-radius: rem.torem(8px);
+    border-radius: var(--border-radius-l);
   }
 }
 
@@ -110,7 +110,7 @@
 
 .radio.box-variant {
   border: rem.torem(1px) solid var(--color-border-default);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   padding: 0 0 0 rem.torem(16px);
 
   .base-radio-label {

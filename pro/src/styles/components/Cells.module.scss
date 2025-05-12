@@ -188,7 +188,7 @@
 .pop-in {
   background-color: var(--color-background-default);
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(6px);
+  border-radius: var(--border-radius-m);
   z-index: zIndex.$profil-pop-in-z-index;
   width: 100dvw;
   height: 100dvh;
@@ -219,7 +219,7 @@
     &:focus-visible {
       @include outline.focus-outline;
 
-      border-radius: rem.torem(4px);
+      border-radius: var(--border-radius-s);
     }
 
     &[data-highlighted] {

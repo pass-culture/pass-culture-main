@@ -41,7 +41,7 @@
   &-input {
     appearance: none;
     border: rem.torem(2px) solid var(--color-border-default);
-    border-radius: rem.torem(3px);
+    border-radius: var(--border-radius-s);
     transition:
       border 150ms ease,
       background 150ms ease;
@@ -166,7 +166,7 @@
 .box-variant,
 .inline-box-variant {
   border: rem.torem(1px) solid var(--color-border-default);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   min-width: 100%;
   padding-left: rem.torem(16px);
 

@@ -3,7 +3,7 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-$border-radius: rem.torem(20px);
+$border-radius: var(--border-radius-xxxl);
 $input-height: rem.torem(40px);
 
 .omnisearch-container {

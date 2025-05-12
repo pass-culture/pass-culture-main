@@ -63,7 +63,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     &:focus-visible {
       @include outline.focus-outline;
 
-      border-radius: rem.torem(8px);
+      border-radius: var(--border-radius-l);
     }
 
     &:hover {
@@ -104,7 +104,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     margin-left: 0;
     margin-top: 0;
     padding: rem.torem(8px) rem.torem(16px);
-    border-radius: rem.torem(6px);
+    border-radius: var(--border-radius-m);
     border: solid rem.torem(1px) var(--color-border-subtle);
   }
 }
@@ -141,7 +141,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   z-index: 15;
 
   @media screen and (min-width: size.$tablet) {
-    border-radius: rem.torem(6px);
+    border-radius: var(--border-radius-m);
     border: solid rem.torem(1px) var(--color-border-subtle);
   }
 
@@ -170,7 +170,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   background-color: var(--color-background-subtle);
   outline: none;
   border: none;
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   padding: rem.torem(8px);
   max-width: rem.torem($button-width);
   height: $profil-button-size;
@@ -225,7 +225,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   &:focus-visible {
     @include outline.focus-outline;
 
-    border-radius: rem.torem(4px);
+    border-radius: var(--border-radius-s);
   }
 
   &:hover {

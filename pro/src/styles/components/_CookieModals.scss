@@ -27,7 +27,7 @@ $action-gap: rem.torem(12px);
     @include fonts.button;
 
     text-align: center;
-    border-radius: rem.torem(30px);
+    border-radius: var(--border-radius-xxxl);
     border: rem.torem(2px) solid var(--color-border-brand-primary);
     padding: 0 rem.torem(16px);
     min-height: rem.torem(40px);
@@ -55,7 +55,7 @@ $action-gap: rem.torem(12px);
     }
 
     &-body {
-      border-radius: rem.torem(6px);
+      border-radius: var(--border-radius-m);
       padding: rem.torem(21px);
       max-width: initial;
       width: 100%;
@@ -105,7 +105,7 @@ $action-gap: rem.torem(12px);
           align-items: flex-start;
           justify-content: flex-start;
           background-color: transparent;
-          border-radius: rem.torem(4px);
+          border-radius: var(--border-radius-s);
           padding: 0;
           border: none;
           height: auto;
@@ -328,7 +328,7 @@ $action-gap: rem.torem(12px);
       .orejime-Purpose-input {
         appearance: none;
         border: rem.torem(2px) solid var(--color-border-default);
-        border-radius: rem.torem(3px);
+        border-radius: var(--border-radius-s);
         transition:
           border 150ms ease,
           background 150ms ease;

@@ -43,7 +43,7 @@ $offer-image-width: rem.torem(216px);
   &:focus-visible {
     @include outline.focus-outline(rem.torem(4px));
 
-    border-radius: rem.torem(18px);
+    border-radius: var(--border-radius-xxl);
   }
 }
 
@@ -54,7 +54,7 @@ $offer-image-width: rem.torem(216px);
 .offer-image {
   width: $offer-image-width;
   height: $offer-image-height;
-  border-radius: rem.torem(16px);
+  border-radius: var(--border-radius-xxl);
   border: rem.torem(1px) solid var(--color-border-inverted);
   object-fit: cover;
 
@@ -95,7 +95,7 @@ $offer-image-width: rem.torem(216px);
 .offer-tag {
   display: flex;
   align-items: center;
-  border-radius: rem.torem(32px);
+  border-radius: var(--border-radius-xxxl);
   padding: rem.torem(4px) rem.torem(8px);
 
   &-image {

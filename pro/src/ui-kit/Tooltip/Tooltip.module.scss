@@ -41,7 +41,7 @@ $arrow-triangle-height: rem.torem(4px);
     top: 0;
 
     &-panel {
-      border-radius: rem.torem(3px);
+      border-radius: var(--border-radius-s);
       background-color: var(--color-background-brand-primary);
       color: var(--color-text-inverted);
       padding: rem.torem(4px) rem.torem(8px);

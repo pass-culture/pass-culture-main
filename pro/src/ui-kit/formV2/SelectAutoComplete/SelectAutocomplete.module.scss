@@ -45,7 +45,7 @@
 
     align-items: center;
     background-color: var(--color-background-subtle);
-    border-radius: rem.torem(100px);
+    border-radius: var(--border-radius-full);
     color: var(--color-text-default);
     cursor: pointer;
     display: flex;

@@ -17,12 +17,12 @@
 }
 
 .search-input input {
-  border-radius: rem.torem(24px) 0 0 rem.torem(24px);
+  border-radius: var(--border-radius-xxxl) 0 0 var(--border-radius-xxxl);
 }
 
 .search-button {
   margin: 0;
-  border-radius: 0 rem.torem(24px) rem.torem(24px) 0;
+  border-radius: 0 var(--border-radius-xxxl) var(--border-radius-xxxl) 0;
 }
 
 .offer-info {
