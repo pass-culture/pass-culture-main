@@ -17,6 +17,7 @@ from pcapi.core.providers import factories as provider_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.routes.public.collective.endpoints.offers import PATCH_NON_NULLABLE_FIELDS
 from pcapi.utils import date as date_utils
 
 import tests
@@ -26,6 +27,20 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
+
+NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR = {
+    "contactEmail": "Ce champ ne peut pas être vide",
+    "contactPhone": "Ce numéro de telephone ne semble pas valide",
+    "startDatetime": "La date de début de l'évènement ne peut pas être vide.",
+    "endDatetime": "La date de fin de l'évènement ne peut pas être vide.",
+    "totalPrice": "Le prix ne peut pas être nul.",
+    "numberOfTickets": "Le nombre de places ne peut pas être nul.",
+    "formats": "formats must have at least one value",
+    "name": "name cannot be empty",
+    "domains": "domains must have at least one value",
+}
+# the other fields have the same error message when null
+NON_REQUIRED_NON_NULLABLE_FIELDS = set(PATCH_NON_NULLABLE_FIELDS) - NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR.keys()
 
 time_travel_str = "2021-10-01 15:00:00"
 
@@ -157,6 +172,40 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
+    @pytest.mark.parametrize("field", NON_REQUIRED_NON_NULLABLE_FIELDS)
+    def test_non_nullable_field(self, client, field):
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        payload = {field: None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {field: ["Ce champ peut ne pas être présent mais ne peut pas être null."]}
+
+    @pytest.mark.parametrize("field,error", NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR.items())
+    def test_non_nullable_field_custom_error(self, client, field, error):
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        payload = {field: None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {field: [error]}
+
     def test_change_venue(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
         venue = venue_provider.venue
@@ -216,28 +265,20 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.venueId == venue.id
 
     def test_partial_patch_offer(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        payload = {
-            "educationalInstitutionId": educational_institution.id,
-        }
-
-        # When
+        payload = {"educationalInstitutionId": educational_institution.id}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
@@ -245,37 +286,27 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert educational_institution.isActive is True
 
     def test_patch_private_api_offer(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
         api_key = offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.PENDING, name="old_name", venue=venue, provider=api_key.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        payload = {
-            "name": "new_name",
-        }
-
-        # When
+        payload = {"name": "new_name"}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 422
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.name == "old_name"
 
     def test_partial_patch_offer_uai(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -283,23 +314,15 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
-
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
 
-        payload = {
-            "educationalInstitution": "UAI123",
-        }
-
-        # When
+        payload = {"educationalInstitution": "UAI123"}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
@@ -345,7 +368,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.collectiveStock.endDatetime == next_month
 
     def test_should_raise_400_because_endDatetime_is_before_startDatetime(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -353,9 +375,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
         next_month_minus_one_day = next_month - timedelta(days=1)
@@ -365,13 +385,11 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "endDatetime": date_utils.utc_datetime_to_department_timezone(next_month_minus_one_day, None).isoformat(),
         }
 
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
 
@@ -406,7 +424,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
     def test_patch_offer_uai_and_institution_id(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
@@ -416,110 +433,55 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {
             "educationalInstitution": "UAI123",
             "educationalInstitutionId": educational_institution.id,
         }
-
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {
+            "__root__": [
+                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
+                "Vous ne pouvez pas remplir les deux en même temps"
+            ]
+        }
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId is None
 
     def test_patch_offer_invalid_api_key(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
-        domain = educational_factories.EducationalDomainFactory()
-        educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        payload = {
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
-            # stock part
-            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
-            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
-            "totalPrice": 35621,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
-        }
-
-        # When
+        payload = {"description": "une description d'offre"}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 401
+        assert response.json == {"auth": "API key required"}
 
     def test_patch_offer_invalid_offerer(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        domain = educational_factories.EducationalDomainFactory()
-        educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=provider_factories.ProviderFactory())
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        payload = {
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
-            # stock part
-            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
-            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
-            "totalPrice": 35621,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
-        }
-
+        payload = {"description": "une description d'offre"}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
@@ -531,105 +493,56 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         }
 
     def test_patch_offer_invalid_phone_number(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        payload = {
-            "contactPhone": "NOT A PHONE NUMBER",
-        }
-
-        # When
+        payload = {"contactPhone": "NOT A PHONE NUMBER"}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"contactPhone": ["Ce numéro de telephone ne semble pas valide"]}
 
     def test_patch_offer_institution_not_active(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(isActive=False)
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        payload = {
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "venueId": venue2.id,
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "01 00 99 27.98",
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
-            "isActive": False,
-            # stock part
-            "startDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 216.25,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
-        }
-        # when
+        payload = {"educationalInstitutionId": educational_institution.id}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # then
-        assert response.status_code == 400
+        assert response.status_code == 403
+        assert response.json == {"global": ["cet institution est expiré."]}
 
     def test_add_valid_image(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
-
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 200
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
@@ -637,27 +550,21 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_add_invalid_image_size(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_SIZE}
-
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"imageFile": ["L'image doit faire exactement 400*600 pixels"]}
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.hasImage is False
@@ -665,26 +572,21 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.name != "pouet"
 
     def test_add_invalid_image_type(self, client):
-        # Given
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_TYPE}
-
-        # When
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"imageFile": ["Les formats acceptés sont:  png, jpg, jpeg, mpo, webp"]}
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=stock.collectiveOffer.id).one()
         assert offer.hasImage is False
@@ -698,12 +600,9 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
-
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
@@ -714,13 +613,14 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         # END SETUP
+
         # actual test
         payload = {"imageFile": None}
-
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
+
         assert response.status_code == 200
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
@@ -762,22 +662,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"domains": ["domains must have at least one value"]}
 
-    def test_patch_offer_none_domains(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-
-        payload = {"domains": None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{offer.id}", json=payload
-            )
-
-        assert response.status_code == 400
-        assert response.json == {"domains": ["domains must have at least one value"]}
-
     def test_patch_offer_bad_institution(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -798,28 +682,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.json == {"educationalInstitutionId": ["Établissement scolaire non trouvé."]}
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.institutionId == educational_institution.id
-
-    @pytest.mark.parametrize("institution_field", ["educationalInstitution", "educationalInstitutionId"])
-    def test_does_not_update_institution_if_field_is_null(self, institution_field, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-
-        offer = educational_factories.CollectiveStockFactory(
-            collectiveOffer__venue=venue_provider.venue,
-            collectiveOffer__provider=venue_provider.provider,
-            collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
-        ).collectiveOffer
-
-        payload = {institution_field: None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{offer.id}", json=payload
-            )
-
-        assert response.status_code == 200
-
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
-        assert offer.institutionId
 
     def test_unknown_national_program(self, client):
         venue_provider = provider_factories.VenueProviderFactory()

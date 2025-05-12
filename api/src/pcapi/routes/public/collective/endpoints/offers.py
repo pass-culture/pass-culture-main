@@ -27,6 +27,31 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
+PATCH_NON_NULLABLE_FIELDS = (
+    "name",
+    "venueId",
+    "contactEmail",
+    "contactPhone",
+    "description",
+    "domains",
+    "students",
+    "offerVenue",
+    "interventionArea",
+    "startDatetime",
+    "endDatetime",
+    "totalPrice",
+    "numberOfTickets",
+    "audioDisabilityCompliant",
+    "mentalDisabilityCompliant",
+    "motorDisabilityCompliant",
+    "visualDisabilityCompliant",
+    "isActive",
+    "educationalInstitution",
+    "educationalInstitutionId",
+    "formats",
+)
+
+
 @blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
 @atomic()
 @provider_api_key_required
@@ -266,29 +291,7 @@ def patch_collective_offer_public(
     image_file = False
     # checking data
     educational_validation.validate_offer_venue(body.offerVenue)
-    non_nullable_fields = [
-        "name",
-        "venueId",
-        "contactEmail",
-        "contactPhone",
-        "description",
-        "domains",
-        "students",
-        "offerVenue",
-        "interventionArea",
-        "startDatetime",
-        "endDatetime",
-        "totalPrice",
-        "numberOfTickets",
-        "audioDisabilityCompliant",
-        "mentalDisabilityCompliant",
-        "motorDisabilityCompliant",
-        "visualDisabilityCompliant",
-        "isActive",
-        "educational_institution_id",
-        "formats",
-    ]
-    for field in non_nullable_fields:
+    for field in PATCH_NON_NULLABLE_FIELDS:
         if field in new_values and new_values[field] is None:
             raise api_errors.ApiErrors(
                 errors={field: ["Ce champ peut ne pas être présent mais ne peut pas être null."]}, status_code=400

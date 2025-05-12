@@ -518,14 +518,17 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
-        assert name is not None and name.strip() != ""
+        if name is None or name.strip() == "":
+            raise ValueError("name cannot be empty")
+
         educational_validation.check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("description")
     def validate_description(cls, description: str | None) -> str | None:
-        assert description is not None
-        educational_validation.check_collective_offer_description_length_is_valid(description)
+        if description is not None:
+            educational_validation.check_collective_offer_description_length_is_valid(description)
+
         return description
 
     @validator("domains")
