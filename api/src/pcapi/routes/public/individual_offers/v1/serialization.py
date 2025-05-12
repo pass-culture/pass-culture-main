@@ -27,7 +27,6 @@ import pcapi.routes.public.serialization.accessibility as accessibility_serializ
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
-from pcapi.utils.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
