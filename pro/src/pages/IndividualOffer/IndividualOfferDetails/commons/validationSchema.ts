@@ -32,15 +32,18 @@ export const getValidationSchema = ({
     speaker: yup.string(),
     stageDirector: yup.string(),
     visa: yup.string(),
-    durationMinutes: yup.string().when('subcategoryConditionalFields', {
-      is: (subcategoryConditionalFields: string[]) =>
-        subcategoryConditionalFields.includes('durationMinutes'),
-      then: (schema) =>
-        schema.matches(
-          /^\d{1,3}:\d{2}$/,
-          'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
-        ),
-    }),
+    durationMinutes: yup
+      .string()
+      .nullable()
+      .when('subcategoryConditionalFields', {
+        is: (subcategoryConditionalFields: string[]) =>
+          subcategoryConditionalFields.includes('durationMinutes'),
+        then: (schema) =>
+          schema.matches(
+            /^\d{1,3}:\d{2}$/,
+            'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
+          ),
+      }),
     categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
     subcategoryId: yup.string().when('categoryId', {
       is: (categoryId: string) => categoryId,
