@@ -49,7 +49,7 @@
     min-width: rem.torem(20px);
     width: rem.torem(20px);
     border: rem.torem(2px) solid var(--color-border-default);
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     background-color: var(--color-background-default);
     margin-right: rem.torem(8px);
     appearance: none;

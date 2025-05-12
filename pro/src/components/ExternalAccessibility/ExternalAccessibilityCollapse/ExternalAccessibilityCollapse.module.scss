@@ -19,7 +19,7 @@
   background-color: var(--color-background-default);
   width: rem.torem(16px);
   height: rem.torem(16px);
-  border-radius: 50%;
+  border-radius: var(--border-radius-full);
 
   &.accessible {
     color: var(--color-icon-success);

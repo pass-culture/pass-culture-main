@@ -190,7 +190,7 @@ $action-gap: rem.torem(12px);
             background: var(--color-background-disabled);
             border-color: var(--color-border-disabled);
             color: var(--color-text-disabled);
-            border-radius: 30px;
+            border-radius: var(--border-radius-xxxl);
             opacity: 1;
             cursor: default;
             pointer-events: none;
@@ -226,7 +226,7 @@ $action-gap: rem.torem(12px);
 
       &-label {
         display: inline;
-        border-radius: 4px;
+        border-radius: var(--border-radius-s);
         background: var(--color-background-subtle);
         color: var(--color-text-default);
         padding: rem.torem(4px) rem.torem(8px);
@@ -259,7 +259,7 @@ $action-gap: rem.torem(12px);
   .orejime-PurposeList-item {
     $initial-padding-left-item: 60px;
 
-    border-radius: 8px;
+    border-radius: var(--border-radius-l);
     border: 1px solid var(--color-border-subtle);
     padding: rem.torem(12px) rem.torem(16px);
     margin-bottom: rem.torem(12px);
