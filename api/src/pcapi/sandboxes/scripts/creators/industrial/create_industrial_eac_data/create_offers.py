@@ -154,8 +154,7 @@ def create_offers(
     offerers: list[offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
 ) -> None:
     reset_offer_id_seq()
-    national_programs = create_national_programs()
-    domains = create_domains(national_programs)
+    national_programs, domains = create_national_programs_and_domains()
     offerers_iterator = iter(offerers)
 
     # eac_1
@@ -1098,80 +1097,87 @@ def create_booking_base_list(
             )
 
 
-def create_domains(
-    national_programs: typing.Sequence[educational_models.NationalProgram],
-) -> list[educational_models.EducationalDomain]:
-    college_au_cinema = [np for np in national_programs if np.name == "Collège au cinéma"]
-    lyceens_apprentis_au_cinema = [np for np in national_programs if np.name == "Lycéens et apprentis au cinéma"]
-    olympiade_culturelle = [np for np in national_programs if np.name == "Olympiade culturelle de PARIS 2024"]
-    jeunes_en_librairie = [np for np in national_programs if np.name == "Jeunes en librairie"]
+def create_national_programs_and_domains() -> tuple[
+    list[educational_models.NationalProgram], list[educational_models.EducationalDomain]
+]:
+    college_au_cinema = educational_factories.NationalProgramFactory.create(name="Collège au cinéma")
+    lyceens_apprentis_au_cinema = educational_factories.NationalProgramFactory.create(
+        name="Lycéens et apprentis au cinéma"
+    )
+    jeunes_en_librairie = educational_factories.NationalProgramFactory.create(name="Jeunes en librairie")
+    olympiade_culturelle = educational_factories.NationalProgramFactory.create(
+        name="Olympiade culturelle de PARIS 2024", isActive=False
+    )
+    prado = educational_factories.NationalProgramFactory.create(name="PRADO (plan national de la DILCRAH)")
+    national_programs = [
+        college_au_cinema,
+        lyceens_apprentis_au_cinema,
+        jeunes_en_librairie,
+        olympiade_culturelle,
+        prado,
+    ]
 
-    return [
+    domains = [
         educational_factories.EducationalDomainFactory.create(
-            name="Architecture", id=1, nationalPrograms=olympiade_culturelle
+            name="Architecture", id=1, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Arts du cirque et arts de la rue", id=2, nationalPrograms=olympiade_culturelle
+            name="Arts du cirque et arts de la rue", id=2, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Arts numériques", id=4, nationalPrograms=olympiade_culturelle
+            name="Arts numériques", id=4, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Arts visuels, arts plastiques, arts appliqués", id=5, nationalPrograms=olympiade_culturelle
+            name="Arts visuels, arts plastiques, arts appliqués", id=5, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
             name="Cinéma, audiovisuel",
             id=6,
-            nationalPrograms=college_au_cinema + lyceens_apprentis_au_cinema,
+            nationalPrograms=[college_au_cinema, lyceens_apprentis_au_cinema, prado],
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Culture scientifique, technique et industrielle", id=7, nationalPrograms=olympiade_culturelle
+            name="Culture scientifique, technique et industrielle",
+            id=7,
+            nationalPrograms=[olympiade_culturelle, prado],
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Danse", id=8, nationalPrograms=olympiade_culturelle
+            name="Danse", id=8, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Design", id=9, nationalPrograms=olympiade_culturelle
+            name="Design", id=9, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Développement durable", id=10, nationalPrograms=olympiade_culturelle
+            name="Développement durable", id=10, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
             name="Univers du livre, de la lecture et des écritures",
             id=11,
-            nationalPrograms=jeunes_en_librairie,
+            nationalPrograms=[jeunes_en_librairie, prado],
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Musique", id=12, nationalPrograms=olympiade_culturelle
+            name="Musique", id=12, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Patrimoine", id=13, nationalPrograms=olympiade_culturelle
+            name="Patrimoine", id=13, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Photographie", id=14, nationalPrograms=olympiade_culturelle
+            name="Photographie", id=14, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Théâtre, expression dramatique, marionnettes", id=15, nationalPrograms=olympiade_culturelle
+            name="Théâtre, expression dramatique, marionnettes", id=15, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Bande dessinée", id=16, nationalPrograms=olympiade_culturelle
+            name="Bande dessinée", id=16, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Média et information", id=17, nationalPrograms=olympiade_culturelle
+            name="Média et information", id=17, nationalPrograms=[olympiade_culturelle, prado]
         ),
         educational_factories.EducationalDomainFactory.create(
-            name="Mémoire", id=18, nationalPrograms=olympiade_culturelle
+            name="Mémoire", id=18, nationalPrograms=[olympiade_culturelle, prado]
         ),
     ]
 
-
-def create_national_programs() -> list[educational_models.NationalProgram]:
-    return [
-        educational_factories.NationalProgramFactory.create(name="Collège au cinéma"),
-        educational_factories.NationalProgramFactory.create(name="Lycéens et apprentis au cinéma"),
-        educational_factories.NationalProgramFactory.create(name="Jeunes en librairie"),
-        educational_factories.NationalProgramFactory.create(name="Olympiade culturelle de PARIS 2024", isActive=False),
-    ]
+    return national_programs, domains
 
 
 def reset_offer_id_seq() -> None:
