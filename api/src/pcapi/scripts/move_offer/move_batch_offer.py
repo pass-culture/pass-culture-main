@@ -5,12 +5,14 @@ import typing
 
 import click
 
+from pcapi.core import search
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
 from pcapi.core.offers import models as offer_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 
@@ -23,11 +25,14 @@ ORIGIN_VENUE_ID_HEADER = "origin_venue_id"
 DESTINATION_VENUE_ID_HEADER = "destination_venue_id"
 
 
-def _get_venues_to_move_from_csv_file() -> typing.Iterator[dict[str, str]]:
-    namespace_dir = os.path.dirname(os.path.abspath(__file__))
-    with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
-        csv_rows = csv.DictReader(csv_file, delimiter=",")
-        yield from csv_rows
+def _get_venue_rows(origin: int | None, destination: int | None) -> typing.Iterator[dict]:
+    if origin and destination:
+        yield from [{ORIGIN_VENUE_ID_HEADER: origin, DESTINATION_VENUE_ID_HEADER: destination}]
+    else:
+        namespace_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
+            csv_rows = csv.DictReader(csv_file, delimiter=",")
+            yield from csv_rows
 
 
 def _extract_invalid_venues_to_csv(invalid_venues: list[tuple[int, int, str]]) -> None:
@@ -64,6 +69,7 @@ def _check_destination_venue_validity(
 
 def check_origin_venue_validity(origin_venue: offerers_models.Venue) -> str | None:
     if origin_venue.isPermanent or origin_venue.isOpenToPublic or bool(origin_venue.siret):
+        logger.info("Origin venue with id %d permanent, open to public or with SIRET.", origin_venue.id)
         return "Origin venue permanent, open to public or with SIRET. "
     return None
 
@@ -149,9 +155,9 @@ def _move_price_category_label(origin_venue: offerers_models.Venue, destination_
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
-def _move_offer_from_csv_file(commit_by_venue: bool) -> None:
+def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
-    for row in _get_venues_to_move_from_csv_file():
+    for row in _get_venue_rows(origin, destination):
         origin_venue_id = int(row[ORIGIN_VENUE_ID_HEADER])
         destination_venue_id = int(row[DESTINATION_VENUE_ID_HEADER])
 
@@ -171,13 +177,15 @@ def _move_offer_from_csv_file(commit_by_venue: bool) -> None:
         if invalidity_reason:
             invalid_venues.append((origin_venue_id, destination_venue_id, invalidity_reason))
         else:
+            offers_repository.lock_stocks_for_venue(origin_venue_id)
             _move_individual_offers(origin_venue, destination_venue)
             _move_collective_offers(origin_venue, destination_venue)
             _move_collective_offer_template(origin_venue, destination_venue)
             _move_collective_offer_playlist(origin_venue, destination_venue)
             _move_price_category_label(origin_venue, destination_venue)
-            if commit_by_venue:
+            if not dry_run:
                 db.session.commit()
+                search.reindex_venue_ids([origin_venue_id])
                 logger.info("Transfert done for venue %d to venue %d", origin_venue_id, destination_venue_id)
             else:
                 db.session.flush()
@@ -186,11 +194,11 @@ def _move_offer_from_csv_file(commit_by_venue: bool) -> None:
 
 @blueprint.cli.command("move_batch_offer")
 @click.option("--dry-run", type=bool, default=True)
-@click.option("--commit-by-venue", type=bool, default=True)
-def move_batch_offer(dry_run: bool = True, commit_by_venue: bool = True) -> None:
-    _move_offer_from_csv_file(commit_by_venue=commit_by_venue and not dry_run)
+@click.option("--origin", type=int, required=False)
+@click.option("--destination", type=int, required=False)
+def move_batch_offer(dry_run: bool, origin: int | None, destination: int | None) -> None:
+    _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
     if not dry_run:
-        db.session.commit()
         logger.info("Finished")
     else:
         db.session.rollback()
