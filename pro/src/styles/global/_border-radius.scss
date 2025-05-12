@@ -1,0 +1,11 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+:root {
+  --border-radius-xs: #{rem.torem(2px)};
+  --border-radius-s: #{rem.torem(4px)};
+  --border-radius-m: #{rem.torem(6px)};
+  --border-radius-l: #{rem.torem(8px)};
+  --border-radius-xl: #{rem.torem(12px)};
+  --border-radius-xxl: #{rem.torem(16px)};
+  --border-radius-full: 100%;
+}
