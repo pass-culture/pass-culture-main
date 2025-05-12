@@ -12,6 +12,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import db as db_utils
 
 
 if typing.TYPE_CHECKING:
@@ -22,70 +23,70 @@ if typing.TYPE_CHECKING:
 
 class ActionType(enum.Enum):
     # Single comment from admin, on any resource, without status change:
-    COMMENT = "Commentaire interne"
+    COMMENT = "COMMENT"
     # Update:
-    INFO_MODIFIED = "Modification des informations"
+    INFO_MODIFIED = "INFO_MODIFIED"
     # Validation process for offerers:
-    OFFERER_NEW = "Nouvelle entité juridique"
-    OFFERER_PENDING = "Entité juridique mise en attente"
-    OFFERER_VALIDATED = "Entité juridique validée"
-    OFFERER_REJECTED = "Entité juridique rejetée"
-    OFFERER_CLOSED = "Entité juridique fermée"
-    OFFERER_SUSPENDED = "Entité juridique désactivée"
-    OFFERER_UNSUSPENDED = "Entité juridique réactivée"
-    OFFERER_ATTESTATION_CHECKED = "Attestation consultée"
+    OFFERER_NEW = "OFFERER_NEW"
+    OFFERER_PENDING = "OFFERER_PENDING"
+    OFFERER_VALIDATED = "OFFERER_VALIDATED"
+    OFFERER_REJECTED = "OFFERER_REJECTED"
+    OFFERER_CLOSED = "OFFERER_CLOSED"
+    OFFERER_SUSPENDED = "OFFERER_SUSPENDED"
+    OFFERER_UNSUSPENDED = "OFFERER_UNSUSPENDED"
+    OFFERER_ATTESTATION_CHECKED = "OFFERER_ATTESTATION_CHECKED"
     # Validation process for user-offerer relationships:
-    USER_OFFERER_NEW = "Nouveau rattachement"
-    USER_OFFERER_PENDING = "Rattachement mis en attente"
-    USER_OFFERER_VALIDATED = "Rattachement validé"
-    USER_OFFERER_REJECTED = "Rattachement rejeté"
-    USER_OFFERER_DELETED = "Rattachement supprimé, sans mail envoyé"
+    USER_OFFERER_NEW = "USER_OFFERER_NEW"
+    USER_OFFERER_PENDING = "USER_OFFERER_PENDING"
+    USER_OFFERER_VALIDATED = "USER_OFFERER_VALIDATED"
+    USER_OFFERER_REJECTED = "USER_OFFERER_REJECTED"
+    USER_OFFERER_DELETED = "USER_OFFERER_DELETED"
     # User account status changes:
-    USER_CREATED = "Création du compte"
-    USER_SUSPENDED = "Compte suspendu"
-    USER_UNSUSPENDED = "Compte réactivé"
-    USER_PHONE_VALIDATED = "Validation manuelle du numéro de téléphone"
-    USER_EMAIL_VALIDATED = "Validation manuelle de l'email"
-    USER_ACCOUNT_UPDATE_INSTRUCTED = "Instruction d'une demande de modifications"
-    USER_EXTRACT_DATA = "Génération d'un extrait des données du compte"
-    CONNECT_AS_USER = "Connexion d'un admin"
-    USER_PASSWORD_INVALIDATED = "Invalidation du mot de passe de l'utilisateur"
+    USER_CREATED = "USER_CREATED"
+    USER_SUSPENDED = "USER_SUSPENDED"
+    USER_UNSUSPENDED = "USER_UNSUSPENDED"
+    USER_PHONE_VALIDATED = "USER_PHONE_VALIDATED"
+    USER_EMAIL_VALIDATED = "USER_EMAIL_VALIDATED"
+    USER_ACCOUNT_UPDATE_INSTRUCTED = "USER_ACCOUNT_UPDATE_INSTRUCTED"
+    USER_EXTRACT_DATA = "USER_EXTRACT_DATA"
+    CONNECT_AS_USER = "CONNECT_AS_USER"
+    USER_PASSWORD_INVALIDATED = "USER_PASSWORD_INVALIDATED"
     # Fraud and compliance actions:
-    BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
-    REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
-    FRAUD_INFO_MODIFIED = "Fraude et Conformité"  # protected information
+    BLACKLIST_DOMAIN_NAME = "BLACKLIST_DOMAIN_NAME"
+    REMOVE_BLACKLISTED_DOMAIN_NAME = "REMOVE_BLACKLISTED_DOMAIN_NAME"
+    FRAUD_INFO_MODIFIED = "FRAUD_INFO_MODIFIED"  # protected information
 
     # Finance incident events
-    FINANCE_INCIDENT_CREATED = "Création de l'incident"
-    FINANCE_INCIDENT_CANCELLED = "Annulation de l'incident"
-    FINANCE_INCIDENT_VALIDATED = "Validation de l'incident"
-    FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
-    FINANCE_INCIDENT_WAIT_FOR_PAYMENT = "Attente de la prochaine échéance de remboursement"
-    FINANCE_INCIDENT_GENERATE_DEBIT_NOTE = "Une note de débit va être générée"
-    FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE = "Choix note de débit"
+    FINANCE_INCIDENT_CREATED = "FINANCE_INCIDENT_CREATED"
+    FINANCE_INCIDENT_CANCELLED = "FINANCE_INCIDENT_CANCELLED"
+    FINANCE_INCIDENT_VALIDATED = "FINANCE_INCIDENT_VALIDATED"
+    FINANCE_INCIDENT_USER_RECREDIT = "FINANCE_INCIDENT_USER_RECREDIT"
+    FINANCE_INCIDENT_WAIT_FOR_PAYMENT = "FINANCE_INCIDENT_WAIT_FOR_PAYMENT"
+    FINANCE_INCIDENT_GENERATE_DEBIT_NOTE = "FINANCE_INCIDENT_GENERATE_DEBIT_NOTE"
+    FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE = "FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE"
 
     # Actions related to a venue:
-    VENUE_CREATED = "Lieu créé"
-    LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
-    LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
-    LINK_VENUE_PROVIDER_UPDATED = "Lien avec le partenaire technique modifié"
-    LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le partenaire technique"
-    SYNC_VENUE_TO_PROVIDER = "Synchronisation du lieu avec un partenaire technique"
+    VENUE_CREATED = "VENUE_CREATED"
+    LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "LINK_VENUE_BANK_ACCOUNT_DEPRECATED"
+    LINK_VENUE_BANK_ACCOUNT_CREATED = "LINK_VENUE_BANK_ACCOUNT_CREATED"
+    LINK_VENUE_PROVIDER_UPDATED = "LINK_VENUE_PROVIDER_UPDATED"
+    LINK_VENUE_PROVIDER_DELETED = "LINK_VENUE_PROVIDER_DELETED"
+    SYNC_VENUE_TO_PROVIDER = "SYNC_VENUE_TO_PROVIDER"
 
     # Permissions role changes:
-    ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"
+    ROLE_PERMISSIONS_CHANGED = "ROLE_PERMISSIONS_CHANGED"
     # RGPD scripts
-    USER_ANONYMIZED = "Le compte a été anonymisé conformément au RGPD"
+    USER_ANONYMIZED = "USER_ANONYMIZED"
     # Offer validation rule changes:
-    RULE_CREATED = "Création d'une règle de conformité"
-    RULE_DELETED = "Suppression d'une règle de conformité"
-    RULE_MODIFIED = "Modification d'une règle de conformité"
+    RULE_CREATED = "RULE_CREATED"
+    RULE_DELETED = "RULE_DELETED"
+    RULE_MODIFIED = "RULE_MODIFIED"
     # Pivot changes
-    PIVOT_DELETED = "Suppression d'un pivot"
-    PIVOT_CREATED = "Création d'un pivot"
+    PIVOT_DELETED = "PIVOT_DELETED"
+    PIVOT_CREATED = "PIVOT_CREATED"
     # Chronicles
-    CHRONICLE_PUBLISHED = "Publication d'une chronique"
-    CHRONICLE_UNPUBLISHED = "Dépublication d'une chronique"
+    CHRONICLE_PUBLISHED = "CHRONICLE_PUBLISHED"
+    CHRONICLE_UNPUBLISHED = "CHRONICLE_UNPUBLISHED"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
@@ -115,7 +116,7 @@ class ActionHistory(PcObject, Base, Model):
 
     __tablename__ = "action_history"
 
-    actionType: ActionType = sa.Column(sa.Enum(ActionType, create_constraint=False), nullable=False)
+    actionType: ActionType = sa.Column(db_utils.MagicEnum(ActionType), nullable=False)
     sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash")
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions

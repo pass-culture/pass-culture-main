@@ -307,7 +307,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(rows) == 2
 
-        assert rows[0]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert rows[0]["Type"] == "Compte suspendu"
         assert rows[0]["Date/Heure"] == format_date(action2.actionDate, "Le %d/%m/%Y à %Hh%M")
         assert (
             rows[0]["Commentaire"]
@@ -315,7 +315,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
         )
         assert rows[0]["Auteur"] == action2.authorUser.full_name
 
-        assert rows[1]["Type"] == history_models.ActionType.COMMENT.value
+        assert rows[1]["Type"] == "Commentaire interne"
         assert rows[1]["Date/Heure"] == format_date(action1.actionDate, "Le %d/%m/%Y à %Hh%M")
         assert rows[1]["Commentaire"] == action1.comment
         assert rows[1]["Auteur"] == action1.authorUser.full_name

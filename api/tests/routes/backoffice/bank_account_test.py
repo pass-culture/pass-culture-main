@@ -232,7 +232,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["Type"] == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED.value
+        assert rows[0]["Type"] == "Lieu associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))

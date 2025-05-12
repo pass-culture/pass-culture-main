@@ -29,6 +29,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -48,6 +49,80 @@ from pcapi.utils.csr import get_csr
 logger = logging.getLogger(__name__)
 
 PARIS_TZ = pytz.timezone("Europe/Paris")
+
+ACTION_TYPE_TO_STRING = {
+    history_models.ActionType.COMMENT: "Commentaire interne",
+    # Update:
+    history_models.ActionType.INFO_MODIFIED: "Modification des informations",
+    # Validation process for offerers:
+    history_models.ActionType.OFFERER_NEW: "Nouvelle entité juridique",
+    history_models.ActionType.OFFERER_PENDING: "Entité juridique mise en attente",
+    history_models.ActionType.OFFERER_VALIDATED: "Entité juridique validée",
+    history_models.ActionType.OFFERER_REJECTED: "Entité juridique rejetée",
+    history_models.ActionType.OFFERER_CLOSED: "Entité juridique fermée",
+    history_models.ActionType.OFFERER_SUSPENDED: "Entité juridique désactivée",
+    history_models.ActionType.OFFERER_UNSUSPENDED: "Entité juridique réactivée",
+    history_models.ActionType.OFFERER_ATTESTATION_CHECKED: "Attestation consultée",
+    # Validation process for user-offerer relationships:
+    history_models.ActionType.USER_OFFERER_NEW: "Nouveau rattachement",
+    history_models.ActionType.USER_OFFERER_PENDING: "Rattachement mis en attente",
+    history_models.ActionType.USER_OFFERER_VALIDATED: "Rattachement validé",
+    history_models.ActionType.USER_OFFERER_REJECTED: "Rattachement rejeté",
+    history_models.ActionType.USER_OFFERER_DELETED: "Rattachement supprimé, sans mail envoyé",
+    # User account status changes:
+    history_models.ActionType.USER_CREATED: "Création du compte",
+    history_models.ActionType.USER_SUSPENDED: "Compte suspendu",
+    history_models.ActionType.USER_UNSUSPENDED: "Compte réactivé",
+    history_models.ActionType.USER_PHONE_VALIDATED: "Validation manuelle du numéro de téléphone",
+    history_models.ActionType.USER_EMAIL_VALIDATED: "Validation manuelle de l'email",
+    history_models.ActionType.USER_ACCOUNT_UPDATE_INSTRUCTED: "Instruction d'une demande de modifications",
+    history_models.ActionType.USER_EXTRACT_DATA: "Génération d'un extrait des données du compte",
+    history_models.ActionType.CONNECT_AS_USER: "Connexion d'un admin",
+    history_models.ActionType.USER_PASSWORD_INVALIDATED: "Invalidation du mot de passe de l'utilisateur",
+    # Fraud and compliance actions:
+    history_models.ActionType.BLACKLIST_DOMAIN_NAME: "Blacklist d'un nom de domaine",
+    history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME: "Suppression d'un nom de domaine banni",
+    history_models.ActionType.FRAUD_INFO_MODIFIED: "Fraude et Conformité",  # protected information
+    # Finance incident events
+    history_models.ActionType.FINANCE_INCIDENT_CREATED: "Création de l'incident",
+    history_models.ActionType.FINANCE_INCIDENT_CANCELLED: "Annulation de l'incident",
+    history_models.ActionType.FINANCE_INCIDENT_VALIDATED: "Validation de l'incident",
+    history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT: "Compte re-crédité suite à un incident",
+    history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT: "Attente de la prochaine échéance de remboursement",
+    history_models.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE: "Une note de débit va être générée",
+    history_models.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE: "Choix note de débit",
+    # Actions related to a venue:
+    history_models.ActionType.VENUE_CREATED: "Lieu créé",
+    history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED: "Lieu dissocié d'un compte bancaire",
+    history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED: "Lieu associé à un compte bancaire",
+    history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED: "Lien avec le partenaire technique modifié",
+    history_models.ActionType.LINK_VENUE_PROVIDER_DELETED: "Suppression du lien avec le partenaire technique",
+    history_models.ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du lieu avec un partenaire technique",
+    # Permissions role changes:
+    history_models.ActionType.ROLE_PERMISSIONS_CHANGED: "Modification des permissions du rôle",
+    # RGPD scripts
+    history_models.ActionType.USER_ANONYMIZED: "Le compte a été anonymisé conformément au RGPD",
+    # Offer validation rule changes:
+    history_models.ActionType.RULE_CREATED: "Création d'une règle de conformité",
+    history_models.ActionType.RULE_DELETED: "Suppression d'une règle de conformité",
+    history_models.ActionType.RULE_MODIFIED: "Modification d'une règle de conformité",
+    # Pivot changes
+    history_models.ActionType.PIVOT_DELETED: "Suppression d'un pivot",
+    history_models.ActionType.PIVOT_CREATED: "Création d'un pivot",
+    # Chronicles
+    history_models.ActionType.CHRONICLE_PUBLISHED: "Publication d'une chronique",
+    history_models.ActionType.CHRONICLE_UNPUBLISHED: "Dépublication d'une chronique",
+}
+
+
+def format_action_type(action_type: history_models.ActionType | str) -> str:
+    if isinstance(action_type, str):
+        return action_type
+    try:
+        return ACTION_TYPE_TO_STRING[action_type]
+    except KeyError:
+        logger.error("Missing action type in ACTION_TYPE_TO_STRING: %s", action_type.name)
+        return action_type.name
 
 
 def format_state(is_active: bool) -> str:
@@ -1701,6 +1776,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["any"] = any
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
+    app.jinja_env.filters["format_action_type"] = format_action_type
     app.jinja_env.filters["format_amount"] = format_amount
     app.jinja_env.filters["format_badge"] = format_badge
     app.jinja_env.filters["format_booking_cancellation"] = format_booking_cancellation

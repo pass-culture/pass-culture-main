@@ -1126,7 +1126,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert history_rows[3]["Commentaire"] == "phone_validation, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[3]["Auteur"]
 
-        assert history_rows[4]["Type"] == history_models.ActionType.INFO_MODIFIED.value
+        assert history_rows[4]["Type"] == "Modification des informations"
         assert history_rows[4]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=30)).strftime("Le %d/%m/%Y à ")
         )
@@ -1136,14 +1136,14 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert "Date de naissance : 2001-04-14 → 2000-09-19" in history_rows[4]["Commentaire"]
         assert history_rows[4]["Auteur"] == admin.full_name
 
-        assert history_rows[5]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
+        assert history_rows[5]["Type"] == "Compte réactivé"
         assert history_rows[5]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=35)).strftime("Le %d/%m/%Y à ")
         )
         assert history_rows[5]["Commentaire"] == unsuspended.comment
         assert history_rows[5]["Auteur"] == admin.full_name
 
-        assert history_rows[6]["Type"] == history_models.ActionType.USER_CREATED.value
+        assert history_rows[6]["Type"] == "Création du compte"
         assert history_rows[6]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
         )
@@ -1162,7 +1162,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
         assert history_rows[8]["Commentaire"] == "Recrédit à 18 ans de 150,00 € sur un crédit 17-18"
 
-        assert history_rows[9]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert history_rows[9]["Type"] == "Compte suspendu"
         assert not history_rows[9]["Date/Heure"]  # Empty date, at the end of the list
         assert history_rows[9]["Commentaire"].startswith("Fraude suspicion")
         assert history_rows[9]["Auteur"] == legit_user.full_name

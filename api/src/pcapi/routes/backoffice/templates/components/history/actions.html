@@ -17,7 +17,7 @@
         <tr>
           <th scope="row"></th>
           {# action can be an ActionHistory row from db or an AccountAction object from another table #}
-          <td>{{ action.actionType.value or action.actionType }}</td>
+          <td>{{ action.actionType | format_action_type }}</td>
           <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
           <td class="text-break">
             {% if action.userId and is_user_offerer_action_type(action) %}
