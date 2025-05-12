@@ -1741,9 +1741,9 @@ def get_unbookable_unbooked_old_offer_ids(
     """
 
     if max_id is None:
-        max_id = models.Offer.query.order_by(models.Offer.id).first().id
+        max_id = models.Offer.query.order_by(models.Offer.id.desc()).first().id
 
     while min_id < max_id:
-        rows = db.session.execute(sa.text(query), {"min_id": min_id, "max_id": max_id + batch_size})
+        rows = db.session.execute(sa.text(query), {"min_id": min_id, "max_id": min_id + batch_size})
         yield from {row[0] for row in rows}
         min_id += batch_size
