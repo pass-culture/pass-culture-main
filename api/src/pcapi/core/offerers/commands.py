@@ -56,16 +56,6 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         [offerer.siren for offerer in offerers], dry_run=dry_run, fill_in_codir_report=codir_report_is_enabled
     )
 
-    for offerer in offerers:
-        # Do not flood Sirene API (max. 30 per minute for the whole product)
-        offerers_tasks.check_offerer_siren_task.delay(
-            offerers_tasks.CheckOffererSirenRequest(
-                siren=offerer.siren,
-                close_or_tag_when_inactive=not dry_run,
-                fill_in_codir_report=codir_report_is_enabled,
-            )
-        )
-
 
 def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in_codir_report: bool = False) -> None:
     # Do not flood Sirene API (max. 30 per minute for the whole product)
