@@ -751,7 +751,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     def has_headline_offer(self) -> bool:
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
-    _has_partner_page: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
+    _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
     @hybrid_property
     def has_partner_page(self) -> bool:
