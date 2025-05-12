@@ -151,6 +151,7 @@ jobs:
   deploy-to-testing:
     name: "Deploy to testing"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi]
+    if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
@@ -168,6 +169,7 @@ jobs:
   deploy-to-ops:
     name: "Deploy to ops"
     needs: [pcapi-init-job, push-pcapi-console, push-pcapi, deploy-to-testing]
+    if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ops
