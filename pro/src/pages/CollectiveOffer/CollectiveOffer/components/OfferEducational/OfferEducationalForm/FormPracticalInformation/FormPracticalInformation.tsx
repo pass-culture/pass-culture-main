@@ -10,7 +10,7 @@ import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
-import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
+import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -51,7 +51,7 @@ export const FormPracticalInformation = ({
       addedOptions: Option[],
       removedOptions: Option[]
     ) => {
-      const newSelectedOptions = interventionAreaMultiSelect({
+      const newSelectedOptions = selectInterventionAreas({
         selectedOption,
         addedOptions,
         removedOptions,
