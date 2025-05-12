@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -13,9 +13,9 @@ import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/
 import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
@@ -47,14 +47,22 @@ export const DetailsForm = ({
   imageOffer,
   categoryStatus,
 }: DetailsFormProps): JSX.Element => {
-  const { values, handleChange } = useFormikContext<DetailsFormValues>()
-  const { subcategoryId } = values
+  const {
+    register,
+    watch,
+    getValues,
+    formState: { errors },
+  } = useFormContext<DetailsFormValues>()
+  const { subcategoryId } = getValues()
   const { offer } = useIndividualOfferContext()
 
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
   const showAddVenueBanner = venuesOptions.length === 0
+
+  const venueIdField = register('venueId')
+  const name = watch('name')
 
   return (
     <>
@@ -84,7 +92,7 @@ export const DetailsForm = ({
               <FormLayout.Row>
                 <Select
                   label="Qui propose l’offre ?"
-                  name="venueId"
+                  {...venueIdField}
                   options={venuesOptions}
                   defaultOption={{
                     value: '',
@@ -95,32 +103,32 @@ export const DetailsForm = ({
                       return
                     }
 
-                    handleChange(ev)
+                    void venueIdField.onChange(ev)
                   }}
                   disabled={
                     readOnlyFields.includes('venueId') ||
                     venuesOptions.length === 1
                   }
+                  error={errors.venueId?.message}
                 />
               </FormLayout.Row>
             )}
             <FormLayout.Row>
               <TextInput
-                countCharacters
                 label="Titre de l’offre"
                 maxLength={90}
-                name="name"
-                onChange={handleChange}
+                {...register('name')}
+                error={errors.name?.message}
+                count={name.length}
                 disabled={readOnlyFields.includes('name')}
               />
             </FormLayout.Row>
             <FormLayout.Row sideComponent={<MarkdownInfoBox />}>
               <TextArea
-                isOptional
+                asterisk={false}
                 label="Description"
                 maxLength={1000}
                 name="description"
-                onChange={handleChange}
                 disabled={readOnlyFields.includes('description')}
               />
             </FormLayout.Row>
@@ -136,8 +144,7 @@ export const DetailsForm = ({
               >
                 <TextInput
                   label="URL d’accès à l’offre"
-                  name="url"
-                  type="text"
+                  {...register('url')}
                   description="Format : https://exemple.com"
                   disabled={readOnlyFields.includes('url')}
                 />
