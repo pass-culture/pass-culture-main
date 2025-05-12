@@ -59,6 +59,14 @@ describe('ImageEditor', () => {
 
     expect(onChangeDone).toHaveBeenCalled()
   })
+
+  it('displays a warning when scale is disabled', () => {
+    render(<ImageEditor {...defaultProps} initialScale={0} maxScale={1} />)
+
+    expect(
+      screen.getByText('L’image est trop petite pour utiliser le zoom.')
+    ).toBeInTheDocument()
+  })
 })
 
 describe('ImageEditor:map', () => {

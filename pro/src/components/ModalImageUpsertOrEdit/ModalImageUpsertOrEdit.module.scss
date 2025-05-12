@@ -50,7 +50,7 @@
     display: flex;
     flex-direction: column;
     gap: rem.torem(16px);
-    padding: rem.torem(16px);
+    padding: rem.torem(24px) rem.torem(16px) rem.torem(16px) rem.torem(16px);
     align-items: flex-start;
   }
 

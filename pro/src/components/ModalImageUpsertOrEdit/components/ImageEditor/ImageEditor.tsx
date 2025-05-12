@@ -135,6 +135,8 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     // Debounce onChangeDone to avoid too many calls
     const debouncedOnSearch = useDebouncedCallback(() => onChangeDone?.(), 100)
 
+    const isScaleDisabled = maxScale <= 1
+
     return (
       <div className={style['image-editor']}>
         <AvatarEditor
@@ -160,13 +162,13 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         <label className={style['image-editor-label']} htmlFor="scale">
           Zoom
         </label>
-        <label className={style['image-editor-scale']} htmlFor="scale">
+        <div className={style['image-editor-scale']}>
           <span className={style['image-editor-scale-label']}>min</span>
-          <span className={style['image-editor-scale-input']}>
+          <div className={style['image-editor-scale-input']}>
             <Slider
               name="scale"
               step={0.01}
-              max={maxScale > 1 ? maxScale.toFixed(2) : 1}
+              max={!isScaleDisabled ? maxScale.toFixed(2) : 1}
               min={1}
               displayMinMaxValues={false}
               value={scale}
@@ -174,10 +176,21 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
                 setScale(Number(e.target.value))
                 debouncedOnSearch()
               }}
+              disabled={isScaleDisabled}
+              aria-describedby="image-editor-scale-disabled"
+              hideLabel
             />
-          </span>
+          </div>
           <span className={style['image-editor-scale-label']}>max</span>
-        </label>
+        </div>
+        {isScaleDisabled && (
+          <span
+            id="image-editor-scale-disabled"
+            className={style['image-editor-scale-disabled']}
+          >
+            L’image est trop petite pour utiliser le zoom.
+          </span>
+        )}
       </div>
     )
   }

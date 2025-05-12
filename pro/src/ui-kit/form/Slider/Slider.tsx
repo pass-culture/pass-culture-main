@@ -82,20 +82,22 @@ export const Slider = ({
   const max = props.max || DEFAULT_SLIDER_MAX_VALUE
 
   return (
-    <div>
-      <div className={styles['slider-header']}>
-        <label
-          htmlFor={labelId}
-          className={hideLabel ? styles['visually-hidden'] : ''}
-        >
-          {props.label}
-        </label>
-        {displayValue && (
-          <span className={styles['input-value']}>
-            {props.value}&nbsp;{scale}
-          </span>
-        )}
-      </div>
+    <>
+      {(props.label || displayValue) && (
+        <div className={styles['slider-header']}>
+          <label
+            htmlFor={labelId}
+            className={hideLabel ? styles['visually-hidden'] : ''}
+          >
+            {props.label}
+          </label>
+          {displayValue && (
+            <span className={styles['input-value']}>
+              {props.value}&nbsp;{scale}
+            </span>
+          )}
+        </div>
+      )}
       <input
         data-testid="slider"
         type="range"
@@ -120,6 +122,6 @@ export const Slider = ({
           </span>
         </div>
       )}
-    </div>
+    </>
   )
 }

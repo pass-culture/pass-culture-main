@@ -5,6 +5,32 @@
 .slider {
   accent-color: var(--color-icon-brand-primary);
   width: 100%;
+  cursor: pointer;
+
+  &[disabled] {
+    appearance: none;
+    border: none;
+    cursor: not-allowed;
+    background-color: var(--color-background-disabled);
+    border-radius: rem.torem(6px);
+    height: rem.torem(8px);
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: rem.torem(16px);
+      height: rem.torem(16px);
+      border-radius: rem.torem(16px);
+      background-color: var(--color-icon-disabled);
+    }
+
+    &::-moz-range-thumb {
+      background-color: var(--color-background-disabled);
+    }
+
+    &::-ms-thumb {
+      background-color: var(--color-background-disabled);
+    }
+  }
 }
 
 .slider-header {
