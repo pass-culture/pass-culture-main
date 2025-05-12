@@ -21,6 +21,7 @@ const mockOffer = getIndividualOfferFactory({
   motorDisabilityCompliant: false,
   bookingEmail: 'test@example.com',
   bookingContact: 'Contact Info',
+  externalTicketOfficeUrl: 'https://hello.co',
   url: 'http://example.com',
 })
 
@@ -40,6 +41,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
         [AccessibilityEnum.NONE]: false,
       },
       bookingEmail: 'test@example.com',
+      externalTicketOfficeUrl: 'https://hello.co',
       bookingContact: 'Contact Info',
       receiveNotificationEmails: true,
     }
@@ -57,6 +59,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       mentalDisabilityCompliant: false,
       audioDisabilityCompliant: false,
       motorDisabilityCompliant: false,
+      externalTicketOfficeUrl: undefined,
     })
 
     const expectedValues = {
@@ -75,6 +78,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       },
       bookingEmail: '',
       bookingContact: undefined,
+      externalTicketOfficeUrl: undefined,
       receiveNotificationEmails: false,
     }
 
@@ -93,6 +97,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       mentalDisabilityCompliant: undefined,
       audioDisabilityCompliant: undefined,
       motorDisabilityCompliant: undefined,
+      externalTicketOfficeUrl: undefined,
     })
 
     const expectedValues = {
@@ -111,6 +116,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       },
       bookingEmail: '',
       bookingContact: undefined,
+      externalTicketOfficeUrl: undefined,
       receiveNotificationEmails: false,
     }
 
@@ -173,6 +179,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       },
       bookingEmail: 'test@example.com',
       bookingContact: 'Contact Info',
+      externalTicketOfficeUrl: 'https://hello.co',
       receiveNotificationEmails: true,
 
       offerLocation: OFFER_LOCATION.OTHER_ADDRESS,

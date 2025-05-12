@@ -218,6 +218,21 @@ export const UsefulInformationForm = ({
           </FormLayout.Row>
         )}
       </FormLayout.Section>
+      <FormLayout.Section title="Lien de réservation externe en l’absence de crédit" >
+        <p className={styles['infotext']}>
+          S’ils ne disposent pas ou plus de crédit, les utilisateurs de l’application seront redirigés sur ce lien pour pouvoir néanmoins profiter de votre offre.
+        </p>
+        <FormLayout.Row>
+          <TextInput
+            isOptional
+            label="URL de votre site ou billetterie"
+            name="externalTicketOfficeUrl"
+            type="text"
+            description="Format : https://exemple.com"
+            disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
+          />
+        </FormLayout.Row>
+      </FormLayout.Section>
       <FormLayout.Section title="Modalités d’accessibilité">
         <FormLayout.Row>
           <CheckboxGroup

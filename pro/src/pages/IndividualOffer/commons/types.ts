@@ -34,6 +34,7 @@ export interface IndividualOfferFormValues extends Partial<AddressFormValues> {
   receiveNotificationEmails: boolean
   bookingEmail: string
   isDuo: boolean
+  externalTicketOfficeUrl?: string | null
   url: string
   bookingContact?: string
   offerLocation?: string | undefined

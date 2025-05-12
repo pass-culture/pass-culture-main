@@ -101,6 +101,7 @@ export function setDefaultInitialValuesFromOffer({
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
+    externalTicketOfficeUrl: offer.externalTicketOfficeUrl || undefined,
     ...addressFields,
   }
 }

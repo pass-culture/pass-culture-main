@@ -63,6 +63,7 @@ export const serializePatchOffer = ({
   shouldNotSendExtraData = false,
 }: SerializePatchOffer): PatchOfferBodyModel => {
   let sentValues: Partial<IndividualOfferFormValues> = formValues
+
   if (offer.lastProvider) {
     const {
       ALLOCINE: allocineEditableFields,
@@ -146,6 +147,7 @@ export const serializePatchOffer = ({
           ? null
           : sentValues.bookingEmail,
     url: sentValues.url || undefined,
+    externalTicketOfficeUrl: sentValues.externalTicketOfficeUrl || null,
     shouldSendMail: shouldSendMail,
     bookingContact: sentValues.bookingContact || undefined,
     ...addressValues,

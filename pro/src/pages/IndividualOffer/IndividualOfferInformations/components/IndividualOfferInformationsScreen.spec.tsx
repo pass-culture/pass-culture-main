@@ -147,6 +147,10 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(
       await screen.findByRole('heading', { name: 'Modalités d’accessibilité' })
     ).toBeInTheDocument()
+    
+    expect(
+      await screen.findByRole('heading', { name: 'Lien de réservation externe en l’absence de crédit' })
+    ).toBeInTheDocument()
 
     expect(
       await screen.findByRole('heading', { name: 'Notifications' })
@@ -240,6 +244,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       motorDisabilityCompliant: true,
       name: undefined,
       shouldSendMail: true,
+      externalTicketOfficeUrl: 'https://chuck.no',
       url: undefined,
       visualDisabilityCompliant: false,
       withdrawalDelay: null,

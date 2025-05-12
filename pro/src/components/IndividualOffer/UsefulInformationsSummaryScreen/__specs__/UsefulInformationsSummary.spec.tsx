@@ -43,6 +43,7 @@ describe('UsefulInformationsSummaryScreen', () => {
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
       withdrawalDelay: 120,
       bookingContact: 'robert@exemple.com',
+      externalTicketOfficeUrl: 'https://hey.no',
       venue: { ...getOfferVenueFactory(), isVirtual: true },
     })
 
@@ -56,6 +57,7 @@ describe('UsefulInformationsSummaryScreen', () => {
       screen.getByText('2 minutes avant le début de l’évènement')
     ).toBeInTheDocument()
     expect(screen.getByText('robert@exemple.com')).toBeInTheDocument()
+    expect(screen.getByText('https://hey.no')).toBeInTheDocument()
   })
 
   it('should render summary with right field with OA FF', async () => {

@@ -117,6 +117,7 @@ export const getIndividualOfferFactory = (
     hasPendingBookings: false,
     priceCategories: [priceCategoryFactory()],
     eventOpeningHours: null,
+    externalTicketOfficeUrl: 'https://chuck.no',
     extraData: {
       author: 'Chuck Norris',
       performer: 'Le Poing de Chuck',
