@@ -576,8 +576,12 @@ class UpdatePivotTest(PostEndpointHelper):
 
         form = {"venue_id": venue.id, "theater_id": "ABCDEFGHIJKLMNOPQR==", "internal_id": "P12345"}
 
-        response = self.post_to_endpoint(authenticated_client, name="allocine", pivot_id=pivot_id, form=form)
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client, name="allocine", pivot_id=pivot_id, form=form, follow_redirects=True
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert html_parser.extract_alert(response.data) == "Le pivot a été mis à jour"
 
         updated = db.session.query(providers_models.AllocinePivot).one()
         assert updated.venueId == venue.id
@@ -585,8 +589,11 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.internalId == form["internal_id"]
 
     def test_update_pivot_boost(self, authenticated_client, requests_mock):
-        requests_mock.get("http://example.com/boost1/")
-        requests_mock.post("http://example.com/boost1/")
+        requests_mock.get("http://example.com/boost1/", json={"key": "value"})
+        requests_mock.post(
+            "http://example.com/boost1/api/vendors/login?ignore_device=True",
+            json={"code": 200, "message": "Login successful", "token": "new-token"},
+        )
         boost_pivot = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="http://example.com/boost0/")
 
         form = {
@@ -595,7 +602,12 @@ class UpdatePivotTest(PostEndpointHelper):
             "cinema_url": "http://example.com/boost1/",
         }
 
-        self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id, form=form)
+        response = self.post_to_endpoint(
+            authenticated_client, name="boost", pivot_id=boost_pivot.id, form=form, follow_redirects=True
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert html_parser.extract_alerts(response.data) == ["Connexion à l'API OK.", "Le pivot a été mis à jour"]
 
         updated = db.session.query(providers_models.BoostCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
@@ -615,24 +627,35 @@ class UpdatePivotTest(PostEndpointHelper):
             "password": "Azerty!123",
         }
 
-        self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id, form=form)
+        response = self.post_to_endpoint(
+            authenticated_client, name="cgr", pivot_id=cgr_pivot.id, form=form, follow_redirects=True
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert html_parser.extract_alerts(response.data) == ["Connexion à l'API CGR OK.", "Le pivot a été mis à jour"]
 
         updated = db.session.query(providers_models.CGRCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.cinemaUrl == form["cinema_url"]
         assert decrypt(updated.password) == form["password"]
 
-    def test_update_pivot_cineoffice(self, authenticated_client):
+    def test_update_pivot_cineoffice(self, authenticated_client, requests_mock):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
+        requests_mock.get("https://account1er.test_cds_url/vad/rating?api_token===@/@414324rF!", json={"key": "value"})
 
         form = {
             "venue_id": str(cineoffice_pivot.cinemaProviderPivot.venue.id),
-            "cinema_id": "boost 1",
+            "cinema_id": "cineoffice 1",
             "account_id": "account1er",
             "api_token": "==@/@414324rF!",
         }
 
-        self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form)
+        response = self.post_to_endpoint(
+            authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form, follow_redirects=True
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert html_parser.extract_alerts(response.data) == ["Connexion à l'API OK.", "Le pivot a été mis à jour"]
 
         updated = db.session.query(providers_models.CDSCinemaDetails).one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
@@ -652,7 +675,12 @@ class UpdatePivotTest(PostEndpointHelper):
         assert ems_pivot.cinemaProviderPivot.idAtProvider != "New cinema id"
         assert ems_pivot.lastVersion == 0
 
-        self.post_to_endpoint(authenticated_client, name="ems", pivot_id=ems_pivot.id, form=expected_data)
+        response = self.post_to_endpoint(
+            authenticated_client, name="ems", pivot_id=ems_pivot.id, form=expected_data, follow_redirects=True
+        )
+        assert response.status_code == 200  # after redirect
+
+        assert html_parser.extract_alert(response.data) == "Le pivot a été mis à jour"
 
         db.session.refresh(ems_pivot)
 
@@ -669,7 +697,7 @@ class UpdatePivotTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(
-            authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form
+            authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form, follow_redirects=True
         )
 
         updated = db.session.query(providers_models.CDSCinemaDetails).one()
@@ -677,11 +705,9 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.accountId != form["account_id"]
         assert updated.cinemaApiToken != form["api_token"]
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
         assert (
             "Le nom de compte ne peut pas contenir de caractères autres que chiffres, lettres et tirets"
-            in html_parser.content_as_text(redirected_response.data)
+            in html_parser.content_as_text(response.data)
         )
 
 
