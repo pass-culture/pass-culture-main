@@ -8,7 +8,8 @@ import { Thumb } from 'ui-kit/Thumb/Thumb'
 import styles from './HeadlineOffer.module.scss'
 
 export function HeadlineOffer() {
-  const {isHeadlineOfferAllowedForOfferer,  headlineOffer } = useHeadlineOfferContext()
+  const { isHeadlineOfferAllowedForOfferer, headlineOffer } =
+    useHeadlineOfferContext()
 
   if (!isHeadlineOfferAllowedForOfferer || !headlineOffer) {
     return
@@ -32,7 +33,10 @@ export function HeadlineOffer() {
       </div>
 
       <div className={styles['headline-offer-block']}>
-        <Thumb url={headlineOffer.image?.url} />
+        <Thumb
+          className={styles['headline-offer-thumb']}
+          url={headlineOffer.image?.url}
+        />
         <p className={styles['headline-offer-name']}>{headlineOffer.name}</p>
       </div>
     </div>

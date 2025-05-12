@@ -29,6 +29,10 @@
   width: 100%;
 }
 
+.headline-offer-thumb {
+  min-width: rem.torem(80px);
+}
+
 .headline-offer-title {
   @include fonts.title2;
 }
