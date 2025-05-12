@@ -8,7 +8,7 @@
 
   margin: 0;
   border: rem.torem(2px) solid;
-  border-radius: rem.torem(24px);
+  border-radius: var(--border-radius-xxxl);
   display: inline-flex;
   vertical-align: top;
   justify-content: center;
