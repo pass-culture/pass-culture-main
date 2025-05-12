@@ -485,7 +485,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
 )
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_collective_booking_overpayment_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking: educational_models.CollectiveBooking = (
+    collective_booking: educational_models.CollectiveBooking | None = (
         db.session.query(educational_models.CollectiveBooking)
         .filter_by(id=collective_booking_id)
         .options(
@@ -539,7 +539,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
 )
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
 def get_collective_booking_commercial_gesture_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking: educational_models.CollectiveBooking = (
+    collective_booking: educational_models.CollectiveBooking | None = (
         db.session.query(educational_models.CollectiveBooking)
         .filter_by(id=collective_booking_id)
         .options(
@@ -1129,7 +1129,7 @@ def _build_incident_error_str(incident_ids: list[str], message: str) -> str:
 
 
 def _flash_success_and_error_messages(
-    success_count: int, error_dict: dict[str, list[str]], is_validating: bool
+    success_count: int, error_dict: dict[str, list[int]], is_validating: bool
 ) -> None:
     if success_count > 0:
         flash(

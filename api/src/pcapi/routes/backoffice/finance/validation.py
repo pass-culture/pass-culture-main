@@ -1,4 +1,5 @@
 import decimal
+import typing
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
@@ -56,13 +57,13 @@ def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> 
 
 def get_overpayment_incident_amount_interval(
     bookings: list[bookings_models.Booking],
-) -> tuple[decimal.Decimal, decimal.Decimal]:
+) -> tuple[decimal.Decimal, decimal.Decimal | typing.Literal[0]]:
     return decimal.Decimal(0), sum(booking.total_amount for booking in bookings)
 
 
 def get_commercial_gesture_amount_interval(
     bookings: list[bookings_models.Booking],
-) -> tuple[decimal.Decimal, decimal.Decimal]:
+) -> tuple[decimal.Decimal, decimal.Decimal | typing.Literal[0]]:
     return decimal.Decimal(0), sum(booking.total_amount for booking in bookings)
 
 
