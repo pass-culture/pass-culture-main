@@ -1,3 +1,5 @@
+import { addDays, format } from 'date-fns'
+
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
@@ -74,12 +76,19 @@ describe('Create collective offers', () => {
 
     cy.findByText('Enregistrer et continuer').click()
 
-    cy.findByLabelText('Date de début').type('2025-05-10')
+    const tomorrow = addDays(new Date(), 1)
+    const dayAfterTomorrow = addDays(new Date(), 2)
+
+    cy.findByLabelText('Date de début').type(
+      format(dayAfterTomorrow, 'yyyy-MM-dd')
+    )
     cy.findByLabelText('Horaire').type('18:30')
     cy.findByLabelText('Nombre de participants').type('10')
     cy.findByLabelText('Prix total TTC').type('10')
     cy.findByLabelText('Informations sur le prix').type('description')
-    cy.findByLabelText('Date limite de réservation').type('2025-05-09')
+    cy.findByLabelText('Date limite de réservation').type(
+      format(tomorrow, 'yyyy-MM-dd')
+    )
 
     cy.findByText('Enregistrer et continuer').click()
 
@@ -129,7 +138,7 @@ describe('Create collective offers', () => {
         '',
         '',
         newOfferName,
-        '10/05/202518h30',
+        `${format(dayAfterTomorrow, 'dd/MM/yyyy')}18h30`,
         venueName,
         'COLLEGE 123',
         'brouillon',
@@ -184,7 +193,7 @@ describe('Create collective offers', () => {
         '',
         '',
         newOfferName,
-        '10/05/202518h30',
+        `${format(dayAfterTomorrow, 'dd/MM/yyyy')}18h30`,
         venueName,
         'COLLEGE 123',
         'publiée',
@@ -194,9 +203,10 @@ describe('Create collective offers', () => {
     expectOffersOrBookingsAreFound(expectedNewResults)
   })
 
-
   it('I can create a bookable offer with specific address when FF OA is active', () => {
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE', isActive: true }])
+    cy.setFeatureFlags([
+      { name: 'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE', isActive: true },
+    ])
 
     logInAndGoToPage(login, '/offre/creation')
 
@@ -236,12 +246,19 @@ describe('Create collective offers', () => {
 
     cy.findByText('Enregistrer et continuer').click()
 
-    cy.findByLabelText('Date de début').type('2025-05-10')
+    const tomorrow = addDays(new Date(), 1)
+    const dayAfterTomorrow = addDays(new Date(), 2)
+
+    cy.findByLabelText('Date de début').type(
+      format(dayAfterTomorrow, 'yyyy-MM-dd')
+    )
     cy.findByLabelText('Horaire').type('18:30')
     cy.findByLabelText('Nombre de participants').type('10')
     cy.findByLabelText('Prix total TTC').type('10')
     cy.findByLabelText('Informations sur le prix').type('description')
-    cy.findByLabelText('Date limite de réservation').type('2025-05-09')
+    cy.findByLabelText('Date limite de réservation').type(
+      format(tomorrow, 'yyyy-MM-dd')
+    )
 
     cy.findByText('Enregistrer et continuer').click()
 
@@ -291,7 +308,7 @@ describe('Create collective offers', () => {
         '',
         '',
         newOfferName,
-        '10/05/202518h30',
+        `${format(dayAfterTomorrow, 'dd/MM/yyyy')}18h30`,
         venueName,
         'COLLEGE 123',
         'brouillon',
@@ -346,7 +363,7 @@ describe('Create collective offers', () => {
         '',
         '',
         newOfferName,
-        '10/05/202518h30',
+        `${format(dayAfterTomorrow, 'dd/MM/yyyy')}18h30`,
         venueName,
         'COLLEGE 123',
         'publiée',
