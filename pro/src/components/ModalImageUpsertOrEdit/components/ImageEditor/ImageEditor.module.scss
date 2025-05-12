@@ -18,20 +18,27 @@
     width: 100%;
     display: flex;
     align-items: center;
-    padding-top: rem.torem(8px);
-    padding-bottom: rem.torem(8px);
+    padding: rem.torem(8px) rem.torem(16px);
+    justify-content: center;
+    gap: rem.torem(8px);
 
     &-label {
       @include fonts.body-accent-xs;
 
-      margin-left: rem.torem(28px);
-      margin-right: rem.torem(28px);
-      padding-bottom: rem.torem(4px);
       color: var(--color-text-subtle);
     }
 
     &-input {
+      display: flex;
       flex-grow: 1;
+      max-width: rem.torem(200px);
+    }
+
+    &-disabled {
+      @include fonts.body-xs;
+
+      padding: 0 rem.torem(16px);
+      text-align: center;
     }
   }
 }
