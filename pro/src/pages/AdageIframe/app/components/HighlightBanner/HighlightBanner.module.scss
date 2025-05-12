@@ -64,7 +64,7 @@
     right: 16px;
     background-color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     width: rem.torem(24px);
     height: rem.torem(24px);
     color: var(--color-icon-brand-primary);

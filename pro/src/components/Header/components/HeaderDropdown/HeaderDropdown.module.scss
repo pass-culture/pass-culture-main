@@ -252,7 +252,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     padding: rem.torem(8px);
 
     &[data-state="checked"] {
-      border-radius: 6px;
+      border-radius: var(--border-radius-m);
       border: 1px solid var(--color-border-default);
 
       @media (min-width: $sub-popin-full-width-breakpoint) {

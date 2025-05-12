@@ -55,7 +55,7 @@
   &-button {
     width: rem.torem(40px);
     height: rem.torem(40px);
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     background-color: var(--color-background-subtle);
   }
 }

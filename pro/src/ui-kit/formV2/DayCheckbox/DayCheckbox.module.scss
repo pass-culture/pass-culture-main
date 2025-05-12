@@ -10,7 +10,7 @@ $checkbox-size: rem.torem(40px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 100%;
+  border-radius: var(--border-radius-full);
   cursor: pointer;
 
   &:hover:not(&.disabled) {
@@ -45,7 +45,7 @@ $checkbox-size: rem.torem(40px);
   height: $checkbox-size;
   background-color: var(--color-background-default);
   border: rem.torem(1px) solid var(--color-border-default);
-  border-radius: 100%;
+  border-radius: var(--border-radius-full);
   cursor: pointer;
 
   &:focus-within {
@@ -60,7 +60,7 @@ $checkbox-size: rem.torem(40px);
 
     &:focus {
       border: rem.torem(2px) solid var(--color-border-brand-primary);
-      border-radius: 50%;
+      border-radius: var(--border-radius-full);
       background-color: var(--color-background-info);
     }
   }

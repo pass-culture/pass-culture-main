@@ -24,7 +24,7 @@
 
     &-button {
       background-color: var(--color-background-default);
-      border-radius: 100%;
+      border-radius: var(--border-radius-full);
       padding: rem.torem(1px);
       color: var(--color-text-subtle);
       border: none;

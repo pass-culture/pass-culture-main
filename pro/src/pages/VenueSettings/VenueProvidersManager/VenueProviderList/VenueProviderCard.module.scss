@@ -93,7 +93,7 @@
 .last-synchronisation {
   &::before {
     background-color: var(--color-icon-success);
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     content: "";
     display: inline-block;
     height: rem.torem(8px);

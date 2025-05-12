@@ -50,7 +50,7 @@
             width: rem.torem(8px);
             height: rem.torem(8px);
             background-color: var(--color-icon-brand-primary);
-            border-radius: 50%;
+            border-radius: var(--border-radius-full);
             margin-right: rem.torem(8px);
           }
         }
