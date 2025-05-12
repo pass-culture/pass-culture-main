@@ -150,9 +150,30 @@ def _move_collective_offer_playlist(
 
 
 def _move_price_category_label(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
-    db.session.query(offer_models.PriceCategoryLabel).filter(
-        offer_models.PriceCategoryLabel.venueId == origin_venue.id
-    ).update({"venueId": destination_venue.id}, synchronize_session=False)
+    origin_price_category_labels = (
+        db.session.query(offer_models.PriceCategoryLabel)
+        .filter(offer_models.PriceCategoryLabel.venueId == origin_venue.id)
+        .all()
+    )
+    for origin_price_category_label in origin_price_category_labels:
+        existing_price_category_label = (
+            db.session.query(offer_models.PriceCategoryLabel)
+            .filter(
+                offer_models.PriceCategoryLabel.venueId == destination_venue.id,
+                offer_models.PriceCategoryLabel.label == origin_price_category_label.label,
+            )
+            .one_or_none()
+        )
+        if existing_price_category_label:
+            db.session.query(offer_models.PriceCategory).filter(
+                offer_models.PriceCategory.priceCategoryLabelId == origin_price_category_label.id
+            ).update(
+                {"priceCategoryLabelId": existing_price_category_label.id},
+                synchronize_session=False,
+            )
+        else:
+            origin_price_category_label.venueId = destination_venue.id
+            db.session.add(origin_price_category_label)
 
 
 def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
