@@ -13,7 +13,7 @@ import { offerInterventionOptions } from 'commons/core/shared/interventionOption
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { interventionAreaMultiSelect } from 'commons/utils/interventionAreaMultiSelect'
+import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Button } from 'ui-kit/Button/Button'
@@ -202,7 +202,7 @@ export const CollectiveDataForm = ({
                       addedOptions,
                       removedOptions
                     ) => {
-                      const newSelectedOptions = interventionAreaMultiSelect({
+                      const newSelectedOptions = selectInterventionAreas({
                         selectedOption,
                         addedOptions,
                         removedOptions,
