@@ -810,6 +810,22 @@ class HeadlineOfferTest:
         with pytest.raises(sa_exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
 
+    def test_new_headline_increments_product_count(self):
+        product = factories.ProductFactory()
+        factories.HeadlineOfferFactory(offer__product=product)
+
+        assert product.headlinesCount == 1
+
+    def test_headline_deletion_decrements_product_count(self):
+        product = factories.ProductFactory()
+        headline_offer = factories.HeadlineOfferFactory(offer__product=product)
+        assert product.headlinesCount == 1
+
+        db.session.delete(headline_offer)
+        db.session.refresh(product)
+
+        assert product.headlinesCount == 0
+
 
 class OfferIsHeadlineTest:
     today = datetime.datetime.utcnow()
