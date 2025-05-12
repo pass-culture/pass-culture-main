@@ -1,20 +1,16 @@
-import useSWR from 'swr'
-
-import { api } from 'apiClient/api'
 import {
+  CollectiveLocationType,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   Description,
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { formatOfferEventAddress } from './utils/formatOfferEventAddress'
+import styles from '../CollectiveOfferSummary.module.scss'
 
 interface CollectiveOfferLocationSectionProps {
   offer:
@@ -22,39 +18,47 @@ interface CollectiveOfferLocationSectionProps {
     | GetCollectiveOfferResponseModel
 }
 
+const getLocationInformation = ({
+  offer,
+}: CollectiveOfferLocationSectionProps) => {
+  const offerLocation = offer.location
+  if (offerLocation?.locationType === CollectiveLocationType.ADDRESS) {
+    const { label, street, city, postalCode } = offerLocation.address || {}
+    return (
+      <div className={styles['location-information']}>
+        <p>Intitulé : {label ?? '-'}</p>
+        <p>
+          Adresse : {street}, {postalCode}, {city}
+        </p>
+      </div>
+    )
+  }
+
+  const interventionAreas = getInterventionAreaLabels(offer.interventionArea)
+  if (offerLocation?.locationType === CollectiveLocationType.SCHOOL) {
+    return (
+      <div className={styles['location-information']}>
+        <p>Dans l’établissement scolaire</p>
+        <p>Zone de mobilité : {interventionAreas}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles['location-information']}>
+      <p>À déterminer avec l’enseignant</p>
+      <p>Commentaire : {offerLocation?.locationComment ?? '-'}</p>
+      <p>Zone de mobilité : {interventionAreas}</p>
+    </div>
+  )
+}
+
 export const CollectiveOfferLocationSection = ({
   offer,
 }: CollectiveOfferLocationSectionProps) => {
-  const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, offer.venue.id],
-    ([, venueIdParam]) => api.getVenue(venueIdParam)
-  )
-
-  const interventionAreas = getInterventionAreaLabels(offer.interventionArea)
-
-  const venue = venueQuery.data
-
-  if (venueQuery.isLoading) {
-    return <Spinner />
-  }
-
-  if (venueQuery.error) {
-    return null
-  }
-
-  if (!venue) {
-    return
-  }
-
   const descriptions: Description[] = [
-    { text: formatOfferEventAddress(offer.offerVenue, venue) },
+    { text: getLocationInformation({ offer }) },
   ]
-  if (interventionAreas) {
-    descriptions.push({
-      title: 'Zone de mobilité pour l’évènement',
-      text: interventionAreas,
-    })
-  }
 
   return (
     <SummarySubSection title="Localisation de l’événement">
