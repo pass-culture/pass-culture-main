@@ -155,7 +155,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
-      app_version: ${{ github.sha }}
+      app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
