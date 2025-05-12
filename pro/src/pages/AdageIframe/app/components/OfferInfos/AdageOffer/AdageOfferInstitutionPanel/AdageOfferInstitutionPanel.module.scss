@@ -3,7 +3,7 @@
 
 .institution-panel {
   width: 100%;
-  border-radius: rem.torem(16px);
+  border-radius: var(--border-radius-xxl);
   box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 var(--color-large-shadow);
   padding: rem.torem(24px);
 
@@ -20,7 +20,7 @@
   &-info {
     margin-top: rem.torem(24px);
     background-color: var(--color-background-info);
-    border-radius: rem.torem(6px);
+    border-radius: var(--border-radius-m);
     padding: rem.torem(8px);
   }
 

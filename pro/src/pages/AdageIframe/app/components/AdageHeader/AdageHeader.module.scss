@@ -28,7 +28,7 @@
     align-items: flex-start;
     background: var(--color-background-default);
     padding: 0;
-    border-radius: rem.torem(8px) rem.torem(8px) 0 0;
+    border-radius: var(--border-radius-l) var(--border-radius-l) 0 0;
     box-shadow: 0 rem.torem(2px) rem.torem(4px) 0 var(--color-large-shadow);
     overflow-x: auto;
 

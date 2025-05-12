@@ -58,7 +58,7 @@
   &:focus-visible {
     @include outline.focus-outline;
 
-    border-radius: rem.torem(4px);
+    border-radius: var(--border-radius-s);
   }
 }
 

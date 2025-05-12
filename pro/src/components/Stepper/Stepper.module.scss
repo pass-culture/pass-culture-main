@@ -104,7 +104,7 @@ $number-size: rem.torem(30px);
           span {
             @include outline.focus-outline(rem.torem(4px));
 
-            border-radius: rem.torem(4px);
+            border-radius: var(--border-radius-s);
           }
         }
       }
@@ -141,7 +141,6 @@ $number-size: rem.torem(30px);
         padding: 0 rem.torem(16px);
 
         &::after {
-          border-radius: rem.torem(2px);
           background-color: var(--color-border-subtle);
           content: "";
           width: 100%;
