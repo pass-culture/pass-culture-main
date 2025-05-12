@@ -7,7 +7,6 @@ import click
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api
-from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
@@ -99,9 +98,16 @@ def _move_individual_offers(origin_venue: offerers_models.Venue, destination_ven
     for offer in origin_venue.offers:
         offer_api.move_offer(offer, destination_venue)
         offer_ids.append(offer.id)
-        offerers_api.create_action_history_when_move_offers(
-            origin_venue.id, destination_venue.id, offer_ids, offers_type="individual"
-        )
+    logger.info(
+        "Individual offers' venue has changed",
+        extra={
+            "origin_venue_id": origin_venue.id,
+            "destination_venue_id": destination_venue.id,
+            "offer_ids": offer_ids,
+            "offers_type": "individual",
+        },
+        technical_message_id="offer.move",
+    )
 
 
 def _move_collective_offers(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
@@ -109,9 +115,16 @@ def _move_collective_offers(origin_venue: offerers_models.Venue, destination_ven
     for collective_offer in origin_venue.collectiveOffers:
         educational_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
         collective_offer_ids.append(collective_offer.id)
-        offerers_api.create_action_history_when_move_offers(
-            origin_venue.id, destination_venue.id, collective_offer_ids, offers_type="collective"
-        )
+    logger.info(
+        "Collective offers' venue has changed",
+        extra={
+            "origin_venue_id": origin_venue.id,
+            "destination_venue_id": destination_venue.id,
+            "collective_offer_ids": collective_offer_ids,
+            "offers_type": "collective",
+        },
+        technical_message_id="offer.move",
+    )
 
 
 def _move_collective_offer_template(
