@@ -140,7 +140,7 @@
             {% for action in container.internal.actionsHistory %}
                 <table class="borderless">
                     {% if action.actionDate %}<tr><td>Date</td><td>{{action.actionDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    <tr><td>Action</td><td>{{action.actionType.value}}</td></tr>
+                    <tr><td>Action</td><td>{{"Compte suspendu" if action.actionType.name == 'USER_SUSPENDED' else "Compte réactivé"}}</td></tr>
                 </table>
             {% endfor %}
         {% endif %}

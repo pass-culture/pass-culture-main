@@ -2225,8 +2225,8 @@ class GetIncidentHistoryTest(GetEndpointHelper):
         iterator_actions = iter(rows)
         cancel_action = next(iterator_actions)
         creation_action = next(iterator_actions)
-        assert cancel_action["Type"] == history_models.ActionType.FINANCE_INCIDENT_CANCELLED.value
-        assert creation_action["Type"] == history_models.ActionType.FINANCE_INCIDENT_CREATED.value
+        assert cancel_action["Type"] == "Annulation de l'incident"
+        assert creation_action["Type"] == "Création de l'incident"
         assert creation_action["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert creation_action["Commentaire"] == action.comment
         assert creation_action["Auteur"] == action.authorUser.full_name

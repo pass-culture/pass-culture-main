@@ -689,7 +689,7 @@ class UpdateOffererTest(PostEndpointHelper):
 
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
+        assert history_rows[0]["Type"] == "Modification des informations"
         assert f"Nom juridique : {old_name} → {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
         assert f"Ville : {old_city} → {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
         assert f"Code postal : {old_postal_code} → {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
@@ -735,7 +735,7 @@ class UpdateOffererTest(PostEndpointHelper):
 
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
+        assert history_rows[0]["Type"] == "Modification des informations"
         assert history_rows[0]["Auteur"] == legit_user.full_name
         assert "Premier tag → Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
         for item in ("Adresse", "Code postal", "Ville"):
@@ -1214,7 +1214,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert rows[0]["Type"] == history_models.ActionType.COMMENT.value
+        assert rows[0]["Type"] == "Commentaire interne"
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Commentaire"] == action.comment
         assert rows[0]["Auteur"] == action.authorUser.full_name
@@ -1247,7 +1247,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["Type"] == history_models.ActionType.OFFERER_NEW.value
+        assert rows[0]["Type"] == "Nouvelle entité juridique"
         assert rows[0]["Commentaire"] == action.comment
         assert not rows[0]["Auteur"]
 

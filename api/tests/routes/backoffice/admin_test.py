@@ -263,7 +263,7 @@ class GetRolesHistoryTest(GetEndpointHelper):
 
         history_rows = html_parser.extract_table_rows(response.data)
         assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == history_models.ActionType.ROLE_PERMISSIONS_CHANGED.value
+        assert history_rows[0]["Type"] == "Modification des permissions du rôle"
         assert (
             history_rows[0]["Commentaire"] == f"Rôle : {role.name} "
             f"Informations modifiées : {perm_models.Permissions.MANAGE_PERMISSIONS.value} : Oui → Non "
@@ -523,11 +523,11 @@ class GetBoUserTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(rows) == 2
-        assert rows[0]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert rows[0]["Type"] == "Compte suspendu"
         assert rows[0]["Date/Heure"]
         assert rows[0]["Commentaire"] == "Fin de contrat Test"
         assert rows[0]["Auteur"] == legit_user.full_name
-        assert rows[1]["Type"] == history_models.ActionType.USER_CREATED.value
+        assert rows[1]["Type"] == "Création du compte"
         assert rows[1]["Date/Heure"]
         assert rows[1]["Auteur"] == user.full_name
 

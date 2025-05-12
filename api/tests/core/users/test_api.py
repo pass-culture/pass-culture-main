@@ -3427,8 +3427,8 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                     },
                 ],
                 "actionsHistory": [
-                    {"actionDate": "2023-12-30T00:00:00", "actionType": "Compte suspendu"},
-                    {"actionDate": "2024-01-01T00:00:00", "actionType": "Compte réactivé"},
+                    {"actionDate": "2023-12-30T00:00:00", "actionType": "USER_SUSPENDED"},
+                    {"actionDate": "2024-01-01T00:00:00", "actionType": "USER_UNSUSPENDED"},
                 ],
                 "beneficiaryValidations": [
                     {
