@@ -86,6 +86,16 @@ export function UsefulInformationsSummaryScreen({
             accessibleItem={offer}
             accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
           />
+          <SummarySubSection title="Lien de réservation externe en l’absence de crédit">
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'URL de votre site ou billetterie',
+                  text: offer.externalTicketOfficeUrl || ' - ',
+                },
+              ]}
+            />
+          </SummarySubSection>
           <SummarySubSection title="Notification des réservations">
             <SummaryDescriptionList
               descriptions={[

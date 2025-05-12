@@ -10,6 +10,7 @@ export type UsefulInformationFormValues = {
   accessibility: AccessibilityFormValues
   receiveNotificationEmails: boolean
   bookingEmail: string
+  externalTicketOfficeUrl?: string | null
   bookingContact?: string
   offerLocation?: string | undefined
   manuallySetAddress?: boolean

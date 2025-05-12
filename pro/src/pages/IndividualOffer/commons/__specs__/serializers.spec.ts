@@ -99,6 +99,7 @@ describe('IndividualOffer:commons:serializers', () => {
         bookingContact: undefined,
         isDuo: false,
         url: 'https://my.url',
+        externalTicketOfficeUrl: 'https://my-external-ticket-office.url',
         city: 'Paris',
         latitude: '48.853320',
         longitude: '2.348979',
@@ -122,6 +123,8 @@ describe('IndividualOffer:commons:serializers', () => {
         withdrawalDelay: undefined,
         withdrawalDetails: 'test withdrawalDetails',
         withdrawalType: undefined,
+        bookingContact: undefined,
+        externalTicketOfficeUrl: 'https://my-external-ticket-office.url',
         durationMinutes: 120,
         bookingEmail: 'booking@email.org',
         shouldSendMail: false,
@@ -153,12 +156,14 @@ describe('IndividualOffer:commons:serializers', () => {
         receiveNotificationEmails: false,
         durationMinutes: undefined,
         url: '',
+        externalTicketOfficeUrl: '',
       }
       patchBody = {
         ...patchBody,
         bookingEmail: null,
         durationMinutes: undefined,
         url: undefined,
+        externalTicketOfficeUrl: null,
       }
       expect(
         serializePatchOffer({
