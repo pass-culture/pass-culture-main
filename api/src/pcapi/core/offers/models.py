@@ -638,6 +638,30 @@ class HeadlineOffer(PcObject, Base, Model):
         )
 
 
+@sa.event.listens_for(HeadlineOffer, "after_insert")
+def after_insert_product_reaction(
+    _mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: HeadlineOffer
+) -> None:
+    if target.offer.productId:
+        _increment_product_headlines_count(connection, target.offer.productId, 1)
+
+
+@sa.event.listens_for(HeadlineOffer, "after_delete")
+def after_delete_product_reaction(
+    _mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: HeadlineOffer
+) -> None:
+    # SQLAlchemy will not call this event if the object is deleted using a bulk delete
+    # (e.g. db.session.execute(sa.delete(Chronicle).where(...)))
+    if target.offer.productId:
+        _increment_product_headlines_count(connection, target.offer.productId, -1)
+
+
+def _increment_product_headlines_count(connection: sa.engine.Connection, product_id: int, increment: int) -> None:
+    connection.execute(
+        sa.update(Product).where(Product.id == product_id).values(headlinesCount=Product.headlinesCount + increment)
+    )
+
+
 class ValidationRuleOfferLink(PcObject, Base, Model):
     __tablename__ = "validation_rule_offer_link"
     ruleId: int = sa.Column(
