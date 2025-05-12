@@ -20,9 +20,9 @@ dependencies = [
   "brevo-python==1.1.2",
   "celery[redis]==5.5.2",
   "click-option-group==0.5.7",
-  "click==8.1.8",
+  "click==8.1.8",                      # regression with 8.2.0 (tests/core/finance/test_commands.py)
   "clickhouse-sqlalchemy==0.2.7",
-  "cryptography==44.0.2",
+  "cryptography==44.0.3",
   "ecdsa==0.19.1",                     # <0.20.0
   "email-validator==2.2.0",
   "factory-boy==3.3.3",
@@ -36,8 +36,8 @@ dependencies = [
   "flask==2.0.*",
   "flower==2.0.1",
   "geoalchemy2>=0.17.1",
-  "google-api-python-client==2.168.0",
-  "google-auth==2.39.0",
+  "google-api-python-client==2.169.0",
+  "google-auth==2.40.1",
   "google-cloud-bigquery==3.31.0",
   "google-cloud-storage==3.1.0",
   "google-cloud-tasks==2.19.2",
@@ -51,17 +51,17 @@ dependencies = [
   "libsass==0.23.0",
   "markupsafe==3.0.2",
   "openpyxl>=3.1.5",
-  "phonenumberslite==9.0.4",
+  "phonenumberslite==9.0.5",
   "pillow==11.2.1",
   "prometheus-flask-exporter>=0.23.2",
   "psycopg2>=2.9.10",
   "py7zr>=0.22.0",
   # required by schwifty, upgraded manually because of setuptools
   "pycountry==24.6.1",
-  "pydantic[email]==2.11.3",
+  "pydantic[email]==2.11.4",
   "pyjwt[crypto]==2.10.1",
   "pyopenssl==24.3.0",
-  "pypdf>=5.4.0",
+  "pypdf>=5.5.0",
   "pyproj>=3.7.1",
   "pysaml2>=7.5.0",
   "python-dateutil==2.9.0.post0",
@@ -70,10 +70,10 @@ dependencies = [
   "rapidfuzz==3.13.0",
   "regex (>=2024.11.6,<2025.0.0)",
   "requests==2.32.3",
-  "rq==2.3.2",
+  "rq==2.3.3",
   "schwifty==2025.1.0",
   "semver==3.0.4",
-  "sentry-sdk[flask]==2.27.0",
+  "sentry-sdk[flask]==2.28.0",
   "slack-sdk==3.35.0",
   "spectree==1.2.1",
   # Do not use 1.4.46 that has a new
@@ -94,10 +94,10 @@ dependencies = [
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^4.6.0"
+commitizen = "^4.7.0"
 debugpy = "^1.8.14"
 djlint = "1.36.4"
-fakeredis = "^2.28.1"
+fakeredis = "^2.29.0"
 isort = "^6.0.1"
 mypy = "1.13.0"
 pgcli = "^4.3.0"
@@ -108,8 +108,8 @@ pytest-mock = "^3.14.0"
 pytest-socket = "^0.7.0"
 pytest-split = "^0.10.0"
 requests-mock = "^1.12.1"
-ruff = "^0.11.7"
-types-protobuf = "^5.29.1.20250403"
+ruff = "^0.11.9"
+types-protobuf = "^6.30.2.20250506"
 types-python-dateutil = "^2.9.0.20241206"
 types-pytz = "^2025.2.0.20250326"
 types-pyyaml = "^6.0.12.20250402"
