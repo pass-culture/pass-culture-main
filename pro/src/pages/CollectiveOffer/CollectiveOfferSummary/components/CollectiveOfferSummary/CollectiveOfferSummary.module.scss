@@ -3,3 +3,9 @@
 .banner-container {
   margin: rem.torem(16px) 0;
 }
+
+.location-information {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+}
