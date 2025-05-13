@@ -1472,7 +1472,7 @@ class UpdateStockQuantityToDnBookedQuantityTest:
         # when
         repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
         # then
-        db_session.refresh(stock)
+        db.session.refresh(stock)
         assert stock.quantity == 6
 
 
