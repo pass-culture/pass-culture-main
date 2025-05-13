@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -46,6 +46,8 @@ export const LinkVenuesDialog = ({
     .map((venue) => venue.id)
   const notification = useNotification()
   const { logEvent } = useAnalytics()
+
+  const saveButtonRef = useRef<HTMLButtonElement>(null)
 
   const initialVenuesIds = selectedBankAccount.linkedVenues.map(
     (venue) => venue.id
@@ -164,12 +166,11 @@ export const LinkVenuesDialog = ({
                     }
                   />
                   <span className={styles['dialog-select-all-count']}>
-                    `{selectedVenuesIds.length}{' '}
+                    {selectedVenuesIds.length}{' '}
                     {pluralizeString(
                       'structure sélectionnée',
                       selectedVenuesIds.length
                     )}
-                    `
                   </span>
                 </div>
 
@@ -195,7 +196,11 @@ export const LinkVenuesDialog = ({
                     Annuler
                   </Button>
 
-                  <Button type="submit" isLoading={formik.isSubmitting}>
+                  <Button
+                    type="submit"
+                    isLoading={formik.isSubmitting}
+                    ref={saveButtonRef}
+                  >
                     Enregistrer
                   </Button>
                 </div>
@@ -225,7 +230,12 @@ export const LinkVenuesDialog = ({
           [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
         })}
         icon={strokeWarningIcon}
-        onCancel={() => setShowUnlinkVenuesDialog(false)}
+        onCancel={() => {
+          setShowUnlinkVenuesDialog(false)
+          setTimeout(() => {
+            saveButtonRef.current?.focus()
+          })
+        }}
         title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"
         onConfirm={() => {
           setShowUnlinkVenuesDialog(false)
