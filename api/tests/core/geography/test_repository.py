@@ -49,7 +49,7 @@ class GetIrisFromAddressTest:
             latitude=17.900710,
             longitude=-62.834786,
             city="unused",
-            street=None,
+            street="unused",
         ),
     )
     def test_get_iris_from_postcode_and_missing_address(
@@ -79,7 +79,7 @@ class GetIrisFromAddressTest:
             latitude=17.900710,
             longitude=-62.834786,
             city="unused",
-            street=None,
+            street="unused",
         ),
     )
     @patch("pcapi.connectors.api_adresse.get_address")
@@ -191,7 +191,7 @@ class GetCoordinatesFromAddressTest:
             latitude=17.900710,
             longitude=-62.834786,
             city="unused",
-            street=None,
+            street="unused",
         ),
     )
     def test_get_coordinates_from_address(self, _mock_get_address):

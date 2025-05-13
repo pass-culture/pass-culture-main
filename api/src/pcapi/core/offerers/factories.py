@@ -82,21 +82,13 @@ class VenueFactory(BaseFactory):
     latitude: float | None = 48.87004
     longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    street: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
-        lambda o: None if o.isVirtual else "1 boulevard Poissonnière"
-    )
-    banId: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
-        lambda o: None if o.isVirtual else "75102_7560_00001"
-    )
-    postalCode: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
-        lambda o: None if o.isVirtual else "75002"
-    )
+    street: factory.declarations.BaseDeclaration | str | None = "1 boulevard Poissonnière"
+    banId: factory.declarations.BaseDeclaration | str | None = "75102_7560_00001"
+    postalCode: factory.declarations.BaseDeclaration | str | None = "75002"
     departementCode: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
-        lambda o: None if o.isVirtual else _get_department_code(o.postalCode)
+        lambda o: _get_department_code(o.postalCode)
     )
-    city: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
-        lambda o: None if o.isVirtual else "Paris"
-    )
+    city: factory.declarations.BaseDeclaration | str | None = "Paris"
     publicName = factory.SelfAttribute("name")
     siret: factory.declarations.BaseDeclaration | None = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.complete_siren_or_siret(f"{o.managingOfferer.siren}{n:04}")

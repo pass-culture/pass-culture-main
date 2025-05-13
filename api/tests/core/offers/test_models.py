@@ -712,8 +712,6 @@ class OfferfullAddressTest:
         [
             ("label", "street of the full address", "label - street of the full address 75000 Paris"),
             (None, "street of the full address", "street of the full address 75000 Paris"),
-            ("label", None, "label - 75000 Paris"),
-            (None, None, "75000 Paris"),
         ],
     )
     def test_full_address(self, label, street, expected_full_address):

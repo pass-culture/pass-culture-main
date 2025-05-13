@@ -4,6 +4,7 @@ import typing
 
 from geoalchemy2 import Geometry
 import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
 from pcapi.models import Base
@@ -28,14 +29,16 @@ class Address(PcObject, Base, Model):
     __tablename__ = "address"
     banId: str | None = sa.Column(sa.Text(), nullable=True)
     inseeCode: str | None = sa.Column(sa.Text(), nullable=True)
-    street: str | None = sa.Column(sa.Text(), nullable=True)
-    postalCode: str = sa.Column(sa.Text(), nullable=False)
-    city: str = sa.Column(sa.Text(), nullable=False)
-    latitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
-    longitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
-    departmentCode = sa.Column(sa.Text(), nullable=False, index=True)
-    timezone: str = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
-    isManualEdition: bool = sa.Column(
+    street: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False)
+    postalCode: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False)
+    city: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False)
+    latitude: sa_orm.Mapped[Decimal] = sa.Column(sa.Numeric(8, 5), nullable=False)
+    longitude: sa_orm.Mapped[Decimal] = sa.Column(sa.Numeric(8, 5), nullable=False)
+    departmentCode: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False, index=True)
+    timezone: sa_orm.Mapped[str] = sa.Column(
+        sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
+    )
+    isManualEdition: sa_orm.Mapped[bool] = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
 
