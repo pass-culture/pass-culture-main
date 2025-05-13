@@ -119,7 +119,7 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
-                products=products,  # type: ignore[arg-type]
+                products=products,
                 userId=user_id,
                 isActive=False,
             )
