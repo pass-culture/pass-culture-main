@@ -115,9 +115,10 @@ def check_institution_id_exists(institution_id: int) -> models.EducationalInstit
 
 
 def check_collective_offer_action_is_allowed(
-    offer: models.CollectiveOffer, action: models.CollectiveOfferAllowedAction
+    offer: models.CollectiveOffer, action: models.CollectiveOfferAllowedAction, for_public_api: bool = False
 ) -> None:
-    if action not in offer.allowedActions:
+    allowed_actions = offer.allowedActionsForPublicApi if for_public_api else offer.allowedActions
+    if action not in allowed_actions:
         raise exceptions.CollectiveOfferForbiddenAction(action=action)
 
 

@@ -10,34 +10,10 @@ from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.routes.serialization import collective_stock_serialize
-
-
-STATUSES_ALLOWING_EDIT_DATES = (
-    CollectiveOfferDisplayedStatus.DRAFT,
-    CollectiveOfferDisplayedStatus.PUBLISHED,
-    CollectiveOfferDisplayedStatus.PREBOOKED,
-    CollectiveOfferDisplayedStatus.EXPIRED,
-)
-
-STATUSES_NOT_ALLOWING_EDIT_DATES = tuple(
-    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DATES, CollectiveOfferDisplayedStatus.HIDDEN}
-)
-
-STATUSES_ALLOWING_EDIT_DISCOUNT = (
-    CollectiveOfferDisplayedStatus.DRAFT,
-    CollectiveOfferDisplayedStatus.PUBLISHED,
-    CollectiveOfferDisplayedStatus.PREBOOKED,
-    CollectiveOfferDisplayedStatus.BOOKED,
-)
-
-STATUSES_NOT_ALLOWING_EDIT_DISCOUNT = tuple(
-    set(CollectiveOfferDisplayedStatus) - {*STATUSES_ALLOWING_EDIT_DISCOUNT, CollectiveOfferDisplayedStatus.HIDDEN}
-)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -260,7 +236,7 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.price == price + 100
 
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
-    @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DATES)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DATES)
     def test_can_edit_dates(self, status):
         educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
@@ -288,7 +264,7 @@ class EditCollectiveOfferStocksTest:
         if booking:
             assert booking.confirmationLimitDate == new_limit.replace(tzinfo=None)
 
-    @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_DISCOUNT)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DISCOUNT)
     def test_can_lower_price_and_edit_price_details(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
 
@@ -398,7 +374,7 @@ class ReturnErrorTest:
                 stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
             )
 
-    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DATES)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DATES)
     def test_cannot_edit_dates(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
 
@@ -428,7 +404,7 @@ class ReturnErrorTest:
                     stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
                 )
 
-    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
+    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
     def test_cannot_lower_price_and_edit_price_details(self, status):
         offer = educational_factories.create_collective_offer_by_status(status)
 

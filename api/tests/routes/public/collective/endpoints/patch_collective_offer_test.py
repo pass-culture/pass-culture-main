@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -41,6 +42,15 @@ NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR = {
 }
 # the other fields have the same error message when null
 NON_REQUIRED_NON_NULLABLE_FIELDS = set(PATCH_NON_NULLABLE_FIELDS) - NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR.keys()
+
+# there is not DRAFT offer in public API
+# the HIDDEN status is for templates only once the WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API FF is ON
+# the ARCHIVED status must be tested separately as we need the ArchivedPublishedCollectiveOfferFactory factory
+STATUSES_NOT_IN_PUBLIC_API = {
+    educational_models.CollectiveOfferDisplayedStatus.DRAFT,
+    educational_models.CollectiveOfferDisplayedStatus.HIDDEN,
+    educational_models.CollectiveOfferDisplayedStatus.ARCHIVED,
+}
 
 time_travel_str = "2021-10-01 15:00:00"
 
@@ -116,6 +126,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                 "addressType": "school",
                 "otherAddress": None,
             },
+            "interventionArea": ["33", "75"],
             "isActive": False,
             "imageCredit": "a great artist",
             "nationalProgramId": national_program.id,
@@ -154,6 +165,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "addressType": "school",
             "otherAddress": "",
         }
+        assert offer.interventionArea == ["33", "75"]
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is True
         assert offer.motorDisabilityCompliant is True
@@ -1440,3 +1452,239 @@ class UpdatePriceTest(PublicAPIVenueEndpointHelper):
             "global": ["Seuls les champs totalPrice, educationalPriceDetail, numberOfTickets peuvent être modifiés."]
         }
         assert stock.bookingLimitDatetime == limit
+
+
+@pytest.mark.usefixtures("db_session")
+class AllowedActionsTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/v2/collective/offers/{offer_id}"
+    endpoint_method = "patch"
+    default_path_params = {"offer_id": 1}
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        pass
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+        pass
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+        pass
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_allowed_action_edit_details(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        payload = {"name": "New name", "description": "New description"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 200
+        db.session.refresh(offer)
+        assert offer.name == "New name"
+        assert offer.description == "New description"
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_unallowed_action_edit_details(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        payload = {"name": "New name", "description": "New description"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+        }
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_allowed_action_increase_price(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        new_price = offer.collectiveStock.price + 100
+        payload = {"totalPrice": new_price}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 200
+        stock = offer.collectiveStock
+        db.session.refresh(stock)
+        assert stock.price == new_price
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_unallowed_action_increase_price(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        new_price = offer.collectiveStock.price + 100
+        payload = {"totalPrice": new_price}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+        }
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_ALLOWING_EDIT_DATES) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_allowed_action_edit_dates(self, client, status):
+        educational_factories.EducationalCurrentYearFactory()
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        new_limit = datetime.now(timezone.utc) + timedelta(days=10)
+        new_start = new_limit + timedelta(days=5)
+        new_end = new_limit + timedelta(days=7)
+        payload = {
+            "bookingLimitDatetime": new_limit.isoformat(),
+            "startDatetime": new_start.isoformat(),
+            "endDatetime": new_end.isoformat(),
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 200
+        stock = offer.collectiveStock
+        db.session.refresh(stock)
+        assert stock.bookingLimitDatetime == new_limit.replace(tzinfo=None)
+        assert stock.startDatetime == new_start.replace(tzinfo=None)
+        assert stock.endDatetime == new_end.replace(tzinfo=None)
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_NOT_ALLOWING_EDIT_DATES) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_unallowed_action_edit_dates(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        new_date = datetime.now(timezone.utc) + timedelta(days=5)
+        for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):
+            with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+                response = client.with_explicit_token(key).patch(
+                    self.endpoint_url.format(offer_id=offer.id), json={date_field: new_date.isoformat()}
+                )
+
+            assert response.status_code == 400
+            assert response.json == {
+                "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+            }
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_NOT_ALLOWING_EDIT_INSTITUTION) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_unallowed_action_edit_institution(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(
+                self.endpoint_url.format(offer_id=offer.id), json={"educationalInstitution": "111"}
+            )
+
+        assert response.status_code == 400
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_allowed_action_lower_price_and_edit_price_details(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        payload = {"totalPrice": 1, "educationalPriceDetail": "yes", "numberOfTickets": 1200}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(self.endpoint_url.format(offer_id=offer.id), json=payload)
+
+        assert response.status_code == 200
+        stock = offer.collectiveStock
+        db.session.refresh(stock)
+        assert stock.price == 1
+        assert stock.priceDetail == "yes"
+        assert stock.numberOfTickets == 1200
+
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "status", set(educational_testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API
+    )
+    def test_unallowed_action_lower_price_and_edit_price_details(self, client, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        for payload in ({"totalPrice": 1}, {"educationalPriceDetail": "yes", "numberOfTickets": 1200}):
+            with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+                response = client.with_explicit_token(key).patch(
+                    self.endpoint_url.format(offer_id=offer.id), json=payload
+                )
+
+            assert response.status_code == 400
+            assert response.json == {
+                "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+            }
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=True)
+    @pytest.mark.parametrize(
+        "field,value",
+        (
+            ("educationalInstitution", "111"),
+            ("educationalInstitutionId", 1),
+            ("bookingLimitDatetime", "2021-11-01 15:00:00"),
+            ("startDatetime", "2021-11-01 15:00:00"),
+            ("endDatetime", "2021-11-01 15:00:00"),
+            ("name", "New name"),
+            ("totalPrice", 2000),  # increase price
+            ("totalPrice", 1),  # decrease price
+            ("educationalPriceDetail", "yes"),
+            ("numberOfTickets", 1200),
+        ),
+    )
+    def test_unallowed_action_archived(self, client, field, value):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.ArchivedPublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(
+                self.endpoint_url.format(offer_id=offer.id), json={field: value}
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"global": "Cette action n'est pas autorisée car le statut de l'offre est ARCHIVED"}

@@ -4,23 +4,15 @@ import pytest
 
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
-from pcapi.core.educational import testing as adage_api_testing
+from pcapi.core.educational import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
-
-
-STATUSES_ALLOWING_EDIT_INSTITUTION = (models.CollectiveOfferDisplayedStatus.DRAFT,)
-
-STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
-    set(models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_ALLOWING_EDIT_INSTITUTION, models.CollectiveOfferDisplayedStatus.HIDDEN}
-)
 
 
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
-    @pytest.mark.parametrize("status", STATUSES_ALLOWING_EDIT_INSTITUTION)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_allowed_action(self, client, status) -> None:
         institution1 = factories.EducationalInstitutionFactory()
         offer = factories.create_collective_offer_by_status(status=status, institution=institution1)
@@ -121,7 +113,7 @@ class Returns403Test:
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
-    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_EDIT_INSTITUTION)
+    @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_INSTITUTION)
     def test_change_institution_unallowed_action(self, client, status) -> None:
         institution1 = factories.EducationalInstitutionFactory()
         offer = factories.create_collective_offer_by_status(status=status, institution=institution1)
@@ -166,7 +158,7 @@ class Returns403Test:
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
 
-        assert len(adage_api_testing.adage_requests) == 0
+        assert len(testing.adage_requests) == 0
 
     def test_offer_institution_link_institution_not_active(self, client: Any) -> None:
         institution = factories.EducationalInstitutionFactory(isActive=False)

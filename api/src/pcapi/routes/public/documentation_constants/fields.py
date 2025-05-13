@@ -283,7 +283,9 @@ class _FIELDS:
     COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")
     COLLECTIVE_OFFER_NB_OF_TICKETS = Field(example=10, description="Number of tickets for your collective offer")
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
-        description="The explanation of the offer price", example="10 tickets x 10 € = 100 €"
+        description="The explanation of the offer price",
+        example="10 tickets x 10 € = 100 €",
+        alias="educationalPriceDetail",
     )
     # Collective booking
     COLLECTIVE_BOOKING_ID = Field(description="Collective booking id")

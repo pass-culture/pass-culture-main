@@ -34,7 +34,6 @@ from pcapi.utils.image_conversion import ImageRatio
 pytestmark = pytest.mark.usefixtures("db_session")
 
 ALL_DISPLAYED_STATUSES = set(CollectiveOfferDisplayedStatus)
-NEW_DISPLAYED_STATUSES = {CollectiveOfferDisplayedStatus.CANCELLED, CollectiveOfferDisplayedStatus.REIMBURSED}
 
 
 class EducationalDepositTest:
@@ -766,8 +765,7 @@ class CollectiveOfferAllowedActionsTest:
 
     @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.ENDED})
     def test_get_offer_allowed_actions_public_api(self, status):
-        offer = factories.create_collective_offer_by_status(status)
-        offer.provider = providers_factories.ProviderFactory()
+        offer = factories.create_collective_offer_by_status(status, provider=providers_factories.ProviderFactory())
 
         assert set(offer.allowedActions) == set(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status]) - {
             CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -777,8 +775,9 @@ class CollectiveOfferAllowedActionsTest:
         }
 
     def test_get_offer_ended_allowed_actions_public_api(self):
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
-        offer.provider = providers_factories.ProviderFactory()
+        offer = factories.EndedCollectiveOfferFactory(
+            booking_is_confirmed=True, provider=providers_factories.ProviderFactory()
+        )
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [
@@ -787,8 +786,7 @@ class CollectiveOfferAllowedActionsTest:
         ]
 
     def test_get_offer_ended_two_days_past_allowed_actions_public_api(self):
-        offer = factories.EndedCollectiveOfferFactory()
-        offer.provider = providers_factories.ProviderFactory()
+        offer = factories.EndedCollectiveOfferFactory(provider=providers_factories.ProviderFactory())
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [CollectiveOfferAllowedAction.CAN_DUPLICATE]
@@ -825,6 +823,38 @@ class CollectiveOfferAllowedActionsTest:
     def test_get_offer_template_allowed_actions(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.allowedActions == list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.ENDED})
+    def test_get_offer_allowed_actions_for_public_api(self, status):
+        offer = factories.create_collective_offer_by_status(status, provider=providers_factories.ProviderFactory())
+
+        assert offer.allowedActionsForPublicApi == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES)
+    def test_get_offer_allowed_actions_for_public_api_pc_pro_offer(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        assert offer.allowedActionsForPublicApi == []
+
+    def test_get_ended_offer_allowed_actions_for_public_api(self):
+        offer = factories.EndedCollectiveOfferFactory(
+            booking_is_confirmed=True, provider=providers_factories.ProviderFactory()
+        )
+
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
+        assert offer.allowedActionsForPublicApi == [
+            CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+            CollectiveOfferAllowedAction.CAN_DUPLICATE,
+            CollectiveOfferAllowedAction.CAN_CANCEL,
+        ]
+
+    def test_get_ended_offer_two_days_past_allowed_actions_for_public_api(self):
+        offer = factories.EndedCollectiveOfferFactory(provider=providers_factories.ProviderFactory())
+
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
+        assert offer.allowedActionsForPublicApi == [
+            CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        ]
 
 
 class CollectiveOfferTemplateHasEndDatePassedTest:

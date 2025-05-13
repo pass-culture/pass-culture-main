@@ -138,11 +138,11 @@ def validate_image_file(image_file: str | None) -> str | None:
 
 
 def number_of_tickets_validator(field_name: str) -> classmethod:
-    return validator(field_name, allow_reuse=True, pre=True)(validate_number_of_tickets)
+    return validator(field_name, allow_reuse=True)(validate_number_of_tickets)
 
 
 def price_validator(field_name: str) -> classmethod:
-    return validator(field_name, allow_reuse=True, pre=True)(validate_price)
+    return validator(field_name, allow_reuse=True)(validate_price)
 
 
 def booking_limit_datetime_validator(field_name: str) -> classmethod:
@@ -487,7 +487,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         example=100.00,
         alias="totalPrice",
     )
-    educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
+    priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
     # educational_institution
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
@@ -495,7 +495,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
-    _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
+    _validate_educational_price_detail = price_detail_validator("priceDetail")
     _validate_start_datetime = start_datetime_validator("startDatetime")
     _validate_end_datetime = end_datetime_validator("endDatetime")
     _validate_contact_phone = phone_number_validator("contactPhone")
