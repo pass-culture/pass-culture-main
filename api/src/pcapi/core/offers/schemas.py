@@ -4,6 +4,7 @@ import typing
 from psycopg2.extras import NumericRange
 from pydantic.v1 import ConstrainedList
 from pydantic.v1 import EmailStr
+from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
@@ -15,6 +16,9 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import time_to_int
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+
+
+OFFER_DESCRIPTION_MAX_LENGTH = 10_000
 
 
 class TimeSpan(BaseModel):
@@ -165,7 +169,7 @@ class PostDraftOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
     venue_id: int
-    description: str | None = None
+    description: str | None = Field(max_length=OFFER_DESCRIPTION_MAX_LENGTH)
     url: HttpUrl | None = None
     extra_data: typing.Any = None
     duration_minutes: int | None = None
@@ -185,7 +189,7 @@ class PatchDraftOfferBodyModel(BaseModel):
     name: str | None = None
     subcategory_id: str | None = None
     url: HttpUrl | None = None
-    description: str | None = None
+    description: str | None = Field(max_length=OFFER_DESCRIPTION_MAX_LENGTH)
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
 

@@ -2,8 +2,18 @@ import { render } from '@testing-library/react'
 
 import { Markdown } from '../Markdown'
 
-function renderMarkdown(text: string) {
-  return render(<Markdown markdownText={text} />)
+function renderMarkdown(
+  text: string,
+  maxLength?: number,
+  croppedTextEnding?: string
+) {
+  return render(
+    <Markdown
+      markdownText={text}
+      maxLength={maxLength}
+      croppedTextEnding={croppedTextEnding}
+    />
+  )
 }
 
 describe('Markdown', () => {
@@ -53,6 +63,24 @@ describe('Markdown', () => {
     const component = renderMarkdown('_texte_ en _italique_')
     expect(component.container.innerHTML).toContain(
       '<span class="markdown" data-testid="markdown-content"><em>texte</em> en <em>italique</em></span>'
+    )
+  })
+
+  it('should crop text', () => {
+    const component = renderMarkdown(
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
+      50
+    )
+    expect(component.container.innerHTML).toContain(
+      '<span class="markdown" data-testid="markdown-content">Lorem ipsum dolor sit amet, consectetur adipiscing...</span>'
+    )
+    const componentWithCustomCroppedEnding = renderMarkdown(
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
+      50,
+      ' Afficher plus...'
+    )
+    expect(componentWithCustomCroppedEnding.container.innerHTML).toContain(
+      '<span class="markdown" data-testid="markdown-content">Lorem ipsum dolor sit amet, consectetur adipiscing Afficher plus...</span>'
     )
   })
 })
