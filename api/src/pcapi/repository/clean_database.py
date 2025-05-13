@@ -148,7 +148,7 @@ tables_to_clean: list[type[Model]] = [
 
 
 def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typing.Any) -> None:
-    if settings.ENV not in ("development", "testing"):
+    if settings.ENV not in ("development", "testing") and not settings.IS_RUNNING_TESTS:
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
 
     for table in tables_to_clean:
