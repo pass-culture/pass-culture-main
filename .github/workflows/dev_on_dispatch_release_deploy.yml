@@ -73,10 +73,12 @@ jobs:
       apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
-      doc-api-entrypoint: 'api/documentation'
+      doc-api-entrypoint: "api/documentation"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-integration:
     name: "Deploy on integration environnement"
@@ -92,10 +94,12 @@ jobs:
       apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
-      doc-api-entrypoint: 'api/documentation'
+      doc-api-entrypoint: "api/documentation"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-prod:
     name: "Deploy on production environnement"
@@ -114,6 +118,8 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   slack-notification:
     name: "Send Slack notification"
@@ -126,13 +132,13 @@ jobs:
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
@@ -180,5 +186,3 @@ jobs:
                     text:
                       type: "mrkdwn"
                       text: "La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ github.event.inputs.target_environment }}`"
-
-

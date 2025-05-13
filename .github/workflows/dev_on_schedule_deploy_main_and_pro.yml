@@ -6,7 +6,7 @@ on:
     # This cron is defined in UTC timezone. It means that it will run :
     # - during summer hours between 8:28am - 7:28pm
     # - during winter hours between 7:28am - 6:28pm
-    # we cannot yet specify timezone : 
+    # we cannot yet specify timezone :
     # https://github.com/orgs/community/discussions/13454
     # Why 28? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
     # Cron jobs might be delayed or even completely skipped.
@@ -22,16 +22,16 @@ env:
 jobs:
   pcapi-init-job:
     runs-on: ubuntu-latest
-    outputs: 
-        checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-        pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
-        pcapi-console-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
+    outputs:
+      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+      pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
+      pcapi-console-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: false
-          ref: 'master'
+          ref: "master"
       - name: "Define pcapi image tags."
         id: pcapi-tags
         run: |
@@ -91,7 +91,7 @@ jobs:
           echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
           echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
           echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
-  
+
   # Theses steps builds pcapi and pcapi-console image, tags them with the last commit sha then
   # pushes them to the registry
   build-pcapi:
@@ -165,6 +165,8 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-to-ops:
     name: "Deploy to ops"
@@ -182,6 +184,8 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   slack-notify:
     name: "Post failure notification on #alertes-deploiement"
