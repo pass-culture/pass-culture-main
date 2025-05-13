@@ -258,7 +258,7 @@ class CheckOffererTest:
         assert response.status_code == 204
         mock_close_offerer.assert_called_once_with(
             offerer,
-            datetime.date(2025, 1, 16),
+            closure_date=datetime.date(2025, 1, 16),
             author_user=None,
             comment="L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Sirene (INSEE)",
             modified_info={"tags": {"new_info": "SIREN caduc"}},
@@ -308,7 +308,7 @@ class CheckOffererTest:
         assert response.status_code == 204
         mock_close_offerer.assert_called_once_with(
             offerer,
-            datetime.date(2025, 3, 5),
+            closure_date=datetime.date(2025, 3, 5),
             author_user=None,
             comment="L'entité juridique est détectée comme fermée le 05/03/2025 via l'API Sirene (INSEE)",
         )

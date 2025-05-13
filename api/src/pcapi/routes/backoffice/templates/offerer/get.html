@@ -49,31 +49,38 @@
               {% endif %}
             </div>
           </div>
-          {% if has_permission("VALIDATE_OFFERER") %}
-            <div class="d-flex row-reverse justify-content-end flex-grow-1">
-              {% if offerer.validationStatus != offerer.validationStatus.VALIDATED %}
+          <div class="d-flex row-reverse justify-content-end flex-grow-1">
+            {% if has_permission("VALIDATE_OFFERER") %}
+              {% if not offerer.isValidated %}
                 <a data-bs-toggle="modal"
                    data-bs-target="#validate-modal-{{ offerer.id }}">
                   <button class="btn btn-outline-primary">Valider</button>
                 </a>
                 {{ build_lazy_modal(url_for('backoffice_web.validation.get_validate_offerer_form', offerer_id=offerer.id) , "validate-modal-" + offerer.id|string) }}
               {% endif %}
-              {% if offerer.validationStatus != offerer.validationStatus.PENDING %}
+              {% if not offerer.isPending %}
                 <a data-bs-toggle="modal"
                    data-bs-target="#pending-modal-{{ offerer.id }}">
                   <button class="btn btn-outline-primary">Mettre en attente</button>
                 </a>
                 {{ build_lazy_modal(url_for('backoffice_web.validation.get_offerer_pending_form', offerer_id=offerer.id) , "pending-modal-" + offerer.id|string) }}
               {% endif %}
-              {% if offerer.validationStatus != offerer.validationStatus.REJECTED %}
+              {% if not offerer.isRejected %}
                 <a data-bs-toggle="modal"
                    data-bs-target="#reject-modal-{{ offerer.id }}">
                   <button class="btn btn-outline-primary">Rejeter</button>
                 </a>
                 {{ build_lazy_modal(url_for('backoffice_web.validation.get_reject_offerer_form', offerer_id=offerer.id) , "reject-modal-" + offerer.id|string) }}
               {% endif %}
-            </div>
-          {% endif %}
+            {% endif %}
+            {% if has_permission("CLOSE_OFFERER") and offerer.isValidated %}
+              <a data-bs-toggle="modal"
+                 data-bs-target="#close-modal-{{ offerer.id }}">
+                <button class="btn btn-outline-primary">Fermer l'entité juridique</button>
+              </a>
+              {{ build_lazy_modal(url_for('backoffice_web.offerer.get_close_offerer_form', offerer_id=offerer.id) , "close-modal-" + offerer.id|string) }}
+            {% endif %}
+          </div>
           <p class="card-subtitle text-muted mb-3 h5">
             Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de l'entité juridique") }}
           </p>

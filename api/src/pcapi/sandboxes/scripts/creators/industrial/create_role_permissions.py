@@ -49,6 +49,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.CREATE_INCIDENTS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.CLOSE_OFFERER,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -191,6 +192,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.CLOSE_OFFERER,
     ],
     "global_access": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
@@ -234,6 +236,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.CREATE_INCIDENTS,
+        perm_models.Permissions.CLOSE_OFFERER,
     ],
     "dpo": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,

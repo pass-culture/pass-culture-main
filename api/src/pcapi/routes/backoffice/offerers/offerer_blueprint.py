@@ -39,6 +39,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
+from pcapi.routes.backoffice.bookings import forms as bookings_forms
+from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils
@@ -1416,3 +1418,92 @@ def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
         db.session.flush()
 
     return render_template("offerer/get/details/entreprise_info_dgfip.html", **data)
+
+
+@offerer_blueprint.route("/close", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.CLOSE_OFFERER)
+def get_close_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+
+    form = offerer_forms.OffererClosureForm()
+    info = None
+
+    count_individual_bookings = len(offerers_api.get_individual_bookings_to_cancel_on_offerer_closure(offerer.id))
+    count_collective_bookings = len(offerers_api.get_collective_bookings_to_cancel_on_offerer_closure(offerer.id))
+
+    if count_individual_bookings or count_collective_bookings:
+        info = Markup("<p>La fermeture de l'entité juridique entraînera l'annulation automatique de :<p><ul>")
+        if count_individual_bookings:
+            info += Markup(
+                """<li><b>{count}</b> <a href="{url}" target="_blank" class="link-primary">réservation{s} individuelle{s}</a></li>"""
+            ).format(
+                count=count_individual_bookings,
+                url=url_for(
+                    "backoffice_web.individual_bookings.list_individual_bookings",
+                    offerer=offerer_id,
+                    status=[bookings_forms.BookingStatus.BOOKED.name, bookings_forms.BookingStatus.CONFIRMED.name],
+                ),
+                s=pluralize(count_individual_bookings),
+            )
+        if count_collective_bookings:
+            info += Markup(
+                """<li><b>{count}</b> <a href="{url}" target="_blank" class="link-primary">réservation{s} collective{s}</a></li>"""
+            ).format(
+                count=count_collective_bookings,
+                url=url_for(
+                    "backoffice_web.collective_bookings.list_collective_bookings",
+                    offerer=offerer_id,
+                    status=[
+                        bookings_forms.CollectiveBookingStatus.PENDING.name,
+                        bookings_forms.CollectiveBookingStatus.CONFIRMED.name,
+                    ],
+                ),
+                s=pluralize(count_collective_bookings),
+            )
+        info += Markup("</ul>")
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        info=info,
+        form=form,
+        dst=url_for("backoffice_web.offerer.close_offerer", offerer_id=offerer.id),
+        div_id=f"close-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Fermer l'entité juridique {offerer.name.upper()}",
+        button_text="Fermer l'entité juridique",
+    )
+
+
+@offerer_blueprint.route("/close", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.CLOSE_OFFERER)
+def close_offerer(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        db.session.query(offerers_models.Offerer)
+        .filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
+
+    if not offerer.isValidated:
+        flash("Seule une entité juridique validée peut être fermée", "warning")
+        return _self_redirect(offerer.id)
+
+    form = offerer_forms.OffererClosureForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return _self_redirect(offerer.id)
+
+    offerers_api.close_offerer(
+        offerer,
+        is_manual=True,
+        author_user=current_user,
+        comment=form.comment.data,
+        zendesk_id=form.zendesk_id.data,
+        drive_link=form.drive_link.data,
+    )
+
+    flash(Markup("L'entité juridique <b>{name}</b> a été fermée").format(name=offerer.name), "success")
+    return _self_redirect(offerer.id)

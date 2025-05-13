@@ -1378,8 +1378,10 @@ USED_EVENT_DELAY = bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + timedelt
 
 def close_offerer(
     offerer: offerers_models.Offerer,
-    closure_date: date | None,
-    author_user: users_models.User | None,
+    *,
+    is_manual: bool = False,
+    closure_date: date | None = None,
+    author_user: users_models.User | None = None,
     **action_args: typing.Any,
 ) -> None:
     if offerer.isClosed:
@@ -1404,7 +1406,7 @@ def close_offerer(
     remove_pro_role_and_add_non_attached_pro_role(applicants)
 
     if applicants:
-        transactional_mails.send_offerer_closed_email_to_pro(offerer, closure_date)
+        transactional_mails.send_offerer_closed_email_to_pro(offerer, is_manual, closure_date)
 
     db.session.flush()
 
@@ -1458,7 +1460,7 @@ def auto_delete_attachments_on_closed_offerers() -> None:
                 delete_offerer_attachment(user_offerer, author_user=None, comment=comment)
 
 
-def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
+def get_individual_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> list[bookings_models.Booking]:
     now = datetime.utcnow()
     event_subcategory_ids = subcategories.EVENT_SUBCATEGORIES.keys()
 
@@ -1477,16 +1479,21 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
         .all()
     )
 
-    for booking in ongoing_bookings:
-        if booking.stock.offer.subcategoryId in event_subcategory_ids and (
-            now - USED_EVENT_DELAY <= booking.stock.beginningDatetime <= now
-        ):
-            # Do not cancel booking which will become USED in auto_mark_as_used_after_event()
-            logger.info(
-                "Event booking not cancelled when closing offerer",
-                extra={"booking_id": booking.id, "offerer_id": offerer_id},
-            )
-            continue
+    # Do not cancel bookings which will become USED in auto_mark_as_used_after_event()
+    return [
+        booking
+        for booking in ongoing_bookings
+        if not (
+            booking.stock.offer.subcategoryId in event_subcategory_ids
+            and (now - USED_EVENT_DELAY <= booking.stock.beginningDatetime <= now)
+        )
+    ]
+
+
+def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
+    bookings = get_individual_bookings_to_cancel_on_offerer_closure(offerer_id)
+
+    for booking in bookings:
         with atomic():
             try:
                 bookings_api.cancel_booking_on_closed_offerer(booking, author_id=author_id)
@@ -1500,7 +1507,7 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
     db.session.flush()
 
 
-def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
+def get_collective_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> list[educational_models.CollectiveBooking]:
     now = datetime.utcnow()
 
     ongoing_collective_bookings = (
@@ -1522,16 +1529,21 @@ def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: i
         .all()
     )
 
-    for collective_booking in ongoing_collective_bookings:
-        if collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED and (
-            now - USED_EVENT_DELAY <= collective_booking.collectiveStock.endDatetime <= now
-        ):
-            # Do not cancel booking which will become USED in auto_mark_as_used_after_event()
-            logger.info(
-                "Collective booking not cancelled when closing offerer",
-                extra={"collective_booking_id": collective_booking.id, "offerer_id": offerer_id},
-            )
-            continue
+    # Do not cancel bookings which will become USED in auto_mark_as_used_after_event()
+    return [
+        collective_booking
+        for collective_booking in ongoing_collective_bookings
+        if not (
+            collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
+            and (now - USED_EVENT_DELAY <= collective_booking.collectiveStock.endDatetime <= now)
+        )
+    ]
+
+
+def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
+    collective_bookings = get_collective_bookings_to_cancel_on_offerer_closure(offerer_id)
+
+    for collective_booking in collective_bookings:
         try:
             educational_booking_api.cancel_collective_booking(
                 collective_booking,
