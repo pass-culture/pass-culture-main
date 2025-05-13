@@ -15,8 +15,11 @@ from pcapi.utils.string import u_nbsp
 @pytest.mark.usefixtures("db_session")
 class BannerTest:
     # - authenticated user
-    # - user joinloaded with subscription data
-    expected_num_queries_without_subscription_check = 2
+    # - user
+    # - beneficiary fraud checks
+    # - beneficiary fraud reviews
+    # - deposits
+    expected_num_queries_without_subscription_check = 5
     # - all feature flags checked
     expected_num_queries_with_subscription_check = expected_num_queries_without_subscription_check + 1
 
@@ -138,7 +141,7 @@ class BannerTest:
         user = users_factories.UserFactory(age=17)
 
         client.with_token(email=user.email)
-        with assert_num_queries(3):  # authenticated user + joined user + credit v3 FF
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -209,3 +212,13 @@ class BannerTest:
                 "title": f"Débloque tes 150{u_nbsp}€",
             },
         }
+
+    def should_not_return_any_banner_for_free_eligibility(self, client):
+        user = users_factories.EmailValidatedUserFactory(age=16)
+
+        client.with_token(email=user.email)
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
+            response = client.get("/native/v1/banner?isGeolocated=true")
+
+        assert response.status_code == 200
+        assert response.json == {"banner": None}
