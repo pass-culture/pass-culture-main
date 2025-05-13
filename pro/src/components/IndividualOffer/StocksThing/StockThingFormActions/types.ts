@@ -3,4 +3,5 @@ export interface StockFormRowAction {
   label: string
   icon?: string
   disabled?: boolean
+  ref?: React.Ref<HTMLButtonElement>
 }

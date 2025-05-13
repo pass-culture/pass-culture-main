@@ -24,6 +24,7 @@ export const StockThingFormActions = ({
           icon={action.icon}
           onClick={action.callback}
           tooltipContent={!isMobileScreen ? <>{action.label}</> : undefined}
+          ref={action.ref}
         />
       ))}
     </div>

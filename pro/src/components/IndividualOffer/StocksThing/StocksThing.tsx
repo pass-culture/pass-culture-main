@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -73,6 +73,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
+
+  const activeationCodesButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     async function loadStocks() {
@@ -294,6 +296,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       label: "Ajouter des codes d'activation",
       disabled: isDisabled,
       icon: fullCodeIcon,
+      ref: activeationCodesButtonRef,
     })
   }
 
@@ -313,6 +316,13 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     await formik.setFieldValue('quantity', activationCodes.length, true)
     await formik.setFieldValue('activationCodes', activationCodes)
     setIsActivationCodeFormVisible(false)
+    focusDialogTriggerButton()
+  }
+
+  function focusDialogTriggerButton() {
+    setTimeout(() => {
+      activeationCodesButtonRef.current?.focus()
+    })
   }
 
   const readOnlyFields = publishedOfferWithSameEAN
@@ -345,7 +355,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
       <ActivationCodeFormDialog
         onSubmit={submitActivationCodes}
-        onCancel={() => setIsActivationCodeFormVisible(false)}
+        onCancel={() => {
+          setIsActivationCodeFormVisible(false)
+          focusDialogTriggerButton()
+        }}
         today={today}
         minExpirationDate={minExpirationDate}
         isDialogOpen={isActivationCodeFormVisible}
