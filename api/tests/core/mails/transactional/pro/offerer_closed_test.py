@@ -26,7 +26,7 @@ class SendOffererClosedEmailTest:
         bookings_factories.ReimbursedBookingFactory(stock__offer__venue__managingOfferer=offerer)
         educational_factories.ReimbursedCollectiveBookingFactory(offerer=offerer)
 
-        offerer_closed.send_offerer_closed_email_to_pro(offerer, date(2025, 3, 7))
+        offerer_closed.send_offerer_closed_email_to_pro(offerer, False, date(2025, 3, 7))
 
         assert len(mails_testing.outbox) == 2
         for mail, user_offerer in zip(mails_testing.outbox, (user_offerer_1, user_offerer_2)):
@@ -53,7 +53,7 @@ class SendOffererClosedEmailTest:
             )
         )
 
-        offerer_closed.send_offerer_closed_email_to_pro(offerer, date(2025, 3, 17))
+        offerer_closed.send_offerer_closed_email_to_pro(offerer, False, date(2025, 3, 17))
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
@@ -79,7 +79,7 @@ class SendOffererClosedEmailTest:
             )
         )
 
-        offerer_closed.send_offerer_closed_email_to_pro(offerer, date(2025, 3, 17))
+        offerer_closed.send_offerer_closed_email_to_pro(offerer, False, date(2025, 3, 17))
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
@@ -102,7 +102,7 @@ class SendOffererClosedEmailTest:
 
         booking_factory(offerer=offerer)
 
-        offerer_closed.send_offerer_closed_email_to_pro(offerer, date(2025, 3, 17))
+        offerer_closed.send_offerer_closed_email_to_pro(offerer, False, date(2025, 3, 17))
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
@@ -114,3 +114,28 @@ class SendOffererClosedEmailTest:
             "HAS_THING_BOOKINGS": False,
             "HAS_EVENT_BOOKINGS": True,
         }
+
+    def test_send_mail_is_manual(self):
+        offerer = offerers_factories.OffererFactory()
+        user_offerer_1 = offerers_factories.UserOffererFactory(offerer=offerer)
+        user_offerer_2 = offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        offerers_factories.RejectedUserOffererFactory(offerer=offerer)
+
+        bookings_factories.CancelledBookingFactory(stock__offer__venue__managingOfferer=offerer)
+        bookings_factories.ReimbursedBookingFactory(stock__offer__venue__managingOfferer=offerer)
+        educational_factories.ReimbursedCollectiveBookingFactory(offerer=offerer)
+
+        offerer_closed.send_offerer_closed_email_to_pro(offerer, True, None)
+
+        assert len(mails_testing.outbox) == 2
+        for mail, user_offerer in zip(mails_testing.outbox, (user_offerer_1, user_offerer_2)):
+            assert mail["To"] == user_offerer.user.email
+            assert mail["template"] == asdict(TransactionalEmail.OFFERER_CLOSED_MANUALLY.value)
+            assert mail["params"] == {
+                "OFFERER_NAME": offerer.name,
+                "SIREN": offerer.siren,
+                "END_DATE": "",
+                "HAS_THING_BOOKINGS": False,
+                "HAS_EVENT_BOOKINGS": False,
+            }

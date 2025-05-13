@@ -1829,7 +1829,7 @@ class CloseOffererTest:
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
 
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 7), author_user=admin)
 
         assert offerer.isClosed
 
@@ -1838,7 +1838,7 @@ class CloseOffererTest:
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
 
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 7), author_user=admin)
 
         assert offerer.isClosed
         assert offerer.UserOfferers == [user_offerer]
@@ -1852,7 +1852,7 @@ class CloseOffererTest:
         offerer = user_offerer.offerer
         other_user_offerer = offerers_factories.UserOffererFactory(user=user_offerer.user)
 
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 7), author_user=admin)
 
         assert offerer.isClosed
         assert user_offerer.isValidated
@@ -1861,13 +1861,22 @@ class CloseOffererTest:
 
     @patch("pcapi.core.mails.transactional.send_offerer_closed_email_to_pro")
     def test_send_offerer_closed_email(self, mock_send_offerer_closed_email_to_pro):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 7))
+
+        mock_send_offerer_closed_email_to_pro.assert_called_once_with(offerer, False, datetime.date(2025, 3, 7))
+
+    @patch("pcapi.core.mails.transactional.send_offerer_closed_email_to_pro")
+    def test_send_offerer_closed_manually_email(self, mock_send_offerer_closed_email_to_pro):
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
 
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 7), admin)
+        offerers_api.close_offerer(offerer, is_manual=True, author_user=admin)
 
-        mock_send_offerer_closed_email_to_pro.assert_called_once_with(offerer, datetime.date(2025, 3, 7))
+        mock_send_offerer_closed_email_to_pro.assert_called_once_with(offerer, True, None)
 
     def test_action_is_logged(self):
         admin = users_factories.AdminFactory()
@@ -1878,8 +1887,8 @@ class CloseOffererTest:
 
         offerers_api.close_offerer(
             offerer,
-            datetime.date(2025, 3, 7),
-            admin,
+            closure_date=datetime.date(2025, 3, 7),
+            author_user=admin,
             comment="Test",
             modified_info={"tags": {"new_info": "SIREN caduc"}},
         )
@@ -1903,7 +1912,9 @@ class CloseOffererTest:
         offerer = user_offerer.offerer
 
         with pytest.raises(offerers_exceptions.FutureClosureDate):
-            offerers_api.close_offerer(offerer, datetime.date.today() + datetime.timedelta(days=1), admin)
+            offerers_api.close_offerer(
+                offerer, closure_date=datetime.date.today() + datetime.timedelta(days=1), author_user=admin
+            )
 
         assert offerer.isValidated
 
@@ -1928,7 +1939,7 @@ class CloseOffererTest:
         other_booking = bookings_factories.BookingFactory(
             stock=offers_factories.ThingStockFactory(), user=confirmed_booking.user
         )
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 26), admin)
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 26), author_user=admin)
 
         assert offerer.isClosed
 
@@ -1979,7 +1990,7 @@ class CloseOffererTest:
         )
         other_booking = bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory())
 
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 20), None)
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 20))
 
         assert offerer.isClosed
 
@@ -2040,7 +2051,7 @@ class CloseOffererTest:
         )
         other_booking = educational_factories.PendingCollectiveBookingFactory()
 
-        offerers_api.close_offerer(offerer, datetime.date(2025, 3, 20), None)
+        offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 20))
 
         assert offerer.isClosed
 

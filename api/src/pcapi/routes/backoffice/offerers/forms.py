@@ -294,6 +294,24 @@ class BatchOffererRejectionForm(empty_forms.BatchForm, OffererRejectionForm):
     pass
 
 
+class OffererClosureForm(FlaskForm):
+    comment = fields.PCCommentField("Motif de la fermeture (obligatoire)")
+    zendesk_id = fields.PCOptIntegerField(
+        "N° de ticket Zendesk",
+        validators=[
+            wtforms.validators.Optional(),
+            wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
+        ],
+    )
+    drive_link = fields.PCOptStringField(
+        "Document Drive",
+        validators=[
+            wtforms.validators.Optional(),
+            wtforms.validators.URL(allow_ip=False, message="Le document doit être une URL"),
+        ],
+    )
+
+
 class CommentAndTagOffererForm(OptionalCommentForm):
     tags = fields.PCQuerySelectMultipleField(
         "Tags Homologation",

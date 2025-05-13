@@ -130,7 +130,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                 elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
                     offerers_api.close_offerer(
                         offerer,
-                        siren_info.closure_date,
+                        closure_date=siren_info.closure_date,
                         author_user=None,
                         **action_kwargs,
                     )

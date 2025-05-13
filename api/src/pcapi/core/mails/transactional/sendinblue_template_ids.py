@@ -131,6 +131,7 @@ class TransactionalEmail(Enum):
     OFFERER_ATTACHMENT_VALIDATION = models.TemplatePro(id_prod=2, id_not_prod=2)
     OFFERER_ATTACHMENT_REJECTION = models.TemplatePro(id_prod=9, id_not_prod=9)
     OFFERER_CLOSED = models.TemplatePro(id_prod=123, id_not_prod=61)
+    OFFERER_CLOSED_MANUALLY = models.TemplatePro(id_prod=235, id_not_prod=65)
     REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION = models.TemplatePro(id_prod=16, id_not_prod=16)
     REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO = models.TemplatePro(id_prod=36, id_not_prod=24)
     REMINDER_OFFER_CREATION_5_DAYS_AFTER_TO_PRO = models.TemplatePro(

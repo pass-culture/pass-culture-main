@@ -14,7 +14,7 @@ from pcapi.utils.date import get_date_formatted_for_email
 
 
 def get_offerer_closed_email_data(
-    offerer: offerers_models.Offerer, closure_date: datetime.date | None
+    offerer: offerers_models.Offerer, is_manual: bool, closure_date: datetime.date | None
 ) -> models.TransactionalEmailData:
     bookings_subcategory_ids = [
         entities[0]
@@ -48,8 +48,10 @@ def get_offerer_closed_email_data(
             offerer.id, include_used=True
         )
 
+    template = TransactionalEmail.OFFERER_CLOSED_MANUALLY if is_manual else TransactionalEmail.OFFERER_CLOSED
+
     return models.TransactionalEmailData(
-        template=TransactionalEmail.OFFERER_CLOSED.value,
+        template=template.value,
         params={
             "OFFERER_NAME": offerer.name,
             "SIREN": offerer.siren,
@@ -60,8 +62,10 @@ def get_offerer_closed_email_data(
     )
 
 
-def send_offerer_closed_email_to_pro(offerer: offerers_models.Offerer, closure_date: datetime.date | None) -> None:
+def send_offerer_closed_email_to_pro(
+    offerer: offerers_models.Offerer, is_manual: bool, closure_date: datetime.date | None
+) -> None:
     pro_users = users_repository.get_users_with_validated_attachment(offerer)
-    data = get_offerer_closed_email_data(offerer, closure_date)
+    data = get_offerer_closed_email_data(offerer, is_manual, closure_date)
     for pro_user in pro_users:
         mails.send(recipients=[pro_user.email], data=data)

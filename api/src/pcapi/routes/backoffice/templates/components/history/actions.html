@@ -74,7 +74,10 @@
               {% set linked_incident_id = action.extraData.get('linked_incident_id') %}
               {% if linked_incident_id and "/finance/incidents/" not in request.path %}
                 {% set link = url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=linked_incident_id) %}
-                {% if request.url != link %}<a href="{{ link }}">Voir l'incident #{{ linked_incident_id }}</a>{% endif %}
+                {% if request.url != link %}
+                  <a href="{{ link }}"
+                     class="link-primary">Voir l'incident #{{ linked_incident_id }}</a>
+                {% endif %}
               {% endif %}
               {% set provider_id = action.extraData.get('provider_id') %}
               {% if provider_id %}{{ action.extraData.get("provider_name") | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
@@ -84,6 +87,16 @@
                 {{ links.build_ds_application_external_link(ds_dossier_id, ds_procedure_id, "Dossier Démarches Simplifiées n°") }}
                 {% set ds_status = action.extraData.get("ds_status") %}
                 {% if ds_status %}{{ action.extraData.get("ds_status") | format_dms_application_status_badge }}{% endif %}
+              {% endif %}
+              {% set zendesk_id = action.extraData.get('zendesk_id') %}
+              {% if zendesk_id %}N° de ticket Zendesk : {{ links.build_zendesk_ticket_external_link(zendesk_id) }}{% endif %}
+              {% set drive_link = action.extraData.get('drive_link') %}
+              {% if drive_link %}
+                <br />
+                Document Drive :
+                <a href="{{ drive_link }}"
+                   target="_blank"
+                   class="link-primary">{{ drive_link }} <i class="bi bi-box-arrow-up-right"></i></a>
               {% endif %}
             {% endif %}
           </td>

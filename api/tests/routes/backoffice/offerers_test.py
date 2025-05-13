@@ -327,7 +327,7 @@ class GetOffererTest(GetEndpointHelper):
 
         @property
         def path(self):
-            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.NEW)
+            offerer = offerers_factories.NotValidatedOffererFactory()
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
     class PendingButtonTest(button_helpers.ButtonHelper):
@@ -336,7 +336,7 @@ class GetOffererTest(GetEndpointHelper):
 
         @property
         def path(self):
-            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.NEW)
+            offerer = offerers_factories.NotValidatedOffererFactory()
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
     class RejectButtonTest(button_helpers.ButtonHelper):
@@ -345,8 +345,26 @@ class GetOffererTest(GetEndpointHelper):
 
         @property
         def path(self):
-            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.NEW)
+            offerer = offerers_factories.NotValidatedOffererFactory()
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
+    class CloseButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.CLOSE_OFFERER
+        button_label = "Fermer l'entité juridique"
+
+        @property
+        def path(self):
+            offerer = offerers_factories.OffererFactory()
+            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
+        def test_no_button_when_closed(self, authenticated_client):
+            offerer = offerers_factories.ClosedOffererFactory()
+            path = url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
+            response = authenticated_client.get(path)
+            assert response.status_code == 200
+
+            assert self.button_label not in response.data.decode("utf-8")
 
 
 class ActivateOrDeactivateOffererHelper(PostEndpointHelper):
@@ -1415,6 +1433,34 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Type"] == "Entité juridique rejetée"
         assert rows[0]["Commentaire"] == "Raison : Non réponse aux questionnaires Relancé 3 fois"
+        assert rows[0]["Auteur"] == bo_user.full_name
+
+    def test_get_offerer_closed_action(self, authenticated_client, legit_user):
+        bo_user = users_factories.AdminFactory()
+        offerer = offerers_factories.ClosedOffererFactory()
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.OFFERER_CLOSED,
+            authorUser=bo_user,
+            offerer=offerer,
+            comment="Demande de l'acteur culturel avant arrêt de son activité",
+            extraData={"zendesk_id": 12345, "drive_link": "https://drive.example.com/path/to/document"},
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Type"] == "Entité juridique fermée"
+        assert rows[0]["Commentaire"] == (
+            "Demande de l'acteur culturel avant arrêt de son activité"
+            "N° de ticket Zendesk : 12345 Document Drive : https://drive.example.com/path/to/document"
+        )
         assert rows[0]["Auteur"] == bo_user.full_name
 
 
@@ -4966,3 +5012,104 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
+
+
+class GetCloseOffererFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_close_offerer_form"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.CLOSE_OFFERER
+
+    # session + current user + offerer + individual bookings + collective bookings
+    expected_num_queries = 5
+
+    def test_get_close_offerer_form_with_no_ongoing_booking(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        db.session.expire(offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        html_parser.assert_no_alert(response.data)
+
+    def test_get_close_offerer_form_with_ongoing_bookings(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        bookings_factories.BookingFactory.create_batch(2, stock__offer__venue__managingOfferer=offerer)
+        educational_factories.CollectiveBookingFactory(offerer=offerer)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        db.session.expire(offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == (
+            "La fermeture de l'entité juridique entraînera l'annulation automatique de :"
+            "2 réservations individuelles"
+            "1 réservation collective"
+        )
+
+
+class CloseOffererTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.close_offerer"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.CLOSE_OFFERER
+
+    def test_close_offerer(self, legit_user, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"comment": "Test", "zendesk_id": "12345", "drive_link": "https://drive.example.com/test"},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'entité juridique {offerer.name} a été fermée"
+
+        db.session.refresh(user_offerer)
+        assert offerer.isClosed
+        assert offerer.isActive
+        assert not user_offerer.user.has_pro_role
+        assert user_offerer.user.has_non_attached_pro_role
+
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.OFFERER_CLOSED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId is None
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.comment == "Test"
+        assert action.extraData["zendesk_id"] == 12345
+        assert action.extraData["drive_link"] == "https://drive.example.com/test"
+
+    @pytest.mark.parametrize(
+        "validation_status",
+        [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.REJECTED, ValidationStatus.CLOSED],
+    )
+    def test_close_offerer_not_validated(self, authenticated_client, validation_status):
+        offerer = offerers_factories.OffererFactory(validationStatus=validation_status)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"comment": "Test", "zendesk_id": "12345", "drive_link": "https://drive.example.com/test"},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Seule une entité juridique validée peut être fermée"
+
+        db.session.refresh(offerer)
+        assert offerer.validationStatus == validation_status
+
+    def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, offerer_id=1)
+
+        assert response.status_code == 404

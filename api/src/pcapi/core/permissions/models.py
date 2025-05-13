@@ -63,6 +63,7 @@ class Permissions(enum.Enum):
     MULTIPLE_OFFERS_ACTIONS = "opérations sur plusieurs offres"
 
     VALIDATE_OFFERER = "gérer la validation des entités juridiques et des rattachements"
+    CLOSE_OFFERER = "fermer une entité juridique"
 
     READ_TAGS = "visualiser les tags entités juridiques, offres et partenaires culturels"
     MANAGE_OFFERER_TAG = "gérer les tags entité juridique"
