@@ -2,7 +2,10 @@ import dataclasses
 import decimal
 import pathlib
 
+from geoalchemy2.elements import WKBElement
+from geoalchemy2.shape import to_shape
 import pytest
+from shapely.geometry.base import BaseGeometry
 
 from pcapi.core.geography import api
 from pcapi.core.geography import models
@@ -30,39 +33,13 @@ class ImportIrisTest:
     def test_import_iris(self):
         path = DATA_DIR / "iris_min.7z"
         api.import_iris_from_7z(str(path))
-        assert db.session.query(models.IrisFrance).count() == 6
-
-
-def test_to_wkt_polygon():
-    coordinates = [
-        [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]],
-        [[20, 30], [35, 35], [30, 20], [20, 30]],
-    ]
-    geom = FakeFionaGeometry("Polygon", coordinates)
-    transformer = FakeTransformer()
-
-    wkt = api._to_wkt(geom, transformer)
-
-    assert wkt == "POLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))"
-
-
-def test_to_wkt_multipolygon():
-    coordinates = [
-        [[[40, 40], [20, 45], [45, 30], [40, 40]]],
-        [
-            [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]],
-            [[30, 20], [20, 15], [20, 25], [30, 20]],
-        ],
-    ]
-    geom = FakeFionaGeometry("MultiPolygon", coordinates)
-    transformer = FakeTransformer()
-
-    wkt = api._to_wkt(geom, transformer)
-
-    assert (
-        wkt
-        == "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 10 30, 10 10, 30 5, 45 20, 20 35), (30 20, 20 15, 20 25, 30 20)))"
-    )
+        iris = db.session.query(models.IrisFrance).order_by(models.IrisFrance.code).all()
+        assert len(iris) == 6
+        iris_codes = [iri.code for iri in iris]
+        assert iris_codes == ["975010000", "975020101", "975020102", "977010101", "977010102", "977010103"]
+        assert isinstance(iris[0].shape, WKBElement)  # Assert that the shape stored is a PostGIS spatial object
+        geom = to_shape(iris[0].shape)
+        assert isinstance(geom, BaseGeometry)  # Assert that it converts to a Shapely geometry
 
 
 def test_compute_distance():
