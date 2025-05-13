@@ -645,14 +645,17 @@ def edit_collective_offer_public(
     new_values: dict,
     offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
-    if not offer.isEditable:
+    if not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active() and not offer.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
 
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
 
     collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
-    if collective_stock_unique_booking is not None:
+    if (
+        not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active()
+        and collective_stock_unique_booking is not None
+    ):
         if collective_stock_unique_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
             # if the booking is CONFIRMED, we can only edit the price related fields and the price cannot be increased
             allowed_fields_for_confirmed_booking = {"price", "priceDetail", "numberOfTickets"}
@@ -785,6 +788,86 @@ def edit_collective_offer_public(
         )
     )
     return offer
+
+
+PATCH_INSTITUTION_FIELDS_PUBLIC = ("educationalInstitutionId", "educationalInstitution")
+PATCH_DATES_FIELDS_PUBLIC = ("startDatetime", "endDatetime", "bookingLimitDatetime")
+PATCH_DISCOUNT_FIELDS_PUBLIC = ("numberOfTickets", "priceDetail")
+
+# fields of public schema PatchCollectiveOfferBodyModel that correspond to CAN_EDIT_DETAILS
+# i.e all the fields except the ones that correspond to other actions
+# "price" can correspond to CAN_EDIT_DETAILS or CAN_EDIT_DISCOUNT an is processed separately
+PATCH_DETAILS_FIELDS_PUBLIC = tuple(
+    public_api_collective_offers_serialize.PatchCollectiveOfferBodyModel.__fields__.keys()
+    - {
+        *PATCH_INSTITUTION_FIELDS_PUBLIC,
+        *PATCH_DATES_FIELDS_PUBLIC,
+        *PATCH_DISCOUNT_FIELDS_PUBLIC,
+        "price",
+    }
+)
+
+
+def _check_allowed_action(
+    *,
+    offer: educational_models.CollectiveOffer,
+    edited_fields: typing.Iterable[str],
+    action_fields: typing.Iterable[str],
+    allowed_action: educational_models.CollectiveOfferAllowedAction,
+) -> None:
+    is_editing_fields = any(field in edited_fields for field in action_fields)
+    if is_editing_fields:
+        validation.check_collective_offer_action_is_allowed(offer=offer, action=allowed_action, for_public_api=True)
+
+
+def check_edit_collective_offer_public_allowed_action(
+    offer: educational_models.CollectiveOffer, new_values: dict
+) -> None:
+    edited_fields = new_values.keys()
+
+    _check_allowed_action(
+        offer=offer,
+        edited_fields=edited_fields,
+        action_fields=PATCH_INSTITUTION_FIELDS_PUBLIC,
+        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+    )
+
+    _check_allowed_action(
+        offer=offer,
+        edited_fields=edited_fields,
+        action_fields=PATCH_DATES_FIELDS_PUBLIC,
+        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+    )
+
+    _check_allowed_action(
+        offer=offer,
+        edited_fields=edited_fields,
+        action_fields=PATCH_DISCOUNT_FIELDS_PUBLIC,
+        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+    )
+
+    _check_allowed_action(
+        offer=offer,
+        edited_fields=edited_fields,
+        action_fields=PATCH_DETAILS_FIELDS_PUBLIC,
+        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+    )
+
+    if "price" in new_values:
+        price: float = new_values["price"]
+
+        if price > offer.collectiveStock.price:
+            validation.check_collective_offer_action_is_allowed(
+                offer=offer,
+                action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+                for_public_api=True,
+            )
+        else:
+            validation.check_collective_offer_action_is_allowed(
+                offer=offer,
+                action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+                for_public_api=True,
+            )
 
 
 def publish_collective_offer(

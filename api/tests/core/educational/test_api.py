@@ -12,6 +12,7 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import stock as educational_api_stock
 import pcapi.core.educational.api.institution as institution_api
+from pcapi.core.educational.api.offer import PATCH_DETAILS_FIELDS_PUBLIC
 from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
@@ -725,3 +726,36 @@ class SynchroniseInstitutionsGeolocationTest:
         assert institution_with_values.longitude == decimal.Decimal("2.3488000")
         assert institution_not_present.latitude is None
         assert institution_not_present.longitude is None
+
+
+class CheckAllowedActionTest:
+    def test_patch_details_fields_public(self):
+        # if the public api schema PatchCollectiveOfferBodyModel is updated, we need to check PATCH_DETAILS_FIELDS_PUBLIC
+        # which is computed from the list of fields of the schema
+        # e.g if we add a new field, we need to make sure that the field coresponds to the allowed action CAN_EDIT_DETAILS
+        # if not, it must be manually removed from PATCH_DETAILS_FIELDS_PUBLIC (and checked separately)
+
+        expected = {
+            "name",
+            "description",
+            "venueId",
+            "formats",
+            "bookingEmails",
+            "contactEmail",
+            "contactPhone",
+            "domains",
+            "students",
+            "offerVenue",
+            "interventionArea",
+            "durationMinutes",
+            "audioDisabilityCompliant",
+            "mentalDisabilityCompliant",
+            "motorDisabilityCompliant",
+            "visualDisabilityCompliant",
+            "isActive",
+            "imageCredit",
+            "imageFile",
+            "nationalProgramId",
+        }
+        assert len(PATCH_DETAILS_FIELDS_PUBLIC) == len(expected)
+        assert set(PATCH_DETAILS_FIELDS_PUBLIC) == expected

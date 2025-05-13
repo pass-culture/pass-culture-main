@@ -22,11 +22,11 @@ import tests
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
 
-STATUSES_NOT_ALLOWING_DUPLIATE = (educational_models.CollectiveOfferDisplayedStatus.DRAFT,)
+STATUSES_NOT_ALLOWING_DUPLICATE = (educational_models.CollectiveOfferDisplayedStatus.DRAFT,)
 
-STATUSES_ALLOWING_DUPLIATE = tuple(
+STATUSES_ALLOWING_DUPLICATE = tuple(
     set(educational_models.CollectiveOfferDisplayedStatus)
-    - {*STATUSES_NOT_ALLOWING_DUPLIATE, educational_models.CollectiveOfferDisplayedStatus.HIDDEN}
+    - {*STATUSES_NOT_ALLOWING_DUPLICATE, educational_models.CollectiveOfferDisplayedStatus.HIDDEN}
 )
 
 
@@ -175,7 +175,7 @@ class Returns200Test:
             "location": None,
         }
 
-    @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLIATE)
+    @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLICATE)
     def test_duplicate_allowed_action(self, client, status):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -200,7 +200,7 @@ class Returns200Test:
         duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.name == offer.name
 
-    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_DUPLIATE)
+    @pytest.mark.parametrize("status", STATUSES_NOT_ALLOWING_DUPLICATE)
     def test_duplicate_unallowed_action(self, client, status):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")

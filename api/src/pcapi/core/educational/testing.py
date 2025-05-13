@@ -42,6 +42,37 @@ STATUSES_NOT_ALLOWING_EDIT_DETAILS_TEMPLATE = (
     models.CollectiveOfferDisplayedStatus.ARCHIVED,
 )
 
+STATUSES_ALLOWING_EDIT_DATES = (
+    models.CollectiveOfferDisplayedStatus.DRAFT,
+    models.CollectiveOfferDisplayedStatus.PUBLISHED,
+    models.CollectiveOfferDisplayedStatus.PREBOOKED,
+    models.CollectiveOfferDisplayedStatus.EXPIRED,
+)
+
+STATUSES_NOT_ALLOWING_EDIT_DATES = tuple(
+    set(models.CollectiveOfferDisplayedStatus)
+    - {*STATUSES_ALLOWING_EDIT_DATES, models.CollectiveOfferDisplayedStatus.HIDDEN}
+)
+
+STATUSES_ALLOWING_EDIT_INSTITUTION = (models.CollectiveOfferDisplayedStatus.DRAFT,)
+
+STATUSES_NOT_ALLOWING_EDIT_INSTITUTION = tuple(
+    set(models.CollectiveOfferDisplayedStatus)
+    - {*STATUSES_ALLOWING_EDIT_INSTITUTION, models.CollectiveOfferDisplayedStatus.HIDDEN}
+)
+
+STATUSES_ALLOWING_EDIT_DISCOUNT = (
+    models.CollectiveOfferDisplayedStatus.DRAFT,
+    models.CollectiveOfferDisplayedStatus.PUBLISHED,
+    models.CollectiveOfferDisplayedStatus.PREBOOKED,
+    models.CollectiveOfferDisplayedStatus.BOOKED,
+)
+
+STATUSES_NOT_ALLOWING_EDIT_DISCOUNT = tuple(
+    set(models.CollectiveOfferDisplayedStatus)
+    - {*STATUSES_ALLOWING_EDIT_DISCOUNT, models.CollectiveOfferDisplayedStatus.HIDDEN}
+)
+
 STATUSES_ALLOWING_CREATE_BOOKABLE_OFFER = (
     models.CollectiveOfferDisplayedStatus.PUBLISHED,
     models.CollectiveOfferDisplayedStatus.HIDDEN,

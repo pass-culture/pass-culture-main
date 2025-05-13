@@ -13,6 +13,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
@@ -297,9 +298,6 @@ def patch_collective_offer_public(
                 errors={field: ["Ce champ peut ne pas être présent mais ne peut pas être null."]}, status_code=400
             )
 
-    if "educationalPriceDetail" in new_values:
-        new_values["priceDetail"] = new_values.pop("educationalPriceDetail")
-
     # access control
     try:
         offer = educational_repository.get_collective_offer_by_id(offer_id)
@@ -318,6 +316,19 @@ def patch_collective_offer_public(
             status_code=403,
         )
 
+    # check allowed actions
+    if feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active():
+        try:
+            educational_api_offer.check_edit_collective_offer_public_allowed_action(offer=offer, new_values=new_values)
+        except educational_exceptions.CollectiveOfferForbiddenAction:
+            raise api_errors.ApiErrors(
+                errors={
+                    "global": f"Cette action n'est pas autorisée car le statut de l'offre est {offer.displayedStatus.value}"
+                },
+                status_code=400,
+            )
+
+    # check new venueId and update offer venue
     if new_values.get("venueId"):
         venue = offerers_repository.find_venue_and_provider_by_id(new_values["venueId"])
         if not venue:

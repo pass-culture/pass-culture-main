@@ -958,33 +958,48 @@ class CollectiveOffer(
         logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
         return CollectiveOfferDisplayedStatus.PUBLISHED
 
-    @property
-    def allowedActions(self) -> list[CollectiveOfferAllowedAction]:
+    def _get_allowed_actions(self) -> tuple[CollectiveOfferAllowedAction, ...]:
         displayed_status = self.displayedStatus
         allowed_actions = ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[displayed_status]
-        not_allowed: set[CollectiveOfferAllowedAction] = set()
 
         # an offer that has ended more than 48 hours ago cannot have its price edited or be canceled
         if displayed_status == CollectiveOfferDisplayedStatus.ENDED and self.is_two_days_past_end():
-            not_allowed = not_allowed.union(
-                {
-                    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-                    CollectiveOfferAllowedAction.CAN_CANCEL,
-                }
-            )
+            not_allowed = {
+                CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+                CollectiveOfferAllowedAction.CAN_CANCEL,
+            }
+            return tuple(action for action in allowed_actions if action not in not_allowed)
 
-        # an offer created with the public API can only be edited with the API
+        return allowed_actions
+
+    @property
+    def allowedActionsForPublicApi(self) -> list[CollectiveOfferAllowedAction]:
+        """The list of allowed actions in the context of public API"""
+
+        # an offer created in PC Pro cannot be edited with the public API
+        if not self.isPublicApi:
+            return []
+
+        return list(self._get_allowed_actions())
+
+    @property
+    def allowedActions(self) -> list[CollectiveOfferAllowedAction]:
+        """The list of allowed actions in the context of PC Pro"""
+
+        allowed_actions = self._get_allowed_actions()
+
+        # an offer created with the public API cannot be edited in PC Pro
         if self.isPublicApi:
-            not_allowed = not_allowed.union(
-                {
-                    CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-                    CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-                    CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
-                    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-                }
-            )
+            not_allowed = {
+                CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+                CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+                CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+                CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+            }
 
-        return [action for action in allowed_actions if action not in not_allowed]
+            return [action for action in allowed_actions if action not in not_allowed]
+
+        return list(allowed_actions)
 
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
