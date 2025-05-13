@@ -922,7 +922,7 @@ class UbbleWorkflowV1Test:
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        db_session.refresh(fraud_check)
+        db.session.refresh(fraud_check)
 
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
@@ -967,7 +967,7 @@ class UbbleWorkflowV1Test:
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        db_session.refresh(fraud_check)
+        db.session.refresh(fraud_check)
 
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
