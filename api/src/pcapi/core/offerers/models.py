@@ -764,6 +764,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
             .join(Offerer, Offerer.id == Venue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
+                sa.not_(Offerer.isClosed),
                 Venue.isPermanent.is_(True),
                 Venue.isVirtual.is_(False),
                 Venue.id == self.id,
@@ -783,6 +784,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
             .join(Offerer, Offerer.id == AliasedVenue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
+                sa.not_(Offerer.isClosed),
                 AliasedVenue.isPermanent.is_(True),
                 AliasedVenue.isVirtual.is_(False),
                 AliasedVenue.id == cls.id,

@@ -631,3 +631,12 @@ class VenueHasPartnerPageTest:
         assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == True).all() == [
             partner_page_venue
         ]
+
+    def test_closed_offerer_has_no_partner_page(self):
+        offerer = factories.ClosedOffererFactory()
+        venue = factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
+        offers_factories.OfferFactory(venue=venue)
+
+        assert venue.has_partner_page is False
+        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == False).all() == [venue]
+        assert db.session.query(models.Venue).filter(models.Venue.has_partner_page == True).count() == 0

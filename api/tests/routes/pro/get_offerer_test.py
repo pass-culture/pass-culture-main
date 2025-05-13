@@ -12,6 +12,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -679,6 +680,8 @@ class GetOffererTest:
     def test_closed_offerer(self, client):
         offerer = offerers_factories.ClosedOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
+        offers_factories.OfferFactory(venue=venue)
 
         client = client.with_session_auth(user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
@@ -689,21 +692,31 @@ class GetOffererTest:
         # closed => similar to validated then suspended
         assert response.json["isActive"] is False
         assert response.json["isValidated"] is True
+        assert response.json["hasPartnerPage"] is False
+        assert response.json["managedVenues"][0]["hasPartnerPage"] is False
 
     @pytest.mark.parametrize(
-        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
+        "validation_status,active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
         [
-            (False, True, False, True, False),
-            (True, False, False, True, False),
-            (True, True, True, True, False),
-            (True, True, False, False, False),
-            (True, True, False, True, True),
+            (ValidationStatus.VALIDATED, False, True, False, True, False),
+            (ValidationStatus.VALIDATED, True, False, False, True, False),
+            (ValidationStatus.VALIDATED, True, True, True, True, False),
+            (ValidationStatus.VALIDATED, True, True, False, False, False),
+            (ValidationStatus.VALIDATED, True, True, False, True, True),
+            (ValidationStatus.CLOSED, True, True, False, True, False),
         ],
     )
     def test_offerer_has_partner_page(
-        self, client, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, has_partner_page
+        self,
+        client,
+        validation_status,
+        active_offerer,
+        permanent_venue,
+        virtual_venue,
+        at_least_one_offer,
+        has_partner_page,
     ):
-        offerer = offerers_factories.OffererFactory(isActive=active_offerer)
+        offerer = offerers_factories.OffererFactory(validationStatus=validation_status, isActive=active_offerer)
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
         if virtual_venue:
