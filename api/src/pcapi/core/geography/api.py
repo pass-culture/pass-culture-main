@@ -5,9 +5,11 @@ import pathlib
 import tempfile
 import typing
 
-import fiona
 import py7zr
 import pyproj
+import shapefile
+from shapely.geometry import shape as shapely_shape
+from shapely.ops import transform as shapely_transform
 
 from pcapi.models import db
 
@@ -39,44 +41,37 @@ def import_iris_from_7z(path: str) -> None:
 
 
 def import_iris_from_shp_file(path: pathlib.Path) -> int:
-    with fiona.open(path) as shapefile:
-        count = 0
-        transformer = pyproj.Transformer.from_crs(
-            shapefile.crs,
-            constants.WGS_SPATIAL_REFERENCE_IDENTIFIER,
+    sf = shapefile.Reader(str(path))
+    fields = [field[0] for field in sf.fields[1:]]  # skip DeletionFlag
+    count = 0
+
+    # Source projection from .prj file
+    prj_path = path.with_suffix(".prj")
+    if not prj_path.exists():
+        raise ValueError(f"Missing .prj file for {path}")
+
+    with open(prj_path) as f:
+        prj_text = f.read()
+        source_crs = pyproj.CRS.from_wkt(prj_text)
+
+    target_crs = pyproj.CRS.from_epsg(constants.WGS_SPATIAL_REFERENCE_IDENTIFIER)
+    transformer = pyproj.Transformer.from_crs(source_crs, target_crs, always_xy=True)
+
+    project = lambda x, y: transformer.transform(x, y)
+
+    for sr in sf.shapeRecords():
+        geom = shapely_shape(sr.shape.__geo_interface__)
+        reprojected = shapely_transform(project, geom)
+        props = dict(zip(fields, sr.record))
+
+        iris = models.IrisFrance(
+            code=props["CODE_IRIS"],
+            shape=reprojected.wkt,
         )
-        for feature in shapefile.values():
-            iris = models.IrisFrance(
-                code=feature.properties["CODE_IRIS"],
-                shape=_to_wkt(feature.geometry, transformer),
-            )
-            db.session.add(iris)
-            count += 1
+        db.session.add(iris)
+        count += 1
+
     return count
-
-
-# If this function ever gets too complex, we could use the `geomet`
-# Python package instead.
-def _to_wkt(geometry: fiona.Geometry, transformer: pyproj.Transformer) -> str:
-    def _polygon(rings: list) -> str:
-        s = ""
-        for ring in rings:
-            s += "("
-            for point in ring:
-                lat, lon = transformer.transform(*point)
-                # /!\ Order must be the same as in `get_iris_from_coordinates()`.
-                s += f"{lon} {lat}, "
-            s = s.rstrip(", ")
-            s += "), "
-        s = s.rstrip(", ")
-        return s
-
-    if geometry.type == "Polygon":
-        return "POLYGON (%s)" % _polygon(geometry.coordinates)
-    if geometry.type == "MultiPolygon":
-        s = ", ".join(["(%s)" % _polygon(polygon) for polygon in geometry.coordinates])
-        return f"MULTIPOLYGON ({s})"
-    raise ValueError(f"Unsupported type of geometry: {geometry.type}")
 
 
 def compute_distance(first_point: models.Coordinates, second_point: models.Coordinates) -> float:
