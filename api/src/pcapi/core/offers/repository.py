@@ -345,8 +345,8 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 models.Product.last_30_days_booking,
                 models.Product.thumbCount,
                 models.Product.durationMinutes,
+                models.Product.likesCount,
             )
-            .options(sa_orm.with_expression(models.Product.likesCount, get_product_reaction_count_subquery()))
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.product).selectinload(models.Product.artists))
