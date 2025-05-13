@@ -324,6 +324,18 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
+    @staticmethod
+    def _get_default_json(venue_id: int, subcategory_id: str) -> dict:
+        return {
+            "venueId": venue_id,
+            "name": "Mon offre",
+            "subcategoryId": subcategory_id,
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+        }
+
     def test_fail_if_venue_is_not_found(self, client):
         # Given
         offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -345,277 +357,62 @@ class Returns400Test:
         # Then
         assert response.status_code == 404
 
-    def test_fail_if_name_too_long(self, client):
-        # Given
+    @pytest.mark.parametrize(
+        "input_json,expected_json",
+        [
+            ({"name": "too long" * 30}, {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]}),
+            (
+                {
+                    "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
+                    "subcategoryId": subcategories.LIVRE_PAPIER.id,
+                },
+                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+            (
+                {"subcategoryId": subcategories.ACHAT_INSTRUMENT.id, "url": "http://legrandj.eu"},
+                {"url": ['Une offre de sous-catégorie "Achat instrument" ne peut contenir un champ `url`']},
+            ),
+            ({"url": "missing.something"}, {"url": ['L\'URL doit commencer par "http://" ou "https://"']}),
+            ({"url": "https://missing"}, {"url": ['L\'URL doit terminer par une extension (ex. ".fr")']}),
+            (
+                {"externalTicketOfficeUrl": "missing.something"},
+                {"externalTicketOfficeUrl": ['L\'URL doit commencer par "http://" ou "https://"']},
+            ),
+            (
+                {"externalTicketOfficeUrl": "https://missing"},
+                {"externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")']},
+            ),
+            ({"subcategoryId": "ART_PRIMITIF"}, {"subcategory": ["La sous-catégorie de cette offre est inconnue"]}),
+            (
+                {"subcategoryId": "OEUVRE_ART"},
+                {"subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]},
+            ),
+            (
+                {"subcategoryId": subcategories.FESTIVAL_ART_VISUEL.id},
+                {"offer": ["Une offre qui a un ticket retirable doit avoir un type de retrait renseigné"]},
+            ),
+            (
+                {"subcategoryId": subcategories.FESTIVAL_ART_VISUEL.id, "withdrawalType": "no_ticket"},
+                {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
+            ),
+            (
+                {"subcategoryId": subcategories.FESTIVAL_ART_VISUEL.id, "withdrawalType": "in_app"},
+                {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]},
+            ),
+        ],
+    )
+    def test_fail_if_json_incorrect(self, client, input_json, expected_json):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "too long" * 30,
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "withdrawalType": "no_ticket",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        data = self._get_default_json(venue.id, subcategories.SPECTACLE_REPRESENTATION.id)
+        data.update(input_json)
 
-        # Then
-        assert response.status_code == 400
-        assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
-
-    def test_fail_if_name_contains_ean(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "withdrawalType": "no_ticket",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
-
-    def test_fail_if_unknown_subcategory(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "An unacceptable name",
-            "subcategoryId": "TOTO",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
-
-    @pytest.mark.parametrize("subcategory_id", ["OEUVRE_ART", "BON_ACHAT_INSTRUMENT"])
-    def test_fail_if_inactive_subcategory(self, client, subcategory_id):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "A cool offer name",
-            "subcategoryId": subcategory_id,
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["subcategory"] == [
-            "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
-        ]
-
-    def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, client):
-        # Given
-        venue = offerers_factories.VirtualVenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "subcategoryId": subcategories.ACHAT_INSTRUMENT.id,
-            "name": "Le grand jeu",
-            "url": "http://legrandj.eu",
-            "venueId": venue.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["url"] == [
-            'Une offre de sous-catégorie "Achat instrument" ne peut contenir un champ `url`'
-        ]
-
-    def should_fail_when_url_has_no_scheme(self, client):
-        # Given
-        venue = offerers_factories.VirtualVenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Les lièvres pas malins",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "url": "missing.something",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
-
-    def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, client):
-        # Given
-        venue = offerers_factories.VirtualVenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Les lièvres pas malins",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "externalTicketOfficeUrl": "missing.something",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit commencer par "http://" ou "https://"']
-
-    def should_fail_when_url_has_no_host(self, client):
-        # Given
-        venue = offerers_factories.VirtualVenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Les lièvres pas malins",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "url": "https://missing",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["url"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
-
-    def should_fail_when_externalTicketOfficeUrl_has_no_host(self, client):
-        # Given
-        venue = offerers_factories.VirtualVenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Les lièvres pas malins",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "externalTicketOfficeUrl": "https://missing",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
-
-    def test_non_withdrawable_event_offer_cant_have_withdrawal(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Dofus",
-            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
-            "withdrawalType": "no_ticket",
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-
-    def test_withdrawable_event_offer_must_have_booking_contact(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Vernissage",
-            "subcategoryId": subcategories.FESTIVAL_ART_VISUEL.id,
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-
-    def test_withdrawalable_event_cannot_be_in_app_mode(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
-        # When
-        data = {
-            "venueId": venue.id,
-            "name": "Vernissage",
-            "subcategoryId": subcategories.CONCERT.id,
-            "mentalDisabilityCompliant": False,
-            "audioDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "withdrawalType": "in_app",
-        }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]}
+        assert response.json == expected_json
 
 
 @pytest.mark.usefixtures("db_session")

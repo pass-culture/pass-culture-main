@@ -412,6 +412,18 @@ class Returns400Test:
         for key in forbidden_keys:
             assert key in response.json
 
+    def when_trying_to_set_a_description_way_to_long(self, client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CARTE_MUSEE.id, name="New name", url="http://example.com/offer"
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"description": "d" * 10_001}
+        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["description"] == ["ensure this value has at most 10000 characters"]
+
     def when_trying_to_set_offer_name_with_ean(self, client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CARTE_MUSEE.id,
