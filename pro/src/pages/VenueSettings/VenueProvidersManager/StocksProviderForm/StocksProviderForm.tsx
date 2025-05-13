@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -33,6 +33,7 @@ export const StocksProviderForm = ({
   const { logEvent } = useAnalytics()
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
+  const dialogTriggerRef = useRef<HTMLButtonElement>(null)
 
   const handleOpenConfirmDialog = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -50,6 +51,9 @@ export const StocksProviderForm = ({
   const handleCloseConfirmDialog = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     setIsConfirmDialogOpened(false)
+    setTimeout(() => {
+      dialogTriggerRef.current?.focus()
+    })
   }
 
   const handleFormSubmit = async () => {
@@ -90,6 +94,7 @@ export const StocksProviderForm = ({
         <Button
           variant={ButtonVariant.PRIMARY}
           onClick={handleOpenConfirmDialog}
+          ref={dialogTriggerRef}
         >
           Lancer la synchronisation
         </Button>
