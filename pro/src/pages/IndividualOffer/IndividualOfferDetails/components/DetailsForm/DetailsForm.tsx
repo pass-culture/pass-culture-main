@@ -129,7 +129,7 @@ export const DetailsForm = ({
               <TextArea
                 isOptional
                 label="Description"
-                maxLength={1000}
+                maxLength={10000}
                 name="description"
                 onChange={handleChange}
                 disabled={readOnlyFields.includes('description')}

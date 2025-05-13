@@ -20,16 +20,41 @@ function markdownToHtml(markdown: string) {
   })
 }
 
-export const Markdown = ({ markdownText }: { markdownText: string }) => {
+const cropText = (
+  text: string,
+  maxLength: number,
+  croppedTextEnding: string = '...'
+): string => {
+  if (text.trim().length > maxLength) {
+    return `${text.slice(0, maxLength)}${croppedTextEnding}`
+  }
+  return text
+}
+
+export const Markdown = ({
+  markdownText,
+  maxLength,
+  croppedTextEnding,
+}: {
+  markdownText: string
+  maxLength?: number
+  croppedTextEnding?: string
+}) => {
   const html = DOMPurify.sanitize(markdownToHtml(markdownText), {
     ALLOWED_TAGS: ['strong', 'em', 'a'],
     ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
   })
+
   return (
     <span
       className={styles['markdown']}
       data-testid="markdown-content"
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{
+        __html:
+          maxLength === undefined
+            ? html
+            : cropText(html, maxLength, croppedTextEnding),
+      }}
     />
   )
 }

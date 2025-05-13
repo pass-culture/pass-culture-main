@@ -51,7 +51,11 @@ export const OfferAppPreview = ({
 
         {offer.description && (
           <div className={style['offer-description']}>
-            <Markdown markdownText={offer.description} />
+            <Markdown
+              markdownText={offer.description}
+              maxLength={200}
+              croppedTextEnding={'<b> Afficher plus...</b>'}
+            />
           </div>
         )}
 
