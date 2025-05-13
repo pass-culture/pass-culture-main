@@ -178,8 +178,26 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     ean = sa.Column(sa.Text, sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"), nullable=True)
+
+    chroniclesCount: int | None = sa.Column(
+        sa.BigInteger,
+        sa.CheckConstraint('"chroniclesCount" >= 0', name="check_chronicles_count_is_positive"),
+        nullable=False,
+        server_default=sa.text("0"),
+    )
+    headlinesCount: int | None = sa.Column(
+        sa.BigInteger,
+        sa.CheckConstraint('"headlinesCount" >= 0', name="check_headlines_count_is_positive"),
+        nullable=False,
+        server_default=sa.text("0"),
+    )
+    likesCount: int | None = sa.Column(
+        sa.BigInteger,
+        sa.CheckConstraint('"likesCount" >= 0', name="check_likes_count_is_positive"),
+        nullable=False,
+        server_default=sa.text("0"),
+    )
 
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
     sa.Index("product_visa_idx", extraData["visa"].astext)
