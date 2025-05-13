@@ -321,6 +321,15 @@ class GetOffererTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404
 
+    class GenerateApiKeyButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+        button_label = "Générer une clé API"
+
+        @property
+        def path(self):
+            offerer = offerers_factories.OffererFactory()
+            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
     class ValidateButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
         button_label = "Valider"
@@ -592,7 +601,7 @@ class DeleteOffererTest(PostEndpointHelper):
 class GenerateOffererAPIKeyTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.generate_api_key"
     endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
     def test_generate_api_key(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory()

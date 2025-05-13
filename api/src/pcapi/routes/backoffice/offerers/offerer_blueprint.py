@@ -415,7 +415,7 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 
 # TODO: (tcoudray-pass, 16/07/2024) Remove when all the providers have migrated to the new public API
 @offerer_blueprint.route("/api-keys", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+@utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
     offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
     if offerer.isRejected or offerer.isClosed:
