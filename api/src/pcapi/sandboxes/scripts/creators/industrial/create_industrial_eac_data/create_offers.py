@@ -123,17 +123,20 @@ def _get_or_create_offerer_address(
             return target_venue.offererAddress
 
         # get or create OA with same offerer and adress as target_venue
-        offerer_id = managing_offerer.id
-        address_id = target_venue.offererAddress.addressId
         label = target_venue.common_name
+        target_address = target_venue.offererAddress.address
         offerer_address = (
             db.session.query(offerers_models.OffererAddress)
-            .filter_by(offererId=offerer_id, addressId=address_id, label=label)
+            .filter(
+                offerers_models.OffererAddress.offerer == managing_offerer,
+                offerers_models.OffererAddress.address == target_address,
+                offerers_models.OffererAddress.label == label,
+            )
             .one_or_none()
         )
         if offerer_address is None:
             offerer_address = offerers_factories.OffererAddressFactory.create(
-                label=label, addressId=address_id, offererId=offerer_id
+                label=label, address=target_address, offerer=managing_offerer
             )
 
         return offerer_address
