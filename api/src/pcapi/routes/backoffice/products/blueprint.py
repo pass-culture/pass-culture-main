@@ -1,7 +1,10 @@
 import dataclasses
+import datetime
 import enum
+from functools import partial
 
 import pydantic.v1 as pydantic_v1
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -14,16 +17,21 @@ from werkzeug.exceptions import NotFound
 
 import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.serialization import titelive_serializers
+from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
+from pcapi.core import search
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offers.serializer import OfferSerializer
@@ -381,3 +389,168 @@ def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
         offer.name = product.name
         offer.productId = product.id
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+def render_search_template(form: forms.ProductSearchForm | None = None) -> str:
+    if form is None:
+        form = forms.ProductSearchForm()
+
+    return render_template(
+        "products/search.html",
+        title="Recherche produit",
+        dst=url_for(".search_product"),
+        form=form,
+    )
+
+
+@list_products_blueprint.route("/search", methods=["GET"])
+def search_product() -> utils.BackofficeResponse:
+    if not request.args:
+        return render_search_template()
+
+    form = forms.ProductSearchForm(request.args)
+    if not form.validate():
+        return render_search_template(form), 400
+
+    result_type = forms.ProductFilterTypeEnum[form.product_filter_type.data]
+    search_query = form.q.data
+
+    product = None
+    FILTER_MAP = {
+        forms.ProductFilterTypeEnum.VISA: offers_models.Product.extraData["visa"].astext,
+        forms.ProductFilterTypeEnum.ALLOCINE_ID: offers_models.Product.extraData["allocineId"].astext,
+    }
+    if result_type in FILTER_MAP:
+        field_to_filter = FILTER_MAP[result_type]
+        product = db.session.query(offers_models.Product).filter(field_to_filter == search_query).one_or_none()
+
+    elif result_type == forms.ProductFilterTypeEnum.EAN:
+        ean = search_query
+        product = db.session.query(offers_models.Product).filter_by(ean=ean).one_or_none()
+        if not product:
+            try:
+                titelive_data = get_by_ean13(ean)
+            except Exception as err:
+                flash(
+                    Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+                    "warning",
+                )
+                titelive_data = {}
+            try:
+                data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+            except Exception:
+                titelive_data = {}
+                ineligibility_reason = None
+            else:
+                ineligibility_reason = get_ineligibility_reasons(data.article[0], data.titre)
+
+            if not titelive_data:
+                raise NotFound()
+
+            return render_template(
+                "products/create_product_from_titelive.html",
+                form=form,
+                dst=url_for(".search_product"),
+                titelive_data=titelive_data,
+                button_text="Importer ce produit dans la base de données du pass Culture",
+                ineligibility_reason=ineligibility_reason,
+            )
+
+    if not product:
+        raise NotFound()
+
+    return redirect(url_for(".get_product_details", product_id=product.id), 303)
+
+
+@list_products_blueprint.route("/<string:ean>/import_titelive_product_form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
+    is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
+    if is_ineligible:
+        form = forms.OptionalCommentForm()
+    else:
+        form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
+        div_id="import-product-modal",
+        title="Voulez-vous importer ce produit ?",
+        button_text="Importer",
+    )
+
+
+@list_products_blueprint.route("/<string:ean>/import_titelive_product", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
+    is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
+
+    try:
+        product = offers_api.whitelist_product(ean)
+    except offers_exceptions.TiteLiveAPINotExistingEAN:
+        flash(Markup("L'EAN <b>{ean}</b> n'existe pas chez Titelive").format(ean=ean), "warning")
+    except GtlIdError:
+        flash(
+            Markup("L'EAN <b>{ean}</b> n'a pas de GTL ID chez Titelive").format(ean=ean),
+            "warning",
+        )
+    else:
+        if is_ineligible:
+            try:
+                if product.ean:
+                    form = forms.OptionalCommentForm()
+                    product_whitelist = fraud_models.ProductWhitelist(
+                        comment=form.comment.data, ean=product.ean, title=product.name, authorId=current_user.id
+                    )
+                    db.session.add(product_whitelist)
+                    db.session.flush()
+            except sa.exc.IntegrityError as error:
+                mark_transaction_as_invalid()
+                flash(
+                    Markup("L'EAN <b>{ean}</b> n'a pas été ajouté dans la whitelist :<br/>{error}").format(
+                        ean=ean, error=error
+                    ),
+                    "warning",
+                )
+            except GtlIdError:
+                mark_transaction_as_invalid()
+                flash(
+                    Markup("L'EAN <b>{ean}</b> n'a pas de GTL ID côté Titelive").format(ean=ean),
+                    "warning",
+                )
+            else:
+                flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
+
+                if product:
+                    offers_query = db.session.query(offers_models.Offer).filter(
+                        offers_models.Offer.productId == product.id,
+                        offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
+                        offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                    )
+                    offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+
+                    if offer_ids:
+                        offers_query.update(
+                            values={
+                                "validation": offers_models.OfferValidationStatus.APPROVED,
+                                "lastValidationDate": datetime.datetime.utcnow(),
+                                "lastValidationType": OfferValidationType.MANUAL,
+                                "lastValidationAuthorUserId": current_user.id,
+                            },
+                            synchronize_session=False,
+                        )
+                        db.session.flush()
+                        on_commit(
+                            partial(
+                                search.async_index_offer_ids,
+                                offer_ids,
+                                reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+                                log_extra={"ean": ean},
+                            )
+                        )
+
+        flash(Markup("Le produit <b>{product_name}</b> a été créé").format(product_name=product.name), "success")
+        return redirect(url_for(".get_product_details", product_id=product.id), 303)
+
+    return redirect(request.referrer or url_for(".search_product"), 303)

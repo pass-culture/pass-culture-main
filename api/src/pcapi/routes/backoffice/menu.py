@@ -112,6 +112,11 @@ MENU_SECTIONS = [
                 permissions=["READ_TAGS"],
             ),
             MenuItem(
+                label="Base de donnée produit",
+                url_name="backoffice_web.product.search_product",
+                permissions=["READ_OFFERS"],
+            ),
+            MenuItem(
                 label="Offres individuelles",
                 url_name="backoffice_web.offer.list_offers",
                 permissions=["READ_OFFERS"],

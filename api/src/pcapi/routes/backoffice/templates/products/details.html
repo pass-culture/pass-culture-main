@@ -359,27 +359,27 @@
           }
         </script>
         {# djlint:off #}
-            <script>
-                const offers = {{ product_offers | tojson }};
+        <script>
+            const offers = {{ product_offers | tojson }};
 
-                initPaginatedTable({
-                  data: offers,
-                  tableSelector: '#offers-table',
-                  paginationSelector: '#linked-offers-pagination',
-                  searchInputSelector: '#search-linked-offers',
-                  filterSelectSelector: '#filter-select-linked-offer',
-                  itemsPerPage: 20,
-                  rowRenderer: offer => `
-                        <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
-                        <td>${offer.name}</td>
-                        <td>
-                          <a href="/pro/venue/${offer.venue_id}" class="link-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Voir le partenaire culturel" target="_top">${offer.venue_name}</a>
-                        </td>
-                        <td>${offer.status}</td>
-                        <td>${offer.dateCreated}</td>
-                      `,
-                  resultsCountSelector: '.num-results-linked-offer'
-                });
+            initPaginatedTable({
+              data: offers,
+              tableSelector: '#offers-table',
+              paginationSelector: '#linked-offers-pagination',
+              searchInputSelector: '#search-linked-offers',
+              filterSelectSelector: '#filter-select-linked-offer',
+              itemsPerPage: 20,
+              rowRenderer: offer => `
+                    <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
+                    <td>${offer.name}</td>
+                    <td>
+                      <a href="/pro/venue/${offer.venue_id}" class="link-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Voir le partenaire culturel" target="_top">${offer.venue_name}</a>
+                    </td>
+                    <td>${offer.status}</td>
+                    <td>${offer.dateCreated}</td>
+                  `,
+              resultsCountSelector: '.num-results-linked-offer'
+            });
 </script>
         {# djlint:on #}
       </div>
@@ -444,86 +444,86 @@
           {{ build_lazy_modal(url_for("backoffice_web.product.confirm_link_offers_forms", product_id=product.id) ,
           "batch-link-to-product-modal", "true") }}
           {# djlint:off #}
-            <script>
-                const unlinked_offers = {{ unlinked_offers | tojson }};
-                initPaginatedTable({
-                  data: unlinked_offers,
-                  tableSelector: '#unlinked-offers-table',
-                  paginationSelector: '#unlinked-offers-pagination',
-                  searchInputSelector: '#search-unlinked-offers',
-                  filterSelectSelector: '#filter-select-unlinked-offer',
-                  itemsPerPage: 20,
-                  rowRenderer: offer => `
-                      <td>
-                        <input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-${offer.id}" data-id="${offer.id}" />
-                      </td>
-                      <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
-                      <td>${offer.name}</td>
-                      <td>
-                        <a href="/pro/venue/${offer.venue_id}" class="link-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Voir le partenaire culturel" target="_top">${offer.venue_name}</a>
-                      </td>
-                      <td>${offer.status}</td>
-                      <td>${offer.dateCreated}</td>
-                    `,
-                    resultsCountSelector: '.num-results-unlinked-offer'
-                });
+        <script>
+            const unlinked_offers = {{ unlinked_offers | tojson }};
+            initPaginatedTable({
+              data: unlinked_offers,
+              tableSelector: '#unlinked-offers-table',
+              paginationSelector: '#unlinked-offers-pagination',
+              searchInputSelector: '#search-unlinked-offers',
+              filterSelectSelector: '#filter-select-unlinked-offer',
+              itemsPerPage: 20,
+              rowRenderer: offer => `
+                  <td>
+                    <input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-${offer.id}" data-id="${offer.id}" />
+                  </td>
+                  <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
+                  <td>${offer.name}</td>
+                  <td>
+                    <a href="/pro/venue/${offer.venue_id}" class="link-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Voir le partenaire culturel" target="_top">${offer.venue_name}</a>
+                  </td>
+                  <td>${offer.status}</td>
+                  <td>${offer.dateCreated}</td>
+                `,
+                resultsCountSelector: '.num-results-unlinked-offer'
+            });
 </script>
-            {# djlint:off #}
+        {# djlint:off #}
 
-        </div>
-        {% endif %}
     </div>
+    {% endif %}
+</div>
+{% endcall %}
+{% endblock details_container %}
+{% block side_column %}
+<!-- BUTTONS -->
+<div>
+    {% call description_detail_vertical("Product ID") %}
+    {{ product.id }}
+    {{ clipboard.copy_to_clipboard(product.id, "Copier") }}
     {% endcall %}
-    {% endblock details_container %}
-    {% block side_column %}
-    <!-- BUTTONS -->
-    <div>
-        {% call description_detail_vertical("Product ID") %}
-        {{ product.id }}
-        {{ clipboard.copy_to_clipboard(product.id, "Copier") }}
-        {% endcall %}
-        {% call description_detail_vertical("Catégorie") %}
-        {{ product.subcategoryId | format_offer_category }}
-        {% endcall %}
-        {% call description_detail_vertical("Sous-catégorie") %}
-        {{ product.subcategoryId | format_offer_subcategory }}
-        {% endcall %}
-        {% set extra_data = product.extraData %}
-        {% if extra_data.gtl_id %}
-        {% call description_detail_vertical("Type de musique") %}
-        {{ extra_data.gtl_id | format_music_gtl_id }}
-        {% endcall %}
-        {% endif %}
-        {% if extra_data.showType or extra_data.showSubType %}
-        {% call description_detail_vertical("Type de spectacle") %}
-        {{ extra_data.showType | format_show_type }} - {{ extra_data.showSubType | format_show_subtype }}
-        {% endcall %}
-        {% endif %}
-        {% if extra_data.genres %}
-        {% call description_detail_vertical("Genres") %}
-        {{ extra_data.genres | format_string_list }}
-        {% endcall %}
-        {% endif %}
-        <hr/>
-        {% call description_detail_vertical("Nombre d'offres associées") %}
-        {{ product_offers | length }}
-        {% endcall %}
-        {% call description_detail_vertical("Approuvées actives") %}
-        {{ approved_active_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("Approuvées inactives") %}
-        {{ approved_inactive_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("En attente") %}
-        {{ pending_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("Rejetées") %}
-        {{ rejected_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("Offres non liées") %}
-        {{ unlinked_offers | length }}
-        {% endcall %}
-    </div>
+    {% call description_detail_vertical("Catégorie") %}
+    {{ product.subcategoryId | format_offer_category }}
+    {% endcall %}
+    {% call description_detail_vertical("Sous-catégorie") %}
+    {{ product.subcategoryId | format_offer_subcategory }}
+    {% endcall %}
+    {% set extra_data = product.extraData %}
+    {% if extra_data.gtl_id %}
+    {% call description_detail_vertical("Type de musique") %}
+    {{ extra_data.gtl_id | format_music_gtl_id }}
+    {% endcall %}
+    {% endif %}
+    {% if extra_data.showType or extra_data.showSubType %}
+    {% call description_detail_vertical("Type de spectacle") %}
+    {{ extra_data.showType | format_show_type }} - {{ extra_data.showSubType | format_show_subtype }}
+    {% endcall %}
+    {% endif %}
+    {% if extra_data.genres %}
+    {% call description_detail_vertical("Genres") %}
+    {{ extra_data.genres | format_string_list }}
+    {% endcall %}
+    {% endif %}
+    <hr/>
+    {% call description_detail_vertical("Nombre d'offres associées") %}
+    {{ product_offers | length }}
+    {% endcall %}
+    {% call description_detail_vertical("Approuvées actives") %}
+    {{ approved_active_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("Approuvées inactives") %}
+    {{ approved_inactive_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("En attente") %}
+    {{ pending_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("Rejetées") %}
+    {{ rejected_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("Offres non liées") %}
+    {{ unlinked_offers | length }}
+    {% endcall %}
+</div>
 </div>
 {% endblock side_column %}
 {% block extra_main_content %}

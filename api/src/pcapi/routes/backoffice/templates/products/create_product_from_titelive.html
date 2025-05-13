@@ -1,0 +1,48 @@
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/search/result_form.html" import build_result_page_form %}
+{% extends "layouts/connected.html" %}
+{% from "products/titelive_information.html" import render_titelive_information %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h1 class="fw-light mb-4">Produit Titelive</h1>
+    {{ build_result_page_form(form, dst) }}
+    {% if titelive_data %}
+      {% if has_permission("PRO_FRAUD_ACTIONS") %}
+        {% if ineligibility_reason %}
+          <div class="alert alert-danger mt-4 mb-4"
+               role="alert">
+            <strong>Attention : Ce produit est considéré comme inéligible par le Pass Culture.</strong>
+            <br>
+            Cependant, vous pouvez quand même l'ajouter si nécessaire en cliquant sur le bouton ci-dessous. Cela rendra
+            le produit automatiquement éligible.
+          </div>
+        {% else %}
+          <div class="alert alert-info mt-4 mb-4"
+               role="alert">
+            <strong>Ce produit n'est pas encore dans la base de données du Pass Culture.</strong> Vous pouvez l'ajouter en
+            cliquant sur le bouton ci-dessous.
+          </div>
+        {% endif %}
+        <div class="mb-4 mt-8">
+          <button type="button"
+                  class="btn btn-outline-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#import-product-modal">Importer ce produit dans la base de données du pass Culture</button>
+          {{ build_lazy_modal(url_for('backoffice_web.product.get_import_product_from_titelive_form',
+                    ean=titelive_data.ean, is_ineligible=ineligibility_reason is not none) , "import-product-modal", "true")
+          }}
+        </div>
+      {% endif %}
+      <div class="card mt-4">
+        <div class="card-header bg-light">
+          <h5 class="card-title"
+              id="titelive-data">Détails du Produit</h5>
+        </div>
+        {{ render_titelive_information(titelive_data, ineligibility_reason) }}
+      </div>
+    {% else %}
+      <div class="alert alert-warning mt-4 mb-4"
+           role="alert">Le produit est introuvable. Il ne figure ni dans notre base de données ni sur Titelive</div>
+    {% endif %}
+  </div>
+{% endblock page %}

@@ -1543,7 +1543,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     return
 
 
-def whitelist_product(idAtProviders: str) -> models.Product | None:
+def whitelist_product(idAtProviders: str) -> models.Product:
     titelive_product = get_new_product_from_ean13(idAtProviders)
 
     product = fetch_or_update_product_with_titelive_data(titelive_product)
