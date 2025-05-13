@@ -19,7 +19,10 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+import {
+  DialogBuilder,
+  DialogBuilderProps,
+} from 'ui-kit/DialogBuilder/DialogBuilder'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -40,7 +43,8 @@ export interface OnImageUploadArgs {
   credit: string | null
 }
 
-export interface ModalImageUpsertOrEditProps {
+export interface ModalImageUpsertOrEditProps
+  extends Omit<DialogBuilderProps, 'children'> {
   mode: UploaderModeEnum
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete?: () => void
@@ -52,6 +56,7 @@ export const ModalImageUpsertOrEdit = ({
   onImageUpload,
   onImageDelete,
   initialValues = {},
+  ...dialogBuilderProps
 }: ModalImageUpsertOrEditProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const { draftImage, ...previouslyUploadedImage } = initialValues
@@ -127,6 +132,10 @@ export const ModalImageUpsertOrEdit = ({
       setImageFromUrl(previouslyUploadedImageUrl)
     }
   }, [previouslyUploadedImageUrl, notification])
+
+  useEffect(() => {
+    setImage(draftImage)
+  }, [draftImage])
 
   const onImageReplace = () => {
     setImage(undefined)
@@ -207,120 +216,121 @@ export const ModalImageUpsertOrEdit = ({
   const onImageSave = () => handleImageChange(onEditedImageSave)
 
   return (
-    <form className={style['modal-image-crop']}>
-      <div className={style['modal-image-crop-content']}>
-        <Dialog.Title asChild>
-          <h1 className={style['modal-image-crop-header']}>
-            Modifier une image
-          </h1>
-        </Dialog.Title>
-        <p className={style['modal-image-crop-right']}>
-          En utilisant ce contenu, je certifie que je suis propriétaire ou que
-          je dispose des autorisations nécessaires pour l’utilisation de
-          celui-ci.
-        </p>
-        {image && (
-          <>
-            {isPaintingImage && <Spinner />}
-            <div
-              className={cn(
-                style['modal-image-crop-subwrapper'],
-                isPaintingImage && style['modal-image-crop-editor-loading']
-              )}
-            >
-              <div className={style['modal-image-crop-editor']}>
-                <ImageEditor
-                  ref={editorRef}
-                  {...imageEditorConfig}
-                  image={image}
-                  initialPosition={editorInitialPosition}
-                  initialScale={scale}
-                  onChangeDone={onImageEditorChange}
-                  onImagePainted={onImagePainted}
-                />
-                <div className={style['modal-image-crop-actions']}>
-                  <Button
-                    icon={fullDownloadIcon}
-                    onClick={onImageReplace}
-                    variant={ButtonVariant.TERNARY}
-                  >
-                    Remplacer l’image
-                  </Button>
-                  <Dialog.Close asChild>
+    <DialogBuilder
+      {...dialogBuilderProps}
+      title="Modifier une image"
+      variant="drawer"
+    >
+      <form className={style['modal-image-crop']}>
+        <div className={style['modal-image-crop-content']}>
+          <p className={style['modal-image-crop-right']}>
+            En utilisant ce contenu, je certifie que je suis propriétaire ou que
+            je dispose des autorisations nécessaires pour l’utilisation de
+            celui-ci.
+          </p>
+          {image && (
+            <>
+              {isPaintingImage && <Spinner />}
+              <div
+                className={cn(
+                  style['modal-image-crop-subwrapper'],
+                  isPaintingImage && style['modal-image-crop-editor-loading']
+                )}
+              >
+                <div className={style['modal-image-crop-editor']}>
+                  <ImageEditor
+                    ref={editorRef}
+                    {...imageEditorConfig}
+                    image={image}
+                    initialPosition={editorInitialPosition}
+                    initialScale={scale}
+                    onChangeDone={onImageEditorChange}
+                    onImagePainted={onImagePainted}
+                  />
+                  <div className={style['modal-image-crop-actions']}>
                     <Button
-                      icon={fullTrashIcon}
-                      onClick={onImageDelete}
+                      icon={fullDownloadIcon}
+                      onClick={onImageReplace}
                       variant={ButtonVariant.TERNARY}
                     >
-                      Supprimer l’image
+                      Remplacer l’image
                     </Button>
-                  </Dialog.Close>
+                    <Dialog.Close asChild>
+                      <Button
+                        icon={fullTrashIcon}
+                        onClick={onImageDelete}
+                        variant={ButtonVariant.TERNARY}
+                      >
+                        Supprimer l’image
+                      </Button>
+                    </Dialog.Close>
+                  </div>
                 </div>
+                {previewImageUrl && <AppPreview imageUrl={previewImageUrl} />}
               </div>
-              {previewImageUrl && <AppPreview imageUrl={previewImageUrl} />}
-            </div>
-            {shouldDisplayWarningCallout && (
-              <Callout
-                className={style['modal-image-crop-callout']}
-                variant={CalloutVariant.WARNING}
-              >
-                <div>
-                  La qualité de votre image n’est pas optimale.
-                  <br />
-                  Le format recommandé :
-                  <ul className={style['modal-image-crop-callout-list']}>
-                    <li>Largeur minimale de l’image : 400 px</li>
-                    <li>Hauteur minimale de l’image : 600 px</li>
-                  </ul>
-                </div>
-              </Callout>
-            )}
-            <TextInput
-              count={credit.length}
-              className={cn(
-                style['modal-image-crop-credit'],
-                isPaintingImage && style['modal-image-crop-credit-loading']
+              {shouldDisplayWarningCallout && (
+                <Callout
+                  className={style['modal-image-crop-callout']}
+                  variant={CalloutVariant.WARNING}
+                >
+                  <div>
+                    La qualité de votre image n’est pas optimale.
+                    <br />
+                    Le format recommandé :
+                    <ul className={style['modal-image-crop-callout-list']}>
+                      <li>Largeur minimale de l’image : 400 px</li>
+                      <li>Hauteur minimale de l’image : 600 px</li>
+                    </ul>
+                  </div>
+                </Callout>
               )}
-              label="Crédit de l’image"
-              maxLength={255}
-              value={credit}
-              onChange={(e) => setCredit(e.target.value)}
-              name="credit"
-              type="text"
+              <TextInput
+                count={credit.length}
+                className={cn(
+                  style['modal-image-crop-credit'],
+                  isPaintingImage && style['modal-image-crop-credit-loading']
+                )}
+                label="Crédit de l’image"
+                maxLength={255}
+                value={credit}
+                onChange={(e) => setCredit(e.target.value)}
+                name="credit"
+                type="text"
+              />
+            </>
+          )}
+          {!image && (
+            <ImageDragAndDrop
+              onDropOrSelected={onImageReplacementDropOrSelected}
+              {...(mode !== UploaderModeEnum.OFFER
+                ? {
+                    minSizes: {
+                      width: 600,
+                      height: 400,
+                    },
+                  }
+                : {})}
             />
-          </>
-        )}
-        {!image && (
-          <ImageDragAndDrop
-            onDropOrSelected={onImageReplacementDropOrSelected}
-            {...(mode !== UploaderModeEnum.OFFER
-              ? {
-                  minSizes: {
-                    width: 600,
-                    height: 400,
-                  },
-                }
-              : {})}
-          />
-        )}
-      </div>
-      <DialogBuilder.Footer>
-        <div className={style['modal-image-crop-footer']}>
-          <Dialog.Close asChild>
-            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-          </Dialog.Close>
-          <Button
-            type="submit"
-            onClick={(e) => {
-              e.preventDefault()
-              onImageSave()
-            }}
-            disabled={!image}
-          >
-            Enregistrer
-          </Button>
+          )}
         </div>
-      </DialogBuilder.Footer>
-    </form>
+        <DialogBuilder.Footer>
+          <div className={style['modal-image-crop-footer']}>
+            <Dialog.Close asChild>
+              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            </Dialog.Close>
+            <Button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault()
+                onImageSave()
+              }}
+              disabled={!image}
+            >
+              Enregistrer
+            </Button>
+          </div>
+        </DialogBuilder.Footer>
+      </form>
+    </DialogBuilder>
   )
 }
