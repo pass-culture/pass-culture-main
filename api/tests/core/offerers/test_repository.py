@@ -248,7 +248,7 @@ class GetOffererAddressesTest:
         offerer_address_with_two_offers = offerers_factories.OffererAddressFactory(
             offerer=offerer,
             label="3eme adresse",
-            address__street=None,
+            address__street="3 rue des moutons",
             address__postalCode="75008",
             address__city="Paris",
             address__banId="75108_7560_00000",
