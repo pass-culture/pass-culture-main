@@ -42,7 +42,7 @@ class EducationalWorkflowTest:
             assert collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
 
             # We need to expire all the objects to ensure the test session is in sync with the database when auto_mark_as_used_after_event is called
-            db_session.expire_all()
+            db.session.expire_all()
 
             # Mark the booking as used
             bookings_api.auto_mark_as_used_after_event()
