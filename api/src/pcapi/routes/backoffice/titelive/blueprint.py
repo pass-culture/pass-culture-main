@@ -1,6 +1,3 @@
-import datetime
-from functools import partial
-
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -15,18 +12,14 @@ from markupsafe import Markup
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
-from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.utils import requests
 
 from .. import utils
@@ -153,32 +146,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
             flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
 
             if product:
-                offers_query = db.session.query(offers_models.Offer).filter(
-                    offers_models.Offer.productId == product.id,
-                    offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
-                    offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-                )
-                offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
-
-                if offer_ids:
-                    offers_query.update(
-                        values={
-                            "validation": offers_models.OfferValidationStatus.APPROVED,
-                            "lastValidationDate": datetime.datetime.utcnow(),
-                            "lastValidationType": OfferValidationType.MANUAL,
-                            "lastValidationAuthorUserId": current_user.id,
-                        },
-                        synchronize_session=False,
-                    )
-                    db.session.flush()
-                    on_commit(
-                        partial(
-                            search.async_index_offer_ids,
-                            offer_ids,
-                            reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
-                            log_extra={"ean": ean},
-                        )
-                    )
+                offers_api.revalidate_offers_after_product_whitelist(product, current_user)
 
     return redirect(url_for(".search_titelive", ean=ean), code=303)
 
