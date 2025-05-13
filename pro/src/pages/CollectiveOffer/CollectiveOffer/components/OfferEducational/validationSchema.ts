@@ -94,26 +94,30 @@ export function getOfferEducationalValidationSchema(
           )
       : yup.mixed(),
     ...(isCollectiveOaActive && addressValidationSchema),
-    eventAddress: yup.object().shape({
-      addressType: yup
-        .string()
-        .oneOf([
-          OfferAddressType.OFFERER_VENUE,
-          OfferAddressType.OTHER,
-          OfferAddressType.SCHOOL,
-        ]),
-      otherAddress: yup.string().when('addressType', {
-        is: OfferAddressType.OTHER,
-        then: (schema) => schema.required('Veuillez renseigner une adresse'),
-      }),
-      venueId: yup
-        .number()
-        .nullable()
-        .when('addressType', {
-          is: OfferAddressType.OFFERER_VENUE,
-          then: (schema) => schema.required('Veuillez sélectionner un lieu'),
+    eventAddress: isCollectiveOaActive
+      ? yup.mixed()
+      : yup.object().shape({
+          addressType: yup
+            .string()
+            .oneOf([
+              OfferAddressType.OFFERER_VENUE,
+              OfferAddressType.OTHER,
+              OfferAddressType.SCHOOL,
+            ]),
+          otherAddress: yup.string().when('addressType', {
+            is: OfferAddressType.OTHER,
+            then: (schema) =>
+              schema.required('Veuillez renseigner une adresse'),
+          }),
+          venueId: yup
+            .number()
+            .nullable()
+            .when('addressType', {
+              is: OfferAddressType.OFFERER_VENUE,
+              then: (schema) =>
+                schema.required('Veuillez sélectionner un lieu'),
+            }),
         }),
-    }),
     participants: yup.object().test({
       name: 'is-one-true',
       message: 'Veuillez sélectionner au moins un niveau scolaire',
@@ -212,11 +216,11 @@ export function getOfferEducationalValidationSchema(
     ),
     interventionArea: isCollectiveOaActive
       ? yup.array().when('location.locationType', {
-        is: (locationType: CollectiveLocationType) =>
-          locationType !== CollectiveLocationType.ADDRESS,
-        then: (schema) =>
-          schema.min(1, 'Veuillez renseigner au moins un département'),
-      })
+          is: (locationType: CollectiveLocationType) =>
+            locationType !== CollectiveLocationType.ADDRESS,
+          then: (schema) =>
+            schema.min(1, 'Veuillez renseigner au moins un département'),
+        })
       : yup.array().when('eventAddress', {
           is: (eventAddress: { addressType: OfferAddressType }) =>
             eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,

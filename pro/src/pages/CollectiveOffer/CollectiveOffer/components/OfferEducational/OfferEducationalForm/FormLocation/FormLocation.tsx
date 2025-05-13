@@ -196,6 +196,7 @@ export const FormLocation = ({
       await Promise.all([
         setFieldValue('location.address.id_oa', address?.id_oa.toString()),
         setFieldValue('location.locationType', CollectiveLocationType.ADDRESS),
+        setFieldValue('locationComment', ''),
         setFieldValue('interventionArea', []),
       ])
     } else {
