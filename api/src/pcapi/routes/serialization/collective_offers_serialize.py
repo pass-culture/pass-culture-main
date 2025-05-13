@@ -834,7 +834,7 @@ class PatchCollectiveOfferArchiveBodyModel(BaseModel):
 
 
 class PatchCollectiveOfferEducationalInstitution(BaseModel):
-    educational_institution_id: int | None
+    educational_institution_id: int
     teacher_email: str | None
 
     class Config:

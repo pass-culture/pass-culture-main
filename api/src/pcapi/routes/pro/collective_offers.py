@@ -486,10 +486,6 @@ def patch_collective_offers_educational_institution(
         raise ApiErrors({"offer": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
     except educational_exceptions.EducationalRedactorNotFound:
         raise ApiErrors({"teacherEmail": ["L'enseignant n'à pas été trouvé dans cet établissement."]}, status_code=404)
-    except educational_exceptions.EducationalRedactorCannotBeLinked:
-        raise ApiErrors(
-            {"teacherEmail": ["L’enseignant ne peut pas être lié à une offre sans établissement."]}, status_code=400
-        )
 
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
