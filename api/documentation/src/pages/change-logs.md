@@ -5,6 +5,16 @@ title: Pass Culture API change logs
 # Change logs
 
 :::warning
+💡 Important notice concerning the **collective offers**.
+
+- A new status field will be added to the collective offer, which will replace the current `status` field in the coming months. Both status fields will be available for a period of time to allow the transition.
+- The new status will determine which actions are allowed on the collective offer (which fields can be updated, whether the booking can be cancelled...).
+- Note that the `status` field of the collective **booking** will not change.
+
+**You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions-%EF%B8%8F-upcoming-changes).**
+:::
+
+:::warning
 💡 Important notice some old resources are going to be removed in the coming months.
 
 - If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
