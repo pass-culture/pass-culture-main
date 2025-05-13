@@ -497,7 +497,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: ty
 
 
 def update_collective_offer_educational_institution(
-    offer_id: int, educational_institution_id: int | None, teacher_email: str | None
+    offer_id: int, educational_institution_id: int, teacher_email: str | None
 ) -> educational_models.CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
 
@@ -505,20 +505,14 @@ def update_collective_offer_educational_institution(
         offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
     )
 
-    new_institution = None
-    if educational_institution_id is not None:
-        new_institution = validation.check_institution_id_exists(educational_institution_id)
+    new_institution = validation.check_institution_id_exists(educational_institution_id)
+    if not new_institution.isActive:
+        raise exceptions.EducationalInstitutionIsNotActive()
 
     offer.institution = new_institution
     offer.teacher = None
 
-    if offer.institution is not None:
-        if not offer.institution.isActive:
-            raise exceptions.EducationalInstitutionIsNotActive()
-    elif teacher_email is not None:
-        raise exceptions.EducationalRedactorCannotBeLinked()
-
-    if offer.institution is not None and teacher_email:
+    if teacher_email:
         possible_teachers = educational_api_adage.autocomplete_educational_redactor_for_uai(
             uai=offer.institution.institutionId,
             candidate=teacher_email,
@@ -541,7 +535,7 @@ def update_collective_offer_educational_institution(
 
     db.session.flush()
 
-    if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
+    if offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         on_commit(partial(adage_client.notify_institution_association, serialize_collective_offer(offer)))
 
     return offer

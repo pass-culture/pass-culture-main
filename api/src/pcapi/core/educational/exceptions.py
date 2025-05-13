@@ -119,10 +119,6 @@ class EducationalInstitutionIsNotActive(Exception):
     pass
 
 
-class EducationalRedactorCannotBeLinked(Exception):
-    pass
-
-
 class CollectiveOfferNotEditable(Exception):
     pass
 

@@ -40,18 +40,15 @@ class Returns200Test:
 @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns404Test:
     def test_offer_not_found(self, client: Any) -> None:
-        # Given
         institution = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory()
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
         response = client.patch("/collective/offers/0/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 404
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
@@ -74,7 +71,6 @@ class Returns404Test:
 @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
 class Returns403Test:
     def test_change_institution_on_uneditable_offer_booking_confirmed(self, client: Any) -> None:
-        # Given
         institution1 = factories.EducationalInstitutionFactory()
         booking = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__institution=institution1, status=models.CollectiveBookingStatus.CONFIRMED
@@ -83,18 +79,15 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = factories.EducationalInstitutionFactory()
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 403
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
     def test_change_institution_on_uneditable_offer_booking_reimbused(self, client: Any) -> None:
-        # Given
         institution1 = factories.EducationalInstitutionFactory()
         booking = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__institution=institution1, status=models.CollectiveBookingStatus.REIMBURSED
@@ -103,18 +96,15 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = factories.EducationalInstitutionFactory()
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 403
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
     def test_change_institution_on_uneditable_offer_booking_used(self, client: Any) -> None:
-        # Given
         institution1 = factories.EducationalInstitutionFactory()
         booking = factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__institution=institution1, status=models.CollectiveBookingStatus.USED
@@ -123,12 +113,10 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = factories.EducationalInstitutionFactory()
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution2.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 403
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
@@ -165,18 +153,15 @@ class Returns403Test:
         assert offer.institution == institution1
 
     def test_add_institution_link_on_pending_offer(self, client: Any) -> None:
-        # Given
         institution = factories.EducationalInstitutionFactory()
         stock = factories.CollectiveStockFactory(collectiveOffer__validation="PENDING")
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 403
         offer_db = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
@@ -184,16 +169,38 @@ class Returns403Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     def test_offer_institution_link_institution_not_active(self, client: Any) -> None:
-        # Given
         institution = factories.EducationalInstitutionFactory(isActive=False)
         stock = factories.CollectiveStockFactory()
         offer = stock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth("pro@example.com")
         data = {"educationalInstitutionId": institution.id}
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
-        # Then
         assert response.status_code == 403
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns400Test:
+    def test_institution_id_none(self, client):
+        offer = factories.DraftCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        data = {"educationalInstitutionId": None}
+        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"educationalInstitutionId": ["Ce champ ne peut pas être nul"]}
+
+    def test_institution_id_missing(self, client):
+        offer = factories.DraftCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth("pro@example.com")
+        data = {}
+        response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"educationalInstitutionId": ["Ce champ est obligatoire"]}

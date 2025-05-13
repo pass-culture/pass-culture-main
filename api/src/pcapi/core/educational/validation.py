@@ -107,7 +107,7 @@ def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveSt
         raise exceptions.CollectiveStockNotBookableByUser()
 
 
-def check_institution_id_exists(institution_id: int) -> models.EducationalInstitution | None:
+def check_institution_id_exists(institution_id: int) -> models.EducationalInstitution:
     institution = db.session.query(models.EducationalInstitution).get(institution_id)
     if not institution:
         raise exceptions.EducationalInstitutionNotFound()
