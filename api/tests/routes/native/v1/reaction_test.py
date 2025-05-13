@@ -21,6 +21,7 @@ class PostReactionTest:
 
     num_queries_success = num_queries_base + 1  # select reaction
     num_queries_success += 1  # Insert reaction
+    num_queries_success_with_product = num_queries_success + 1  # update product likes count
 
     num_queries_failure = num_queries_base + 1  # rollback
 
@@ -101,14 +102,18 @@ class PostReactionTest:
         client.with_token(user.email)
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries_success):
+        with assert_num_queries(self.num_queries_success_with_product):
             response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "LIKE"})
             assert response.status_code == 204
 
+        assert product.likesCount == 1
+
+        response = client.post("/native/v1/reaction", json={"offerId": offer_id, "reactionType": "DISLIKE"})
         reaction = user.reactions[0]
 
-        assert reaction.reactionType == ReactionTypeEnum.LIKE
+        assert reaction.reactionType == ReactionTypeEnum.DISLIKE
         assert reaction.product == product
+        assert reaction.product.likesCount == 0
 
     def test_post_bulk_reaction(self, client):
         user = users_factories.BeneficiaryFactory()

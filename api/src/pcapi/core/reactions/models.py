@@ -1,19 +1,16 @@
 import enum
-from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
+from pcapi.core.users.models import User
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
-
-
-if TYPE_CHECKING:
-    from pcapi.core.offers.models import Offer
-    from pcapi.core.offers.models import Product
-    from pcapi.core.users.models import User
 
 
 class ReactionTypeEnum(enum.Enum):
@@ -41,4 +38,40 @@ class Reaction(PcObject, Base, Model):
             )
         ),
         sa.Index("reaction_offer_product_user_unique_constraint", "userId", "offerId", "productId", unique=True),
+    )
+
+
+@sa.event.listens_for(Reaction, "after_insert")
+def after_insert_product_reaction(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Reaction) -> None:
+    if target.productId and target.reactionType == ReactionTypeEnum.LIKE:
+        _increment_product_counts(connection, target.productId, 1)
+
+
+@sa.event.listens_for(Reaction.reactionType, "set")
+def on_set_product_reaction(
+    target: Reaction,
+    value: ReactionTypeEnum,
+    old_value: ReactionTypeEnum,
+    _initiator: sa_orm.AttributeEvent,
+) -> None:
+    if target.productId is None:
+        return
+
+    if value == ReactionTypeEnum.LIKE and old_value != ReactionTypeEnum.LIKE:
+        _increment_product_counts(db.session, target.productId, 1)
+    elif value != ReactionTypeEnum.LIKE and old_value == ReactionTypeEnum.LIKE:
+        _increment_product_counts(db.session, target.productId, -1)
+
+
+@sa.event.listens_for(Reaction, "after_delete")
+def after_delete_product_reaction(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Reaction) -> None:
+    # SQLAlchemy will not call this event if the object is deleted using a bulk delete
+    # (e.g. db.session.execute(sa.delete(Chronicle).where(...)))
+    if target.productId and target.reactionType == ReactionTypeEnum.LIKE:
+        _increment_product_counts(connection, target.productId, -1)
+
+
+def _increment_product_counts(connection: sa.engine.Connection, product_id: int, increment: int) -> None:
+    connection.execute(
+        sa.update(Product).where(Product.id == product_id).values(likesCount=Product.likesCount + increment)
     )
