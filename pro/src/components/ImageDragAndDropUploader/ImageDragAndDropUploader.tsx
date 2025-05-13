@@ -15,7 +15,6 @@ import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ImageDragAndDropUploader.module.scss'
@@ -56,6 +55,7 @@ export const ImageDragAndDropUploader = ({
     setIsModalImageOpen(false)
     setDraftImage(undefined)
     onImageDelete()
+    setDraftImage(undefined)
     notify.success('L’image a bien été supprimée')
   }
 
@@ -86,10 +86,16 @@ export const ImageDragAndDropUploader = ({
           [styles['image-uploader-actions-visible']]: shouldDisplayActions,
         })}
       >
-        <DialogBuilder
+        <ModalImageUpsertOrEdit
+          mode={mode}
+          onImageUpload={onImageUploadHandler}
+          onImageDelete={onImageDeleteHandler}
+          initialValues={{
+            draftImage,
+            ...initialValues,
+          }}
           onOpenChange={setIsModalImageOpen}
           open={isModalImageOpen}
-          variant="drawer"
           trigger={
             shouldDisplayActions && (
               <Button
@@ -102,17 +108,7 @@ export const ImageDragAndDropUploader = ({
               </Button>
             )
           }
-        >
-          <ModalImageUpsertOrEdit
-            mode={mode}
-            onImageUpload={onImageUploadHandler}
-            onImageDelete={onImageDeleteHandler}
-            initialValues={{
-              draftImage,
-              ...initialValues,
-            }}
-          />
-        </DialogBuilder>
+        />
         {shouldDisplayActions && (
           <Button
             onClick={onImageDeleteHandler}
