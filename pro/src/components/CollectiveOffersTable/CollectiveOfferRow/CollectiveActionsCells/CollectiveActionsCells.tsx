@@ -223,6 +223,8 @@ export const CollectiveActionsCells = ({
           duration: NOTIFICATION_LONG_SHOW_DURATION,
         }
       )
+    } finally {
+      focusDropdownTrigger()
     }
   }
 
@@ -486,12 +488,18 @@ export const CollectiveActionsCells = ({
           </DropdownMenuWrapper>
         )}
         <DuplicateOfferDialog
-          onCancel={() => setIsModalOpen(false)}
+          onCancel={() => {
+            setIsModalOpen(false)
+            focusDropdownTrigger()
+          }}
           onConfirm={onDialogConfirm}
           isDialogOpen={isModalOpen && shouldDisplayModal}
         />
         <CancelCollectiveBookingModal
-          onDismiss={() => setIsCancelledBookingModalOpen(false)}
+          onDismiss={() => {
+            setIsCancelledBookingModalOpen(false)
+            focusDropdownTrigger()
+          }}
           onValidate={cancelBooking}
           isFromOffer
           isDialogOpen={isCancelledBookingModalOpen}
