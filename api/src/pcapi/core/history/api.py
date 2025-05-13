@@ -73,7 +73,7 @@ def add_action(
         venue=venue,
         financeIncident=finance_incident,
         bankAccount=bank_account,
-        rule=rule,  # type: ignore[arg-type]
+        rule=rule,
         chronicle=chronicle,
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
