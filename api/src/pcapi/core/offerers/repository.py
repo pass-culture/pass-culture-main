@@ -635,6 +635,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
         .where(
             models.Offerer.isActive.is_(True),
+            sa.not_(models.Offerer.isClosed),
             models.Venue.isPermanent.is_(True),
             models.Venue.isVirtual.is_(False),
             models.Offerer.id == models.Venue.managingOffererId,
