@@ -1573,7 +1573,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     return
 
 
-def whitelist_product(idAtProviders: str) -> models.Product | None:
+def whitelist_product(idAtProviders: str) -> models.Product:
     titelive_product = get_new_product_from_ean13(idAtProviders)
 
     product = fetch_or_update_product_with_titelive_data(titelive_product)
@@ -1583,6 +1583,35 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
     db.session.add(product)
     db.session.flush()
     return product
+
+
+def revalidate_offers_after_product_whitelist(product: offers_models.Product, user: users_models.User) -> None:
+    offers_query = db.session.query(offers_models.Offer).filter(
+        offers_models.Offer.productId == product.id,
+        offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
+        offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+    )
+    offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+
+    if offer_ids:
+        offers_query.update(
+            values={
+                "validation": offers_models.OfferValidationStatus.APPROVED,
+                "lastValidationDate": datetime.datetime.utcnow(),
+                "lastValidationType": OfferValidationType.MANUAL,
+                "lastValidationAuthorUserId": user.id,
+            },
+            synchronize_session=False,
+        )
+        db.session.flush()
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids,
+                reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+                log_extra={"ean": product.ean},
+            )
+        )
 
 
 def fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
