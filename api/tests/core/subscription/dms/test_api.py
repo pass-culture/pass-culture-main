@@ -205,7 +205,7 @@ class HandleDmsApplicationTest:
         dms_subscription_api.handle_dms_application(dms_response)
 
         mock_process_in_progress.assert_not_called()
-        db_session.refresh(dms_fraud_check)
+        db.session.refresh(dms_fraud_check)
         assert (
             dms_fraud_check.source_data().get_latest_modification_datetime()
             == dms_response.latest_modification_datetime
@@ -474,7 +474,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        db_session.refresh(fraud_check)
+        db.session.refresh(fraud_check)
 
         assert fraud_check.reasonCodes == []
         assert fraud_check.reason is None

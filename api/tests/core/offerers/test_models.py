@@ -108,7 +108,7 @@ class VenueBannerUrlTest:
 
         venue.bannerUrl = expected_banner_url
         repository.save(venue)
-        db_session.refresh(venue)
+        db.session.refresh(venue)
 
         assert venue.bannerUrl == expected_banner_url
         assert venue._bannerUrl == expected_banner_url
@@ -119,7 +119,7 @@ class VenueBannerUrlTest:
 
         venue.bannerUrl = expected_banner_url
         repository.save(venue)
-        db_session.refresh(venue)
+        db.session.refresh(venue)
 
         assert venue.bannerUrl == expected_banner_url
         assert venue._bannerUrl == expected_banner_url

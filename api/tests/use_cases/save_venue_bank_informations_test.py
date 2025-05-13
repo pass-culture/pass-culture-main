@@ -296,8 +296,8 @@ class BankAccountJourneyTest:
         assert len(status_history) == 2
         accepted_status_history = status_history[-1]
 
-        db_session.refresh(on_going_status_history)
-        db_session.refresh(bank_account)
+        db.session.refresh(on_going_status_history)
+        db.session.refresh(bank_account)
 
         assert on_going_status_history.timespan.upper is not None
         assert (
@@ -503,8 +503,8 @@ class BankAccountJourneyTest:
         assert len(status_history) == 2
         accepted_status_history = status_history[-1]
 
-        db_session.refresh(on_going_status_history)
-        db_session.refresh(bank_account)
+        db.session.refresh(on_going_status_history)
+        db.session.refresh(bank_account)
 
         assert on_going_status_history.timespan.upper is not None
         assert (
