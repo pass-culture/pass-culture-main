@@ -373,3 +373,49 @@ def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
     for offer in offers:
         offer.productId = product_id
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+def render_search_template(form: forms.ProductSearchForm | None = None) -> str:
+    if form is None:
+        form = forms.ProductSearchForm()
+
+    return render_template(
+        "products/search.html",
+        title="Recherche produit",
+        dst=url_for(".search_product"),
+        form=form,
+    )
+
+
+@list_products_blueprint.route("/search", methods=["GET"])
+def search_product() -> utils.BackofficeResponse:
+    if not request.args:
+        return render_search_template()
+
+    form = forms.ProductSearchForm(request.args)
+    if not form.validate():
+        return render_search_template(form), 400
+
+    result_type = forms.ProductFilterTypeEnum[form.product_filter_type.data]
+    search_query = form.q.data
+
+    product = None
+    if result_type == forms.ProductFilterTypeEnum.EAN:
+        product = db.session.query(offers_models.Product).filter_by(ean=search_query).one_or_none()
+    elif result_type == forms.ProductFilterTypeEnum.VISA:
+        product = (
+            db.session.query(offers_models.Product)
+            .filter(offers_models.Product.extraData["visa"].astext == search_query)
+            .one_or_none()
+        )
+    elif result_type == forms.ProductFilterTypeEnum.ALLOCINE_ID:
+        product = (
+            db.session.query(offers_models.Product)
+            .filter(offers_models.Product.extraData["allocine_id"].astext == search_query)
+            .one_or_none()
+        )
+
+    if not product:
+        raise NotFound()
+
+    return redirect(url_for(".get_product_details", product_id=product.id), 303)
