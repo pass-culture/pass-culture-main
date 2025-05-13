@@ -1,4 +1,4 @@
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 
 import pcapi.core.banner.api as banner_api
 from pcapi.core.fraud import models as fraud_models
@@ -19,7 +19,7 @@ def get_banner(user: users_models.User, query: serializers.BannerQueryParams) ->
         db.session.query(users_models.User)
         .filter_by(id=user.id)
         .options(
-            joinedload(users_models.User.beneficiaryFraudChecks).load_only(
+            selectinload(users_models.User.beneficiaryFraudChecks).load_only(
                 fraud_models.BeneficiaryFraudCheck.dateCreated,
                 fraud_models.BeneficiaryFraudCheck.eligibilityType,
                 fraud_models.BeneficiaryFraudCheck.type,
@@ -28,11 +28,11 @@ def get_banner(user: users_models.User, query: serializers.BannerQueryParams) ->
                 fraud_models.BeneficiaryFraudCheck.reasonCodes,
                 fraud_models.BeneficiaryFraudCheck.updatedAt,
             ),
-            joinedload(users_models.User.beneficiaryFraudReviews).load_only(
+            selectinload(users_models.User.beneficiaryFraudReviews).load_only(
                 fraud_models.BeneficiaryFraudReview.dateReviewed,
                 fraud_models.BeneficiaryFraudReview.review,
             ),
-            joinedload(users_models.User.deposits),
+            selectinload(users_models.User.deposits),
         )
         .one()
     )

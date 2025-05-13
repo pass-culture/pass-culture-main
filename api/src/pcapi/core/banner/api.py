@@ -30,7 +30,11 @@ def get_banner(
     is_geolocated: bool,
 ) -> serializers.Banner | None:
     banner = None
-    if user_subscription_state.next_step in ACTIVATION_BANNER_NEXT_STEPS:
+    should_display_activation_banner = (
+        user.eligibility != users_models.EligibilityType.FREE
+        and user_subscription_state.next_step in ACTIVATION_BANNER_NEXT_STEPS
+    )
+    if should_display_activation_banner:
         banner = _get_activation_banner(user, user_subscription_state)
     elif not is_geolocated:
         banner = GEOLOCATION_BANNER
