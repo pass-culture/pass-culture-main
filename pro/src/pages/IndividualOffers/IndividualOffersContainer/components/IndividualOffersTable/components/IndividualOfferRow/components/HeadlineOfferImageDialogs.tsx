@@ -26,12 +26,14 @@ type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean
   offer: ListOffersOfferResponseModel
   setIsFirstDialogOpen: (state: boolean) => void
+  onDialogClosed: () => void
 }
 
 export const HeadlineOfferImageDialogs = ({
   isFirstDialogOpen,
   setIsFirstDialogOpen,
   offer,
+  onDialogClosed,
 }: HeadlineOfferImageDialogsProps) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
@@ -65,6 +67,7 @@ export const HeadlineOfferImageDialogs = ({
   }: OnImageUploadArgs) => {
     try {
       setIsImageUploaderOpen(false)
+      onDialogClosed()
 
       await mutate(
         [GET_OFFERS_QUERY_KEY, apiFilters],
@@ -114,6 +117,7 @@ export const HeadlineOfferImageDialogs = ({
         confirmText="Ajouter une image"
         onCancel={() => {
           setIsFirstDialogOpen(false)
+          onDialogClosed()
         }}
         onConfirm={() => {
           setIsFirstDialogOpen(false)
@@ -124,7 +128,10 @@ export const HeadlineOfferImageDialogs = ({
       />
       <DialogBuilder
         open={isImageUploaderOpen}
-        onOpenChange={() => setIsImageUploaderOpen(false)}
+        onOpenChange={() => {
+          setIsImageUploaderOpen(false)
+          onDialogClosed()
+        }}
         variant="drawer"
       >
         <ModalImageUpsertOrEdit
