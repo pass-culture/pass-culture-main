@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -51,6 +51,8 @@ export const Offerers = (): JSX.Element => {
   const isLocalAuthority = MAYBE_LOCAL_AUTHORITY_APE_CODE.includes(
     offerer?.apeCode ?? ''
   )
+
+  const joinSpaceButtonRef = useRef<HTMLButtonElement>(null)
 
   /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
@@ -142,6 +144,10 @@ export const Offerers = (): JSX.Element => {
       categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     setShowLinkDialog(false)
+
+    setTimeout(() => {
+      joinSpaceButtonRef.current?.focus()
+    })
   }
 
   return (
@@ -183,7 +189,11 @@ export const Offerers = (): JSX.Element => {
             </Button>
           )}
         </div>
-        <Button variant={ButtonVariant.SECONDARY} onClick={doLinkUserToOfferer}>
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          onClick={doLinkUserToOfferer}
+          ref={joinSpaceButtonRef}
+        >
           Rejoindre cet espace
         </Button>
       </div>
