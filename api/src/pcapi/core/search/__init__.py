@@ -529,6 +529,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
                 offers_models.Product.ean,
                 offers_models.Product.extraData,
                 offers_models.Product.description,
+                offers_models.Product.likesCount,
                 offers_models.Product.thumbCount,
             )
             .options(
@@ -541,11 +542,6 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             .options(
                 sa_orm.joinedload(offers_models.Product.artists).load_only(
                     artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image
-                )
-            )
-            .options(
-                sa_orm.with_expression(
-                    offers_models.Product.likesCount, offers_repository.get_product_reaction_count_subquery()
                 )
             )
         )
