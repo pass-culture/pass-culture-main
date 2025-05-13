@@ -1,12 +1,14 @@
 import datetime
 import logging
-import typing
 
 import sqlalchemy as sa
 from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.elements import BinaryExpression
 
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
+from pcapi.core.users.models import User
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -16,11 +18,6 @@ from pcapi.utils import db as db_utils
 
 
 logger = logging.getLogger(__name__)
-
-if typing.TYPE_CHECKING:
-    from pcapi.core.offers.models import Offer
-    from pcapi.core.offers.models import Product
-    from pcapi.core.users.models import User
 
 
 class ProductChronicle(PcObject, Base, Model):
@@ -99,3 +96,24 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     @isPublished.expression  # type: ignore[no-redef]
     def isPublished(cls) -> BinaryExpression:
         return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))
+
+
+@sa.event.listens_for(Chronicle, "after_insert")
+def after_insert_chronicle(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Chronicle) -> None:
+    _increment_product_counts(connection, target, 1)
+
+
+@sa.event.listens_for(Chronicle, "after_delete")
+def after_delete_chronicle(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Chronicle) -> None:
+    # SQLAlchemy will not call this event if the object is deleted using a bulk delete
+    # (e.g. db.session.execute(sa.delete(Chronicle).where(...)))
+    _increment_product_counts(connection, target, -1)
+
+
+def _increment_product_counts(connection: sa.engine.Connection, target: Chronicle, increment: int) -> None:
+    if product_ids := [product.id for product in target.products]:
+        connection.execute(
+            sa.update(Product)
+            .where(Product.id.in_(product_ids))
+            .values(chroniclesCount=Product.chroniclesCount + increment)
+        )
