@@ -129,7 +129,7 @@ class DiscordSigninTest:
         assert mock_add_to_server.call_args[0][0] == "access_token"
         assert mock_add_to_server.call_args[0][1] == "discord_user_id"
 
-        db_session.refresh(discord_user)
+        db.session.refresh(discord_user)
         assert discord_user.discordId == "discord_user_id"
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
@@ -257,7 +257,7 @@ class DiscordSigninTest:
 
         assert response.status_code == 303
 
-        db_session.refresh(discord_user)
+        db.session.refresh(discord_user)
         assert discord_user.discordId is None
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")

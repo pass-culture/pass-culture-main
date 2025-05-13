@@ -58,7 +58,7 @@ class OffererPatchBankAccountsTest:
         assert linked_venue["id"] == venue.id
         assert linked_venue["commonName"] == venue.common_name
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert len(bank_account.venueLinks) == 1
 
@@ -105,7 +105,7 @@ class OffererPatchBankAccountsTest:
 
         assert response.status_code == 200
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert len(bank_account.venueLinks) == 1
 
@@ -151,7 +151,7 @@ class OffererPatchBankAccountsTest:
         bank_account_response = response.json["bankAccounts"].pop()
         assert not bank_account_response["linkedVenues"]
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert not bank_account.venueLinks
 
@@ -194,7 +194,7 @@ class OffererPatchBankAccountsTest:
         bank_account_response = response.json["bankAccounts"].pop()
         assert not bank_account_response["linkedVenues"]
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert not bank_account.venueLinks
 
@@ -270,7 +270,7 @@ class OffererPatchBankAccountsTest:
         bank_account_response = response.json["bankAccounts"].pop()
         assert not bank_account_response["linkedVenues"]
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert len(bank_account.venueLinks) == 3
 
@@ -396,7 +396,7 @@ class OffererPatchBankAccountsTest:
             assert linked_venue["id"] == venue.id
             assert linked_venue["commonName"] == venue.common_name
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert len(bank_account.venueLinks) == 4
         assert (
@@ -587,11 +587,11 @@ class OffererPatchBankAccountsTest:
         assert linked_venue["commonName"] == venue.common_name
 
         # Should not alter any other offerer data
-        db_session.refresh(foreign_link)
+        db.session.refresh(foreign_link)
         assert foreign_link.timespan.upper is None
         assert foreign_link.bankAccount == foreign_bank_account
 
-        db_session.refresh(bank_account)
+        db.session.refresh(bank_account)
 
         assert len(bank_account.venueLinks) == 1
 

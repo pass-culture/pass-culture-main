@@ -5,6 +5,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
+from pcapi.models import db
 
 
 @pytest.fixture(name="venue_provider")
@@ -42,10 +43,10 @@ class Returns204Test:
         )
 
         assert response.status_code == 204
-        db_session.refresh(offer)
+        db.session.refresh(offer)
         assert offer.isArchived
 
-        db_session.refresh(not_modified_offer)
+        db.session.refresh(not_modified_offer)
         assert not_modified_offer.isActive is True
         assert not_modified_offer.isArchived is False
 
@@ -69,11 +70,11 @@ class Returns204Test:
 
         assert response.status_code == 204
         for offer in offers:
-            db_session.refresh(offer)
+            db.session.refresh(offer)
             assert offer.isActive is False
             assert offer.isArchived
 
-        db_session.refresh(not_modified_offer)
+        db.session.refresh(not_modified_offer)
         assert not_modified_offer.isActive is True
         assert not_modified_offer.isArchived is False
 
@@ -103,7 +104,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"global": ["Cette action n'est pas autorisée sur une des offres"]}
-        db_session.refresh(offer)
+        db.session.refresh(offer)
         assert offer.isArchived is False
 
     def test_archive_archived_collective_offers(self, public_client, venue_provider, db_session):
@@ -115,7 +116,7 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        db_session.refresh(offer)
+        db.session.refresh(offer)
         assert offer.isArchived is True
 
 
@@ -132,5 +133,5 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json == {"ids": f"Les offres suivantes n'ont pas été trouvées: {{{offer.id}}}"}
-        db_session.refresh(offer)
+        db.session.refresh(offer)
         assert offer.isArchived is False

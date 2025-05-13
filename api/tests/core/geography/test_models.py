@@ -77,7 +77,7 @@ class AddressModelsTest:
                 departmentCode="7",
             )
 
-        db_session.rollback()
+        db.session.rollback()
 
         # More than 3 digits, should fail
         with pytest.raises(IntegrityError):

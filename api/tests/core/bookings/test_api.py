@@ -2113,8 +2113,8 @@ class ArchiveOldBookingsTest:
         api.archive_old_bookings()
 
         # then
-        db_session.refresh(recent_booking)
-        db_session.refresh(old_booking)
+        db.session.refresh(recent_booking)
+        db.session.refresh(old_booking)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
@@ -2141,9 +2141,9 @@ class ArchiveOldBookingsTest:
         api.archive_old_bookings()
 
         # then
-        db_session.refresh(recent_booking)
-        db_session.refresh(old_booking)
-        db_session.refresh(old_not_free_booking)
+        db.session.refresh(recent_booking)
+        db.session.refresh(old_booking)
+        db.session.refresh(old_not_free_booking)
         assert not recent_booking.displayAsEnded
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
@@ -2175,8 +2175,8 @@ class ArchiveOldBookingsTest:
         api.archive_old_bookings()
 
         # then
-        db_session.refresh(recent_booking)
-        db_session.refresh(old_booking)
+        db.session.refresh(recent_booking)
+        db.session.refresh(old_booking)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
