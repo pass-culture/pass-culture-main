@@ -64,7 +64,7 @@ class AddressInfo(pydantic_v1.BaseModel):
     longitude: float
     score: float
     city: str
-    street: str | None
+    street: str
 
     @pydantic_v1.validator("latitude")
     def validate_latitude(cls, latitude: float) -> float:
@@ -229,7 +229,7 @@ class TestingBackend(BaseBackend):
             latitude=43.555468,
             longitude=7.004585,
             city="Cannes",
-            street=None,
+            street="n/d",
         )
 
     def get_single_address_result(

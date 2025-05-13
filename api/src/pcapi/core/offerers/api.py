@@ -2975,7 +2975,7 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
 LocationData = typing.TypedDict(
     "LocationData",
     {
-        "street": str | None,
+        "street": str,
         "city": str,
         "postal_code": str,
         "insee_code": str | None,
@@ -2992,7 +2992,7 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     postal_code = location_data["postal_code"]
     latitude = decimal.Decimal(location_data["latitude"]).quantize(decimal.Decimal("1.00000"))
     longitude = decimal.Decimal(location_data["longitude"]).quantize(decimal.Decimal("1.00000"))
-    street = location_data.get("street")
+    street = location_data["street"]
     city = location_data["city"]
     ban_id = None if is_manual_edition else location_data.get("ban_id")
     city_code = insee_code or postal_code

@@ -32,10 +32,6 @@ class VenueModelConstraintsTest:
             db.session.flush()
         assert "check_has_siret_xor_comment_xor_isVirtual" in str(err.value)
 
-    def test_non_virtual_with_siret_can_have_null_address(self):
-        # The following statement should not fail.
-        factories.VenueFactory(siret="siret", street=None)
-
     def test_non_virtual_without_siret_must_have_comment(self):
         venue = factories.VenueWithoutSiretFactory()
         with pytest.raises(IntegrityError) as err:

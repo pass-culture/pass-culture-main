@@ -298,6 +298,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         longitude=0.0,
                         score=0.5,
                         city="unused",
+                        street="unused",
                     )
                 ],
                 {"2 rue de la Culture 01002 Là-Bas"},
@@ -314,6 +315,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         longitude=0.0,
                         score=0.5,
                         city="unused",
+                        street="unused",
                     ),
                     api_adresse.AddressInfo(
                         id="01234_56789_00003",
@@ -324,6 +326,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         longitude=0.0,
                         score=0.5,
                         city="unused",
+                        street="unused",
                     ),
                 ],
                 {"2 rue de la Culture 01002 Là-Bas", "2 rue de la Culture 01003 Là-Haut"},
@@ -340,6 +343,7 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
                         longitude=0.0,
                         score=0.5,
                         city="unused",
+                        street="unused",
                     )
                 ],
                 set(),

@@ -174,7 +174,7 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
             longitude=4.701174,
             score=0.93,
             city="Saint-Jean-de-Vaux",
-            street=None,
+            street="unused",
         )
 
         result = client.with_explicit_token(plain_api_key).post(
@@ -227,7 +227,7 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
             longitude=2.347,
             score=0.667307878787879,
             city="Paris",
-            street=None,
+            street="unused",
         )
 
         result = client.with_explicit_token(plain_api_key).post(
@@ -309,7 +309,7 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
             longitude=4.701174,
             score=0.93,
             city="Saint-Jean-de-Vaux",
-            street=None,
+            street="unused",
         )
 
         result = client.with_explicit_token(plain_api_key).post(

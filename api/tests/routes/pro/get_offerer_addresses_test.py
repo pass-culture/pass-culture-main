@@ -37,7 +37,7 @@ class Return200Test:
         offerer_address_3 = offerers_factories.OffererAddressFactory(
             offerer=offerer,
             label="3eme adresse",
-            address__street=None,
+            address__street="3 rue des moutons",
             address__postalCode="75008",
             address__city="Paris",
             address__banId="75108_7560_00000",
@@ -79,7 +79,7 @@ class Return200Test:
                 "isLinkedToVenue": False,
                 "label": "3eme adresse",
                 "postalCode": "75008",
-                "street": None,
+                "street": "3 rue des moutons",
             },
         ]
 

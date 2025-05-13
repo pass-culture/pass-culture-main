@@ -151,7 +151,7 @@ class Returns200Test:
                 longitude=0.72,
                 score=0.9,
                 city="Saint-Pierre-des-Corps",
-                street=None,
+                street="unused",
             ),
         ):
             # User of offerer 2 create the exact same address but manually. Maybe the BAN API is down, maybe is though the
@@ -200,7 +200,7 @@ class Returns200Test:
                 longitude=0.72,
                 score=0.9,
                 city="Saint-Pierre-des-Corps",
-                street=None,
+                street="unused",
             ),
         ):
             # User of offerer 3 could create manually the same address as user of offerer 2 for same reasons.
@@ -563,7 +563,7 @@ class Returns200Test:
             longitude=164.073,
             score=0.9371472727272726,
             city="Poum",
-            street=None,
+            street="unused",
         )
 
         # When

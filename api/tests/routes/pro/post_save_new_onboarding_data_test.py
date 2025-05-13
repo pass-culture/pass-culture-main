@@ -105,7 +105,7 @@ class Returns200Test:
             latitude=48.87171,
             longitude=2.308289,
             city="Paris",
-            street=None,
+            street="unused",
         ),
     )
     def test_nominal_case_with_manually_edited_address(self, mocked_get_centroid, client):
