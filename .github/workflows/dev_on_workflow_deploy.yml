@@ -34,13 +34,18 @@ on:
       doc-api-entrypoint:
         type: string
         required: false
-        default: 'api/documentation'
-
+        default: "api/documentation"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
+      PASSCULTURE_GITHUB_ACTION_APP_ID:
+        required: true
+        description: "Github Application ID to use to clone other repos"
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
+        required: true
+        description: "Private key for the Github application used to clone other repos"
 
 jobs:
   deploy-api:
@@ -57,33 +62,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      # Get github api token that will be used to commit and push app_version to pass-culture-deployment repository
       - name: "Get secrets (github)"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-${{ inputs.environment }}_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
 
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Liste des repositories à cloner
+          repositories: |
+            pass-culture-deployment
+            pass-culture-main
+            rendered-manifests
+            pc-connect
+          permission-contents: write
 
       - name: "Connect to cluster"
         uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
         with:
           cluster_scope: ${{ inputs.cluster_scope }}
           cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       - name: "Play pre-migrations"
         uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
@@ -109,7 +127,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: pass-culture/pass-culture-deployment
-          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.github-token.outputs.token }}
           path: ./pass-culture-deployment
 
       # Commit and push app_version to matching pcapi environment helm value file.
@@ -125,14 +143,14 @@ jobs:
           git push origin master
 
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.0.0
+        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v3.0.0
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
@@ -140,12 +158,12 @@ jobs:
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
+          api_token_github: ${{ steps.github-token.outputs.token }}
           chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
 
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
@@ -155,7 +173,7 @@ jobs:
         with:
           cluster_scope: ${{ inputs.cluster_scope }}
           cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       - name: "Sync ArgoCD application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
@@ -182,21 +200,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '${{ inputs.doc-api-entrypoint }}/.nvmrc'
+          node-version-file: "${{ inputs.doc-api-entrypoint }}/.nvmrc"
       - name: "Build documentation"
         run: |
-            set -e
-            npm install
-            npm run build
+          set -e
+          npm install
+          npm run build
         env:
           ENV: ${{ inputs.environment }}
-        working-directory: '${{ inputs.doc-api-entrypoint }}'
+        working-directory: "${{ inputs.doc-api-entrypoint }}"
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: "google-github-actions/auth@v2"
@@ -209,6 +227,7 @@ jobs:
         with:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_doc_api_${{ inputs.environment }}_firebase_json
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -270,22 +289,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      - name: "Get secrets (github)"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: pc-connect
+          permission-contents: read
+
+      - name: "Get secrets"
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-${{ inputs.environment }}_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
 
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
@@ -295,7 +323,7 @@ jobs:
         with:
           cluster_scope: ${{ inputs.cluster_scope }}
           cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       - name: "Configure algolia"
         id: "set_algolia_settings"
@@ -313,8 +341,8 @@ jobs:
   deploy-image-resizing-ehp:
     name: "Deploy image-resizing EHP"
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
     if: ${{ inputs.environment != 'production' && inputs.environment != 'ops' }}
     with:
@@ -331,8 +359,8 @@ jobs:
   deploy-image-resizing-production:
     name: "Deploy image-resizing production"
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
     if: ${{ inputs.environment == 'production' }}
     with:
