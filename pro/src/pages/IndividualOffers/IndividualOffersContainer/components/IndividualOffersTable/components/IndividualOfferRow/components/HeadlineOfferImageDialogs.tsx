@@ -20,7 +20,6 @@ import {
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean
@@ -122,16 +121,12 @@ export const HeadlineOfferImageDialogs = ({
         title="Ajoutez une image pour mettre votre offre à la une"
         open={isFirstDialogOpen}
       />
-      <DialogBuilder
+      <ModalImageUpsertOrEdit
+        mode={UploaderModeEnum.OFFER}
+        onImageUpload={onImageUpload}
         open={isImageUploaderOpen}
         onOpenChange={() => setIsImageUploaderOpen(false)}
-        variant="drawer"
-      >
-        <ModalImageUpsertOrEdit
-          mode={UploaderModeEnum.OFFER}
-          onImageUpload={onImageUpload}
-        />
-      </DialogBuilder>
+      />
     </>
   )
 }
