@@ -268,6 +268,7 @@ def _book_offer(
                 stock_id_at_providers=stock.idAtProviders,
                 booking=booking,
                 beneficiary=beneficiary,
+                provider=stock.offer.lastProvider,
             )
             booking.externalBookings = [
                 models.ExternalBooking(
