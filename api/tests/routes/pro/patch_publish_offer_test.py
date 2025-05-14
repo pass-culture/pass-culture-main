@@ -279,5 +279,5 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."]
+            "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]
         }

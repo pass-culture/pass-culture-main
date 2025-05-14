@@ -363,7 +363,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             "ean": book_product.ean,
             "venue_id": venue.id,
             "provider_id": api_key.provider.id,
-            "exc": "RejectedOrPendingOfferNotEditable",
+            "exc": "OfferException",
         }
         assert response.status_code == 204
 

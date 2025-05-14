@@ -287,8 +287,10 @@ def edit_collective_offer(
         raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
     except educational_exceptions.CollectiveOfferIsPublicApi:
         raise ApiErrors({"global": ["Collective offer created by public API is only editable via API."]}, 403)
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise ApiErrors(error.errors, status_code=400)
+    except (
+        offers_exceptions.OfferException
+    ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
+        raise ApiErrors(error.errors)
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
@@ -345,8 +347,10 @@ def edit_collective_offer_template(
         raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
 
     # edition errors
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise ApiErrors(error.errors, status_code=400)
+    except (
+        offers_exceptions.OfferException
+    ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
+        raise ApiErrors(error.errors)
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except educational_exceptions.UpdateCollectiveOfferTemplateError as err:

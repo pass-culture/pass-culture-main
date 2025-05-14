@@ -59,7 +59,7 @@ class CheckCanInputIdAtProviderTest:
         validation.check_can_input_id_at_provider(provider, "an id at provider")
 
     def test_raise_when_id_at_provider_given_without_a_provider(self):
-        with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_can_input_id_at_provider(None, "an id at provider")
 
         assert error.value.errors["idAtProvider"] == [
@@ -107,7 +107,7 @@ class CheckCanInputIdAtProviderForThisVenueTest:
             idAtProvider=id_at_provider,
         )
 
-        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider)
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
@@ -290,7 +290,7 @@ class CheckStockIsDeletableTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=offer)
 
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_stock_is_deletable(stock)
 
         assert error.value.errors["global"] == [
@@ -307,7 +307,7 @@ class CheckStockIsDeletableTest:
         too_long_ago = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         stock = offers_factories.EventStockFactory(beginningDatetime=too_long_ago)
 
-        with pytest.raises(exceptions.TooLateToDeleteStock) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_stock_is_deletable(stock)
 
         assert error.value.errors["global"] == [
@@ -340,7 +340,7 @@ class CheckStockIsUpdatableTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=offer)
 
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable):
+        with pytest.raises(exceptions.OfferException):
             validation.check_stock_is_updatable(stock)
 
     def test_offer_from_non_allocine_provider(self):
@@ -476,7 +476,7 @@ class CheckValidationStatusTest:
     def test_pending_offer(self):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_validation_status(pending_validation_offer)
 
         assert error.value.errors["global"] == [
@@ -486,7 +486,7 @@ class CheckValidationStatusTest:
     def test_rejected_offer(self):
         rejected_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
 
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_validation_status(rejected_offer)
 
         assert error.value.errors["global"] == [
@@ -510,7 +510,7 @@ class CheckOfferWithdrawalTest:
         )
 
     def test_withdrawable_event_offer_with_no_ticket_to_withdraw_cant_have_delay(self):
-        with pytest.raises(exceptions.NoDelayWhenEventWithdrawalTypeHasNoTicket):
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_offer_withdrawal(
                 withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
                 withdrawal_delay=60 * 30,
@@ -518,6 +518,10 @@ class CheckOfferWithdrawalTest:
                 booking_contact="booking@conta.ct",
                 provider=None,
             )
+
+        assert error.value.errors["offer"] == [
+            "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"
+        ]
 
     def test_non_withdrawable_event_offer_can_have_withdrawal(self):
         provider = providers_factories.ProviderFactory(
@@ -555,7 +559,7 @@ class CheckOfferWithdrawalTest:
         ],
     )
     def test_withdrawable_event_offer_with_ticket_must_have_delay(self, withdrawal_type):
-        with pytest.raises(exceptions.EventWithTicketMustHaveDelay):
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_offer_withdrawal(
                 withdrawal_type=withdrawal_type,
                 withdrawal_delay=None,
@@ -563,6 +567,8 @@ class CheckOfferWithdrawalTest:
                 booking_contact="booking@conta.ct",
                 provider=None,
             )
+
+        assert error.value.errors["offer"] == ["Un évènement avec ticket doit avoir un délai de renseigné"]
 
     @pytest.mark.parametrize(
         "subcategory_id",
@@ -578,7 +584,7 @@ class CheckOfferWithdrawalTest:
         )
 
     def test_withdrawable_event_offer_must_have_withdrawal(self):
-        with pytest.raises(exceptions.WithdrawableEventOfferMustHaveWithdrawal):
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_offer_withdrawal(
                 withdrawal_type=None,
                 withdrawal_delay=None,
@@ -587,8 +593,12 @@ class CheckOfferWithdrawalTest:
                 provider=None,
             )
 
+        assert error.value.errors["offer"] == [
+            "Une offre qui a un ticket retirable doit avoir un type de retrait renseigné",
+        ]
+
     def test_withdrawable_event_offer_must_have_booking_contact(self):
-        with pytest.raises(exceptions.WithdrawableEventOfferMustHaveBookingContact):
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_offer_withdrawal(
                 withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
                 withdrawal_delay=None,
@@ -596,6 +606,10 @@ class CheckOfferWithdrawalTest:
                 booking_contact=None,
                 provider=None,
             )
+
+        assert error.value.errors["offer"] == [
+            "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation",
+        ]
 
     def test_withdrawable_event_offer_with_ticketing_service_at_provider_level_can_be_in_app(self):
         provider = providers_factories.PublicApiProviderFactory(name="Technical provider")
@@ -623,7 +637,7 @@ class CheckOfferWithdrawalTest:
         )
 
     def test_withdrawable_event_offer_without_provider_cannot_be_in_app(self):
-        with pytest.raises(exceptions.NonLinkedProviderCannotHaveInAppTicket):
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_offer_withdrawal(
                 withdrawal_type=WithdrawalTypeEnum.IN_APP,
                 withdrawal_delay=None,
@@ -631,11 +645,14 @@ class CheckOfferWithdrawalTest:
                 booking_contact="booking@conta.ct",
                 provider=None,
             )
+        assert error.value.errors["offer"] == [
+            "Vous devez supporter l'interface de billeterie pour créer des offres avec billet",
+        ]
 
     def test_withdrawable_event_offer_with_provider_without_a_ticketing_service_implementation_cannot_be_in_app(self):
         # A provider without bookingExternalUrl or cancelExternalUrl
         provider = providers_factories.ProviderFactory(name="Technical provider", localClass=None)
-        with pytest.raises(exceptions.NonLinkedProviderCannotHaveInAppTicket):
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_offer_withdrawal(
                 withdrawal_type=WithdrawalTypeEnum.IN_APP,
                 withdrawal_delay=None,
@@ -643,6 +660,10 @@ class CheckOfferWithdrawalTest:
                 booking_contact="booking@conta.ct",
                 provider=provider,
             )
+
+        assert error.value.errors["offer"] == [
+            "Vous devez supporter l'interface de billeterie pour créer des offres avec billet",
+        ]
 
 
 class CheckOfferExtraDataTest:
@@ -718,7 +739,7 @@ class CheckOfferExtraDataTest:
             )
 
         assert error.value.errors["ean"] == [
-            "Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
+            "Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."
         ]
 
     def test_allow_creation_with_inactive_ean(self):
@@ -884,7 +905,7 @@ class CheckPublicationDateTest:
     )
     def test_check_publication_date_should_raise(self, offer_factory, publication_date, expected_message):
         offer = offer_factory()
-        with pytest.raises(exceptions.FutureOfferException) as exc:
+        with pytest.raises(exceptions.OfferException) as exc:
             validation.check_publication_date(offer, publication_date)
             assert exc.value.errors["publication_date"] == [expected_message]
 
@@ -892,7 +913,7 @@ class CheckPublicationDateTest:
         offer = offers_factories.ThingOfferFactory()
         publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(days=30)
         offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
-        with pytest.raises(exceptions.FutureOfferException) as exc:
+        with pytest.raises(exceptions.OfferException) as exc:
             validation.check_publication_date(offer, publication_date)
             msg = "Cette offre est déjà programmée pour être publiée dans le futur"
             assert exc.value.errors["publication_date"] == [msg]
@@ -970,7 +991,7 @@ class CheckOfferNameDoesNotContainEanTest:
         ],
     )
     def test_check_offer_name_does_not_contain_ean_should_raise(self, offer_name):
-        with pytest.raises(exceptions.EanInOfferNameException):
+        with pytest.raises(exceptions.OfferException):
             validation.check_offer_name_does_not_contain_ean(offer_name)
 
 
@@ -1030,13 +1051,13 @@ class ValidateEventOpeningHoursCanBeUpdatedTest:
         db.session.commit()
 
         new_start_date = now_with_offset(5)
-        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.OfferEditionBaseException)
+        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.OfferException)
 
     def test_offer_with_timestamped_stock_cannot_update_anything(self):
         new_start_date = now_with_offset(5)
         offers_factories.StockFactory(beginningDatetime=new_start_date, offer=self.offer)
 
-        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.OfferEditionBaseException)
+        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.OfferException)
 
     def test_the_event_has_been_soft_deleted_any_update_is_not_ok(self):
         self.event_opening_hours.isSoftDeleted = True
