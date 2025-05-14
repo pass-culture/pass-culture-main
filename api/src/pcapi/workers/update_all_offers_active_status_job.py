@@ -39,7 +39,6 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
         statuses=[filters["status"]] if filters["status"] else None,
         venue_id=filters["venue_id"],
         provider_id=filters["provider_id"],
-        category_id=filters["category_id"],
         name_keywords=filters["name_or_isbn"],
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
