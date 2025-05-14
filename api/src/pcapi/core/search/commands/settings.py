@@ -6,7 +6,6 @@ import os
 import pathlib
 
 import click
-from algoliasearch.search_index import SearchIndex
 
 import pcapi
 import pcapi.core.search.backends.algolia as algolia_backend

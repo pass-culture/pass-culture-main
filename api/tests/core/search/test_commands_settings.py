@@ -4,7 +4,6 @@ from unittest import mock
 
 import pytest
 import requests_mock
-from algoliasearch.search_index import SearchIndex
 
 import pcapi.core.search.commands.settings as commands_settings
 from pcapi import settings
