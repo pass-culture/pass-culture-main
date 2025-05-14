@@ -38,7 +38,7 @@ describe('ImageDragAndDrop', () => {
     expect(input).toHaveAttribute('type', 'file')
     expect(input).toHaveAttribute(
       'accept',
-      'image/*,.jpeg,.jpg,.png,.mpo,.webp'
+      'image/jpeg,.jpeg,.jpg,image/png,.png,image/mpo,.mpo,image/webp,.webp'
     )
   })
 
