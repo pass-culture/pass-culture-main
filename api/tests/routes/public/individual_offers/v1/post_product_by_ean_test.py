@@ -35,7 +35,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean,
             lastProviderId=product_provider.id,
-            idAtProviders=ean,
         )
 
         return ean, product
@@ -102,7 +101,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=product_provider.id,
-            idAtProviders="1234567890123",
         )
         unknown_ean = "1234567897123"
 
@@ -380,7 +378,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=product_provider.id,
-            idAtProviders="1234567890123",
         )
         finance_factories.CustomReimbursementRuleFactory(offerer=api_key.offerer, rate=0.2, offer=None)
 
@@ -519,7 +516,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=product_provider.id,
-            idAtProviders="1234567890123",
         )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -623,13 +619,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean_to_update,
             lastProviderId=product_provider.id,
-            idAtProviders=ean_to_update,
         )
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean_to_create,
             lastProviderId=product_provider.id,
-            idAtProviders=ean_to_create,
         )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -852,7 +846,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean,
             lastProviderId=api_key.provider.id,
-            idAtProviders=ean,
         )
 
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue, lastProvider=api_key.provider)
@@ -863,7 +856,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=other_ean,
             lastProviderId=api_key.provider.id,
-            idAtProviders=other_ean,
         )
 
         other_offer = offers_factories.ThingOfferFactory(

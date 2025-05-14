@@ -157,7 +157,8 @@ class GcuCompatibilityType(enum.Enum):
     FRAUD_INCOMPATIBLE = "FRAUD_INCOMPATIBLE"
 
 
-class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
+class Product(PcObject, Base, Model, HasThumbMixin):
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
@@ -168,6 +169,8 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         server_default=GcuCompatibilityType.COMPATIBLE.value,
     )
     last_30_days_booking = sa.Column(sa.Integer, nullable=True)
+    lastProviderId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"

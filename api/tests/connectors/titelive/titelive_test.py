@@ -50,7 +50,6 @@ class TiteliveTest:
         product = titelive.get_new_product_from_ean13(ean)
 
         assert product.ean == ean
-        assert product.idAtProviders == ean
         assert product.description == html.unescape(article["resume"])
         assert product.thumbCount == article["image"]
         assert product.name == oeuvre["titre"]
@@ -78,7 +77,6 @@ class TiteliveTest:
         product = titelive.get_new_product_from_ean13(ean)
 
         assert product.ean == ean
-        assert product.idAtProviders == ean
         assert product.description is None
 
     def test_get_new_product_from_ean_13_without_gtl(self, requests_mock):

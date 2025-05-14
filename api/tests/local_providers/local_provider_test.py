@@ -64,32 +64,28 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        new_product = db.session.query(offers_models.Product).one()
+        new_product = db.session.query(offers_models.Offer).one()
         assert new_product.name == "New Product"
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_updates_existing_object(self, next_function):
-        # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = ProvidableInfo(date_modified_at_provider=datetime(2018, 1, 1))
-        product = offers_factories.ThingProductFactory(
+        offers_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2000, 1, 1),
             lastProvider=provider,
-            idAtProviders=providable_info.id_at_providers,
             name="Old product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
 
-        # When
         local_provider.updateObjects()
 
-        # Then
-        product = db.session.query(offers_models.Product).one()
-        assert product.name == "New Product"
-        assert product.dateModifiedAtLastProvider == providable_info.date_modified_at_provider
+        offer = db.session.query(offers_models.Offer).one()
+        assert offer.name == "New Product"
+        assert offer.dateModifiedAtLastProvider == providable_info.date_modified_at_provider
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_existing_object_when_date_is_older_than_last_modified_date(self, next_function):
@@ -99,7 +95,6 @@ class UpdateObjectsTest:
         product = offers_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2020, 1, 1),
             lastProvider=provider,
-            idAtProviders=providable_info.id_at_providers,
             name="Old product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
@@ -159,38 +154,32 @@ class UpdateObjectsTest:
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_only_one_object_when_limit_is_one(self, next_function):
-        # Given
         providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info1 = ProvidableInfo()
         providable_info2 = ProvidableInfo(id_at_providers="2")
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info1], [providable_info2]]
 
-        # When
         local_provider.updateObjects(limit=1)
 
-        # Then
-        new_product = db.session.query(offers_models.Product).one()
-        assert new_product.name == "New Product"
-        assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        new_offer = db.session.query(offers_models.Offer).one()
+        assert new_offer.name == "New Product"
+        assert new_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
 
 
 @pytest.mark.usefixtures("db_session")
 class CreateObjectTest:
     def test_returns_object_with_expected_attributes(self):
-        # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = ProvidableInfo()
         local_provider = provider_test_utils.TestLocalProvider()
 
-        # When
-        product = local_provider._create_object(providable_info)
+        offer = local_provider._create_object(providable_info)
 
-        # Then
-        assert isinstance(product, offers_models.Product)
-        assert product.name == "New Product"
-        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.lastProviderId == provider.id
+        assert isinstance(offer, offers_models.Offer)
+        assert offer.name == "New Product"
+        assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert offer.lastProviderId == provider.id
 
     def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self):
         # Given
@@ -221,7 +210,6 @@ class HandleUpdateTest:
         product = offers_factories.ThingProductFactory(
             name="Old product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
         )
         local_provider = provider_test_utils.TestLocalProvider()
@@ -263,9 +251,7 @@ class HandleThumbTest:
     def test_handle_thumb_increments_thumbCount(self):
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        providable_info = ProvidableInfo()
         product = offers_factories.ThingProductFactory(
-            idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
         )
         local_provider = provider_test_utils.TestLocalProviderWithThumb()
@@ -286,9 +272,7 @@ class UploadThumbTest:
     def test_first_thumb(self, app):
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        providable_info = ProvidableInfo()
         product = offers_factories.ThingProductFactory(
-            idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
             thumbCount=0,
         )
@@ -306,9 +290,7 @@ class UploadThumbTest:
     @patch("pcapi.core.object_storage.store_public_object")
     def test_fifth_thumb(self, mock_store_public_object):
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        providable_info = ProvidableInfo()
         product = offers_factories.ThingProductFactory(
-            idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
             thumbCount=4,
         )
