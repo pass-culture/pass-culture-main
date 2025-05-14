@@ -6,4 +6,5 @@ export interface Address {
   street: string
   banId: string | null
   manuallySetAddress?: boolean
+  inseeCode: string | null
 }

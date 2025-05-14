@@ -56,6 +56,8 @@ export const OfferLocation = ({
       }
 
       await Promise.all([
+        formik.setFieldValue('manuallySetAddress', false),
+        formik.setFieldValue('inseeCode', venue.address.inseeCode),
         formik.setFieldValue('banId', venue.address.banId),
         formik.setFieldValue('city', venue.address.city),
         formik.setFieldValue('locationLabel', venue.address.label),
@@ -78,9 +80,7 @@ export const OfferLocation = ({
   const toggleManuallySetAddress = async () => {
     const isAddressManual = !manuallySetAddress.value
     await setManuallySetAddress(isAddressManual)
-    if (isAddressManual) {
-      await resetAddressFields({ formik })
-    }
+    await resetAddressFields({ formik })
   }
 
   const venueAddress = venue?.address

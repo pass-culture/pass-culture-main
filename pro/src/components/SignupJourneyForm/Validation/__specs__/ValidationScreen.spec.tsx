@@ -50,6 +50,7 @@ const addressInformations: Address = {
   latitude: 1.23,
   longitude: 2.9887,
   postalCode: '75001',
+  inseeCode: '75111',
   banId: '75118_5995_00043',
 }
 
@@ -317,6 +318,7 @@ describe('ValidationScreen', () => {
             latitude: 0,
             longitude: 0,
             postalCode: '75001',
+            inseeCode: '75111',
           },
           token: 'token',
           isOpenToPublic: false,

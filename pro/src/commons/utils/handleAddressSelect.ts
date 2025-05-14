@@ -16,4 +16,5 @@ export const handleAddressSelect = (
   setFieldValue('latitude', selectedItem?.extraData?.latitude ?? '')
   setFieldValue('longitude', selectedItem?.extraData?.longitude ?? '')
   setFieldValue('banId', selectedItem?.value ?? '')
+  setFieldValue('inseeCode', selectedItem?.extraData?.inseeCode ?? '')
 }

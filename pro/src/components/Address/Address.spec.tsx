@@ -117,6 +117,7 @@ describe('AddressSelect', () => {
           latitude: 22.2,
           longitude: -2.22,
           postalCode: '75003',
+          inseeCode: '75103',
           'search-addressAutocomplete': '12 rue des tournesols 75003 Paris',
           street: '12 rue des tournesols',
         },
