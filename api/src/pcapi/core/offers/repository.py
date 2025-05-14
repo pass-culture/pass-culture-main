@@ -460,7 +460,6 @@ def get_collective_offers_by_filters(
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
     provider_id: int | None = None,
-    category_id: str | None = None,
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
@@ -489,12 +488,6 @@ def get_collective_offers_by_filters(
 
     if provider_id is not None:
         query = query.filter(educational_models.CollectiveOffer.providerId == provider_id)
-
-    if category_id is not None:
-        requested_subcategories = [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
-        ]
-        query = query.filter(educational_models.CollectiveOffer.subcategoryId.in_(requested_subcategories))
 
     if name_keywords is not None:
         search = name_keywords
@@ -563,7 +556,6 @@ def get_collective_offers_template_by_filters(
     offerer_id: int | None = None,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
     venue_id: int | None = None,
-    category_id: str | None = None,
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
@@ -584,17 +576,15 @@ def get_collective_offers_template_by_filters(
                 offerers_models.UserOfferer.isValidated,
             )
         )
+
     if offerer_id is not None:
         if user_is_admin:
             query = query.join(offerers_models.Venue)
         query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+
     if venue_id is not None:
         query = query.filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
-    if category_id is not None:
-        requested_subcategories = [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
-        ]
-        query = query.filter(educational_models.CollectiveOfferTemplate.subcategoryId.in_(requested_subcategories))
+
     if name_keywords is not None:
         search = name_keywords
         if len(name_keywords) > 3:

@@ -391,7 +391,6 @@ def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any
             "status": None,
             "venue_id": venue_provider.venueId,
             "provider_id": provider_id,
-            "category_id": None,
             "name_or_isbn": None,
             "creation_mode": None,
             "period_beginning_date": None,
