@@ -124,6 +124,10 @@ def build_main_app():
     # But in some tests, there are more recursions than the default accepted number (1000)
     sys.setrecursionlimit(3000)
 
+    @app.teardown_request
+    def clean_g_between_requests(exc: BaseException | None = None) -> None:
+        g.pop("_login_user", default=None)
+
     app.config.from_mapping(
         CELERY=dict(
             # For testing, tasks are run locally
