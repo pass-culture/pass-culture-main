@@ -57,7 +57,8 @@ def import_iris_from_shp_file(path: pathlib.Path) -> int:
     target_crs = pyproj.CRS.from_epsg(constants.WGS_SPATIAL_REFERENCE_IDENTIFIER)
     transformer = pyproj.Transformer.from_crs(source_crs, target_crs, always_xy=True)
 
-    project = lambda x, y: transformer.transform(x, y)
+    def project(x: typing.Any, y: typing.Any) -> tuple[typing.Any, typing.Any]:
+        return transformer.transform(x, y)
 
     for sr in sf.shapeRecords():
         geom = shapely_shape(sr.shape.__geo_interface__)

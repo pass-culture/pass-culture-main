@@ -306,9 +306,12 @@ class ApiAdresseBackend(BaseBackend):
         return data
 
     def _cached_search(self, params: dict) -> dict:
+        def retriever() -> str:
+            return json.dumps(self._search(params))
+
         key_template = "cache:api:addresse:search:%(hash_params)s"
         hash_params = md5(json.dumps(params).encode("utf-8")).hexdigest()
-        retriever = lambda: json.dumps(self._search(params))
+
         cached_data = cache_utils.get_from_cache(
             retriever=retriever,
             key_template=key_template,
