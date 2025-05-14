@@ -548,7 +548,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         num_queries = 2  # Select API key + rollback
         super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
-    def test_can_book_collective_offer(self, client):
+    def test_can_book_collective_offer(self, client, features):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 

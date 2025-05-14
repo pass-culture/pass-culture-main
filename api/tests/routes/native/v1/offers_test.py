@@ -323,6 +323,52 @@ class OffersTest:
         assert response.json["venue"]["isPermanent"]
         assert response.json["stocks"][0]["features"] == []
 
+    @pytest.mark.parametrize(
+        "provider_class,ff_name,ff_value,booking_disabled",
+        [
+            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, True),
+            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", False, False),
+            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", True, True),
+            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", False, False),
+            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", True, True),
+            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", False, False),
+            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", True, True),
+            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", False, False),
+            ("BoostStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, False),
+        ],
+    )
+    def test_offer_external_booking_is_disabled_by_ff(
+        self, features, client, provider_class, ff_name, ff_value, booking_disabled
+    ):
+        provider = get_provider_by_local_class(provider_class)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue__isPermanent=True,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=provider,
+        )
+        providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
+
+        offer_id = offer.id
+        setattr(features, ff_name, ff_value)
+        # 1. select offer
+        # 2. select stocks
+        # 3. select mediations
+        # 4. check cinema venue_provider exists
+        # 5. select active cinema provider
+        # 6. check offer is from current cinema provider
+        # 7. update offer (deactivate)
+        # 8. select chronicles
+        # 9. select futureOffer
+        # 10. select artists
+        with assert_num_queries(10):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
+
+        assert response.json["isExternalBookingsDisabled"] is booking_disabled
+
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
         stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id

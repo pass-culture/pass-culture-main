@@ -142,7 +142,7 @@ class Returns200Test:
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Somewhere in Paris"}],
         }
 
-    def test_get_educational_institution_num_queries(self, client):
+    def test_get_educational_institution_num_queries(self, client, features):
         redactor = EducationalRedactorFactory()
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()

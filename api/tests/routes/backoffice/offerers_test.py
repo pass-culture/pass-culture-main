@@ -861,6 +861,8 @@ class GetOffererStatsTest(GetEndpointHelper):
     # get offerer (1 query)
     # get offerers offers stats (6 query: 3 to check the quantity and 3 to get the data)
     expected_num_queries = 9
+    # -1 sql query replaced with clickhouse query
+    expected_num_queries_when_clickhouse_enabled = expected_num_queries - 1
 
     @pytest.mark.parametrize(
         "venue_factory,expected_revenue_text",
@@ -1086,6 +1088,7 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     # user
     # offerer
     expected_num_queries = 3
+    expected_num_queries_when_clickhouse_enabled = 3
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
@@ -1679,6 +1682,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
     # - venues with joined data (1 query)
     # - venue providers (selectinload: 1 query)
     expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = datetime.datetime.utcnow()
@@ -1741,7 +1745,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Partenaire technique"] == ""
         assert rows[1]["Fraude"] == ""
 
-    def test_get_caledonian_managed_venues(self, authenticated_client):
+    def test_get_caledonian_managed_venues(self, authenticated_client, features):
         offerer = offerers_factories.CaledonianOffererFactory()
         venue = offerers_factories.CaledonianVenueFactory(managingOfferer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte NC")

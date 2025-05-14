@@ -20,7 +20,7 @@ from pcapi.models import db
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_refuse_collective_booking(self, client):
+    def test_refuse_collective_booking(self, client, features):
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",

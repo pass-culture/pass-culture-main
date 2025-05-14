@@ -3574,9 +3574,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     # session + user + offer with joined data
     expected_num_queries = 3
-    expected_num_queries_with_ff = 4
 
-    def test_get_detail_offer(self, authenticated_client):
+    def test_get_detail_offer(self, authenticated_client, features):
         offer = offers_factories.OfferFactory(
             description="Une offre pour tester",
             withdrawalDetails="Demander à la caisse",
@@ -3592,8 +3591,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
             validation_status_prediction=offers_models.ComplianceValidationStatusPrediction.APPROVED,
             validation_status_prediction_reason="Cette offre est conforme aux règles de conformité",
         )
-        url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3657,7 +3656,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
         offer = offers_factories.OfferFactory(product=product)
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3772,7 +3771,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data) == 0
 
-    def test_get_detail_validated_offer(self, legit_user, authenticated_client):
+    def test_get_detail_validated_offer(self, legit_user, authenticated_client, features):
         validation_date = datetime.datetime.utcnow()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
@@ -3781,7 +3780,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3789,18 +3788,18 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Utilisateur de la dernière validation"] == legit_user.full_name
         assert descriptions["Date de la dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
 
-    def test_get_detail_offer_without_show_subtype(self, legit_user, authenticated_client):
+    def test_get_detail_offer_without_show_subtype(self, legit_user, authenticated_client, features):
         offer = offers_factories.OfferFactory(
             withdrawalDetails="Demander à la caisse",
             extraData={"showType": 1510},
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-    def test_get_detail_offer_display_modify_offer_button(self, client):
+    def test_get_detail_offer_display_modify_offer_button(self, client, features):
         offer = offers_factories.OfferFactory()
         manage_offers = (
             db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.MANAGE_OFFERS.name).one()
@@ -3815,7 +3814,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3824,7 +3823,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Valider l'offre" not in buttons
         assert "Rejeter l'offre" not in buttons
 
-    def test_get_detail_offer_display_validation_buttons_fraud(self, client):
+    def test_get_detail_offer_display_validation_buttons_fraud(self, client, features):
         offer = offers_factories.OfferFactory()
         pro_fraud_actions = (
             db.session.query(perm_models.Permission)
@@ -3841,7 +3840,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3850,7 +3849,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Valider" in buttons
         assert "Rejeter" in buttons
 
-    def test_get_detail_rejected_offer(self, legit_user, authenticated_client):
+    def test_get_detail_rejected_offer(self, legit_user, authenticated_client, features):
         validation_date = datetime.datetime.utcnow()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
@@ -3859,7 +3858,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3903,14 +3902,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Date / Heure (Martinique)"] == "31/12/2026 à 22h00"
         assert stocks_rows[0]["Fin des réservations (Martinique)"] == "25/12/2026 à 12h00"
 
-    def test_get_offer_details_with_one_expired_stock(self, legit_user, authenticated_client):
+    def test_get_offer_details_with_one_expired_stock(self, legit_user, authenticated_client, features):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock = offers_factories.EventStockFactory(
             offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
         )
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
@@ -3929,7 +3928,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             expired_stock.beginningDatetime, "%d/%m/%Y à %Hh%M"
         )
 
-    def test_get_offer_details_with_two_expired_stocks(self, legit_user, authenticated_client):
+    def test_get_offer_details_with_two_expired_stocks(self, legit_user, authenticated_client, features):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock_1 = offers_factories.EventStockFactory(
@@ -3945,7 +3944,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         )
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
@@ -3992,11 +3991,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
         venue_factory,
         expected_price,
         expected_timezone,
+        features,
     ):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_factory())
         stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4015,10 +4015,10 @@ class GetOfferDetailsTest(GetEndpointHelper):
             stock.beginningDatetime, "%d/%m/%Y à %Hh%M", address=offer.offererAddress.address
         )
 
-    def test_get_offer_details_with_soft_deleted_stock(self, authenticated_client):
+    def test_get_offer_details_with_soft_deleted_stock(self, authenticated_client, features):
         stock = offers_factories.EventStockFactory(quantity=0, dnBookedQuantity=0, isSoftDeleted=True)
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4056,6 +4056,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         expected_price_2,
         expected_price_3,
         expected_price_4,
+        features,
     ):
         venue = venue_factory()
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -4077,7 +4078,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_bronze)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_free)
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4097,7 +4098,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[3]["Tarif"] == "OR"
         assert stocks_rows[3]["Prix"] == expected_price_4
 
-    def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client):
+    def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client, features):
         now = datetime.datetime.utcnow()
         offer = offers_factories.EventOfferFactory()
         stock1 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=5))
@@ -4106,7 +4107,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer, beginningDatetime=now + datetime.timedelta(days=7), isSoftDeleted=True
         )
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4118,7 +4119,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert [row["ID"] for row in stocks_rows] == [str(stock2.id), str(stock3.id), str(stock1.id)]
 
-    def test_get_event_offer(self, legit_user, authenticated_client):
+    def test_get_event_offer(self, legit_user, authenticated_client, features):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenueFactory.create_batch(2, managingOfferer=venue.managingOfferer, pricing_point=venue)
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -4129,14 +4130,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
         # - count stocks with beginningDatetime in the past
         # - count reimbursed bookings
         # - fetch destination venue candidates
-        with assert_num_queries(self.expected_num_queries_with_ff + 4):
+        with assert_num_queries(self.expected_num_queries + 4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         buttons = html_parser.extract(response.data, "button")
         assert "Modifier le partenaire culturel" in buttons
 
-    def test_get_offer_details(self, authenticated_client):
+    def test_get_offer_details(self, authenticated_client, features):
         address = geography_factories.AddressFactory(
             street="1v Place Jacques Rueff",
             postalCode="75007",
@@ -4152,38 +4153,38 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Localisation"] == "Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800"
 
-    def test_get_offer_details_with_offerer_confidence_rule(self, authenticated_client):
+    def test_get_offer_details_with_offerer_confidence_rule(self, authenticated_client, features):
         rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
         offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer)
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Entité juridique"] == "Offerer Revue manuelle"
 
-    def test_get_offer_details_with_venue_confidence_rule(self, authenticated_client):
+    def test_get_offer_details_with_venue_confidence_rule(self, authenticated_client, features):
         rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue__name="Venue")
         offer = offers_factories.OfferFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Partenaire culturel"] == "Venue Revue manuelle"
 
-    def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
+    def test_collective_offer_with_top_acteur_offerer(self, authenticated_client, features):
         offer = offers_factories.OfferFactory(
             venue__managingOfferer__name="Offerer",
             venue__managingOfferer__tags=[
@@ -4192,7 +4193,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

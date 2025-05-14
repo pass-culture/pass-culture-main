@@ -186,7 +186,7 @@ class ReindexOfferIdsTest:
 
         assert search_testing.search_store["offers"] == {}
 
-    def test_that_base_query_is_correct(self, app):
+    def test_that_base_query_is_correct(self, app, features):
         # Make sure that `get_base_query_for_offer_indexation` loads
         # all offers and related data that is expected by
         # `reindex_offer_ids()`.
@@ -204,7 +204,6 @@ class ReindexOfferIdsTest:
             app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
 
         num_queries = 1  # base query for indexation
-        num_queries += 1  # FF
         num_queries += 1  # last30DaysBookings
 
         num_queries += 1  # venues from offers
@@ -295,7 +294,7 @@ class ReindexVenueIdsTest:
         search.reindex_venue_ids([venue.id])
         assert venue.id not in search_testing.search_store["venues"]
 
-    def test_no_unexpected_query_made(self):
+    def test_no_unexpected_query_made(self, features):
         venues = offerers_factories.VenueFactory.create_batch(3, isPermanent=True)
         venue_ids = [venue.id for venue in venues]
 

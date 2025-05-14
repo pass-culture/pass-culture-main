@@ -356,7 +356,6 @@ class OffererBookingRecapTest:
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
         # 1 - SELECT venue with bank account
-        # 0 - SELECT feature (already cached by BeneficiaryGrant18Factory.beneficiaryImports)
         # 1 - SELECT external booking (might be preloaded ?)
         # 1 - SELECT activation code (might be preloaded ?)
         with assert_num_queries(3):
@@ -384,7 +383,6 @@ class OffererBookingRecapTest:
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
         # 1 - SELECT venue with bank account
-        # 0 - SELECT feature (already cached by BeneficiaryGrant18Factory.beneficiaryImports)
         # 1 - SELECT external booking (might be preloaded ?)
         # 1 - SELECT activation code (might be preloaded ?)
         with assert_num_queries(3):
