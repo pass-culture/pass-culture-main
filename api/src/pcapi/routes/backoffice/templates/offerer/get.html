@@ -143,8 +143,8 @@
               {% endif %}
               <p class="mb-1">
                 <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
-                {{ bank_information_status.ok }} OK
-                / {{ bank_information_status.ko }} KO
+                {{ bank_information_status.ok or 0 }} OK
+                / {{ bank_information_status.ko or 0 }} KO
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Tags :</span>
