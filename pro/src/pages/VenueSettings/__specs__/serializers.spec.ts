@@ -11,6 +11,7 @@ describe('serializeEditVenueBodyModel', () => {
     formValues = {
       street: '3 Rue de Valois',
       postalCode: '75001',
+      inseeCode: '75111',
       city: 'Paris',
       addressAutocomplete: '3 Rue de Valois 75001 Paris',
       'search-addressAutocomplete': '3 Rue de Valois 75001 Paris',
@@ -38,6 +39,7 @@ describe('serializeEditVenueBodyModel', () => {
       longitude: '2.348979',
       name: 'Lieu de test',
       postalCode: '75001',
+      inseeCode: '75111',
       publicName: 'Adresse de la venue',
       street: '3 Rue de Valois',
       siret: '41816609600069',

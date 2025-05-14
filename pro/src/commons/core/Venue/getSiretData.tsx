@@ -13,6 +13,7 @@ export type GetSiretDataResponse = {
     longitude: number | null
     name: string
     postalCode: string
+    inseeCode: string | null
     siret: string
     apeCode: string
     legalCategoryCode: string
@@ -33,6 +34,7 @@ const getSiretDataRequest = async (
         longitude: null,
         name: '',
         postalCode: '',
+        inseeCode: '',
         siret: '',
         apeCode: '',
         legalCategoryCode: '',
@@ -69,6 +71,7 @@ const getSiretDataRequest = async (
         longitude: longitude,
         name: response.name,
         postalCode: addressData[0].postalCode,
+        inseeCode: addressData[0].inseeCode,
         siret: response.siret,
         apeCode: response.ape_code,
         legalCategoryCode: response.legal_category_code,

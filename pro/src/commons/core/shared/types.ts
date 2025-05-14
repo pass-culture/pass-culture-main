@@ -25,6 +25,7 @@ export interface AddressFormValues {
   banId: string | null
   street: string | null
   postalCode: string
+  inseeCode: string | null
   city: string
   coords: string
   latitude: string

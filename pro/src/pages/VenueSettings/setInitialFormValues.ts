@@ -15,6 +15,7 @@ export const setInitialFormValues = ({
   return {
     street: venue.address?.street || '',
     postalCode: venue.address?.postalCode || '',
+    inseeCode: venue.address?.inseeCode || null,
     city: venue.address?.city || '',
     addressAutocomplete: `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`,
     'search-addressAutocomplete': `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`,

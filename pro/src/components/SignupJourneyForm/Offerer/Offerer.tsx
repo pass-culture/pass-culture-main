@@ -122,6 +122,7 @@ export const Offerer = (): JSX.Element => {
         latitude: offererSiretData.values.latitude,
         longitude: offererSiretData.values.longitude,
         postalCode: offererSiretData.values.postalCode,
+        inseeCode: offererSiretData.values.inseeCode,
         legalCategoryCode: offererSiretData.values.legalCategoryCode,
         banId: offererSiretData.values.banId,
         hasVenueWithSiret:

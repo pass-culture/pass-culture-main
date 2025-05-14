@@ -18,6 +18,7 @@ describe('getsiretData', () => {
         longitude: null,
         name: '',
         postalCode: '',
+        inseeCode: '',
         siret: '',
         apeCode: '',
         legalCategoryCode: '',

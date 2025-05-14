@@ -18,6 +18,7 @@ export type UsefulInformationFormValues = {
   addressAutocomplete?: string
   coords?: string
   banId?: string | null
+  inseeCode?: string | null
   locationLabel?: string | null
   street?: string | null
   postalCode?: string

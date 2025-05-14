@@ -138,7 +138,9 @@ export const SelectAutocomplete = ({
   }, [searchField.value])
 
   useEffect(() => {
-    setFilteredOptions(searchInOptions(options, searchField.value))
+    setFilteredOptions(
+      searchInOptions(options, (searchField.value ?? '').trim())
+    )
   }, [searchField.value, options])
 
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = async (event) => {
