@@ -10,7 +10,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import schemas
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -18,6 +17,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.serializers import offers_serialize
 
 import tests
 
@@ -1002,17 +1002,24 @@ class ValidateEventOpeningHoursCanBeUpdatedTest:
         return self._offer
 
     def assert_is_valid(self, **kwargs):
-        body = schemas.UpdateEventOpeningHoursModel(**kwargs)
-        assert validation.check_event_opening_hours_can_be_updated(self.offer, self.event_opening_hours, body) is None
+        body = offers_serialize.UpdateEventOpeningHoursModel(**kwargs)
+        assert (
+            validation.check_event_opening_hours_can_be_updated(
+                self.offer, self.event_opening_hours, body.endDatetime, body.startDatetime
+            )
+            is None
+        )
 
     def assert_is_not_valid(self, **kwargs):
         error = kwargs.pop("err", exceptions.EventOpeningHoursException)
         field = kwargs.pop("field", None)
 
-        body = schemas.UpdateEventOpeningHoursModel(**kwargs)
+        body = offers_serialize.UpdateEventOpeningHoursModel(**kwargs)
 
         with pytest.raises(error) as exc_info:
-            validation.check_event_opening_hours_can_be_updated(self.offer, self.event_opening_hours, body)
+            validation.check_event_opening_hours_can_be_updated(
+                self.offer, self.event_opening_hours, body.endDatetime, body.startDatetime
+            )
 
         if field:
             assert getattr(exc_info.value, "field") == field
