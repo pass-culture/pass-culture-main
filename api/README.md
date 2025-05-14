@@ -10,8 +10,7 @@ Voici le backend de l'application pass Culture; il est lancé via `docker compos
 Le gestionnaire de paquet recommandé est [Homebrew](https://brew.sh/).
 
 ```sh
-brew install coreutils libxmlsec1 weasyprint ozeias/postgresql/postgis@15 redis python@3.13 pipx
-npm install --global squawk-cli  # yarn peut être utilisé à la place de npm
+brew install coreutils libxmlsec1 weasyprint ozeias/postgresql/postgis@15 redis uv
 
 brew services start redis
 brew services start postgresql@15
@@ -24,8 +23,7 @@ L'installation de PostGIS 15 peut demander une configuration en amont :
 - pour Ubuntu il faut configurer le repo apt de [postgresql](https://www.postgresql.org/download/linux/ubuntu/)
 
 ```sh
-sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0 pipx postgresql-15-postgis-3 pipx
-npm install --global squawk-cli  # yarn peut être utilisé à la place de npm
+sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0 postgresql-15-postgis-3 uv
 
 sudo systemctl enable redis
 sudo systemctl enable postgresql
@@ -37,21 +35,19 @@ sudo systemctl enable postgresql
 
 Il faut se positionner dans le dossier `pass-culture-main/api/` et pas à la racine `pass-culture-main/`.
 
-Poetry est le gestionnaire de paquets python, pour ajouter une dépendance il faut mettre à jour le fichier de lock.
-L'activation de l'environnement virtuel se fait avec la commande `eval $(poetry env activate)`.
+uv est le gestionnaire de paquets python, pour ajouter une dépendance il faut mettre à jour le fichier de lock.
+L'activation de l'environnement virtuel se fait avec la commande `source .venv/bin/activate`.
 
 ```sh
-pipx install poetry
-poetry env use python3.13
-poetry install --with dev
+uv sync
 
 psql postgres <<EOF
   CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
   CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
 EOF
 
-eval $(poetry env activate)  # activation de l'environnement virtuel
-pc setup-no-docker           # créera les tables PostgreSQL et le fichier .env.local.secret
+source .venv/bin/activate  # activation de l'environnement virtuel
+pc setup-no-docker         # créera les tables PostgreSQL et le fichier .env.local.secret
 ```
 
 > !NOTE  
@@ -63,7 +59,7 @@ pc setup-no-docker           # créera les tables PostgreSQL et le fichier .env.
 - Soit via python
 
 ```shell
-$ eval $(poetry env activate)  # avant chaque commande
+$ source .venv/bin/activate  # avant chaque commande
 
 # dans des terminaux différents, sans le script pc
 $ python src/pcapi/app.py
@@ -164,7 +160,7 @@ Pour ça, via Docker:
 
 Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker compose
 
-### 1. Lancement des tests depuis la ligne de commande dans l'environnement poetry
+### 1. Lancement des tests depuis la ligne de commande dans l'environnement uv
 
 ```shell
 pytest -m 'not backoffice' # lance tous les tests hors backoffice
