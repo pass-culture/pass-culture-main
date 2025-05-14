@@ -21,10 +21,6 @@ class CannotFindOffererUserEmail(Exception):
     pass
 
 
-class CannotFindOffererSiren(Exception):
-    pass
-
-
 class CannotFindProviderOfferer(Exception):
     pass
 

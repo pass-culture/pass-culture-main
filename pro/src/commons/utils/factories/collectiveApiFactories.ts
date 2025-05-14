@@ -186,6 +186,7 @@ export const getCollectiveOfferManagingOffererFactory = (
   return {
     id: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
+    siren: '123456789',
     allowedOnAdage: true,
     ...customGetCollectiveOfferManagingOfferer,
   }

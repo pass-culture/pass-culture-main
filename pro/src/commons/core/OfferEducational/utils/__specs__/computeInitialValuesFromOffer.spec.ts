@@ -30,6 +30,7 @@ const offerer = {
   allowedOnAdage: true,
   id: 1,
   managedVenues: venues,
+  siren: '123456789',
   name: 'toto',
 }
 

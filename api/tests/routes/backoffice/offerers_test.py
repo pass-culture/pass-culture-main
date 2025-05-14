@@ -4807,16 +4807,6 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
-    def test_offerer_without_siren(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren=None)
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        db.session.expire_all()
-
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback transaction
-            response = authenticated_client.get(url)
-            assert response.status_code == 404
-
     def test_offerer_with_invalid_siren(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="222222222")
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -4894,16 +4884,6 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
         assert "Date de radiation : 31/12/2023" in content
         assert "Activité du siège social : TEST" in content
 
-    def test_offerer_without_siren(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren=None)
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        db.session.expire_all()
-
-        with assert_num_queries(self.expected_num_queries + 1):  # rollback transaction
-            response = authenticated_client.get(url)
-            assert response.status_code == 404
-
 
 class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_entreprise_urssaf_info"
@@ -4955,16 +4935,6 @@ class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
         )
         assert "Attestation de vigilance valide" not in content
 
-    def test_offerer_without_siren(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren=None)
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        db.session.expire_all()
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 404
-
 
 class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_entreprise_dgfip_info"
@@ -5011,16 +4981,6 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
         assert "À jour des obligations fiscales : Non" in content
         assert "Date de délivrance de l'attestation" not in content
         assert "Date de la période analysée" not in content
-
-    def test_offerer_without_siren(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren=None)
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        db.session.expire_all()
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 404
 
 
 class GetCloseOffererFormTest(GetEndpointHelper):

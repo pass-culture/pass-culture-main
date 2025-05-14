@@ -86,9 +86,7 @@
           </p>
           <p class="card-subtitle text-muted mb-3 h5">
             {{ offerer.identifier_name }} : {{ links.build_siren_to_external_link(offerer) }}
-            {% if offerer.siren %}
-              <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de l'entité juridique") }}</span>
-            {% endif %}
+            <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de l'entité juridique") }}</span>
           </p>
           <div class="row pt-3">
             <div class="col-4">
@@ -257,7 +255,7 @@
           {% if show_subscription_tab %}
             {{ build_details_tab("subscription", "Parcours auto-entrepreneur", active_tab == 'subscription') }}
           {% endif %}
-          {% if offerer.siren and not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
           {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
@@ -282,7 +280,7 @@
               </turbo-frame>
             {% endcall %}
           {% endif %}
-          {% if offerer.siren and not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
               <turbo-frame data-turbo="false" id="offerer_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}

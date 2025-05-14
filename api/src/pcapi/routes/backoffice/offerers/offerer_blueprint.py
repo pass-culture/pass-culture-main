@@ -1309,9 +1309,6 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
-    if not offerer.siren:
-        raise NotFound()
-
     if not siren_utils.is_valid_siren(offerer.siren):
         mark_transaction_as_invalid()
         return render_template("offerer/get/details/entreprise_info.html", is_invalid_siren=True, offerer=offerer)
@@ -1348,7 +1345,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
-    if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
+    if not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}
@@ -1367,7 +1364,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
-    if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
+    if not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}
@@ -1394,7 +1391,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
 
-    if not offerer.siren or not siren_utils.is_valid_siren(offerer.siren):
+    if not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}

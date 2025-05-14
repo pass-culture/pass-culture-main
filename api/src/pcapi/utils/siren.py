@@ -65,8 +65,8 @@ def is_valid_siret(digits: str) -> bool:
     return False
 
 
-def is_rid7(siren: str | None) -> bool:
-    return bool(siren and re.match(NEW_CALEDONIA_SIREN_RE, siren))
+def is_rid7(siren: str) -> bool:
+    return bool(re.match(NEW_CALEDONIA_SIREN_RE, siren))
 
 
 def is_ridet(siret: str | None) -> bool:

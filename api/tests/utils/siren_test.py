@@ -62,7 +62,7 @@ def test_is_valid_siret(digits, expected):
 
 @pytest.mark.parametrize(
     "data,expected",
-    [("NC1234567", True), ("NN1234567", False), ("123456789", False), ("NCNCNCNCN", False), (None, False)],
+    [("NC1234567", True), ("NN1234567", False), ("123456789", False), ("NCNCNCNCN", False)],
 )
 def test_is_rid7(data, expected):
     result = siren_utils.is_rid7(data)

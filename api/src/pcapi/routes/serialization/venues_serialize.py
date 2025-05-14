@@ -108,8 +108,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     isValidated: bool
     name: str
     postalCode: str
-    # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: str | None
+    siren: str
     street: str | None
     allowedOnAdage: bool
 

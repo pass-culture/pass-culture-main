@@ -50,7 +50,7 @@ describe('CollectiveOfferCreation', () => {
   })
   const defaultProps = {
     offer: getCollectiveOfferFactory({
-      venue: { ...venue, managingOfferer: offerer },
+      venue: { ...venue, managingOfferer: {...offerer, siren: '123456789'} },
     }),
     isTemplate: false,
   }

@@ -5566,7 +5566,6 @@
                     },
                     "siren": {
                         "example": "123456789",
-                        "nullable": true,
                         "title": "Siren",
                         "type": "string"
                     }
@@ -5575,6 +5574,7 @@
                     "id",
                     "createdDatetime",
                     "name",
+                    "siren",
                     "allowedOnAdage"
                 ],
                 "title": "OffererResponse",

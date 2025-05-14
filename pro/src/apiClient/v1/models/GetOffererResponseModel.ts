@@ -25,7 +25,7 @@ export type GetOffererResponseModel = {
   managedVenues?: Array<GetOffererVenueResponseModel>;
   name: string;
   postalCode: string;
-  siren?: string | null;
+  siren: string;
   street?: string | null;
   venuesWithNonFreeOffersWithoutBankAccounts: Array<number>;
 };

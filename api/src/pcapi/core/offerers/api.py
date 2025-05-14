@@ -1052,7 +1052,6 @@ def create_offerer(
         db.session.flush()
 
     if is_new:
-        assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
         try:
             siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
         except sirene_exceptions.SireneException as exc:
@@ -1707,7 +1706,7 @@ def can_offerer_create_educational_offer(offerer_id: int) -> bool:
     if offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
         return True
 
-    siren = offerers_repository.find_siren_by_offerer_id(offerer_id)
+    siren = db.session.query(models.Offerer).filter_by(id=offerer_id).with_entities(models.Offerer.siren).scalar()
     try:
         response = adage_client.get_adage_offerer(siren)
         return len(response) != 0
