@@ -78,19 +78,6 @@ class Returns200Test:
         assert "thumbUrl" in response_json
         assert response_json["id"] == offer.id
 
-    def test_access_even_if_offerer_has_no_siren(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=user_offerer.offerer,
-            venue__managingOfferer__siren=None,
-        )
-
-        auth_client = client.with_session_auth(email=user_offerer.user.email)
-        offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
-            assert response.status_code == 200
-
     def test_returns_an_active_mediation(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)

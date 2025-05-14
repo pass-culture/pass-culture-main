@@ -348,6 +348,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   isActive: false,
   isValidated: false,
   managedVenues: [],
+  siren: '123456789',
   name: 'Ma super structure',
   id: 1,
   postalCode: '00000',

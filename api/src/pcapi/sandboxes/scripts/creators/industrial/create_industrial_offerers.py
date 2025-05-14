@@ -4,7 +4,7 @@ import logging
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.offerers.repository import check_if_siren_already_exists
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
@@ -54,7 +54,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
 
     # add a real offerer just for the inscription/validation API
     real_siren = "784340093"
-    if not check_if_siren_already_exists(real_siren):
+    if not db.session.query(db.session.query(Offerer.id).filter(Offerer.siren == real_siren).exists()):
         print("creating offerer 1")
         offerer_name = "784340093 lat:48.8 lon:1.48"
         offerer = offerers_factories.OffererFactory.create(

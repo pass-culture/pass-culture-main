@@ -166,8 +166,6 @@ def create_collective_offer(
         offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
 
     # venue / offerer errors
-    except offerers_exceptions.CannotFindOffererSiren:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except educational_exceptions.VenueIdDontExist:
@@ -556,8 +554,6 @@ def create_collective_offer_template(
         offer = educational_api_offer.create_collective_offer_template(offer_data=body, user=current_user)
 
     # venue / offerer errors
-    except offerers_exceptions.CannotFindOffererSiren:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except educational_exceptions.VenueIdDontExist:

@@ -6,6 +6,6 @@ export type GetCollectiveOfferManagingOffererResponseModel = {
   allowedOnAdage: boolean;
   id: number;
   name: string;
-  siren?: string | null;
+  siren: string;
 };
 

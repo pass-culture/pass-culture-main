@@ -17,16 +17,7 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
             managing_offerer = db.session.query(offerers_models.Offerer).filter_by(id=venue.managingOffererId).one()
         else:
             managing_offerer = venue.managingOfferer
-        if not managing_offerer.siren:
-            api_errors.add_error(
-                "siren", "Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné"
-            )
-        if (
-            venue.siret
-            and managing_offerer
-            and managing_offerer.siren
-            and not venue.siret.startswith(managing_offerer.siren)
-        ):
+        if venue.siret and managing_offerer and not venue.siret.startswith(managing_offerer.siren):
             api_errors.add_error("siret", "Le code SIRET doit correspondre à un établissement de votre structure")
 
     if venue.isVirtual:

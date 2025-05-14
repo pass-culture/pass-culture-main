@@ -343,19 +343,6 @@ def find_new_offerer_user_email(offerer_id: int) -> str:
     raise exceptions.CannotFindOffererUserEmail()
 
 
-def check_if_siren_already_exists(siren: str) -> bool:
-    return db.session.query(db.session.query(models.Offerer.id).filter(models.Offerer.siren == siren).exists())
-
-
-def find_siren_by_offerer_id(offerer_id: int) -> str:
-    siren = db.session.query(models.Offerer).filter_by(id=offerer_id).with_entities(models.Offerer.siren).scalar()
-
-    if siren:
-        return siren
-
-    raise exceptions.CannotFindOffererSiren
-
-
 def venues_have_individual_offers(*venues: models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
     return db.session.query(

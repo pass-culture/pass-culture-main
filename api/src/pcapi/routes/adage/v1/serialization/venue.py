@@ -69,7 +69,7 @@ class VenueModel(BaseModel):
     network: list[str] | None
     statusId: int | None
     label: VenueLabelModel | None
-    siren: str | None
+    siren: str | None  # TODO (jcicurel) : remove | None
     isPermanent: bool | None
     isAdmin: bool | None
     offerer: OffererModel | None

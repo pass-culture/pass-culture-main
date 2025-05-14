@@ -53,17 +53,6 @@ class VenueValidationTest:
         api_errors = validate(venue)
         assert api_errors.errors == {"siret": ["Le code SIRET doit correspondre à un établissement de votre structure"]}
 
-    @pytest.mark.usefixtures("db_session")
-    def test_missing_offerer_siren(self):
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren=None,
-            siret="12345678901234",
-        )
-        api_errors = validate(venue)
-        assert api_errors.errors == {
-            "siren": ["Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné"]
-        }
-
 
 class OfferValidationTest:
     def test_digital_offer_with_virtual_venue(self):

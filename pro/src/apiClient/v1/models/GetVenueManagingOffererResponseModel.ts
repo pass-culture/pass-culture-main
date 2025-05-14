@@ -10,7 +10,7 @@ export type GetVenueManagingOffererResponseModel = {
   isValidated: boolean;
   name: string;
   postalCode: string;
-  siren?: string | null;
+  siren: string;
   street?: string | null;
 };
 

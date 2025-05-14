@@ -108,7 +108,7 @@
        target="_blank"
        title="Rechercher dans l'open data de la Nouvelle Calédonie"
        class="link-primary">{{ rid7 }} <i class="bi bi-box-arrow-up-right"></i></a>
-  {% elif offerer.siren %}
+  {% else %}
     <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/{{ offerer.siren }}"
        target="_blank"
        title="Visualiser dans l'Annuaire des Entreprises"

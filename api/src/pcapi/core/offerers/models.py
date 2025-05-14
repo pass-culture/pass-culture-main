@@ -1013,9 +1013,7 @@ class Offerer(
         "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"
     )
 
-    siren = sa.Column(
-        sa.String(9), nullable=True, unique=True
-    )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
+    siren: str = sa.Column(sa.String(9), nullable=False, unique=True)
 
     dateValidated = sa.Column(sa.DateTime, nullable=True, default=None)
 
@@ -1088,7 +1086,7 @@ class Offerer(
 
     @hybrid_property
     def rid7(self) -> str | None:
-        if self.siren and siren_utils.is_rid7(self.siren):
+        if siren_utils.is_rid7(self.siren):
             return siren_utils.siren_to_rid7(self.siren)
         return None
 
@@ -1106,7 +1104,7 @@ class Offerer(
         Caledonian offerers with SIREN can be checked on "Annuaire des Entreprises" or Sirene API, but cannot create
         collective offers or apply on Adage. Check `rid7` or `is_caledonian` property depending on purpose.
         """
-        if self.siren and siren_utils.is_rid7(self.siren):
+        if siren_utils.is_rid7(self.siren):
             return True
         if self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
             return True

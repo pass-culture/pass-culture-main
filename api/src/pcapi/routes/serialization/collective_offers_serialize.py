@@ -274,8 +274,7 @@ class OfferDomain(BaseModel):
 class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
     id: int
     name: str
-    # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: str | None
+    siren: str
     allowedOnAdage: bool
 
     class Config:

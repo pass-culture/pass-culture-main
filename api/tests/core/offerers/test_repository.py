@@ -166,17 +166,6 @@ class HasDigitalVenueWithAtLeastOneOfferTest:
         assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
 
 
-class GetSirenByOffererIdTest:
-    def test_return_siren_for_offerer_id(self):
-        offerer = offerers_factories.OffererFactory()
-
-        assert repository.find_siren_by_offerer_id(offerer.id) == offerer.siren
-
-    def test_return_error_when_no_siren_found(self):
-        with pytest.raises(exceptions.CannotFindOffererSiren):
-            repository.find_siren_by_offerer_id(0)
-
-
 class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
     def test_should_return_two_venues_of_offerer_without_offers_and_validated_5_days_ago(self):
         five_days_ago = datetime.utcnow() - timedelta(days=5)
