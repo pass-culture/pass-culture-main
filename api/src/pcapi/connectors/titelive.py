@@ -198,7 +198,6 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
 
     provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
     return offers_models.Product(
-        idAtProviders=ean,
         lastProvider=provider,
         description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]),

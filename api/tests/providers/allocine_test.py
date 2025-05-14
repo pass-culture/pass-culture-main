@@ -46,10 +46,6 @@ class AllocineMovieListTest:
             .one()
         )
         assert all(product.lastProviderId == allocine_products_provider.id for product in catalogue)
-        assert all(
-            product.idAtProviders == f"{allocine_products_provider.id}:{product.extraData['allocineId']}"
-            for product in catalogue
-        )
 
         movie_data = catalogue[0].extraData
         expected_data = fixtures.ALLOCINE_MOVIE_LIST_PAGE_1["movieList"]["edges"][0]["node"]

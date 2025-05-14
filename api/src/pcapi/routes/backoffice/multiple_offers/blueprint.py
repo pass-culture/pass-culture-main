@@ -63,11 +63,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     ean = form.ean.data
 
-    product = (
-        db.session.query(offers_models.Product)
-        .filter(offers_models.Product.ean == ean, offers_models.Product.idAtProviders.is_not(None))
-        .one_or_none()
-    )
+    product = db.session.query(offers_models.Product).filter(offers_models.Product.ean == ean).one_or_none()
 
     if not product:
         flash("Aucun produit n'a été trouvé avec cet EAN-13", "warning")

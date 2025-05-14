@@ -70,7 +70,6 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
             description=article.resume,
             extraData=build_music_extra_data(article, common_article_fields),
             ean=article.gencod,
-            idAtProviders=article.gencod,
             lastProvider=self.provider,
             name=self.truncate_string(common_article_fields["titre"]),
             subcategoryId=parse_titelive_music_codesupport(article.codesupport).id,
@@ -86,7 +85,6 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
         if product.extraData is None:
             product.extraData = offers_models.OfferExtraData()
         product.extraData.update(build_music_extra_data(article, common_article_fields))
-        product.idAtProviders = article.gencod
         product.ean = article.gencod
         product.name = self.truncate_string(common_article_fields["titre"])
         product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id

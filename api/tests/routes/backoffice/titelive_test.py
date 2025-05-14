@@ -169,7 +169,6 @@ class AddProductWhitelistTest(PostEndpointHelper):
         thing_product = offers_factories.ThingProductFactory(
             ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
-            idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
             subcategoryId="LIVRE_PAPIER",
         )
@@ -263,7 +262,6 @@ class AddProductWhitelistTest(PostEndpointHelper):
         thing_product = offers_factories.ThingProductFactory(
             ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
-            idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
             subcategoryId="LIVRE_PAPIER",
         )
@@ -352,7 +350,6 @@ class AddProductWhitelistTest(PostEndpointHelper):
         thing_product = offers_factories.ThingProductFactory(
             ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
-            idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
             subcategoryId="LIVRE_PAPIER",
         )

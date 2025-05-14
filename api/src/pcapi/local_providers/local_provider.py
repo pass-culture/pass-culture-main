@@ -46,7 +46,6 @@ class LocalProvider(Iterator):
     def can_create(self) -> bool:
         pass
 
-    @abstractmethod
     def fill_object_attributes(self, obj: Model) -> None:
         pass
 
@@ -65,7 +64,7 @@ class LocalProvider(Iterator):
 
     def create_providable_info(
         self,
-        pc_object: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
+        pc_object: type[offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
         date_modified_at_provider: datetime,
         new_id_at_provider: str,
@@ -176,9 +175,9 @@ class LocalProvider(Iterator):
 
     def get_existing_object(
         self,
-        model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
+        model_type: type[offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
-    ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+    ) -> offers_models.Offer | offers_models.Stock | None:
         # exception to the ProvidableMixin because Offer no longer extends this class
         # idAtProviders has been replaced by idAtProvider property
         lookup = {}
@@ -194,7 +193,7 @@ class LocalProvider(Iterator):
 
     def get_existing_pc_obj(
         self, providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
-    ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+    ) -> offers_models.Offer | offers_models.Stock | None:
         object_in_current_chunk = get_object_from_current_chunks(providable_info, chunk_to_insert, chunk_to_update)
         if object_in_current_chunk is None:
             return self.get_existing_object(providable_info.type, providable_info.id_at_providers)

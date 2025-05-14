@@ -55,9 +55,7 @@ class TiteliveSearchTest:
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
-        offers_factories.ProductFactory(
-            ean="3700187679323", idAtProviders="3700187679323", lastProvider=titelive_epagine_provider
-        )
+        offers_factories.ProductFactory(ean="3700187679323", lastProvider=titelive_epagine_provider)
 
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
@@ -65,7 +63,7 @@ class TiteliveSearchTest:
         cd_product = (
             db.session.query(offers_models.Product)
             .filter(
-                offers_models.Product.idAtProviders == "3700187679323",
+                offers_models.Product.ean == "3700187679323",
                 offers_models.Product.lastProvider == titelive_epagine_provider,
             )
             .one()
@@ -94,7 +92,7 @@ class TiteliveSearchTest:
         shared_gtl_product = (
             db.session.query(offers_models.Product)
             .filter(
-                offers_models.Product.idAtProviders == "3700187679324",
+                offers_models.Product.ean == "3700187679324",
                 offers_models.Product.lastProvider == titelive_epagine_provider,
             )
             .one()
@@ -128,7 +126,7 @@ class TiteliveSearchTest:
         vinyle_product = (
             db.session.query(offers_models.Product)
             .filter(
-                offers_models.Product.idAtProviders == "5054197199738",
+                offers_models.Product.ean == "5054197199738",
                 offers_models.Product.lastProvider == titelive_epagine_provider,
             )
             .one()
@@ -304,9 +302,7 @@ class TiteliveSearchTest:
         assert len(synced_products) == 3
         assert db.session.query(offers_models.ProductMediation).count() == 2
 
-        no_thumbnail_product_1 = next(
-            (product for product in synced_products if product.idAtProviders == "3700187679324"), None
-        )
+        no_thumbnail_product_1 = next((product for product in synced_products if product.ean == "3700187679324"), None)
 
         assert no_thumbnail_product_1 is not None
         assert (
@@ -315,9 +311,7 @@ class TiteliveSearchTest:
             .count()
             == 0
         )
-        no_thumbnail_product_2 = next(
-            (product for product in synced_products if product.idAtProviders == "5054197199738"), None
-        )
+        no_thumbnail_product_2 = next((product for product in synced_products if product.ean == "5054197199738"), None)
         assert no_thumbnail_product_2 is not None
         assert (
             db.session.query(offers_models.ProductMediation)
@@ -340,9 +334,7 @@ class TiteliveSearchTest:
         synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
         assert db.session.query(offers_models.ProductMediation).count() == 4
-        no_thumbnail_product = next(
-            (product for product in synced_products if product.idAtProviders == "3700187679324"), None
-        )
+        no_thumbnail_product = next((product for product in synced_products if product.ean == "3700187679324"), None)
         assert no_thumbnail_product is not None
         assert (
             db.session.query(offers_models.ProductMediation)
@@ -365,9 +357,7 @@ class TiteliveSearchTest:
         synced_products = db.session.query(offers_models.Product).all()
         assert len(synced_products) == 3
         assert db.session.query(offers_models.ProductMediation).count() == 4
-        no_thumbnail_product = next(
-            (product for product in synced_products if product.idAtProviders == "3700187679324"), None
-        )
+        no_thumbnail_product = next((product for product in synced_products if product.ean == "3700187679324"), None)
         assert no_thumbnail_product is not None
         assert (
             db.session.query(offers_models.ProductMediation)
@@ -391,7 +381,7 @@ class TiteliveSearchTest:
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
         synced_product = db.session.query(offers_models.Product).one()
-        assert synced_product.idAtProviders == "3700187679323"
+        assert synced_product.ean == "3700187679323"
 
     def test_titelive_music_sync_from_page(self, requests_mock, settings):
         _configure_login_and_images(requests_mock, settings)
@@ -459,7 +449,6 @@ class TiteliveBookSearchTest:
 
         product = offers_factories.ProductFactory(
             ean=ean,
-            idAtProviders=ean,
             gcuCompatibilityType=gcuCompatibilityType,
             lastProviderId=titelive_provider.id,
             name=name if name else "The Book",
