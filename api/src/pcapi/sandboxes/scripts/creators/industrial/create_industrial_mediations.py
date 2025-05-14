@@ -65,6 +65,6 @@ def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
 
 
 def clean_industrial_mediations_bucket() -> None:
-    logger.info("Cleaning mediation bucket")
-    delete_public_object_recursively(storage_path="thumbs/mediations", bucket=settings.GCP_BUCKET_NAME)
-    logger.info("Mediation bucket cleaned")
+    logger.info("Cleaning thumbs bucket")
+    delete_public_object_recursively(storage_path="thumbs", bucket=settings.GCP_BUCKET_NAME)
+    logger.info("Thumbs bucket cleaned")
