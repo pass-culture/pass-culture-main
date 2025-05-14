@@ -40,7 +40,6 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import BaseQuery
 from pcapi.models.pc_object import PcObject
-from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils import db as db_utils
 
@@ -231,13 +230,16 @@ class Product(PcObject, Base, Model, HasThumbMixin):
         return {ImageType.RECTO.value: self.thumbUrl}
 
 
-class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
+class Mediation(PcObject, Base, Model, HasThumbMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", backref="mediations")
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    lastProviderId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    lastProvider: sa_orm.Mapped["Provider | None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", backref="mediations")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     thumb_path_component = "mediations"
