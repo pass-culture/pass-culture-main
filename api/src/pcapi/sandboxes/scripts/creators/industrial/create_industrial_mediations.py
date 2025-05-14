@@ -1,3 +1,5 @@
+from itertools import cycle
+from itertools import islice
 import logging
 from pathlib import Path
 from shutil import copyfile
@@ -17,9 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5
-
-from itertools import cycle
-from itertools import islice
 
 
 def prepare_mediations_folders() -> None:

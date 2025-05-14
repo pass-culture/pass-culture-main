@@ -241,7 +241,6 @@ ignore = [
   "E731", # Do not assign a `lambda` expression, use a `def`
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert)
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy
-  "E402", # Module level import not at top of file
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
@@ -249,7 +248,7 @@ ignore = [
 "requests".msg = "Use `pcapi.utils.requests` instead."
 
 [tool.ruff.lint.per-file-ignores]
-"*/__init__.py" = ["F401"]
+"*/__init__.py" = ["F401"]  # unused-import -> required in some init files
 
 [tool.pytest.ini_options]
 addopts = [

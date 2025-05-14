@@ -20,10 +20,10 @@ from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
 
+from .. import blueprint
+
 
 logger = logging.getLogger(__name__)
-
-from .. import blueprint
 
 
 @blueprint.native_route("/bookings", methods=["POST"])

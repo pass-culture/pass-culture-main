@@ -5,11 +5,11 @@ from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
-
-logger = logging.getLogger(__name__)
-
 from .utils import get_occurrence_short_name_or_none
 from .utils import get_price_by_short_name
+
+
+logger = logging.getLogger(__name__)
 
 
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3

@@ -14,10 +14,10 @@ from pcapi.routes.adage.v1.serialization import constants
 from pcapi.routes.adage.v1.serialization import prebooking as prebooking_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
+from . import blueprint
+
 
 logger = logging.getLogger(__name__)
-
-from . import blueprint
 
 
 @blueprint.adage_v1.route(educational_institution_path + "/prebookings", methods=["GET"])
