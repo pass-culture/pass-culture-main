@@ -259,6 +259,8 @@ def remove_db_session(exc: BaseException | None = None) -> None:
             },
             exc_info=True,
         )
+        del db.session
+        logger.error("Deleted Session object")
 
 
 @app.teardown_request
