@@ -7,6 +7,7 @@ export const DEFAULT_ADDRESS_FORM_VALUES = {
   longitude: 0,
   street: '',
   postalCode: '',
+  inseeCode: '',
   coords: '',
   manuallySetAddress: false,
 }

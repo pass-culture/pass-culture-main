@@ -147,9 +147,11 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(
       await screen.findByRole('heading', { name: 'Modalités d’accessibilité' })
     ).toBeInTheDocument()
-    
+
     expect(
-      await screen.findByRole('heading', { name: 'Lien de réservation externe en l’absence de crédit' })
+      await screen.findByRole('heading', {
+        name: 'Lien de réservation externe en l’absence de crédit',
+      })
     ).toBeInTheDocument()
 
     expect(
@@ -231,6 +233,8 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         longitude: '2.30829',
         postalCode: '75001',
         street: '3 Rue de Valois',
+        banId: '75101_9575_00003',
+        inseeCode: '75056',
       },
       audioDisabilityCompliant: true,
       bookingContact: undefined,

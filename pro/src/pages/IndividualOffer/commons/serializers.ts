@@ -94,6 +94,8 @@ export const serializePatchOffer = ({
   if (!offer.isDigital && allAddressFieldsAreNotNull) {
     addressValues = {
       address: {
+        banId: sentValues.banId,
+        inseeCode: sentValues.inseeCode,
         city: removeQuotes(sentValues.city!.trim()), // checked in `allAddressFieldsAreNotNull`
         latitude: sentValues.latitude,
         longitude: sentValues.longitude,

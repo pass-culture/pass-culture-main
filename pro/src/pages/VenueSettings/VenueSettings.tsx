@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'

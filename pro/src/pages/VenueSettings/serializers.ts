@@ -17,6 +17,7 @@ export const serializeEditVenueBodyModel = (
     longitude: formValues.longitude,
     name: formValues.name,
     postalCode: formValues.postalCode,
+    inseeCode: formValues.inseeCode,
     publicName: formValues.publicName,
     street: removeQuotes(formValues.street?.trim() ?? ''),
     siret: unhumanizeSiret(formValues.siret),

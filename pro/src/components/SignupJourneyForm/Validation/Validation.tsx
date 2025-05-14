@@ -122,6 +122,7 @@ export const Validation = (): JSX.Element => {
           latitude: offerer.latitude ?? 0,
           city: offerer.city,
           postalCode: offerer.postalCode,
+          inseeCode: offerer.inseeCode,
           street: offerer.street,
           isManualEdition: offerer.manuallySetAddress,
         },
