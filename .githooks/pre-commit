@@ -299,24 +299,23 @@ cd ..
 ## END BACKOFFICE ##
 ####################
 
-#######################
-## CHECK DEPENDECIES ##
-#######################
+########################
+## CHECK DEPENDENCIES ##
+########################
 cd $DIR/api
-STAGED_PYPROJECT_TOML=$(git diff --cached --name-only --diff-filter=ACMR | grep -wE 'api/pyproject.toml|poetry.lock' | sed 's|^api\/||g')
+STAGED_PYPROJECT_TOML=$(git diff --cached --name-only --diff-filter=ACMR | grep -wE 'api/pyproject.toml|uv.lock' | sed 's|^api\/||g')
 if [[ ! -z "$STAGED_PYPROJECT_TOML" ]]; then
   # run `poetry check` on staged files
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",check-dependencies," ]]; then
     echo "Running check-dependencies..."
-    poetry check
+    uv lock --check
     CHECK_DEPENDENCIES_EXIT_CODE=$?
 
-    # add files auto-fixed by the linter
     git add -f $STAGED_PYPROJECT_TOML
 
     # check exit code
     if [ $CHECK_DEPENDENCIES_EXIT_CODE -ne 0 ]; then
-      echo -e "❌ Please fix check-dependencies errors first. poetry.lock and pyproject.toml are not synced.\nIf the changes are wanted, run 'poetry lock'"
+      echo -e "❌ Please fix check-dependencies errors first. uv.lock and pyproject.toml are not synced.\nIf the changes are wanted, run 'uv lock'"
       exit 1
     else
       echo "✅ check-dependencies all good"
