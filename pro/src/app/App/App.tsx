@@ -58,9 +58,21 @@ export const App = (): JSX.Element | null => {
   // This is to force the offerer if the url comes from the BO
   // (without breaking everything else)
   const [searchParams] = useSearchParams()
-  if (searchParams.get('from-bo')) {
-    dispatch(updateSelectedOffererId(Number(searchParams.get('structure'))))
-  }
+  useEffect(() => {
+    if (searchParams.get('from-bo')) {
+      dispatch(updateSelectedOffererId(Number(searchParams.get('structure'))))
+      searchParams.delete('from-bo')
+      searchParams.delete('structure')
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      navigate(
+        {
+          search: searchParams.toString(),
+        },
+        { replace: true }
+      )
+    }
+  }, [])
+
   // Analytics
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
   useSentry()
