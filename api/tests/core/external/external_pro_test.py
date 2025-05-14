@@ -399,8 +399,7 @@ def test_update_external_pro_booking_email_attributes():
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
-    with assert_num_queries(6):
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -447,8 +446,7 @@ def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_b
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
-    with assert_num_queries(6):
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is True
     assert attributes.has_banner_url is True
@@ -469,8 +467,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
-    with assert_num_queries(6):
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True
@@ -490,8 +487,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    # 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
-    with assert_num_queries(6):
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True

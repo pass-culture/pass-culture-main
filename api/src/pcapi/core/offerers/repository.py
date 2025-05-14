@@ -356,7 +356,7 @@ def find_siren_by_offerer_id(offerer_id: int) -> str:
     raise exceptions.CannotFindOffererSiren
 
 
-def venues_have_offers(*venues: models.Venue) -> bool:
+def venues_have_individual_offers(*venues: models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
     return db.session.query(
         db.session.query(offers_models.Offer)
@@ -366,6 +366,32 @@ def venues_have_offers(*venues: models.Venue) -> bool:
         )
         .exists()
     ).scalar()
+
+
+def venues_have_collective_offers(*venues: models.Venue) -> bool:
+    venue_ids = [venue.id for venue in venues]
+
+    collective_offer_query = (
+        db.session.query(educational_models.CollectiveOffer.id)
+        .filter(
+            educational_models.CollectiveOffer.venueId.in_(venue_ids),
+            educational_models.CollectiveOffer.status.in_(  # type: ignore[attr-defined]
+                [offer_mixin.CollectiveOfferStatus.ACTIVE, offer_mixin.CollectiveOfferStatus.SOLD_OUT]
+            ),
+        )
+        .exists()
+    )
+
+    collective_offer_template_query = (
+        db.session.query(educational_models.CollectiveOfferTemplate.id)
+        .filter(
+            educational_models.CollectiveOfferTemplate.venueId.in_(venue_ids),
+            educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.ACTIVE,
+        )
+        .exists()
+    )
+
+    return db.session.query(sa.or_(collective_offer_query, collective_offer_template_query)).scalar()
 
 
 def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
