@@ -5,6 +5,8 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import Model
@@ -23,6 +25,8 @@ class TestLocalProvider(LocalProvider):
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
         obj.subcategoryId = subcategories.LIVRE_PAPIER.id
+        if isinstance(obj, offers_models.Offer):
+            obj.venue = offerers_factories.VenueFactory()
 
     def __next__(self):
         pass

@@ -463,19 +463,6 @@ def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
-def get_products_map_by_provider_reference(
-    id_at_providers: list[str],
-) -> dict[str, models.Product]:
-    products = (
-        db.session.query(models.Product)
-        .filter(models.Product.can_be_synchronized)
-        .filter(models.Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
-        .filter(models.Product.idAtProviders.in_(id_at_providers))
-        .all()
-    )
-    return {product.idAtProviders: product for product in products}
-
-
 def venue_already_has_validated_offer(offer: models.Offer) -> bool:
     return (
         db.session.query(models.Offer.id)

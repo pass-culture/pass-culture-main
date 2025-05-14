@@ -542,7 +542,6 @@ def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Produc
             offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
             # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
             offers_models.Product.lastProviderId.is_not(None),
-            offers_models.Product.idAtProviders.is_not(None),
         )
         .all()
     )
