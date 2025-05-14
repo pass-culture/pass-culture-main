@@ -248,14 +248,6 @@ class UserProfilePatchRequest(ConfiguredBaseModel):
     origin: str | None
 
 
-class UserProfileEmailUpdate(ConfiguredBaseModel):
-    email: pydantic_v1.EmailStr  # the new email address
-    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
-        password: str
-    else:
-        password: pydantic_v1.constr(strip_whitespace=True, min_length=8, strict=True)
-
-
 class ValidateEmailRequest(ConfiguredBaseModel):
     token: str
 

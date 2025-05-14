@@ -76,13 +76,6 @@ def _fill_favorite_offer(
     _fill_offer_expired(offer, non_expired_count, active_count)
 
 
-@blueprint.native_route("/me/favorites/count", methods=["GET"])
-@spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)
-@authenticated_and_active_user_required
-def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
-    return serializers.FavoritesCountResponse(count=db.session.query(Favorite).filter_by(user=user).count())
-
-
 def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favorite]:
     active_stock_filters = sa.and_(Offer.isActive.is_(True), Stock.isSoftDeleted.is_(False))
     stock_filters = sa.and_(

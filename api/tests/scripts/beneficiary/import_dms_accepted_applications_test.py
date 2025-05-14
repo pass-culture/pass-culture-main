@@ -632,7 +632,7 @@ class RunIntegrationTest:
         import_all_updated_dms_applications(6712558)
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/next_step")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] is None

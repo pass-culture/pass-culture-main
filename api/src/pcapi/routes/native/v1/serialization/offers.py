@@ -23,7 +23,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
-from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.providers import constants as provider_constants
@@ -454,45 +453,6 @@ class OfferResponseV2(BaseOfferResponse):
     images: dict[str, OfferImageResponse] | None
 
 
-class OfferPreviewResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        if key == "extraData" and self._obj.ean:
-            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
-            extra_data_copy["ean"] = self._obj.ean
-            return extra_data_copy
-
-        return super().get(key, default)
-
-
-class OfferPreviewResponse(BaseModel):
-    @classmethod
-    def from_orm(cls, offer: Offer) -> "OfferPreviewResponse":
-        offer_preview = super().from_orm(offer)
-        offer_preview.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
-
-        return offer_preview
-
-    id: int
-    durationMinutes: int | None
-    extraData: OfferExtraDataResponse | None
-    image: OfferImageResponse | None
-    last30DaysBookings: int | None
-    name: str
-    stocks: list[OfferStockResponse]
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        getter_dict = OfferPreviewResponseGetterDict
-
-
-class OffersStocksResponse(BaseModel):
-    offers: list[OfferPreviewResponse]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-
-
 class OffersStocksResponseV2(BaseModel):
     offers: list[OfferResponseV2]
 
@@ -502,24 +462,6 @@ class OffersStocksResponseV2(BaseModel):
 
 class OffersStocksRequest(BaseModel):
     offer_ids: list[int]
-
-
-class OfferReportRequest(BaseModel):
-    class Config:
-        alias_generator = to_camel
-
-    reason: Reason
-    custom_reason: str | None
-
-    @validator("custom_reason")
-    def custom_reason_must_not_be_too_long(cls, content: str | None) -> str | None:
-        if not content:
-            return None
-
-        if len(content) > 512:
-            raise ValueError("custom reason is too long")
-
-        return content
 
 
 class OfferReportReasons(BaseModel):
@@ -540,10 +482,3 @@ class ReportedOffer(BaseModel):
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
-
-
-class UserReportedOffersResponse(BaseModel):
-    reported_offers: list[ReportedOffer]
-
-    class Config:
-        alias_generator = to_camel

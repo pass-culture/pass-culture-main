@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 
 from flask import current_app as app
@@ -21,7 +20,6 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
-from pcapi.core.users.email import repository as email_repository
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
@@ -32,7 +30,6 @@ from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
-from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import postal_code as postal_code_utils
@@ -115,60 +112,6 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
     api.reset_recredit_amount_to_show(user)
 
     return serializers.UserProfileResponse.from_orm(user)
-
-
-@blueprint.native_route("/profile/update_email", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, deprecated=True)
-@authenticated_and_active_user_required
-def update_user_email(user: users_models.User, body: serializers.UserProfileEmailUpdate) -> None:
-    try:
-        email_api.request_email_update_with_credentials(user, body.email, body.password)
-    except exceptions.EmailUpdateTokenExists:
-        raise account_errors.EmailUpdatePendingError()
-    except exceptions.EmailUpdateLimitReached:
-        raise account_errors.EmailUpdateLimitError()
-    except exceptions.EmailExistsError:
-        # Returning an error message might help the end client find
-        # existing email addresses.
-        return
-    except exceptions.EmailUpdateInvalidPassword:
-        raise account_errors.WrongPasswordError()
-
-
-@blueprint.native_route("/profile/email_update/status", methods=["GET"])
-@spectree_serialize(
-    on_success_status=200,
-    api=blueprint.api,
-    response_model=serializers.EmailUpdateStatus,
-    deprecated=True,
-)
-@authenticated_and_active_user_required
-def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatus:
-    latest_email_update_event = email_repository.get_email_update_latest_event(user)
-    if not latest_email_update_event:
-        raise api_errors.ResourceNotFoundError
-    return serializers.EmailUpdateStatus(
-        newEmail=latest_email_update_event.newEmail or "",
-        expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
-        status=latest_email_update_event.eventType,
-    )
-
-
-@blueprint.native_route("/profile/email_update/confirm", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-def confirm_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
-    try:
-        email_api.update.confirm_email_update_request_and_send_mail(body.token)
-    except pydantic_v1.ValidationError:
-        raise api_errors.ApiErrors(
-            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
-            status_code=400,
-        )
-    except (exceptions.InvalidToken, exceptions.EmailExistsError):
-        raise api_errors.ApiErrors(
-            {"code": "INVALID_TOKEN", "message": "aucune demande de changement d'email en cours"},
-            status_code=401,
-        )
 
 
 @blueprint.native_route("/profile/email_update/cancel", methods=["POST"])
