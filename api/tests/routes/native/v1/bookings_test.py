@@ -1130,7 +1130,7 @@ class CancelBookingTest:
         booking = booking_factories.BookingFactory(user=user)
 
         client = client.with_token(self.identifier)
-        with assert_num_queries(26):
+        with assert_num_queries(27):
             response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 204
@@ -1146,7 +1146,7 @@ class CancelBookingTest:
         booking = booking_factories.BookingFactory(user=user)
 
         client = client.with_token(self.identifier)
-        with assert_num_queries(26):
+        with assert_num_queries(27):
             response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 204

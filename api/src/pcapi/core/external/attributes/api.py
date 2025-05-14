@@ -26,7 +26,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.repository.session_management import on_commit
 
 
@@ -205,8 +204,6 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         .one_or_none()
     )
 
-    has_collective_offers = False
-
     if user:
         offerers = [
             user_offerer.offerer
@@ -225,11 +222,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         is_eac = False
 
         if offerers:
-            has_collective_offers = _check_if_pro_attribute_has_collective_offers(user=user)
-
             for offerer in offerers:
                 all_venues += offerer.managedVenues
-
                 offerers_names.add(offerer.name)
                 offerers_tags.update(tag.name for tag in offerer.tags)
 
@@ -312,7 +306,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             offerers_names.add(venue.managingOfferer.name)
             offerers_tags.update(tag.name for tag in venue.managingOfferer.tags)
 
-        has_individual_offers = offerers_repository.venues_have_offers(*venues)
+        has_collective_offers = offerers_repository.venues_have_collective_offers(*venues)
+        has_individual_offers = offerers_repository.venues_have_individual_offers(*venues)
 
         if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
             has_banner_url = all(venue._bannerUrl for venue in venues if venue.isOpenToPublic)
@@ -326,6 +321,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 "isPermanent": any(venue.isPermanent for venue in venues),
                 "isOpenToPublic": any(venue.isOpenToPublic for venue in venues),
                 "has_offers": has_individual_offers or has_collective_offers,
+                "has_collective_offers": has_collective_offers,
                 "has_individual_offers": has_individual_offers,
                 "has_bookings": bookings_repository.venues_have_bookings(*venues),
                 "has_banner_url": has_banner_url,
@@ -372,47 +368,9 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             for venue in all_venues
             if venue.offererAddress and venue.offererAddress.address.postalCode
         },
-        has_collective_offers=has_collective_offers,
         is_eac_meg=is_eac_meg,
         **attributes,
     )
-
-
-def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bool:
-    collective_offer_query = (
-        db.session.query(educational_models.CollectiveOffer.id)
-        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
-        .filter(
-            offerers_models.Offerer.isActive,
-            offerers_models.Offerer.isValidated,
-            offerers_models.UserOfferer.isValidated,
-            offerers_models.UserOfferer.userId == user.id,
-            educational_models.CollectiveOffer.status.in_(  # type: ignore[attr-defined]
-                [CollectiveOfferStatus.ACTIVE, CollectiveOfferStatus.SOLD_OUT]
-            ),
-        )
-        .exists()
-    )
-
-    collective_offer_template_query = (
-        db.session.query(educational_models.CollectiveOfferTemplate.id)
-        .join(offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
-        .filter(
-            offerers_models.Offerer.isActive,
-            offerers_models.Offerer.isValidated,
-            offerers_models.UserOfferer.isValidated,
-            offerers_models.UserOfferer.userId == user.id,
-            educational_models.CollectiveOfferTemplate.status == CollectiveOfferStatus.ACTIVE,
-        )
-        .exists()
-    )
-
-    result = db.session.query(sa.or_(collective_offer_query, collective_offer_template_query)).scalar()
-    return bool(result)
 
 
 def get_user_attributes(user: users_models.User) -> models.UserAttributes:
