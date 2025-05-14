@@ -48,7 +48,6 @@ from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
 
 from . import forms as offerer_forms
-from . import serialization
 from .. import utils
 from ..forms import empty as empty_forms
 
@@ -179,10 +178,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     if not row:
         raise NotFound()
 
-    bank_information = row.bank_information or {}
-    bank_information_status = serialization.OffererBankInformationStatus(
-        ok=bank_information.get("ok", 0), ko=bank_information.get("ko", 0)
-    )
+    bank_information_status = row.bank_information or {}
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(
             name=offerer.name,
