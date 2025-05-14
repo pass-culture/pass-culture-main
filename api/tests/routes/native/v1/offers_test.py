@@ -370,11 +370,10 @@ class OffersTest:
         # 5. select active cinema provider
         # 6. check offer is from current cinema provider
         # 7. update offer (deactivate)
-        # 8. select feature
-        # 9. select chronicles
-        # 10. select futureOffer
-        # 11. select artists
-        with assert_num_queries(11):
+        # 8. select chronicles
+        # 9. select futureOffer
+        # 10. select artists
+        with assert_num_queries(10):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -505,7 +504,6 @@ class OffersTest:
         nb_queries += 1  # check cinema venue_provider exists
         nb_queries += 1  # select active cinema provider
         nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
         nb_queries += 1  # update stock
         nb_queries += 1  # select chronicles
         nb_queries += 1  # select futureOffer
@@ -561,7 +559,6 @@ class OffersTest:
         nb_queries += 1  # select EXISTS venue_provider
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select boost_cinema_details
         nb_queries += 1  # update stock
@@ -617,7 +614,6 @@ class OffersTest:
         nb_queries += 1  # select EXISTS venue_provider
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select cgr_cinema_details
         nb_queries += 1  # update stock
@@ -655,7 +651,6 @@ class OffersTest:
         nb_query += 1  # check cinema venue_provider exists
         nb_query += 1  # select active cinema provider
         nb_query += 1  # update offer
-        nb_query += 1  # select feature
         nb_query += 1  # select chronicles
         nb_query += 1  # select futureOffer
         with assert_num_queries(nb_query):
@@ -1120,7 +1115,6 @@ class OffersV2Test:
         setattr(features, ff_name, ff_value)
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
         num_queries += 1  # update offer
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1233,7 +1227,6 @@ class OffersV2Test:
 
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1280,7 +1273,6 @@ class OffersV2Test:
 
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         num_queries += 1  # select boost_cinema_details
         with assert_num_queries(num_queries):
@@ -1328,7 +1320,6 @@ class OffersV2Test:
 
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         num_queries += 1  # select cgr_cinema_details
         with assert_num_queries(num_queries):
@@ -1368,7 +1359,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_with_product + self.num_queries_for_cinema
         num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1405,7 +1395,6 @@ class OffersV2Test:
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # select cinema_provider_pivot
         num_queries += 1  # select EXISTS venue_provider
-        num_queries += 1  # select feature
         num_queries += 1  # select cgr_cinema_details
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1437,7 +1426,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # update offer (why?)
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1476,7 +1464,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         num_queries += 1  # select boost_cinema_details
         with assert_num_queries(num_queries):
@@ -1506,7 +1493,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # update offer
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 

@@ -910,8 +910,7 @@ class GetOffererStatsTest(GetEndpointHelper):
     # get offerer (1 query)
     # get total revenue (1 query)
     # get offerers offers stats (6 query: 3 to check the quantity and 3 to get the data)
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
-    expected_num_queries = 11
+    expected_num_queries = 10
     # -1 sql query replaced with clickhouse query
     expected_num_queries_when_clickhouse_enabled = expected_num_queries - 1
 
@@ -922,7 +921,7 @@ class GetOffererStatsTest(GetEndpointHelper):
             (offerers_factories.CaledonianVenueFactory, "10,00 € (1193 CFP) de CA"),
         ],
     )
-    def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text):
+    def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text, features):
         venue = venue_factory()
         offer = offers_factories.OfferFactory(
             venue=venue,
@@ -1126,8 +1125,7 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     # session
     # user
     # offerer
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
-    expected_num_queries_when_clickhouse_enabled = 4
+    expected_num_queries_when_clickhouse_enabled = 3
 
     @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
@@ -1756,8 +1754,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
-    # - WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
@@ -1818,7 +1815,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
         assert rows[1]["Fraude"] == ""
 
-    def test_get_caledonian_managed_venues(self, authenticated_client):
+    def test_get_caledonian_managed_venues(self, authenticated_client, features):
         offerer = offerers_factories.CaledonianOffererFactory()
         venue = offerers_factories.CaledonianVenueFactory(managingOfferer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte NC")

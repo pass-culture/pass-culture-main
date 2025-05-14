@@ -1948,7 +1948,6 @@ class AutoMarkAsUsedAfterEventTest:
         educational_factories.CollectiveBookingFactory(collectiveStock__startDatetime=event_date)
         educational_factories.CollectiveBookingFactory(collectiveStock__startDatetime=event_date)
 
-        # queries = 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries = 1  # select individual bookings
         queries += 1  # select individual booking user achievements
         # fmt: off
