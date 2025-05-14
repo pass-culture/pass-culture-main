@@ -10,11 +10,10 @@ from pcapi.routes.adage.v1.serialization.educational_institution import Educatio
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_bookings
 from pcapi.serialization.decorator import spectree_serialize
 
-
-logger = logging.getLogger(__name__)
-
 from . import blueprint
 
+
+logger = logging.getLogger(__name__)
 
 educational_institution_path = "years/<string:year_id>/educational_institution/<string:uai_code>"
 

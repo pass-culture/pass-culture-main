@@ -10,10 +10,10 @@ from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
+from . import blueprint
+
 
 logger = logging.getLogger(__name__)
-
-from . import blueprint
 
 
 @blueprint.adage_v1.route("/venues/<string:venues_siret>", methods=["GET"])
