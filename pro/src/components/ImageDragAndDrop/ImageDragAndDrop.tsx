@@ -28,6 +28,10 @@ const ALLOWED_IMAGE_TYPES = [
   },
 ]
 
+type MimeToExtensionsMap = {
+  [mimeType: string]: string[]
+}
+
 type FileWithDimensions = File & {
   width: number
   height: number
@@ -77,12 +81,12 @@ export const ImageDragAndDrop = ({
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
 
-  const imageExtensions = ALLOWED_IMAGE_TYPES.reduce(
-    (acc: string[], { extensions }) => {
-      acc.push(...extensions)
+  const accept: MimeToExtensionsMap = ALLOWED_IMAGE_TYPES.reduce(
+    (acc: MimeToExtensionsMap, { mime, extensions }) => {
+      acc[mime] = extensions
       return acc
     },
-    []
+    {}
   )
 
   const imageMimeTypes = ALLOWED_IMAGE_TYPES.reduce(
@@ -95,9 +99,7 @@ export const ImageDragAndDrop = ({
 
   const { inputRef, getRootProps, getInputProps, fileRejections } = useDropzone(
     {
-      accept: {
-        'image/*': imageExtensions,
-      },
+      accept,
       maxFiles: 1,
       maxSize: 10 * 1024 * 1024,
       onDragEnter: () => setIsDraggedOver(true),
