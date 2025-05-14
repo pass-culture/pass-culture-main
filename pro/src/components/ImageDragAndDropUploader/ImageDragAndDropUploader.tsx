@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 import { useNotification } from 'commons/hooks/useNotification'
+import { usePrevious } from 'commons/hooks/usePrevious'
 import {
   UploadImageValues,
   UploaderModeEnum,
@@ -44,18 +45,26 @@ export const ImageDragAndDropUploader = ({
 }: ImageDragAndDropUploaderProps) => {
   const notify = useNotification()
   const updateImageRef = useRef<HTMLButtonElement>(null)
+  const inputDragAndDropRef = useRef<HTMLInputElement>(null)
+
   const { imageUrl, originalImageUrl } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
+  const previousDraftImage = usePrevious(draftImage)
 
   const hasImage = imageUrl && originalImageUrl
   const shouldDisplayActions = hasImage && !hideActionButtons
+
+  useEffect(() => {
+    if (previousDraftImage && !draftImage) {
+      inputDragAndDropRef.current?.focus()
+    }
+  }, [draftImage, previousDraftImage])
 
   const onImageDeleteHandler = () => {
     setIsModalImageOpen(false)
     setDraftImage(undefined)
     onImageDelete()
-    setDraftImage(undefined)
     notify.success('L’image a bien été supprimée')
   }
 
@@ -108,6 +117,8 @@ export const ImageDragAndDropUploader = ({
               </Button>
             )
           }
+          refToFocusOnClose={inputDragAndDropRef}
+          preferNonNullRefToFocusOnClose
         />
         {shouldDisplayActions && (
           <Button
@@ -125,6 +136,7 @@ export const ImageDragAndDropUploader = ({
       </div>
       {!hasImage && (
         <ImageDragAndDrop
+          ref={inputDragAndDropRef}
           className={dragAndDropClassName}
           onDropOrSelected={(draftImage) => {
             onImageDropOrSelected?.()
