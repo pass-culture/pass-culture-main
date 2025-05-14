@@ -1,4 +1,5 @@
 import datetime
+from operator import itemgetter
 
 import pytest
 
@@ -299,7 +300,7 @@ class GetAvailableReactionTest:
             },
         ]
 
-        sorting_key = lambda x: x["name"]
+        sorting_key = itemgetter("name")
         expected_bookings.sort(key=sorting_key)
         response_bookings.sort(key=sorting_key)
         assert response_bookings == expected_bookings

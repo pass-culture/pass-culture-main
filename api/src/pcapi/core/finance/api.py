@@ -1347,6 +1347,42 @@ def _write_csv(
     return path
 
 
+def _row_formatter(row: typing.Any) -> tuple:
+    return (
+        "",
+        "True",
+        "False",
+        str(row.id),
+        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
+        "A",
+        "ACTEURCULT",
+        "30J",
+        "15J",
+        "EUR",
+        "SPOT",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "fr-FR",
+        _clean_for_accounting(row.offerer_street),
+        "",
+        _clean_for_accounting(row.offerer_city),
+        "FR",
+        "",
+        _clean_for_accounting(row.offerer_postal_code),
+        "VSEPA",
+        _clean_for_accounting(row.iban),
+        "",
+        "",
+        _clean_for_accounting(row.bic),
+        _clean_for_accounting(row.offerer_siren),
+        "",
+        "EXO",
+    )
+
+
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
         "Numéro",
@@ -1416,40 +1452,19 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         models.BankAccount.bic.label("bic"),
     )
 
-    row_formatter = lambda row: (
-        "",
-        "True",
-        "False",
+    return _write_csv("bank_accounts", header, rows=query, row_formatter=_row_formatter)
+
+
+def _row_formatter_legacy(row: typing.Any) -> tuple:
+    return (
+        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
+        human_ids.humanize(row.id),
         str(row.id),
-        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
-        "A",
-        "ACTEURCULT",
-        "30J",
-        "15J",
-        "EUR",
-        "SPOT",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "fr-FR",
-        _clean_for_accounting(row.offerer_street),
-        "",
-        _clean_for_accounting(row.offerer_city),
-        "FR",
-        "",
-        _clean_for_accounting(row.offerer_postal_code),
-        "VSEPA",
-        _clean_for_accounting(row.iban),
-        "",
-        "",
-        _clean_for_accounting(row.bic),
         _clean_for_accounting(row.offerer_siren),
-        "",
-        "EXO",
+        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
+        _clean_for_accounting(row.iban),
+        _clean_for_accounting(row.bic),
     )
-    return _write_csv("bank_accounts", header, rows=query, row_formatter=row_formatter)
 
 
 def _generate_legacy_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
@@ -1492,16 +1507,7 @@ def _generate_legacy_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Pa
         models.BankAccount.bic.label("bic"),
     )
 
-    row_formatter = lambda row: (
-        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
-        human_ids.humanize(row.id),
-        str(row.id),
-        _clean_for_accounting(row.offerer_siren),
-        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
-        _clean_for_accounting(row.iban),
-        _clean_for_accounting(row.bic),
-    )
-    return _write_csv("legacy_bank_accounts", header, rows=query, row_formatter=row_formatter)
+    return _write_csv("legacy_bank_accounts", header, rows=query, row_formatter=_row_formatter_legacy)
 
 
 def _clean_for_accounting(value: str) -> str:

@@ -236,10 +236,7 @@ extend-select = [
   "TID251", # banned-api (requests)
 ]
 
-# Pylint rules mapped to Ruff rules
 ignore = [
-  # New rules
-  "E731", # Do not assign a `lambda` expression, use a `def`
   "E712", # Avoid equality comparisons to `True`; use `if offer.audioDisabilityCompliant:` for truth checks (issue in assert)
   "E711", # Use 'is' instead of '==' to test for None -> several incompatibilities with SQLAlchemy
 ]

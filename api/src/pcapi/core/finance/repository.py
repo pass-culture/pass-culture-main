@@ -610,6 +610,10 @@ def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
     return query
 
 
+def convert_to_datetime(date: datetime.date) -> datetime.datetime:
+    return date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
+
+
 def get_invoices_query(
     user: users_models.User,
     bank_account_id: int | None = None,
@@ -644,7 +648,6 @@ def get_invoices_query(
         models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id))
     )
 
-    convert_to_datetime = lambda date: date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
     if date_from:
         datetime_from = convert_to_datetime(date_from)
         invoices = invoices.filter(models.Invoice.date >= datetime_from)
