@@ -1,4 +1,7 @@
-search_store: dict[str, dict[int, dict]] = {}
+import typing
+
+
+search_store: dict[str, dict[typing.Union[int, str], dict]] = {}
 
 
 def reset_search_store() -> None:
