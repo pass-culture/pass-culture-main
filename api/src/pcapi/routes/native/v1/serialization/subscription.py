@@ -52,18 +52,6 @@ class SubscriptionMessageV2(BaseModel):
         use_enum_values = True
 
 
-class NextSubscriptionStepResponse(BaseModel):
-    next_subscription_step: subscription_models.SubscriptionStep | None
-    maintenance_page_type: subscription_models.MaintenancePageType | None
-    allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
-    has_identity_check_pending: bool
-    subscription_message: SubscriptionMessage | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
 class SubscriptionStepDetailsResponse(BaseModel):
     name: subscription_models.SubscriptionStep
     title: subscription_models.SubscriptionStepTitle
@@ -74,19 +62,6 @@ class SubscriptionStepDetailsResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         use_enum_values = True
-
-
-class SubscriptionStepperResponse(BaseModel):
-    subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
-    allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
-    maintenance_page_type: subscription_models.MaintenancePageType | None
-    title: str
-    subtitle: str | None
-    error_message: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
 
 class SubscriptionStepperResponseV2(BaseModel):

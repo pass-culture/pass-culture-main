@@ -7,17 +7,12 @@ from pcapi.core.categories.app_search_tree import SEARCH_NODES
 from pcapi.core.categories.models import GenreType
 import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
 from pcapi.core.offers import repository
-from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Reason
-from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository.session_management import atomic
@@ -59,23 +54,6 @@ def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     return serializers.OfferResponseV2.from_orm(offer)
 
 
-@blueprint.native_route("/offers/stocks", methods=["POST"])
-@spectree_serialize(deprecated=True, response_model=serializers.OffersStocksResponse, api=blueprint.api)
-def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponse:
-    offer_ids = body.offer_ids
-    offers = (
-        db.session.query(Offer)
-        .filter(Offer.id.in_(offer_ids))
-        .options(joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel))
-        .options(joinedload(Offer.mediations))
-        .options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
-        .all()
-    )
-    serialized_offers = [serializers.OfferPreviewResponse.from_orm(offer) for offer in offers]
-    offers_response = serializers.OffersStocksResponse(offers=serialized_offers)
-    return offers_response
-
-
 @blueprint.native_route("/offers/stocks", methods=["POST"], version="v2")
 @spectree_serialize(response_model=serializers.OffersStocksResponseV2, api=blueprint.api)
 def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponseV2:
@@ -86,33 +64,11 @@ def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.
     return offers_response
 
 
-@blueprint.native_route("/offer/<int:offer_id>/report", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_and_active_user_required
-def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest) -> None:
-    offer = db.session.query(Offer).get_or_404(offer_id)
-    # filter in the query above would cause one more db query reported by assert_num_queries
-    if offer.validation != OfferValidationStatus.APPROVED:
-        raise ResourceNotFoundError()
-
-    try:
-        api.report_offer(user, offer, body.reason, body.custom_reason)
-    except OfferReportError as error:
-        raise ApiErrors({"code": error.code}, status_code=400)
-
-
 @blueprint.native_route("/offer/report/reasons", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
 @authenticated_and_active_user_required
 def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
     return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
-
-
-@blueprint.native_route("/offers/reports", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserReportedOffersResponse)
-@authenticated_and_active_user_required
-def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
-    return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)  # type: ignore[call-arg]
 
 
 @blueprint.native_route("/offer/<int:offer_id>/chronicles", methods=["GET"])

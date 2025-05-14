@@ -21,7 +21,6 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 FAVORITES_URL = "/native/v1/me/favorites"
-FAVORITES_COUNT_URL = "/native/v1/me/favorites/count"
 
 
 class GetTest:
@@ -500,41 +499,3 @@ class DeleteTest:
 
             # Then
             assert response.status_code == 404
-
-
-class GetCountTest:
-    class Returns200Test:
-        def when_user_is_logged_in_but_has_no_favorites(self, client):
-            # Given
-            user = users_factories.UserFactory()
-
-            client = client.with_token(user.email)
-
-            # When
-            # QUERY_COUNT:
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites count
-            with assert_num_queries(2):
-                response = client.get(FAVORITES_COUNT_URL)
-
-            # Then
-            assert response.status_code == 200
-            assert response.json == {"count": 0}
-
-        def when_user_is_logged_in_and_has_favorite_offers(self, client):
-            # Given
-            user = users_factories.UserFactory()
-            users_factories.FavoriteFactory.create_batch(size=3, user=user)
-
-            client.with_token(user.email)
-
-            # When
-            # QUERY_COUNT:
-            # 1: Fetch the user for auth
-            # 1: Fetch the favorites count
-            with assert_num_queries(2):
-                response = client.get(FAVORITES_COUNT_URL)
-
-            # Then
-            assert response.status_code == 200
-            assert response.json == {"count": 3}

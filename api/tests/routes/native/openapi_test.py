@@ -806,16 +806,6 @@ def test_public_api(client):
                     ],
                     "title": "EmailHistoryEventTypeEnum",
                 },
-                "EmailUpdateStatus": {
-                    "properties": {
-                        "expired": {"title": "Expired", "type": "boolean"},
-                        "newEmail": {"title": "Newemail", "type": "string"},
-                        "status": {"$ref": "#/components/schemas/EmailHistoryEventTypeEnum"},
-                    },
-                    "required": ["newEmail", "expired", "status"],
-                    "title": "EmailUpdateStatus",
-                    "type": "object",
-                },
                 "EmailUpdateStatusResponse": {
                     "properties": {
                         "expired": {"title": "Expired", "type": "boolean"},
@@ -968,12 +958,6 @@ def test_public_api(client):
                     },
                     "required": ["id", "offer"],
                     "title": "FavoriteResponse",
-                    "type": "object",
-                },
-                "FavoritesCountResponse": {
-                    "properties": {"count": {"title": "Count", "type": "integer"}},
-                    "required": ["count"],
-                    "title": "FavoritesCountResponse",
                     "type": "object",
                 },
                 "GTL": {
@@ -1201,31 +1185,6 @@ def test_public_api(client):
                     "title": "NewEmailSelectionRequest",
                     "type": "object",
                 },
-                "NextSubscriptionStepResponse": {
-                    "properties": {
-                        "allowedIdentityCheckMethods": {
-                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
-                            "type": "array",
-                        },
-                        "hasIdentityCheckPending": {"title": "Hasidentitycheckpending", "type": "boolean"},
-                        "maintenancePageType": {
-                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
-                            "nullable": True,
-                        },
-                        "nextSubscriptionStep": {
-                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionStep"}],
-                            "nullable": True,
-                        },
-                        "subscriptionMessage": {
-                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
-                            "nullable": True,
-                            "title": "SubscriptionMessage",
-                        },
-                    },
-                    "required": ["allowedIdentityCheckMethods", "hasIdentityCheckPending"],
-                    "title": "NextSubscriptionStepResponse",
-                    "type": "object",
-                },
                 "NotificationSubscriptions": {
                     "properties": {
                         "marketingEmail": {"title": "Marketingemail", "type": "boolean"},
@@ -1368,32 +1327,6 @@ def test_public_api(client):
                     "title": "OfferOffererResponse",
                     "type": "object",
                 },
-                "OfferPreviewResponse": {
-                    "properties": {
-                        "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
-                        "extraData": {
-                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraDataResponse"}],
-                            "nullable": True,
-                            "title": "OfferExtraDataResponse",
-                        },
-                        "id": {"title": "Id", "type": "integer"},
-                        "image": {
-                            "anyOf": [{"$ref": "#/components/schemas/OfferImageResponse"}],
-                            "nullable": True,
-                            "title": "OfferImageResponse",
-                        },
-                        "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
-                        "name": {"title": "Name", "type": "string"},
-                        "stocks": {
-                            "items": {"$ref": "#/components/schemas/OfferStockResponse"},
-                            "title": "Stocks",
-                            "type": "array",
-                        },
-                    },
-                    "required": ["id", "name", "stocks"],
-                    "title": "OfferPreviewResponse",
-                    "type": "object",
-                },
                 "OfferReportReasons": {
                     "properties": {
                         "reasons": {
@@ -1404,15 +1337,6 @@ def test_public_api(client):
                     },
                     "required": ["reasons"],
                     "title": "OfferReportReasons",
-                    "type": "object",
-                },
-                "OfferReportRequest": {
-                    "properties": {
-                        "customReason": {"nullable": True, "title": "Customreason", "type": "string"},
-                        "reason": {"$ref": "#/components/schemas/Reason"},
-                    },
-                    "required": ["reason"],
-                    "title": "OfferReportRequest",
                     "type": "object",
                 },
                 "OfferResponse": {
@@ -1704,18 +1628,6 @@ def test_public_api(client):
                     "title": "OffersStocksRequest",
                     "type": "object",
                 },
-                "OffersStocksResponse": {
-                    "properties": {
-                        "offers": {
-                            "items": {"$ref": "#/components/schemas/OfferPreviewResponse"},
-                            "title": "Offers",
-                            "type": "array",
-                        }
-                    },
-                    "required": ["offers"],
-                    "title": "OffersStocksResponse",
-                    "type": "object",
-                },
                 "OffersStocksResponseV2": {
                     "properties": {
                         "offers": {
@@ -1891,11 +1803,6 @@ def test_public_api(client):
                     "enum": ["LIKE", "DISLIKE", "NO_REACTION"],
                     "title": "ReactionTypeEnum",
                 },
-                "Reason": {
-                    "description": "Describe possible reason codes to used when reporting an offer.\n\nThe whole meta part is only consumed by the api client, it has no meaning\ninside the whole API code.\n\nNote: when adding a new enum symbol, do not forget to update the meta method.",
-                    "enum": ["IMPROPER", "PRICE_TOO_HIGH", "INAPPROPRIATE", "OTHER"],
-                    "title": "Reason",
-                },
                 "ReasonMeta": {
                     "properties": {
                         "description": {"title": "Description", "type": "string"},
@@ -1953,16 +1860,6 @@ def test_public_api(client):
                         "offer",
                     ],
                     "title": "ReminderResponse",
-                    "type": "object",
-                },
-                "ReportedOffer": {
-                    "properties": {
-                        "offerId": {"title": "Offerid", "type": "integer"},
-                        "reason": {"$ref": "#/components/schemas/Reason"},
-                        "reportedAt": {"format": "date-time", "title": "Reportedat", "type": "string"},
-                    },
-                    "required": ["offerId", "reportedAt", "reason"],
-                    "title": "ReportedOffer",
                     "type": "object",
                 },
                 "RequestPasswordResetRequest": {
@@ -2364,29 +2261,6 @@ def test_public_api(client):
                     "enum": ["Numéro de téléphone", "Profil", "Identification", "Confirmation"],
                     "title": "SubscriptionStepTitle",
                 },
-                "SubscriptionStepperResponse": {
-                    "properties": {
-                        "allowedIdentityCheckMethods": {
-                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
-                            "type": "array",
-                        },
-                        "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
-                        "maintenancePageType": {
-                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
-                            "nullable": True,
-                        },
-                        "subscriptionStepsToDisplay": {
-                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
-                            "title": "Subscriptionstepstodisplay",
-                            "type": "array",
-                        },
-                        "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
-                        "title": {"title": "Title", "type": "string"},
-                    },
-                    "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
-                    "title": "SubscriptionStepperResponse",
-                    "type": "object",
-                },
                 "SubscriptionStepperResponseV2": {
                     "properties": {
                         "allowedIdentityCheckMethods": {
@@ -2450,15 +2324,6 @@ def test_public_api(client):
                         "expiration": {"format": "date-time", "nullable": True, "title": "Expiration", "type": "string"}
                     },
                     "title": "UpdateEmailTokenExpiration",
-                    "type": "object",
-                },
-                "UserProfileEmailUpdate": {
-                    "properties": {
-                        "email": {"format": "email", "title": "Email", "type": "string"},
-                        "password": {"minLength": 8, "title": "Password", "type": "string"},
-                    },
-                    "required": ["email", "password"],
-                    "title": "UserProfileEmailUpdate",
                     "type": "object",
                 },
                 "UserProfilePatchRequest": {
@@ -2574,18 +2439,6 @@ def test_public_api(client):
                         "subscriptions",
                     ],
                     "title": "UserProfileResponse",
-                    "type": "object",
-                },
-                "UserReportedOffersResponse": {
-                    "properties": {
-                        "reportedOffers": {
-                            "items": {"$ref": "#/components/schemas/ReportedOffer"},
-                            "title": "Reportedoffers",
-                            "type": "array",
-                        }
-                    },
-                    "required": ["reportedOffers"],
-                    "title": "UserReportedOffersResponse",
                     "type": "object",
                 },
                 "UserRole": {
@@ -3511,31 +3364,6 @@ def test_public_api(client):
                     "tags": [],
                 },
             },
-            "/native/v1/me/favorites/count": {
-                "get": {
-                    "description": "",
-                    "operationId": "get__native_v1_me_favorites_count",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/FavoritesCountResponse"}}
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "get_favorites_count <GET>",
-                    "tags": [],
-                }
-            },
             "/native/v1/me/favorites/{favorite_id}": {
                 "delete": {
                     "description": "",
@@ -3826,37 +3654,6 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/offer/{offer_id}/report": {
-                "post": {
-                    "description": "",
-                    "operationId": "post__native_v1_offer_{offer_id}_report",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "offer_id",
-                            "required": True,
-                            "schema": {"format": "int32", "type": "integer"},
-                        }
-                    ],
-                    "requestBody": {
-                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OfferReportRequest"}}}
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "report_offer <POST>",
-                    "tags": [],
-                }
-            },
             "/native/v1/offerer/{offerer_id}/headline-offer": {
                 "get": {
                     "description": "",
@@ -3904,63 +3701,6 @@ def test_public_api(client):
                     "summary": "get_offerer_headline_offer <GET>",
                     "tags": [],
                 },
-            },
-            "/native/v1/offers/reports": {
-                "get": {
-                    "description": "",
-                    "operationId": "get__native_v1_offers_reports",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UserReportedOffersResponse"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "user_reported_offers <GET>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/offers/stocks": {
-                "post": {
-                    "deprecated": True,
-                    "description": "",
-                    "operationId": "post__native_v1_offers_stocks",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/OffersStocksRequest"}}
-                        }
-                    },
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/OffersStocksResponse"}}
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "get_offers_showtimes <POST>",
-                    "tags": [],
-                }
             },
             "/native/v1/offer/{offer_id}/chronicles": {
                 "get": {
@@ -4104,56 +3844,6 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/profile/email_update/confirm": {
-                "post": {
-                    "description": "",
-                    "operationId": "post__native_v1_profile_email_update_confirm",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "confirm_email_update <POST>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/profile/email_update/status": {
-                "get": {
-                    "deprecated": True,
-                    "description": "",
-                    "operationId": "get__native_v1_profile_email_update_status",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/EmailUpdateStatus"}}
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "get_email_update_status <GET>",
-                    "tags": [],
-                }
-            },
             "/native/v1/profile/email_update/validate": {
                 "put": {
                     "description": "",
@@ -4209,32 +3899,6 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_token_expiration_date <GET>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/profile/update_email": {
-                "post": {
-                    "deprecated": True,
-                    "description": "",
-                    "operationId": "post__native_v1_profile_update_email",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileEmailUpdate"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "update_user_email <POST>",
                     "tags": [],
                 }
             },
@@ -4764,34 +4428,6 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/subscription/next_step": {
-                "get": {
-                    "deprecated": True,
-                    "description": "",
-                    "operationId": "get__native_v1_subscription_next_step",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/NextSubscriptionStepResponse"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "next_subscription_step <GET>",
-                    "tags": [],
-                }
-            },
             "/native/v1/subscription/profile": {
                 "get": {
                     "description": "",
@@ -4835,34 +4471,6 @@ def test_public_api(client):
                     "summary": "complete_profile <POST>",
                     "tags": [],
                 },
-            },
-            "/native/v1/subscription/stepper": {
-                "get": {
-                    "deprecated": True,
-                    "description": "",
-                    "operationId": "get__native_v1_subscription_stepper",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/SubscriptionStepperResponse"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "get_subscription_stepper_deprecated <GET>",
-                    "tags": [],
-                }
             },
             "/native/v1/ubble_identification": {
                 "post": {
