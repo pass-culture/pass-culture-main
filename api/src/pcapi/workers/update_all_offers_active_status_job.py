@@ -1,7 +1,8 @@
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models
-import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.reminders.external import reminders_notifications
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
@@ -32,7 +33,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
 
 @job(worker.low_queue)
 def update_all_collective_offers_active_status_job(filters: dict, is_active: bool) -> None:
-    collective_offer_query = offers_repository.get_collective_offers_by_filters(
+    collective_offer_query = educational_repository.get_collective_offers_by_filters(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
