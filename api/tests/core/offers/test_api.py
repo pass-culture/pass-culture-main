@@ -322,13 +322,11 @@ class CreateStockTest:
         assert error.value.errors == {"beginningDatetime": ["Ce paramètre est obligatoire"]}
 
     def test_does_not_allow_idAtProvider_that_is_already_taken(self):
-        # Given
         duplicate_id_at_provider = "dos_veces"
         offer = factories.EventOfferFactory()
         factories.StockFactory(offer=offer, idAtProviders=duplicate_id_at_provider)
 
-        # When
-        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherOfferStock) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_stock(
                 offer=offer,
                 id_at_provider=duplicate_id_at_provider,
@@ -336,7 +334,6 @@ class CreateStockTest:
                 quantity=10,
             )
 
-        # Then
         assert error.value.errors == {"idAtProvider": ["`dos_veces` is already taken by another offer stock"]}
 
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
@@ -373,7 +370,7 @@ class CreateStockTest:
     def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
 
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_stock(offer=offer, price=10, quantity=7)
 
         assert error.value.errors == {
@@ -789,7 +786,7 @@ class EditStockTest:
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
         existing_stock = factories.StockFactory(offer=offer, price=10)
 
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
         assert error.value.errors == {
@@ -1082,7 +1079,7 @@ class DeleteStockTest:
         too_long_ago = datetime.utcnow() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
 
-        with pytest.raises(exceptions.TooLateToDeleteStock):
+        with pytest.raises(exceptions.OfferException):
             api.delete_stock(stock)
         stock = db.session.query(models.Stock).one()
         assert not stock.isSoftDeleted
@@ -1194,7 +1191,7 @@ class CreateDraftOfferTest:
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
         )
-        with pytest.raises(exceptions.EanInOfferNameException):
+        with pytest.raises(exceptions.OfferException):
             api.create_draft_offer(body, venue=venue)
 
     def test_create_draft_offer_with_accessibility_provider(self):
@@ -1251,7 +1248,7 @@ class CreateDraftOfferTest:
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
         )
-        with pytest.raises(exceptions.SubCategoryIsInactive) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_draft_offer(body, venue=venue)
 
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
@@ -1264,7 +1261,7 @@ class CreateDraftOfferTest:
             subcategoryId="TOTO",
             venueId=venue.id,
         )
-        with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_draft_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
@@ -1299,7 +1296,7 @@ class UpdateDraftOfferTest:
             description="New description",
         )
 
-        with pytest.raises(exceptions.EanInOfferNameException):
+        with pytest.raises(exceptions.OfferException):
             api.update_draft_offer(offer, body)
 
         db.session.flush()
@@ -1404,7 +1401,7 @@ class CreateOfferTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
         )
-        with pytest.raises(exceptions.SubCategoryIsInactive) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == [
@@ -1421,7 +1418,7 @@ class CreateOfferTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
         )
-        with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
@@ -1436,7 +1433,7 @@ class CreateOfferTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
         )
-        with pytest.raises(exceptions.EanInOfferNameException) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_offer(body, venue=venue)
 
         assert error.value.errors["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
@@ -1513,7 +1510,7 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             idAtProvider=id_at_provider,
         )
-        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_offer(
                 body,
                 venue=venue,
@@ -1607,7 +1604,7 @@ class UpdateOfferTest:
     def test_cannot_update_with_name_containing_ean(self):
         offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
-        with pytest.raises(exceptions.EanInOfferNameException) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
@@ -1742,7 +1739,7 @@ class UpdateOfferTest:
     def test_update_non_approved_offer_fails(self):
         pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.PENDING)
         body = offers_schemas.UpdateOffer(name="Monologue")
-        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.update_offer(pending_offer, body)
 
         assert error.value.errors == {
@@ -1800,7 +1797,7 @@ class UpdateOfferTest:
             ean="1234567890124",
         )
         body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
-        with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == [
@@ -1829,7 +1826,7 @@ class UpdateOfferTest:
         )
 
         body = offers_schemas.UpdateOffer(idAtProvider=id_at_provider)
-        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
@@ -2046,7 +2043,7 @@ class CreateEventOpeningHoursTest:
         offer = factories.EventOfferFactory(subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id)
         body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
-        with pytest.raises(exceptions.OfferEditionBaseException) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_event_opening_hours(body=body, offer=offer)
 
         assert error.value.errors["offer.subcategory"] == [
@@ -2057,7 +2054,7 @@ class CreateEventOpeningHoursTest:
         offer = factories.EventOpeningHoursFactory().offer
         body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
-        with pytest.raises(exceptions.OfferEditionBaseException) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_event_opening_hours(body=body, offer=offer)
 
         assert error.value.errors["offer"] == [f"Offer #{offer.id} already has opening hours"]
@@ -2067,7 +2064,7 @@ class CreateEventOpeningHoursTest:
         factories.StockFactory(offer=offer)
         body = offers_schemas.CreateEventOpeningHoursModel(**_FUNCTIONAL_CREATE_EVENT_OPENING_HOURS_PAYLOAD)
 
-        with pytest.raises(exceptions.OfferEditionBaseException) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_event_opening_hours(body=body, offer=offer)
 
         assert error.value.errors["offer"] == [f"Offer #{offer.id} already has timestamped stocks"]
@@ -5000,7 +4997,7 @@ class CreatePriceCategoryTest:
         offer = factories.EventOfferFactory()
         factories.PriceCategoryFactory(offer=offer, idAtProvider="aHÇaVaBugguer")
 
-        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.create_price_category(offer, "Carré d'as", decimal.Decimal("70.5"), id_at_provider="aHÇaVaBugguer")
 
         assert error.value.errors["idAtProvider"] == [
@@ -5037,7 +5034,7 @@ class EditPriceCategoryTest:
         factories.PriceCategoryFactory(offer=offer, idAtProvider=failing_id)
         price_category = factories.PriceCategoryFactory(offer=offer)
 
-        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             api.edit_price_category(
                 price_category.offer,
                 price_category,

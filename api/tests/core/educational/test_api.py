@@ -90,7 +90,7 @@ class CreateCollectiveOfferStocksTest:
             educationalPriceDetail="hello",
         )
 
-        with pytest.raises(offers_exceptions.RejectedOrPendingOfferNotEditable) as error:
+        with pytest.raises(offers_exceptions.OfferException) as error:
             educational_api_stock.create_collective_stock(stock_data=created_stock_data)
 
         assert error.value.errors == {

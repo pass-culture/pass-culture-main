@@ -316,8 +316,8 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
         # order to check that there is no bug on our side.
         logger.error("Unlikely create product error encountered", extra={"error": error, "body": body})
         raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except offers_exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return serialization.ProductOfferResponse.build_product_offer(product)
 
@@ -433,10 +433,7 @@ def _create_or_update_ean_offers(
                     )
                     created_offers.append(created_offer)
 
-                except (
-                    offers_exceptions.OfferCreationBaseException,
-                    offers_exceptions.OfferEditionBaseException,
-                ) as exc:
+                except offers_exceptions.OfferException as exc:
                     logger.info(
                         "Error while creating offer by ean",
                         extra={
@@ -469,10 +466,7 @@ def _create_or_update_ean_offers(
                         booking_limit_datetime=stock_data["booking_limit_datetime"],
                         creating_provider=provider,
                     )
-                except (
-                    offers_exceptions.OfferCreationBaseException,
-                    offers_exceptions.OfferEditionBaseException,
-                ) as exc:
+                except offers_exceptions.OfferException as exc:
                     logger.info(
                         "Error while creating offer by ean",
                         extra={
@@ -516,20 +510,10 @@ def _create_or_update_ean_offers(
                     provider,
                 )
                 offers_to_index.append(offer_to_update_by_ean[ean].id)
-            except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
+            except offers_exceptions.OfferException as exc:
                 logger.info(
                     "Error while creating offer by ean",
                     extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
-                )
-            except offers_exceptions.TooLateToDeleteStock:
-                logger.info(
-                    "Could not update stock: too late",
-                    extra={
-                        "ean": ean,
-                        "venue_id": venue_id,
-                        "provider_id": provider_id,
-                        "stock_data": stock_data,
-                    },
                 )
 
     search.async_index_offer_ids(
@@ -908,10 +892,8 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 utils.save_image(body.image, updated_offer)
             if "stock" in updates:
                 _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
-        raise api_errors.ApiErrors(e.errors, status_code=400)
-    except offers_exceptions.TooLateToDeleteStock as e:
-        raise api_errors.ApiErrors(e.errors, status_code=400)
+    except offers_exceptions.OfferException as e:
+        raise api_errors.ApiErrors(e.errors)
 
     # TODO(jeremieb): this should not be needed. BUT since datetime from
     # db are not timezone aware and those from the request are...
