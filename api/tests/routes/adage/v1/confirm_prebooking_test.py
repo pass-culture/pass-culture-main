@@ -30,12 +30,11 @@ class Returns200Test:
     # 1. select booking
     # 2. select deposit
     # 3. select stock.price sum
-    # 4. select FF
     # 5. update booking
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     @time_machine.travel("2021-10-15 09:00:00", tick=False)
-    def test_confirm_collective_prebooking(self, client, caplog) -> None:
+    def test_confirm_collective_prebooking(self, client, caplog, features) -> None:
         redactor = EducationalRedactorFactory()
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
@@ -161,7 +160,7 @@ class Returns200Test:
         assert response.status_code == 200
 
     @time_machine.travel("2021-10-15 09:00:00")
-    def test_sufficient_ministry_fund(self, client) -> None:
+    def test_sufficient_ministry_fund(self, client, features) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
         educational_institution3 = EducationalInstitutionFactory()
@@ -217,7 +216,7 @@ class Returns200Test:
         assert response.status_code == 200
 
     @time_machine.travel("2021-10-15 09:00:00")
-    def test_out_of_minitry_check_dates(self, client) -> None:
+    def test_out_of_minitry_check_dates(self, client, features) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
 

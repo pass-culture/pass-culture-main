@@ -11,10 +11,9 @@ from pcapi.core.testing import assert_num_queries
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
-@pytest.mark.usefixtures("db_session")
+@pytest.mark.usefixtures("db_session", "features")
 class Returns200Test:
     num_queries = 1  # fetch bookings
-    num_queries += 1  # fetch FF (WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE)
 
     def test_get_prebookings_without_query_params(self, client):
         redactor = EducationalRedactorFactory(
