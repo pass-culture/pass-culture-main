@@ -6,8 +6,7 @@ from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.adage_iframe.serialization.venues import GetRelativeVenuesQueryModel
-from pcapi.routes.adage_iframe.serialization.venues import VenueResponse
+from pcapi.routes.adage_iframe.serialization.venues import GetRelativeVenuesQueryModel, VenueResponse
 from pcapi.serialization.decorator import spectree_serialize
 
 

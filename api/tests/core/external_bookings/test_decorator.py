@@ -5,8 +5,10 @@ import pytest
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external_bookings import models as external_bookings_models
-from pcapi.core.external_bookings.decorators import ExternalBookingDecoratorException
-from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
+from pcapi.core.external_bookings.decorators import (
+    ExternalBookingDecoratorException,
+    catch_cinema_provider_request_timeout,
+)
 from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
 from pcapi.core.users import models as users_models
 from pcapi.utils.requests import requests

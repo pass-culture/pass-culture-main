@@ -10,8 +10,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.tasks.mails_tasks import send_withdrawal_detail_changed_emails
-from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailBookingDetail
-from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
+from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailBookingDetail, WithdrawalChangedMailRequest
 from pcapi.utils.date import format_time_in_second_to_human_readable
 
 

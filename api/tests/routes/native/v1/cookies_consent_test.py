@@ -1,6 +1,6 @@
-from datetime import datetime
 import logging
 import uuid
+from datetime import datetime
 
 import pytest
 

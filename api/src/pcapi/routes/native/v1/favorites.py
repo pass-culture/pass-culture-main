@@ -7,20 +7,13 @@ import sqlalchemy.orm as sa_orm
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_added_to_favorites_event
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import Offerer, OffererAddress, Venue
 from pcapi.core.offers.exceptions import OfferNotFound
-from pcapi.core.offers.models import Mediation
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Mediation, Offer, Product, Stock
 from pcapi.core.offers.repository import get_offer_by_id
-from pcapi.core.users.models import Favorite
-from pcapi.core.users.models import User
+from pcapi.core.users.models import Favorite, User
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize

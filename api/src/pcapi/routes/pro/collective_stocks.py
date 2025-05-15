@@ -1,7 +1,6 @@
 import logging
 
-from flask_login import current_user
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational.api import stock as educational_api_stock

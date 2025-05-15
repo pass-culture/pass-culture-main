@@ -4,16 +4,18 @@ from zoneinfo import ZoneInfo
 import dateutil
 import pytest
 
-from pcapi.utils.date import CUSTOM_TIMEZONES
-from pcapi.utils.date import FrenchParserInfo
-from pcapi.utils.date import METROPOLE_TIMEZONE
-from pcapi.utils.date import default_timezone_to_local_datetime
-from pcapi.utils.date import format_time_in_second_to_human_readable
-from pcapi.utils.date import get_date_formatted_for_email
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_postal_code_timezone
-from pcapi.utils.date import get_time_formatted_for_email
-from pcapi.utils.date import local_datetime_to_default_timezone
+from pcapi.utils.date import (
+    CUSTOM_TIMEZONES,
+    METROPOLE_TIMEZONE,
+    FrenchParserInfo,
+    default_timezone_to_local_datetime,
+    format_time_in_second_to_human_readable,
+    get_date_formatted_for_email,
+    get_department_timezone,
+    get_postal_code_timezone,
+    get_time_formatted_for_email,
+    local_datetime_to_default_timezone,
+)
 
 
 class GetDateFormattedForEmailTest:

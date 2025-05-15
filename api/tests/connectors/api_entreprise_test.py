@@ -7,8 +7,7 @@ import pytest
 import requests_mock
 
 from pcapi import settings
-from pcapi.connectors.entreprise import api
-from pcapi.connectors.entreprise import exceptions
+from pcapi.connectors.entreprise import api, exceptions
 
 from . import api_entreprise_test_data
 

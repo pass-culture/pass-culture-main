@@ -10,11 +10,13 @@ from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
+    AuthenticatedInformation,
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.adage_iframe.serialization.collective_bookings import BookCollectiveOfferRequest
-from pcapi.routes.adage_iframe.serialization.collective_bookings import BookCollectiveOfferResponse
+from pcapi.routes.adage_iframe.serialization.collective_bookings import (
+    BookCollectiveOfferRequest,
+    BookCollectiveOfferResponse,
+)
 from pcapi.serialization.decorator import spectree_serialize
 
 

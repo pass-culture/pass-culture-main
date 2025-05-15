@@ -1,23 +1,19 @@
-from datetime import datetime
 import enum
 import logging
+from datetime import datetime
 
 from flask import current_app as app
 
+import pcapi.core.external.sendinblue as external_contacts
 from pcapi import settings
 from pcapi.core import token as token_utils
-import pcapi.core.external.sendinblue as external_contacts
 from pcapi.core.mails import transactional as transactional_mails
-from pcapi.core.users import api
-from pcapi.core.users import constants
-from pcapi.core.users import exceptions
-from pcapi.core.users import models
+from pcapi.core.users import api, constants, exceptions, models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
-from pcapi.repository import transaction
+from pcapi.repository import repository, transaction
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 

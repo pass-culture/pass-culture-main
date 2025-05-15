@@ -4,15 +4,14 @@ Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
 
-from dataclasses import dataclass
 import logging
 import time
+from dataclasses import dataclass
 
 import sqlalchemy as sa
 import urllib3.exceptions
 
-from pcapi.core.external import batch
-from pcapi.core.external import sendinblue
+from pcapi.core.external import batch, sendinblue
 from pcapi.core.external.attributes.api import get_user_attributes
 from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.users.models import User

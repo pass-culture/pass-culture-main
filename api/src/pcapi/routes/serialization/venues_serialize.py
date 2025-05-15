@@ -1,12 +1,11 @@
-from datetime import datetime
 import enum
-from io import BytesIO
 import typing
+from datetime import datetime
+from io import BytesIO
 
-from PIL import Image
 import pydantic.v1 as pydantic_v1
-from pydantic.v1 import root_validator
-from pydantic.v1 import validator
+from PIL import Image
+from pydantic.v1 import root_validator, validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
@@ -18,17 +17,12 @@ from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import address_serialize
-from pcapi.routes.serialization import base
+from pcapi.routes.serialization import BaseModel, address_serialize, base
 from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
-from pcapi.serialization.utils import string_length_validator
-from pcapi.serialization.utils import string_to_boolean_field
-from pcapi.serialization.utils import to_camel
+from pcapi.serialization.utils import string_length_validator, string_to_boolean_field, to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.image_conversion import CropParam
-from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import CropParam, CropParams
 
 
 class DMSApplicationstatus(enum.Enum):

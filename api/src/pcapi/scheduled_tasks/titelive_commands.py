@@ -6,8 +6,7 @@ import click
 from pcapi.core.providers.titelive_book_search import TiteliveBookSearch
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.decorators import cron_require_feature
-from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
+from pcapi.scheduled_tasks.decorators import cron_require_feature, log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 
 

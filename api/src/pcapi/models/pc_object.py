@@ -1,12 +1,12 @@
 import logging
-from pprint import pprint
 import re
 import typing
+from pprint import pprint
 
-from flask_sqlalchemy import BaseQuery as FlaskSQLAlchemyBaseQuery
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from flask_sqlalchemy import BaseQuery as FlaskSQLAlchemyBaseQuery
 from werkzeug.exceptions import NotFound
 
 from pcapi.models import db

@@ -5,8 +5,8 @@ from unittest import mock
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import exceptions
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers import exceptions
 from pcapi.core.offers.models import Mediation
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize

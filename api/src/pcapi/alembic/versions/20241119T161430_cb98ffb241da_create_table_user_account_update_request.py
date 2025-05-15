@@ -1,7 +1,7 @@
 """Create table UserAccountUpdateRequest"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.utils.db import MagicEnum

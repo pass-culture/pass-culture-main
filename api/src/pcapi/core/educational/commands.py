@@ -1,17 +1,17 @@
 import datetime
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
 import click
 
-from pcapi.core import search
-from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.api.adage as adage_api
-from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 import pcapi.core.educational.models as educational_models
+from pcapi.core import search
+from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
 from pcapi.repository import transaction

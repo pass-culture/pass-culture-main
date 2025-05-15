@@ -1,6 +1,4 @@
-from pydantic.v1 import ConstrainedFloat
-from pydantic.v1 import ConstrainedStr
-from pydantic.v1 import root_validator
+from pydantic.v1 import ConstrainedFloat, ConstrainedStr, root_validator
 
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields

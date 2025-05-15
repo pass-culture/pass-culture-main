@@ -7,8 +7,7 @@ from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
-from . import api
-from . import errors
+from . import api, errors
 
 
 REDIRECT_TO_IDENTIFICATION = subscription_models.CallToActionMessage(

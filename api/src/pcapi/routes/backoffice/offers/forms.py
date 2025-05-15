@@ -1,27 +1,21 @@
 import enum
-from functools import partial
 import json
 import re
 import typing
+from functools import partial
 from urllib.parse import urlencode
 
-from flask import flash
-from flask import url_for
-from flask_wtf import FlaskForm
 import wtforms
+from flask import flash, url_for
+from flask_wtf import FlaskForm
 
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import pro_categories, subcategories
 from pcapi.core.categories.genres import show
 from pcapi.core.offerers import models as offerers_models
-from pcapi.models.offer_mixin import OfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.forms import constants
+from pcapi.models.offer_mixin import OfferStatus, OfferValidationStatus
+from pcapi.routes.backoffice import autocomplete, filters, utils
+from pcapi.routes.backoffice.forms import constants, fields
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.utils import string as string_utils
 

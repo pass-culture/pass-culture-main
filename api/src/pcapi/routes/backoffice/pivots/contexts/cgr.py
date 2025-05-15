@@ -10,8 +10,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
-from pcapi.utils.crypto import decrypt
-from pcapi.utils.crypto import encrypt
+from pcapi.utils.crypto import decrypt, encrypt
 
 from .. import forms
 from .base import PivotContext

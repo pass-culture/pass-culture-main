@@ -2,10 +2,7 @@ import datetime
 import logging
 from urllib.parse import urlencode
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import url_for
+from flask import flash, redirect, render_template, url_for
 from markupsafe import Markup
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import NotFound

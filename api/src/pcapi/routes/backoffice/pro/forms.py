@@ -3,8 +3,8 @@ import re
 import typing
 import urllib.parse
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
@@ -14,9 +14,8 @@ from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_pro_or_non_attached_pro_user_by_email_query
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice.forms import fields
+from pcapi.routes.backoffice.forms import fields, utils
 from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils

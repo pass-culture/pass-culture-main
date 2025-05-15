@@ -1,13 +1,12 @@
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.models import db
-from pcapi.models import offer_mixin
+from pcapi.models import db, offer_mixin
 
 from .helpers import html_parser
 

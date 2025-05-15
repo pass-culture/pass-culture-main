@@ -1,8 +1,10 @@
 import pytest
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.accepted_as_beneficiary import get_accepted_as_beneficiary_email_v3_data
-from pcapi.core.mails.transactional.users.accepted_as_beneficiary import get_accepted_as_underage_beneficiary_email_data
+from pcapi.core.mails.transactional.users.accepted_as_beneficiary import (
+    get_accepted_as_beneficiary_email_v3_data,
+    get_accepted_as_underage_beneficiary_email_data,
+)
 from pcapi.core.users import factories as users_factories
 
 

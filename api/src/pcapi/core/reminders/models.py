@@ -3,8 +3,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offers.models import FutureOffer
 from pcapi.core.users.models import User
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 
 

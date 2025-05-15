@@ -2,24 +2,26 @@ from flask import Flask
 
 
 def install_routes(app: Flask) -> None:
-    from . import adage_data
-    from . import bookings
-    from . import collective_bookings
-    from . import collective_offers
-    from . import collective_stocks
-    from . import features
-    from . import finance
-    from . import headline_offer
-    from . import offerers
-    from . import offers
-    from . import providers
-    from . import reimbursements
-    from . import signup
-    from . import sirene
-    from . import statistics
-    from . import stocks
-    from . import users
-    from . import venue_labels
-    from . import venue_providers
-    from . import venue_types
-    from . import venues
+    from . import (
+        adage_data,
+        bookings,
+        collective_bookings,
+        collective_offers,
+        collective_stocks,
+        features,
+        finance,
+        headline_offer,
+        offerers,
+        offers,
+        providers,
+        reimbursements,
+        signup,
+        sirene,
+        statistics,
+        stocks,
+        users,
+        venue_labels,
+        venue_providers,
+        venue_types,
+        venues,
+    )

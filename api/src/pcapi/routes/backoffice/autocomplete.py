@@ -1,9 +1,9 @@
 import re
 
-from flask import request
-from flask_login import login_required
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import request
+from flask_login import login_required
 
 from pcapi.connectors import api_adresse
 from pcapi.core.criteria import models as criteria_models

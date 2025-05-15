@@ -1,5 +1,4 @@
-from pcapi.core.educational import exceptions
-from pcapi.core.educational import models
+from pcapi.core.educational import exceptions, models
 from pcapi.models import db
 
 

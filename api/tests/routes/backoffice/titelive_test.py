@@ -2,8 +2,8 @@ import datetime
 import html
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi import settings
 from pcapi.core import search

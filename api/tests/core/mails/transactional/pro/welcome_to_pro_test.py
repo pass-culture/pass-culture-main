@@ -3,10 +3,10 @@ from dataclasses import asdict
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
 from pcapi.core.mails.transactional.pro.welcome_to_pro import send_welcome_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.settings import PRO_URL
 
 

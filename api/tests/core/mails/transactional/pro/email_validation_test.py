@@ -2,12 +2,12 @@ from dataclasses import asdict
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core import token as token_utils
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.pro.email_validation import send_signup_email_confirmation_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

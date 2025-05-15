@@ -4,15 +4,13 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
 
 
 if TYPE_CHECKING:
-    from pcapi.core.offers.models import Offer
-    from pcapi.core.offers.models import Product
+    from pcapi.core.offers.models import Offer, Product
     from pcapi.core.users.models import User
 
 

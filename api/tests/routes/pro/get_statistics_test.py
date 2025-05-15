@@ -3,12 +3,12 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
-from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
+from pcapi.core import testing
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 

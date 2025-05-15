@@ -1,14 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.providers import factories
-from pcapi.core.providers import models
-from pcapi.core.providers import repository
+from pcapi.core.providers import factories, models, repository
 from pcapi.models import db
 
 

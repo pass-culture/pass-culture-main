@@ -1,9 +1,7 @@
-from datetime import datetime
-from datetime import timedelta
 import decimal
+from datetime import datetime, timedelta
 
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import Offer, PriceCategory
 
 
 class EventOccurrence:

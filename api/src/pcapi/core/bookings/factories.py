@@ -4,16 +4,15 @@ import uuid
 
 import factory
 
-from pcapi.core.factories import BaseFactory
-from pcapi.core.finance.models import DepositType
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.core.factories import BaseFactory
+from pcapi.core.finance.models import DepositType
 from pcapi.models import db
 from pcapi.utils.token import random_token
 
-from . import api
-from . import models
+from . import api, models
 
 
 class BookingFactory(BaseFactory):

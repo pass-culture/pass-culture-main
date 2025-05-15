@@ -2,9 +2,11 @@ from typing import Any
 
 import pytest
 
-from pcapi.core.educational.factories import EducationalDepositFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import (
+    EducationalDepositFactory,
+    EducationalInstitutionFactory,
+    EducationalYearFactory,
+)
 
 
 @pytest.mark.usefixtures("db_session")

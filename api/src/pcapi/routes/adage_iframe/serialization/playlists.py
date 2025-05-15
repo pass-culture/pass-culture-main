@@ -1,5 +1,5 @@
-from decimal import Decimal
 import typing
+from decimal import Decimal
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel

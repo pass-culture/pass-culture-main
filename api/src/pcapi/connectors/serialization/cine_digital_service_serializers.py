@@ -1,8 +1,7 @@
 import datetime
 import typing
 
-from pydantic.v1 import Field
-from pydantic.v1 import validator
+from pydantic.v1 import Field, validator
 
 import pcapi.core.offers.models as offers_models
 from pcapi.routes.serialization import BaseModel

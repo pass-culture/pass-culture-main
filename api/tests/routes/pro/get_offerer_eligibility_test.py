@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.educational.factories as collective_factories
+from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories

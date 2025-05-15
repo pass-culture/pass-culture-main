@@ -1,21 +1,17 @@
 import datetime
 from decimal import Decimal
 
-from pcapi.core.bookings import constants
-from pcapi.core.bookings import exceptions
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.finance.repository as finance_repository
+from pcapi.core.bookings import constants, exceptions
+from pcapi.core.bookings.models import Booking, BookingStatus
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
-from .exceptions import NoActivationCodeAvailable
-from .exceptions import OfferCategoryNotBookableByUser
+from .exceptions import NoActivationCodeAvailable, OfferCategoryNotBookableByUser
 
 
 def check_can_book_free_offer(user: User, stock: Stock) -> None:

@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -7,8 +6,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import AUTHENTICATION_QUERIES
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import AUTHENTICATION_QUERIES, assert_num_queries
 from pcapi.core.users import factories as users_factories
 
 

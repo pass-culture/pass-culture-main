@@ -3,13 +3,10 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.recommendation import RecommendationApiException
-from pcapi.connectors.recommendation import RecommendationApiTimeoutException
+from pcapi.connectors.recommendation import RecommendationApiException, RecommendationApiTimeoutException
 from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.factories import ProductMediationFactory
+from pcapi.core.offers.factories import OfferFactory, ProductFactory, ProductMediationFactory
 from pcapi.core.offers.models import ImageType
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import UserFactory

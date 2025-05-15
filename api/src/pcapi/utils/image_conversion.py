@@ -6,16 +6,14 @@ from the PIL library:
     https://pillow.readthedocs.io/
 """
 
-from dataclasses import dataclass
 import enum
 import io
 import math
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from PIL import ImageFile
-from PIL import ImageOps
-from PIL import UnidentifiedImageError
 import PIL.Image
+from PIL import ImageFile, ImageOps, UnidentifiedImageError
 from pydantic.v1 import confloat
 
 

@@ -1,20 +1,17 @@
 import datetime
-from decimal import Decimal
 import pathlib
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 import pytest
 
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import exceptions
+from pcapi.core.offers import exceptions, schemas, validation
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import schemas
-from pcapi.core.offers import validation
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import WithdrawalTypeEnum
-import pcapi.core.providers.factories as providers_factories
+from pcapi.core.offers.models import OfferValidationStatus, WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors

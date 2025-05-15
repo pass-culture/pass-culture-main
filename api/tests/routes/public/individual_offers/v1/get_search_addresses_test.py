@@ -2,8 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_adresse import AddressInfo
-from pcapi.connectors.api_adresse import NoResultException
+from pcapi.connectors.api_adresse import AddressInfo, NoResultException
 from pcapi.core.geography import factories as geography_factories
 
 from tests.conftest import TestClient

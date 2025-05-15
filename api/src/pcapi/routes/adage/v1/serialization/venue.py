@@ -2,10 +2,7 @@ import logging
 
 from pydantic.v1 import PositiveInt
 
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueContact
-from pcapi.core.offerers.models import VenueLabel
-from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.offerers.models import Venue, VenueContact, VenueLabel, VenueTypeCode
 from pcapi.routes.serialization import BaseModel
 
 

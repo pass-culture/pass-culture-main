@@ -1,20 +1,22 @@
 import dataclasses
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from decimal import Decimal
 import logging
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
-from urllib.parse import parse_qs
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
-from dateutil.relativedelta import relativedelta
 import fakeredis
 import jwt
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
+import pcapi.core.finance.models as finance_models
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.models as subscription_models
+import pcapi.core.users.constants as users_constants
 from pcapi import settings
 from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.connectors.serialization import ubble_serializers
@@ -22,31 +24,24 @@ from pcapi.core import token as token_utils
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.achievements.factories import AchievementFactory
 from pcapi.core.bookings import factories as booking_factories
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import BookingFactory, CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.finance import deposit_api
-import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.subscription.api as subscription_api
-import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users import young_status
 from pcapi.core.users.api import create_phone_validation_token
-import pcapi.core.users.constants as users_constants
 from pcapi.core.users.email import request_email_update_with_credentials
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.email.repository import get_email_update_latest_event
-from pcapi.core.users.utils import ALGORITHM_HS_256
-from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.core.users.utils import ALGORITHM_HS_256, encode_jwt_payload
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing

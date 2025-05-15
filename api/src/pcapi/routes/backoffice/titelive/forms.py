@@ -1,5 +1,5 @@
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 from wtforms import validators
 
 from pcapi.utils import string as string_utils

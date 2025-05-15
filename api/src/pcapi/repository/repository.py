@@ -1,15 +1,11 @@
 import logging
 
-from sqlalchemy.exc import DataError
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.exc import InternalError
+from sqlalchemy.exc import DataError, IntegrityError, InternalError
 
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import PcObject
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import is_managed_transaction, mark_transaction_as_invalid
 from pcapi.validation.models import entity_validator
 
 

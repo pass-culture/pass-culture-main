@@ -1,29 +1,23 @@
 import logging
 
-from flask import redirect
-from flask import render_template
-from flask import request
+from flask import redirect, render_template, request
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.wrappers.response import Response
 
 from pcapi import settings
 from pcapi.connectors import discord as discord_connector
-from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
+from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException, ReCaptchaException, check_web_recaptcha_token
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
 
-from . import blueprint
-from . import utils
+from . import blueprint, utils
 
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi import settings as pcapi_settings
 import pcapi.core.bookings.models as bookings_models
+from pcapi import settings as pcapi_settings
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle

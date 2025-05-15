@@ -1,14 +1,14 @@
-from dataclasses import dataclass
 import logging
 import random
 import typing
+from dataclasses import dataclass
 
 import pcapi.connectors.big_query.queries as big_query
 import pcapi.connectors.big_query.queries.adage_playlists as bq_playlists
-from pcapi.connectors.big_query.queries.base import BaseQuery
-from pcapi.core.educational import repository
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.models as educational_models
+from pcapi.connectors.big_query.queries.base import BaseQuery
+from pcapi.core.educational import repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.repository import transaction

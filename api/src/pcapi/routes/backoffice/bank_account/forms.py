@@ -1,7 +1,6 @@
 from wtforms import validators
 
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 
 
 class EditBankAccountForm(utils.PCForm):

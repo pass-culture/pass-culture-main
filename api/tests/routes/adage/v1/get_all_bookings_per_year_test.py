@@ -1,10 +1,11 @@
 import pytest
 
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.factories import (
+    CollectiveBookingFactory,
+    EducationalInstitutionFactory,
+    EducationalYearFactory,
+)
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons, CollectiveBookingStatus
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 

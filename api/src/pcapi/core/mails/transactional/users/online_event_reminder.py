@@ -8,8 +8,7 @@ from pcapi.core.bookings import models as booking_models
 from pcapi.core.mails import transactional as mails_transactional
 from pcapi.core.mails.models import TransactionalEmailData
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 

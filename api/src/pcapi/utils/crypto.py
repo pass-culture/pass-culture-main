@@ -1,7 +1,5 @@
-from hashlib import md5
-from hashlib import sha3_512
-from secrets import compare_digest
-from secrets import token_hex
+from hashlib import md5, sha3_512
+from secrets import compare_digest, token_hex
 
 import bcrypt
 from cryptography.fernet import Fernet

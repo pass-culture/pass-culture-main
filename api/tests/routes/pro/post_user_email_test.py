@@ -1,12 +1,11 @@
 from typing import Any
 from unittest.mock import patch
-from urllib.parse import parse_qs
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
+from pcapi import settings
 from pcapi.core.users import factories as users_factories
 
 

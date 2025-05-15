@@ -3,8 +3,7 @@ import logging
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
 
-from pcapi.core.categories.genres import music
-from pcapi.core.categories.genres import show
+from pcapi.core.categories.genres import music, show
 from pcapi.core.external.compliance_backends import compliance_backend
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db

@@ -1,6 +1,5 @@
 from pcapi.notifications.push import testing
-from pcapi.notifications.push.backends.batch import BatchAPI
-from pcapi.notifications.push.backends.batch import UserUpdateData
+from pcapi.notifications.push.backends.batch import BatchAPI, UserUpdateData
 from pcapi.notifications.push.backends.logger import LoggerBackend
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.notifications.push.trigger_events import TrackBatchEventRequest

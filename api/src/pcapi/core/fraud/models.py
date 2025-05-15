@@ -5,17 +5,16 @@ import typing
 from typing import TYPE_CHECKING
 
 import pydantic.v1 as pydantic_v1
-from pydantic.v1.class_validators import validator
 import pytz
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
+from pydantic.v1.class_validators import validator
+from sqlalchemy.dialects import postgresql
 
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 from pcapi.serialization.utils import to_camel
 

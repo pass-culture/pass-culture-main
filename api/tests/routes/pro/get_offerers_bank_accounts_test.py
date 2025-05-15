@@ -2,12 +2,12 @@ import datetime
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 
 
 class OfferersBankAccountTest:

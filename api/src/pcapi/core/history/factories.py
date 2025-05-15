@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import factory
+from dateutil.relativedelta import relativedelta
 
-from pcapi.core.factories import BaseFactory
-from pcapi.core.history import models
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
+from pcapi.core.factories import BaseFactory
+from pcapi.core.history import models
 
 
 class ActionHistoryFactory(BaseFactory):

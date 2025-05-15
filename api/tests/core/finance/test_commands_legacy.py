@@ -1,9 +1,9 @@
 import csv
 import datetime
-from decimal import Decimal
 import io
-from unittest.mock import patch
 import zipfile
+from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 

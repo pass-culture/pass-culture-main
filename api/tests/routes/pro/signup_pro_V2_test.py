@@ -1,13 +1,13 @@
 from dataclasses import asdict
 from unittest import mock
 
+import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-import pytest
 
-from pcapi.core import token as token_utils
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core import token as token_utils
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 from pcapi.models import db

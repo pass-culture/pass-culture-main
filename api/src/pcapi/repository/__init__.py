@@ -1,5 +1,5 @@
-from contextlib import contextmanager
 import typing
+from contextlib import contextmanager
 
 from pcapi.models import db
 

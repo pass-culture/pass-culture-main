@@ -1,13 +1,11 @@
 import typing
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import pro_categories, subcategories
 
-from ..forms import fields
-from ..forms import utils
+from ..forms import fields, utils
 
 
 class SearchRuleForm(FlaskForm):

@@ -4,9 +4,11 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.utils.date import get_date_formatted_for_email
-from pcapi.utils.date import get_time_formatted_for_email
-from pcapi.utils.date import utc_datetime_to_department_timezone
+from pcapi.utils.date import (
+    get_date_formatted_for_email,
+    get_time_formatted_for_email,
+    utc_datetime_to_department_timezone,
+)
 from pcapi.utils.urls import booking_app_link
 
 

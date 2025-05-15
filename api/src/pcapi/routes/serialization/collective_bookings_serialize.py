@@ -1,18 +1,18 @@
 import csv
-from datetime import datetime
 import decimal
-from enum import Enum
-from io import BytesIO
-from io import StringIO
 import typing
+from datetime import datetime
+from enum import Enum
+from io import BytesIO, StringIO
 
-from pydantic.v1 import root_validator
 import xlsxwriter
+from pydantic.v1 import root_validator
 
-from pcapi.core.bookings.utils import convert_collective_booking_dates_utc_to_venue_timezone
-from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_timezone
-from pcapi.core.educational import models
-from pcapi.core.educational import repository
+from pcapi.core.bookings.utils import (
+    convert_collective_booking_dates_utc_to_venue_timezone,
+    convert_real_booking_dates_utc_to_venue_timezone,
+)
+from pcapi.core.educational import models, repository
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import BaseQuery

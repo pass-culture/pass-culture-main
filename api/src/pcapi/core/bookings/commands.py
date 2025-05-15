@@ -2,8 +2,8 @@ import logging
 
 import click
 
-from pcapi.models import db
 import pcapi.scheduled_tasks.decorators as cron_decorators
+from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 
 from . import api

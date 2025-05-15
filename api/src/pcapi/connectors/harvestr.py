@@ -1,5 +1,4 @@
-from pydantic.v1 import BaseModel
-from pydantic.v1 import EmailStr
+from pydantic.v1 import BaseModel, EmailStr
 
 from pcapi import settings
 from pcapi.utils import requests

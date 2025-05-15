@@ -4,8 +4,7 @@ from factory.faker import faker
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.sandboxes.scripts.creators.test_cases import create_offer_with_ean
-from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
+from pcapi.sandboxes.scripts.creators.test_cases import create_offer_with_ean, venues_mock
 
 
 Fake = faker.Faker(locale="fr_FR")

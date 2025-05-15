@@ -5,30 +5,29 @@ from unittest import mock
 import pytest
 from sqlalchemy import exc as sa_exc
 
-from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.educational import exceptions
-from pcapi.core.educational import factories
-from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
-from pcapi.core.educational.models import COLLECTIVE_OFFER_TEMPLATE_STATUSES
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveDmsApplication
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferAllowedAction
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import EducationalDeposit
-from pcapi.core.educational.models import HasImageMixin
-from pcapi.core.educational.models import TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.bookings import exceptions as booking_exceptions
+from pcapi.core.educational import exceptions, factories
+from pcapi.core.educational.models import (
+    ALLOWED_ACTIONS_BY_DISPLAYED_STATUS,
+    COLLECTIVE_OFFER_TEMPLATE_STATUSES,
+    TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS,
+    CollectiveBookingStatus,
+    CollectiveDmsApplication,
+    CollectiveOffer,
+    CollectiveOfferAllowedAction,
+    CollectiveOfferDisplayedStatus,
+    CollectiveOfferTemplate,
+    CollectiveStock,
+    EducationalDeposit,
+    HasImageMixin,
+)
 from pcapi.models import db
-from pcapi.models.offer_mixin import CollectiveOfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus, OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import db as db_utils
-from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import ImageRatio
+from pcapi.utils.image_conversion import CropParams, ImageRatio
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

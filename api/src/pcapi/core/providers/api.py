@@ -3,24 +3,26 @@ import functools
 import logging
 import typing
 
-from pcapi.core import search
-from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core import search
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
-from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
-from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
+from pcapi.workers.update_all_offers_active_status_job import (
+    update_all_collective_offers_active_status_job,
+    update_venue_synchronized_offers_active_status_job,
+)
 
 from . import validation
 

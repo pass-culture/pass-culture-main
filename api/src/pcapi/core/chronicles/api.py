@@ -1,19 +1,17 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from re import search
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
+from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors import typeform
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
 
-from . import constants
-from . import models
+from . import constants, models
 
 
 logger = logging.getLogger(__name__)

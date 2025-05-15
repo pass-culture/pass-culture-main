@@ -1,7 +1,6 @@
 import typing
 
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import joinedload, load_only
 
 from pcapi.core.offerers import models
 from pcapi.models import db

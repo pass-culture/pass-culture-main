@@ -7,10 +7,8 @@ import pytest
 
 from pcapi import settings as pcapi_settings
 from pcapi.connectors import typeform
-from pcapi.core.chronicles import api
-from pcapi.core.chronicles import constants
+from pcapi.core.chronicles import api, constants, models
 from pcapi.core.chronicles import factories as chronicles_factories
-from pcapi.core.chronicles import models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db

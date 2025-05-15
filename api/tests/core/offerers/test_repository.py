@@ -1,15 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-from pcapi.core.offerers import exceptions
-from pcapi.core.offerers import models
-from pcapi.core.offerers import repository
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.educational.factories import CollectiveOfferFactory, CollectiveOfferTemplateFactory
+from pcapi.core.offerers import exceptions, models, repository
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 

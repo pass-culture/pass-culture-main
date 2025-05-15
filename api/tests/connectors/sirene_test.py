@@ -4,8 +4,7 @@ import datetime
 import pytest
 import requests_mock
 
-from pcapi.connectors.entreprise import exceptions
-from pcapi.connectors.entreprise import sirene
+from pcapi.connectors.entreprise import exceptions, sirene
 
 from . import sirene_test_data
 

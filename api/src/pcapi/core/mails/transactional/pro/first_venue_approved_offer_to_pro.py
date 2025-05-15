@@ -9,9 +9,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueBankAccountLink
+from pcapi.core.offerers.models import OffererAddress, Venue, VenueBankAccountLink
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 from pcapi.utils.urls import build_pc_pro_offer_link

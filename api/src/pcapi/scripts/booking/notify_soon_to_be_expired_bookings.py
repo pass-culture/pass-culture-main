@@ -1,6 +1,6 @@
 import datetime
-from itertools import groupby
 import logging
+from itertools import groupby
 from operator import attrgetter
 
 import pcapi.core.bookings.repository as bookings_repository

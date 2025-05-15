@@ -1,10 +1,10 @@
 import csv
 import datetime
-from decimal import Decimal
 import io
 import pathlib
-from unittest import mock
 import zipfile
+from decimal import Decimal
+from unittest import mock
 
 import pytest
 import time_machine
@@ -15,11 +15,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.finance import api
-from pcapi.core.finance import exceptions
-from pcapi.core.finance import factories
-from pcapi.core.finance import models
-from pcapi.core.finance import utils
+from pcapi.core.finance import api, exceptions, factories, models, utils
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories

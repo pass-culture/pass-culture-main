@@ -3,12 +3,10 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.bookings import factories as booking_factories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
     get_booking_cancellation_confirmation_by_pro_email_data,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
     send_booking_cancellation_confirmation_by_pro_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail

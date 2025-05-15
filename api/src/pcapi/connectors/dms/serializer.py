@@ -1,15 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
 import logging
 import re
+from datetime import datetime, timedelta
 from textwrap import shorten
-from typing import Any
-from typing import Literal
+from typing import Any, Literal
 
 from dateutil import parser as date_parser
-from pydantic.v1 import Field
-from pydantic.v1 import root_validator
-from pydantic.v1 import validator
+from pydantic.v1 import Field, root_validator, validator
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models

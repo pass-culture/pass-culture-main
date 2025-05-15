@@ -1,12 +1,12 @@
-from datetime import datetime
 import decimal
 import typing
+from datetime import datetime
 
 from pydantic.v1 import Field
 
+import pcapi.serialization.utils as serialization_utils
 from pcapi.core.offers import models
 from pcapi.routes.serialization import BaseModel
-import pcapi.serialization.utils as serialization_utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 

@@ -2,8 +2,8 @@
 add_soft_delete_future_offers
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

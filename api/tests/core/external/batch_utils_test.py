@@ -1,5 +1,4 @@
-from pcapi.core.external.batch_utils import batch_length
-from pcapi.core.external.batch_utils import shorten_for_batch
+from pcapi.core.external.batch_utils import batch_length, shorten_for_batch
 
 
 def test_batch_length_no_emoji():

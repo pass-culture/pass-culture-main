@@ -1,9 +1,7 @@
 from datetime import datetime
 
 from pcapi.core import token as token_utils
-from pcapi.core.users import api
-from pcapi.core.users import constants
-from pcapi.core.users import exceptions
+from pcapi.core.users import api, constants, exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.email import update as email_api

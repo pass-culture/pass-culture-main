@@ -2,21 +2,19 @@ import enum
 import json
 import re
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
-from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES, SubcategoryIdEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.backoffice import autocomplete
 from pcapi.utils.clean_accents import clean_accents
 
 from .. import filters
-from ..forms import fields
-from ..forms import utils
+from ..forms import fields, utils
 
 
 OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION = {

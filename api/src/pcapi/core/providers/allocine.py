@@ -3,8 +3,7 @@ from typing import Iterator
 
 from pcapi.connectors import api_allocine
 from pcapi.connectors.serialization import allocine_serializers
-from pcapi.core.offers.models import Movie
-from pcapi.core.offers.models import OfferExtraData
+from pcapi.core.offers.models import Movie, OfferExtraData
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.models import Provider
 from pcapi.models import db

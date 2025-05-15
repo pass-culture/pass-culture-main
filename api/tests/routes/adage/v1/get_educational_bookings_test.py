@@ -1,10 +1,12 @@
 import pytest
 
 from pcapi.core.educational import models
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import (
+    CollectiveBookingFactory,
+    ConfirmedCollectiveBookingFactory,
+    EducationalInstitutionFactory,
+    EducationalYearFactory,
+)
 from pcapi.core.testing import assert_no_duplicated_queries
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking

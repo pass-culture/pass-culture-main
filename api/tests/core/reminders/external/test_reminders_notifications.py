@@ -3,8 +3,7 @@ import logging
 import pytest
 
 from pcapi.core.offers import factories as offer_factories
-from pcapi.core.reminders import factories
-from pcapi.core.reminders import models
+from pcapi.core.reminders import factories, models
 from pcapi.core.reminders.external.reminders_notifications import notify_users_future_offer_activated
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db

@@ -5,23 +5,20 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import search
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
-from pcapi.core.categories import subcategories
-from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import StockFactory
 import pcapi.core.offers.models as offers_models
-from pcapi.core.providers import api
-from pcapi.core.providers import exceptions
-from pcapi.core.providers import models as providers_models
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core import search
+from pcapi.core.bookings.factories import BookingFactory, CancelledBookingFactory
+from pcapi.core.categories import subcategories
+from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers.factories import OfferFactory, StockFactory
+from pcapi.core.providers import api, exceptions
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody

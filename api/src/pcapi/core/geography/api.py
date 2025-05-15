@@ -13,8 +13,7 @@ from shapely.ops import transform as shapely_transform
 
 from pcapi.models import db
 
-from . import constants
-from . import models
+from . import constants, models
 
 
 if typing.TYPE_CHECKING:

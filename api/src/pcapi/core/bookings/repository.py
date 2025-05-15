@@ -1,12 +1,8 @@
-from collections.abc import Sequence
 import csv
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
-from io import BytesIO
-from io import StringIO
 import typing
+from collections.abc import Sequence
+from datetime import date, datetime, time, timedelta
+from io import BytesIO, StringIO
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -14,9 +10,7 @@ import xlsxwriter
 from xlsxwriter.format import Format
 from xlsxwriter.worksheet import Worksheet
 
-from pcapi.core.bookings import constants
-from pcapi.core.bookings import models
-from pcapi.core.bookings import utils
+from pcapi.core.bookings import constants, models, utils
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address

@@ -6,22 +6,24 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.utils import generate_hmac_signature
-from pcapi.core.external_bookings.api import EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
-from pcapi.core.external_bookings.api import _instantiate_cinema_api_client
-from pcapi.core.external_bookings.api import book_event_ticket
-from pcapi.core.external_bookings.api import cancel_event_ticket
-from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
-from pcapi.core.external_bookings.api import send_booking_notification_to_external_service
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as user_factories
+from pcapi.core.bookings.utils import generate_hmac_signature
+from pcapi.core.external_bookings.api import (
+    EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+    _instantiate_cinema_api_client,
+    book_event_ticket,
+    cancel_event_ticket,
+    get_active_cinema_venue_provider,
+    send_booking_notification_to_external_service,
+)
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 
 

@@ -3,9 +3,9 @@ import contextlib
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 

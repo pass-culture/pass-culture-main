@@ -3,13 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import search
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import Stock
+from pcapi.core import search
+from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.models import OfferValidationStatus, Stock
 from pcapi.utils.date import format_into_utc_date
 
 

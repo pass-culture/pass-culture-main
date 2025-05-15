@@ -1,21 +1,20 @@
-from dataclasses import dataclass
-from datetime import datetime
-from functools import partial
 import json
 import logging
 import typing
+from dataclasses import dataclass
+from datetime import datetime
+from functools import partial
 
-from pydantic.v1 import parse_obj_as
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import address as address_api
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
-from pcapi.core.educational.schemas import AdageCulturalPartner
-from pcapi.core.educational.schemas import AdageCulturalPartners
+from pcapi.core.educational.schemas import AdageCulturalPartner, AdageCulturalPartners
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email

@@ -3,12 +3,10 @@ import logging
 from flask import render_template
 
 from pcapi.core import mails
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import Booking, BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.mails import models
-from pcapi.utils.date import get_date_formatted_for_email
-from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import get_date_formatted_for_email, get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 from .booking_cancellation_by_beneficiary import send_booking_cancellation_by_beneficiary_email

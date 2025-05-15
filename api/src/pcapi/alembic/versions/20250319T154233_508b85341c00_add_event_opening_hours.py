@@ -1,7 +1,7 @@
 """Add event_opening_hours and event_week_day_opening_hours"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 from pcapi.core.offers.models import Weekday

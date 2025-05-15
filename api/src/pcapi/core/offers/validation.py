@@ -1,34 +1,27 @@
 import datetime
 import decimal
-from io import BytesIO
 import logging
 import re
 import warnings
+from io import BytesIO
 
-from PIL import Image
-from PIL import UnidentifiedImageError
-from dateutil.relativedelta import relativedelta
 import flask
-from pydantic.v1 import HttpUrl
 import sqlalchemy as sa
+from PIL import Image, UnidentifiedImageError
+from dateutil.relativedelta import relativedelta
+from pydantic.v1 import HttpUrl
 
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music
-from pcapi.core.categories.genres import show
+from pcapi.core.categories.genres import music, show
 from pcapi.core.categories.subcategories import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.schemas import VenueTypeCode
-from pcapi.core.offers import exceptions
-from pcapi.core.offers import models
-from pcapi.core.offers import repository
-from pcapi.core.offers import schemas
+from pcapi.core.offers import exceptions, models, repository, schemas
 from pcapi.core.providers import models as providers_models
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.models.offer_mixin import OfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models import api_errors, db
+from pcapi.models.offer_mixin import OfferStatus, OfferValidationStatus
 from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
 

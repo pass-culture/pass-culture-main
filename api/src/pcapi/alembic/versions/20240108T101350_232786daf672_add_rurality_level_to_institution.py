@@ -1,7 +1,7 @@
 """add rurality_level to EductionInstitution"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.educational.models import InstitutionRuralLevel
 from pcapi.utils.db import MagicEnum

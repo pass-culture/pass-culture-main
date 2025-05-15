@@ -1,7 +1,5 @@
 from flask import current_app as app
-from flask import redirect
-from flask import request
-from flask import url_for
+from flask import redirect, request, url_for
 
 from pcapi.routes.backoffice.home import REDIRECT_AFTER_LOGIN_COOKIE_NAME
 

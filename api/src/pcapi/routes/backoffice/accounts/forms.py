@@ -1,16 +1,14 @@
 import datetime
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import search
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, search, utils
 from pcapi.utils import string as string_utils
 
 

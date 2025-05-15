@@ -1,21 +1,18 @@
 import functools
 
-from flask_login import current_user
-from flask_login import login_required
+from flask_login import current_user, login_required
 from sqlalchemy.orm import exc as orm_exc
 from werkzeug.exceptions import NotFound
 
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.providers import api
-from pcapi.core.providers import exceptions
+from pcapi.core.providers import api, exceptions
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import atomic, on_commit
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize

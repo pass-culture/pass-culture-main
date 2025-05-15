@@ -4,8 +4,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers.models import GcuCompatibilityType
-from pcapi.core.offers.models import ImageType
+from pcapi.core.offers.models import GcuCompatibilityType, ImageType
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 

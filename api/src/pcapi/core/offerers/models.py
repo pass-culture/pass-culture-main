@@ -1,43 +1,38 @@
-from datetime import date
-from datetime import datetime
 import decimal
 import enum
 import logging
 import os
 import re
 import typing
+from datetime import date, datetime
 
 import psycopg2.extras
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_psql
+import sqlalchemy.orm as sa_orm
+import sqlalchemy.sql.functions as sa_func
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import Case
-import sqlalchemy.sql.functions as sa_func
+from sqlalchemy.sql.elements import BinaryExpression, Case
 from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import LargeBinary
 
+import pcapi.core.finance.models as finance_models
+import pcapi.utils.db as db_utils
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
 from pcapi.connectors.acceslibre import AccessibilityInfo
-from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
-from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
+from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel, TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
-import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
-from pcapi.core.offerers.schemas import BannerMetaModel
-from pcapi.core.offerers.schemas import VenueTypeCode
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.core.offerers.schemas import BannerMetaModel, VenueTypeCode
+from pcapi.models import Base, Model, db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.feature import FeatureToggle
@@ -49,13 +44,13 @@ from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.date import METROPOLE_TIMEZONE
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_postal_code_timezone
-from pcapi.utils.date import numranges_to_timespan_str
-import pcapi.utils.db as db_utils
+from pcapi.utils.date import (
+    METROPOLE_TIMEZONE,
+    get_department_timezone,
+    get_postal_code_timezone,
+    numranges_to_timespan_str,
+)
 from pcapi.utils.human_ids import humanize
-import pcapi.utils.postal_code as postal_code_utils
 
 
 if typing.TYPE_CHECKING:
@@ -567,8 +562,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     def has_approved_offers(self) -> bool:
         """Better performance than nApprovedOffers when we only want to check if there is at least one offer"""
         from pcapi.core.educational.models import CollectiveOffer
-        from pcapi.core.offers.models import Offer
-        from pcapi.core.offers.models import OfferValidationStatus
+        from pcapi.core.offers.models import Offer, OfferValidationStatus
 
         query_offer = db.session.query(
             db.session.query(Offer)
@@ -587,8 +581,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     @property
     def nApprovedOffers(self) -> int:  # used in validation rule, do not remove
         from pcapi.core.educational.models import CollectiveOffer
-        from pcapi.core.offers.models import Offer
-        from pcapi.core.offers.models import OfferValidationStatus
+        from pcapi.core.offers.models import Offer, OfferValidationStatus
 
         query_offer = db.session.query(sa_func.count(Offer.id)).filter(
             Offer.validation == OfferValidationStatus.APPROVED, Offer.venueId == self.id

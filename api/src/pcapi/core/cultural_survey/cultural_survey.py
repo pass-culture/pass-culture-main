@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
-from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
+from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum, CulturalSurveyQuestionEnum
 from pcapi.utils.string import u_nbsp
 
 

@@ -1,10 +1,9 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 from PIL import UnidentifiedImageError
 from flask import request
-from flask_login import current_user
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -21,8 +20,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization import educational_redactors
+from pcapi.routes.serialization import collective_offers_serialize, educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 

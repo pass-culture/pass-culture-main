@@ -2,8 +2,7 @@ import decimal
 
 import pcapi.core.finance.conf as finance_conf
 from pcapi.core.finance.utils import XPR_TO_EUR_RATE
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import BaseModel, ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 
 

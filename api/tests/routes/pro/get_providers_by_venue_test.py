@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 from pcapi.models import db
 
 

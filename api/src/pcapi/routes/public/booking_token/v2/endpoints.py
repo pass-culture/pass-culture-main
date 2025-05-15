@@ -1,11 +1,11 @@
 from flask_login import current_user
 
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings import validation as bookings_validation
-import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.public import spectree_schemas
@@ -14,11 +14,12 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import login_or_api_key_required
-from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_cancel_booking
-from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
-from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
+from pcapi.validation.routes.users_authentifications import current_api_key, login_or_api_key_required
+from pcapi.validation.routes.users_authorizations import (
+    check_api_key_allows_to_cancel_booking,
+    check_api_key_allows_to_validate_booking,
+    check_user_can_validate_bookings_v2,
+)
 
 from . import serialization
 

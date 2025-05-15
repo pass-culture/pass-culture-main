@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.core.offerers.factories import OffererFactory
-from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers.factories import OffererFactory, VenueFactory
 from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
 
 

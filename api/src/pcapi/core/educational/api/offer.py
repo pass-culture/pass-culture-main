@@ -1,8 +1,8 @@
 import dataclasses
 import datetime
-from functools import partial
 import logging
 import typing
+from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -11,13 +11,14 @@ from pcapi import settings
 from pcapi.core import search
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import adage_backends as adage_client
-from pcapi.core.educational import exceptions
+from pcapi.core.educational import exceptions, validation
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
-from pcapi.core.educational import validation
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
+from pcapi.core.educational.adage_backends.serialize import (
+    serialize_collective_offer,
+    serialize_collective_offer_request,
+)
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.core.educational.api import shared as api_shared
@@ -38,19 +39,14 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import User
-from pcapi.models import db
-from pcapi.models import feature
-from pcapi.models import offer_mixin
-from pcapi.models import validation_status_mixin
+from pcapi.models import db, feature, offer_mixin, validation_status_mixin
 from pcapi.models.pc_object import BaseQuery
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import is_managed_transaction, on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.utils import image_conversion
-from pcapi.utils import rest
+from pcapi.utils import image_conversion, rest
 
 
 logger = logging.getLogger(__name__)

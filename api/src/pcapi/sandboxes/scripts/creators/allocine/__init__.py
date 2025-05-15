@@ -1,9 +1,9 @@
 from random import randint
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import create_industrial_admin_users

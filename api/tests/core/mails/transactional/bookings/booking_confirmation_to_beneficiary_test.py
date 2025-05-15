@@ -1,24 +1,20 @@
 import dataclasses
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, timezone
 
 import pytest
 import time_machine
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import UsedBookingFactory
-from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
-from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.bookings.factories import BookingFactory, UsedBookingFactory
+from pcapi.core.categories import subcategories
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     get_booking_confirmation_to_beneficiary_email_data,
-)
-from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils.human_ids import humanize
 

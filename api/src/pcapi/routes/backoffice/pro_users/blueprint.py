@@ -1,13 +1,9 @@
 from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import mails as mails_api
@@ -24,15 +20,13 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import mark_transaction_as_invalid, on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
-from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
-from pcapi.tasks.batch_tasks import delete_user_attributes_task
+from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest, delete_user_attributes_task
 from pcapi.utils import email as email_utils
 
 

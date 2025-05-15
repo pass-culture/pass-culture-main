@@ -7,9 +7,11 @@ import time_machine
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import _has_inactivity_delay_expired
-from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import _is_never_eligible_applicant
-from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import handle_inactive_dms_applications
+from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import (
+    _has_inactivity_delay_expired,
+    _is_never_eligible_applicant,
+    handle_inactive_dms_applications,
+)
 
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 

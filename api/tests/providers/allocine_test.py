@@ -4,15 +4,11 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_allocine import ALLOCINE_API_URL
-from pcapi.connectors.api_allocine import AllocineException
+from pcapi.connectors.api_allocine import ALLOCINE_API_URL, AllocineException
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.offers.models import Product
 from pcapi.core.providers import constants as providers_constants
-from pcapi.core.providers.allocine import get_movie_list
-from pcapi.core.providers.allocine import get_movie_poster
-from pcapi.core.providers.allocine import get_movies_showtimes
-from pcapi.core.providers.allocine import synchronize_products
+from pcapi.core.providers.allocine import get_movie_list, get_movie_poster, get_movies_showtimes, synchronize_products
 from pcapi.core.providers.models import Provider
 from pcapi.models import db
 

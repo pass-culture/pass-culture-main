@@ -1,7 +1,7 @@
 """Recreate column special_event.eventDate as DATE NOT NULL"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi import settings
 

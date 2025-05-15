@@ -1,6 +1,6 @@
 import inspect
-from itertools import islice
 import typing
+from itertools import islice
 
 
 T = typing.TypeVar("T")

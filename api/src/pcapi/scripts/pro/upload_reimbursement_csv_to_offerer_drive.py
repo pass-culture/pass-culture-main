@@ -14,8 +14,10 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.users import models as user_models
 from pcapi.models import db
-from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
-from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
+from pcapi.routes.serialization.reimbursement_csv_serialize import (
+    ReimbursementDetails,
+    find_reimbursement_details_by_invoices,
+)
 
 
 logger = logging.getLogger(__name__)

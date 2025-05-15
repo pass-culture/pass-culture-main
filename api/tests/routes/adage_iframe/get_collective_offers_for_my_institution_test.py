@@ -1,8 +1,7 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models

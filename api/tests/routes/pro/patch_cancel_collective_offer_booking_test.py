@@ -1,8 +1,6 @@
 import pytest
 
-from pcapi.core.educational import factories
-from pcapi.core.educational import models
-from pcapi.core.educational import testing
+from pcapi.core.educational import factories, models, testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel

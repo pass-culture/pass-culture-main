@@ -1,8 +1,10 @@
 import pytest
 
 import pcapi.core.users.factories as users_factories
-from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
+from pcapi.routes.native.security import (
+    authenticated_and_active_user_required,
+    authenticated_maybe_inactive_user_required,
+)
 
 from tests.serialization.serialization_decorator_test import test_blueprint
 

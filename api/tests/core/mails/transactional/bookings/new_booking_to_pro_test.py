@@ -1,18 +1,19 @@
 from dataclasses import asdict
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, timezone
 
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
-from pcapi.core.finance import factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.bookings.new_booking_to_pro import get_new_booking_to_pro_email_data
-from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.categories import subcategories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.mails.transactional.bookings.new_booking_to_pro import (
+    get_new_booking_to_pro_email_data,
+    send_user_new_booking_to_pro_email,
+)
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import assert_num_queries
 

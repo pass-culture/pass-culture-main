@@ -2,12 +2,11 @@ import decimal
 import logging
 from unittest.mock import patch
 
-from brevo_python.rest import ApiException as SendinblueApiException
 import pytest
+from brevo_python.rest import ApiException as SendinblueApiException
 from urllib3.response import HTTPResponse
 
-from pcapi.core.mails import models
-from pcapi.core.mails import send
+from pcapi.core.mails import models, send
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.tasks.serialization import sendinblue_tasks

@@ -1,7 +1,7 @@
 """Add achievements table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.achievements.models import AchievementEnum
 from pcapi.utils.db import MagicEnum

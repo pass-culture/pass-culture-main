@@ -9,8 +9,8 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core.testing import assert_num_queries
 
 
 @pytest.mark.usefixtures("db_session")

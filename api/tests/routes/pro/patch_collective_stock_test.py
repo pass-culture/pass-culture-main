@@ -1,16 +1,16 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import testing as adage_api_testing
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.models import (
+    CollectiveBooking,
+    CollectiveBookingCancellationReasons,
+    CollectiveBookingStatus,
+    CollectiveStock,
+)
 from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories

@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.models import db
 
 

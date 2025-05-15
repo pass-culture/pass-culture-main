@@ -12,16 +12,12 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.models import api_errors, db
+from pcapi.routes.public import blueprints, spectree_schemas
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import current_api_key, provider_api_key_required
 
 from . import bookings_serialization as serialization
 

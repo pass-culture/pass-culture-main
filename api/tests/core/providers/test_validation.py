@@ -3,9 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.providers import exceptions
-from pcapi.core.providers import factories
-from pcapi.core.providers import validation
+from pcapi.core.providers import exceptions, factories, validation
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

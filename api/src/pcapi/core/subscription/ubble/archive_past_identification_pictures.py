@@ -1,9 +1,9 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
+import pcapi.core.subscription.ubble.api as ubble_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
-import pcapi.core.subscription.ubble.api as ubble_api
 from pcapi.core.subscription.ubble.exceptions import UbbleDownloadedFileEmpty
 from pcapi.models import db
 from pcapi.utils.requests import ExternalAPIException

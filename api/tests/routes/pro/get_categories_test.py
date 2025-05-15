@@ -2,12 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories.subcategories import ABO_BIBLIOTHEQUE
-from pcapi.core.categories.subcategories import CINE_PLEIN_AIR
-from pcapi.core.categories.subcategories import VISITE
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core.categories import pro_categories
+from pcapi.core.categories.subcategories import ABO_BIBLIOTHEQUE, CINE_PLEIN_AIR, VISITE
+from pcapi.core.testing import assert_num_queries
 
 
 @patch(

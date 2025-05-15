@@ -3,8 +3,8 @@ from time import time
 
 import click
 
-from pcapi.core.providers import allocine
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.providers import allocine
 from pcapi.local_providers import provider_manager
 from pcapi.utils.blueprint import Blueprint
 

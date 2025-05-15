@@ -1,14 +1,10 @@
 import datetime
 from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+import sqlalchemy as sa
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import NotFound
 
@@ -19,8 +15,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import search_utils, utils
 from pcapi.routes.backoffice.forms.empty import EmptyForm
 from pcapi.routes.backoffice.utils import permission_required
 from pcapi.utils import string as string_utils

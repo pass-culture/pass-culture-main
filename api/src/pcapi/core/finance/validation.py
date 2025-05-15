@@ -2,14 +2,12 @@ import datetime
 
 import pytz
 
+import pcapi.utils.date as date_utils
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-import pcapi.utils.date as date_utils
 
-from . import exceptions
-from . import models
-from . import utils
+from . import exceptions, models, utils
 
 
 def validate_reimbursement_rule(

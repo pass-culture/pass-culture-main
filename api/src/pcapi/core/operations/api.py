@@ -1,7 +1,7 @@
-from contextlib import suppress
 import datetime
-from functools import partial
 import logging
+from contextlib import suppress
+from functools import partial
 from traceback import format_exc
 
 import sqlalchemy as sa
@@ -11,9 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid, on_commit
 from pcapi.utils.phone_number import ParsedPhoneNumber
 from pcapi.workers.operations_jobs import retrieve_special_event_from_typeform_job
 

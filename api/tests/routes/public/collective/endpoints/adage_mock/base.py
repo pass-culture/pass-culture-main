@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.core.educational import factories
-from pcapi.core.educational import models
+from pcapi.core.educational import factories, models
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper

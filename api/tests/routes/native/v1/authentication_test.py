@@ -1,15 +1,16 @@
 import copy
-from datetime import datetime
 import logging
-from unittest.mock import patch
 import uuid
+from datetime import datetime
+from unittest.mock import patch
 
-from flask_jwt_extended import decode_token
-from flask_jwt_extended.utils import create_access_token
-from flask_jwt_extended.utils import create_refresh_token
 import pytest
 import time_machine
+from flask_jwt_extended import decode_token
+from flask_jwt_extended.utils import create_access_token, create_refresh_token
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.notifications.push.testing as bash_testing
 from pcapi import settings
 from pcapi.connectors import google_oauth
 from pcapi.connectors.dms import api as api_dms
@@ -19,18 +20,13 @@ from pcapi.core import token as token_utils
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.history import factories as history_factories
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.models import AccountState
-from pcapi.core.users.models import LoginDeviceHistory
-from pcapi.core.users.models import SingleSignOn
-from pcapi.core.users.models import TrustedDevice
+from pcapi.core.users.models import AccountState, LoginDeviceHistory, SingleSignOn, TrustedDevice
 from pcapi.models import db
-import pcapi.notifications.push.testing as bash_testing
 from pcapi.utils import crypto
 
 from tests.scripts.beneficiary.fixture import make_single_application

@@ -1,7 +1,7 @@
 import logging
 
-from pcapi.core.bookings.exceptions import CannotDeleteBookingWithReimbursementException
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.bookings.exceptions import CannotDeleteBookingWithReimbursementException
 from pcapi.core.finance.repository import has_reimbursement
 from pcapi.models import db
 

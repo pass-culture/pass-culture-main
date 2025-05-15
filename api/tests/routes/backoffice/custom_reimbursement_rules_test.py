@@ -1,8 +1,8 @@
 import datetime
 from decimal import Decimal
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories

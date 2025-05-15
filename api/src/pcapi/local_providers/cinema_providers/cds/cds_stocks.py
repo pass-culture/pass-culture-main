@@ -1,22 +1,22 @@
-from datetime import datetime
 import decimal
 import logging
-from typing import Iterator
 import uuid
+from datetime import datetime
+from typing import Iterator
 
 import PIL
 
-from pcapi import settings
-from pcapi.connectors import thumb_storage
-from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
-from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
+import pcapi.utils.date as utils_date
+from pcapi import settings
+from pcapi.connectors import thumb_storage
+from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS, ShowCDS
+from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
@@ -24,10 +24,8 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 from pcapi.repository.providable_queries import get_last_update_for_provider
-import pcapi.utils.date as utils_date
 
 
 ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL = {

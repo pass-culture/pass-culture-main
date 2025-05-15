@@ -8,8 +8,7 @@ from pcapi.core.educational.api import institution as educational_api_institutio
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
-from pcapi.routes.serialization import educational_institutions
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import educational_institutions, venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 
 

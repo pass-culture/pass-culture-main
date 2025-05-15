@@ -1,22 +1,16 @@
-from collections import defaultdict
 import datetime
-from io import BytesIO
 import logging
 import re
 import typing
+from collections import defaultdict
+from io import BytesIO
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import send_file
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from werkzeug.exceptions import BadRequest
-from werkzeug.exceptions import NotFound
+from flask import flash, redirect, render_template, request, send_file, url_for
+from flask_login import current_user
+from markupsafe import Markup
+from werkzeug.exceptions import BadRequest, NotFound
 
 from pcapi import settings
 from pcapi.connectors import ems
@@ -34,11 +28,8 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
+from pcapi.routes.backoffice import autocomplete, search_utils, utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.filters import pluralize

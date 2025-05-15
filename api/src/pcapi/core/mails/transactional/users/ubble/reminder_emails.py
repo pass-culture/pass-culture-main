@@ -1,18 +1,18 @@
 import datetime
 import logging
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
+from dateutil.relativedelta import relativedelta
 
-from pcapi import settings
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.constants as ubble_constants
-from pcapi.core.mails.transactional import send_subscription_document_error_email
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.api as ubble_subscription
-from pcapi.core.users import eligibility_api
 import pcapi.core.users.models as users_models
+from pcapi import settings
+from pcapi.core.mails.transactional import send_subscription_document_error_email
+from pcapi.core.users import eligibility_api
 from pcapi.models import db
 
 

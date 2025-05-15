@@ -1,6 +1,5 @@
 import pcapi.core.providers.repository as providers_repository
-from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
-from pcapi.local_providers.provider_manager import synchronize_venue_provider
+from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider, synchronize_venue_provider
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 

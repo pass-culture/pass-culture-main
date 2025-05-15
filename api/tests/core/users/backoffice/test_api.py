@@ -1,10 +1,10 @@
 import pytest
 
+import pcapi.core.users.backoffice.api as backoffice_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-import pcapi.core.users.backoffice.api as backoffice_api
 from pcapi.models import db
 
 

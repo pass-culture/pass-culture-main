@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import enum
 import typing
+from dataclasses import dataclass
 
 from pcapi.models.feature import FeatureToggle
 

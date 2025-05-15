@@ -1,11 +1,11 @@
-from dataclasses import dataclass
-from datetime import datetime
 import json
 import pathlib
 import shutil
 import tempfile
 import threading
 import urllib.parse
+from dataclasses import dataclass
+from datetime import datetime
 
 import weasyprint
 

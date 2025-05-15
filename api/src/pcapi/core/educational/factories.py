@@ -2,13 +2,11 @@ import datetime
 import re
 import typing
 
-from dateutil.relativedelta import relativedelta
 import factory
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import constants
-from pcapi.core.educational import models
-from pcapi.core.educational import utils
+from pcapi.core.educational import constants, models, utils
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus

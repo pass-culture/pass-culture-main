@@ -1,7 +1,7 @@
 """Add Address.timezone column"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.utils.date import METROPOLE_TIMEZONE
 

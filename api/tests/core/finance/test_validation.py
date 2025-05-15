@@ -3,10 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core.categories import subcategories
-from pcapi.core.finance import exceptions
-from pcapi.core.finance import factories
-from pcapi.core.finance import models
-from pcapi.core.finance import validation
+from pcapi.core.finance import exceptions, factories, models, validation
 from pcapi.core.offerers import factories as offerers_factories
 
 

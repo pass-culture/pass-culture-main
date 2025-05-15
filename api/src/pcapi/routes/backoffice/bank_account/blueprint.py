@@ -1,15 +1,10 @@
 from datetime import datetime
 from io import BytesIO
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import send_file
-from flask import url_for
+import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.dms import api as dms_api

@@ -18,8 +18,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
-from pcapi.sandboxes.scripts.creators.test_cases import create_movie_products
-from pcapi.sandboxes.scripts.creators.test_cases import create_offer_and_stocks_for_cinemas
+from pcapi.sandboxes.scripts.creators.test_cases import create_movie_products, create_offer_and_stocks_for_cinemas
 from pcapi.utils import siren as siren_utils
 
 

@@ -1,18 +1,14 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import flask
-from flask_login import current_user
-from flask_login import login_required
-from flask_login import login_user
-from flask_login import logout_user
 import jwt
+from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug import Response
 
 from pcapi import settings
 from pcapi.connectors import harvestr
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
+from pcapi.connectors.api_recaptcha import ReCaptchaException, check_web_recaptcha_token
 from pcapi.core import token as token_utils
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -29,17 +25,13 @@ from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
 from pcapi.domain.password import check_password_validity
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.api_errors import UnauthorizedError
+from pcapi.models.api_errors import ApiErrors, ForbiddenError, ResourceNotFoundError, UnauthorizedError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.login_manager import discard_session
-from pcapi.utils.login_manager import stamp_session
+from pcapi.utils.login_manager import discard_session, stamp_session
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint

@@ -1,11 +1,9 @@
-from flask import g
-from flask import url_for
+from flask import g, url_for
 
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
-from . import base
-from . import unauthorized
+from . import base, unauthorized
 
 
 class PostEndpointWithoutPermissionHelper(base.BaseHelper):

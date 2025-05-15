@@ -1,14 +1,10 @@
 from operator import attrgetter
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.fraud import models as fraud_models

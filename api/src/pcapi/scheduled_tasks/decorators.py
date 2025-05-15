@@ -1,12 +1,11 @@
-from functools import wraps
 import logging
 import time
 import typing
+from functools import wraps
 
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.logger import CronStatus
-from pcapi.scheduled_tasks.logger import build_cron_log_message
+from pcapi.scheduled_tasks.logger import CronStatus, build_cron_log_message
 
 
 logger = logging.getLogger(__name__)

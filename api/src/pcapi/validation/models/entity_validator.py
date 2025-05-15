@@ -1,17 +1,10 @@
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offerers.models import Offerer, Venue
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_address_mixin import HasAddressMixin
-from pcapi.validation.models import has_address_mixin
-from pcapi.validation.models import offer
-from pcapi.validation.models import offerer
-from pcapi.validation.models import stock
-from pcapi.validation.models import user
-from pcapi.validation.models import venue
+from pcapi.validation.models import has_address_mixin, offer, offerer, stock, user, venue
 from pcapi.validation.models.generic import validate_generic
 
 

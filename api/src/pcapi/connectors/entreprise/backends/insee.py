@@ -10,8 +10,7 @@ import re
 import typing
 
 from pcapi import settings
-from pcapi.connectors.entreprise import exceptions
-from pcapi.connectors.entreprise import models
+from pcapi.connectors.entreprise import exceptions, models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import requests

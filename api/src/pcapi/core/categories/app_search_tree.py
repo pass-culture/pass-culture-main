@@ -2,17 +2,19 @@ from pcapi.core.categories.genres.book import BOOK_TYPES
 from pcapi.core.categories.genres.movie import MOVIE_TYPES
 from pcapi.core.categories.genres.music import MUSIC_TYPES
 from pcapi.core.categories.genres.show import SHOW_TYPES
-from pcapi.core.categories.models import BookGenre
-from pcapi.core.categories.models import GenreType
-from pcapi.core.categories.models import MovieGenre
-from pcapi.core.categories.models import MusicGenre
-from pcapi.core.categories.models import NativeCategory
-from pcapi.core.categories.models import SearchGroup
-from pcapi.core.categories.models import SearchNode
-from pcapi.core.categories.models import ShowGenre
-from pcapi.core.categories.models import get_all_instances
-from pcapi.core.categories.models import get_native_categories
-from pcapi.core.categories.models import get_search_groups
+from pcapi.core.categories.models import (
+    BookGenre,
+    GenreType,
+    MovieGenre,
+    MusicGenre,
+    NativeCategory,
+    SearchGroup,
+    SearchNode,
+    ShowGenre,
+    get_all_instances,
+    get_native_categories,
+    get_search_groups,
+)
 
 
 # region genres

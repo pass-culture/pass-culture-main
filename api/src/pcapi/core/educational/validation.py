@@ -3,12 +3,9 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.educational import exceptions
-from pcapi.core.educational import models
-from pcapi.core.educational import repository
+from pcapi.core.educational import exceptions, models, repository
 from pcapi.core.educational.api import national_program as national_program_api
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.models import api_errors, db
 
 
 if TYPE_CHECKING:

@@ -12,8 +12,7 @@ from pcapi.models import db
 from pcapi.utils import human_ids
 
 import tests
-from tests.routes.public.helpers import ProductEndpointHelper
-from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+from tests.routes.public.helpers import ProductEndpointHelper, PublicAPIVenueEndpointHelper
 
 from . import utils
 

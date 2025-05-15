@@ -5,8 +5,7 @@ from pcapi.core.finance.conf import get_credit_amount_per_age_and_eligibility
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.eligibility_api import get_pre_decree_or_current_eligibility
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
+from pcapi.core.users.models import User, UserRole
 from pcapi.models.feature import FeatureToggle
 
 

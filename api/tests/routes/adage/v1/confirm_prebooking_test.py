@@ -1,22 +1,21 @@
+import logging
 from datetime import datetime
 from decimal import Decimal
-import logging
 
 import pytest
 import time_machine
 
 from pcapi.core import testing
 from pcapi.core.bookings.models import Booking
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import EducationalDepositFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalRedactorFactory
-from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.educational.factories import PendingCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveLocationType
-from pcapi.core.educational.models import Ministry
+from pcapi.core.educational.factories import (
+    CollectiveBookingFactory,
+    EducationalDepositFactory,
+    EducationalInstitutionFactory,
+    EducationalRedactorFactory,
+    EducationalYearFactory,
+    PendingCollectiveBookingFactory,
+)
+from pcapi.core.educational.models import CollectiveBooking, CollectiveBookingStatus, CollectiveLocationType, Ministry
 from pcapi.models import db
 from pcapi.routes.adage.v1.serialization import constants
 

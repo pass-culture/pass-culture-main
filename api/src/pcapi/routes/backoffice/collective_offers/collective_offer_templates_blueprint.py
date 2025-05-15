@@ -1,14 +1,10 @@
 import datetime
 import functools
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import search
@@ -19,13 +15,9 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import utils
+from pcapi.models.offer_mixin import OfferValidationStatus, OfferValidationType
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid, on_commit
+from pcapi.routes.backoffice import autocomplete, utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import date as date_utils

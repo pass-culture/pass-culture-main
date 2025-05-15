@@ -5,8 +5,7 @@ from pcapi.core.external import sendinblue
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
-from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
-from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
+from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest, UpdateSendinblueContactRequest
 
 
 logger = logging.getLogger(__name__)

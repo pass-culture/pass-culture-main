@@ -1,45 +1,40 @@
 from datetime import datetime
 from decimal import Decimal
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import BookingFactory, CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
-from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
-from pcapi.core.external.attributes.api import get_bookings_categories_and_subcategories
-from pcapi.core.external.attributes.api import get_most_favorite_subcategories
-from pcapi.core.external.attributes.api import get_user_attributes
-from pcapi.core.external.attributes.api import get_user_bookings
-from pcapi.core.external.attributes.api import update_external_user
-from pcapi.core.external.attributes.models import BookingsAttributes
-from pcapi.core.external.attributes.models import UserAttributes
+from pcapi.core.external.attributes.api import (
+    TRACKED_PRODUCT_IDS,
+    get_bookings_categories_and_subcategories,
+    get_most_favorite_subcategories,
+    get_user_attributes,
+    get_user_bookings,
+    update_external_user,
+)
+from pcapi.core.external.attributes.models import BookingsAttributes, UserAttributes
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.offers.factories import EventOfferFactory
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers.factories import EventOfferFactory, OfferFactory, ProductFactory
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.factories import BeneficiaryFactory
-from pcapi.core.users.factories import BeneficiaryGrant18Factory
-from pcapi.core.users.factories import FavoriteFactory
-from pcapi.core.users.factories import ProFactory
-from pcapi.core.users.factories import UnderageBeneficiaryFactory
-from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import Credit
-from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import PhoneValidationStatusType
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
+from pcapi.core.users.factories import (
+    BeneficiaryFactory,
+    BeneficiaryGrant18Factory,
+    FavoriteFactory,
+    ProFactory,
+    UnderageBeneficiaryFactory,
+    UserFactory,
+)
+from pcapi.core.users.models import Credit, DomainsCredit, EligibilityType, PhoneValidationStatusType, User, UserRole
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 

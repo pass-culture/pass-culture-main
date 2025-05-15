@@ -9,14 +9,12 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.models import api_errors, db
 from pcapi.routes.public import utils as public_utils
 from pcapi.utils import image_conversion
 from pcapi.validation.routes.users_authentifications import current_api_key
 
-from . import constants
-from . import serialization
+from . import constants, serialization
 
 
 def get_address_or_raise_404(address_id: int) -> geography_models.Address:

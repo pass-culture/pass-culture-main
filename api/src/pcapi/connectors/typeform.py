@@ -3,18 +3,17 @@ A client for Typeform API.
 API Documentation: https://www.typeform.com/developers/
 """
 
-from datetime import datetime
 import hashlib
 import json
 import logging
 import typing
+from datetime import datetime
 
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.utils import email as email_utils
-from pcapi.utils import module_loading
-from pcapi.utils import requests
+from pcapi.utils import module_loading, requests
 
 
 logger = logging.getLogger(__name__)

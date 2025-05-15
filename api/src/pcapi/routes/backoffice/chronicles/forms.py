@@ -1,9 +1,7 @@
 import enum
 import typing
 
-from wtforms.validators import Length
-from wtforms.validators import Optional
-from wtforms.validators import Regexp
+from wtforms.validators import Length, Optional, Regexp
 
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils

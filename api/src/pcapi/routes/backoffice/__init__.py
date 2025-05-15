@@ -4,24 +4,15 @@ from pcapi import settings
 
 
 def install_routes(app: Flask) -> None:
-    from . import auth
-    from . import autocomplete
-    from . import filters
-    from . import health_check
-    from . import home
-    from . import move_siret
-    from . import pro
-    from . import redirect
+    from . import auth, autocomplete, filters, health_check, home, move_siret, pro, redirect
     from .accounts import blueprint as accounts_blueprint
     from .accounts import update_request_blueprint
     from .admin import blueprint as admin_blueprint
     from .admin import bo_users_blueprint
     from .bank_account import blueprint as bank_account_blueprint
-    from .bookings import collective_bookings_blueprint
-    from .bookings import individual_bookings_blueprint
+    from .bookings import collective_bookings_blueprint, individual_bookings_blueprint
     from .chronicles import blueprint as chronicles_blueprint
-    from .collective_offers import collective_offer_templates_blueprint
-    from .collective_offers import collective_offers_blueprint
+    from .collective_offers import collective_offer_templates_blueprint, collective_offers_blueprint
     from .criteria import blueprint as criteria_blueprint
     from .custom_reimbursement_rule import blueprint as custom_reimbursement_rule_blueprint
     from .external.zendesk_sell import blueprint as zendesk_sell_blueprint
@@ -31,9 +22,7 @@ def install_routes(app: Flask) -> None:
     from .multiple_offers import blueprint as multiple_offers_blueprint
     from .offer_price_limitation_rules import blueprint as offer_price_limitation_rule_blueprint
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
-    from .offerers import offerer_blueprint
-    from .offerers import offerer_tag_blueprint
-    from .offerers import validation_blueprint
+    from .offerers import offerer_blueprint, offerer_tag_blueprint, validation_blueprint
     from .offers import blueprint as offers_blueprint
     from .operations import blueprint as operations_blueprint
     from .pivots import blueprint as pivots_blueprint

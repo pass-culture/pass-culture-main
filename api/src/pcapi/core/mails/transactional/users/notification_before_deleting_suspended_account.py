@@ -1,7 +1,7 @@
+import pcapi.core.users.models as users_models
 from pcapi.core import mails
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.users.models as users_models
 
 
 def get_send_email_before_deletion_of_suspended_account_data(user: users_models.User) -> models.TransactionalEmailData:

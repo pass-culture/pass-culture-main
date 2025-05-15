@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus

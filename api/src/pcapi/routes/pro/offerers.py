@@ -1,32 +1,29 @@
 import logging
 
-from flask_login import current_user
-from flask_login import login_required
 import sqlalchemy.orm as sa_orm
+from flask_login import current_user, login_required
 
-from pcapi import settings
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
-from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
-from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
-from pcapi.connectors.entreprise import sirene
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.repository as finance_repository
-from pcapi.core.offerers import api
-from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.repository as offers_repository
+from pcapi import settings
+from pcapi.connectors.api_recaptcha import ReCaptchaException, check_web_recaptcha_token
+from pcapi.connectors.big_query.queries.offerer_stats import (
+    DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+    TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+)
+from pcapi.connectors.entreprise import sirene
+from pcapi.core.offerers import api, repository
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import headline_offer_serialize
-from pcapi.routes.serialization import offerers_serialize
+from pcapi.routes.serialization import headline_offer_serialize, offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils.rest import check_user_has_access_to_offerer

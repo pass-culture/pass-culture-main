@@ -1,24 +1,17 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.categories import subcategories
-from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
-from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
-from pcapi.core.categories.app_search_tree import SEARCH_NODES
-from pcapi.core.categories.models import GenreType
 import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES, SEARCH_GROUPS, SEARCH_NODES
+from pcapi.core.categories.models import GenreType
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import api
-from pcapi.core.offers import repository
+from pcapi.core.offers import api, repository
 from pcapi.core.offers.exceptions import OfferReportError
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import Reason
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, PriceCategory, Reason, Stock
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required

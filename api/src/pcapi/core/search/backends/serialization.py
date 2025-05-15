@@ -10,10 +10,8 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.categories import pro_categories
-from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
-from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
-from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
-from pcapi.core.categories.genres.music import TITELIVE_MUSIC_TYPES
+from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES, SEARCH_GROUPS
+from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE, TITELIVE_MUSIC_TYPES
 from pcapi.core.categories.models import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.academies import get_academy_from_department
@@ -26,8 +24,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-from pcapi.models import db
-from pcapi.models import feature
+from pcapi.models import db, feature
 from pcapi.utils import date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 

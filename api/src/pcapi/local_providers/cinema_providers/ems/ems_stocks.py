@@ -5,8 +5,9 @@ import uuid
 
 import PIL
 
-from pcapi.connectors import thumb_storage
 import pcapi.connectors.ems as ems_connector
+import pcapi.utils.date as utils_date
+from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
 from pcapi.core.categories import subcategories
@@ -20,7 +21,6 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.models import db
-import pcapi.utils.date as utils_date
 from pcapi.validation.models import entity_validator
 
 

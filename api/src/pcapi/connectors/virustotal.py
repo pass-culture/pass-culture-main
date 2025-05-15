@@ -13,8 +13,7 @@ import time
 
 from pcapi import settings
 from pcapi.models.feature import FeatureToggle
-from pcapi.utils import module_loading
-from pcapi.utils import requests
+from pcapi.utils import module_loading, requests
 
 
 logger = logging.getLogger(__name__)

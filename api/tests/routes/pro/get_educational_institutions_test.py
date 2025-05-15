@@ -2,9 +2,9 @@ from typing import Any
 
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.educational.factories import EducationalInstitutionFactory
-import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

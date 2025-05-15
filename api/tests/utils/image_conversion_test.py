@@ -4,14 +4,16 @@ import pathlib
 import PIL
 import pytest
 
-from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import ImageRatio
-from pcapi.utils.image_conversion import ImageRatioError
-from pcapi.utils.image_conversion import _crop_image
-from pcapi.utils.image_conversion import _pre_process_image
-from pcapi.utils.image_conversion import _resize_image
-from pcapi.utils.image_conversion import process_original_image
-from pcapi.utils.image_conversion import standardize_image
+from pcapi.utils.image_conversion import (
+    CropParams,
+    ImageRatio,
+    ImageRatioError,
+    _crop_image,
+    _pre_process_image,
+    _resize_image,
+    process_original_image,
+    standardize_image,
+)
 
 import tests
 

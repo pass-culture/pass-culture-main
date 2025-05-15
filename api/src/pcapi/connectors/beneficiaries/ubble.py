@@ -1,7 +1,7 @@
-from contextlib import suppress
 import functools
 import logging
 import typing
+from contextlib import suppress
 
 from pydantic.v1 import networks as pydantic_networks
 from pydantic.v1 import parse_obj_as

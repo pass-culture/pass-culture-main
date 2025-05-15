@@ -1,23 +1,20 @@
-from datetime import datetime
-from datetime import timezone
 import decimal
+from datetime import datetime, timezone
 
 import pytest
 import time_machine
 
-from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     get_booking_cancellation_by_pro_to_beneficiary_email_data,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 
 
 @pytest.mark.usefixtures("db_session")

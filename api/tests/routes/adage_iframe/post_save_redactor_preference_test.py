@@ -1,5 +1,5 @@
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.models import db

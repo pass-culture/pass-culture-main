@@ -1,8 +1,7 @@
 import logging
 import typing
 
-from sqlalchemy import create_engine
-from sqlalchemy import engine
+from sqlalchemy import create_engine, engine
 
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors

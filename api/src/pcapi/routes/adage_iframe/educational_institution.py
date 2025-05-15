@@ -1,5 +1,5 @@
-from pcapi.core.educational import repository
 import pcapi.core.educational.api.institution as api
+from pcapi.core.educational import repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint

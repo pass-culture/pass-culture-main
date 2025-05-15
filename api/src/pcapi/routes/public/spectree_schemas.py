@@ -5,8 +5,7 @@ from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.validation.routes import users_authentifications
 
-from .documentation_constants import descriptions
-from .documentation_constants import tags
+from .documentation_constants import descriptions, tags
 
 
 _INTEGRATION_SERVER = Server(

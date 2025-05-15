@@ -1,8 +1,8 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.rest import check_user_has_access_to_offerer
 

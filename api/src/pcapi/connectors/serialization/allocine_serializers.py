@@ -1,6 +1,6 @@
 import datetime
-from enum import Enum
 import re
+from enum import Enum
 
 import pydantic
 

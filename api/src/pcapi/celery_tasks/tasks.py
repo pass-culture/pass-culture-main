@@ -1,10 +1,10 @@
-from functools import wraps
 import json
 import logging
 import typing
+from functools import wraps
 
-from celery import shared_task
 import pydantic.v1 as pydantic_v1
+from celery import shared_task
 
 
 logger = logging.getLogger(__name__)

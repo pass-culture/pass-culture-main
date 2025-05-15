@@ -1,6 +1,6 @@
 import dataclasses
-from datetime import datetime
 import typing
+from datetime import datetime
 
 import pcapi.core.offers.models as offers_models
 

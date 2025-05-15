@@ -6,16 +6,14 @@ from operator import itemgetter
 from unittest import mock
 from unittest.mock import patch
 
-from flask import g
-from flask import url_for
 import openpyxl
 import pytest
+from flask import g, url_for
 
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import pro_categories, subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories

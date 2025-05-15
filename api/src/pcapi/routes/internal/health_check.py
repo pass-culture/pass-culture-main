@@ -1,6 +1,5 @@
 from pcapi.routes.apis import public_api
-from pcapi.utils.health_checker import check_database_connection
-from pcapi.utils.health_checker import read_version_from_file
+from pcapi.utils.health_checker import check_database_connection, read_version_from_file
 
 
 @public_api.route("/health/api", methods=["GET"])

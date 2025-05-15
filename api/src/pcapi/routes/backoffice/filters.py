@@ -5,22 +5,19 @@ import logging
 import random
 import re
 import typing
-from urllib.parse import urlparse
-from urllib.parse import urlunparse
+from urllib.parse import urlparse, urlunparse
 
-from flask import Flask
-from flask import url_for
-from markupsafe import Markup
-from markupsafe import escape
 import psycopg2.extras
 import pytz
+from flask import Flask, url_for
+from markupsafe import Markup, escape
 
+import pcapi.core.categories.genres.music
 from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres import show
-import pcapi.core.categories.genres.music
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.criteria import models as criteria_models
@@ -38,12 +35,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.models import offer_mixin
-from pcapi.models import validation_status_mixin
+from pcapi.models import offer_mixin, validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
 from pcapi.utils import urls
-from pcapi.utils.csr import Csr
-from pcapi.utils.csr import get_csr
+from pcapi.utils.csr import Csr, get_csr
 
 
 logger = logging.getLogger(__name__)

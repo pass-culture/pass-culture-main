@@ -1,8 +1,8 @@
-from collections import abc
 import datetime
 import enum
 import logging
 import typing
+from collections import abc
 
 import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
@@ -22,8 +22,7 @@ from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.pc_object import BaseQuery
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 

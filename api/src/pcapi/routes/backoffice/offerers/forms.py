@@ -1,9 +1,9 @@
 import re
 import typing
 
-from flask_wtf import FlaskForm
 import sqlalchemy.orm as sa_orm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models
@@ -11,8 +11,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 from pcapi.routes.backoffice.utils import get_regions_choices
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils

@@ -1,14 +1,11 @@
-from unittest.mock import Mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from flask.blueprints import Blueprint
 from werkzeug.datastructures import MultiDict
 
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.decorator import _transform_query_args_to_dict
-from pcapi.serialization.decorator import feature_flag_required
-from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.decorator import _transform_query_args_to_dict, feature_flag_required, spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
 

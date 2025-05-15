@@ -1,9 +1,6 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
-from decimal import Decimal
 import typing
+from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 
 import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
@@ -21,8 +18,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
-from pcapi.models import db
-from pcapi.models import offer_mixin
+from pcapi.models import db, offer_mixin
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.utils.clean_accents import clean_accents

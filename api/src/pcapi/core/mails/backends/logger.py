@@ -1,6 +1,6 @@
-from dataclasses import asdict
 import logging
 import typing
+from dataclasses import asdict
 
 from pcapi.tasks.serialization import sendinblue_tasks
 

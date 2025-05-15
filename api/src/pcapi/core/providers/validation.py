@@ -1,8 +1,7 @@
 from pcapi.core.offerers import models as offerers_models
 
-from . import exceptions
+from . import exceptions, repository
 from . import models as provider_models
-from . import repository
 
 
 def check_ticketing_urls_are_coherently_set(external_booking_url: str | None, external_cancel_url: str | None) -> None:

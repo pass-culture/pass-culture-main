@@ -1,16 +1,16 @@
+import logging
 from csv import DictWriter
 from datetime import datetime
-import logging
 from pathlib import Path
-from typing import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from urllib3 import exceptions as urllib3_exceptions
 
-from pcapi import settings
 import pcapi.connectors.ems as ems_connectors
+import pcapi.local_providers
+from pcapi import settings
 from pcapi.connectors.googledrive import get_backend
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -19,14 +19,11 @@ from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.api import update_venue_synchronized_offers_active_status_job
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
-import pcapi.local_providers
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
-from pcapi.repository import transaction
-from pcapi.scheduled_tasks.logger import CronStatus
-from pcapi.scheduled_tasks.logger import build_cron_log_message
+from pcapi.repository import repository, transaction
+from pcapi.scheduled_tasks.logger import CronStatus, build_cron_log_message
 from pcapi.utils import requests
 
 

@@ -1,20 +1,16 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 import time_machine
 
-from pcapi.core.bookings import factories as booking_factories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     get_booking_cancellation_by_beneficiary_email_data,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     send_booking_cancellation_by_beneficiary_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import EventStockFactory, ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 
 

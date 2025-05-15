@@ -2,11 +2,11 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core import testing
 
 
 @pytest.mark.usefixtures("db_session")

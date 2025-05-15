@@ -4,13 +4,14 @@ import logging
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.factories import EventOfferFactory
-from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import PriceCategoryFactory
-from pcapi.core.offers.factories import ThingOfferFactory
-from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offerers.models import Offerer, Venue
+from pcapi.core.offers.factories import (
+    EventOfferFactory,
+    EventStockFactory,
+    PriceCategoryFactory,
+    ThingOfferFactory,
+    ThingStockFactory,
+)
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.models import User
 from pcapi.models import db

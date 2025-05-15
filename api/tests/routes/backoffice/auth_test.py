@@ -1,9 +1,9 @@
 import logging
 from unittest.mock import patch
 
+import pytest
 from authlib.integrations.base_client import MismatchingStateError
 from flask import url_for
-import pytest
 
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories

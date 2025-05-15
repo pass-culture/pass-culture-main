@@ -14,21 +14,16 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.models import api_errors, db
+from pcapi.routes.public import blueprints, spectree_schemas
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.custom_keys import get_field
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import current_api_key, provider_api_key_required
 
-from . import serialization
-from . import utils
+from . import serialization, utils
 
 
 def _deserialize_has_ticket(

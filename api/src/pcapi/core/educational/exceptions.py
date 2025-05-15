@@ -4,9 +4,11 @@ from pcapi.core.core_exception import CoreException
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.educational.models import CollectiveBookingStatus
-    from pcapi.core.educational.models import CollectiveOfferAllowedAction
-    from pcapi.core.educational.models import CollectiveOfferTemplateAllowedAction
+    from pcapi.core.educational.models import (
+        CollectiveBookingStatus,
+        CollectiveOfferAllowedAction,
+        CollectiveOfferTemplateAllowedAction,
+    )
 
 
 class EducationalException(CoreException):

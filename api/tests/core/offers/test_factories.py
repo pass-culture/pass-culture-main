@@ -1,10 +1,8 @@
 import pytest
 
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music
-from pcapi.core.categories.genres import show
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.categories.genres import music, show
+from pcapi.core.offers.factories import OfferFactory, ProductFactory
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.providers.titelive_gtl import GTLS
 

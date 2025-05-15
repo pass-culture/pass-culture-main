@@ -6,17 +6,19 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers.models import Mediation
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import ProductMediation
-from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
+from pcapi.core.categories import subcategories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.models import (
+    Mediation,
+    Offer,
+    PriceCategory,
+    PriceCategoryLabel,
+    Product,
+    ProductMediation,
+    Stock,
+)
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 

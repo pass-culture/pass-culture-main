@@ -1,22 +1,16 @@
 import json
 import logging
 
-from flask import Response
+from flask import Response, request
 from flask import current_app as app
-from flask import request
 from sqlalchemy.exc import DatabaseError
 from werkzeug import exceptions as werkzeug_exceptions
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import MethodNotAllowed
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import HTTPException, MethodNotAllowed, NotFound
 
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.offers.exceptions as offers_exceptions
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import DateTimeCastError
-from pcapi.models.api_errors import DecimalCastError
-from pcapi.models.api_errors import UnauthorizedError
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.models.api_errors import ApiErrors, DateTimeCastError, DecimalCastError, UnauthorizedError
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
 from pcapi.utils.image_conversion import ImageRatioError

@@ -1,11 +1,9 @@
-from unittest.mock import call
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import pytest
 
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.decorators import cron_require_feature
-from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
+from pcapi.scheduled_tasks.decorators import cron_require_feature, log_cron_with_transaction
 from pcapi.scheduled_tasks.logger import CronStatus
 
 

@@ -1,8 +1,8 @@
 import csv
 import json
 import os.path
-from pathlib import Path
 import typing
+from pathlib import Path
 from typing import TypedDict
 
 

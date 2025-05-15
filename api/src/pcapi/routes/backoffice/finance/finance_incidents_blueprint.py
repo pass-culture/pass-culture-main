@@ -1,16 +1,12 @@
+import typing
 from collections import defaultdict
 from datetime import datetime
-import typing
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
@@ -29,14 +25,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.exceptions import ProviderException
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import utils
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
+from pcapi.routes.backoffice import autocomplete, filters, utils
 from pcapi.routes.backoffice.filters import pluralize
-from pcapi.routes.backoffice.finance import forms
-from pcapi.routes.backoffice.finance import validation
+from pcapi.routes.backoffice.finance import forms, validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import date as date_utils

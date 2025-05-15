@@ -1,13 +1,12 @@
 import dataclasses
-from decimal import Decimal
 import typing
+from decimal import Decimal
 
-from geoalchemy2 import Geometry
 import sqlalchemy as sa
+from geoalchemy2 import Geometry
 
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.date import METROPOLE_TIMEZONE
 

@@ -1,7 +1,6 @@
 from flask import current_app
 
-from pcapi.utils.health_checker import check_database_connection
-from pcapi.utils.health_checker import read_version_from_file
+from pcapi.utils.health_checker import check_database_connection, read_version_from_file
 
 
 @current_app.route("/health/api", methods=["GET"])

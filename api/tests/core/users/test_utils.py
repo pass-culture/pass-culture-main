@@ -5,14 +5,15 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.users import utils as user_utils
-from pcapi.core.users.utils import ALGORITHM_HS_256
-from pcapi.core.users.utils import ALGORITHM_RS_256
-from pcapi.core.users.utils import decode_jwt_token_rs256
-from pcapi.core.users.utils import encode_jwt_payload
-from pcapi.core.users.utils import format_login_location
+from pcapi.core.users.utils import (
+    ALGORITHM_HS_256,
+    ALGORITHM_RS_256,
+    decode_jwt_token_rs256,
+    encode_jwt_payload,
+    format_login_location,
+)
 
-from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
-from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
+from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH, VALID_RSA_PRIVATE_KEY_PATH
 
 
 class EncodeJWTPayloadTest:

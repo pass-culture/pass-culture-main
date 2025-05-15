@@ -2,8 +2,8 @@ import enum
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declared_attr
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.declarative import declared_attr
 
 
 if TYPE_CHECKING:

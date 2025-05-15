@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core.bookings.exceptions import CannotDeleteBookingWithReimbursementException
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.factories as finance_factories
+from pcapi.core.bookings.exceptions import CannotDeleteBookingWithReimbursementException
 from pcapi.core.finance.models import PricingStatus
 from pcapi.models import db
 from pcapi.scripts.booking.delete_cancelled_booking import delete_cancelled_booking

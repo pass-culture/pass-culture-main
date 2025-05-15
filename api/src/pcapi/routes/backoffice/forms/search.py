@@ -2,8 +2,7 @@ import enum
 
 import wtforms
 
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 
 
 class AccountSearchFilter(enum.Enum):

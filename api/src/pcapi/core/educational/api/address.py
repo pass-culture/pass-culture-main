@@ -1,5 +1,5 @@
-from datetime import datetime
 import typing
+from datetime import datetime
 
 import sqlalchemy as sa
 

@@ -1,24 +1,23 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from unittest import mock
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import factories as booking_factories
-from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import BookingCancellationReasons, BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
-import pcapi.core.mails.testing as mails_testing
+from pcapi.core.educational.models import (
+    CollectiveBooking,
+    CollectiveBookingCancellationReasons,
+    CollectiveBookingStatus,
+)
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
-from pcapi.utils.date import get_date_formatted_for_email
-from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import get_date_formatted_for_email, get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 

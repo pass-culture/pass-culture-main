@@ -19,8 +19,7 @@ from pcapi.repository import repository
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import requests
 
-from . import constants
-from . import exceptions
+from . import constants, exceptions
 
 
 logger = logging.getLogger(__name__)

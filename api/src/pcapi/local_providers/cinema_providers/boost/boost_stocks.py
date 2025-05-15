@@ -1,16 +1,15 @@
-from datetime import datetime
 import decimal
 import logging
-from typing import Iterator
 import uuid
+from datetime import datetime
+from typing import Iterator
 
 import PIL
 
 from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.boost.client import BoostClientAPI
-from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
+from pcapi.core.external_bookings.boost.client import BoostClientAPI, get_pcu_pricing_if_exists
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -22,8 +21,7 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 from pcapi.repository.providable_queries import get_last_update_for_provider
 
 

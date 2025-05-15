@@ -2,16 +2,16 @@ import dataclasses
 import datetime
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import factory
-from flask import url_for
 import pytest
+from dateutil.relativedelta import relativedelta
+from flask import url_for
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.history import models as history_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries

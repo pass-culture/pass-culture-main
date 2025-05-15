@@ -4,9 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors import api_adresse
-from pcapi.core.geography import api
-from pcapi.core.geography import factories
-from pcapi.core.geography import repository
+from pcapi.core.geography import api, factories, repository
 
 import tests
 

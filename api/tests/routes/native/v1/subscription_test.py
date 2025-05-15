@@ -1,9 +1,10 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
+import pcapi.repository
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
@@ -15,7 +16,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
-import pcapi.repository
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 from pcapi.utils.string import u_nbsp
 

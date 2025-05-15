@@ -3,91 +3,82 @@ import datetime
 import decimal
 import enum
 import functools
-from functools import partial
 import logging
 import time
 import typing
+from functools import partial
 
-from psycopg2.errorcodes import CHECK_VIOLATION
-from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
 import sqlalchemy as sa
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import insert
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from psycopg2.errorcodes import CHECK_VIOLATION, UNIQUE_VIOLATION
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
 
-from pcapi import settings
-from pcapi.connectors.ems import EMSAPIException
-from pcapi.connectors.serialization import acceslibre_serializers
-from pcapi.connectors.thumb_storage import create_thumb
-from pcapi.connectors.thumb_storage import remove_thumb
-from pcapi.connectors.titelive import get_new_product_from_ean13
-from pcapi.core import search
-from pcapi.core.bookings import exceptions as booking_exceptions
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.criteria.models as criteria_models
+import pcapi.core.external_bookings.api as external_bookings_api
+import pcapi.core.finance.conf as finance_conf
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.repository as offerers_repository
+import pcapi.core.offers.validation as offers_validation
+import pcapi.core.providers.exceptions as providers_exceptions
+import pcapi.core.providers.models as providers_models
+import pcapi.core.users.models as users_models
+import pcapi.utils.cinema_providers as cinema_providers_utils
+from pcapi import settings
+from pcapi.connectors.ems import EMSAPIException
+from pcapi.connectors.serialization import acceslibre_serializers
+from pcapi.connectors.thumb_storage import create_thumb, remove_thumb
+from pcapi.connectors.titelive import get_new_product_from_ean13
+from pcapi.core import search
+from pcapi.core.bookings import exceptions as booking_exceptions
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
-import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
-import pcapi.core.external_bookings.api as external_bookings_api
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIException
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
-import pcapi.core.finance.conf as finance_conf
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import schemas as offerers_schemas
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import models as offers_models
-import pcapi.core.offers.validation as offers_validation
 from pcapi.core.providers.allocine import get_allocine_products_provider
-from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
-from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
-from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-import pcapi.core.providers.exceptions as providers_exceptions
-import pcapi.core.providers.models as providers_models
+from pcapi.core.providers.constants import (
+    GTL_IDS_BY_MUSIC_GENRE_CODE,
+    MUSIC_SLUG_BY_GTL_ID,
+    TITELIVE_MUSIC_GENRES_BY_GTL_ID,
+)
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
-import pcapi.core.users.models as users_models
-from pcapi.models import db
-from pcapi.models import feature
-from pcapi.models import offer_mixin
-from pcapi.models import pc_object
+from pcapi.models import db, feature, offer_mixin, pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.pc_object import BaseQuery
-from pcapi.repository import repository
-from pcapi.repository import transaction
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.repository import repository, transaction
+from pcapi.repository.session_management import atomic, is_managed_transaction, mark_transaction_as_invalid, on_commit
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
-import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.utils.date import local_datetime_to_default_timezone
 from pcapi.workers import push_notification_job
 
-from . import exceptions
-from . import models
+from . import exceptions, models, validation
 from . import repository as offers_repository
 from . import schemas as offers_schemas
-from . import validation
 
 
 logger = logging.getLogger(__name__)

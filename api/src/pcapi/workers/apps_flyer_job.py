@@ -1,7 +1,6 @@
 import sqlalchemy.orm as sa_orm
 
-from pcapi.connectors.apps_flyer import log_offer_event
-from pcapi.connectors.apps_flyer import log_user_event
+from pcapi.connectors.apps_flyer import log_offer_event, log_user_event
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User

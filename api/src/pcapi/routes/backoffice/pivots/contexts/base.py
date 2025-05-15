@@ -1,8 +1,8 @@
 import typing
 
-from flask_login import current_user
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask_login import current_user
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api

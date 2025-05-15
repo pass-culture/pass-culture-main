@@ -1,8 +1,6 @@
-from datetime import datetime
-from datetime import timedelta
-from itertools import count
-from itertools import cycle
 import typing
+from datetime import datetime, timedelta
+from itertools import count, cycle
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA

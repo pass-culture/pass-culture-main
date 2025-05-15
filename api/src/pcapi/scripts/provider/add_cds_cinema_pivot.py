@@ -6,9 +6,7 @@ import openpyxl
 import sqlalchemy.exc
 
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.models import CDSCinemaDetails
-from pcapi.core.providers.models import CinemaProviderPivot
-from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import CDSCinemaDetails, CinemaProviderPivot, Provider
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 

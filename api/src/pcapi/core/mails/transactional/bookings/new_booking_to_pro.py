@@ -13,8 +13,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.utils.date import get_date_formatted_for_email
-from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import get_date_formatted_for_email, get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 

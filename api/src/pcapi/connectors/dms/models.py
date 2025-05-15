@@ -6,8 +6,7 @@ import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 
 

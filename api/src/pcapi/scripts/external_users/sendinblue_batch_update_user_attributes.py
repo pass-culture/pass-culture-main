@@ -8,12 +8,9 @@ import sys
 
 import sqlalchemy as sa
 
-from pcapi.core.external import batch
-from pcapi.core.external import sendinblue
-from pcapi.core.external.attributes.api import get_pro_attributes
-from pcapi.core.external.attributes.api import get_user_attributes
-from pcapi.core.external.sendinblue import SendinblueUserUpdateData
-from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
+from pcapi.core.external import batch, sendinblue
+from pcapi.core.external.attributes.api import get_pro_attributes, get_user_attributes
+from pcapi.core.external.sendinblue import SendinblueUserUpdateData, import_contacts_in_sendinblue
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes

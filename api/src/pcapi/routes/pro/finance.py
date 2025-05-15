@@ -1,11 +1,9 @@
 import datetime
 from io import BytesIO
 
-from flask_login import current_user
-from flask_login import login_required
-from pypdf import PdfReader
-from pypdf import PdfWriter
 import sqlalchemy.orm as sa_orm
+from flask_login import current_user, login_required
+from pypdf import PdfReader, PdfWriter
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -15,8 +13,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import requests
-from pcapi.utils import rest
+from pcapi.utils import requests, rest
 
 from . import blueprint
 

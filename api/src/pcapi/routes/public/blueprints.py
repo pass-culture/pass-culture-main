@@ -1,5 +1,4 @@
-from flask import Blueprint
-from flask import request
+from flask import Blueprint, request
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest
 

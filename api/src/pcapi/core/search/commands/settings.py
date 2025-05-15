@@ -5,12 +5,12 @@ import logging
 import os
 import pathlib
 
-from algoliasearch.search_index import SearchIndex
 import click
+from algoliasearch.search_index import SearchIndex
 
 import pcapi
-from pcapi import settings
 import pcapi.core.search.backends.algolia as algolia_backend
+from pcapi import settings
 from pcapi.utils.blueprint import Blueprint
 
 

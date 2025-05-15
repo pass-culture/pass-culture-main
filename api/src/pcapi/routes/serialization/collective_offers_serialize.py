@@ -1,16 +1,10 @@
-from datetime import date
-from datetime import datetime
 import enum
 import typing
+from datetime import date, datetime
 
 import flask
-from pydantic.v1 import AnyHttpUrl
-from pydantic.v1 import ConstrainedStr
-from pydantic.v1 import EmailStr
-from pydantic.v1 import Field
-from pydantic.v1 import root_validator
+from pydantic.v1 import AnyHttpUrl, ConstrainedStr, EmailStr, Field, root_validator, validator
 from pydantic.v1 import utils as pydantic_utils
-from pydantic.v1 import validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
@@ -22,8 +16,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.models import feature
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import address_serialize
+from pcapi.routes.serialization import BaseModel, address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel

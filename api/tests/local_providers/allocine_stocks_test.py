@@ -1,18 +1,18 @@
 import copy
-from datetime import datetime
 import decimal
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 import time_machine
 
-from pcapi.connectors.serialization import allocine_serializers
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
+from pcapi.connectors.serialization import allocine_serializers
+from pcapi.core.categories import subcategories
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import db
 from pcapi.repository import repository

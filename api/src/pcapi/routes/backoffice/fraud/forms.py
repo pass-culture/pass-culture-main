@@ -1,5 +1,4 @@
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 
 
 class BlacklistDomainNameForm(utils.PCForm):

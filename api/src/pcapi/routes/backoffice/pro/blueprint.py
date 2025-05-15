@@ -1,11 +1,7 @@
-from functools import partial
 import typing
+from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
 from sqlalchemy import func
@@ -28,11 +24,9 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import search_utils, utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import offerers_serialize, venues_serialize
 from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 

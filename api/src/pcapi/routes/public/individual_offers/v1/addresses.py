@@ -5,19 +5,14 @@ from pcapi.connectors import api_adresse
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import repository as geography_repository
 from pcapi.core.offerers import api as offerers_api
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.models import api_errors, db
+from pcapi.routes.public import blueprints, spectree_schemas
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
-from .serializers.addresses import AddressModel
-from .serializers.addresses import AddressResponse
-from .serializers.addresses import SearchAddressResponse
+from .serializers.addresses import AddressModel, AddressResponse, SearchAddressResponse
 
 
 logger = logging.getLogger(__name__)

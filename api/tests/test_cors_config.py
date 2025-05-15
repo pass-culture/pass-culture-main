@@ -1,9 +1,9 @@
 import itertools
 from urllib.parse import urlsplit
 
+import pytest
 from flask import Flask
 from flask_cors import CORS
-import pytest
 
 from tests.conftest import TestClient
 

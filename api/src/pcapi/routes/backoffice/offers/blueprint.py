@@ -1,26 +1,20 @@
-from collections import namedtuple
 import dataclasses
 import datetime
 import decimal
 import enum
 import functools
-from io import BytesIO
 import logging
 import re
 import typing
+from collections import namedtuple
+from io import BytesIO
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import send_file
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
-from markupsafe import escape
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, send_file, url_for
+from flask_login import current_user
+from markupsafe import Markup, escape
+from sqlalchemy.dialects import postgresql
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
@@ -47,11 +41,9 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import mark_transaction_as_invalid, on_commit
 from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.filters import format_amount
-from pcapi.routes.backoffice.filters import pluralize
+from pcapi.routes.backoffice.filters import format_amount, pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils

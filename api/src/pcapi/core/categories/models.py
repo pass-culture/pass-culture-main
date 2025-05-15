@@ -1,20 +1,13 @@
-from dataclasses import dataclass
-from dataclasses import field
-from enum import Enum
 import itertools
 import typing
+from dataclasses import dataclass, field
+from enum import Enum
 
 from pcapi.core.categories import pro_categories
-from pcapi.core.categories.genres.book import BOOK_MACRO_SECTIONS
-from pcapi.core.categories.genres.book import BOOK_TYPES
-from pcapi.core.categories.genres.book import BookType
-from pcapi.core.categories.genres.movie import MOVIE_TYPES
-from pcapi.core.categories.genres.movie import MovieType
-from pcapi.core.categories.genres.music import MUSIC_TYPES
-from pcapi.core.categories.genres.music import MusicType
-from pcapi.core.categories.genres.show import SHOW_TYPES
-from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
-from pcapi.core.categories.genres.show import ShowType
+from pcapi.core.categories.genres.book import BOOK_MACRO_SECTIONS, BOOK_TYPES, BookType
+from pcapi.core.categories.genres.movie import MOVIE_TYPES, MovieType
+from pcapi.core.categories.genres.music import MUSIC_TYPES, MusicType
+from pcapi.core.categories.genres.show import SHOW_TYPES, SHOW_TYPES_LABEL_BY_CODE, ShowType
 
 
 class OnlineOfflinePlatformChoices(Enum):

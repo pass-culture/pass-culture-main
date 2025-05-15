@@ -1,6 +1,6 @@
 import abc
-from collections.abc import Iterable
 import typing
+from collections.abc import Iterable
 
 import pytest
 

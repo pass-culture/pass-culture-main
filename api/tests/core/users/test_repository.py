@@ -1,17 +1,15 @@
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.users import exceptions
+from pcapi.core.users import exceptions, repository
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import repository
 from pcapi.core.users.models import UserRole
-from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
-from pcapi.core.users.repository import has_access_to_venues
+from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer, has_access_to_venues
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

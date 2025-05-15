@@ -1,21 +1,19 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
 import decimal
+from datetime import date, datetime, timedelta
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi.connectors.dms import models as dms_models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.finance import deposit_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
+from pcapi.connectors.dms import models as dms_models
+from pcapi.core.finance import deposit_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
@@ -25,8 +23,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import repository
-from pcapi.repository import transaction
+from pcapi.repository import repository, transaction
 
 
 @pytest.mark.usefixtures("db_session")

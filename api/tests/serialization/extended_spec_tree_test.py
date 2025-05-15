@@ -1,14 +1,10 @@
 from unittest.mock import Mock
 
 from flask import Blueprint
-from spectree import SecurityScheme
-from spectree import Tag
+from spectree import SecurityScheme, Tag
 
-from pcapi.serialization.decorator import feature_flag_required
-from pcapi.serialization.decorator import spectree_serialize
-from pcapi.serialization.spec_tree import ExtendedSpecTree
-from pcapi.serialization.spec_tree import _AUTHENTICATION_ATTRIBUTE
-from pcapi.serialization.spec_tree import add_security_scheme
+from pcapi.serialization.decorator import feature_flag_required, spectree_serialize
+from pcapi.serialization.spec_tree import _AUTHENTICATION_ATTRIBUTE, ExtendedSpecTree, add_security_scheme
 
 
 AUTH_KEY = "API_KEY"
