@@ -343,7 +343,7 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .logo-unlogged {
-  color: var(--color-text-locked);
+  color: var(--color-text-locked-inverted);
   max-width: rem.torem(135px);
 
   @media (min-width: size.$tablet) {

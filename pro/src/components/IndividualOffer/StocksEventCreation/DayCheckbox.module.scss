@@ -56,7 +56,7 @@ $checkbox-size: rem.torem(40px);
     }
 
     &:hover {
-      color: var(--color-text-locked);
+      color: var(--color-text-locked-inverted);
     }
   }
 
