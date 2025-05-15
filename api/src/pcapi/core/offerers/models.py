@@ -245,7 +245,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         server_default=expression.false(),
     )
 
-    isPermanent = sa.Column(sa.Boolean, nullable=False, default=False)
+    isPermanent: sa_orm.Mapped[bool] = sa.Column(sa.Boolean, nullable=False, default=False)
 
     isOpenToPublic = sa.Column(sa.Boolean, nullable=False, default=False)
 

@@ -1,9 +1,9 @@
 import logging
+import typing
 
 from pydantic.v1 import PositiveInt
 
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.routes.serialization import BaseModel
@@ -64,66 +64,86 @@ class VenueModel(BaseModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
-    domains: list[VenueDomain] | None
-    interventionArea: list[str] | None
+    domains: typing.Sequence[VenueDomain]
+    interventionArea: list[str]
     network: list[str] | None
     statusId: int | None
     label: VenueLabelModel | None
-    siren: str | None  # TODO (jcicurel) : remove | None
-    isPermanent: bool | None
-    isAdmin: bool | None
-    offerer: OffererModel | None
+    siren: str
+    isPermanent: bool
+    isAdmin: bool
+    offerer: OffererModel
     bannerUrl: str | None
     bannerMeta: dict | None
 
     @classmethod
     def from_orm(cls, venue: Venue) -> "VenueModel":
-        result: "VenueModel" = super().from_orm(venue)
-
-        contact: VenueContact | None = venue.contact
-
-        if venue.collectiveEmail:
-            result.email = venue.collectiveEmail
-        elif contact is not None:
-            result.email = contact.email
-
-        if venue.collectiveWebsite:
-            result.website = venue.collectiveWebsite
-        elif contact is not None:
-            result.website = contact.website
-
-        if venue.collectivePhone:
-            result.phoneNumber = venue.collectivePhone
-        elif contact is not None:
-            result.phoneNumber = contact.phone_number
-
-        result.domains = [VenueDomain.from_orm(domain) for domain in venue.collectiveDomains]
-        result.interventionArea = [
-            intervention_area.zfill(3) for intervention_area in venue.collectiveInterventionArea or []
-        ]
-        result.network = venue.collectiveNetwork
-        result.statusId = venue.venueEducationalStatusId
-        result.label = VenueLabelModel.from_orm(venue.venueLabel) if venue.venueLabel is not None else None
-        result.siren = venue.managingOfferer.siren
-        result.isAdmin = venue.venueTypeCode == VenueTypeCode.ADMINISTRATIVE
-        result.offerer = OffererModel.from_orm(venue.managingOfferer)
-
-        if venue.offererAddress is None:
-            # we only use this model on venues with (isVirtual=False) that should have an offererAddress
-            logger.error("Found venue with id %s without offererAddress", venue.id)
-
-            result.address = None
-            result.latitude = None
-            result.longitude = None
-            result.city = None
+        if venue.offererAddress is not None:
+            venue_address = venue.offererAddress.address
+            address = venue_address.street
+            latitude = float(venue_address.latitude)
+            longitude = float(venue_address.longitude)
+            city = venue_address.city
         else:
-            address = venue.offererAddress.address
-            result.address = address.street
-            result.latitude = float(address.latitude)
-            result.longitude = float(address.longitude)
-            result.city = address.city
+            # TODO(OA): remove this when the virtual venues are migrated
+            address = None
+            latitude = None
+            longitude = None
+            city = None
 
-        return result
+        contact = venue.contact
+
+        email: str | None
+        if venue.collectiveEmail:
+            email = venue.collectiveEmail
+        elif contact is not None:
+            email = contact.email
+
+        website: str | None
+        if venue.collectiveWebsite:
+            website = venue.collectiveWebsite
+        elif contact is not None:
+            website = contact.website
+
+        phone_number: str | None
+        if venue.collectivePhone:
+            phone_number = venue.collectivePhone
+        elif contact is not None:
+            phone_number = contact.phone_number
+
+        intervention_area = [intervention_area.zfill(3) for intervention_area in venue.collectiveInterventionArea or []]
+
+        return cls(
+            name=venue.name,
+            siret=venue.siret,
+            address=address,
+            latitude=latitude,
+            longitude=longitude,
+            city=city,
+            publicName=venue.publicName,
+            description=venue.description,
+            collectiveDescription=venue.collectiveDescription,
+            id=venue.id,
+            adageId=venue.adageId,
+            email=email,
+            website=website,
+            phoneNumber=phone_number,
+            audioDisabilityCompliant=venue.audioDisabilityCompliant,
+            mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+            motorDisabilityCompliant=venue.motorDisabilityCompliant,
+            visualDisabilityCompliant=venue.visualDisabilityCompliant,
+            domains=venue.collectiveDomains,
+            interventionArea=intervention_area,
+            network=venue.collectiveNetwork,
+            statusId=venue.venueEducationalStatusId,
+            label=venue.venueLabel,
+            siren=venue.managingOfferer.siren,
+            isPermanent=venue.isPermanent,
+            isAdmin=venue.venueTypeCode == VenueTypeCode.ADMINISTRATIVE,
+            offerer=venue.managingOfferer,
+            bannerUrl=venue.bannerUrl,
+            bannerMeta=venue.bannerMeta,
+        )
 
     class Config:
         orm_mode = True
