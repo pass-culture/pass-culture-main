@@ -106,8 +106,6 @@ class CDSStocks(LocalProvider):
         model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
     ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
-        # exception to the ProvidableMixin because Offer no longer extends this class
-        # idAtProviders has been replaced by idAtProvider property
         if model_type == offers_models.Offer:
             query = db.session.query(model_type).filter_by(idAtProvider=id_at_providers)
         elif model_type == offers_models.Stock:

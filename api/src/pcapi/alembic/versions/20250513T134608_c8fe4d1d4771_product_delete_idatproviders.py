@@ -1,7 +1,7 @@
 """Delete idAtProviders column from product table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: post

@@ -1,14 +1,14 @@
 """Drop fieldsUpdated column from product"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
 revision = "1eb6460032d1"
-down_revision = "60fdd63d8828"
+down_revision = "2d9c4b59ac7c"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
