@@ -1,6 +1,6 @@
+import logging
 from dataclasses import dataclass
 from enum import Enum
-import logging
 
 from pcapi import settings
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData

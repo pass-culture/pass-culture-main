@@ -3,15 +3,16 @@
 import logging
 
 from pcapi import settings
-from pcapi.notifications.push import delete_user_attributes
-from pcapi.notifications.push import send_transactional_notification
-from pcapi.notifications.push import track_event
-from pcapi.notifications.push import track_event_bulk
-from pcapi.notifications.push import update_user_attributes
+from pcapi.notifications.push import (
+    delete_user_attributes,
+    send_transactional_notification,
+    track_event,
+    track_event_bulk,
+    update_user_attributes,
+)
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
-from pcapi.notifications.push.trigger_events import TrackBatchEventsRequest
+from pcapi.notifications.push.trigger_events import TrackBatchEventRequest, TrackBatchEventsRequest
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 

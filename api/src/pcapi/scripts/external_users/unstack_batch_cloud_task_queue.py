@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 import itertools
 import json
 import logging
-from time import sleep
 import typing
+from dataclasses import dataclass
+from time import sleep
 from typing import Generator
 
 from google.cloud.tasks_v2 import CloudTasksClient

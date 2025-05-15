@@ -1,7 +1,7 @@
 import re
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.educational import factories as collective_offers_factories
 from pcapi.core.offerers import api as offerers_api

@@ -1,7 +1,7 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories

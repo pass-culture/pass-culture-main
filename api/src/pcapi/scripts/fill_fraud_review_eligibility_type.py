@@ -1,8 +1,7 @@
 import argparse
 from datetime import timedelta
 
-from sqlalchemy import extract
-from sqlalchemy import func
+from sqlalchemy import extract, func
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import models as fraud_models

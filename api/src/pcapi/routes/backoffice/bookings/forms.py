@@ -2,16 +2,15 @@ import datetime
 import enum
 import typing
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 from pcapi.routes.backoffice.forms.empty import BatchForm
 
 

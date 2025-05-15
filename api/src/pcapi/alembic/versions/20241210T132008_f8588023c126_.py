@@ -2,8 +2,8 @@
 Create tables artist, artist_alias and artist_product_link
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.artist.models import ArtistType
 from pcapi.utils.db import MagicEnum

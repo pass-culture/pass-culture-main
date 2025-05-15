@@ -1,8 +1,8 @@
 import dataclasses
 
+import pcapi.utils.date as date_utils
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
-import pcapi.utils.date as date_utils
 
 
 @dataclasses.dataclass

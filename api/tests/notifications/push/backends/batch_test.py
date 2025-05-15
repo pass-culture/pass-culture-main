@@ -1,9 +1,10 @@
 import requests_mock
 
-from pcapi.notifications.push.backends.batch import BatchAPI
-from pcapi.notifications.push.backends.batch import BatchBackend
-from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.transactional_notifications import TransactionalNotificationMessage
+from pcapi.notifications.push.backends.batch import BatchAPI, BatchBackend
+from pcapi.notifications.push.transactional_notifications import (
+    TransactionalNotificationData,
+    TransactionalNotificationMessage,
+)
 
 
 class BatchPushNotificationClientTest:

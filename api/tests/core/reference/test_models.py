@@ -2,9 +2,7 @@ import pytest
 import sqlalchemy as sa
 import sqlalchemy.sql as sa_sql
 
-from pcapi.core.reference import exceptions
-from pcapi.core.reference import factories
-from pcapi.core.reference import models
+from pcapi.core.reference import exceptions, factories, models
 from pcapi.models import db
 
 

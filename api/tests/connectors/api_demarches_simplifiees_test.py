@@ -6,9 +6,11 @@ import time_machine
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import models as dms_models
 
-from tests.scripts.beneficiary.fixture import make_graphql_application
-from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
-from tests.scripts.beneficiary.fixture import make_single_application
+from tests.scripts.beneficiary.fixture import (
+    make_graphql_application,
+    make_graphql_deleted_applications,
+    make_single_application,
+)
 
 
 DS_MAKE_ON_GOING_RESPONSE = {

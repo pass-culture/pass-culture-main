@@ -1,7 +1,6 @@
-from datetime import datetime
-from datetime import timedelta
 import hashlib
 import logging
+from datetime import datetime, timedelta
 
 import jwt
 from psycopg2.extras import DateTimeRange

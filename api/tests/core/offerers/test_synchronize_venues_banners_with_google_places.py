@@ -6,8 +6,7 @@ import pytest
 import time_machine
 
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places
-from pcapi.core.offerers.factories import GooglePlacesInfoFactory
-from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers.factories import GooglePlacesInfoFactory, VenueFactory
 from pcapi.utils.image_conversion import ImageRatio
 
 

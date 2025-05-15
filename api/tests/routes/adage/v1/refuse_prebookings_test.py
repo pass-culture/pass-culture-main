@@ -3,15 +3,19 @@ from datetime import datetime
 import pytest
 import time_machine
 
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import CollectiveStockFactory
-from pcapi.core.educational.factories import EducationalRedactorFactory
-from pcapi.core.educational.factories import UsedCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveLocationType
-from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.factories import (
+    CollectiveBookingFactory,
+    CollectiveStockFactory,
+    EducationalRedactorFactory,
+    UsedCollectiveBookingFactory,
+)
+from pcapi.core.educational.models import (
+    CollectiveBooking,
+    CollectiveBookingCancellationReasons,
+    CollectiveBookingStatus,
+    CollectiveLocationType,
+    CollectiveStock,
+)
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries

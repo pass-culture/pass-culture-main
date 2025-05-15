@@ -4,8 +4,7 @@ from typing import Iterable
 from pcapi.core.users import testing as users_testing
 from pcapi.tasks.serialization import sendinblue_tasks
 
-from .. import models
-from .. import testing
+from .. import models, testing
 from .base import BaseBackend
 
 

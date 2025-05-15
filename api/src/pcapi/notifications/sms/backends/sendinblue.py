@@ -3,9 +3,9 @@ import logging
 import brevo_python
 from brevo_python.rest import ApiException
 
+import pcapi.core.mails.models as mails_models
 from pcapi import settings
 from pcapi.core import mails
-import pcapi.core.mails.models as mails_models
 from pcapi.models import db
 from pcapi.utils import requests
 from pcapi.utils.email import is_email_whitelisted

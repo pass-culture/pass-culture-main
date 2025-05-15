@@ -1,6 +1,5 @@
-from sqlalchemy import Column
-from sqlalchemy import Integer
 import sqlalchemy.orm as sa_orm
+from sqlalchemy import Column, Integer
 from sqlalchemy.orm import declarative_mixin
 
 from pcapi import settings

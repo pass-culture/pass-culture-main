@@ -5,15 +5,15 @@ import enum
 import logging
 import typing
 
-from flask import request
 import pydantic.v1 as pydantic_v1
+from flask import request
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 from spectree import BaseFile
 
+import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music
-from pcapi.core.categories.genres import show
+from pcapi.core.categories.genres import music, show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
@@ -23,7 +23,6 @@ from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
-import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils

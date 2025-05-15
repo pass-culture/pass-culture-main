@@ -1,9 +1,6 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from itertools import count
-from itertools import cycle
 import typing
+from datetime import date, datetime, timedelta
+from itertools import count, cycle
 
 import sqlalchemy as sa
 

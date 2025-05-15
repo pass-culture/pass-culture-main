@@ -3,8 +3,8 @@ import datetime
 from io import StringIO
 from unittest import mock
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core.bookings import factories as bookings_factories

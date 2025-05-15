@@ -11,8 +11,7 @@ from pcapi.core.educational.exceptions import CantGetImageFromUrl
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as user_factories
-from pcapi.models import db
-from pcapi.models import validation_status_mixin
+from pcapi.models import db, validation_status_mixin
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.date import format_into_utc_date
 

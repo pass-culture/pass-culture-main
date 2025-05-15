@@ -1,12 +1,11 @@
+import logging
 from contextlib import suppress
 from datetime import datetime
-import logging
 
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import exceptions as bookings_exceptions
-from pcapi.core.educational import exceptions
-from pcapi.core.educational import models
+from pcapi.core.educational import exceptions, models
 from pcapi.core.educational.api import booking as booking_api
 from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.finance import api as finance_api
@@ -14,20 +13,15 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.api_errors import ApiErrors, ForbiddenError, ResourceNotFoundError
 from pcapi.repository.session_management import atomic
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public import blueprints, spectree_schemas
 from pcapi.routes.public.collective.endpoints.adage_mock import utils
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import current_api_key, provider_api_key_required
 
 
 logger = logging.getLogger(__name__)

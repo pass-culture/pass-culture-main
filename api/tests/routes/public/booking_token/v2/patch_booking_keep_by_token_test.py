@@ -1,9 +1,8 @@
 import pytest
 
-from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.models import Booking, BookingStatus
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 

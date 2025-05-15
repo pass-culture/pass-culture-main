@@ -1,11 +1,7 @@
 from unittest.mock import MagicMock
 
 from pcapi.routes.serialization import BaseModel
-from pcapi.utils.cache import _CacheProxy
-from pcapi.utils.cache import _compute_arguments_hash
-from pcapi.utils.cache import _view_retriever
-from pcapi.utils.cache import cached_view
-from pcapi.utils.cache import get_from_cache
+from pcapi.utils.cache import _CacheProxy, _compute_arguments_hash, _view_retriever, cached_view, get_from_cache
 
 
 class DummySerializer(BaseModel):

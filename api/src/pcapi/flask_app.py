@@ -4,21 +4,16 @@ import sys
 import time
 import typing
 
-from authlib.integrations.flask_client import OAuth
-from flask import Flask
-from flask import Response
-from flask import g
-from flask import jsonify
-from flask import request
-from flask.logging import default_handler
 import flask.wrappers
-from flask_login import LoginManager
-from flask_login import current_user
 import prometheus_flask_exporter.multiprocess
 import redis
 import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from authlib.integrations.flask_client import OAuth
+from flask import Flask, Response, g, jsonify, request
+from flask.logging import default_handler
+from flask_login import LoginManager, current_user
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -26,10 +21,8 @@ from pcapi import settings
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.core import monkeypatches
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.logging import get_or_set_correlation_id
-from pcapi.core.logging import install_logging
-from pcapi.models import db
-from pcapi.models import install_models
+from pcapi.core.logging import get_or_set_correlation_id, install_logging
+from pcapi.models import db, install_models
 from pcapi.repository import session_management
 from pcapi.scripts.install import install_commands
 from pcapi.utils.json_encoder import EnumJSONEncoder

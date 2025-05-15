@@ -2,14 +2,10 @@ import datetime
 import logging
 import secrets
 
-from authlib.integrations.base_client import MismatchingStateError
-from flask import redirect
-from flask import render_template
-from flask import session
-from flask import url_for
-from flask_login import login_user
-from flask_login import logout_user
 import werkzeug
+from authlib.integrations.base_client import MismatchingStateError
+from flask import redirect, render_template, session, url_for
+from flask_login import login_user, logout_user
 
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
@@ -21,8 +17,7 @@ from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
 
-from . import blueprint
-from . import utils
+from . import blueprint, utils
 
 
 logger = logging.getLogger(__name__)

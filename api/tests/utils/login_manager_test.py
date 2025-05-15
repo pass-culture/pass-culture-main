@@ -1,15 +1,12 @@
-from datetime import datetime
-from datetime import timedelta
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from datetime import datetime, timedelta
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
 from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
-from pcapi.routes.apis import private_api
-from pcapi.routes.apis import public_api
+from pcapi.routes.apis import private_api, public_api
 from pcapi.routes.auth.blueprint import auth_blueprint
 from pcapi.routes.native.blueprint import native_blueprint
 from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint

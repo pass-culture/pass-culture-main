@@ -1,7 +1,6 @@
 import datetime
 
-from sqlalchemy import Integer
-from sqlalchemy import or_
+from sqlalchemy import Integer, or_
 
 from pcapi.core.fraud import models as fraud_models
 from pcapi.models import db

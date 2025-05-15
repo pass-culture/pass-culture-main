@@ -1,11 +1,10 @@
 from flask_login import login_required
 
-from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.offerers.models import Venue
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
-from pcapi.routes.serialization.providers_serialize import ListProviderResponse
-from pcapi.routes.serialization.providers_serialize import ProviderResponse
+from pcapi.routes.serialization.providers_serialize import ListProviderResponse, ProviderResponse
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint

@@ -1,7 +1,6 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.offers.models import FutureOffer
-from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import FutureOffer, Offer
 from pcapi.core.reminders.models import FutureOfferReminder
 from pcapi.core.users.models import User
 from pcapi.models import db

@@ -1,9 +1,9 @@
 import datetime
 
+import pcapi.core.educational.schemas as educational_schemas
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
-import pcapi.core.educational.schemas as educational_schemas
 
 
 class AdageClient:

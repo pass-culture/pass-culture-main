@@ -3,9 +3,7 @@ import logging
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offers.factories import EventOfferFactory
-from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import PriceCategoryFactory
+from pcapi.core.offers.factories import EventOfferFactory, EventStockFactory, PriceCategoryFactory
 
 
 logger = logging.getLogger(__name__)

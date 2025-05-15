@@ -1,14 +1,13 @@
+import logging
 from datetime import date
 from enum import Enum
-import logging
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
-from pcapi.utils.urls import booking_app_link
-from pcapi.utils.urls import offer_app_link
+from pcapi.utils.urls import booking_app_link, offer_app_link
 
 
 logger = logging.getLogger(__name__)

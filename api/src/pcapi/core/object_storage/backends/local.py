@@ -1,7 +1,7 @@
-from itertools import chain
 import logging
 import os
 import pathlib
+from itertools import chain
 
 from pcapi import settings
 

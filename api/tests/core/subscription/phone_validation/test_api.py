@@ -1,8 +1,8 @@
 from ssl import SSLError
 from unittest.mock import patch
 
-from brevo_python.rest import ApiException
 import pytest
+from brevo_python.rest import ApiException
 
 from pcapi.core import token as token_utils
 from pcapi.core.fraud import models as fraud_models

@@ -1,18 +1,18 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.finance.models import DepositType
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import BeneficiaryFraudReviewFactory
 from pcapi.core.users import models as users_models
-from pcapi.core.users.factories import DepositGrantFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import DepositGrantFactory, UserFactory
 from pcapi.models import db
-from pcapi.scripts.fill_fraud_review_eligibility_type import add_eligibility_to_reviews_based_on_beneficiary_age
-from pcapi.scripts.fill_fraud_review_eligibility_type import add_eligibility_to_reviews_based_on_deposit
+from pcapi.scripts.fill_fraud_review_eligibility_type import (
+    add_eligibility_to_reviews_based_on_beneficiary_age,
+    add_eligibility_to_reviews_based_on_deposit,
+)
 
 
 @pytest.mark.usefixtures("db_session")

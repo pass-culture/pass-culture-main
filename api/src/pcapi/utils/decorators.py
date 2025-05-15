@@ -1,6 +1,6 @@
+import typing
 from functools import wraps
 from logging import Logger
-import typing
 
 
 def retry(

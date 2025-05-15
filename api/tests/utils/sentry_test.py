@@ -1,13 +1,12 @@
 from unittest.mock import patch
 
-from pydantic.v1 import BaseModel
 import pytest
+from pydantic.v1 import BaseModel
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.apis import private_api
-from pcapi.utils.sentry import before_send
-from pcapi.utils.sentry import init_sentry_sdk
+from pcapi.utils.sentry import before_send, init_sentry_sdk
 
 
 original_before_send = before_send

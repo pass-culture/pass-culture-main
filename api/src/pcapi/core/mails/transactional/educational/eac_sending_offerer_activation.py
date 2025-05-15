@@ -1,7 +1,7 @@
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core import mails
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.models as offerers_models
 
 
 def send_eac_offerer_activation_email(venue: offerers_models.Venue, emails: list[str]) -> None:

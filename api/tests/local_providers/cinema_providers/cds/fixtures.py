@@ -1,10 +1,12 @@
 from datetime import datetime
 
-from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import (
+    IdObjectCDS,
+    MediaCDS,
+    ShowCDS,
+    ShowTariffCDS,
+    ShowsMediaoptionsCDS,
+)
 
 
 MOVIE_1 = MediaCDS(

@@ -1,14 +1,12 @@
 import logging
 from resource import struct_rusage
-from typing import Any
-from typing import Iterable
+from typing import Any, Iterable
 
 import click
 import redis
-from rq import Queue
-from rq import Worker
-from rq.job import Job
 import sentry_sdk
+from rq import Queue, Worker
+from rq.job import Job
 
 from pcapi import settings
 from pcapi.models import db

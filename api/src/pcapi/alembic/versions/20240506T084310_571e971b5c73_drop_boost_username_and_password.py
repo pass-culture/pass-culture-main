@@ -1,7 +1,7 @@
 """Drop "username" & "password" columns from "boost_cinema_details" table."""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: post

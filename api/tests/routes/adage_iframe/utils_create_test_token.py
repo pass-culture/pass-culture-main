@@ -1,12 +1,10 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import jwt
 
 from pcapi.core.users.utils import ALGORITHM_RS_256
 
-from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
-from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
+from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH, VALID_RSA_PRIVATE_KEY_PATH
 
 
 DEFAULT_LAT = 67.91865044229313

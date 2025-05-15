@@ -11,20 +11,15 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.models import api_errors, db
 from pcapi.repository.session_management import atomic
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public import utils
+from pcapi.routes.public import blueprints, spectree_schemas, utils
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.image_conversion import DO_NOT_CROP
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import current_api_key, provider_api_key_required
 
 
 PATCH_NON_NULLABLE_FIELDS = (

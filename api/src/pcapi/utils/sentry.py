@@ -3,20 +3,20 @@ import random
 import sys
 import typing
 
-from pydantic.v1 import ValidationError
 import sentry_sdk
+from pydantic.v1 import ValidationError
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.rq import RqIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-from pcapi import settings
-from pcapi.routes import UrlPrefix
 import pcapi.routes.apis as routes_apis
 import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 import pcapi.routes.pro.blueprint as pro_blueprint
 import pcapi.routes.public.blueprints as public_api_blueprints
 import pcapi.tasks.decorator as tasks_decorator
+from pcapi import settings
+from pcapi.routes import UrlPrefix
 from pcapi.utils.health_checker import read_version_from_file
 
 

@@ -1,13 +1,10 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 import time_machine
 
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons, CollectiveBookingStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories

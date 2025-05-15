@@ -1,25 +1,21 @@
 import flask
-from flask import request
-from flask_login import current_user
-from flask_login import login_required
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
+from flask import request
+from flask_login import current_user, login_required
 
+import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
 from pcapi.connectors.entreprise import sirene
-import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core.offerers import api as offerers_api
-from pcapi.core.offerers import exceptions
-from pcapi.core.offerers import models
+from pcapi.core.offerers import exceptions, models, validation
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import offerers_serialize, venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job

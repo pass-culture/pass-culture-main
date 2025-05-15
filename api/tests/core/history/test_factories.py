@@ -1,8 +1,7 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from pcapi.core.history import factories
-from pcapi.core.history import models
+from pcapi.core.history import factories, models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 

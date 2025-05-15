@@ -1,15 +1,13 @@
 import datetime
 import functools
-from typing import Any
-from typing import Callable
+from typing import Any, Callable
 
 import flask
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
-from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import UnauthorizedError
+from pcapi.models.api_errors import ForbiddenError, UnauthorizedError
 
 
 class DMSWebhookRequest(pydantic_v1.BaseModel):

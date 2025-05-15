@@ -6,8 +6,8 @@ import pydantic.v1 as pydantic_v1
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
-from pcapi.core.offers.utils import get_offer_address
 import pcapi.core.users.models as users_models
+from pcapi.core.offers.utils import get_offer_address
 
 
 logger = logging.getLogger(__name__)

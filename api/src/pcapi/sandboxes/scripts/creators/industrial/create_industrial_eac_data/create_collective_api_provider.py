@@ -4,9 +4,7 @@ import factory
 
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.factories import OffererProviderFactory
-from pcapi.core.providers.factories import PublicApiProviderFactory
-from pcapi.core.providers.factories import VenueProviderFactory
+from pcapi.core.providers.factories import OffererProviderFactory, PublicApiProviderFactory, VenueProviderFactory
 from pcapi.core.providers.models import Provider
 
 

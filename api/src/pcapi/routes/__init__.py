@@ -14,30 +14,31 @@ class UrlPrefix(enum.Enum):
 
 
 def install_all_routes(app: Flask) -> None:
+    import pcapi.tasks
     from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
     from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
-    from pcapi.routes.apis import private_api
-    from pcapi.routes.apis import public_api
+    from pcapi.routes.apis import private_api, public_api
     from pcapi.routes.auth.blueprint import auth_blueprint
     from pcapi.routes.native.blueprint import native_blueprint
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.public import blueprints as public_blueprint
     from pcapi.routes.saml.blueprint import saml_blueprint as saml_blueprint_blueprint
-    import pcapi.tasks
     from pcapi.tasks.decorator import cloud_task_api
 
-    from . import adage
-    from . import adage_iframe
-    from . import auth
-    from . import error_handlers
-    from . import external
-    from . import institutional
-    from . import internal
-    from . import native
-    from . import pro
-    from . import public
-    from . import saml
-    from . import shared
+    from . import (
+        adage,
+        adage_iframe,
+        auth,
+        error_handlers,
+        external,
+        institutional,
+        internal,
+        native,
+        pro,
+        public,
+        saml,
+        shared,
+    )
 
     adage.install_routes(app)
     external.install_routes(app)

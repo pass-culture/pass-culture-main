@@ -1,7 +1,7 @@
 import typing
 
-from psycopg2.extras import NumericRange
 import pydantic.v1 as pydantic_v1
+from psycopg2.extras import NumericRange
 from pydantic.v1 import validator
 
 from pcapi.connectors.serialization import acceslibre_serializers

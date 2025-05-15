@@ -4,14 +4,12 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories import models as categories_models
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
-from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
+from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES, SEARCH_GROUPS
 from pcapi.core.categories.genres.book import BookType
 from pcapi.core.categories.genres.movie import MovieType
 from pcapi.core.categories.genres.music import MusicType
 from pcapi.core.categories.genres.show import ShowType
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import BaseModel, ConfiguredBaseModel
 from pcapi.serialization.utils import to_camel
 
 

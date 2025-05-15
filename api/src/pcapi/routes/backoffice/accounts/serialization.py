@@ -3,10 +3,10 @@ import datetime
 import decimal
 import typing
 
+import sqlalchemy as sa
 from flask import url_for
 from markupsafe import Markup
 from pydantic.v1.utils import GetterDict
-import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.finance import models as finance_models

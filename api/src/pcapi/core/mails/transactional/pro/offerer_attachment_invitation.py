@@ -1,11 +1,11 @@
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import constants as users_constants
-import pcapi.core.users.models as users_models
 
 
 def retrieve_data_for_offerer_attachment_invitation_new_user(

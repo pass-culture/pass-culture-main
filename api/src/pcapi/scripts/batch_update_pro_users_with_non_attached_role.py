@@ -8,8 +8,7 @@ from typing import Generator
 import sqlalchemy as sa
 
 from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
+from pcapi.core.users.models import User, UserRole
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 

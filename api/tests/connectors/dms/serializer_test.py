@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from unittest.mock import patch
 
 import pytest

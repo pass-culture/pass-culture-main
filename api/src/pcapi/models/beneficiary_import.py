@@ -1,15 +1,13 @@
-from enum import Enum
 import typing
+from enum import Enum
 
 import sqlalchemy as sa
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Base, Model, db
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.pc_object import PcObject
 

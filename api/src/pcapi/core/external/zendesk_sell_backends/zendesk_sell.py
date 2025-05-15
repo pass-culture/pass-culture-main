@@ -4,14 +4,15 @@ import logging
 import urllib.parse
 
 from pcapi import settings
-from pcapi.core.external.zendesk_sell_backends.base import BaseBackend
-from pcapi.core.external.zendesk_sell_backends.base import ContactFoundMoreThanOneError
-from pcapi.core.external.zendesk_sell_backends.base import ContactNotFoundError
-from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsNames
-from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsShort
+from pcapi.core.external.zendesk_sell_backends.base import (
+    BaseBackend,
+    ContactFoundMoreThanOneError,
+    ContactNotFoundError,
+    ZendeskCustomFieldsNames,
+    ZendeskCustomFieldsShort,
+)
 from pcapi.core.offerers import models as offerers_models
-from pcapi.utils import requests
-from pcapi.utils import urls
+from pcapi.utils import requests, urls
 from pcapi.utils.regions import get_region_name_from_department
 
 

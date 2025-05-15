@@ -5,13 +5,13 @@ from urllib.parse import urljoin
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.external_bookings.ems.client import EMSClientAPI
-from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
+from pcapi.core.external_bookings.ems.client import EMSClientAPI
+from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 
 
 @pytest.mark.usefixtures("db_session")

@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.finance import factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.users.factories import ProFactory
 from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import _get_all_invoices
 

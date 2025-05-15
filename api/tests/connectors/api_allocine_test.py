@@ -1,16 +1,17 @@
 import copy
-from dataclasses import dataclass
 import logging
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from dataclasses import dataclass
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pcapi.connectors.api_allocine import AllocineException
-from pcapi.connectors.api_allocine import get_movie_list_page
-from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
-from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
-from pcapi.connectors.api_allocine import parse_movie_showtimes
+from pcapi.connectors.api_allocine import (
+    AllocineException,
+    get_movie_list_page,
+    get_movie_poster_from_allocine,
+    get_movies_showtimes_from_allocine,
+    parse_movie_showtimes,
+)
 from pcapi.connectors.serialization import allocine_serializers
 
 from tests.connectors import fixtures

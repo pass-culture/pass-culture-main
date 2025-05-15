@@ -2,14 +2,12 @@ import datetime
 import re
 from urllib.parse import urlparse
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.operations import models
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import search
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, search, utils
 
 
 RE_TYPEFORM_ID = r"^[a-zA-Z0-9]{4,}$"

@@ -5,8 +5,8 @@ import logging
 import random
 import typing
 
-from psycopg2.extras import DateTimeRange
 import sqlalchemy as sa
+from psycopg2.extras import DateTimeRange
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
@@ -14,8 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import elements as sa_elements
 from sqlalchemy.sql import selectable as sa_selectable
 
-from pcapi import models
-from pcapi import settings
+from pcapi import models, settings
 from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories.models import EacFormat
@@ -39,9 +38,7 @@ MAX_COLLECTIVE_DESCRIPTION_LENGTH: typing.Final = 1500
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.offerers.models import Offerer
-    from pcapi.core.offerers.models import OffererAddress
-    from pcapi.core.offerers.models import Venue
+    from pcapi.core.offerers.models import Offerer, OffererAddress, Venue
     from pcapi.core.offers.models import OfferValidationRule
     from pcapi.core.providers.models import Provider
     from pcapi.core.users.models import User

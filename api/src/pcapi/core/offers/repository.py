@@ -20,15 +20,13 @@ from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users import models as users_models
-from pcapi.models import db
-from pcapi.models import offer_mixin
+from pcapi.models import db, offer_mixin
 from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import custom_keys
 from pcapi.utils import string as string_utils
 from pcapi.utils.decorators import retry
 
-from . import exceptions
-from . import models
+from . import exceptions, models
 
 
 logger = logging.getLogger(__name__)

@@ -1,8 +1,6 @@
 import pytest
 
-from pcapi.utils.csr import get_closest_csr
-from pcapi.utils.csr import get_csr
-from pcapi.utils.csr import get_csr_from_csr_id
+from pcapi.utils.csr import get_closest_csr, get_csr, get_csr_from_csr_id
 
 
 class GetCsrTest:

@@ -1,14 +1,14 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.users.factories as users_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import models as users_models
-import pcapi.core.users.factories as users_factories
 from pcapi.utils.string import u_nbsp
 
 

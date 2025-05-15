@@ -8,9 +8,8 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import exceptions
+from pcapi.core.subscription import exceptions, profile_options
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors

@@ -1,9 +1,9 @@
 import datetime
 import decimal
 
+import pytz
 from babel import numbers
 from flask import Flask
-import pytz
 
 
 ACCOUNTING_TIMEZONE = pytz.timezone("Europe/Paris")

@@ -1,8 +1,7 @@
 import dataclasses
 import typing
 
-from flask import request
-from flask import url_for
+from flask import request, url_for
 from flask_login import current_user
 
 from pcapi.routes.backoffice import utils

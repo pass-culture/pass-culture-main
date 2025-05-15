@@ -2,8 +2,8 @@ from operator import itemgetter
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core import testing
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 

@@ -1,14 +1,11 @@
 import functools
 import inspect
 import logging
-from typing import Any
-from typing import Callable
-from typing import TypeVar
+from typing import Any, Callable, TypeVar
 
 from pcapi.utils.requests import exceptions as requests_exception
 
-from . import exceptions
-from . import models
+from . import exceptions, models
 
 
 logger = logging.getLogger(__name__)

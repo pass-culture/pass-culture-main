@@ -1,8 +1,8 @@
 import typing
 
-from flask_wtf import FlaskForm
 import sqlalchemy.orm as sa_orm
 import wtforms
+from flask_wtf import FlaskForm
 from wtforms import validators
 
 from pcapi.connectors import acceslibre as acceslibre_connector
@@ -12,11 +12,9 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 from pcapi.routes.backoffice.forms.constants import area_choices
-from pcapi.routes.backoffice.utils import get_regions_choices
-from pcapi.routes.backoffice.utils import has_current_user_permission
+from pcapi.routes.backoffice.utils import get_regions_choices, has_current_user_permission
 from pcapi.utils import siren as siren_utils
 
 

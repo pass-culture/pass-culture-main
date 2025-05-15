@@ -1,13 +1,26 @@
 import datetime
-from functools import partial
 import json
 import logging
 import typing
+from functools import partial
 
-from flask import current_app
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import current_app
 
+import pcapi.core.external_bookings.api as external_bookings_api
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
+import pcapi.core.finance.models as finance_models
+import pcapi.core.finance.repository as finance_repository
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.exceptions as offers_exceptions
+import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.validation as offers_validation
+import pcapi.core.providers.repository as providers_repository
+import pcapi.serialization.utils as serialization_utils
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
@@ -15,49 +28,26 @@ from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.external import batch
-from pcapi.core.external.attributes.api import update_external_pro
-from pcapi.core.external.attributes.api import update_external_user
+from pcapi.core.external.attributes.api import update_external_pro, update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
-import pcapi.core.external_bookings.api as external_bookings_api
 from pcapi.core.external_bookings.ems import constants as ems_constants
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
-import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.exceptions as finance_exceptions
-import pcapi.core.finance.models as finance_models
-import pcapi.core.finance.repository as finance_repository
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
-import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.exceptions as offers_exceptions
-import pcapi.core.offers.models as offers_models
-import pcapi.core.offers.validation as offers_validation
-import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
-from pcapi.repository import transaction
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
-import pcapi.serialization.utils as serialization_utils
+from pcapi.repository import repository, transaction
+from pcapi.repository.session_management import is_managed_transaction, mark_transaction_as_invalid, on_commit
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
 from pcapi.utils.requests import exceptions as requests_exceptions
-from pcapi.workers import apps_flyer_job
-from pcapi.workers import push_notification_job
-from pcapi.workers import user_emails_job
+from pcapi.workers import apps_flyer_job, push_notification_job, user_emails_job
 
-from . import constants
-from . import exceptions
-from . import models
-from . import utils
-from . import validation
+from . import constants, exceptions, models, utils, validation
 
 
 logger = logging.getLogger(__name__)

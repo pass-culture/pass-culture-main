@@ -2,8 +2,7 @@ import logging
 
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.tasks.zendesk_tasks import UpdateZendeskAttributesRequest
-from pcapi.tasks.zendesk_tasks import update_zendesk_attributes_task
+from pcapi.tasks.zendesk_tasks import UpdateZendeskAttributesRequest, update_zendesk_attributes_task
 from pcapi.validation.routes import zendesk as zendesk_validation
 
 

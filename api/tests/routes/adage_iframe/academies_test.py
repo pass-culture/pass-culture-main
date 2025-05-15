@@ -1,8 +1,7 @@
-from flask import url_for
 import pytest
+from flask import url_for
 
-from pcapi.core.educational import academies
-from pcapi.core.educational import factories
+from pcapi.core.educational import academies, factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

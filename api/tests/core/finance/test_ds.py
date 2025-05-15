@@ -1,6 +1,6 @@
-from collections import namedtuple
 import datetime
 import random
+from collections import namedtuple
 from unittest.mock import patch
 
 import pytest
@@ -8,20 +8,18 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import factories as ds_factories
 from pcapi.connectors.dms import models as ds_models
-from pcapi.connectors.dms.models import GraphQLApplicationStates
-from pcapi.connectors.dms.models import LatestDmsImport
+from pcapi.connectors.dms.models import GraphQLApplicationStates, LatestDmsImport
 from pcapi.connectors.dms.utils import import_ds_applications
-from pcapi.core.finance.ds import MARK_WITHOUT_CONTINUATION_MOTIVATION
-from pcapi.core.finance.ds import mark_without_continuation_applications
-from pcapi.core.finance.ds import update_ds_applications_for_procedure
-from pcapi.core.finance.factories import BankAccountFactory
-from pcapi.core.finance.factories import BankAccountStatusHistoryFactory
-from pcapi.core.finance.models import BankAccount
-from pcapi.core.finance.models import BankAccountApplicationStatus
+from pcapi.core.finance.ds import (
+    MARK_WITHOUT_CONTINUATION_MOTIVATION,
+    mark_without_continuation_applications,
+    update_ds_applications_for_procedure,
+)
+from pcapi.core.finance.factories import BankAccountFactory, BankAccountStatusHistoryFactory
+from pcapi.core.finance.models import BankAccount, BankAccountApplicationStatus
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers.factories import VenueBankAccountLinkFactory
-from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers.factories import VenueBankAccountLinkFactory, VenueFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 

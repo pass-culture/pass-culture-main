@@ -6,12 +6,14 @@ import pytest
 
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
-from pcapi.models.feature import FEATURES_DISABLED_BY_DEFAULT
-from pcapi.models.feature import Feature
-from pcapi.models.feature import FeatureToggle
-from pcapi.models.feature import check_feature_flags_completeness
-from pcapi.models.feature import clean_feature_flags
-from pcapi.models.feature import install_feature_flags
+from pcapi.models.feature import (
+    FEATURES_DISABLED_BY_DEFAULT,
+    Feature,
+    FeatureToggle,
+    check_feature_flags_completeness,
+    clean_feature_flags,
+    install_feature_flags,
+)
 from pcapi.repository import repository
 
 

@@ -1,8 +1,8 @@
-from functools import partial
 import typing
+from functools import partial
 
-from flask import render_template
 import wtforms
+from flask import render_template
 from wtforms import validators
 
 

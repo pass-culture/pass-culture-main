@@ -1,9 +1,7 @@
 from datetime import datetime
 
 from pcapi.core.users import constants
-from pcapi.core.users.models import EmailHistoryEventTypeEnum
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserEmailHistory
+from pcapi.core.users.models import EmailHistoryEventTypeEnum, User, UserEmailHistory
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 

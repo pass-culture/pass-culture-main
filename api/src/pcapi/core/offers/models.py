@@ -1,45 +1,34 @@
-from dataclasses import dataclass
 import datetime
 import decimal
 import enum
 import logging
 import typing
+from dataclasses import dataclass
 
 import psycopg2.extras
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
-from sqlalchemy.sql.elements import Case
-from sqlalchemy.sql.elements import UnaryExpression
+from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList, Case, UnaryExpression
 
-from pcapi import settings
 import pcapi.core.bookings.constants as bookings_constants
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi import settings
+from pcapi.core.categories import pro_categories, subcategories
 from pcapi.core.criteria.models import OfferCriterion
-from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
-from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
+from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink, ValidationRuleCollectiveOfferTemplateLink
 from pcapi.core.providers.models import VenueProvider
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Base, Model, db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.offer_mixin import OfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import ValidationMixin
-from pcapi.models.pc_object import BaseQuery
-from pcapi.models.pc_object import PcObject
+from pcapi.models.offer_mixin import OfferStatus, OfferValidationStatus, ValidationMixin
+from pcapi.models.pc_object import BaseQuery, PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils import db as db_utils
@@ -50,10 +39,8 @@ logger = logging.getLogger(__name__)
 if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.criteria.models import Criterion
-    from pcapi.core.educational.models import CollectiveOffer
-    from pcapi.core.educational.models import CollectiveOfferTemplate
-    from pcapi.core.offerers.models import OffererAddress
-    from pcapi.core.offerers.models import Venue
+    from pcapi.core.educational.models import CollectiveOffer, CollectiveOfferTemplate
+    from pcapi.core.offerers.models import OffererAddress, Venue
     from pcapi.core.providers.models import Provider
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.users.models import User

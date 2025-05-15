@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 
 import flask
 import pydantic.v1 as pydantic_v1

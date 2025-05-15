@@ -1,26 +1,25 @@
-from datetime import date
 import math
+from datetime import date
 from typing import cast
 
-from flask_login import current_user
-from flask_login import login_required
+from flask_login import current_user, login_required
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingExportType
-import pcapi.core.bookings.repository as booking_repository
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.core.users import repository as users_repository
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
-from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
-from pcapi.routes.serialization.bookings_recap_serialize import EventDateScheduleAndPriceCategoriesCountModel
-from pcapi.routes.serialization.bookings_recap_serialize import EventDatesInfos
-from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
-from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
-from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
-from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings
+from pcapi.models import api_errors, db
+from pcapi.routes.serialization.bookings_recap_serialize import (
+    BookingsExportQueryModel,
+    BookingsExportStatusFilter,
+    EventDateScheduleAndPriceCategoriesCountModel,
+    EventDatesInfos,
+    ListBookingsQueryModel,
+    ListBookingsResponseModel,
+    UserHasBookingResponse,
+    serialize_bookings,
+)
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint

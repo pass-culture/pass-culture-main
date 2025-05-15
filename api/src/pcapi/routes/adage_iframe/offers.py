@@ -1,6 +1,5 @@
 import logging
-from typing import Collection
-from typing import Mapping
+from typing import Collection, Mapping
 
 from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import exc as orm_exc
@@ -9,10 +8,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import offer as educational_api_offer
-from pcapi.core.educational.models import AdageFrontRoles
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import EducationalRedactor
+from pcapi.core.educational.models import AdageFrontRoles, CollectiveOffer, CollectiveOfferTemplate, EducationalRedactor
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id
@@ -22,9 +18,9 @@ from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
+    AuthenticatedInformation,
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.favorites import serialize_collective_offer
 from pcapi.serialization.decorator import spectree_serialize
 

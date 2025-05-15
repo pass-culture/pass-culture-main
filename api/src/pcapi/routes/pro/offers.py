@@ -1,33 +1,27 @@
 import logging
 
-from flask import request
-from flask_login import current_user
-from flask_login import login_required
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
+from flask import request
+from flask_login import current_user, login_required
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.repository as offers_repository
+from pcapi.core.categories import pro_categories, subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-import pcapi.core.offerers.api as offerers_api
-from pcapi.core.offers import exceptions
-from pcapi.core.offers import models
+from pcapi.core.offers import exceptions, models, validation
 from pcapi.core.offers import schemas as offers_schemas
-from pcapi.core.offers import validation
-import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.repository as offers_repository
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.core.reminders.external import reminders_notifications
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.models import api_errors, db
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
-from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
-from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
+from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel, CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job

@@ -5,13 +5,10 @@ from typing import Iterable
 
 from sqlalchemy import exc as sa_exc
 
-from pcapi.connectors.big_query import queries as big_query_queries
-from pcapi.connectors.big_query.queries.artist import ArtistAliasModel
-from pcapi.connectors.big_query.queries.artist import ArtistModel
-from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 import pcapi.core.artist.models as artist_models
-from pcapi.core.artist.utils import get_artist_type
-from pcapi.core.artist.utils import sanitize_author_html
+from pcapi.connectors.big_query import queries as big_query_queries
+from pcapi.connectors.big_query.queries.artist import ArtistAliasModel, ArtistModel, ArtistProductLinkModel
+from pcapi.core.artist.utils import get_artist_type, sanitize_author_html
 from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.utils.blueprint import Blueprint

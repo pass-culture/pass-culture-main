@@ -1,21 +1,19 @@
-from datetime import datetime
-from datetime import timezone
 import decimal
-from typing import Any
-from typing import Sequence
+from datetime import datetime, timezone
+from typing import Any, Sequence
 
-from pydantic.v1 import Field
-from pydantic.v1 import root_validator
-from pydantic.v1 import validator
+from pydantic.v1 import Field, root_validator, validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import validation as educational_validation
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveLocationType
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-from pcapi.core.educational.models import OfferAddressType
-from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational.models import (
+    CollectiveBookingStatus,
+    CollectiveLocationType,
+    CollectiveOffer,
+    CollectiveOfferDisplayedStatus,
+    OfferAddressType,
+    StudentLevels,
+)
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel

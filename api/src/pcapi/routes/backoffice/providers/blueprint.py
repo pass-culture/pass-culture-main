@@ -1,14 +1,10 @@
 from secrets import token_urlsafe
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.external import zendesk_sell
@@ -26,8 +22,8 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import urls
 
-from . import forms
 from .. import utils
+from . import forms
 
 
 providers_blueprint = utils.child_backoffice_blueprint(

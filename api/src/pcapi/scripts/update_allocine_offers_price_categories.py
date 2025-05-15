@@ -2,12 +2,9 @@ import datetime
 import time
 
 import sqlalchemy as sa
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import contains_eager, load_only
 
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, PriceCategory, Stock
 from pcapi.models import db
 from pcapi.repository import transaction
 

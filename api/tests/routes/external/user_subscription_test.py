@@ -2,16 +2,17 @@ import datetime
 import json
 import logging
 import time
+import uuid
 from unittest import mock
 from unittest.mock import patch
-import uuid
 
-from dateutil import relativedelta
 import ecdsa
 import pytest
 import pytz
 import time_machine
+from dateutil import relativedelta
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
@@ -20,7 +21,6 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models

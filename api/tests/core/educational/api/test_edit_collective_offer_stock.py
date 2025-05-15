@@ -7,11 +7,13 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.educational.api import stock as educational_api_stock
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.models import (
+    CollectiveBooking,
+    CollectiveBookingCancellationReasons,
+    CollectiveBookingStatus,
+    CollectiveOfferDisplayedStatus,
+    CollectiveStock,
+)
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.routes.serialization import collective_stock_serialize

@@ -4,8 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
-from pcapi.flask_app import app
-from pcapi.flask_app import setup_metrics
+from pcapi.flask_app import app, setup_metrics
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -28,8 +27,8 @@ csrf.init_app(app)
 
 
 with app.app_context():
-    from pcapi.routes import install_all_routes
     import pcapi.utils.login_manager  # noqa F401
+    from pcapi.routes import install_all_routes
 
     install_all_routes(app)
 

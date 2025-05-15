@@ -1,9 +1,7 @@
 import enum
 
 from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired
-from wtforms.validators import NumberRange
-from wtforms.validators import Optional
+from wtforms.validators import DataRequired, NumberRange, Optional
 
 from pcapi.core.finance import models as finance_models
 from pcapi.routes.backoffice import filters

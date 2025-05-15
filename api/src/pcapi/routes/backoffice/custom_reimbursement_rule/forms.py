@@ -1,14 +1,11 @@
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.core.categories import pro_categories, subcategories
+from pcapi.routes.backoffice.forms import fields, utils
 
 
 class GetCustomReimbursementRulesListForm(FlaskForm):

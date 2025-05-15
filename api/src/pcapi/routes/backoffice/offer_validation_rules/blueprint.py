@@ -1,14 +1,10 @@
 import typing
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
@@ -23,8 +19,8 @@ from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
 
-from . import forms
 from .. import utils
+from . import forms
 
 
 offer_validation_rules_blueprint = utils.child_backoffice_blueprint(

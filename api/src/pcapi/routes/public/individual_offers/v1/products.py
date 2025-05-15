@@ -2,17 +2,16 @@ import copy
 import datetime
 import logging
 
-from flask import request
-from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from flask import request
+from psycopg2.errorcodes import UNIQUE_VIOLATION
 
 from pcapi import repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music
-from pcapi.core.categories.genres import show
+from pcapi.core.categories.genres import music, show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -22,28 +21,21 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID, TITELIVE_MUSIC_TYPES
+from pcapi.models import api_errors, db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public import blueprints, spectree_schemas
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
 from pcapi.utils.custom_keys import get_field
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import current_api_key, provider_api_key_required
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
-from . import constants
-from . import serialization
-from . import utils
+from . import constants, serialization, utils
 
 
 logger = logging.getLogger(__name__)

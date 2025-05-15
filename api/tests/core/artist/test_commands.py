@@ -6,9 +6,7 @@ import pytest
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.core.artist import commands
 from pcapi.core.artist.factories import ArtistFactory
-from pcapi.core.artist.models import Artist
-from pcapi.core.artist.models import ArtistAlias
-from pcapi.core.artist.models import ArtistProductLink
+from pcapi.core.artist.models import Artist, ArtistAlias, ArtistProductLink
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.models import db

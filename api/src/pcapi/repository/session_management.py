@@ -1,17 +1,16 @@
-from dataclasses import dataclass
 import functools
 import itertools
 import logging
+import typing
+from dataclasses import dataclass
 from traceback import format_exc
 from types import TracebackType
-import typing
 
-from flask import g
 import sqlalchemy as sa
+from flask import g
 from sqlalchemy.exc import InternalError
 
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 
 
 logger = logging.getLogger(__name__)

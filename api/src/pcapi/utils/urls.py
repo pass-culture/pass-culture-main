@@ -3,8 +3,7 @@ from urllib.parse import urlencode
 
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.educational.models import CollectiveOffer, CollectiveOfferTemplate
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer

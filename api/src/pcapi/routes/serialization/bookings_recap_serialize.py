@@ -1,16 +1,14 @@
-from datetime import date
-from datetime import datetime
-from enum import Enum
 import typing
+from datetime import date, datetime
+from enum import Enum
 
 from pydantic.v1 import root_validator
 
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingExportType
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import BookingStatusFilter
-from pcapi.core.bookings.utils import _apply_departement_timezone
-from pcapi.core.bookings.utils import convert_collective_booking_dates_utc_to_venue_timezone
+from pcapi.core.bookings.models import Booking, BookingExportType, BookingStatus, BookingStatusFilter
+from pcapi.core.bookings.utils import (
+    _apply_departement_timezone,
+    convert_collective_booking_dates_utc_to_venue_timezone,
+)
 from pcapi.domain.booking_recap.utils import get_booking_token
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel

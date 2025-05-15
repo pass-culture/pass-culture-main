@@ -7,8 +7,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.connectors import boost
 from pcapi.core.external_bookings.boost import exceptions as boost_exceptions
-from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
-from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
+from pcapi.core.external_bookings.boost.exceptions import BoostAPIException, BoostInvalidTokenException
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository

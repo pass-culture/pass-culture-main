@@ -1,9 +1,7 @@
 import datetime
 
 import pcapi.core.offers.models as offers_models
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Base, Model, db
 
 
 def insert_chunk(chunk_to_insert: dict[str, Model]) -> None:

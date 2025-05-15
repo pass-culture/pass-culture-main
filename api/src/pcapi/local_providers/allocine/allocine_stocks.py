@@ -1,10 +1,11 @@
-from datetime import datetime
 import decimal
 import logging
 import uuid
+from datetime import datetime
 
 import PIL
 
+import pcapi.core.providers.models as providers_models
 from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories
@@ -12,21 +13,20 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers.allocine import build_movie_id_at_providers
-from pcapi.core.providers.allocine import create_generic_movie
-from pcapi.core.providers.allocine import get_movie_poster
-from pcapi.core.providers.allocine import get_movies_showtimes
-import pcapi.core.providers.models as providers_models
+from pcapi.core.providers.allocine import (
+    build_movie_id_at_providers,
+    create_generic_movie,
+    get_movie_poster,
+    get_movies_showtimes,
+)
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 from pcapi.repository.providable_queries import get_last_update_for_provider
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import local_datetime_to_default_timezone
+from pcapi.utils.date import get_department_timezone, local_datetime_to_default_timezone
 
 
 logger = logging.getLogger(__name__)

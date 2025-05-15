@@ -1,11 +1,10 @@
 from unittest.mock import patch
 
-from dateutil import parser
 import pytest
+from dateutil import parser
 
 from pcapi.connectors import acceslibre
-from pcapi.connectors.acceslibre import AcceslibreActivity
-from pcapi.connectors.acceslibre import AcceslibreWidgetData
+from pcapi.connectors.acceslibre import AcceslibreActivity, AcceslibreWidgetData
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.utils import requests
 

@@ -1,6 +1,5 @@
 from pcapi.core.educational import models as educational_models
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import national_programs
+from pcapi.routes.serialization import BaseModel, national_programs
 
 
 class EducationalDomainResponseModel(BaseModel):

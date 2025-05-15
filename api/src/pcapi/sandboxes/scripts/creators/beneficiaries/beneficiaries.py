@@ -1,8 +1,7 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
-from dateutil.relativedelta import SA
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import SA, relativedelta
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.users.factories as users_factories

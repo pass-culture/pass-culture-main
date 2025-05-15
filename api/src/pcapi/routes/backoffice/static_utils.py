@@ -1,7 +1,7 @@
-from collections import namedtuple
-from contextlib import suppress
 import hashlib
 import os
+from collections import namedtuple
+from contextlib import suppress
 from pathlib import Path
 
 import sass

@@ -1,11 +1,9 @@
-from datetime import datetime
-from datetime import timezone
 import decimal
 import logging
+from datetime import datetime, timezone
 from typing import Any
 
-from pydantic.v1 import Field
-from pydantic.v1 import validator
+from pydantic.v1 import Field, validator
 from pydantic.v1.fields import ModelField
 
 from pcapi import settings

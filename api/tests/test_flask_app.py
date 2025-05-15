@@ -1,10 +1,8 @@
 import logging
 
-from flask import url_for
 import pytest
-from werkzeug.routing import IntegerConverter
-from werkzeug.routing import PathConverter
-from werkzeug.routing import UnicodeConverter
+from flask import url_for
+from werkzeug.routing import IntegerConverter, PathConverter, UnicodeConverter
 
 from pcapi.core.users import factories as users_factories
 

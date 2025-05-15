@@ -2,16 +2,11 @@ import datetime
 import re
 import typing
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
-from markupsafe import escape
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup, escape
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
@@ -29,12 +24,9 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
-from pcapi.models import db
-from pcapi.models import feature
-from pcapi.models import offer_mixin
+from pcapi.models import db, feature, offer_mixin
 from pcapi.models.pc_object import BaseQuery
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
 from pcapi.routes.backoffice.forms import empty as empty_forms

@@ -2,8 +2,7 @@ from logging.config import fileConfig
 
 from alembic import context
 
-from pcapi.alembic.run_migrations import run_offline_migrations
-from pcapi.alembic.run_migrations import run_online_migrations
+from pcapi.alembic.run_migrations import run_offline_migrations, run_online_migrations
 from pcapi.models import install_models
 
 

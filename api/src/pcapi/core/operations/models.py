@@ -1,14 +1,12 @@
-from datetime import date
-from datetime import datetime
 import enum
+from datetime import date, datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
 

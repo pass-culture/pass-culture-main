@@ -3,12 +3,14 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.educational import exceptions
-from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
-from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.educational.factories import PendingCollectiveBookingFactory
-from pcapi.core.educational.factories import UsedCollectiveBookingFactory
+from pcapi.core.educational.factories import (
+    CancelledCollectiveBookingFactory,
+    ConfirmedCollectiveBookingFactory,
+    EducationalInstitutionFactory,
+    EducationalYearFactory,
+    PendingCollectiveBookingFactory,
+    UsedCollectiveBookingFactory,
+)
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.validation import check_institution_fund
 

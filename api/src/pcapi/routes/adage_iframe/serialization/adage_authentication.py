@@ -1,7 +1,6 @@
 import logging
 
-from pydantic.v1 import Field
-from pydantic.v1 import ValidationError
+from pydantic.v1 import Field, ValidationError
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation

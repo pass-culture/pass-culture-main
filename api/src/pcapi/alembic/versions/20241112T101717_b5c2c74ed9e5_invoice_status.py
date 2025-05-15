@@ -2,8 +2,8 @@
 add `status` field to `Invoice` model
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.finance.models import InvoiceStatus
 from pcapi.utils.db import MagicEnum

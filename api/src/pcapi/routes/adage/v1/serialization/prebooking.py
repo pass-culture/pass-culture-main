@@ -1,6 +1,6 @@
-from datetime import datetime
 import decimal
 import typing
+from datetime import datetime
 from typing import Iterable
 
 from pydantic.v1 import PositiveInt
@@ -10,10 +10,12 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize as adage_serialize
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.educational.models import (
+    CollectiveBooking,
+    CollectiveBookingCancellationReasons,
+    CollectiveBookingStatus,
+    EducationalBookingStatus,
+)
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.serialization import BaseModel
 

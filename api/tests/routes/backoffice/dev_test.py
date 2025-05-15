@@ -1,7 +1,7 @@
 import urllib.parse
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi import settings
 from pcapi.core.users import factories as users_factories

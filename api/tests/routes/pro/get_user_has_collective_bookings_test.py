@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core import testing
-from pcapi.core.educational.factories import CollectiveBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
+from pcapi.core.educational.factories import CollectiveBookingFactory
 
 
 @pytest.mark.usefixtures("db_session")

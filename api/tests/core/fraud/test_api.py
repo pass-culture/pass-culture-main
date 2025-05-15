@@ -2,18 +2,18 @@ import datetime
 import itertools
 import uuid
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi import settings as pcapi_settings
-from pcapi.connectors.serialization import ubble_serializers
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi import settings as pcapi_settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.models import db
 
 

@@ -3,13 +3,11 @@ import logging
 import typing
 
 import sqlalchemy as sa
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.elements import BinaryExpression
 
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Base, Model, db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import db as db_utils
@@ -18,8 +16,7 @@ from pcapi.utils import db as db_utils
 logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.offers.models import Offer
-    from pcapi.core.offers.models import Product
+    from pcapi.core.offers.models import Offer, Product
     from pcapi.core.users.models import User
 
 

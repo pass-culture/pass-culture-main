@@ -5,8 +5,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi import settings
 from pcapi.utils import chunks
 
-from .base import BaseQuery
-from .base import RowIterator
+from .base import BaseQuery, RowIterator
 
 
 class FavoritesNotBookedModel(pydantic_v1.BaseModel):

@@ -1,19 +1,16 @@
-from datetime import date
-from datetime import datetime
-from decimal import Decimal
 import logging
 import typing
+from datetime import date, datetime
+from decimal import Decimal
 
-from pydantic.v1 import Field
-from pydantic.v1 import root_validator
+from pydantic.v1 import Field, root_validator
 from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization import BaseModel, collective_offers_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent

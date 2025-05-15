@@ -7,9 +7,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Base, Model, db
 from pcapi.models.pc_object import PcObject
 
 

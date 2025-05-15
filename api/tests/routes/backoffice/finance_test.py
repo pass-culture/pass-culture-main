@@ -3,10 +3,10 @@ import decimal
 from secrets import compare_digest
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
-from flask import url_for
 import pytest
 import sqlalchemy as sa
+from dateutil.relativedelta import relativedelta
+from flask import url_for
 
 from pcapi.core import testing
 from pcapi.core.bookings import api as bookings_api
@@ -29,8 +29,7 @@ from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.routes.backoffice.filters import format_booking_status
-from pcapi.routes.backoffice.filters import format_date_time
+from pcapi.routes.backoffice.filters import format_booking_status, format_date_time
 from pcapi.routes.backoffice.finance import forms as finance_forms
 
 from .helpers import html_parser

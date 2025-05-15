@@ -4,6 +4,7 @@ import logging
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import exc as sa_exc
 
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
@@ -14,7 +15,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.repository import repository
-import pcapi.utils.postal_code as postal_code_utils
 
 
 logger = logging.getLogger(__name__)

@@ -1,10 +1,10 @@
-from dataclasses import asdict
 import datetime
+from dataclasses import asdict
 from decimal import Decimal
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -24,9 +24,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.models.offer_mixin import CollectiveOfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models.offer_mixin import CollectiveOfferStatus, OfferValidationStatus, OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
 from pcapi.utils import db as db_utils
 from pcapi.utils.requests import exceptions as requests_exceptions

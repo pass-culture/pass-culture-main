@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi import settings
 from pcapi.core.offers.utils import offer_app_link
 
 

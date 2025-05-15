@@ -3,9 +3,7 @@ from flask_wtf import FlaskForm
 from pcapi import settings
 from pcapi.core.permissions import models as perm_models
 
-from ..forms import fields
-from ..forms import search
-from ..forms import utils
+from ..forms import fields, search, utils
 
 
 class EditPermissionForm(FlaskForm):

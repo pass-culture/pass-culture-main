@@ -1,27 +1,27 @@
+import warnings
 from copy import deepcopy
 from datetime import datetime
-from unittest.mock import call
-from unittest.mock import patch
-import warnings
+from unittest.mock import call, patch
 
-from brevo_python.models.request_contact_import import RequestContactImport
 import pytest
+from brevo_python.models.request_contact_import import RequestContactImport
 
+import pcapi.core.users.testing as sendinblue_testing
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
-from pcapi.core.external.sendinblue import SendinblueUserUpdateData
-from pcapi.core.external.sendinblue import add_contacts_to_list
-from pcapi.core.external.sendinblue import build_file_body
-from pcapi.core.external.sendinblue import format_cultural_survey_answers
-from pcapi.core.external.sendinblue import format_pro_attributes
-from pcapi.core.external.sendinblue import format_user_attributes
-from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
-from pcapi.core.external.sendinblue import make_update_request
-import pcapi.core.users.testing as sendinblue_testing
+from pcapi.core.external.sendinblue import (
+    SendinblueUserUpdateData,
+    add_contacts_to_list,
+    build_file_body,
+    format_cultural_survey_answers,
+    format_pro_attributes,
+    format_user_attributes,
+    import_contacts_in_sendinblue,
+    make_update_request,
+)
 from pcapi.tasks.serialization import sendinblue_tasks
 
-from . import common_pro_attributes
-from . import common_user_attributes
+from . import common_pro_attributes, common_user_attributes
 
 
 # Do not use this identifier with production account when running skipped tests

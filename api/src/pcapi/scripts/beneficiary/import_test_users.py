@@ -1,14 +1,13 @@
 import csv
 import datetime
-from io import TextIOWrapper
 import logging
+from io import TextIOWrapper
 from typing import Iterable
 
 import click
-from click_option_group import RequiredMutuallyExclusiveOptionGroup
-from click_option_group import optgroup
-from flask import Blueprint
 import schwifty
+from click_option_group import RequiredMutuallyExclusiveOptionGroup, optgroup
+from flask import Blueprint
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
@@ -21,20 +20,16 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import api as users_api
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
+from pcapi.core.users.models import EligibilityType, User, UserRole
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.repository import repository
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import offerers_serialize, venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
-from pcapi.utils.email import anonymize_email
-from pcapi.utils.email import sanitize_email
+from pcapi.utils.email import anonymize_email, sanitize_email
 from pcapi.utils.siren import complete_siren_or_siret
 
 

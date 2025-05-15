@@ -2,8 +2,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.models import db
 

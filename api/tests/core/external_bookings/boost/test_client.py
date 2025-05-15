@@ -1,16 +1,16 @@
 import datetime
-from decimal import Decimal
 import json
+from decimal import Decimal
 
 import pytest
 
-from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors.serialization import boost_serializers
+from pcapi.core.external_bookings.boost import client as boost_client
 from pcapi.utils import date
 
 from tests.local_providers.cinema_providers.boost import fixtures

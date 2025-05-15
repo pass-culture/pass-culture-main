@@ -1,7 +1,7 @@
 import logging
 
-from pcapi.core.bookings.models import Booking
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.bookings.models import Booking
 from pcapi.models import db
 from pcapi.workers import worker
 from pcapi.workers.decorators import job

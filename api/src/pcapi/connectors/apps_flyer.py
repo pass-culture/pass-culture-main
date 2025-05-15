@@ -1,7 +1,6 @@
-from dataclasses import dataclass
 import logging
-from typing import Any
-from typing import Dict
+from dataclasses import dataclass
+from typing import Any, Dict
 
 from pcapi import settings
 from pcapi.core.bookings.models import Booking

@@ -5,9 +5,11 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 from pcapi.notifications.push import send_transactional_notification
-from pcapi.notifications.push.transactional_notifications import get_bookings_cancellation_notification_data
-from pcapi.notifications.push.transactional_notifications import get_offer_notification_data
-from pcapi.notifications.push.transactional_notifications import get_today_stock_booking_notification_data
+from pcapi.notifications.push.transactional_notifications import (
+    get_bookings_cancellation_notification_data,
+    get_offer_notification_data,
+    get_today_stock_booking_notification_data,
+)
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 

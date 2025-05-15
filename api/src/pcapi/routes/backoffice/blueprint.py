@@ -6,9 +6,7 @@ from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
-from . import menu
-from . import static_utils
-from . import utils
+from . import menu, static_utils, utils
 from .forms import empty as empty_forms
 
 

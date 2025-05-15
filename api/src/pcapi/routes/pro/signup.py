@@ -1,8 +1,7 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
+from pcapi.connectors.api_recaptcha import ReCaptchaException, check_web_recaptcha_token
 from pcapi.core.subscription.phone_validation import exceptions as phone_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions

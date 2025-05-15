@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import EventStockFactory, ThingStockFactory
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 from pcapi.scripts.deactivate_300e_thing_offers import deactivate_300e_thing_offers

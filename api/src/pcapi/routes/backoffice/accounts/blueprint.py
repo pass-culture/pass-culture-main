@@ -1,22 +1,17 @@
 import datetime
 import enum
+import re
+import typing
 from functools import partial
 from operator import attrgetter
-import re
 from types import NotImplementedType
-import typing
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from werkzeug.exceptions import BadRequest
-from werkzeug.exceptions import NotFound
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
+from werkzeug.exceptions import BadRequest, NotFound
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
@@ -37,8 +32,7 @@ from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
-from pcapi.core.subscription.models import SubscriptionItemStatus
-from pcapi.core.subscription.models import SubscriptionStep
+from pcapi.core.subscription.models import SubscriptionItemStatus, SubscriptionStep
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
@@ -54,10 +48,8 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.pc_object import BaseQuery
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.repository.session_management import atomic, mark_transaction_as_invalid
+from pcapi.routes.backoffice import search_utils, utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils

@@ -1,13 +1,15 @@
 from enum import Enum
 
 from pcapi.core.categories import pro_categories
-from pcapi.core.categories.models import EacFormat
-from pcapi.core.categories.models import ExtraDataFieldEnum
-from pcapi.core.categories.models import FieldCondition
-from pcapi.core.categories.models import HomepageLabels
-from pcapi.core.categories.models import OnlineOfflinePlatformChoices
-from pcapi.core.categories.models import ReimbursementRuleChoices
-from pcapi.core.categories.models import Subcategory
+from pcapi.core.categories.models import (
+    EacFormat,
+    ExtraDataFieldEnum,
+    FieldCondition,
+    HomepageLabels,
+    OnlineOfflinePlatformChoices,
+    ReimbursementRuleChoices,
+    Subcategory,
+)
 
 
 # region Subcategories declarations

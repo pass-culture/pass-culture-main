@@ -2,8 +2,8 @@
 add subscribed_themes field to notificationSubscriptions column in user table
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 

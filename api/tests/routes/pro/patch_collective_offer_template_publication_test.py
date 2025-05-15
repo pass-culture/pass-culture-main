@@ -6,8 +6,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.models.offer_mixin import CollectiveOfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus, OfferValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")

@@ -12,8 +12,7 @@ import sqlalchemy.event
 import sqlalchemy.orm
 
 from pcapi import settings
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 from pcapi.models.feature import Feature
 
 

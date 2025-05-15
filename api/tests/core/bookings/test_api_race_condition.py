@@ -1,20 +1,15 @@
 import contextlib
-from datetime import datetime
 import logging
 import threading
+from datetime import datetime
 from unittest.mock import patch
 
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.offers.models import VenueProvider
-from pcapi.core.providers.factories import CDSCinemaDetailsFactory
-from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
-from pcapi.core.providers.factories import VenueProviderFactory
+from pcapi.core.offers.models import Offer, Stock, VenueProvider
+from pcapi.core.providers.factories import CDSCinemaDetailsFactory, CDSCinemaProviderPivotFactory, VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db

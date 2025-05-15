@@ -1,9 +1,9 @@
 import logging
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.categories import subcategories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
 

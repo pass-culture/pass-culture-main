@@ -3,12 +3,7 @@ import decimal
 import typing
 from typing import Any
 
-from pydantic.v1 import EmailStr
-from pydantic.v1 import Field
-from pydantic.v1 import HttpUrl
-from pydantic.v1 import conlist
-from pydantic.v1 import constr
-from pydantic.v1 import validator
+from pydantic.v1 import EmailStr, Field, HttpUrl, conlist, constr, validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
@@ -20,12 +15,12 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import BaseModel, ConfiguredBaseModel, collective_offers_serialize
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
-from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
+from pcapi.routes.serialization.address_serialize import (
+    AddressResponseIsLinkedToVenueModel,
+    retrieve_address_info_from_oa,
+)
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date

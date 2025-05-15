@@ -1,10 +1,9 @@
-from functools import wraps
 import logging
 import typing
+from functools import wraps
 
 import flask
-from jwt import ExpiredSignatureError
-from jwt import InvalidSignatureError
+from jwt import ExpiredSignatureError, InvalidSignatureError
 
 from pcapi.core.users import utils as user_utils
 from pcapi.models.api_errors import UnauthorizedError

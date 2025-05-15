@@ -1,8 +1,8 @@
 import pytest
 
+import pcapi.repository.repository as db_repository
 from pcapi.core.providers import factories
 from pcapi.models.api_errors import ApiErrors
-import pcapi.repository.repository as db_repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

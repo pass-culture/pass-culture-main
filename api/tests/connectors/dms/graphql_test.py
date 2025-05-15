@@ -2,8 +2,7 @@ import datetime
 import os
 import pathlib
 
-from gql import Client
-from gql import gql
+from gql import Client, gql
 
 from pcapi.connectors.dms import models as dms_models
 

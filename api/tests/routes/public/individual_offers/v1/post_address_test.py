@@ -2,9 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_adresse import AddressInfo
-from pcapi.connectors.api_adresse import AdresseApiServerErrorException
-from pcapi.connectors.api_adresse import NoResultException
+from pcapi.connectors.api_adresse import AddressInfo, AdresseApiServerErrorException, NoResultException
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.models import db

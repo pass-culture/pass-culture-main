@@ -1,7 +1,6 @@
-from flask import flash
-from flask import url_for
-from markupsafe import Markup
 import sqlalchemy.orm as sa_orm
+from flask import flash, url_for
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 

@@ -1,11 +1,11 @@
 import datetime
-from decimal import Decimal
 import logging
 import re
 import typing
+from decimal import Decimal
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories

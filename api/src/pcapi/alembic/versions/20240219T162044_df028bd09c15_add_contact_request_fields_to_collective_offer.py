@@ -2,8 +2,8 @@
 add contact request fields to collective offer
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.educational.models import OfferContactFormEnum
 from pcapi.utils.db import MagicEnum

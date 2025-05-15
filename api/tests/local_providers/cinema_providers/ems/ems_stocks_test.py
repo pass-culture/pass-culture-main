@@ -1,8 +1,8 @@
+import datetime
+import logging
 from base64 import b64decode
 from csv import DictReader
-import datetime
 from decimal import Decimal
-import logging
 from pathlib import Path
 from unittest import mock
 
@@ -20,8 +20,10 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
-from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
-from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
+from pcapi.local_providers.provider_manager import (
+    collect_elligible_venues_and_activate_ems_sync,
+    synchronize_ems_venue_providers,
+)
 from pcapi.models import db
 
 import tests

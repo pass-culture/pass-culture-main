@@ -1,13 +1,14 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 import time_machine
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
-from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
+from pcapi.core.bookings.external.booking_notifications import (
+    notify_users_bookings_not_retrieved,
+    send_today_events_notifications_metropolitan_france,
+)
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories

@@ -5,11 +5,9 @@ import googlemaps
 import pydantic
 
 from pcapi import settings
-from pcapi.core.object_storage import delete_public_object
-from pcapi.core.object_storage import store_public_object
+from pcapi.core.object_storage import delete_public_object, store_public_object
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.search import IndexationReason
-from pcapi.core.search import async_index_venue_ids
+from pcapi.core.search import IndexationReason, async_index_venue_ids
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import image_conversion

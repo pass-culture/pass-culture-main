@@ -2,8 +2,8 @@ from unittest import mock
 
 import pytest
 
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 
 
 def get_siren_raises(siren, with_address):

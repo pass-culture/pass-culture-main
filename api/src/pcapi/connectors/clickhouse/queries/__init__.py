@@ -1,11 +1,12 @@
-from .total_revenue import TotalExpectedRevenueModel
-from .total_revenue import TotalExpectedRevenueQuery
-from .yearly_revenue import AggregatedCollectiveRevenueModel
-from .yearly_revenue import AggregatedCollectiveRevenueQuery
-from .yearly_revenue import AggregatedIndividualRevenueModel
-from .yearly_revenue import AggregatedIndividualRevenueQuery
-from .yearly_revenue import AggregatedTotalRevenueModel
-from .yearly_revenue import AggregatedTotalRevenueQuery
-from .yearly_revenue import CollectiveRevenue
-from .yearly_revenue import IndividualRevenue
-from .yearly_revenue import TotalRevenue
+from .total_revenue import TotalExpectedRevenueModel, TotalExpectedRevenueQuery
+from .yearly_revenue import (
+    AggregatedCollectiveRevenueModel,
+    AggregatedCollectiveRevenueQuery,
+    AggregatedIndividualRevenueModel,
+    AggregatedIndividualRevenueQuery,
+    AggregatedTotalRevenueModel,
+    AggregatedTotalRevenueQuery,
+    CollectiveRevenue,
+    IndividualRevenue,
+    TotalRevenue,
+)

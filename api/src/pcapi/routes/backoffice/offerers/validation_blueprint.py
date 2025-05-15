@@ -1,17 +1,13 @@
 import datetime
-from functools import partial
 import typing
+from functools import partial
 from urllib.parse import urlparse
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import models as history_models
@@ -24,9 +20,7 @@ from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import autocomplete, search_utils, utils
 from pcapi.utils import date as date_utils
 
 from . import forms as offerer_forms

@@ -1,20 +1,15 @@
 import datetime
 from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
 
 from pcapi.connectors.serialization import titelive_serializers
-from pcapi.connectors.titelive import GtlIdError
-from pcapi.connectors.titelive import get_by_ean13
+from pcapi.connectors.titelive import GtlIdError, get_by_ean13
 from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers import api as offers_api
@@ -25,12 +20,11 @@ from pcapi.core.providers.titelive_book_search import get_ineligibility_reason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import mark_transaction_as_invalid, on_commit
 from pcapi.utils import requests
 
-from . import forms
 from .. import utils
+from . import forms
 
 
 titelive_blueprint = utils.child_backoffice_blueprint(

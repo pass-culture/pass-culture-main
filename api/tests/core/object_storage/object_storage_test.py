@@ -1,16 +1,17 @@
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from google.cloud.exceptions import NotFound
 import pytest
+from google.cloud.exceptions import NotFound
 
-from pcapi.core.object_storage import BACKENDS_MAPPING
-from pcapi.core.object_storage import _check_backend_setting
-from pcapi.core.object_storage import _check_backends_module_paths
-from pcapi.core.object_storage import delete_public_object
-from pcapi.core.object_storage import store_public_object
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.object_storage import (
+    BACKENDS_MAPPING,
+    _check_backend_setting,
+    _check_backends_module_paths,
+    delete_public_object,
+    store_public_object,
+)
 
 
 class StorePublicObjectTest:

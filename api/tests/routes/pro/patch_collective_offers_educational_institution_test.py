@@ -2,8 +2,7 @@ from typing import Any
 
 import pytest
 
-from pcapi.core.educational import factories
-from pcapi.core.educational import models
+from pcapi.core.educational import factories, models
 from pcapi.core.educational import testing as adage_api_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db

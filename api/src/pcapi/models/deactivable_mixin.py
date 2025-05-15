@@ -1,8 +1,7 @@
 """deactivable mixin"""
 
-from sqlalchemy import Boolean
-from sqlalchemy import Column
 import sqlalchemy.orm as sa_orm
+from sqlalchemy import Boolean, Column
 from sqlalchemy.sql import expression
 
 

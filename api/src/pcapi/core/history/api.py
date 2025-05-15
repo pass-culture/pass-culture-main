@@ -11,8 +11,7 @@ from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 
 
 def add_action(

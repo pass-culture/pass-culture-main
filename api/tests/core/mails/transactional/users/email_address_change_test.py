@@ -1,8 +1,10 @@
 import pytest
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.email_address_change import get_confirmation_email_change_data
-from pcapi.core.mails.transactional.users.email_address_change import get_validation_email_change_data
+from pcapi.core.mails.transactional.users.email_address_change import (
+    get_confirmation_email_change_data,
+    get_validation_email_change_data,
+)
 from pcapi.core.users import factories as users_factories
 
 

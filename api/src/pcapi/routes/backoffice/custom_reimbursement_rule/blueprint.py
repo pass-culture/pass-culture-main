@@ -1,16 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from markupsafe import Markup
 import pytz
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import subcategories
@@ -23,8 +18,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import autocomplete, utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 

@@ -1,7 +1,6 @@
 """storage"""
 
-from flask import Response
-from flask import send_file
+from flask import Response, send_file
 
 from pcapi.core.object_storage.backends.local import LocalBackend
 from pcapi.routes.apis import public_api

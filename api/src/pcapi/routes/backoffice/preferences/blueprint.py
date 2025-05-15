@@ -1,8 +1,4 @@
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
 from pcapi.core.permissions import models as perm_models

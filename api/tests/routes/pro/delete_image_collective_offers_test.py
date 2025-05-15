@@ -4,8 +4,7 @@ from pathlib import Path
 import pytest
 
 from pcapi import settings
-from pcapi.core.educational import factories
-from pcapi.core.educational import models
+from pcapi.core.educational import factories, models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 

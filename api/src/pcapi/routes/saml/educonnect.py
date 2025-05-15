@@ -3,10 +3,10 @@ import logging
 from urllib.parse import urlencode
 
 from flask import current_app as app
-from flask import redirect
-from flask import request
+from flask import redirect, request
 from werkzeug.wrappers import Response
 
+import pcapi.routes.serialization.educonnect as educonnect_serializers
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
@@ -21,7 +21,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
-import pcapi.routes.serialization.educonnect as educonnect_serializers
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint

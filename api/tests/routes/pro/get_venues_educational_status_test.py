@@ -2,9 +2,9 @@ import typing
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 
 
 class Returns401Test:

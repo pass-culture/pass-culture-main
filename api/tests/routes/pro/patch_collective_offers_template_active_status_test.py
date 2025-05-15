@@ -4,8 +4,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.educational import testing as educational_testing
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.factories import CollectiveOfferFactory, CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus

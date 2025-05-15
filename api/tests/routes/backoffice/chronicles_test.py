@@ -1,7 +1,7 @@
 import datetime
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.history import models as history_models

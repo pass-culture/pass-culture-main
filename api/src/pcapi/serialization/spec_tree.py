@@ -1,11 +1,8 @@
 from copy import deepcopy
-from typing import Any
-from typing import Callable
+from typing import Any, Callable
 
 from pydantic.v1 import BaseModel
-from spectree import Response
-from spectree import SpecTree
-from spectree import Tag
+from spectree import Response, SpecTree, Tag
 
 from pcapi.models.feature import FeatureToggle
 

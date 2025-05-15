@@ -1,10 +1,8 @@
 from pcapi.core.educational import repository as educational_repository
 from pcapi.repository.session_management import atomic
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public import blueprints, spectree_schemas
 from pcapi.routes.public.collective.serialization import domains as domains_serialization
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.cache import cached_view

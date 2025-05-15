@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.fraud.phone_validation import sending_limit
 import pcapi.core.users.factories as users_factories
+from pcapi.core.fraud.phone_validation import sending_limit
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

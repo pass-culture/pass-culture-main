@@ -2,11 +2,11 @@ import datetime
 import decimal
 import logging
 
+import pcapi.core.educational.schemas as educational_schemas
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
-import pcapi.core.educational.schemas as educational_schemas
 
 
 logger = logging.getLogger(__name__)

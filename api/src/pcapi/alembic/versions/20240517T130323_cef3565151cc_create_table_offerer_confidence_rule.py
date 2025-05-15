@@ -1,7 +1,7 @@
 """Create table: offerer_confidence_rule"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.offerers.models import OffererConfidenceLevel
 from pcapi.utils.db import MagicEnum

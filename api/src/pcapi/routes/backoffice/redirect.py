@@ -1,16 +1,13 @@
 import enum
 import logging
 
-from flask import redirect
-from flask import render_template
-from flask import request
+from flask import redirect, render_template, request
 from werkzeug.exceptions import BadRequest
 from wtforms import validators
 
 from pcapi.connectors import virustotal
 
-from . import blueprint
-from . import utils
+from . import blueprint, utils
 from .forms import fields as forms_fields
 from .forms import utils as forms_utils
 

@@ -2,8 +2,7 @@ import datetime
 import logging
 import os
 import pathlib
-from typing import Any
-from typing import Generator
+from typing import Any, Generator
 
 import gql
 import gql.transport.exceptions as gql_exceptions

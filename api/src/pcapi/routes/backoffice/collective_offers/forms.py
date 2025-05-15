@@ -5,21 +5,17 @@ import re
 import typing
 from urllib.parse import urlencode
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.models.offer_mixin import CollectiveOfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.forms import constants
+from pcapi.models.offer_mixin import CollectiveOfferStatus, OfferValidationStatus
+from pcapi.routes.backoffice import autocomplete, filters, utils
+from pcapi.routes.backoffice.forms import constants, fields
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.routes.backoffice.offers import forms
 

@@ -2,8 +2,7 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Reason
+from pcapi.core.offers.models import Offer, Reason
 from pcapi.core.users.models import User
 from pcapi.utils.urls import build_pc_pro_offer_link
 

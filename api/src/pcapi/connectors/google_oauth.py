@@ -1,5 +1,5 @@
-from flask import request
 import pydantic
+from flask import request
 
 from pcapi.flask_app import native_app_oauth
 

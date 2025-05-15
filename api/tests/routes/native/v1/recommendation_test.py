@@ -3,8 +3,8 @@ import urllib.parse
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 from pcapi.utils import requests
 
 

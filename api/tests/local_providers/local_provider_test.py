@@ -3,11 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
+from pcapi.core.categories import subcategories
 from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import db

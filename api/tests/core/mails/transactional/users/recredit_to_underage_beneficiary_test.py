@@ -1,15 +1,13 @@
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     get_recredit_to_underage_beneficiary_email_data,
-)
-from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     send_recredit_email_to_underage_beneficiary,
 )
 from pcapi.core.users.api import get_domains_credit
-import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

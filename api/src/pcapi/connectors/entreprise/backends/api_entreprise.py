@@ -19,8 +19,7 @@ from urllib.parse import urljoin
 from flask import current_app
 
 from pcapi import settings
-from pcapi.connectors.entreprise import exceptions
-from pcapi.connectors.entreprise import models
+from pcapi.connectors.entreprise import exceptions, models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
 from pcapi.core import logging as pcapi_logging
 from pcapi.utils import cache as cache_utils

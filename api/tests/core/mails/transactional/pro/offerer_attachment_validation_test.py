@@ -3,14 +3,12 @@ import dataclasses
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
     get_offerer_attachment_validation_email_data,
-)
-from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
     send_offerer_attachment_validation_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
 
 
 @pytest.mark.usefixtures("db_session")

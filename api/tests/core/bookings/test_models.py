@@ -1,22 +1,17 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
-from pcapi.core.bookings import factories
-from pcapi.core.bookings import models
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.reactions.factories as reactions_factories
+import pcapi.core.users.factories as users_factories
+from pcapi.core.bookings import factories, models
+from pcapi.core.bookings.models import Booking, BookingCancellationReasons, BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
-import pcapi.core.reactions.factories as reactions_factories
-import pcapi.core.users.factories as users_factories
+from pcapi.core.offers.factories import OfferFactory, ProductFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors

@@ -1,16 +1,17 @@
-from unittest.mock import MagicMock
-from unittest.mock import patch
 import uuid
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from pcapi import settings
-from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
-from pcapi.connectors.api_recaptcha import MissingReCaptchaTokenException
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import ReCaptchaVersion
-from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
-from pcapi.connectors.api_recaptcha import get_token_validation_and_score
+from pcapi.connectors.api_recaptcha import (
+    InvalidRecaptchaTokenException,
+    MissingReCaptchaTokenException,
+    ReCaptchaException,
+    ReCaptchaVersion,
+    check_recaptcha_token_is_valid,
+    get_token_validation_and_score,
+)
 
 
 ORIGINAL_ACTION = "submit"

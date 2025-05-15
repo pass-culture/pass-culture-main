@@ -1,24 +1,22 @@
 import copy
 import datetime
-from io import BytesIO
 import json
 import pathlib
+from io import BytesIO
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
+import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.fraud.factories import BeneficiaryFraudCheckFactory
-from pcapi.core.fraud.models import BeneficiaryFraudCheck
-from pcapi.core.fraud.models import FraudCheckStatus
-from pcapi.core.fraud.models import FraudCheckType
-from pcapi.core.fraud.models import UbbleContent
+from pcapi.core.fraud.models import BeneficiaryFraudCheck, FraudCheckStatus, FraudCheckType, UbbleContent
 from pcapi.core.fraud.ubble import constants as ubble_constants
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
@@ -29,16 +27,17 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import trigger_events
-import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.string import u_nbsp
 
 import tests
 from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_IDENTIFICATION_V2_RESPONSE
-from tests.core.subscription.test_factories import IdentificationState
-from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
-from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
+from tests.core.subscription.test_factories import (
+    IdentificationState,
+    UbbleIdentificationIncludedDocumentsFactory,
+    UbbleIdentificationResponseFactory,
+)
 from tests.test_utils import json_default
 
 

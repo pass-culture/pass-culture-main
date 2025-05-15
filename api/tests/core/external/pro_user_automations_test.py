@@ -1,13 +1,15 @@
 from unittest.mock import patch
 
-from brevo_python import RequestContactImport
 import pytest
+from brevo_python import RequestContactImport
 
 from pcapi import settings
-from pcapi.core.external.automations.pro_user import pro_no_active_offers_since_40_days_automation
-from pcapi.core.external.automations.pro_user import pro_no_bookings_since_40_days_automation
-from pcapi.core.external.automations.pro_user import update_pro_contacts_list_for_live_show_churned_40_days_ago
-from pcapi.core.external.automations.pro_user import update_pro_contacts_list_for_live_show_last_booking_40_days_ago
+from pcapi.core.external.automations.pro_user import (
+    pro_no_active_offers_since_40_days_automation,
+    pro_no_bookings_since_40_days_automation,
+    update_pro_contacts_list_for_live_show_churned_40_days_ago,
+    update_pro_contacts_list_for_live_show_last_booking_40_days_ago,
+)
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

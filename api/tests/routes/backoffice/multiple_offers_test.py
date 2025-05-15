@@ -2,8 +2,8 @@ import dataclasses
 import datetime
 
 import factory
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -22,8 +22,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models.offer_mixin import OfferValidationStatus, OfferValidationType
 
 from .helpers import button as button_helpers
 from .helpers import html_parser

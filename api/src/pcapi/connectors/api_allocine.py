@@ -1,6 +1,6 @@
-from contextlib import suppress
 import logging
 import typing
+from contextlib import suppress
 
 import pydantic
 

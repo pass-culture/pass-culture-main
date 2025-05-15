@@ -2,8 +2,8 @@
 add validationAuthor column for Booking table
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 from pcapi.core.bookings.models import BookingValidationAuthorType

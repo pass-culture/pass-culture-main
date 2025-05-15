@@ -5,16 +5,18 @@ import json
 import logging
 import uuid
 
+import pytest
 from flask import g
 from flask_login import login_user
-import pytest
 
-from pcapi.core.logging import JsonFormatter
-from pcapi.core.logging import get_logged_impersonator_id
-from pcapi.core.logging import get_logged_in_user_id
-from pcapi.core.logging import get_or_set_correlation_id
-from pcapi.core.logging import log_elapsed
 import pcapi.core.users.factories as users_factories
+from pcapi.core.logging import (
+    JsonFormatter,
+    get_logged_impersonator_id,
+    get_logged_in_user_id,
+    get_or_set_correlation_id,
+    log_elapsed,
+)
 
 
 class TestingEnum(enum.Enum):

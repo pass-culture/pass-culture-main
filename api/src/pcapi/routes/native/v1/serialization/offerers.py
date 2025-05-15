@@ -6,8 +6,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import base
+from pcapi.routes.serialization import BaseModel, base
 from pcapi.utils import phone_number as phone_number_utils
 
 

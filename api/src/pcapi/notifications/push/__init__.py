@@ -1,9 +1,7 @@
 from pcapi import settings
-from pcapi.notifications.push.backends.batch import BatchAPI
-from pcapi.notifications.push.backends.batch import UserUpdateData
+from pcapi.notifications.push.backends.batch import BatchAPI, UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.trigger_events import BatchEvent
-from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
+from pcapi.notifications.push.trigger_events import BatchEvent, TrackBatchEventRequest
 from pcapi.utils.module_loading import import_string
 
 

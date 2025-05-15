@@ -10,10 +10,9 @@ import warnings
 
 from urllib3 import exceptions as urllib_execptions
 
-from pcapi import settings
 import pcapi.core.users.models as users_models
-from pcapi.utils import module_loading
-from pcapi.utils import requests
+from pcapi import settings
+from pcapi.utils import module_loading, requests
 
 
 logger = logging.getLogger(__name__)

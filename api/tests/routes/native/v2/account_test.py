@@ -1,16 +1,14 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from unittest.mock import patch
-from urllib.parse import parse_qs
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.constants as users_constants
+from pcapi.core import token as token_utils
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-import pcapi.core.users.constants as users_constants
 from pcapi.models import db
 from pcapi.routes.native.v1.api_errors import account as account_errors
 

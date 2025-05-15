@@ -2,8 +2,8 @@
 # Queries are very specific to backoffice routes, so they are not part of pcapi.core.offerers.api
 """
 
-from datetime import datetime
 import re
+from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm

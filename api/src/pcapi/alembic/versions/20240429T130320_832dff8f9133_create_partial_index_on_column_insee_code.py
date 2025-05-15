@@ -1,7 +1,7 @@
 """Create unique index on Address.inseeCode where it's not null"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi import settings
 

@@ -1,18 +1,18 @@
 import csv
 import datetime
-from io import StringIO
 import string
+from io import StringIO
 
 import pytest
 
-from pcapi.core import testing
-from pcapi.core.bookings import models as bookings_models
-from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import models as offers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.educational import models as educational_models
+from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone

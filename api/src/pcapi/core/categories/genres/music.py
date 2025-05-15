@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
-from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
-from pcapi.core.providers.constants import TITELIVE_MUSIC_LABELS_BY_GTL_ID
-from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
+from pcapi.core.providers.constants import (
+    TITELIVE_MUSIC_GENRES_BY_GTL_ID,
+    TITELIVE_MUSIC_LABELS_BY_GTL_ID,
+    TITELIVE_MUSIC_TYPES,
+)
 
 
 @dataclass

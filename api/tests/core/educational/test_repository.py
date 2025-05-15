@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -12,8 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.models import db
-from pcapi.models import offer_mixin
+from pcapi.models import db, offer_mixin
 from pcapi.utils import db as db_utils
 
 

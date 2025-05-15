@@ -1,8 +1,8 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 import flask
 import pytest
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories

@@ -10,8 +10,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models.pc_object import BaseQuery
-from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm
-from pcapi.routes.backoffice.bookings.forms import BookingStatus
+from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm, BookingStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import string as string_utils

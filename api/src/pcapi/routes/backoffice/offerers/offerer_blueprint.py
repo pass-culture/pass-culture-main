@@ -1,19 +1,14 @@
 import datetime
 import decimal
-from functools import partial
 import typing
+from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from werkzeug.exceptions import BadRequest
-from werkzeug.exceptions import NotFound
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup
+from werkzeug.exceptions import BadRequest, NotFound
 
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.dms.models import GraphQLApplicationStates
@@ -37,8 +32,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.repository.session_management import mark_transaction_as_invalid, on_commit
 from pcapi.routes.backoffice.bookings import forms as bookings_forms
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -47,9 +41,9 @@ from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
 
-from . import forms as offerer_forms
 from .. import utils
 from ..forms import empty as empty_forms
+from . import forms as offerer_forms
 
 
 offerer_blueprint = utils.child_backoffice_blueprint(

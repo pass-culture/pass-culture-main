@@ -1,7 +1,7 @@
 """Add price column to AllocineVenueProvider (1/2)"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

@@ -1,16 +1,11 @@
 import datetime
-from functools import partial
 import typing
+from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
 import sqlalchemy.orm as sa_orm
-from werkzeug.exceptions import Forbidden
-from werkzeug.exceptions import NotFound
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from werkzeug.exceptions import Forbidden, NotFound
 
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
@@ -21,8 +16,7 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice import search_utils, utils
 from pcapi.routes.backoffice.accounts import serialization
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils

@@ -1,9 +1,8 @@
 import pytest
 
-from pcapi.core.finance.deposit_api import recredit_users
 import pcapi.core.finance.models as finance_models
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
+from pcapi.core.finance.deposit_api import recredit_users
+from pcapi.core.users.models import User, UserRole
 from pcapi.models import db
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
 from pcapi.sandboxes.scripts.creators.test_cases import create_users_for_credit_v3_tests

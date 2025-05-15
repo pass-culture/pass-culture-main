@@ -4,8 +4,7 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
-from pcapi.core.offers.exceptions import StockDoesNotExist
-from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
+from pcapi.core.offers.exceptions import StockDoesNotExist, UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
@@ -13,11 +12,13 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
-from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
-from pcapi.routes.native.v1.serialization.bookings import BookingDisplayStatusRequest
-from pcapi.routes.native.v1.serialization.bookings import BookingReponse
-from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
+from pcapi.routes.native.v1.serialization.bookings import (
+    BookOfferRequest,
+    BookOfferResponse,
+    BookingDisplayStatusRequest,
+    BookingReponse,
+    BookingsResponse,
+)
 from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint

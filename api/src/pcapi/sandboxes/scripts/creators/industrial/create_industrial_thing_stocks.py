@@ -5,8 +5,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
-from .utils import get_occurrence_short_name_or_none
-from .utils import get_price_by_short_name
+from .utils import get_occurrence_short_name_or_none, get_price_by_short_name
 
 
 logger = logging.getLogger(__name__)

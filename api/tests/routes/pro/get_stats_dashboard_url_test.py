@@ -1,9 +1,9 @@
 import jwt
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi import settings
 from pcapi.core import testing
-import pcapi.core.offerers.factories as offerers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

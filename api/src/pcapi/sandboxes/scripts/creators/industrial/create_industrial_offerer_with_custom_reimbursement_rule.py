@@ -1,8 +1,8 @@
 import datetime
 import logging
 
-from pcapi.core.finance import factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.finance import factories as finance_factories
 
 
 logger = logging.getLogger(__name__)

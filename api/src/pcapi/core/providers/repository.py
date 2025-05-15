@@ -1,19 +1,16 @@
 import datetime
-from typing import Iterable
-from typing import Sequence
+from typing import Iterable, Sequence
 
-from sqlalchemy import func
-from sqlalchemy import or_
 import sqlalchemy.orm as sa_orm
+from sqlalchemy import func, or_
 
+import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.models as offers_models
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 
-from . import constants
-from . import models
+from . import constants, models
 
 
 def get_venue_provider_by_id(venue_provider_id: int) -> models.VenueProvider:

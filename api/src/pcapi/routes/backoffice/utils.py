@@ -1,22 +1,19 @@
-from collections import defaultdict
 import datetime
 import enum
-from functools import wraps
 import logging
 import operator as op
 import random
 import typing
+from collections import defaultdict
+from functools import wraps
 
-from flask import Blueprint
+import werkzeug
+from flask import Blueprint, flash, request, url_for
 from flask import Response as FlaskResponse
-from flask import flash
-from flask import request
-from flask import url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 from sqlalchemy.dialects import postgresql
-import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import Forbidden
 from werkzeug.wrappers import Response as WerkzeugResponse
@@ -24,8 +21,7 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from pcapi import settings
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.models import db
-from pcapi.models import feature
+from pcapi.models import db, feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import date as date_utils

@@ -1,17 +1,16 @@
 import dataclasses
 import datetime
-from io import BytesIO
 import re
+from io import BytesIO
 
 import factory
-from flask import url_for
 import openpyxl
 import pytest
+from flask import url_for
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import pro_categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import pro_categories, subcategories
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models

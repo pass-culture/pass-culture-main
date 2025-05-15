@@ -2,13 +2,13 @@ import dataclasses
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.pro.offerer_attachment_invitation as oai
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.token as token_utils
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
 @pytest.mark.usefixtures("db_session")

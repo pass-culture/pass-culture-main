@@ -3,11 +3,12 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
-from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import (
+    DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+    TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+)
 from pcapi.core.offerers import update_offerer_stats
-from pcapi.core.offerers.factories import OffererFactory
-from pcapi.core.offerers.factories import OffererStatsFactory
+from pcapi.core.offerers.factories import OffererFactory, OffererStatsFactory
 from pcapi.core.offerers.models import OffererStats
 from pcapi.repository import db
 

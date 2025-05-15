@@ -1,6 +1,6 @@
-from pcapi import settings
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.token as token_utils
+from pcapi import settings
 from pcapi.core.users.models import User
 
 

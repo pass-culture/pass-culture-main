@@ -2,11 +2,13 @@ import dataclasses
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core import testing as core_testing
 from pcapi.core.bookings.factories import BookingFactory
-import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.bookings.booking_withdrawal_updated import send_booking_withdrawal_updated
-from pcapi.core.mails.transactional.bookings.booking_withdrawal_updated import send_email_for_each_ongoing_booking
+from pcapi.core.mails.transactional.bookings.booking_withdrawal_updated import (
+    send_booking_withdrawal_updated,
+    send_email_for_each_ongoing_booking,
+)
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries

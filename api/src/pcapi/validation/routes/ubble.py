@@ -2,16 +2,14 @@ import base64
 import functools
 import hashlib
 import hmac
-from typing import Any
-from typing import Callable
+from typing import Any, Callable
 
 import ecdsa
 import flask
 
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
-from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import UnauthorizedError
+from pcapi.models.api_errors import ForbiddenError, UnauthorizedError
 
 
 def require_ubble_v2_signature(route_function: Callable[..., Any]) -> Callable:

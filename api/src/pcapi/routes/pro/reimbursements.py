@@ -1,5 +1,4 @@
-from flask_login import current_user
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerer_models
@@ -8,12 +7,14 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvByInvoicesModel
-from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvQueryModel
-from pcapi.routes.serialization.reimbursement_csv_serialize import find_offerer_reimbursement_details
-from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
-from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
-from pcapi.routes.serialization.reimbursement_csv_serialize import validate_reimbursement_period
+from pcapi.routes.serialization.reimbursement_csv_serialize import (
+    ReimbursementCsvByInvoicesModel,
+    ReimbursementCsvQueryModel,
+    find_offerer_reimbursement_details,
+    find_reimbursement_details_by_invoices,
+    generate_reimbursement_details_csv,
+    validate_reimbursement_period,
+)
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint

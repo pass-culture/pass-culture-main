@@ -3,18 +3,19 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
-from pcapi.core.external_bookings.models import Movie
-from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.providers.factories import CinemaProviderPivotFactory
-from pcapi.core.providers.models import Provider
-from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
+from pcapi.connectors.serialization.cine_digital_service_serializers import (
+    IdObjectCDS,
+    ShowCDS,
+    ShowTariffCDS,
+    ShowsMediaoptionsCDS,
+)
+from pcapi.core.external_bookings.models import Movie
+from pcapi.core.history import models as history_models
+from pcapi.core.providers.factories import CinemaProviderPivotFactory
+from pcapi.core.providers.models import Provider, VenueProvider
 from pcapi.core.users import factories as user_factories
 from pcapi.models import db
 

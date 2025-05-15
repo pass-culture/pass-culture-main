@@ -5,11 +5,11 @@ import re
 import time
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import flask
 import pytest
 import requests_mock
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.connectors.serialization.ubble_serializers import UbbleIdentificationStatus

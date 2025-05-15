@@ -1,12 +1,11 @@
-from datetime import datetime
 import logging
-from os import path
 import random
 import string
+from datetime import datetime
+from os import path
 
 from flask import current_app as app
-from saml2 import BINDING_HTTP_POST
-from saml2 import xmldsig
+from saml2 import BINDING_HTTP_POST, xmldsig
 from saml2.client import Saml2Client
 from saml2.config import Config as Saml2Config
 from saml2.validate import ResponseLifetimeExceed
@@ -17,8 +16,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
-from . import exceptions
-from . import models
+from . import exceptions, models
 
 
 logger = logging.getLogger(__name__)

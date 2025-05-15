@@ -5,8 +5,7 @@ import uuid
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.models import Base
-from pcapi.models import Model
+from pcapi.models import Base, Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
 

@@ -1,9 +1,9 @@
 import threading
 
-from dateutil.relativedelta import relativedelta
 import flask
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.finance import deposit_api

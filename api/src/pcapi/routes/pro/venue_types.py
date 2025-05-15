@@ -2,8 +2,7 @@ from flask_login import login_required
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization.venue_types_serialize import VenueTypeListResponseModel
-from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
+from pcapi.routes.serialization.venue_types_serialize import VenueTypeListResponseModel, VenueTypeResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint

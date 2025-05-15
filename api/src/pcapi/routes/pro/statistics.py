@@ -1,15 +1,16 @@
 from datetime import date
 
-from flask_login import current_user
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.offers.repository import venues_have_individual_and_collective_offers
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization.statistics_serialize import AggregatedRevenueModel
-from pcapi.routes.serialization.statistics_serialize import StatisticsModel
-from pcapi.routes.serialization.statistics_serialize import StatisticsQueryModel
+from pcapi.routes.serialization.statistics_serialize import (
+    AggregatedRevenueModel,
+    StatisticsModel,
+    StatisticsQueryModel,
+)
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_venues
 

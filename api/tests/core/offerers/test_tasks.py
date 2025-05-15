@@ -1,6 +1,6 @@
-from dataclasses import asdict
 import datetime
 import json
+from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest
@@ -14,8 +14,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
+from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE
 from pcapi.utils import siren as siren_utils
 
 

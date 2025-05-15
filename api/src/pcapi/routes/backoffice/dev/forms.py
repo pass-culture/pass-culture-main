@@ -1,15 +1,12 @@
 import datetime
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
-from pcapi.core.fraud.models import UBBLE_OK_REASON_CODE
-from pcapi.core.fraud.models import UBBLE_REASON_CODE_MAPPING
+from pcapi.core.fraud.models import UBBLE_OK_REASON_CODE, UBBLE_REASON_CODE_MAPPING
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users.generator import GeneratedIdProvider
-from pcapi.core.users.generator import GeneratedSubscriptionStep
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.core.users.generator import GeneratedIdProvider, GeneratedSubscriptionStep
+from pcapi.routes.backoffice.forms import fields, utils
 
 
 class SimpleComponentsForm(FlaskForm):

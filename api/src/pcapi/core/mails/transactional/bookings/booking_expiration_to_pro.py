@@ -1,3 +1,4 @@
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
@@ -6,7 +7,6 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers.models import Offerer
-import pcapi.utils.postal_code as postal_code_utils
 from pcapi.utils.urls import build_pc_pro_offer_link
 
 

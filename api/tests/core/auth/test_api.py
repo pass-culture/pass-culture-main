@@ -2,8 +2,7 @@ import pytest
 
 from pcapi.core.auth.api import extract_roles_from_google_workspace_groups
 
-from .factories import GoogleWorkspaceGroup
-from .factories import GoogleWorkspaceGroupList
+from .factories import GoogleWorkspaceGroup, GoogleWorkspaceGroupList
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

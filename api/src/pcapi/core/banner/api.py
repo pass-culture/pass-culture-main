@@ -4,9 +4,9 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
-from pcapi.core.users import eligibility_api
 import pcapi.core.users.models as users_models
 import pcapi.routes.native.v1.serialization.banner as serializers
+from pcapi.core.users import eligibility_api
 from pcapi.utils.string import u_nbsp
 
 

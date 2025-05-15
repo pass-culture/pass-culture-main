@@ -235,8 +235,8 @@ class Returns401Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_session_timeout(self, client):
-        from dateutil.relativedelta import relativedelta
         import time_machine
+        from dateutil.relativedelta import relativedelta
 
         educational_factories.EducationalInstitutionFactory()
 

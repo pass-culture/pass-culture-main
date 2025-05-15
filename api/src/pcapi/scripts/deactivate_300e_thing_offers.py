@@ -1,7 +1,6 @@
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.models import db
 
 

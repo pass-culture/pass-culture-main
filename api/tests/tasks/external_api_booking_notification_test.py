@@ -2,8 +2,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.offers.factories import StockFactory
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
+from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

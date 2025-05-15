@@ -1,11 +1,11 @@
 import datetime
+import re
 from decimal import Decimal
 from operator import attrgetter
-import re
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi import settings
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
@@ -33,8 +33,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.backoffice.filters import format_date
-from pcapi.routes.backoffice.filters import format_date_time
+from pcapi.routes.backoffice.filters import format_date, format_date_time
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 

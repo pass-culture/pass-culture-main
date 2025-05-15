@@ -17,8 +17,7 @@ from pcapi.utils import human_ids
 from pcapi.utils.date import format_into_utc_date
 
 from tests.routes import image_data
-from tests.routes.public.helpers import ProductEndpointHelper
-from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+from tests.routes.public.helpers import ProductEndpointHelper, PublicAPIVenueEndpointHelper
 
 from . import utils
 

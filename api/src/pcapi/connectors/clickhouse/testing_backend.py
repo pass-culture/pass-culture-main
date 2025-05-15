@@ -3,13 +3,17 @@ import typing
 from sqlalchemy import engine
 
 from .backend import BaseBackend
-from .queries import AggregatedCollectiveRevenueQuery
-from .queries import AggregatedIndividualRevenueQuery
-from .queries import AggregatedTotalRevenueQuery
-from .queries import TotalExpectedRevenueQuery
-from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE
-from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE
-from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE
+from .queries import (
+    AggregatedCollectiveRevenueQuery,
+    AggregatedIndividualRevenueQuery,
+    AggregatedTotalRevenueQuery,
+    TotalExpectedRevenueQuery,
+)
+from .query_mock import (
+    MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE,
+    MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE,
+    MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE,
+)
 
 
 class TestingBackend(BaseBackend):

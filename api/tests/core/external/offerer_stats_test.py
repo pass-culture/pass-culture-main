@@ -1,12 +1,12 @@
 import pytest
 import time_machine
 
-from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
-from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import (
+    DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+    TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+)
 from pcapi.core.offerers import api
-from pcapi.core.offerers.factories import OffererFactory
-from pcapi.core.offerers.factories import OffererStatsFactory
-from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers.factories import OffererFactory, OffererStatsFactory, VenueFactory
 from pcapi.core.offerers.models import OffererStats
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.models import db

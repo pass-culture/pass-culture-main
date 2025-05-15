@@ -1,37 +1,35 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
-from flask import current_app as app
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
+from flask import current_app as app
 
-from pcapi.connectors import api_recaptcha
-from pcapi.connectors import google_oauth
-from pcapi.core import token as token_utils
 import pcapi.core.bookings.exceptions as bookings_exceptions
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.users.models as users_models
+from pcapi.connectors import api_recaptcha, google_oauth
+from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud.phone_validation import sending_limit
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
-from pcapi.core.users import api
-from pcapi.core.users import constants
+from pcapi.core.users import api, constants, exceptions
 from pcapi.core.users import email as email_api
-from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
-import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.models import api_errors, db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
-from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
+from pcapi.routes.native.security import (
+    authenticated_and_active_user_required,
+    authenticated_maybe_inactive_user_required,
+)
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils

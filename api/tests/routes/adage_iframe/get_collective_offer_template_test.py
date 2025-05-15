@@ -1,9 +1,8 @@
 import datetime
-from operator import attrgetter
-from operator import itemgetter
+from operator import attrgetter, itemgetter
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models

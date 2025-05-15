@@ -1,8 +1,7 @@
 import pytest
 
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
+from pcapi.core.providers.repository import get_provider_by_local_class, get_provider_enabled_for_pro_by_id
 
 
 class GetProviderEnabledForProByIdTest:

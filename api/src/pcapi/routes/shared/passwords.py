@@ -2,12 +2,11 @@ import logging
 
 import sqlalchemy.orm as sa_orm
 
-from pcapi import settings
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
-from pcapi.core.finance import models as finance_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.token as token_utils
+from pcapi import settings
+from pcapi.connectors.api_recaptcha import ReCaptchaException, check_web_recaptcha_token
+from pcapi.core.finance import models as finance_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
@@ -18,9 +17,11 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
-from pcapi.routes.serialization.password_serialize import CheckTokenBodyModel
-from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
-from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
+from pcapi.routes.serialization.password_serialize import (
+    CheckTokenBodyModel,
+    NewPasswordBodyModel,
+    ResetPasswordBodyModel,
+)
 from pcapi.serialization.decorator import spectree_serialize
 
 

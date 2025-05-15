@@ -1,17 +1,16 @@
 import copy
 from dataclasses import asdict
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from unittest.mock import patch
 
 import pytest
 import time_machine
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import factories as users_factories

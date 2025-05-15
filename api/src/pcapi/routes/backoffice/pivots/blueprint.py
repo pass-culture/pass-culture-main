@@ -1,8 +1,4 @@
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
@@ -13,10 +9,9 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.repository.session_management import mark_transaction_as_invalid
 
-from . import forms
-from .. import autocomplete
-from .. import utils
+from .. import autocomplete, utils
 from ..forms import empty as empty_forms
+from . import forms
 from .contexts import get_context
 
 

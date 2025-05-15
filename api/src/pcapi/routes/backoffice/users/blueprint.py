@@ -1,17 +1,11 @@
 import logging
 from operator import attrgetter
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
-from werkzeug.exceptions import Forbidden
-from werkzeug.exceptions import NotFound
+from sqlalchemy.orm import joinedload, load_only
+from werkzeug.exceptions import Forbidden, NotFound
 
 from pcapi.core import mails
 from pcapi.core.bookings import models as bookings_models

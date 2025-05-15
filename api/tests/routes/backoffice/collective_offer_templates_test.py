@@ -1,8 +1,8 @@
-from dataclasses import asdict
 import datetime
+from dataclasses import asdict
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
@@ -16,8 +16,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as user_factory
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models.offer_mixin import OfferValidationStatus, OfferValidationType
 
 from .helpers import button as button_helpers
 from .helpers import html_parser

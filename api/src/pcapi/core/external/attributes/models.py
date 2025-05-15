@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import datetime
 import typing
+from dataclasses import dataclass
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.users import constants as users_constants

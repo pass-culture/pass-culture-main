@@ -2,12 +2,7 @@ import datetime
 import typing
 
 from psycopg2.extras import NumericRange
-from pydantic.v1 import ConstrainedList
-from pydantic.v1 import EmailStr
-from pydantic.v1 import Field
-from pydantic.v1 import HttpUrl
-from pydantic.v1 import root_validator
-from pydantic.v1 import validator
+from pydantic.v1 import ConstrainedList, EmailStr, Field, HttpUrl, root_validator, validator
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas

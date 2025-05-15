@@ -1,14 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
-from unittest.mock import call
-from unittest.mock import patch
+from datetime import datetime, timedelta
+from unittest.mock import call, patch
 
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Offer, OfferValidationStatus
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 

@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.offerers.models import Offerer, VenueTypeCode
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN

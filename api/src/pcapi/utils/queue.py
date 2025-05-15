@@ -1,8 +1,8 @@
 import json
 import logging
 
-from flask import current_app
 import redis.exceptions
+from flask import current_app
 
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 import datetime
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
@@ -16,8 +16,7 @@ from pcapi.models import feature as feature_models
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
-from .helpers.get import GetEndpointHelper
-from .helpers.get import GetEndpointWithoutPermissionHelper
+from .helpers.get import GetEndpointHelper, GetEndpointWithoutPermissionHelper
 from .helpers.post import PostEndpointHelper
 
 

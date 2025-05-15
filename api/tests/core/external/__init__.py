@@ -3,9 +3,7 @@ from decimal import Decimal
 
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.users.models import Credit
-from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import EligibilityType
+from pcapi.core.users.models import Credit, DomainsCredit, EligibilityType
 
 
 common_user_attributes = attributes_models.UserAttributes(

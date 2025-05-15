@@ -1,19 +1,18 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.educational import factories
-from pcapi.core.educational import models
+from pcapi.core.educational import factories, models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
-from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
-from tests.routes.public.helpers import assert_attribute_does_not_change
-from tests.routes.public.helpers import assert_attribute_value_changes_to
+from tests.routes.public.helpers import (
+    PublicAPIRestrictedEnvEndpointHelper,
+    assert_attribute_does_not_change,
+    assert_attribute_value_changes_to,
+)
 
 from .base import AdageMockEndpointHelper
 

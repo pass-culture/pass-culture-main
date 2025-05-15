@@ -1,15 +1,13 @@
-from datetime import datetime
-from datetime import timedelta
-from decimal import Decimal
 import logging
+from datetime import datetime, timedelta
+from decimal import Decimal
 from random import choice
 
-from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.finance import api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.models import Booking, BookingStatus
+from pcapi.core.finance import api as finance_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User

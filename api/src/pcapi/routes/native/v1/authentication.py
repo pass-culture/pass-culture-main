@@ -1,13 +1,11 @@
 import logging
 
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from pcapi.connectors import api_recaptcha
-from pcapi.connectors import google_oauth
+import pcapi.core.token as token_utils
+from pcapi.connectors import api_recaptcha, google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
-import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
@@ -15,21 +13,20 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ForbiddenError
+from pcapi.models import api_errors, db
+from pcapi.models.api_errors import ApiErrors, ForbiddenError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
-from pcapi.repository import transaction
+from pcapi.repository import repository, transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
-from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
-from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
-from pcapi.routes.native.v1.serialization.authentication import ResetPasswordResponse
-from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
-from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
+from pcapi.routes.native.v1.serialization.authentication import (
+    ChangePasswordRequest,
+    RequestPasswordResetRequest,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
+    ValidateEmailRequest,
+    ValidateEmailResponse,
+)
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers import apps_flyer_job
 

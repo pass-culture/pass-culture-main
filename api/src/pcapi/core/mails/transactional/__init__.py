@@ -1,24 +1,27 @@
-from .bookings.booking_cancellation import send_booking_cancellation_confirmation_by_pro_to_pro_email
-from .bookings.booking_cancellation import send_booking_cancellation_emails_to_user_and_offerer
+from .bookings.booking_cancellation import (
+    send_booking_cancellation_confirmation_by_pro_to_pro_email,
+    send_booking_cancellation_emails_to_user_and_offerer,
+)
 from .bookings.booking_cancellation_by_beneficiary import send_booking_cancellation_by_beneficiary_email
 from .bookings.booking_cancellation_by_beneficiary_to_pro import send_booking_cancellation_by_beneficiary_to_pro_email
 from .bookings.booking_cancellation_by_pro_to_beneficiary import send_booking_cancellation_by_pro_to_beneficiary_email
 from .bookings.booking_cancellation_confirmation_by_pro import (
+    send_booking_cancellation_confirmation_by_pro_email,
     send_collective_booking_cancellation_confirmation_by_pro_email,
 )
-from .bookings.booking_cancellation_confirmation_by_pro import send_booking_cancellation_confirmation_by_pro_email
 from .bookings.booking_confirmation_to_beneficiary import send_individual_booking_confirmation_email_to_beneficiary
 from .bookings.booking_event_reminder_to_beneficiary import send_individual_booking_event_reminder_email_to_beneficiary
 from .bookings.booking_expiration_to_beneficiary import send_expired_bookings_to_beneficiary_email
 from .bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
 from .bookings.booking_notify_provider_support import send_booking_cancelled_unilaterally_provider_support_email
-from .bookings.booking_postponed_by_pro_to_beneficiary import send_batch_booking_postponement_email_to_users
-from .bookings.booking_postponed_by_pro_to_beneficiary import send_booking_postponement_email_to_users
+from .bookings.booking_postponed_by_pro_to_beneficiary import (
+    send_batch_booking_postponement_email_to_users,
+    send_booking_postponement_email_to_users,
+)
 from .bookings.booking_soon_to_be_expired_to_beneficiary import (
     send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
 )
-from .bookings.booking_withdrawal_updated import send_booking_withdrawal_updated
-from .bookings.booking_withdrawal_updated import send_email_for_each_ongoing_booking
+from .bookings.booking_withdrawal_updated import send_booking_withdrawal_updated, send_email_for_each_ongoing_booking
 from .bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
 from .educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from .educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
@@ -36,21 +39,24 @@ from .pro.event_offer_postponed_confirmation_to_pro import send_event_offer_post
 from .pro.first_venue_approved_offer_to_pro import send_first_venue_approved_offer_email_to_pro
 from .pro.fraudulent_booking_suspicion import send_fraudulent_booking_suspicion_email
 from .pro.invoice_available_to_pro import send_invoice_available_to_pro_email
-from .pro.new_offerer_validation import send_new_offerer_rejection_email_to_pro
-from .pro.new_offerer_validation import send_new_offerer_validation_email_to_pro
-from .pro.offer_validation_to_pro import get_email_data_from_offer
-from .pro.offer_validation_to_pro import send_offer_validation_status_update_email
-from .pro.offerer_attachment_invitation import send_offerer_attachment_invitation
-from .pro.offerer_attachment_invitation import send_offerer_attachment_invitation_accepted
-from .pro.offerer_attachment_validation import send_offerer_attachment_rejection_email_to_pro
-from .pro.offerer_attachment_validation import send_offerer_attachment_validation_email_to_pro
+from .pro.new_offerer_validation import (
+    send_new_offerer_rejection_email_to_pro,
+    send_new_offerer_validation_email_to_pro,
+)
+from .pro.offer_validation_to_pro import get_email_data_from_offer, send_offer_validation_status_update_email
+from .pro.offerer_attachment_invitation import (
+    send_offerer_attachment_invitation,
+    send_offerer_attachment_invitation_accepted,
+)
+from .pro.offerer_attachment_validation import (
+    send_offerer_attachment_rejection_email_to_pro,
+    send_offerer_attachment_validation_email_to_pro,
+)
 from .pro.offerer_closed import send_offerer_closed_email_to_pro
 from .pro.offerer_individual_subscription import send_offerer_individual_subscription_reminder
 from .pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
-from .pro.reminder_offer_creation import send_reminder_offer_creation_j5_to_pro
-from .pro.reminder_offer_creation import send_reminder_offer_creation_j10_to_pro
-from .pro.reset_password_to_pro import send_reset_password_email_to_connected_pro
-from .pro.reset_password_to_pro import send_reset_password_email_to_pro
+from .pro.reminder_offer_creation import send_reminder_offer_creation_j5_to_pro, send_reminder_offer_creation_j10_to_pro
+from .pro.reset_password_to_pro import send_reset_password_email_to_connected_pro, send_reset_password_email_to_pro
 from .pro.venue_bank_account_link_deprecated import send_venue_bank_account_link_deprecated
 from .pro.venue_needs_picture import send_permanent_venue_needs_picture
 from .pro.venue_provider_deleted import send_venue_provider_deleted_email
@@ -58,28 +64,35 @@ from .pro.venue_provider_disabled import send_venue_provider_disabled_email
 from .pro.welcome_to_pro import send_welcome_to_pro_email
 from .send_transactional_email import send_transactional_email
 from .users.accepted_as_beneficiary import send_accepted_as_beneficiary_email
-from .users.birthday_to_newly_eligible_user import send_birthday_age_17_email_to_newly_eligible_user
-from .users.birthday_to_newly_eligible_user import send_birthday_age_18_email_to_newly_eligible_user
-from .users.birthday_to_newly_eligible_user import send_birthday_age_18_email_to_newly_eligible_user_v3
+from .users.birthday_to_newly_eligible_user import (
+    send_birthday_age_17_email_to_newly_eligible_user,
+    send_birthday_age_18_email_to_newly_eligible_user,
+    send_birthday_age_18_email_to_newly_eligible_user_v3,
+)
 from .users.delete_account import send_user_request_to_delete_account_reception_email
-from .users.dms_subscription_emails import send_complete_subscription_after_dms_email
-from .users.dms_subscription_emails import send_create_account_after_dms_email
-from .users.dms_subscription_emails import send_pre_subscription_from_dms_error_email_to_beneficiary
+from .users.dms_subscription_emails import (
+    send_complete_subscription_after_dms_email,
+    send_create_account_after_dms_email,
+    send_pre_subscription_from_dms_error_email_to_beneficiary,
+)
 from .users.duplicate_beneficiary import send_duplicate_beneficiary_email
-from .users.email_address_change import send_confirmation_email_change_email
-from .users.email_address_change import send_email_change_information_email
-from .users.email_address_change import send_email_update_cancellation_email
-from .users.email_address_change import send_pro_confirmation_email_change_email
-from .users.email_address_change import send_pro_information_email_change_email
-from .users.email_address_change import send_validation_email_change_email
+from .users.email_address_change import (
+    send_confirmation_email_change_email,
+    send_email_change_information_email,
+    send_email_update_cancellation_email,
+    send_pro_confirmation_email_change_email,
+    send_pro_information_email_change_email,
+    send_validation_email_change_email,
+)
 from .users.email_address_change_confirmation import send_email_confirmation_email
 from .users.notification_before_deleting_suspended_account import send_email_before_deletion_of_suspended_account
 from .users.offer_link_to_ios_user import send_offer_link_to_ios_user_email
-from .users.recredit_to_underage_beneficiary import send_recredit_email_to_18_years_old
-from .users.recredit_to_underage_beneficiary import send_recredit_email_to_underage_beneficiary
+from .users.recredit_to_underage_beneficiary import (
+    send_recredit_email_to_18_years_old,
+    send_recredit_email_to_underage_beneficiary,
+)
 from .users.reported_offer_by_user import send_email_reported_offer_by_user
-from .users.reset_password import send_email_already_exists_email
-from .users.reset_password import send_reset_password_email_to_user
+from .users.reset_password import send_email_already_exists_email, send_reset_password_email_to_user
 from .users.suspicious_login_email import send_suspicious_login_email
 from .users.ubble.subscription_document_error import send_subscription_document_error_email
 from .users.unsuspension import send_unsuspension_email

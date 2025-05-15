@@ -3,19 +3,14 @@ import typing
 
 import pydantic.v1 as pydantic
 
-from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
-from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicArticle
-from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicWork
+from pcapi.connectors.serialization.titelive_serializers import GenreTitelive, TiteliveMusicArticle, TiteliveMusicWork
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.offers import models as offers_models
 
-from .constants import MUSIC_SLUG_BY_GTL_ID
-from .constants import NOT_CD_LIBELLES
-from .constants import TITELIVE_MUSIC_SUPPORTS_BY_CODE
-from .titelive_api import TiteliveSearchTemplate
-from .titelive_api import activate_newly_eligible_product_and_offers
+from .constants import MUSIC_SLUG_BY_GTL_ID, NOT_CD_LIBELLES, TITELIVE_MUSIC_SUPPORTS_BY_CODE
+from .titelive_api import TiteliveSearchTemplate, activate_newly_eligible_product_and_offers
 
 
 logger = logging.getLogger(__name__)

@@ -2,8 +2,8 @@
 Add "dateArchived" column to "collective_offer" table.
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

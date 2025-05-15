@@ -1,5 +1,4 @@
-from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms import fields, utils
 from pcapi.routes.backoffice.forms.constants import area_choices
 
 

@@ -1,12 +1,11 @@
 import datetime
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
-from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
+from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum, CulturalSurveyQuestionEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models

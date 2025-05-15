@@ -1,5 +1,4 @@
-from base64 import b32decode
-from base64 import b32encode
+from base64 import b32decode, b32encode
 
 import click
 

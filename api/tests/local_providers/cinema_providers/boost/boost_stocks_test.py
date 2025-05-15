@@ -11,14 +11,12 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
-from pcapi.core.providers.factories import BoostCinemaDetailsFactory
-from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
-from pcapi.core.providers.factories import VenueProviderFactory
+from pcapi.core.offers.models import Offer, PriceCategory, PriceCategoryLabel, Product, Stock
+from pcapi.core.providers.factories import (
+    BoostCinemaDetailsFactory,
+    BoostCinemaProviderPivotFactory,
+    VenueProviderFactory,
+)
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import BoostStocks
 from pcapi.models import db

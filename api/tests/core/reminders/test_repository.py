@@ -1,8 +1,7 @@
 import pytest
 
 from pcapi.core.offers import factories as offer_factories
-from pcapi.core.reminders import factories
-from pcapi.core.reminders import repository
+from pcapi.core.reminders import factories, repository
 from pcapi.core.users import factories as users_factories
 
 

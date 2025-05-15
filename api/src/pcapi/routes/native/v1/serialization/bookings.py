@@ -8,8 +8,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import OffererAddress
-from pcapi.core.offers.models import Stock
-from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.offers.models import Stock, WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse

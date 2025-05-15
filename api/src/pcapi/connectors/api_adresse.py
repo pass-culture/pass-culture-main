@@ -6,23 +6,19 @@ Further explanations at: https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.ht
 
 import csv
 import enum
-from hashlib import md5
-from io import StringIO
 import json
 import logging
 import re
+from hashlib import md5
+from io import StringIO
 
-from flask import current_app
 import pydantic.v1 as pydantic_v1
+from flask import current_app
 
 from pcapi import settings
-from pcapi.core.geography.constants import MAX_LATITUDE
-from pcapi.core.geography.constants import MAX_LONGITUDE
+from pcapi.core.geography.constants import MAX_LATITUDE, MAX_LONGITUDE
 from pcapi.utils import cache as cache_utils
-from pcapi.utils import module_loading
-from pcapi.utils import postal_code
-from pcapi.utils import regions
-from pcapi.utils import requests
+from pcapi.utils import module_loading, postal_code, regions, requests
 
 
 logger = logging.getLogger(__name__)

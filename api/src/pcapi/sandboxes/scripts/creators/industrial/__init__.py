@@ -13,8 +13,10 @@ from pcapi.sandboxes.scripts.creators.industrial.create_gdpr_user_extracts impor
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import create_industrial_admin_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import create_fraudulent_bookings
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import create_industrial_bookings
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import (
+    create_fraudulent_bookings,
+    create_industrial_bookings,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings_for_statistics import (
     create_industrial_bookings_for_statistics,
 )
@@ -25,8 +27,8 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_commercial_ge
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_complex_offers import create_complex_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
+    create_industrial_criteria,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_draft_offers import create_industrial_draft_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data import create_eac_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import (
@@ -41,8 +43,10 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents imp
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_offerers import (
     create_industrial_individual_offerers,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import build_many_extra_invoices
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_industrial_invoices
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
+    build_many_extra_invoices,
+    create_industrial_invoices,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import create_iris
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import create_industrial_mediations
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import (

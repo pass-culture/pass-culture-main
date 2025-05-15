@@ -1,12 +1,9 @@
-from collections import Counter
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
 from functools import partial
 
 import sqlalchemy as sa
-from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import contains_eager, joinedload, load_only
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository

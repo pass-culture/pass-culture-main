@@ -1,7 +1,7 @@
 """add column: address."isManualEdition" """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

@@ -1,11 +1,13 @@
 import pytest
 
 from pcapi.core.educational import models
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import EducationalDepositFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalRedactorFactory
-from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import (
+    CollectiveBookingFactory,
+    EducationalDepositFactory,
+    EducationalInstitutionFactory,
+    EducationalRedactorFactory,
+    EducationalYearFactory,
+)
 from pcapi.core.testing import assert_num_queries
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking

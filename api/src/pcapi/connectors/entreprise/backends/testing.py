@@ -1,8 +1,7 @@
-from collections import defaultdict
 import datetime
+from collections import defaultdict
 
-from pcapi.connectors.entreprise import exceptions
-from pcapi.connectors.entreprise import models
+from pcapi.connectors.entreprise import exceptions, models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
 from pcapi.utils import siren as siren_utils
 

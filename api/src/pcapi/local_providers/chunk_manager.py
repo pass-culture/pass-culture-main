@@ -1,8 +1,7 @@
 import pcapi.core.offers.models as offers_models
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.repository.providable_queries import insert_chunk
-from pcapi.repository.providable_queries import update_chunk
+from pcapi.repository.providable_queries import insert_chunk, update_chunk
 
 
 def get_object_from_current_chunks(

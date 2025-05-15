@@ -1,8 +1,8 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core import testing
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 

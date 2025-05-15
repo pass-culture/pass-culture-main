@@ -4,10 +4,10 @@ import os
 import re
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
-from flask import url_for
 import pytest
 import pytz
+from dateutil.relativedelta import relativedelta
+from flask import url_for
 
 from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import models as dms_models
@@ -29,8 +29,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
-from pcapi.core.subscription.models import SubscriptionItemStatus
-from pcapi.core.subscription.models import SubscriptionStep
+from pcapi.core.subscription.models import SubscriptionItemStatus, SubscriptionStep
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -42,26 +41,28 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
-from pcapi.routes.backoffice.accounts.blueprint import RegistrationStep
-from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
-from pcapi.routes.backoffice.accounts.blueprint import TunnelType
-from pcapi.routes.backoffice.accounts.blueprint import _get_fraud_reviews_desc
-from pcapi.routes.backoffice.accounts.blueprint import _get_id_check_histories_desc
-from pcapi.routes.backoffice.accounts.blueprint import _get_progress
-from pcapi.routes.backoffice.accounts.blueprint import _get_status
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_for_tunnel
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_age18
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_age18_old
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_underage
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_underage_age18
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_underage_age18_old
-from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_unspecified
-from pcapi.routes.backoffice.accounts.blueprint import _get_subscription_item_status_by_eligibility
-from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel
-from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel_type
-from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_and_disabled
-from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
-from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
+from pcapi.routes.backoffice.accounts.blueprint import (
+    RegistrationStep,
+    RegistrationStepStatus,
+    TunnelType,
+    _get_fraud_reviews_desc,
+    _get_id_check_histories_desc,
+    _get_progress,
+    _get_status,
+    _get_steps_for_tunnel,
+    _get_steps_tunnel_age18,
+    _get_steps_tunnel_age18_old,
+    _get_steps_tunnel_underage,
+    _get_steps_tunnel_underage_age18,
+    _get_steps_tunnel_underage_age18_old,
+    _get_steps_tunnel_unspecified,
+    _get_subscription_item_status_by_eligibility,
+    _get_tunnel,
+    _get_tunnel_type,
+    _set_steps_with_active_and_disabled,
+    get_eligibility_history,
+    get_public_account_history,
+)
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.utils import email as email_utils
 

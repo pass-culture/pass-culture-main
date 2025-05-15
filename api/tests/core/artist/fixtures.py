@@ -1,8 +1,6 @@
 import uuid
 
-from pcapi.connectors.big_query.queries.artist import ArtistAliasModel
-from pcapi.connectors.big_query.queries.artist import ArtistModel
-from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
+from pcapi.connectors.big_query.queries.artist import ArtistAliasModel, ArtistModel, ArtistProductLinkModel
 
 
 raw_artists_data = [

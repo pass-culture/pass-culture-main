@@ -1,10 +1,7 @@
 import pydantic.v1 as pydantic_v1
 
-from pcapi.connectors.clickhouse.queries import CollectiveRevenue
-from pcapi.connectors.clickhouse.queries import IndividualRevenue
-from pcapi.connectors.clickhouse.queries import TotalRevenue
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.connectors.clickhouse.queries import CollectiveRevenue, IndividualRevenue, TotalRevenue
+from pcapi.routes.serialization import BaseModel, ConfiguredBaseModel
 
 
 class StatisticsQueryModel(BaseModel):

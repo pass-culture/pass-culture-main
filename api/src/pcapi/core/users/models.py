@@ -1,36 +1,28 @@
 from __future__ import annotations  # to type models before their declaration
 
-from dataclasses import asdict
-from dataclasses import dataclass
-from dataclasses import field
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from decimal import Decimal
 import enum
-from operator import attrgetter
 import typing
+from dataclasses import asdict, dataclass, field
+from datetime import date, datetime, timedelta
+from decimal import Decimal
+from operator import attrgetter
 from uuid import UUID
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.models import DepositType
 from pcapi.core.geography.models import IrisFrance
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
-from pcapi.models import Base
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Base, Model, db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus

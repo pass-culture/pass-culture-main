@@ -4,38 +4,36 @@ import functools
 import hashlib
 import json as json_lib
 import os
-from pathlib import Path
-from pprint import pprint
 import sys
 import time
 import typing
-from unittest.mock import MagicMock
-from unittest.mock import patch
 import urllib.parse
+from pathlib import Path
+from pprint import pprint
+from unittest.mock import MagicMock, patch
 
+import ecdsa
+import pytest
+import requests_mock
+import sqlalchemy as sa
 from alembic import command
 from alembic.config import Config
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-import ecdsa
 from faker import Faker
-from flask import Flask
-from flask import g
+from flask import Flask, g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
-import pytest
 from requests.auth import _basic_auth_str  # noqa: TID251
-import requests_mock
-import sqlalchemy as sa
 
-from pcapi.celery_tasks.celery import celery_init_app
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
-from pcapi.core.users import testing as users_testing
 import pcapi.core.users.models as users_models
+from pcapi.celery_tasks.celery import celery_init_app
+from pcapi.core.users import testing as users_testing
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.models import db
 from pcapi.models.feature import install_feature_flags
@@ -49,8 +47,7 @@ from pcapi.utils.module_loading import import_string
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 from tests.serialization.extended_spec_tree_test import test_extended_spec_tree_blueprint
-from tests.serialization.serialization_decorator_test import test_blueprint
-from tests.serialization.serialization_decorator_test import test_bookings_blueprint
+from tests.serialization.serialization_decorator_test import test_blueprint, test_bookings_blueprint
 
 
 def run_migrations():
@@ -70,8 +67,7 @@ def pytest_configure(config):
 def build_backoffice_app():
     from flask_login import FlaskLoginClient
 
-    from pcapi.backoffice_app import app
-    from pcapi.backoffice_app import csrf
+    from pcapi.backoffice_app import app, csrf
     from pcapi.flask_app import remove_db_session
 
     # Some tests fail without this. It's probably because of

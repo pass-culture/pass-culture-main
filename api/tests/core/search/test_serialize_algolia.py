@@ -1,9 +1,9 @@
 import datetime
 import decimal
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.artist import factories as artists_factories
 from pcapi.core.artist import models as artists_models
@@ -21,8 +21,7 @@ from pcapi.core.providers.constants import BookFormat
 from pcapi.core.reactions import factories as reactions_factories
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.search import get_base_query_for_offer_indexation
-from pcapi.core.search.backends import algolia
-from pcapi.core.search.backends import serialization
+from pcapi.core.search.backends import algolia, serialization
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 

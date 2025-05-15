@@ -2,20 +2,16 @@ import logging
 
 import pydantic.v1 as pydantic
 
-from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
-from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
-from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
-from pcapi.connectors.titelive import TiteliveBase
-from pcapi.connectors.titelive import get_by_ean_list
-from pcapi.core.categories.subcategories import LIVRE_PAPIER
 import pcapi.core.fraud.models as fraud_models
+from pcapi.connectors.serialization.titelive_serializers import GenreTitelive, TiteLiveBookArticle, TiteLiveBookWork
+from pcapi.connectors.titelive import TiteliveBase, get_by_ean_list
+from pcapi.core.categories.subcategories import LIVRE_PAPIER
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
 from pcapi.models import db
 from pcapi.utils.csr import get_closest_csr
 
-from .titelive_api import TiteliveSearchTemplate
-from .titelive_api import activate_newly_eligible_product_and_offers
+from .titelive_api import TiteliveSearchTemplate, activate_newly_eligible_product_and_offers
 
 
 logger = logging.getLogger(__name__)

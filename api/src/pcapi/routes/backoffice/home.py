@@ -1,8 +1,6 @@
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask_login import current_user
 import sqlalchemy as sa
+from flask import redirect, render_template, request
+from flask_login import current_user
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.educational import models as educational_models
@@ -10,11 +8,9 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
-from pcapi.models import db
-from pcapi.models import offer_mixin
+from pcapi.models import db, offer_mixin
 
-from . import blueprint
-from . import utils
+from . import blueprint, utils
 
 
 REDIRECT_AFTER_LOGIN_COOKIE_NAME = "redirect_after_login"

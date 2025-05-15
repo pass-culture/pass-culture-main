@@ -4,8 +4,10 @@ import pytest
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.delete_account import get_user_request_to_delete_account_email_data
-from pcapi.core.mails.transactional.users.delete_account import send_user_request_to_delete_account_reception_email
+from pcapi.core.mails.transactional.users.delete_account import (
+    get_user_request_to_delete_account_email_data,
+    send_user_request_to_delete_account_reception_email,
+)
 from pcapi.core.users import factories as users_factories
 
 

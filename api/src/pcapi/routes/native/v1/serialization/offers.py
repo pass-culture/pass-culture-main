@@ -1,10 +1,7 @@
-from datetime import date
-from datetime import datetime
 import logging
 import textwrap
-from typing import Any
-from typing import Callable
-from typing import TypeVar
+from datetime import date, datetime
+from typing import Any, Callable, TypeVar
 
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
@@ -13,25 +10,20 @@ from pydantic.v1.utils import GetterDict
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres.movie import get_movie_label
-from pcapi.core.categories.genres.music import MUSIC_SUB_TYPES_LABEL_BY_CODE
-from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
-from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
-from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
+from pcapi.core.categories.genres.music import MUSIC_SUB_TYPES_LABEL_BY_CODE, MUSIC_TYPES_LABEL_BY_CODE
+from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE, SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.chronicles.api import get_offer_published_chronicles
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Reason
-from pcapi.core.offers.models import ReasonMeta
+from pcapi.core.offers.models import Offer, Reason, ReasonMeta
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import BaseModel, ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date

@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 import typing
 
-from flask import Response
-from flask import make_response
-from flask import render_template
-from flask import request
-from flask_wtf.csrf import CSRFError
-from flask_wtf.csrf import CSRFProtect
+from flask import Response, make_response, render_template, request
+from flask_wtf.csrf import CSRFError, CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
-from pcapi.flask_app import app
-from pcapi.flask_app import setup_metrics
+from pcapi.flask_app import app, setup_metrics
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import static_utils
 

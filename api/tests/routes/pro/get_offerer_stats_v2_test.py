@@ -2,13 +2,13 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.core import testing
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 

@@ -2,8 +2,7 @@ import pytest
 import requests_mock
 
 from pcapi import settings
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
-from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
+from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE
 
 
 @pytest.mark.settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")

@@ -1,6 +1,5 @@
-from pcapi.core.categories import app_search_tree
+from pcapi.core.categories import app_search_tree, subcategories
 from pcapi.core.categories import models as categories_models
-from pcapi.core.categories import subcategories
 from pcapi.core.testing import assert_num_queries
 
 

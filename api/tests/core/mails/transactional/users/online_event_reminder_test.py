@@ -2,10 +2,10 @@ import datetime
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries

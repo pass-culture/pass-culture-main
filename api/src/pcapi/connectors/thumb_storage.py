@@ -1,10 +1,7 @@
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import ImageRatio
-from pcapi.utils.image_conversion import process_original_image
-from pcapi.utils.image_conversion import standardize_image
+from pcapi.utils.image_conversion import CropParams, ImageRatio, process_original_image, standardize_image
 
 
 def create_thumb(

@@ -1,7 +1,6 @@
 import datetime
 
-from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
-from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
+from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period, _legacy_get_validation_period
 
 
 in_two_days = datetime.date.today() + datetime.timedelta(days=2)

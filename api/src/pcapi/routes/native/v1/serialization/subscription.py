@@ -1,7 +1,6 @@
 import datetime
 
-from pydantic.v1 import fields
-from pydantic.v1 import validator
+from pydantic.v1 import fields, validator
 
 import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.subscription import models as subscription_models

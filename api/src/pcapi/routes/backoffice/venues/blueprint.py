@@ -1,19 +1,14 @@
-from datetime import datetime
 import decimal
-from functools import partial
 import logging
 import typing
+from datetime import datetime
+from functools import partial
 
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from markupsafe import Markup
-from markupsafe import escape
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user
+from markupsafe import Markup, escape
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
@@ -42,12 +37,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
-from pcapi.routes.backoffice import autocomplete
-from pcapi.routes.backoffice import filters
-from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import utils
+from pcapi.repository.session_management import mark_transaction_as_invalid, on_commit
+from pcapi.routes.backoffice import autocomplete, filters, search_utils, utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as

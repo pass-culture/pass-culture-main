@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core.testing import assert_num_queries
 
 
 VALID_UAI = "0470009E"
