@@ -305,22 +305,46 @@ Nous utilisons **SonarCloud** pour monitorer la dette technique.
 
 Vous retrouverez dans le fichier [`pro/package.json`](https://github.com/pass-culture/pass-culture-main/blob/master/pro/package.json) des scripts Yarn utiles pour le développement.
 
-Exemples :
+## Générer des templates de composants React et utilitaires avec [Templatron](https://www.npmjs.com/package/templatron) :
 
-- Générer des templates de composants React et utilitaires ([c.f. documentation détaillée](./scripts/generator/README.md)) :
+Lister les templates disponibles :
 
 ```bash
-yarn generate:Component MonComposant
+npx templatron --list
 ```
 
-- Linter les fichiers TypeScript :
+Créer un nouveau composant React :
+
+```bash
+npx templatron component MonNouveauComposant
+```
+
+Créer un fichier utilitaire (ex: fonction/classe JS) :
+
+```bash
+npx templatron util maFonction
+```
+
+> [!NOTE]
+>
+> Les fichiers de template sont consultables dans le [dossier `.templatron/`](./.templatron/)
+
+Pour plus de détails sur le fonctionnement des templates, voir la [documentation de Templatron](https://github.com/jmpp/templatron).
+
+## Linter les fichiers TypeScript :
 
 ```bash
 yarn lint:js
 ```
 
-- Identifier du code mort :
+## Identifier du code mort :
 
 ```bash
 yarn lint:dead-code
+```
+
+## Identifier des problèmes de types TS :
+
+```bash
+yarn tsc -b
 ```
