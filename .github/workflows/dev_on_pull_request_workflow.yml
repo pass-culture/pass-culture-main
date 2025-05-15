@@ -17,7 +17,7 @@ env:
 jobs:
   pcapi-init-job:
     name: "Init job"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
       api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
