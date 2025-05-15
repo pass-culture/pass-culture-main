@@ -2969,6 +2969,21 @@ class SetPricingPointTest(PostEndpointHelper):
             == "Ce partenaire culturel a été lié à un point de valorisation"
         )
 
+    def test_set_pricing_point_as_self(self, authenticated_client):
+        venue_with_siret = offerers_factories.VenueFactory(pricing_point=None)
+        offerers_factories.VirtualVenueFactory(
+            managingOfferer=venue_with_siret.managingOfferer, pricing_point=venue_with_siret
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_with_siret.id,
+            form={"new_pricing_point": venue_with_siret.id},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200  # after redirect
+        assert venue_with_siret.current_pricing_point is venue_with_siret
+        assert html_parser.extract_alert(response.data) == "Ce partenaire culturel a été lié à un point de valorisation"
+
     def test_venue_not_found(self, authenticated_client):
         venue_with_siret = offerers_factories.VenueFactory()
         response = self.post_to_endpoint(
