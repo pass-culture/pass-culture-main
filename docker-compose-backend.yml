@@ -31,11 +31,22 @@ services:
     build:
       context: ./api
       target: api-flask
+      args:
+        network_mode: ${DOCKER_NETWORK_MODE:-default}
     working_dir: /usr/src/app
     container_name: pc-api
     command: ["./start-api-when-database-is-ready.sh"]
-    volumes:
-      - ./api:/usr/src/app
+    develop:
+      watch:
+        - action: sync
+          path: ./api
+          target: /usr/src/app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./api/uv.lock
     env_file:
       - env_file
     networks:
@@ -55,11 +66,22 @@ services:
     build:
       context: ./api
       target: api-flask
+      args:
+        network_mode: ${DOCKER_NETWORK_MODE:-default}
     working_dir: /usr/src/app
     container_name: pc-backoffice
     command: ["./start-backoffice-when-api-is-ready.sh"]
-    volumes:
-      - ./api:/usr/src/app
+    develop:
+      watch:
+        - action: sync
+          path: ./api
+          target: /usr/src/app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./api/uv.lock
     env_file:
       - env_file
     networks:
@@ -79,11 +101,22 @@ services:
     build:
       context: ./api
       target: api-flask
+      args:
+        network_mode: ${DOCKER_NETWORK_MODE:-default}
     working_dir: /usr/src/app
     container_name: pc-celery-worker
     command: ["./start-celery-worker.sh"]
-    volumes:
-      - ./api:/usr/src/app
+    develop:
+      watch:
+        - action: sync
+          path: ./api
+          target: /usr/src/app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./api/uv.lock
     env_file:
       - env_file
     networks:

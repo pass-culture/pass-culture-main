@@ -5,7 +5,7 @@ ci:
 dependencies:
 - changed-files:
   - any-glob-to-any-file:
-    - api/poetry.lock
+    - api/uv.lock
     - pro/yarn.lock
     - api/documentation/package-lock.json
 
