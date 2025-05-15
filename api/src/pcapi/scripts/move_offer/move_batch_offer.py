@@ -215,7 +215,7 @@ def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venu
 
 
 @atomic()
-def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
+def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
     for row in _get_venue_rows(origin, destination):
         logger.info("Starting to move offers from venue (origin): %d to venue (destination): %d", origin, destination)
@@ -244,7 +244,7 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
             _move_collective_offer_playlist(origin_venue, destination_venue)
             _move_price_category_label(origin_venue, destination_venue)
             _move_finance_incident(origin_venue, destination_venue)
-            if not dry_run:
+            if not_dry:
                 on_commit(
                     partial(
                         search.reindex_venue_ids,
@@ -259,12 +259,12 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
 
 
 @blueprint.cli.command("move_batch_offer")
-@click.option("--dry-run", type=bool, default=True)
+@click.option("--not-dry", is_flag=True)
 @click.option("--origin", type=int, required=False)
 @click.option("--destination", type=int, required=False)
-def move_batch_offer(dry_run: bool, origin: int | None, destination: int | None) -> None:
-    _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
-    if not dry_run:
+def move_batch_offer(not_dry: bool, origin: int | None, destination: int | None) -> None:
+    _move_all_venue_offers(not_dry=not_dry, origin=origin, destination=destination)
+    if not_dry:
         logger.info("Finished")
     else:
         db.session.rollback()

@@ -25,7 +25,7 @@ BATCH_SIZE = 1000
 
 
 @blueprint.cli.command("check_active_offerers")
-@click.option("--dry-run", type=bool, default=False)
+@click.option("--dry-run", is_flag=True)
 @click.option("--day", type=int, required=False, default=None)
 def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None:
     # This command is called from a cron running every day, so that any active offerer is checked every month.
@@ -69,7 +69,7 @@ def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in
 
 
 @blueprint.cli.command("check_closed_offerers")
-@click.option("--dry-run", type=bool, default=False)
+@click.option("--dry-run", is_flag=True)
 @click.option("--date-closed", type=str, required=False, default=None)
 def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None) -> None:
     if date_closed:
@@ -119,7 +119,7 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
 
 
 @blueprint.cli.command("delete_user_offerers_on_closed_offerers")
-@click.option("--dry-run", type=bool, default=False)
+@click.option("--dry-run", is_flag=True)
 def delete_user_offerers_on_closed_offerers(dry_run: bool = False) -> None:
     offerers_api.auto_delete_attachments_on_closed_offerers()
 
@@ -165,8 +165,8 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
 
 
 @blueprint.cli.command("synchronize_accessibility_with_acceslibre")
-@click.option("--dry-run", type=bool, default=False)
-@click.option("--force-sync", type=bool, default=False)
+@click.option("--dry-run", is_flag=True)
+@click.option("--force-sync", is_flag=True)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 def synchronize_accessibility_with_acceslibre(
@@ -178,7 +178,7 @@ def synchronize_accessibility_with_acceslibre(
 
 
 @blueprint.cli.command("acceslibre_matching")
-@click.option("--dry-run", type=bool, default=False)
+@click.option("--dry-run", is_flag=True)
 @click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 @click.option("--n-days-to-fetch", type=int, default=7, help="Number of days to look for new data at acceslibre")

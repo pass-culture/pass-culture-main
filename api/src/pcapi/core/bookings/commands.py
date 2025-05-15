@@ -21,10 +21,10 @@ def archive_old_bookings() -> None:
 
 @blueprint.cli.command("recompute_dnBookedQuantity")
 @click.argument("stock-ids", type=int, nargs=-1, required=True)
-@click.option("--dry-run", type=bool, default=True)
-def recompute_dnBookedQuantity(stock_ids: list[int], dry_run: bool = True) -> None:
+@click.option("--not-dry", is_flag=True)
+def recompute_dnBookedQuantity(stock_ids: list[int], not_dry: bool = False) -> None:
     api.recompute_dnBookedQuantity(stock_ids)
-    if not dry_run:
+    if not_dry:
         db.session.commit()
     else:
         db.session.rollback()
