@@ -19,7 +19,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.providers.titelive_book_search import get_ineligibility_reason
+from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -182,9 +182,9 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         try:
             data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
         except Exception:
-            ineligibility_reason = None
+            ineligibility_reasons = None
         else:
-            ineligibility_reason = get_ineligibility_reason(data.article[0], data.titre)
+            ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
 
         product_whitelist = (
             db.session.query(fraud_models.ProductWhitelist)
@@ -204,7 +204,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         )
     else:
         titelive_data = None
-        ineligibility_reason = None
+        ineligibility_reasons = None
         product_whitelist = None
 
     return render_template(
@@ -221,7 +221,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         approved_inactive_offers_count=approved_inactive_offers_count,
         pending_offers_count=pending_offers_count,
         rejected_offers_count=rejected_offers_count,
-        ineligibility_reason=ineligibility_reason,
+        ineligibility_reasons=ineligibility_reasons,
         product_whitelist=product_whitelist,
     )
 
@@ -248,19 +248,19 @@ def get_product_synchro_with_titelive_form(product_id: int) -> utils.BackofficeR
     try:
         data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
     except Exception:
-        ineligibility_reason = None
+        ineligibility_reasons = None
     else:
-        ineligibility_reason = get_ineligibility_reason(data.article[0], data.titre)
+        ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
 
     return render_template(
         "products/titelive_synchro_modal.html",
         form=empty_forms.EmptyForm(),
-        dst=url_for(".synchro_product_with_titelive", product_id=product_id, json=titelive_data),
+        dst=url_for(".synchro_product_with_titelive", product_id=product_id),
         title="Données récupérer via l'API Titelive",
         titelive_data=titelive_data,
         div_id=f"synchro-product-modal-{product.id}",
         button_text="Mettre le produit à jour avec ces informations",
-        ineligibility_reason=ineligibility_reason,
+        ineligibility_reasons=ineligibility_reasons,
         product_whitelist=None,
     )
 
@@ -329,8 +329,8 @@ def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.product.blacklist_product", product_id=product.id),
         div_id=f"blacklist-product-modal-{product.id}",
-        title=f"Blacklisté le produit  {product.name}",
-        button_text="Blacklisté le produit",
+        title=f"Blacklister le produit  {product.name}",
+        button_text="Blacklister le produit",
     )
 
 
@@ -375,7 +375,9 @@ def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
+    product = db.session.query(offers_models.Product).get(product_id)
     offers = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
     for offer in offers:
-        offer.productId = product_id
+        offer.name = product.name
+        offer.productId = product.id
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)

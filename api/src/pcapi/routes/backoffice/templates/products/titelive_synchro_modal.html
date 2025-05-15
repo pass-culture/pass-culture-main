@@ -17,7 +17,7 @@
             aria-label="Fermer"></button>
   </div>
   {% if titelive_data %}
-    {{ render_titelive_information(titelive_data, ineligibility_reason, product_whitelist) }}
+    {{ render_titelive_information(titelive_data, ineligibility_reasons, product_whitelist) }}
     {% if has_permission("PRO_FRAUD_ACTIONS") %}
       <div class="modal-footer">
         <button type="button"

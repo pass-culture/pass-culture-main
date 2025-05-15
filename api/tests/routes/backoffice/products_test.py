@@ -224,11 +224,11 @@ class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert f"Blacklisté le produit {product.name}" in response_text
+        assert f"Blacklister le produit {product.name}" in response_text
 
         buttons = html_parser.extract(response.data, "button")
         assert "Annuler" in buttons
-        assert "Blacklisté le produit" in buttons
+        assert "Blacklister le produit" in buttons
 
 
 class PostProductBlacklistTest(PostEndpointHelper):
@@ -462,3 +462,7 @@ class LinkUnlinkedOfferToProductTest(PostEndpointHelper):
         assert response.status_code == 303
         assert len(product.offers) == len(unlinked_offers)
         assert product.offers == unlinked_offers
+        assert len({offer.name for offer in unlinked_offers}) == 1
+        assert product.name == unlinked_offers[0].name
+        assert len({offer.description for offer in unlinked_offers}) == 1
+        assert product.description == unlinked_offers[0].description
