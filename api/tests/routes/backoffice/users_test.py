@@ -713,7 +713,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
         )
 
     def test_user_does_not_exists(self, authenticated_client):
-        with assert_num_queries(4):  # session + current user + get_user + rollback
+        with assert_num_queries(3):  # session + current user + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=0))
             assert response.status_code == 404
 

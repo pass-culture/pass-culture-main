@@ -4,6 +4,7 @@ import re
 import sqlalchemy as sa
 
 import pcapi
+from pcapi.models import db
 
 
 ANONYMIZE_SQL_PATH = pathlib.Path(pcapi.__path__[0]) / "scripts" / "rebuild_staging" / "anonymize.sql"
@@ -30,4 +31,4 @@ class AnonymizeTest:
                 else:
                     sql.append(line)
         sql = "\n".join(sql)
-        db_session.execute(sa.text(sql))
+        db.session.execute(sa.text(sql))

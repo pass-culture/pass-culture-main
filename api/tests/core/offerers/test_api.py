@@ -78,7 +78,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
     offerers_api.auto_tag_new_offerer(offerer, siren_info, user)
 
     # then
-    db_session.refresh(offerer)
+    db.session.refresh(offerer)
     assert expected_tag in (tag.label for tag in offerer.tags)
 
 
