@@ -1,81 +1,8 @@
 ARG network_mode=default
 
-########## BUILDER ##########
+########## SOURCES FILES ##########
 
-FROM python:3.11-slim AS builder
-
-RUN apt update \
-    && apt -y install \
-    gcc \
-    g++ \
-    libgdal-dev \
-    libpq-dev  && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists*
-
-RUN useradd -rm -d /home/pcapi -u 1000 pcapi
-
-USER pcapi
-
-ENV PYTHONUNBUFFERED 1
-
-COPY ./pyproject.toml ./poetry.lock ./
-
-ENV PATH=$PATH:/home/pcapi/.local/bin
-
-########## BUILDER PROXY ##########
-
-FROM builder AS builder-proxy
-
-COPY /cacert.pem /cacert.pem
-
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem pip install poetry
-
-WORKDIR /home/pcapi
-
-RUN poetry check --lock
-
-ENV VIRTUAL_ENV=/home/pcapi/.local
-
-RUN python -m venv $VIRTUAL_ENV
-
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --without dev --no-root
-
-########## BUILDER DEFAULT ##########
-
-FROM builder AS builder-default
-
-RUN pip install poetry
-
-WORKDIR /home/pcapi
-
-RUN poetry check --lock
-
-ENV VIRTUAL_ENV=/home/pcapi/.local
-
-RUN python -m venv $VIRTUAL_ENV
-
-RUN poetry install --without dev --no-root
-
-########## DEV BUILDER PROXY ##########
-
-FROM builder-${network_mode} AS builder-dev-proxy
-
-RUN poetry check --lock
-
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev --no-root
-
-########## DEV BUILDER DEFAULT ##########
-
-FROM builder-${network_mode} AS builder-dev-default
-
-RUN poetry check --lock
-
-RUN poetry install --only dev --no-root
-
-########## SOURCES ##########
-
-FROM python:3.11-slim AS sources
+FROM python:3.11-slim-bookworm AS source-files
 
 RUN mkdir -p /tmp/src
 
@@ -83,20 +10,91 @@ WORKDIR /tmp/src
 
 COPY . .
 
-RUN rm -rf tests/ pyproject.toml
+RUN rm -rf tests/
 
-######### LIB ##########
+########## DEFAULT BUILDER #########
 
-FROM python:3.11-slim AS lib
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.11-bookworm-slim AS builder-dependencies
+
+RUN apt-get update \
+    && apt-get -y install \
+    gcc \
+    g++ \
+    libgdal-dev \
+    libpq-dev && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists*
+
+FROM builder-dependencies AS builder-default
+
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1 
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy 
+
+# Disable Python downloads, because we want to use the system interpreter across both images
+ENV UV_PYTHON_DOWNLOADS=0
+
+# Display python outputs in real time, without a buffer
+ENV PYTHONUNBUFFERED=1
+
+# Install as user of root
+RUN useradd -rm -d /home/pcapi -u 1000 pcapi
+USER pcapi
+
+WORKDIR /usr/src/app
+
+########## PROXY NETWORK BUILDER ##########
+
+FROM builder-default AS builder-proxy
+
+# Set up the proxy network
+COPY /cacert.pem /cacert.pem
+ENV REQUESTS_CA_BUNDLE=/cacert.pem 
+ENV PIP_CERT=/cacert.pem 
+ENV CURL_CA_BUNDLE=/cacert.pem SSL_CERT_FILE=/cacert.pem
+
+########## BUILDER ##########
+
+FROM builder-${network_mode} AS builder
+
+# Install the project's dependencies
+RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=1000,gid=1000 \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-dev
+
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+COPY --from=source-files --chown=pcapi:pcapi /tmp/src /usr/src/app
+RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=1000,gid=1000 \
+    uv sync --locked --no-dev
+
+########## DEV BUILDER ##########
+
+FROM builder AS builder-dev
+
+# Install the project's dev dependencies
+RUN --mount=type=cache,target=/home/pcapi/.cache/uv,uid=1000,gid=1000 \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --only-dev
+
+######### IMAGES ##########
+
+FROM python:3.11-slim-bookworm AS image-dependencies
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
-ENV PATH=$PATH:/home/pcapi/.local/bin
-ENV PROMETHEUS_MULTIPROC_DIR /tmp
-ENV FLASK_PROMETHEUS_EXPORTER_PORT 5002
+ENV PATH="/usr/src/app/.venv/bin:/$PATH"
+ENV PROMETHEUS_MULTIPROC_DIR=/tmp
+ENV FLASK_PROMETHEUS_EXPORTER_PORT=5002
 
-RUN apt update \
-    && apt --no-install-recommends -y install \
+RUN apt-get update \
+    && apt-get --no-install-recommends -y install \
+    curl \
     libglib2.0-0 \
     libpango-1.0-0 \
     libpangoft2-1.0-0 \
@@ -106,71 +104,44 @@ RUN apt update \
 
 WORKDIR /usr/src/app
 
-COPY --from=sources --chown=pcapi:pcapi /tmp/src .
-
 RUN chown pcapi:pcapi /usr/src/app
 
-USER pcapi
+######### PRODUCTION IMAGE #########
 
-########## LIB PROD ##########
+FROM image-dependencies AS pcapi
 
-FROM builder-${network_mode} AS builder-prod
-
-FROM lib AS lib-prod
-
-COPY --from=builder-prod /home/pcapi/.local /home/pcapi/.local
-
-########## LIB DEV ##########
-
-FROM builder-dev-${network_mode} AS builder-dev
-
-FROM lib AS lib-dev
-
-COPY --from=builder-dev /home/pcapi/.local /home/pcapi/.local
-
-######### DEV ##########
-
-FROM lib-dev AS api-flask
+COPY --from=builder --chown=pcapi:pcapi /usr/src/app /usr/src/app
 
 USER root
-
-RUN apt update && apt --no-install-recommends -y install curl postgresql-client libgdal-dev
-
-USER pcapi
-
-RUN pip install --no-cache-dir --user -e .
-
-######### PRODUCTION #########
-
-FROM lib-prod AS pcapi
-
-USER root
-
-RUN apt update && apt --no-install-recommends -y install curl
 
 RUN curl -o /usr/local/share/ca-certificates/DigiCertGlobalRootG2.crt.pem https://cacerts.digicert.com/DigiCertGlobalRootG2.crt.pem && \
     update-ca-certificates
 
 USER pcapi
 
-WORKDIR /usr/src/app
-
-RUN pip install \
-    --no-cache-dir \
-    --editable .
-
 ENTRYPOINT exec ./entrypoint.sh
 
-######### CONSOLE #########
+######### DEV IMAGE ##########
 
-FROM lib-dev AS pcapi-console-proxy
+FROM image-dependencies AS api-flask
 
+RUN apt update && apt --no-install-recommends -y install postgresql-client libgdal-dev
+
+COPY --from=builder --chown=pcapi:pcapi /usr/src/app /usr/src/app
+
+USER pcapi
+
+######### CONSOLE IMAGE #########
+
+FROM api-flask AS pcapi-console-proxy
+
+# Setup the proxy network
 COPY /cacert.pem /usr/local/share/ca-certificates/cacert.pem
-ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem
+ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem 
 ENV PIP_CERT=/usr/local/share/ca-certificates/cacert.pem 
 ENV CURL_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem
 
-FROM lib-dev AS pcapi-console-default
+FROM api-flask AS pcapi-console-default
 
 FROM pcapi-console-${network_mode} AS pcapi-console 
 
@@ -189,14 +160,7 @@ RUN apt update && apt install --no-install-recommends -y curl less gnupg2 && \
 
 USER pcapi
 
-WORKDIR /usr/src/app
-
-RUN pip install \
-    --no-cache-dir \
-    --editable .
-
-
-######### TESTS #########
+######### TESTS IMAGE #########
 
 FROM api-flask AS pcapi-tests
 
@@ -207,9 +171,9 @@ RUN apt update && apt install -y git npm --no-install-recommends && \
     rm -rf /var/lib/apt/lists*
 
 COPY --chown=pcapi:pcapi tests/ tests
-COPY --chown=pcapi:pcapi pyproject.toml .
 
 USER pcapi
 
+ENV PATH="$HOME/.local/bin:$PATH"
 RUN npm config set prefix "$HOME/.local/"
 RUN npm install --global squawk-cli@1.4.0
