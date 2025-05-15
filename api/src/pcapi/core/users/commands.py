@@ -53,10 +53,8 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 )
 @click.option(
     "--force",
-    type=bool,
     help="If True users will be anonymized even if they have an address without an IRIS",
     is_flag=True,
-    default=False,
 )
 @cron_decorators.log_cron_with_transaction
 def anonymize_inactive_users(category: str, force: bool) -> None:
@@ -104,16 +102,12 @@ def sync_ds_instructor_ids() -> None:
 @blueprint.cli.command("sync_ds_user_account_update_requests")
 @click.option(
     "--ignore_previous",
-    type=bool,
     is_flag=True,
-    default=False,
     help="Import all application ignoring previous import date",
 )
 @click.option(
     "--set-without-continuation",
-    type=bool,
     is_flag=True,
-    default=False,
     help="Set unanswered for 30 days applications to without continuation",
 )
 @cron_decorators.log_cron_with_transaction

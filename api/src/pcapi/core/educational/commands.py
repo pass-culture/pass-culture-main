@@ -34,8 +34,8 @@ def reindex_all_collective_offers() -> None:
 
 
 @blueprint.cli.command("generate_fake_adage_token")
-@click.option("--readonly", type=bool, is_flag=True, default=False, help="Generate a readonly token.")
-@click.option("--cannot-prebook", type=bool, is_flag=True, default=False, help="Generate a token that cannot prebook.")
+@click.option("--readonly", is_flag=True, help="Generate a readonly token.")
+@click.option("--cannot-prebook", is_flag=True, help="Generate a token that cannot prebook.")
 def generate_fake_adage_token(readonly: bool, cannot_prebook: bool) -> None:
     """
     TO BE USED IN LOCAL ENV
@@ -64,9 +64,11 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool) -> None:
     default="keep",
     help="Overide previous ministry if needed.",
 )
-@click.option("--final", type=bool, is_flag=True, default=False, help="Flag deposits as final.")
-@click.option("--dry-run", type=bool, default=True, help="Do not commit the changes.")
-def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, final: bool, dry_run: bool) -> None:
+@click.option("--final", is_flag=True, help="Flag deposits as final.")
+@click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
+def import_deposit_csv(
+    *, path: str, year: int, ministry: str, conflict: str, final: bool, not_dry: bool = False
+) -> None:
     """
     import CSV deposits and update institution according to adage data.
 
@@ -75,19 +77,17 @@ def import_deposit_csv(*, path: str, year: int, ministry: str, conflict: str, fi
     institution_api.import_deposit_institution_csv(
         path=path, year=year, ministry=ministry, conflict=conflict, final=final, program_name=None
     )
-    if not dry_run:
+    if not_dry:
         db.session.commit()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
 @click.option(
     "--debug",
-    type=bool,
     is_flag=True,
-    default=False,
     help="Activate debugging (add logs)",
 )
-@click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
+@click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
 @log_cron_with_transaction
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
@@ -102,7 +102,7 @@ def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_ti
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
-@click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
+@click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
 @log_cron_with_transaction
 def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
@@ -136,9 +136,7 @@ def handle_pending_collective_booking_j3() -> None:
 @blueprint.cli.command("import_eac_dms_application")
 @click.option(
     "--ignore_previous",
-    type=bool,
     is_flag=True,
-    default=False,
     help="Import all application ignoring previous import date",
 )
 @log_cron_with_transaction
@@ -190,11 +188,11 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Dec
     help="The adage year id. If not provided, the current year will be used.",
     required=False,
 )
-@click.option("--dry-run", type=bool, default=True, help="Do not commit the changes.")
-def synchronise_institutions_geolocation(adage_year_id: str | None, dry_run: bool) -> None:
+@click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
+def synchronise_institutions_geolocation(adage_year_id: str | None, not_dry: bool = False) -> None:
     institution_api.synchronise_institutions_geolocation(adage_year_id=adage_year_id)
 
-    if not dry_run:
+    if not_dry:
         db.session.commit()
 
 

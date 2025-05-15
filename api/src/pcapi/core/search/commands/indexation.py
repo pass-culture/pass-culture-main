@@ -114,7 +114,7 @@ def _partially_index(
 
 
 @blueprint.cli.command("partially_index_offers")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
+@click.option("--clear", help="Clear search index first", is_flag=True)
 @click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
 @click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
 @click.option("--last-page", help="Last page of offers to index", type=int, default=None)
@@ -137,7 +137,7 @@ def partially_index_offers(
 
 
 @blueprint.cli.command("partially_index_collective_offer_templates")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
+@click.option("--clear", help="Clear search index first", is_flag=True)
 @click.option("--batch-size", help="Number of templates per page", type=int, default=10_000)
 @click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
 @click.option("--last-page", help="Last page of templates to index", type=int, default=None)
@@ -166,7 +166,7 @@ def partially_index_collective_offer_templates(
 
 
 @blueprint.cli.command("partially_index_venues")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
+@click.option("--clear", help="Clear search index first", is_flag=True)
 @click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
 @click.option("--max-venues", help="Max number of venues (total)", type=int, default=10_000)
 def partially_index_venues(clear: bool, batch_size: int, max_venues: int) -> None:
@@ -196,7 +196,7 @@ def update_products_booking_count_and_reindex_offers() -> None:
 
 
 @blueprint.cli.command("index_offers_staging")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
+@click.option("--clear", help="Clear search index first", is_flag=True)
 def index_offers_staging(clear: bool) -> None:
     """Index a subset of offers for staging.
     we do not index by batch because we only have 5000 offers to index
