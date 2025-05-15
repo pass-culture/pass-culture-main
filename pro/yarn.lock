@@ -2589,26 +2589,19 @@ algoliasearch@>=4:
     "@algolia/requester-fetch" "5.24.0"
     "@algolia/requester-node-http" "5.24.0"
 
-allure-js-commons@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.2.1.tgz#d17595678cc09e00ff0938894329762f5db8bdeb"
-  integrity sha512-VGLv6u3I9NIm649dYmGpG3X5sOnI0tt7K1WYTVZPiEpnsxBbFEfDr6yAI7q509WWw/5g0VBCEtGEspd6AoYOqA==
-  dependencies:
-    md5 "^2.3.0"
-
-allure-js-commons@^3.2.2:
+allure-js-commons@3.2.2, allure-js-commons@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.2.2.tgz#f8c494b7f20b6f2270a4d2924b94a0c9b7762df6"
   integrity sha512-qr9r9+HpyNmbaaAtNDK6qXXar7RcYQECf8hOtH/e8DFKZNahIkfFYU0LP4Q7SPbqyAZsGbocTKikVx9L2po+eg==
   dependencies:
     md5 "^2.3.0"
 
-allure-vitest@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/allure-vitest/-/allure-vitest-3.2.1.tgz#507e5f3ac327d43274b68802702e55b4dd1d9b62"
-  integrity sha512-gTG2SDDQeSCn6YClzjUqKf1SF44b2zuSLQtEFHE9noGelg8Fg9RbtxrICmTZFaCOyesT+A9P2THvZdAwL4sE6g==
+allure-vitest@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/allure-vitest/-/allure-vitest-3.2.2.tgz#010ee2d27a3df9e9b36ff1d86b6269582e6eeef5"
+  integrity sha512-4jErRe1Qq5heH9UPUe22ZY5Ll/4W8mU68W8gtDhdilKikR7AkOx/rZ9nyb72Uv5fYL9Tvza2HmoyEXJtiDbfJQ==
   dependencies:
-    allure-js-commons "3.2.1"
+    allure-js-commons "3.2.2"
 
 ansi-colors@^4.1.1:
   version "4.1.3"
