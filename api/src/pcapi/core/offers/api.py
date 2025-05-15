@@ -2232,6 +2232,7 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
     delete_mediations(offer_ids)
 
 
+@atomic()
 def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], offer_chunk_size: int = 16) -> None:
     """Delete a set of offers and all of their related objects and
     unindex them all. Each removal is done by batch which runs inside
