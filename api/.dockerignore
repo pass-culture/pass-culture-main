@@ -8,7 +8,6 @@ __pycache__
 .local
 
 # Local env
-start-api-when-database-is-ready.sh
 .venv
 
 # Tests

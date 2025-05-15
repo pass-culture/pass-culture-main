@@ -95,6 +95,7 @@ jobs:
             --name pc-api \
             --workdir /usr/src/app \
             --volume ./api:/usr/src/app \
+            --volume /usr/src/app/.venv \
             --env-file ./env_file \
             --tty \
             --detach \
