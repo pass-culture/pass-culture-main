@@ -59,7 +59,7 @@ jobs:
           version: ">= 363.0.0"
 
       - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.1.0
+        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
         with:
           cluster_scope: metier
           cluster_environment: ehp
