@@ -8,6 +8,7 @@ import click
 from pcapi.core import search
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
@@ -154,6 +155,12 @@ def _move_price_category_label(origin_venue: offerers_models.Venue, destination_
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
+def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
+    db.session.query(finance_models.FinanceIncident).filter(
+        finance_models.FinanceIncident.venueId == origin_venue.id
+    ).update({"venueId": destination_venue.id}, synchronize_session=False)
+
+
 def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
     for row in _get_venue_rows(origin, destination):
@@ -181,6 +188,7 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
             _move_collective_offer_template(origin_venue, destination_venue)
             _move_collective_offer_playlist(origin_venue, destination_venue)
             _move_price_category_label(origin_venue, destination_venue)
+            _move_finance_incident(origin_venue, destination_venue)
             if not dry_run:
                 db.session.commit()
                 search.reindex_venue_ids([origin_venue_id])
