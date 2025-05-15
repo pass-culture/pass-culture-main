@@ -14,6 +14,7 @@ from pcapi.models.pc_object import PcObject
 
 
 class TimeInterval(PcObject, Base, Model):
+    __tablename__ = "test_time_interval"
     start = sa.Column(sa.DateTime)
     end = sa.Column(sa.DateTime)
 
