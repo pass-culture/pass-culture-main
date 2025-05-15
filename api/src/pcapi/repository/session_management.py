@@ -76,7 +76,19 @@ class atomic:
                 invalid_transaction=False,
             )
         )
-        db.session.begin_nested()
+
+        # Detect nested calls to atomic context manager to start nested session
+        # only if necessary: if a code block only has one call to `atomic` as a
+        # context manager, there is no need to start nested sessions (or
+        # transactions). When `_atomic_ctx_manager_entered` > 0, there is at
+        # least one nested call to atomic as a context manager, therefore a
+        # nested session must be started.
+        g._atomic_ctx_manager_entered = getattr(g, "_atomic_ctx_manager_entered", -1)
+        g._atomic_ctx_manager_entered += 1
+
+        if _is_managed_session() or g._atomic_ctx_manager_entered > 0:
+            db.session.begin_nested()
+
         db.session.autoflush = False
         return self
 
@@ -95,6 +107,11 @@ class atomic:
             db.session.rollback()
         else:
             db.session.commit()
+
+        # decrement to avoid unexpected behaviour in case of multiple
+        # consecutive (but not nested) calls which should not start nested
+        # sessions/transactions (see `__enter__`).
+        g._atomic_ctx_manager_entered -= 1
 
         # do not suppress the exception
         return False
