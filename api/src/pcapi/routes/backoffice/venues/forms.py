@@ -294,6 +294,8 @@ class RemovePricingPointForm(utils.PCForm):
 
 
 class PricingPointForm(utils.PCForm):
+    allow_self = True
+
     new_pricing_point = fields.PCSelectWithPlaceholderValueField(
         "Nouveau point de valorisation", choices=[], coerce=int
     )
@@ -303,9 +305,10 @@ class PricingPointForm(utils.PCForm):
         self.new_pricing_point.choices = [
             (offerer_venue.id, f"{offerer_venue.name} ({offerer_venue.siret})")
             for offerer_venue in venue.managingOfferer.managedVenues
-            if offerer_venue.siret and offerer_venue.id != venue.id
+            if offerer_venue.siret and (self.allow_self or offerer_venue.id != venue.id)
         ]
 
 
 class RemoveSiretForm(RemovePricingPointForm, PricingPointForm):
+    allow_self = False
     comment = fields.PCCommentField("Commentaire qui apparaîtra sur le partenaire culturel")
