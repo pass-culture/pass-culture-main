@@ -31,7 +31,7 @@ function build_proxy_backend {
 
 function start_backend {
     concat_command
-    RUN="$RUN docker compose -f $ROOT_PATH/docker-compose-backend.yml up"
+    RUN="$RUN docker compose -f $ROOT_PATH/docker-compose-backend.yml up --watch"
     if  [[ $SLOW == true ]];then
         RUN="$RUN --force-recreate"
     fi
