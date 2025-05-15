@@ -1058,17 +1058,20 @@ class PriceEventsTest:
     few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
 
     def test_basics(self):
-        event1 = factories.UsedBookingFinanceEventFactory(
+        event1_id = factories.UsedBookingFinanceEventFactory(
             booking__dateUsed=self.few_minutes_ago,
             booking__stock__offer__venue__pricing_point="self",
-        )
-        event2 = factories.UsedBookingFinanceEventFactory(
+        ).id
+        event2_id = factories.UsedBookingFinanceEventFactory(
             booking__dateUsed=self.few_minutes_ago,
             booking__stock__offer__venue__pricing_point="self",
-        )
+        ).id
 
         api.price_events(min_date=self.few_minutes_ago)
 
+        # expunge is called in price_events, reload
+        event1 = db.session.query(models.FinanceEvent).filter_by(id=event1_id).one()
+        event2 = db.session.query(models.FinanceEvent).filter_by(id=event2_id).one()
         assert len(event1.pricings) == 1
         assert len(event2.pricings) == 1
         assert event1.status == models.FinanceEventStatus.PRICED
