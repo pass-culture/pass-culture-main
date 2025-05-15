@@ -7,7 +7,7 @@ $cardlink-max-width: rem.torem(565px);
 
 .cardlink {
   border: rem.torem(1px) solid var(--color-border-default);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   position: relative;
   max-width: $cardlink-max-width;
 

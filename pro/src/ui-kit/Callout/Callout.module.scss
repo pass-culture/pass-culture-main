@@ -5,7 +5,7 @@
   position: relative;
   display: flex;
   justify-content: left;
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   padding: rem.torem(16px);
 
   &-info {

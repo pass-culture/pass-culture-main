@@ -6,7 +6,7 @@
 .booking-status-label {
   @include fonts.body-accent-xs;
 
-  border-radius: rem.torem(5px);
+  border-radius: var(--border-radius-s);
   padding: rem.torem(5px) rem.torem(7px);
   white-space: nowrap;
   line-height: rem.torem(19px);
@@ -31,7 +31,7 @@
 .bs-tooltip {
   white-space: initial;
   background-color: var(--color-background-default);
-  border-radius: rem.torem(4px);
+  border-radius: var(--border-radius-s);
   box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 var(--color-large-shadow);
   color: var(--color-text-default);
   display: block;

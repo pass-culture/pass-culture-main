@@ -7,7 +7,7 @@
   @include forms.input-theme-nested;
 
   &.filter-variant {
-    border-radius: rem.torem(4px);
+    border-radius: var(--border-radius-s);
     padding: 0 size.$input-filter-variant-horizontal-padding;
     min-height: rem.torem(24px);
   }
