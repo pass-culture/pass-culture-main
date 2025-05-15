@@ -646,3 +646,6 @@ HARVESTR_API_KEY = secrets_utils.get("HARVESTR_API_KEY", "")
 CREDIT_V3_DECREE_DATETIME = datetime.fromisoformat(os.environ.get("CREDIT_V3_DECREE_DATETIME", "2025-01-01"))
 # PROXY configuration
 PROXY_CERT_BUNDLE = os.environ.get("PROXY_CERT_BUNDLE", None)
+
+# Institutional API key
+INSTITUTIONAL_API_KEY = secrets_utils.get("INSTITUTIONAL_API_KEY")
