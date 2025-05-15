@@ -39,12 +39,14 @@ jobs:
           echo "${{ inputs.ref }}" > version.txt
           git add version.txt
 
-      - name: "Install poetry"
-        run: pip install poetry
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.7.4"
 
-      - name: "check poetry lock is up to date"
+      - name: "check uv lock is up to date"
         working-directory: api
-        run: poetry check
+        run: uv lock --check
 
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
@@ -54,7 +56,7 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-          
+
       - name: "Build ${{ steps.compute-image-name.outputs.image_name }} image"
         uses: docker/build-push-action@v6
         with:
