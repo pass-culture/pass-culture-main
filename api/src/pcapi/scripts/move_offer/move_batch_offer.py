@@ -1,4 +1,5 @@
 import csv
+from functools import partial
 import logging
 import os
 import typing
@@ -14,6 +15,9 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
 from pcapi.core.offers import models as offer_models
 from pcapi.models import db
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -182,6 +186,7 @@ def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venu
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
+@atomic()
 def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
     for row in _get_venue_rows(origin, destination):
@@ -211,11 +216,16 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
             _move_price_category_label(origin_venue, destination_venue)
             _move_finance_incident(origin_venue, destination_venue)
             if not dry_run:
-                db.session.commit()
-                search.reindex_venue_ids([origin_venue_id])
-                logger.info("Transfert done for venue %d to venue %d", origin_venue_id, destination_venue_id)
+                on_commit(
+                    partial(
+                        search.reindex_venue_ids,
+                        [origin_venue_id],
+                    )
+                )
+                logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
             else:
                 db.session.flush()
+                mark_transaction_as_invalid()
     _extract_invalid_venues_to_csv(invalid_venues)
 
 
