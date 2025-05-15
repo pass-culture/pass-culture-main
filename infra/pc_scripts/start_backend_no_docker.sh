@@ -28,9 +28,9 @@ EOF
 }
 
 check_requirements() {
-  # check poetry is installed
+  # check uv is installed
   if ! command -v python &>/dev/null; then
-    echo "Error: Python not found. Run poetry shell"
+    echo "Error: Python not found. Run source .venv/bin/activate"
     return 1
   fi
 
