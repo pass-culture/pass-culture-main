@@ -232,7 +232,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["Type"] == "Lieu associé à un compte bancaire"
+        assert rows[0]["Type"] == "Partenaire culturel associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
@@ -271,13 +271,13 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert rows[0]["Type"] == "Lieu dissocié d'un compte bancaire"
+        assert rows[0]["Type"] == "Partenaire culturel dissocié d'un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(unlink_action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Auteur"] == legit_user.full_name
 
-        assert rows[1]["Type"] == "Lieu associé à un compte bancaire"
+        assert rows[1]["Type"] == "Partenaire culturel associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("Le %d/%m/%Y à "))
