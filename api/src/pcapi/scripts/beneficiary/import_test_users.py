@@ -332,12 +332,11 @@ def create_users_from_google_sheet(document_id: str, update_if_exists: bool = Fa
     "-d",
     "--default",
     is_flag=True,
-    default=False,
     help="Import from default Google document set in IMPORT_USERS_GOOGLE_DOCUMENT_ID",
 )
 @optgroup.option("-f", "--filename", help="Path to the CSV file to import")
 @optgroup.option("-g", "--google", "google_id", help="Google document id")
-@click.option("-u", "--update", help="Update users which already exist", is_flag=True, default=False)
+@click.option("-u", "--update", help="Update users which already exist", is_flag=True)
 def import_test_users(default: bool, filename: str, google_id: str, update: bool) -> None:
     """Creates or updates users listed in a Google Sheet or CSV file"""
 

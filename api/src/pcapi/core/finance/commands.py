@@ -37,12 +37,12 @@ def price_finance_events() -> None:
 
 
 @blueprint.cli.command("generate_cashflows_and_payment_files")
-@click.option("--override-feature-flag", help="Override feature flag", is_flag=True, default=False)
+@click.option("--override-feature-flag", help="Override feature flag", is_flag=True)
 @click.option("--cutoff", help="Datetime cutoff to put in UTC timezone", type=datetime.datetime, required=False)
-@click.option("--with-invoices", help="Launch invoices generation after cashflows generation", type=bool, default=True)
+@click.option("--without-invoices", help="Blocks invoices generation after cashflows generation", is_flag=True)
 @cron_decorators.log_cron_with_transaction
 def generate_cashflows_and_payment_files(
-    override_feature_flag: bool, cutoff: datetime.datetime, with_invoices: bool
+    override_feature_flag: bool, cutoff: datetime.datetime, without_invoices: bool
 ) -> None:
     flag = FeatureToggle.GENERATE_CASHFLOWS_BY_CRON
     if not override_feature_flag and not flag.is_active():
@@ -54,7 +54,7 @@ def generate_cashflows_and_payment_files(
     batch = finance_api.generate_cashflows_and_payment_files(cutoff)
     if FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW:
         finance_api.generate_invoices_and_debit_notes(batch)
-    elif with_invoices:
+    elif not without_invoices:
         try:
             finance_api.generate_invoices_and_debit_notes_legacy(batch)
         except finance_exceptions.NoInvoiceToGenerate:
@@ -212,9 +212,7 @@ def recredit_users() -> None:
 @blueprint.cli.command("import_ds_bank_information_applications")
 @click.option(
     "--ignore_previous",
-    type=bool,
     is_flag=True,
-    default=False,
     help="Import all application ignoring previous import date",
 )
 @click.option(

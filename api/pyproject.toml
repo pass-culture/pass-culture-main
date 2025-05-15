@@ -20,7 +20,7 @@ dependencies = [
   "brevo-python==1.1.2",
   "celery[redis]==5.5.2",
   "click-option-group==0.5.7",
-  "click==8.1.8",                      # regression with 8.2.0 (tests/core/finance/test_commands.py)
+  "click==8.2.0",
   "clickhouse-sqlalchemy==0.2.7",
   "cryptography==44.0.3",
   "ecdsa==0.19.1",                     # <0.20.0
