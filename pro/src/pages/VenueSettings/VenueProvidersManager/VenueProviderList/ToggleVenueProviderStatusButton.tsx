@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -25,6 +25,7 @@ export const ToggleVenueProviderStatusButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
   const { mutate } = useSWRConfig()
+  const dialogTriggerRef = useRef<HTMLButtonElement>(null)
 
   const updateVenueProviderStatus = async () => {
     setIsLoading(true)
@@ -44,7 +45,14 @@ export const ToggleVenueProviderStatusButton = ({
     } finally {
       setIsModalOpen(false)
       setIsLoading(false)
+      refocusDialogTrigger()
     }
+  }
+
+  function refocusDialogTrigger() {
+    setTimeout(() => {
+      dialogTriggerRef.current?.focus()
+    })
   }
 
   return (
@@ -55,6 +63,7 @@ export const ToggleVenueProviderStatusButton = ({
           variant={ButtonVariant.TERNARY}
           icon={fullPauseIcon}
           iconAlt="Mettre en pause la synchronisation"
+          ref={dialogTriggerRef}
         >
           Mettre en pause
         </Button>
@@ -64,13 +73,17 @@ export const ToggleVenueProviderStatusButton = ({
           variant={ButtonVariant.TERNARY}
           icon={fullPlayIcon}
           iconAlt="Réactiver la synchronisation"
+          ref={dialogTriggerRef}
         >
           Réactiver
         </Button>
       )}
 
       <ToggleVenueProviderStatusDialog
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setIsModalOpen(false)
+          refocusDialogTrigger()
+        }}
         onConfirm={updateVenueProviderStatus}
         isLoading={isLoading}
         isActive={venueProvider.isActive}

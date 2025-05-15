@@ -1,5 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
+import { ForwardedRef, forwardRef } from 'react'
 
 import fullOtherIcon from 'icons/full-other.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
@@ -57,41 +58,49 @@ type DropdownMenuWrapperProps = {
  * - **Dropdown Trigger**: The trigger button includes a `title` attribute to provide additional context for screen readers.
  * - **Keyboard Navigation**: The dropdown menu can be opened and closed using keyboard interactions, ensuring accessibility for all users.
  */
-export function DropdownMenuWrapper({
-  title,
-  triggerIcon,
-  triggerTooltip,
-  children,
-  triggerClassName,
-  contentClassName,
-}: DropdownMenuWrapperProps): JSX.Element {
-  const icon = triggerIcon || fullOtherIcon
+export const DropdownMenuWrapper = forwardRef(
+  (
+    {
+      title,
+      triggerIcon,
+      triggerTooltip,
+      children,
+      triggerClassName,
+      contentClassName,
+    }: DropdownMenuWrapperProps,
+    ref: ForwardedRef<HTMLButtonElement>
+  ) => {
+    const icon = triggerIcon || fullOtherIcon
 
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        className={cn(styles['menu-button'], triggerClassName)}
-        data-testid="dropdown-menu-trigger"
-        {...(triggerTooltip ? { asChild: true } : {})}
-      >
-        {triggerTooltip ? (
-          <ListIconButton icon={icon} tooltipContent={<>{title}</>} />
-        ) : (
-          <SvgIcon
-            src={icon}
-            alt={title}
-            className={styles['menu-button-icon']}
-          />
-        )}
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className={cn(styles['menu-list'], contentClassName)}
-          align="end"
+    return (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger
+          className={cn(styles['menu-button'], triggerClassName)}
+          data-testid="dropdown-menu-trigger"
+          ref={ref}
+          {...(triggerTooltip ? { asChild: true } : {})}
         >
-          {children}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-  )
-}
+          {triggerTooltip ? (
+            <ListIconButton icon={icon} tooltipContent={<>{title}</>} />
+          ) : (
+            <SvgIcon
+              src={icon}
+              alt={title}
+              className={styles['menu-button-icon']}
+            />
+          )}
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className={cn(styles['menu-list'], contentClassName)}
+            align="end"
+          >
+            {children}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    )
+  }
+)
+
+DropdownMenuWrapper.displayName = 'DropdownMenuWrapper'

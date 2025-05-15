@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -24,6 +24,13 @@ export const DeleteVenueProviderButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
   const { mutate } = useSWRConfig()
+  const dialogTriggerRef = useRef<HTMLButtonElement>(null)
+
+  function refocusDialogTrigger() {
+    setTimeout(() => {
+      dialogTriggerRef.current?.focus()
+    })
+  }
 
   const tryToDeleteVenueProvider = async () => {
     setIsLoading(true)
@@ -38,6 +45,7 @@ export const DeleteVenueProviderButton = ({
     } finally {
       setIsModalOpen(false)
       setIsLoading(false)
+      refocusDialogTrigger()
     }
   }
 
@@ -47,13 +55,17 @@ export const DeleteVenueProviderButton = ({
         onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
         icon={fullTrashIcon}
+        ref={dialogTriggerRef}
       >
         Supprimer
       </Button>
 
       <DeleteVenueProviderDialog
         onConfirm={tryToDeleteVenueProvider}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setIsModalOpen(false)
+          refocusDialogTrigger()
+        }}
         isLoading={isLoading}
         isDialogOpen={isModalOpen}
       />

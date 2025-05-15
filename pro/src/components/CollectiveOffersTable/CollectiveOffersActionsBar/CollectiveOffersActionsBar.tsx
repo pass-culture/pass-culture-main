@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
@@ -95,6 +95,8 @@ export function CollectiveOffersActionsBar({
   areAllOffersSelected,
   areTemplateOffers,
 }: CollectiveOffersActionsBarProps) {
+  const deactivateButtonRef = useRef<HTMLButtonElement>(null)
+
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const notify = useNotification()
@@ -225,7 +227,6 @@ export function CollectiveOffersActionsBar({
         return
       }
     })
-
     setIsDeactivationDialogOpen(true)
   }
 
@@ -318,7 +319,12 @@ export function CollectiveOffersActionsBar({
         onConfirm={() =>
           updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
         }
-        onCancel={() => setIsDeactivationDialogOpen(false)}
+        onCancel={() => {
+          setIsDeactivationDialogOpen(false)
+          setTimeout(() => {
+            deactivateButtonRef.current?.focus()
+          })
+        }}
         isDialogOpen={isDeactivationDialogOpen}
       />
 
@@ -354,6 +360,7 @@ export function CollectiveOffersActionsBar({
             onClick={openHideOffersDialog}
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
+            ref={deactivateButtonRef}
           >
             Mettre en pause
           </Button>

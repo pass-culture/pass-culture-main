@@ -831,7 +831,6 @@ export const StocksEventEdition = ({
                       )}
                     </tbody>
                   </table>
-
                   <Pagination
                     currentPage={page}
                     pageCount={pageCount}
@@ -850,7 +849,6 @@ export const StocksEventEdition = ({
                       nextPage()
                     }}
                   />
-
                   <DialogStockEventDeleteConfirm
                     onConfirm={async () => {
                       if (!stockToDeleteWithConfirmation) {

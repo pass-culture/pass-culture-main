@@ -1,4 +1,3 @@
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { DS_BANK_ACCOUNT_PROCEDURE_ID } from 'commons/utils/config'

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -31,11 +31,18 @@ export const AddVenueProviderButton = ({
 }: AddVenueProviderButtonProps) => {
   const { mutate } = useSWRConfig()
 
+  const [isCinemaProviderDialogOpen, setIsCinemaProviderDialogOpen] =
+    useState(false)
+
+  const addSoftwareButtonRef = useRef<HTMLButtonElement>(null)
+
   const providersQuery = useSWR(
     [GET_PROVIDERS_QUERY_KEY, venue.id],
     ([, venueIdParam]) => api.getProvidersByVenue(venueIdParam)
   )
   const providers = providersQuery.data
+
+  const selectProviderRef = useRef<HTMLSelectElement>(null)
 
   const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
@@ -104,7 +111,11 @@ export const AddVenueProviderButton = ({
 
   const afterSubmit = async () => {
     cancelProviderSelection()
+    setIsCinemaProviderDialogOpen(false)
     await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
+    setTimeout(() => {
+      addSoftwareButtonRef.current?.focus()
+    })
   }
 
   const AddButton = (
@@ -112,6 +123,7 @@ export const AddVenueProviderButton = ({
       onClick={setCreationMode}
       variant={ButtonVariant.SECONDARY}
       icon={fullMoreIcon}
+      ref={addSoftwareButtonRef}
     >
       Sélectionner un logiciel
     </Button>
@@ -122,11 +134,15 @@ export const AddVenueProviderButton = ({
       <FieldLayout label="Logiciel" name="provider">
         <SelectInput
           defaultOption={DEFAULT_PROVIDER_OPTION}
-          onChange={(event) => setSelectedProviderId(event.target.value)}
+          onChange={(event) => {
+            setSelectedProviderId(event.target.value)
+            setIsCinemaProviderDialogOpen(true)
+          }}
           name="provider"
           options={providersOptions}
           value={String(selectedProviderId)}
           data-testid="provider-select"
+          ref={selectProviderRef}
         />
       </FieldLayout>
 
@@ -135,6 +151,13 @@ export const AddVenueProviderButton = ({
           afterSubmit={afterSubmit}
           provider={selectedProvider}
           venue={venue}
+          isDialogOpen={isCinemaProviderDialogOpen}
+          onDialogClosed={() => {
+            setIsCinemaProviderDialogOpen(false)
+            setTimeout(() => {
+              selectProviderRef.current?.focus()
+            })
+          }}
         />
       )}
     </>

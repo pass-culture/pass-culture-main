@@ -19,14 +19,19 @@ interface VenueProviderFormProps {
   afterSubmit: () => Promise<void>
   provider: ProviderResponse
   venue: GetVenueResponseModel
+  onDialogClosed: () => void
+  isDialogOpen: boolean
 }
 
 export const VenueProviderForm = ({
   afterSubmit,
   provider,
   venue,
+  onDialogClosed,
+  isDialogOpen,
 }: VenueProviderFormProps) => {
   const notify = useNotification()
+
   const createVenueProvider = async (
     payload?: PostVenueProviderBody
   ): Promise<boolean> => {
@@ -46,29 +51,38 @@ export const VenueProviderForm = ({
   const shouldDisplayCinemaDrawer =
     isAllocineProvider(provider) || isCinemaProvider(provider)
 
-  return shouldDisplayCinemaDrawer ? (
-    <DialogBuilder
-      variant="drawer"
-      title="Modifier les paramètres de vos offres"
-      defaultOpen={shouldDisplayCinemaDrawer}
-    >
-      <GenericCinemaProviderForm
-        isCreatedEntity
-        showAdvancedFields={isAllocineProvider(provider)}
-        providerId={Number(provider.id)}
-        saveVenueProvider={createVenueProvider}
-        venueId={venue.id}
-        offererId={venue.managingOfferer.id}
-      />
-    </DialogBuilder>
-  ) : (
-    <StocksProviderForm
-      providerId={Number(provider.id)}
-      saveVenueProvider={createVenueProvider}
-      siret={venue.siret}
-      venueId={venue.id}
-      hasOffererProvider={provider.hasOffererProvider}
-      offererId={venue.managingOfferer.id}
-    />
+  return (
+    <>
+      <DialogBuilder
+        variant="drawer"
+        title="Modifier les paramètres de vos offres"
+        open={isDialogOpen && shouldDisplayCinemaDrawer}
+        onOpenChange={(open) => {
+          if (!open) {
+            onDialogClosed()
+          }
+        }}
+      >
+        <GenericCinemaProviderForm
+          isCreatedEntity
+          showAdvancedFields={isAllocineProvider(provider)}
+          providerId={Number(provider.id)}
+          saveVenueProvider={createVenueProvider}
+          venueId={venue.id}
+          offererId={venue.managingOfferer.id}
+        />
+      </DialogBuilder>
+
+      {!shouldDisplayCinemaDrawer && (
+        <StocksProviderForm
+          providerId={Number(provider.id)}
+          saveVenueProvider={createVenueProvider}
+          siret={venue.siret}
+          venueId={venue.id}
+          hasOffererProvider={provider.hasOffererProvider}
+          offererId={venue.managingOfferer.id}
+        />
+      )}
+    </>
   )
 }

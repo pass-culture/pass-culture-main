@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
@@ -41,6 +41,9 @@ export const BankInformations = (): JSX.Element => {
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
 
+  const bankAccountsDialogTriggerRef = useRef<HTMLButtonElement>(null)
+  const dmsDialogTriggerRef = useRef<HTMLButtonElement>(null)
+
   const bankAccountVenuesQuery = useSWR(
     [GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES, selectedOffererId],
     ([, offererId]) =>
@@ -74,6 +77,10 @@ export const BankInformations = (): JSX.Element => {
       }
       setSelectedBankAccount(null)
     }
+
+    setTimeout(() => {
+      bankAccountsDialogTriggerRef.current?.focus()
+    })
   }
 
   let bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
@@ -134,6 +141,7 @@ export const BankInformations = (): JSX.Element => {
                       .length > 0) ??
                   false
                 }
+                ref={bankAccountsDialogTriggerRef}
               />
             ))}
           </div>
@@ -155,12 +163,16 @@ export const BankInformations = (): JSX.Element => {
             offererId: selectedOfferer?.id,
           })
         }}
+        ref={dmsDialogTriggerRef}
       >
         Ajouter un compte bancaire
       </Button>
       <AddBankInformationsDialog
         closeDialog={() => {
           setShowAddBankInformationsDialog(false)
+          setTimeout(() => {
+            dmsDialogTriggerRef.current?.focus()
+          })
         }}
         offererId={selectedOfferer?.id}
         isDialogOpen={showAddBankInformationsDialog}

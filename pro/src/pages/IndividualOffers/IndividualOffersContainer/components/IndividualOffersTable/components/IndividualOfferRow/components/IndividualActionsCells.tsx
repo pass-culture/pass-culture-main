@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
@@ -66,6 +66,8 @@ export const IndividualActionsCells = ({
       ? (storedFilters as Partial<SearchFiltersParams>)
       : {}),
   }
+
+  const actionsButtonRef = useRef<HTMLButtonElement>(null)
 
   const { mutate } = useSWRConfig()
   const [isConfirmDialogDeleteDraftOpen, setIsConfirmDialogDeleteDraftOpen] =
@@ -140,6 +142,7 @@ export const IndividualActionsCells = ({
             title="Voir les actions"
             triggerIcon={fullThreeDotsIcon}
             triggerTooltip
+            ref={actionsButtonRef}
           >
             <>
               <EditOfferCell editionOfferLink={editionOfferLink} />
@@ -194,6 +197,11 @@ export const IndividualActionsCells = ({
         offer={offer}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
         setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}
+        onDialogClosed={() => {
+          setTimeout(() => {
+            actionsButtonRef.current?.focus()
+          })
+        }}
       />
     </>
   )

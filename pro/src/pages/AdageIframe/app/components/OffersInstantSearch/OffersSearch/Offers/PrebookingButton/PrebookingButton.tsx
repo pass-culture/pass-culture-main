@@ -1,5 +1,5 @@
 import { format } from 'date-fns-tz'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -50,6 +50,8 @@ export const PrebookingButton = ({
 
   const notification = useNotification()
 
+  const prebookButtonRef = useRef<HTMLButtonElement>(null)
+
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA && !isPreview) {
       apiAdage.logBookingModalButtonClick({
@@ -64,6 +66,9 @@ export const PrebookingButton = ({
 
   const closeModal = () => {
     setIsModalOpen(false)
+    setTimeout(() => {
+      prebookButtonRef.current?.focus()
+    })
   }
 
   const preBookCurrentStock = useCallback(async () => {
@@ -121,6 +126,7 @@ export const PrebookingButton = ({
               className={styles['prebooking-button']}
               onClick={() => handleBookingModalButtonClick(stock.id)}
               disabled={shouldDisablePrebookButton}
+              ref={prebookButtonRef}
             >
               {children ?? 'Préréserver l’offre'}
             </Button>

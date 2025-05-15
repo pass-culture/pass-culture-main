@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -31,6 +31,8 @@ export const CollectiveActionButtons = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notify = useNotification()
+
+  const cancelButtonRef = useRef<HTMLButtonElement>(null)
 
   const offerId = bookingRecap.stock.offerId
 
@@ -69,7 +71,15 @@ export const CollectiveActionButtons = ({
           duration: NOTIFICATION_LONG_SHOW_DURATION,
         }
       )
+    } finally {
+      focusCancelBookingTrigger()
     }
+  }
+
+  function focusCancelBookingTrigger() {
+    setTimeout(() => {
+      cancelButtonRef.current?.focus()
+    })
   }
 
   return (
@@ -79,6 +89,7 @@ export const CollectiveActionButtons = ({
           <Button
             variant={ButtonVariant.SECONDARY}
             onClick={() => setIsModalOpen(true)}
+            ref={cancelButtonRef}
           >
             Annuler la{' '}
             {bookingRecap.bookingStatus === BOOKING_STATUS.PENDING
@@ -96,7 +107,10 @@ export const CollectiveActionButtons = ({
         )}
       </div>
       <CancelCollectiveBookingModal
-        onDismiss={() => setIsModalOpen(false)}
+        onDismiss={() => {
+          setIsModalOpen(false)
+          focusCancelBookingTrigger()
+        }}
         onValidate={cancelBooking}
         isDialogOpen={isModalOpen}
       />

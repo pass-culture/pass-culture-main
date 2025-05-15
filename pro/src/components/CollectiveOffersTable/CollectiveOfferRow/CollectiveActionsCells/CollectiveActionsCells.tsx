@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -117,6 +117,8 @@ export const CollectiveActionsCells = ({
 
   const { mutate } = useSWRConfig()
 
+  const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
+
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
@@ -221,6 +223,8 @@ export const CollectiveActionsCells = ({
           duration: NOTIFICATION_LONG_SHOW_DURATION,
         }
       )
+    } finally {
+      focusDropdownTrigger()
     }
   }
 
@@ -247,6 +251,8 @@ export const CollectiveActionsCells = ({
       notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
       })
+    } finally {
+      focusDropdownTrigger()
     }
   }
 
@@ -324,6 +330,12 @@ export const CollectiveActionsCells = ({
     offer.displayedStatus === CollectiveOfferDisplayedStatus.BOOKED ||
     offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED
 
+  function focusDropdownTrigger() {
+    setTimeout(() => {
+      dropdownTriggerRef.current?.focus()
+    })
+  }
+
   return (
     <td
       role="cell"
@@ -348,6 +360,7 @@ export const CollectiveActionsCells = ({
             title="Voir les actions"
             triggerIcon={fullThreeDotsIcon}
             triggerTooltip
+            ref={dropdownTriggerRef}
           >
             {shouldDisplayBookingLink && offer.booking && (
               <>
@@ -475,18 +488,27 @@ export const CollectiveActionsCells = ({
           </DropdownMenuWrapper>
         )}
         <DuplicateOfferDialog
-          onCancel={() => setIsModalOpen(false)}
+          onCancel={() => {
+            setIsModalOpen(false)
+            focusDropdownTrigger()
+          }}
           onConfirm={onDialogConfirm}
           isDialogOpen={isModalOpen && shouldDisplayModal}
         />
         <CancelCollectiveBookingModal
-          onDismiss={() => setIsCancelledBookingModalOpen(false)}
+          onDismiss={() => {
+            setIsCancelledBookingModalOpen(false)
+            focusDropdownTrigger()
+          }}
           onValidate={cancelBooking}
           isFromOffer
           isDialogOpen={isCancelledBookingModalOpen}
         />
         <ArchiveConfirmationModal
-          onDismiss={() => setIsArchivedModalOpen(false)}
+          onDismiss={() => {
+            setIsArchivedModalOpen(false)
+            focusDropdownTrigger()
+          }}
           onValidate={archiveOffer}
           offer={offer}
           isDialogOpen={isArchivedModalOpen}
