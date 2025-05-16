@@ -4,6 +4,7 @@ import * as yup from 'yup'
 import { isDateValid } from 'commons/utils/date'
 
 export const validationSchema = yup.object().shape({
+  publicationMode: yup.string<'now' | 'later'>().required(),
   publicationDate: yup.string().when('publicationMode', {
     is: (publicationMode: string) => publicationMode === 'later',
     then: (schema) =>
