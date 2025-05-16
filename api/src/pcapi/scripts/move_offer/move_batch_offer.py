@@ -12,7 +12,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
 from pcapi.core.offers import models as offer_models
-from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 
@@ -177,7 +176,6 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
         if invalidity_reason:
             invalid_venues.append((origin_venue_id, destination_venue_id, invalidity_reason))
         else:
-            offers_repository.lock_stocks_for_venue(origin_venue_id)
             _move_individual_offers(origin_venue, destination_venue)
             _move_collective_offers(origin_venue, destination_venue)
             _move_collective_offer_template(origin_venue, destination_venue)
