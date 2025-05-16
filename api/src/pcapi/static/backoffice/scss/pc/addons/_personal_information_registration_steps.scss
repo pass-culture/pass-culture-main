@@ -1,3 +1,6 @@
+$step-border-width: 1px;
+$step-active-border-width: 3px;
+
 [data-registration-steps-id] {
   & .progress {
     top: 1.4rem;
@@ -21,7 +24,7 @@
         .step-number {
           color: #fff;
           background-color: $gray-600;
-          border: 4px solid $gray-600;
+          border: $step-border-width solid $gray-600;
         }
       }
     }
@@ -30,36 +33,47 @@
       border-radius: 50%;
       width: 3rem;
       height: 3rem;
-      background-color: #E9ECEE;
-      border: 4px solid #E9ECEE;
+      background-color: $gray-200;
+      border: $step-border-width solid $gray-600;
       z-index: 100;
     }
 
+    & .step-status-icon-container {
+      width: 1.5rem;
+      height: 1.5rem;
+      background-color: $gray-200;
+
+      &.step-success {
+        background-color: $success-bg-subtle;
+      }
+
+      &.step-warning {
+        background-color: $warning-bg-subtle;
+      }
+
+      &.step-error {
+        background-color: $danger-bg-subtle;
+      }
+    }
+
     & .step-success .step-number {
-      background-color: $success;
-      color: #fff;
-      border: 4px solid $success;
+      background-color: $success-bg-subtle;
+      border: $step-border-width solid $success-border-subtle;
     }
 
     & .step-warning .step-number {
-      background-color: $warning;
-      color: #fff;
-      border: 4px solid $warning;
+      background-color: $warning-bg-subtle;
+      border: $step-border-width solid $warning-border-subtle;
     }
 
     & .step-error .step-number {
-      background-color: $primary;
-      color: #fff;
-      border: 4px solid $primary;
+      background-color: $danger-bg-subtle;
+      border: $step-border-width solid $danger-border-subtle;
     }
 
     & .step-active .step-number {
-      border: 4px solid $primary;
-    }
-
-    & .icon-container {
-      left: 2.5em;
-      top: 1.3em;
+      box-shadow: 0px 0px 0px $step-active-border-width $primary inset;
+      border-color: $primary;
     }
 
     & .step-text {

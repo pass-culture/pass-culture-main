@@ -126,7 +126,10 @@
           <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
             {% for step in tunnel.steps %}
               <li>
-                <div class="steps d-flex flex-column flex-grow-1 justify-content-center align-items-center position-relative {{ ' step-success' if step.status.success }}{{ ' step-warning' if step.status.warning }}{{ ' step-error' if step.status.error }}{{ ' step-active' if step.status.active }}{{ ' step-disabled' if step.status.disabled }}"
+                {% set div_class %}
+                  {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ ' step-active' if step.status.active }}{{ 'step-disabled' if step.status.disabled }}
+                {% endset %}
+                <div class="steps d-flex flex-column flex-grow-1 justify-content-center align-items-center {{ div_class }}"
                      disabled
                      role="button"
                      data-step-id="step-{{ step.step_id }}"
@@ -137,8 +140,8 @@
                     {% else %}
                       {{ step.text }}
                     {% endif %}
-                    <div class="icon-container position-absolute">
-                      <div class="me-5 fs-4 step-status-icon-container">{{ step.subscription_item_status | format_user_subscription_tunnel_step_status }}</div>
+                    <div class="step-status-icon-container position-absolute top-100 start-100 translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
+                      {{ step.subscription_item_status | format_user_subscription_tunnel_step_status }}
                     </div>
                   </span>
                   <span class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</span>
