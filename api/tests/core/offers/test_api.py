@@ -1685,7 +1685,6 @@ class UpdateOfferTest:
         product = factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             lastProvider=provider,
-            idAtProviders="1234567890123",
             ean="1234567890123",
             extraData={"gtl_id": "01020602", "author": "Asimov"},
         )
@@ -3578,7 +3577,6 @@ class WhitelistExistingProductTest:
         )
 
         product = factories.ProductFactory(
-            idAtProviders=ean,
             name="test",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
@@ -3632,11 +3630,11 @@ class WhitelistExistingProductTest:
             f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
             json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
-        assert not db.session.query(models.Product).filter(models.Product.idAtProviders == ean).one_or_none()
+        assert not db.session.query(models.Product).filter(models.Product.ean == ean).one_or_none()
 
         api.whitelist_product(ean)
 
-        product = db.session.query(models.Product).filter(models.Product.idAtProviders == ean).one()
+        product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product
         assert len(product.extraData["gtl_id"]) == 8
 
@@ -4391,7 +4389,6 @@ class ApproveProductAndRejectedOffersTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             lastProvider=provider,
-            idAtProviders=ean,
             gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -4413,7 +4410,6 @@ class ApproveProductAndRejectedOffersTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             lastProvider=provider,
-            idAtProviders=ean,
             gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -4445,7 +4441,6 @@ class ApproveProductAndRejectedOffersTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             lastProvider=provider,
-            idAtProviders=ean,
             gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -4488,7 +4483,6 @@ class ApproveProductAndRejectedOffersTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             lastProvider=provider,
-            idAtProviders=ean,
             gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -4518,7 +4512,6 @@ class ApproveProductAndRejectedOffersTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             lastProvider=provider,
-            idAtProviders=ean,
             gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -4547,7 +4540,6 @@ class ApproveProductAndRejectedOffersTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
             lastProvider=provider,
-            idAtProviders=ean,
             gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
@@ -4836,64 +4828,51 @@ class CreateMovieProductFromProviderTest:
 
     def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
         # Given
-        product = factories.ProductFactory(
-            idAtProviders="idAllocine", lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345}
-        )
+        product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
         # When
         api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost")
 
         # Then
-        assert product.idAtProviders == "idAllocine"
         assert product.lastProvider.id == self.allocine_provider.id
 
     def test_updates_allocine_product_from_allocine_stocks_synchro(self):
         # Given
-        product = factories.ProductFactory(
-            idAtProviders="idAllocine", lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345}
-        )
+        product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
         # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineStocks")
 
         # Then
-        assert product.idAtProviders == "idAllocineStocks"
         assert product.lastProvider.id == self.allocine_stocks_provider.id
 
     def test_updates_product_from_same_synchro(self):
         # Given
-        product = factories.ProductFactory(
-            idAtProviders="idBoost1", lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345}
-        )
+        product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
         # When
         api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost2")
 
         # Then
-        assert product.idAtProviders == "idBoost2"
         assert product.lastProvider.id == self.boost_provider.id
 
     def test_updates_allocine_id_when_updates_product_by_visa(self):
         # Given
-        product = factories.ProductFactory(
-            idAtProviders="idBoost", lastProviderId=self.boost_provider.id, extraData={"visa": "54321"}
-        )
+        product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"visa": "54321"})
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
         # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
         # Then
-        assert product.idAtProviders == "idAllocine"
         assert product.extraData["allocineId"] == 12345
 
     def test_updates_visa_when_updating_with_visa_provided(self):
         # Given
         product = factories.ProductFactory(
-            idAtProviders="idBoost",
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "visa": "54321"},
         )
@@ -4903,14 +4882,12 @@ class CreateMovieProductFromProviderTest:
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
         # Then
-        assert product.idAtProviders == "idAllocine"
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54322"
 
     def test_keep_visa_when_updating_with_no_visa_provided(self):
         # Given
         product = factories.ProductFactory(
-            idAtProviders="idBoost",
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "visa": "54321"},
         )
@@ -4920,14 +4897,12 @@ class CreateMovieProductFromProviderTest:
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
         # Then
-        assert product.idAtProviders == "idAllocine"
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54321"
 
     def test_does_not_update_data_when_provided_data_is_none(self):
         # Given
         product = factories.ProductFactory(
-            idAtProviders="idBoost",
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "title": "Mon vieux film"},
         )
@@ -4938,19 +4913,16 @@ class CreateMovieProductFromProviderTest:
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
         # Then
-        assert product.idAtProviders == "idAllocine"
         assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}
 
     def test_handles_coexisting_incomplete_movies(self, caplog):
         # Given
         boost_product = factories.ProductFactory(
-            idAtProviders="idBoost",
             lastProviderId=self.boost_provider.id,
             extraData={"visa": "54321", "title": "Mon vieux film Boost"},
         )
         boost_product_id = boost_product.id
         allocine_product = factories.ProductFactory(
-            idAtProviders="idAllocineStocks",
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "title": "Mon vieux film Allociné"},
         )
@@ -4974,7 +4946,6 @@ class CreateMovieProductFromProviderTest:
             == 0
         )
         assert db.session.query(models.Product).filter(models.Product.id == boost_product_id).count() == 0
-        assert allocine_product.idAtProviders == "idAllocineProducts"
         assert allocine_product.extraData == {"allocineId": 12345, "visa": "54321", "title": "Mon vieux film Allociné"}
 
 

@@ -1170,7 +1170,6 @@ def reject_inappropriate_products(
         db.session.query(models.Product)
         .filter(
             models.Product.ean.in_(eans),
-            models.Product.idAtProviders.is_not(None),
             models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         )
         .all()
@@ -1555,7 +1554,7 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
 
 
 def fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
-    product = db.session.query(models.Product).filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
+    product = db.session.query(models.Product).filter_by(ean=titelive_product.ean).one_or_none()
     if not product:
         return titelive_product
 
@@ -1684,7 +1683,6 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
         .filter(
             models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
             models.Product.ean == ean,
-            models.Product.idAtProviders.is_not(None),
         )
         .one_or_none()
     )
@@ -2089,7 +2087,6 @@ def upsert_movie_product_from_provider(
             description=movie.description,
             durationMinutes=movie.duration,
             extraData=None,
-            idAtProviders=id_at_providers,
             lastProviderId=provider.id,
             name=movie.title,
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -2110,7 +2107,6 @@ def _update_movie_product(
 ) -> None:
     product.description = movie.description
     product.durationMinutes = movie.duration
-    product.idAtProviders = id_at_providers
     product.lastProviderId = provider_id
     product.name = movie.title
     _update_product_extra_data(product, movie)

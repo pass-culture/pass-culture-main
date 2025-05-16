@@ -67,9 +67,6 @@ class ProductFactory(BaseFactory):
         if kwargs["subcategoryId"] not in cls.AVAILABLE_SUBCATEGORIES:
             raise ValueError(f"Events products subcategory can only be one of {cls.AVAILABLE_SUBCATEGORIES}.")
 
-        if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
-            kwargs["idAtProviders"] = uuid.uuid4()
-
         if "extraData" not in kwargs:
             subcategory_id = kwargs.get("subcategoryId")
             assert isinstance(
@@ -369,7 +366,6 @@ class EventOpeningHoursFactory(BaseFactory):
         obj: models.EventOpeningHours,
         create: bool,
         extracted: list[models.EventWeekDayOpeningHours] | None,
-        **kwargs: typing.Any,
     ) -> list[models.EventWeekDayOpeningHours] | None:
         if not create or extracted is False:
             return None
