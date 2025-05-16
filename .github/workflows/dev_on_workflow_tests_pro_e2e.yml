@@ -32,7 +32,7 @@ defaults:
 jobs:
   install:
     name: "Install E2E 🔧"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4

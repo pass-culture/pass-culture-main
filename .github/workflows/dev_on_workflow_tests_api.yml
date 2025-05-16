@@ -26,7 +26,7 @@ defaults:
 jobs:
   quality-checks:
     name: "Quality checks"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: "Compute docker image name:tag"
@@ -89,7 +89,7 @@ jobs:
 
   ruff-checks:
     name: "Ruff"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.2
       - name: "Run ruff formatter"
@@ -108,7 +108,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     services:
       postgres:
         image: postgis/postgis:15-3.4-alpine
@@ -272,7 +272,7 @@ jobs:
 
   restore-test-durations:
     name: Restore pytest durations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       # This output will be used to know if we had a cache hit (exact match or not), or no cache hit at all.
       # See documentation about the `cache-hit` output:
@@ -323,7 +323,7 @@ jobs:
       # Remove this environment variable when SQLAlchemy 2.0
       # is successfully bump
       SQLALCHEMY_WARN_20: 1
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -472,7 +472,7 @@ jobs:
     name: Cache test durations
     needs: pytest
     if: github.run_attempt == 1 && (success() || failure())
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Download all partial test durations
         uses: actions/download-artifact@v4
