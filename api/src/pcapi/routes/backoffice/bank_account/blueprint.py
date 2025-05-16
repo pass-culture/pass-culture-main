@@ -28,7 +28,6 @@ from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import urls
-from pcapi.utils.human_ids import humanize
 
 from . import forms
 
@@ -64,7 +63,6 @@ def render_bank_account_details(
         ),
         search_dst=url_for("backoffice_web.pro.search_pro"),
         bank_account=bank_account,
-        humanized_bank_account_id=humanize(bank_account.id),
         dms_stats=dms_stats,
         dms_error=dms_error,
         active_tab=request.args.get("active_tab", "linked_venues"),
