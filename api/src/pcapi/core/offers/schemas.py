@@ -6,6 +6,7 @@ from pydantic.v1 import ConstrainedList
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
+from pydantic.v1 import StrictInt
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -307,3 +308,17 @@ class UpdateOffer(BaseModel):
         arbitrary_types_allowed = True
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
+
+
+class SerializedProductsStocks(typing.TypedDict):
+    quantity: StrictInt
+    price: int
+    booking_limit_datetime: str | None
+
+
+class CreateOrUpdateEANOffersRequest(BaseModel):
+    serialized_products_stocks: dict[str, SerializedProductsStocks]
+    venue_id: int
+    provider_id: int
+    address_id: int | None = None
+    address_label: str | None = None
