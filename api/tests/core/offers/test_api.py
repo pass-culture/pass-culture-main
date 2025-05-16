@@ -9,10 +9,12 @@ import os
 import pathlib
 import re
 from unittest import mock
+from unittest.mock import patch
 
 from factory.faker import faker
 import pytest
 import pytz
+import sqlalchemy as sa
 import time_machine
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
@@ -5430,6 +5432,27 @@ class DeleteOffersAndAllRelatedObjectsTest:
 
         api.delete_offers_and_all_related_objects(offer_ids, offer_chunk_size=1)
         assert_offers_have_been_completely_cleaned(offer_ids)
+
+    @pytest.mark.parametrize(
+        "error", [sa.exc.IntegrityError("bad query", "<params>", "<orig>"), Exception("bad query")]
+    )
+    def test_function_does_not_stop_if_error_occurs_at_a_random_round(self, caplog, error):
+        offers = self.build_many_eligible_for_search_offers_with_related_objects()
+        offer_ids = [offer.id for offer in offers]
+
+        patch_path = "pcapi.core.offers.api.db"
+        with patch(patch_path) as mock:
+            with caplog.at_level(logging.ERROR):
+                mock.session.flush.side_effect = [error] + [None for _ in range(len(offers) - 1)]
+
+                api.delete_offers_and_all_related_objects(offer_ids, offer_chunk_size=1)
+
+                assert len(caplog.records[0].extra["ids"]) == 1
+                assert caplog.records[0].extra["ids"][0] in offer_ids
+                assert "bad query" in caplog.records[0].extra["error"]
+
+        # all offers except one (because of the error) should have been deleted
+        assert models.Offer.query.count() == 1
 
     def build_many_eligible_for_search_offers_with_related_objects(self, count=3):
         offers = []
