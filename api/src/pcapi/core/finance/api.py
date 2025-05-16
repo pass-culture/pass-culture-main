@@ -69,7 +69,6 @@ from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import transaction
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -1233,9 +1232,6 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     logger.info("Generating bank accounts file")
     file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
 
-    logger.info("Generating legacy bank accounts file")
-    file_paths["legacy_bank_accounts"] = _generate_legacy_bank_accounts_file(batch.cutoff)
-
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch)
 
@@ -1455,61 +1451,6 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     return _write_csv("bank_accounts", header, rows=query, row_formatter=_row_formatter)
 
 
-def _row_formatter_legacy(row: typing.Any) -> tuple:
-    return (
-        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
-        human_ids.humanize(row.id),
-        str(row.id),
-        _clean_for_accounting(row.offerer_siren),
-        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
-        _clean_for_accounting(row.iban),
-        _clean_for_accounting(row.bic),
-    )
-
-
-def _generate_legacy_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
-    header = (
-        "Lieux liés au compte bancaire",
-        "Identifiant humanisé des coordonnées bancaires",
-        "Identifiant des coordonnées bancaires",
-        "SIREN de la structure",
-        "Nom de la structure - Libellé des coordonnées bancaires",
-        "IBAN",
-        "BIC",
-    )
-    query = (
-        db.session.query(models.BankAccount)
-        .filter(
-            models.BankAccount.id.in_(
-                db.session.query(offerers_models.VenueBankAccountLink)
-                .filter(offerers_models.VenueBankAccountLink.timespan.contains(cutoff))
-                .with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
-            )
-        )
-        .join(models.BankAccount.offerer)
-        .join(models.BankAccount.venueLinks)
-        .group_by(
-            models.BankAccount.id,
-            models.BankAccount.label,
-            models.BankAccount.iban,
-            models.BankAccount.bic,
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.siren,
-        )
-        .order_by(models.BankAccount.id)
-    ).with_entities(
-        models.BankAccount.id,
-        sa_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
-        offerers_models.Offerer.name.label("offerer_name"),
-        offerers_models.Offerer.siren.label("offerer_siren"),
-        models.BankAccount.label.label("label"),
-        models.BankAccount.iban.label("iban"),
-        models.BankAccount.bic.label("bic"),
-    )
-
-    return _write_csv("legacy_bank_accounts", header, rows=query, row_formatter=_row_formatter_legacy)
-
-
 def _clean_for_accounting(value: str) -> str:
     if not isinstance(value, str):
         return value
@@ -1520,7 +1461,6 @@ def _clean_for_accounting(value: str) -> str:
 def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     batch_id = batch.id
     header = [
-        "Identifiant humanisé des coordonnées bancaires",
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
@@ -1701,7 +1641,6 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
     net_amount = utils.cents_to_full_unit(-sql_row.pricing_amount)
 
     return (
-        human_ids.humanize(sql_row.bank_account_id),
         str(sql_row.bank_account_id),
         _clean_for_accounting(sql_row.offerer_siren),
         _clean_for_accounting(f"{sql_row.offerer_name} - {sql_row.bank_account_label}"),
@@ -1992,7 +1931,6 @@ def generate_invoices_and_debit_notes_legacy(batch: models.CashflowBatch) -> Non
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     header = [
-        "Identifiant humanisé des coordonnées bancaires",
         "Identifiant des coordonnées bancaires",
         "Date du justificatif",
         "Référence du justificatif",
@@ -2216,7 +2154,6 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
     ministry = getattr(sql_row, "ministry", "")
 
     return (
-        human_ids.humanize(sql_row.bank_account_id),
         str(sql_row.bank_account_id),
         sql_row.invoice_date.date().isoformat(),
         sql_row.invoice_reference,

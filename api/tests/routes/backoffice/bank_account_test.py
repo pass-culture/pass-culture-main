@@ -16,7 +16,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -53,7 +52,6 @@ class GetBankAccountTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert bank_account.label in response_text
         assert f"Bank Account ID : {bank_account.id} " in response_text
-        assert f"Humanized ID : {humanize(bank_account.id)} " in response_text
         assert f"IBAN : {bank_account.iban} " in response_text
         assert f"BIC : {bank_account.bic} " in response_text
         assert "Statut dossier DMS ADAGE :" not in response_text
