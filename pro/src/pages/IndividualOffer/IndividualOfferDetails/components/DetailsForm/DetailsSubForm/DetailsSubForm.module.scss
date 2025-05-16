@@ -7,3 +7,9 @@
 .callout {
   margin-bottom: rem.torem(32px);
 }
+
+.artistic-info-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+}

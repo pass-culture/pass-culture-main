@@ -567,7 +567,7 @@ describe('IndividualOfferDetails', () => {
       const eanInputLabel = /Scanner ou rechercher un produit par EAN/
       const eanSearchButtonLabel = /Rechercher/
       const eanResetButtonLabel = /Effacer/
-      it('should render EAN search for record stores as a venue', () => {
+      it('should render EAN search for record stores as a venue', async () => {
         const context = individualOfferContextValuesFactory({
           categories: MOCK_DATA.categories,
           subCategories: MOCK_DATA.subCategories,
@@ -588,7 +588,10 @@ describe('IndividualOfferDetails', () => {
               mode: OFFER_WIZARD_MODE.CREATION,
             }) + '?offer-type=PHYSICAL_GOOD',
         })
-        expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
+
+        await waitFor(() => {
+          expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
+        })
       })
 
       it('should not render EAN search for other venues', () => {

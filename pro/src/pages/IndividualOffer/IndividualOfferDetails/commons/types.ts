@@ -1,11 +1,11 @@
 export type DetailsFormValues = {
   name: string
-  description: string
+  description?: string
   venueId: string
   categoryId: string
   subcategoryId: string
-  showType: string
-  showSubType: string
+  showType?: string
+  showSubType?: string
   gtl_id?: string
   author?: string
   performer?: string
@@ -15,8 +15,8 @@ export type DetailsFormValues = {
   stageDirector?: string
   visa?: string
   durationMinutes?: string | null
-  subcategoryConditionalFields: string[]
-  productId: string
+  subcategoryConditionalFields: (keyof DetailsFormValues)[]
+  productId?: string
   callId?: string
   url?: string | null
 }

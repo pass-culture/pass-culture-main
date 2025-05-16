@@ -1,4 +1,4 @@
-import { FormikErrors } from 'formik'
+import { UseFormSetValue } from 'react-hook-form'
 
 import {
   CategoryResponseModel,
@@ -54,8 +54,8 @@ export const buildSubcategoryOptions = (
     )
   )
 
-export const buildShowSubTypeOptions = (showType: string): SelectOption[] => {
-  if (showType === DEFAULT_DETAILS_FORM_VALUES.showType) {
+export const buildShowSubTypeOptions = (showType?: string): SelectOption[] => {
+  if (showType === DEFAULT_DETAILS_FORM_VALUES.showType || !showType) {
     return []
   }
 
@@ -77,26 +77,23 @@ export const buildShowSubTypeOptions = (showType: string): SelectOption[] => {
 
 export const completeSubcategoryConditionalFields = (
   subcategory?: SubcategoryResponseModel
-): string[] => [
-  ...new Set(subcategory?.conditionalFields),
-  ...(subcategory?.isEvent ? ['durationMinutes'] : []),
-]
+) =>
+  [
+    ...new Set(subcategory?.conditionalFields),
+    ...(subcategory?.isEvent ? ['durationMinutes'] : []),
+  ] as (keyof DetailsFormValues)[]
 
 type OnCategoryChangeProps = {
   readOnlyFields: string[]
   categoryId: string
   subcategories: SubcategoryResponseModel[]
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined
-  ) => Promise<void | FormikErrors<DetailsFormValues>>
-  onSubcategoryChange: (p: OnSubcategoryChangeProps) => Promise<void>
-  subcategoryConditionalFields: string[]
+  setFieldValue: UseFormSetValue<DetailsFormValues>
+  onSubcategoryChange: (p: OnSubcategoryChangeProps) => void
+  subcategoryConditionalFields: (keyof DetailsFormValues)[]
   setIsEvent?: (isEvent: boolean | null) => void
 }
 
-export const onCategoryChange = async ({
+export const onCategoryChange = ({
   categoryId,
   readOnlyFields,
   subcategories,
@@ -116,8 +113,8 @@ export const onCategoryChange = async ({
     newSubcategoryOptions.length === 1
       ? String(newSubcategoryOptions[0].value)
       : DEFAULT_DETAILS_FORM_VALUES.subcategoryId
-  await setFieldValue('subcategoryId', subcategoryId, false)
-  await onSubcategoryChange({
+  setFieldValue('subcategoryId', subcategoryId)
+  onSubcategoryChange({
     newSubCategoryId: subcategoryId,
     subcategories,
     setFieldValue,
@@ -129,16 +126,12 @@ export const onCategoryChange = async ({
 type OnSubcategoryChangeProps = {
   newSubCategoryId: string
   subcategories: SubcategoryResponseModel[]
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined
-  ) => Promise<void | FormikErrors<DetailsFormValues>>
-  subcategoryConditionalFields: string[]
+  setFieldValue: UseFormSetValue<DetailsFormValues>
+  subcategoryConditionalFields: (keyof DetailsFormValues)[]
   setIsEvent?: (isEvent: boolean | null) => void
 }
 
-export const onSubcategoryChange = async ({
+export const onSubcategoryChange = ({
   newSubCategoryId,
   subcategories,
   setFieldValue,
@@ -155,21 +148,18 @@ export const onSubcategoryChange = async ({
 
   const newSubcategoryConditionalFields =
     completeSubcategoryConditionalFields(newSubcategory)
-  await setFieldValue(
-    'subcategoryConditionalFields',
-    newSubcategoryConditionalFields
-  )
+  setFieldValue('subcategoryConditionalFields', newSubcategoryConditionalFields)
 
   if (newSubcategoryConditionalFields === subcategoryConditionalFields) {
     return
   }
 
   const fieldsToReset = subcategoryConditionalFields.filter(
-    (field: string) => !newSubcategoryConditionalFields.includes(field)
+    (field) => !newSubcategoryConditionalFields.includes(field)
   )
-  fieldsToReset.forEach(async (field: string) => {
+  fieldsToReset.forEach((field) => {
     if (field in DEFAULT_DETAILS_FORM_VALUES) {
-      await setFieldValue(
+      setFieldValue(
         field,
         DEFAULT_DETAILS_FORM_VALUES[
           field as keyof typeof DEFAULT_DETAILS_FORM_VALUES

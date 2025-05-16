@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -16,11 +16,12 @@ import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/
 import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
+import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
 import { Subcategories } from './Subcategories/Subcategories'
@@ -51,8 +52,14 @@ export const DetailsForm = ({
   onImageDelete,
 }: DetailsFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const { values, handleChange } = useFormikContext<DetailsFormValues>()
-  const { subcategoryId } = values
+  const {
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<DetailsFormValues>()
+
+  const subcategoryId = watch('subcategoryId')
   const { offer } = useIndividualOfferContext()
 
   const isSubCategorySelected =
@@ -95,44 +102,45 @@ export const DetailsForm = ({
               <FormLayout.Row>
                 <Select
                   label="Qui propose l’offre ?"
-                  name="venueId"
                   options={venuesOptions}
                   defaultOption={{
                     value: '',
                     label: 'Sélectionner la structure',
                   }}
-                  onChange={(ev) => {
+                  {...register('venueId')}
+                  onChange={(e) => {
                     if (isProductBased) {
                       return
                     }
 
-                    handleChange(ev)
+                    setValue('venueId', e.target.value)
                   }}
                   disabled={
                     readOnlyFields.includes('venueId') ||
                     venuesOptions.length === 1
                   }
+                  error={errors.venueId?.message}
                 />
               </FormLayout.Row>
             )}
             <FormLayout.Row>
               <TextInput
-                countCharacters
+                count={watch('name').length}
                 label="Titre de l’offre"
                 maxLength={90}
-                name="name"
-                onChange={handleChange}
+                {...register('name')}
+                error={errors.name?.message}
+                required
                 disabled={readOnlyFields.includes('name')}
               />
             </FormLayout.Row>
             <FormLayout.Row sideComponent={<MarkdownInfoBox />}>
               <TextArea
-                isOptional
                 label="Description"
                 maxLength={10000}
-                name="description"
-                onChange={handleChange}
+                {...register('description')}
                 disabled={readOnlyFields.includes('description')}
+                error={errors.description?.message}
               />
             </FormLayout.Row>
             {(categoryStatus === CATEGORY_STATUS.ONLINE ||
@@ -144,13 +152,16 @@ export const DetailsForm = ({
                     réservé votre offre sur l’application pass Culture.
                   </InfoBox>
                 }
+                className={styles['url-input']}
               >
                 <TextInput
                   label="URL d’accès à l’offre"
-                  name="url"
                   type="text"
                   description="Format : https://exemple.com"
                   disabled={readOnlyFields.includes('url')}
+                  {...register('url')}
+                  error={errors.url?.message}
+                  required
                 />
               </FormLayout.Row>
             )}
