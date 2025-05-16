@@ -92,12 +92,12 @@ ACTION_TYPE_TO_STRING = {
     history_models.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE: "Une note de débit va être générée",
     history_models.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE: "Choix note de débit",
     # Actions related to a venue:
-    history_models.ActionType.VENUE_CREATED: "Lieu créé",
-    history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED: "Lieu dissocié d'un compte bancaire",
-    history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED: "Lieu associé à un compte bancaire",
+    history_models.ActionType.VENUE_CREATED: "Partenaire culturel créé",
+    history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED: "Partenaire culturel dissocié d'un compte bancaire",
+    history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED: "Partenaire culturel associé à un compte bancaire",
     history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED: "Lien avec le partenaire technique modifié",
     history_models.ActionType.LINK_VENUE_PROVIDER_DELETED: "Suppression du lien avec le partenaire technique",
-    history_models.ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du lieu avec un partenaire technique",
+    history_models.ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du partenaire culturel avec un partenaire technique",
     # Permissions role changes:
     history_models.ActionType.ROLE_PERMISSIONS_CHANGED: "Modification des permissions du rôle",
     # RGPD scripts
