@@ -64,10 +64,10 @@
     &:hover {
       background-color: var(--color-background-brand-primary-hover);
       border-color: var(--color-border-brand-primary-hover);
-      color: var(--color-text-locked);
+      color: var(--color-text-locked-inverted);
 
       .button-icon {
-        color: var(--color-text-locked);
+        color: var(--color-text-locked-inverted);
       }
     }
 
@@ -97,10 +97,10 @@
     &:hover {
       background-color: var(--color-background-brand-primary-hover);
       border-color: var(--color-border-brand-primary-hover);
-      color: var(--color-text-locked);
+      color: var(--color-text-locked-inverted);
 
       .button-icon {
-        color: var(--color-text-locked);
+        color: var(--color-text-locked-inverted);
       }
     }
 
