@@ -132,13 +132,8 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
             offers_api.publish_offer(created_offer, publication_date=body.publication_date)
 
-    except (
-        offers_exceptions.OfferCreationBaseException,
-        offers_exceptions.OfferEditionBaseException,
-        offers_exceptions.FutureOfferException,
-        offers_exceptions.PriceCategoryCreationBaseException,
-    ) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except offers_exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return serialization.EventOfferResponse.build_event_offer(created_offer)
 
@@ -276,8 +271,8 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
             if body.image:
                 utils.save_image(body.image, offer)
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except offers_exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
 
@@ -326,10 +321,8 @@ def post_event_price_categories(
                         id_at_provider=price_category.id_at_provider,
                     )
                 )
-    except (
-        offers_exceptions.OfferEditionBaseException,
-        offers_exceptions.PriceCategoryCreationBaseException,
-    ) as error:
+
+    except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
@@ -425,8 +418,9 @@ def patch_event_price_category(
                 id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
             )
-    except (offers_exceptions.OfferEditionBaseException, offers_exceptions.PriceCategoryCreationBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    except offers_exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
@@ -506,11 +500,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
                 )
             if not existing_stocks_count and body.dates:
                 offers_api.update_offer_fraud_information(offer, user=None)
-    except (
-        offers_exceptions.OfferCreationBaseException,
-        offers_exceptions.OfferEditionBaseException,
-        offers_exceptions.StockEditBaseException,
-    ) as error:
+    except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
     return serialization.PostDatesResponse(
@@ -612,8 +602,8 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
         raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
     try:
         offers_api.delete_stock(stock_to_delete)
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except offers_exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
@@ -680,11 +670,7 @@ def patch_event_stock(
                 editing_provider=current_api_key.provider,
             )
         offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
-    except (
-        offers_exceptions.OfferCreationBaseException,
-        offers_exceptions.OfferEditionBaseException,
-        offers_exceptions.StockEditBaseException,
-    ) as error:
+    except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
     except booking_exceptions.BookingIsAlreadyCancelled:
         raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})

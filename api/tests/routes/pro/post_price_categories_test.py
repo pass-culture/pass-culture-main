@@ -287,4 +287,4 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"offer": ["Offer is not editable (because rejected or pending)"]}
+        assert response.json == {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}

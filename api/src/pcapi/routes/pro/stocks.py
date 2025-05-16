@@ -157,7 +157,7 @@ def bulk_create_event_stocks(
         raise api_errors.ApiErrors(
             {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
         )
-    except offers_exceptions.OfferEditionBaseException as error:
+    except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
     return stock_serialize.StocksResponseModel(stocks_count=created_stocks_count)
@@ -218,7 +218,7 @@ def bulk_update_event_stocks(
         raise api_errors.ApiErrors(
             {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
         )
-    except offers_exceptions.OfferEditionBaseException as error:
+    except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
     # Done once we are sure all stocks have been successfully edited
@@ -246,6 +246,6 @@ def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
     try:
         offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
-    except offers_exceptions.OfferEditionBaseException as error:
+    except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
     return stock_serialize.StockIdResponseModel.from_orm(stock)

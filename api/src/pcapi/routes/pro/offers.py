@@ -166,7 +166,7 @@ def post_event_opening_hours(
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         event_opening_hours = offers_api.create_event_opening_hours(body=body, offer=offer)
-    except exceptions.OfferEditionBaseException as error:
+    except exceptions.OfferException as error:
         raise api_errors.ApiErrors(errors=error.errors)
 
     return offers_serialize.GetEventOpeningHoursResponseModel.from_orm(event_opening_hours)
@@ -299,8 +299,8 @@ def post_draft_offer(
 
     try:
         offer = offers_api.create_draft_offer(body, venue, product)
-    except exceptions.OfferCreationBaseException as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
@@ -331,8 +331,8 @@ def patch_draft_offer(
         if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
             body.extra_data = body_extra_data
         offer = offers_api.update_draft_offer(offer, body)
-    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -369,8 +369,8 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
         offer = offers_api.create_offer(
             offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
         )
-    except exceptions.OfferCreationBaseException as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -403,10 +403,8 @@ def patch_publish_offer(
     try:
         offers_api.update_offer_fraud_information(offer, user=current_user)
         offers_api.publish_offer(offer, publication_date=body.publicationDate)
-    except exceptions.FutureOfferException as exc:
-        raise api_errors.ApiErrors(exc.errors, status_code=400)
-    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as exc:
-        raise api_errors.ApiErrors(exc.errors, status_code=400)
+    except exceptions.OfferException as exc:
+        raise api_errors.ApiErrors(exc.errors)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -494,8 +492,8 @@ def patch_offer(
         offer_body = offers_schemas.UpdateOffer(**updates)
 
         offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
-    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except exceptions.OfferException as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -656,10 +654,8 @@ def post_price_categories(
                 label=data.get("label", offers_api.UNCHANGED),
                 price=data.get("price", offers_api.UNCHANGED),
             )
-        except exceptions.RejectedOrPendingOfferNotEditable:
-            raise api_errors.ApiErrors(
-                {"offer": ["Offer is not editable (because rejected or pending)"]}, status_code=400
-            )
+        except exceptions.OfferException as exc:
+            raise api_errors.ApiErrors(exc.errors)
 
     # Since we modified the price categories, we need to push the changes to the database
     # so that the response does include them
@@ -765,8 +761,8 @@ def update_event_opening_hours(
     try:
         offers_api.update_event_opening_hours(opening_hours, body)
     except exceptions.EventOpeningHoursException as error:
-        raise api_errors.ApiErrors(errors={error.field: [error.msg]}, status_code=400)
-    except exceptions.OfferEditionBaseException as error:
+        raise api_errors.ApiErrors(errors={error.field: [error.msg]})
+    except exceptions.OfferException as error:
         raise api_errors.ApiErrors(errors=error.errors)
 
 

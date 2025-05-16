@@ -120,7 +120,7 @@ class PatchDraftOfferBodyModelTest:
         )
 
     def test_patch_offer_with_invalid_subcategory(self):
-        with pytest.raises(offers_exceptions.UnknownOfferSubCategory) as error:
+        with pytest.raises(offers_exceptions.OfferException) as error:
             _ = PatchDraftOfferBodyModel(
                 name="I solemnly swear that my intentions are evil",
                 subcategoryId="Misconduct fullfield",

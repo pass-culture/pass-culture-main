@@ -302,12 +302,20 @@ def check_event_expiration(stock: educational_models.CollectiveStock | models.St
 def check_stock_is_deletable(stock: models.Stock) -> None:
     check_validation_status(stock.offer)
     if not stock.isEventDeletable:
-        raise exceptions.TooLateToDeleteStock()
+        raise exceptions.OfferException(
+            {"global": ["L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible."]}
+        )
 
 
 def check_can_input_id_at_provider(provider: providers_models.Provider | None, id_at_provider: str | None) -> None:
     if id_at_provider and not provider:
-        raise exceptions.CannotSetIdAtProviderWithoutAProvider()
+        raise exceptions.OfferException(
+            {
+                "idAtProvider": [
+                    "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
+                ]
+            }
+        )
 
 
 def check_can_input_id_at_provider_for_this_venue(
@@ -328,7 +336,9 @@ def check_can_input_id_at_provider_for_this_venue(
     )
 
     if id_at_provider_is_taken:
-        raise exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer(id_at_provider)
+        raise exceptions.OfferException(
+            {"idAtProvider": [f"`{id_at_provider}` is already taken by another venue offer"]}
+        )
 
 
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
@@ -380,7 +390,9 @@ def check_validation_status(
     offer: models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> None:
     if offer.validation in (models.OfferValidationStatus.REJECTED, models.OfferValidationStatus.PENDING):
-        raise exceptions.RejectedOrPendingOfferNotEditable()
+        raise exceptions.OfferException(
+            {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+        )
 
 
 def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
@@ -446,7 +458,9 @@ def check_can_input_id_at_provider_for_this_price_category(
     )
 
     if id_at_provider_is_taken:
-        raise exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory(id_at_provider)
+        raise exceptions.OfferException(
+            {"idAtProvider": [f"`{id_at_provider}` is already taken by another offer price category"]}
+        )
 
 
 def check_can_input_id_at_provider_for_this_stock(
@@ -461,7 +475,9 @@ def check_can_input_id_at_provider_for_this_stock(
     )
 
     if id_at_provider_is_taken:
-        raise exceptions.IdAtProviderAlreadyTakenByAnotherOfferStock(id_at_provider)
+        raise exceptions.OfferException(
+            {"idAtProvider": [f"`{id_at_provider}` is already taken by another offer stock"]}
+        )
 
 
 def check_activation_codes_expiration_datetime(
@@ -519,19 +535,25 @@ def check_offer_withdrawal(
 ) -> None:
     is_offer_withdrawable = subcategory_id in subcategories.WITHDRAWABLE_SUBCATEGORIES
     if is_offer_withdrawable and withdrawal_type is None:
-        raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
+        raise exceptions.OfferException(
+            {"offer": ["Une offre qui a un ticket retirable doit avoir un type de retrait renseigné"]}
+        )
 
     if is_offer_withdrawable and not booking_contact:
-        raise exceptions.WithdrawableEventOfferMustHaveBookingContact()
+        raise exceptions.OfferException(
+            {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]}
+        )
 
     if withdrawal_type == models.WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
-        raise exceptions.NoDelayWhenEventWithdrawalTypeHasNoTicket()
+        raise exceptions.OfferException(
+            {"offer": ["Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"]}
+        )
 
     if (
         withdrawal_type in (models.WithdrawalTypeEnum.ON_SITE, models.WithdrawalTypeEnum.BY_EMAIL)
         and withdrawal_delay is None
     ):
-        raise exceptions.EventWithTicketMustHaveDelay()
+        raise exceptions.OfferException({"offer": ["Un évènement avec ticket doit avoir un délai de renseigné"]})
 
     # Only providers that have set a ticketing system at provider level or at venue level
     # can create offers with in app Withdrawal
@@ -539,16 +561,20 @@ def check_offer_withdrawal(
         has_ticketing_system_at_provider_level = provider and provider.hasTicketingService
         has_ticketing_system_at_venue_level = venue_provider and venue_provider.hasTicketingService
         if not (has_ticketing_system_at_provider_level or has_ticketing_system_at_venue_level):
-            raise exceptions.NonLinkedProviderCannotHaveInAppTicket()
+            raise exceptions.OfferException(
+                {"offer": ["Vous devez supporter l'interface de billeterie pour créer des offres avec billet"]}
+            )
 
 
 def check_offer_subcategory_is_valid(offer_subcategory_id: str | None) -> None:
     if not offer_subcategory_id:
         return
     if offer_subcategory_id not in subcategories.ALL_SUBCATEGORIES_DICT:
-        raise exceptions.UnknownOfferSubCategory()
+        raise exceptions.OfferException({"subcategory": ["La sous-catégorie de cette offre est inconnue"]})
     if not subcategories.ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
-        raise exceptions.SubCategoryIsInactive()
+        raise exceptions.OfferException(
+            {"subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]}
+        )
 
 
 def check_booking_limit_datetime(
@@ -610,7 +636,7 @@ def check_offer_extra_data(
 
     try:
         _check_offer_has_product(offer)
-    except exceptions.OfferWithProductShouldNotUpdateExtraData as e:
+    except exceptions.OfferException as e:
         errors.add_client_error(e)
 
     try:
@@ -619,7 +645,7 @@ def check_offer_extra_data(
 
             offer_id = offer.id if offer else None
             check_other_offer_with_ean_does_not_exist(ean, venue, offer_id)
-    except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
+    except exceptions.OfferException as e:
         errors.add_client_error(e)
 
     try:
@@ -627,7 +653,7 @@ def check_offer_extra_data(
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_SUB_TYPE, music.MUSIC_SUB_TYPES_BY_CODE)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show.SHOW_TYPES_LABEL_BY_CODE)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_SUB_TYPE, show.SHOW_SUB_TYPES_BY_CODE)
-    except exceptions.ExtraDataValueNotAllowed as e:
+    except exceptions.OfferException as e:
         errors.add_client_error(e)
 
     if errors.errors:
@@ -648,8 +674,8 @@ def check_product_for_venue_and_subcategory(
         return
     if product is not None:
         return
-    raise exceptions.ProductNotFoundForOfferCreation(
-        ExtraDataFieldEnum.EAN.value, "EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."
+    raise exceptions.OfferException(
+        {ExtraDataFieldEnum.EAN.value: ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]}
     )
 
 
@@ -658,17 +684,19 @@ def check_other_offer_with_ean_does_not_exist(
 ) -> None:
     if repository.has_active_offer_with_ean(ean, venue, offer_id):
         if ean:
-            raise exceptions.OfferAlreadyExists("ean")
+            raise exceptions.OfferException(
+                {"ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]}
+            )
 
 
 def check_offer_name_does_not_contain_ean(offer_name: str) -> None:
     if re.search(r"\d{13}", offer_name):
-        raise exceptions.EanInOfferNameException()
+        raise exceptions.OfferException({"name": ["Le titre d'une offre ne peut contenir l'EAN"]})
 
 
 def _check_offer_has_product(offer: models.Offer | None) -> None:
     if offer and offer.product is not None:
-        raise exceptions.OfferWithProductShouldNotUpdateExtraData()
+        raise exceptions.OfferException({"global": ["Les extraData des offres avec produit ne sont pas modifiables"]})
 
 
 def check_product_cgu_and_offerer(
@@ -694,11 +722,8 @@ def check_product_cgu_and_offerer(
     if len(not_virtual_venues) == 1:
         try:
             check_other_offer_with_ean_does_not_exist(ean, not_virtual_venues[0])
-        except exceptions.OfferAlreadyExists:
-            raise api_errors.ApiErrors(
-                errors={"ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]},
-                status_code=422,
-            )
+        except exceptions.OfferException as exc:
+            raise api_errors.ApiErrors(errors=exc.errors, status_code=422)
     if not product.isGcuCompatible:
         raise api_errors.ApiErrors(
             errors={
@@ -715,13 +740,13 @@ def _check_value_is_allowed(
     if field_value is None:
         return
     if not isinstance(field_value, (str, int)):
-        raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be an int or a string")
+        raise exceptions.OfferException({extra_data_field.value: ["should be an int or a string"]})
     try:
         music_type_code = int(field_value)
     except ValueError:
-        raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be an int or an int string")
+        raise exceptions.OfferException({extra_data_field.value: ["should be an int or an int string"]})
     if music_type_code not in allowed_values:
-        raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
+        raise exceptions.OfferException({extra_data_field.value: ["should be in allowed values"]})
 
 
 def _check_ean_field(ean: str) -> None:
@@ -729,10 +754,10 @@ def _check_ean_field(ean: str) -> None:
         return
 
     if not isinstance(ean, str):
-        raise exceptions.EanFormatException("ean", "L'EAN doit être une chaîne de caractères")
+        raise exceptions.OfferException({"ean": ["L'EAN doit être une chaîne de caractères"]})
 
     if not ean.isdigit() or not len(ean) == 13:
-        raise exceptions.EanFormatException("ean", "L'EAN doit être composé de 13 chiffres")
+        raise exceptions.OfferException({"ean": ["L'EAN doit être composé de 13 chiffres"]})
 
 
 def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
@@ -747,7 +772,9 @@ def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
 
 def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:
     if is_duo and not subcategory.can_be_duo:
-        raise exceptions.OfferCannotBeDuo()
+        raise exceptions.OfferException(
+            {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
+        )
 
 
 def check_accessibility_compliance(
@@ -763,7 +790,7 @@ def check_accessibility_compliance(
         visual_disability_compliant,
     )
     if None in fields:
-        raise exceptions.OfferMustHaveAccessibility()
+        raise exceptions.OfferException({"global": ["L’accessibilité de l’offre doit être définie"]})
 
 
 def check_publication_date(offer: models.Offer, publication_date: datetime.datetime | None) -> None:
@@ -771,26 +798,31 @@ def check_publication_date(offer: models.Offer, publication_date: datetime.datet
         return
 
     if offer.publicationDate is not None:
-        msg = "Cette offre est déjà programmée pour être publiée dans le futur"
-        raise exceptions.FutureOfferException("publication_date", msg)
+        raise exceptions.OfferException(
+            {"publication_date": ["Cette offre est déjà programmée pour être publiée dans le futur"]}
+        )
 
     if not offer.subcategory.is_event:
-        msg = "Seules les offres d’événements peuvent avoir une date de publication"
-        raise exceptions.FutureOfferException("publication_date", msg)
+        raise exceptions.OfferException(
+            {"publication_date": ["Seules les offres d’événements peuvent avoir une date de publication"]}
+        )
 
     if publication_date.minute not in [0, 15, 30, 45]:
-        msg = "L’heure de publication ne peut avoir une précision supérieure au quart d'heure"
-        raise exceptions.FutureOfferException("publication_date", msg)
+        raise exceptions.OfferException(
+            {"publication_date": ["L’heure de publication ne peut avoir une précision supérieure au quart d'heure"]}
+        )
 
     now = datetime.datetime.utcnow()
     if publication_date < now:
-        msg = "Impossible de sélectionner une date de publication dans le passé"
-        raise exceptions.FutureOfferException("publication_date", msg)
+        raise exceptions.OfferException(
+            {"publication_date": ["Impossible de sélectionner une date de publication dans le passé"]}
+        )
 
     years = 2
     if publication_date > now + relativedelta(years=years):
-        msg = f"Impossible sélectionner une date de publication plus de {years} ans en avance"
-        raise exceptions.FutureOfferException("publication_date", msg)
+        raise exceptions.OfferException(
+            {"publication_date": [f"Impossible sélectionner une date de publication plus de {years} ans en avance"]}
+        )
 
 
 def check_price_categories_deletable(offer: models.Offer) -> None:
@@ -854,12 +886,12 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
 
 def _opening_hours_base_checks(offer: models.Offer) -> None:
     if not offer.subcategory.can_have_opening_hours:
-        raise exceptions.OfferEditionBaseException(
-            "offer.subcategory", f"`{offer.subcategory.id}` subcategory does not allow opening hours"
+        raise exceptions.OfferException(
+            {"offer.subcategory": [f"`{offer.subcategory.id}` subcategory does not allow opening hours"]}
         )
 
     if repository.offer_has_timestamped_stocks(offer.id):
-        raise exceptions.OfferEditionBaseException("offer", f"Offer #{offer.id} already has timestamped stocks")
+        raise exceptions.OfferException({"offer": [f"Offer #{offer.id} already has timestamped stocks"]})
 
 
 def check_offer_can_have_opening_hours(
@@ -868,7 +900,7 @@ def check_offer_can_have_opening_hours(
     _opening_hours_base_checks(offer)
 
     if offer.hasOpeningHours:
-        raise exceptions.OfferEditionBaseException("offer", f"Offer #{offer.id} already has opening hours")
+        raise exceptions.OfferException({"offer": [f"Offer #{offer.id} already has opening hours"]})
 
 
 def check_event_opening_hours_can_be_updated(

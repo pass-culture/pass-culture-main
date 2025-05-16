@@ -39,8 +39,8 @@ def restize_api_errors(error: ApiErrors) -> ApiErrorResponse:
     return app.generate_error_response(error.errors), error.status_code or 400
 
 
-@app.errorhandler(offers_exceptions.TooLateToDeleteStock)
-def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> ApiErrorResponse:
+@app.errorhandler(offers_exceptions.OfferException)
+def restize_offer_exception(error: offers_exceptions.OfferException) -> ApiErrorResponse:
     mark_transaction_as_invalid()
     return app.generate_error_response(error.errors), 400
 

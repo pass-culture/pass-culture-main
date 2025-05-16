@@ -88,18 +88,21 @@ def edit_collective_stock(
         raise ApiErrors(
             {"educationalStock": ["La date de fin de l'évènement ne peut précéder la date de début."]}, status_code=400
         )
-    except offers_exceptions.BookingLimitDatetimeTooLate:
+    except (
+        offers_exceptions.BookingLimitDatetimeTooLate
+    ):  # (tcoudray-pass, 14/05/2025) TODO: Refactor, educational_api should not raise this kind of error
         raise ApiErrors(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
-            status_code=400,
         )
     except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
         raise ApiErrors(
             {"educationalStock": "Le prix demandé ne peux être supérieur aux prix actuel si l'offre a été confirmée."},
             status_code=403,
         )
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise ApiErrors(error.errors, status_code=400)
+    except (
+        offers_exceptions.OfferException,
+    ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
+        raise ApiErrors(error.errors)
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}, status_code=400)
     except educational_exceptions.StartEducationalYearMissing:
