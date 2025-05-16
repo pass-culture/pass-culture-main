@@ -16,7 +16,7 @@
     grid-template-rows: repeat(2, auto);
 
     .grid-layout-footer {
-      grid-area: unset;
+      @include a11y.visually-hidden;
     }
   }
 }
