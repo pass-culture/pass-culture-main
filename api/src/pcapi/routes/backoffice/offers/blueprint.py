@@ -1002,7 +1002,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             ),
             sa_orm.joinedload(offers_models.Offer.offererAddress).options(
                 sa_orm.joinedload(offerers_models.OffererAddress.address),
-                sa_orm.selectinload(offerers_models.OffererAddress.venues),
+                sa_orm.selectinload(offerers_models.OffererAddress.venue),
             ),
         )
         .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
