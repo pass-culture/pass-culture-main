@@ -45,6 +45,7 @@ jobs:
           CREDENTIALS: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
         run: |
-          curl -sL https://firebase.tools | bash
+          : # curl -sL https://firebase.tools | bash # temporary fix for https://github.com/firebase/firebase-tools/issues/8611
+          curl -sL https://firebase.tools | sed s/latest/v14.3.1/ | bash 
           echo $CREDENTIALS > credentials.json
           firebase hosting:clone pc-pro-${{ inputs.ENV }}:${{ inputs.VERSION }} pc-pro-${{ inputs.ENV }}:live
