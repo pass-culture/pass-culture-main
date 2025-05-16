@@ -28,7 +28,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scheduled_tasks.titelive_commands",
         "pcapi.scripts.backoffice_users.add_permissions_to_staging_specific_roles",
         "pcapi.scripts.beneficiary.import_test_users",
-        "pcapi.scripts.booking.commands",
         "pcapi.scripts.check_pre_migrations",
         "pcapi.scripts.external_users.commands",
         "pcapi.scripts.full_index_offers",
