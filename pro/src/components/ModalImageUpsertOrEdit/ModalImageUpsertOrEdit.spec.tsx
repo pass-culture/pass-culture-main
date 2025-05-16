@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -15,6 +14,7 @@ const onImageUpload = vi.fn()
 const onImageDelete = vi.fn()
 
 const defaultProps: ModalImageUpsertOrEditProps = {
+  open: true,
   mode: UploaderModeEnum.OFFER,
   onImageUpload,
   onImageDelete,
@@ -38,13 +38,7 @@ const renderModalImageCrop = (props: ModalImageUpsertOrEditTestProps = {}) => {
     ...props,
   }
 
-  return renderWithProviders(
-    <Dialog.Root defaultOpen>
-      <Dialog.Content aria-describedby={undefined}>
-        <ModalImageUpsertOrEdit {...finalProps} />
-      </Dialog.Content>
-    </Dialog.Root>
-  )
+  return renderWithProviders(<ModalImageUpsertOrEdit {...finalProps} />)
 }
 
 describe('ModalImageUpsertOrEdit', () => {

@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 import { useNotification } from 'commons/hooks/useNotification'
+import { usePrevious } from 'commons/hooks/usePrevious'
 import {
   UploadImageValues,
   UploaderModeEnum,
@@ -15,7 +16,6 @@ import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ImageDragAndDropUploader.module.scss'
@@ -45,12 +45,21 @@ export const ImageDragAndDropUploader = ({
 }: ImageDragAndDropUploaderProps) => {
   const notify = useNotification()
   const updateImageRef = useRef<HTMLButtonElement>(null)
+  const inputDragAndDropRef = useRef<HTMLInputElement>(null)
+
   const { imageUrl, originalImageUrl } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
+  const previousDraftImage = usePrevious(draftImage)
 
   const hasImage = imageUrl && originalImageUrl
   const shouldDisplayActions = hasImage && !hideActionButtons
+
+  useEffect(() => {
+    if (previousDraftImage && !draftImage) {
+      inputDragAndDropRef.current?.focus()
+    }
+  }, [draftImage, previousDraftImage])
 
   const onImageDeleteHandler = () => {
     setIsModalImageOpen(false)
@@ -86,10 +95,16 @@ export const ImageDragAndDropUploader = ({
           [styles['image-uploader-actions-visible']]: shouldDisplayActions,
         })}
       >
-        <DialogBuilder
+        <ModalImageUpsertOrEdit
+          mode={mode}
+          onImageUpload={onImageUploadHandler}
+          onImageDelete={onImageDeleteHandler}
+          initialValues={{
+            draftImage,
+            ...initialValues,
+          }}
           onOpenChange={setIsModalImageOpen}
           open={isModalImageOpen}
-          variant="drawer"
           trigger={
             shouldDisplayActions && (
               <Button
@@ -102,17 +117,9 @@ export const ImageDragAndDropUploader = ({
               </Button>
             )
           }
-        >
-          <ModalImageUpsertOrEdit
-            mode={mode}
-            onImageUpload={onImageUploadHandler}
-            onImageDelete={onImageDeleteHandler}
-            initialValues={{
-              draftImage,
-              ...initialValues,
-            }}
-          />
-        </DialogBuilder>
+          refToFocusOnClose={inputDragAndDropRef}
+          preferNonNullRefToFocusOnClose
+        />
         {shouldDisplayActions && (
           <Button
             onClick={onImageDeleteHandler}
@@ -129,6 +136,7 @@ export const ImageDragAndDropUploader = ({
       </div>
       {!hasImage && (
         <ImageDragAndDrop
+          ref={inputDragAndDropRef}
           className={dragAndDropClassName}
           onDropOrSelected={(draftImage) => {
             onImageDropOrSelected?.()

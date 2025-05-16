@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { ForwardedRef, forwardRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -69,36 +69,39 @@ interface ImageDragAndDropProps {
   }
 }
 
-export const ImageDragAndDrop = ({
-  className,
-  onClick,
-  onDropOrSelected,
-  onError,
-  disabled,
-  minSizes,
-}: ImageDragAndDropProps) => {
-  const [isDraggedOver, setIsDraggedOver] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
-
-  const accept: MimeToExtensionsMap = ALLOWED_IMAGE_TYPES.reduce(
-    (acc: MimeToExtensionsMap, { mime, extensions }) => {
-      acc[mime] = extensions
-      return acc
-    },
-    {}
-  )
-
-  const imageMimeTypes = ALLOWED_IMAGE_TYPES.reduce(
-    (acc: string[], { mime }) => {
-      acc.push(mime)
-      return acc
-    },
-    []
-  )
-
-  const { inputRef, getRootProps, getInputProps, fileRejections } = useDropzone(
+export const ImageDragAndDrop = forwardRef(
+  (
     {
+      className,
+      onClick,
+      onDropOrSelected,
+      onError,
+      disabled,
+      minSizes,
+    }: ImageDragAndDropProps,
+    dragAndDropInputRef: ForwardedRef<HTMLInputElement>
+  ) => {
+    const [isDraggedOver, setIsDraggedOver] = useState(false)
+    const [isHovered, setIsHovered] = useState(false)
+    const [isFocused, setIsFocused] = useState(false)
+
+    const accept: MimeToExtensionsMap = ALLOWED_IMAGE_TYPES.reduce(
+      (acc: MimeToExtensionsMap, { mime, extensions }) => {
+        acc[mime] = extensions
+        return acc
+      },
+      {}
+    )
+
+    const imageMimeTypes = ALLOWED_IMAGE_TYPES.reduce(
+      (acc: string[], { mime }) => {
+        acc.push(mime)
+        return acc
+      },
+      []
+    )
+
+    const { getRootProps, getInputProps, fileRejections } = useDropzone({
       accept,
       maxFiles: 1,
       maxSize: 10 * 1024 * 1024,
@@ -197,153 +200,165 @@ export const ImageDragAndDrop = ({
 
         return null
       },
-    }
-  )
+    })
 
-  const rootProps = getRootProps()
-  // role="presentation" on <div> is redundant,
-  // input should be the only focusable element.
-  delete rootProps.role
-  delete rootProps.tabIndex
+    const rootProps = getRootProps()
+    // role="presentation" on <div> is redundant,
+    // input should be the only focusable element.
+    delete rootProps.role
+    delete rootProps.tabIndex
 
-  const inputProps = getInputProps()
-  // restore input focusability to allow keyboard navigation,
-  // and let us define input style.
-  inputProps.tabIndex = 0
-  inputProps.disabled = disabled
-  delete inputProps.style
+    const inputProps = getInputProps()
+    // restore input focusability to allow keyboard navigation,
+    // and let us define input style.
+    inputProps.tabIndex = 0
+    inputProps.disabled = disabled
+    delete inputProps.style
 
-  const errors = fileRejections.reduce(
-    (acc, rejections) => {
-      const { errors } = rejections
+    const errors = fileRejections.reduce(
+      (acc, rejections) => {
+        const { errors } = rejections
 
-      acc.hasWrongType = errors.some((e) => e.code === 'file-invalid-type')
-      acc.hasWrongSize = errors.some((e) => e.code === 'file-too-large')
-      acc.hasWrongWidth = errors.some(
-        (e) => e.code === 'file-invalid-dimensions-width'
-      )
-      acc.hasWrongHeight = errors.some(
-        (e) => e.code === 'file-invalid-dimensions-height'
-      )
+        acc.hasWrongType = errors.some((e) => e.code === 'file-invalid-type')
+        acc.hasWrongSize = errors.some((e) => e.code === 'file-too-large')
+        acc.hasWrongWidth = errors.some(
+          (e) => e.code === 'file-invalid-dimensions-width'
+        )
+        acc.hasWrongHeight = errors.some(
+          (e) => e.code === 'file-invalid-dimensions-height'
+        )
 
-      return acc
-    },
-    {
-      hasWrongType: false,
-      hasWrongSize: false,
-      hasWrongWidth: false,
-      hasWrongHeight: false,
-    }
-  )
-  const hasError =
-    errors.hasWrongSize ||
-    errors.hasWrongType ||
-    errors.hasWrongWidth ||
-    errors.hasWrongHeight
+        return acc
+      },
+      {
+        hasWrongType: false,
+        hasWrongSize: false,
+        hasWrongWidth: false,
+        hasWrongHeight: false,
+      }
+    )
+    const hasError =
+      errors.hasWrongSize ||
+      errors.hasWrongType ||
+      errors.hasWrongWidth ||
+      errors.hasWrongHeight
 
-  return (
-    <div className={cn(styles['image-drag-and-drop-container'])}>
-      <div
-        data-testid="image-drag-and-drop"
-        {...rootProps}
-        className={cn(
-          styles['image-drag-and-drop'],
-          {
-            [styles['image-drag-and-drop-dragged-over']]: isDraggedOver,
-            [styles['image-drag-and-drop-hovered']]: isHovered,
-            [styles['image-drag-and-drop-focused']]: isFocused,
-            [styles['image-drag-and-drop-error']]: hasError,
-            [styles['image-drag-and-drop-disabled']]: disabled,
-          },
-          className
-        )}
-      >
-        {isDraggedOver ? (
-          <SvgIcon src={fullValidateIcon} alt="" width="24" />
-        ) : (
-          <SvgIcon src={strokePicture} alt="" width="58" viewBox="0 0 58 58" />
-        )}
-        <div className={styles['image-drag-and-drop-text']}>
+    return (
+      <div className={cn(styles['image-drag-and-drop-container'])}>
+        <div
+          data-testid="image-drag-and-drop"
+          {...rootProps}
+          className={cn(
+            styles['image-drag-and-drop'],
+            {
+              [styles['image-drag-and-drop-dragged-over']]: isDraggedOver,
+              [styles['image-drag-and-drop-hovered']]: isHovered,
+              [styles['image-drag-and-drop-focused']]: isFocused,
+              [styles['image-drag-and-drop-error']]: hasError,
+              [styles['image-drag-and-drop-disabled']]: disabled,
+            },
+            className
+          )}
+        >
           {isDraggedOver ? (
-            <>Déposez votre image ici</>
+            <SvgIcon src={fullValidateIcon} alt="" width="24" />
           ) : (
-            <>
-              <span>Glissez et déposez votre image</span>
-              <span>
-                {' ou '}
-                <label
-                  id="drag-and-drop-label"
-                  className={styles['image-drag-and-drop-text-highlight']}
-                >
-                  Importez une image
-                </label>
-                <input
-                  {...inputProps}
-                  aria-labelledby="drag-and-drop-label"
-                  aria-describedby="drag-and-drop-description"
-                  aria-invalid={hasError}
-                  className={cn(styles['image-drag-and-drop-input'], {
-                    [styles['image-drag-and-drop-input-error']]: hasError,
-                    [styles['image-drag-and-drop-input-disabled']]: disabled,
-                  })}
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  onClick={(e) => {
-                    e.stopPropagation()
+            <SvgIcon
+              src={strokePicture}
+              alt=""
+              width="58"
+              viewBox="0 0 58 58"
+            />
+          )}
+          <div className={styles['image-drag-and-drop-text']}>
+            {isDraggedOver ? (
+              <>Déposez votre image ici</>
+            ) : (
+              <>
+                <span>Glissez et déposez votre image</span>
+                <span>
+                  {' ou '}
+                  <label
+                    id="drag-and-drop-label"
+                    className={styles['image-drag-and-drop-text-highlight']}
+                  >
+                    Importez une image
+                  </label>
+                  <input
+                    {...inputProps}
+                    ref={dragAndDropInputRef}
+                    aria-labelledby="drag-and-drop-label"
+                    aria-describedby="drag-and-drop-description"
+                    aria-invalid={hasError}
+                    className={cn(styles['image-drag-and-drop-input'], {
+                      [styles['image-drag-and-drop-input-error']]: hasError,
+                      [styles['image-drag-and-drop-input-disabled']]: disabled,
+                    })}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    onClick={(e) => {
+                      e.stopPropagation()
 
-                    // Clear the input value to allow re-uploading the same file.
-                    if (inputRef.current) {
-                      inputRef.current.value = ''
-                      inputRef.current.dispatchEvent(
-                        new Event('input', { bubbles: true })
-                      )
-                    }
+                      // Clear the input value to allow re-uploading the same file.
+                      if (
+                        dragAndDropInputRef &&
+                        typeof dragAndDropInputRef !== 'function' &&
+                        dragAndDropInputRef.current
+                      ) {
+                        dragAndDropInputRef.current.value = ''
+                        dragAndDropInputRef.current.dispatchEvent(
+                          new Event('input', { bubbles: true })
+                        )
+                      }
 
-                    onClick?.()
-                  }}
-                />
-              </span>
-            </>
+                      onClick?.()
+                    }}
+                  />
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+        <div
+          id="drag-and-drop-description"
+          className={styles['image-drag-and-drop-description']}
+          role="alert"
+          aria-relevant="additions"
+        >
+          <ImageConstraintCheck
+            label="Formats acceptés"
+            constraint="JPG, JPEG, PNG, mpo, webP"
+            hasError={errors.hasWrongType}
+            errorMessage="Le format de l’image n’est pas valide"
+          />
+          <ImageConstraintCheck
+            label="Poids maximal du fichier"
+            constraint="10 Mo"
+            hasError={errors.hasWrongSize}
+            errorMessage="Le poids du fichier est trop lourd"
+          />
+          {minSizes?.height && (
+            <ImageConstraintCheck
+              label="Hauteur minimum"
+              constraint={`${minSizes.height} px`}
+              hasError={errors.hasWrongHeight}
+              errorMessage={`L’image doit faire au moins ${minSizes.height} pixels de haut`}
+            />
+          )}
+          {minSizes?.width && (
+            <ImageConstraintCheck
+              label="Largeur minimum"
+              constraint={`${minSizes.width} px`}
+              hasError={errors.hasWrongWidth}
+              errorMessage={`L’image doit faire au moins ${minSizes.width} pixels de large`}
+            />
           )}
         </div>
       </div>
-      <div
-        id="drag-and-drop-description"
-        className={styles['image-drag-and-drop-description']}
-        role="alert"
-        aria-relevant="additions"
-      >
-        <ImageConstraintCheck
-          label="Formats acceptés"
-          constraint="JPG, JPEG, PNG, mpo, webP"
-          hasError={errors.hasWrongType}
-          errorMessage="Le format de l’image n’est pas valide"
-        />
-        <ImageConstraintCheck
-          label="Poids maximal du fichier"
-          constraint="10 Mo"
-          hasError={errors.hasWrongSize}
-          errorMessage="Le poids du fichier est trop lourd"
-        />
-        {minSizes?.height && (
-          <ImageConstraintCheck
-            label="Hauteur minimum"
-            constraint={`${minSizes.height} px`}
-            hasError={errors.hasWrongHeight}
-            errorMessage={`L’image doit faire au moins ${minSizes.height} pixels de haut`}
-          />
-        )}
-        {minSizes?.width && (
-          <ImageConstraintCheck
-            label="Largeur minimum"
-            constraint={`${minSizes.width} px`}
-            hasError={errors.hasWrongWidth}
-            errorMessage={`L’image doit faire au moins ${minSizes.width} pixels de large`}
-          />
-        )}
-      </div>
-    </div>
-  )
-}
+    )
+  }
+)
+
+ImageDragAndDrop.displayName = 'ImageDragAndDrop'
