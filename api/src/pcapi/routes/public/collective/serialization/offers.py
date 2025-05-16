@@ -246,7 +246,7 @@ class CollectiveOfferLocationAddressModel(BaseModel):
     isVenueAddress: typing.Literal[False] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
 
     class Config:
-        title = "ADDRESS - NOT VENUE"
+        title = "ADDRESS - OTHER"
 
 
 CollectiveOfferLocationAddress = typing.Annotated[

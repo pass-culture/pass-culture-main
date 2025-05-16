@@ -548,6 +548,63 @@ def update_collective_offer_educational_institution(
     return offer
 
 
+def _get_location_and_offer_venue_from_public_model(
+    location_body: public_api_collective_offers_serialize.CollectiveOfferLocation,
+    venue: offerers_models.Venue,
+) -> tuple[CollectiveOfferLocation, educational_models.OfferVenueDict]:
+    is_venue_address = False
+
+    match location_body:
+        case public_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
+            location = CollectiveOfferLocation(
+                location_type=educational_models.CollectiveLocationType.SCHOOL,
+                location_comment=None,
+                offerer_address=None,
+            )
+
+        case public_api_collective_offers_serialize.CollectiveOfferLocationToBeDefinedModel():
+            location = CollectiveOfferLocation(
+                location_type=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+                location_comment=location_body.comment,
+                offerer_address=None,
+            )
+
+        case public_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
+            is_venue_address = True
+            location = CollectiveOfferLocation(
+                location_type=educational_models.CollectiveLocationType.ADDRESS,
+                location_comment=None,
+                offerer_address=venue.offererAddress,
+            )
+
+        case public_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():
+            address = public_utils.get_address_or_raise_404(location_body.addressId)
+            offerer_address = offerers_api.get_or_create_offerer_address(
+                offerer_id=venue.managingOffererId,
+                address_id=address.id,
+                label=location_body.addressLabel,
+            )
+
+            location = CollectiveOfferLocation(
+                location_type=educational_models.CollectiveLocationType.ADDRESS,
+                location_comment=None,
+                offerer_address=offerer_address,
+            )
+
+        case _:
+            raise ValueError("Unexpected location body")
+
+    offer_venue = get_offer_venue_from_location(
+        location_type=location.location_type,
+        location_comment=location.location_comment,
+        offerer_address=location.offerer_address,
+        is_venue_address=is_venue_address,
+        venue_id=venue.id,
+    )
+
+    return location, offer_venue
+
+
 def create_collective_offer_public(
     requested_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
@@ -578,17 +635,17 @@ def create_collective_offer_public(
     end_datetime = body.end_datetime or body.start_datetime
     validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
 
-    location: CollectiveOfferLocation | None = None
-    body_location = body.location
+    location: CollectiveOfferLocation
+    offer_venue: educational_models.OfferVenueDict
 
+    # when we receive offerVenue, we also write to OA fields
     if body.offer_venue is not None:
-        offer_venue: educational_models.OfferVenueDict = {
+        offer_venue = {
             "venueId": body.offer_venue.venueId,
             "addressType": body.offer_venue.addressType,
             "otherAddress": body.offer_venue.otherAddress or "",
         }
 
-        # when we receive offerVenue, we also write to OA fields
         location_venue = None
         if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
             venue_id = offer_venue["venueId"]
@@ -602,40 +659,10 @@ def create_collective_offer_public(
             location_venue=location_venue,
             is_offer_located_at_venue=offer_venue["venueId"] == venue.id,
         )
-
-    elif body_location is not None:
-        if body_location.type == educational_models.CollectiveLocationType.ADDRESS.value:
-            if body_location.isVenueAddress:
-                offerer_address = venue.offererAddress
-            else:
-                assert body_location.addressId is not None
-
-                public_utils.get_address_or_raise_404(body_location.addressId)
-
-                offerer_address = offerers_api.get_or_create_offerer_address(
-                    offerer_id=venue.managingOffererId,
-                    address_id=body_location.addressId,
-                    label=body_location.addressLabel,
-                )
-        else:
-            offerer_address = None
-
-        location = CollectiveOfferLocation(
-            location_type=educational_models.CollectiveLocationType(body_location.type),
-            location_comment=body_location.comment
-            if body_location.type == educational_models.CollectiveLocationType.TO_BE_DEFINED.value
-            else None,
-            offerer_address=offerer_address,
-        )
-
-        offer_venue = get_offer_venue_from_location(
-            location_type=location.location_type,
-            location_comment=location.location_comment,
-            offerer_address=location.offerer_address,
-            is_venue_address=body_location.isVenueAddress
-            if body_location.type == educational_models.CollectiveLocationType.ADDRESS.value
-            else False,
-            venue_id=body.venue_id,
+    # when we receive OA fields, we also write to offerVenue
+    elif body.location is not None:
+        location, offer_venue = _get_location_and_offer_venue_from_public_model(
+            location_body=body.location, venue=venue
         )
     else:
         raise ValueError("Location is required")

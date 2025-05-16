@@ -1763,7 +1763,7 @@
                     "addressId",
                     "isVenueAddress"
                 ],
-                "title": "ADDRESS - NOT VENUE",
+                "title": "ADDRESS - OTHER",
                 "type": "object"
             },
             "CollectiveOfferLocationAddressVenueModel": {
