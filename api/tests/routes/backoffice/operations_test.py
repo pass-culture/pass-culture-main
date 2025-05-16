@@ -182,8 +182,13 @@ class GetEventDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"special_event_id": 1}
     needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
-    # authenticated user + user session + special event + responses
-    expected_num_queries = 4
+    # get authenticated user
+    # get user session
+    # get special event
+    # get special event stats
+    # get special event responses
+    # count special event responses (for pagination)
+    expected_num_queries = 6
 
     def test_get_event_details(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
@@ -206,15 +211,15 @@ class GetEventDetailsTest(GetEndpointHelper):
         full_response = operations_factories.SpecialEventResponseFactory(
             event=event, status=operations_models.SpecialEventResponseStatus.PRESELECTED
         )
-        full_name_answer = operations_factories.SpecialEventAnswerFactory(
+        operations_factories.SpecialEventAnswerFactory(
             responseId=full_response.id, questionId=name_question.id, text="Elias de Kelliwic'h"
         )
-        full_chestnut_answer = operations_factories.SpecialEventAnswerFactory(
+        operations_factories.SpecialEventAnswerFactory(
             responseId=full_response.id, questionId=chestnut_question.id, text="Un marron"
         )
 
         no_user_incomplete_response = operations_factories.SpecialEventResponseNoUserFactory(event=event)
-        no_user_name_answer = operations_factories.SpecialEventAnswerFactory(
+        operations_factories.SpecialEventAnswerFactory(
             responseId=no_user_incomplete_response.id, questionId=name_question.id, text="Merlin l'enchanteur"
         )
 
@@ -222,36 +227,36 @@ class GetEventDetailsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, special_event_id=special_event_id))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        card_text = cards_text[0]
-
-        assert "Énigme des enchanteurs" in card_text
-        assert f"Typeform ID : {event.externalId}" in card_text
-        assert f"Créée le : {format_date(event.dateCreated, '%d/%m/%Y à %Hh%M')}" in card_text
-        assert f"Date de l'évènement : {format_date(event.eventDate, '%d/%m/%Y')}" in card_text
-        assert f"Nombre de candidats : {len(event.responses)}" in card_text
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert "Énigme des enchanteurs" in html_parser.extract(response.data, tag="h2")
+        assert event.externalId.encode() in response.data
+        assert descriptions["Date d'import"] == format_date(event.dateCreated, "%d/%m/%Y")
+        assert descriptions["Date de l'opération"] == format_date(event.eventDate, "%d/%m/%Y")
+        assert str(len(event.responses)) == descriptions["Nombre de candidats total"]
+        assert descriptions["Nombre de nouvelles candidatures"] == "1"
+        assert descriptions["Nombre de candidatures en attente"] == "0"
+        assert descriptions["Nombre de candidatures à contacter"] == "1"
+        assert descriptions["Nombre de candidatures confirmées"] == "0"
+        assert descriptions["Nombre de candidatures de backup"] == "0"
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert rows[0]["Candidat"] == "Non trouvé"
-        assert rows[0]["Email"] == no_user_incomplete_response.email
-        assert rows[0]["Téléphone"] == no_user_incomplete_response.phoneNumber
-        assert rows[0]["Éligibilité"] == ""
-        assert rows[0]["Date de réponse"] == format_date(no_user_incomplete_response.dateSubmitted, "%d/%m/%Y à %Hh%M")
+        assert rows[0]["ID"] == str(no_user_incomplete_response.id)
+        assert rows[0]["Candidat"] == no_user_incomplete_response.email
         assert rows[0]["État de la candidature"] == "Nouvelle"
-        assert rows[0]["Réponses"] == " ".join([name_question.title, no_user_name_answer.text, chestnut_question.title])
+        assert rows[0]["Candidatures totales"] == "-"
+        assert rows[0]["Candidatures effectives"] == "-"
+        assert rows[0]["Éligibilité"] == "-"
+        assert rows[0]["Date de réponse"] == format_date(no_user_incomplete_response.dateSubmitted, "%d/%m/%Y à %Hh%M")
 
+        assert rows[1]["ID"] == str(full_response.id)
         assert rows[1]["Candidat"] == f"{full_response.user.full_name} ({full_response.user.id})"
-        assert rows[1]["Email"] == full_response.user.email
-        assert rows[1]["Téléphone"] == (full_response.user.phoneNumber or "")
+        assert rows[1]["État de la candidature"] == "À contacter"
+        assert rows[1]["Candidatures totales"] == "1"
+        assert rows[1]["Candidatures effectives"] == "0"
         assert rows[1]["Éligibilité"] == "Pass 18"
         assert rows[1]["Date de réponse"] == format_date(full_response.dateSubmitted, "%d/%m/%Y à %Hh%M")
-        assert rows[1]["État de la candidature"] == "Préselectionnée"
-        assert rows[1]["Réponses"] == " ".join(
-            [name_question.title, full_name_answer.text, chestnut_question.title, full_chestnut_answer.text]
-        )
 
     def test_filter_event_responses_by_response_status(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
@@ -292,7 +297,7 @@ class GetEventDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert {"Préselectionnée"} == {e["État de la candidature"] for e in rows}
+        assert {"À contacter"} == {e["État de la candidature"] for e in rows}
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url, params={"response_status": "NEW"})
@@ -306,7 +311,7 @@ class GetEventDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 3
-        assert {"Retenue"} == {e["État de la candidature"] for e in rows}
+        assert {"Confirmée"} == {e["État de la candidature"] for e in rows}
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url, params={"response_status": "REJECTED"})
@@ -323,7 +328,7 @@ class GetEventDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 6
-        assert {"Préselectionnée", "Nouvelle"} == {e["État de la candidature"] for e in rows}
+        assert {"À contacter", "Nouvelle"} == {e["État de la candidature"] for e in rows}
 
     def test_filter_event_responses_by_eligibility(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
@@ -350,7 +355,7 @@ class GetEventDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["Email"] == response_pass_18.user.email
+        assert rows[0]["Candidat"] == f"{response_pass_18.user.full_name} ({response_pass_18.user.id})"
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
@@ -359,14 +364,20 @@ class GetEventDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert {row["Email"] for row in rows} == {response_pass_18.user.email, response_pass_1517.user.email}
+        assert {row["Candidat"] for row in rows} == {
+            f"{response_pass_18.user.full_name} ({response_pass_18.user.id})",
+            f"{response_pass_1517.user.full_name} ({response_pass_1517.user.id})",
+        }
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url, params=(("eligibility", "PUBLIC"), ("eligibility", "SUSPENDED")))
             assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert {row["Email"] for row in rows} == {response_non_beneficiary.user.email, response_suspended.user.email}
+        assert {row["Candidat"] for row in rows} == {
+            f"{response_non_beneficiary.user.full_name} ({response_non_beneficiary.user.id})",
+            f"{response_suspended.user.full_name} ({response_suspended.user.id})",
+        }
 
     def test_only_one_line_for_multiple_deposits(self, authenticated_client):
         user = users_factories.UserFactory(roles=[users_models.UserRole.BENEFICIARY])
@@ -407,457 +418,109 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert len(rows) == 1
 
 
-class ValidateResponseTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.validate_response"
+class SetResponseStatusTest(PostEndpointHelper):
+    endpoint = "backoffice_web.operations.set_response_status"
     endpoint_kwargs = {"special_event_id": 1, "response_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
-    def test_validate_response(self, authenticated_client):
-        event_response = operations_factories.SpecialEventResponseFactory(
-            status=operations_models.SpecialEventResponseStatus.NEW
-        )
-        special_event_id = event_response.event.id
-        response_id = event_response.id
+    @pytest.mark.parametrize(
+        "response_status",
+        [
+            operations_models.SpecialEventResponseStatus.PRESELECTED,
+            operations_models.SpecialEventResponseStatus.BACKUP,
+            operations_models.SpecialEventResponseStatus.VALIDATED,
+            operations_models.SpecialEventResponseStatus.WITHDRAWN,
+            operations_models.SpecialEventResponseStatus.WAITING,
+            operations_models.SpecialEventResponseStatus.REJECTED,
+        ],
+    )
+    def test_set_response_status(self, response_status, authenticated_client):
+        event_response = operations_factories.SpecialEventResponseFactory()
 
         response = self.post_to_endpoint(
-            authenticated_client, special_event_id=special_event_id, response_id=response_id
+            authenticated_client,
+            special_event_id=event_response.eventId,
+            response_id=event_response.id,
+            form={"response_status": response_status.value},
         )
 
         assert response.status_code == 303
 
-        db.session.refresh(event_response)
-        assert event_response.status == operations_models.SpecialEventResponseStatus.VALIDATED
-
-
-class PreselectResponseTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.preselect_response"
-    endpoint_kwargs = {"special_event_id": 1, "response_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-
-    def test_validate_response(self, authenticated_client):
-        event_response = operations_factories.SpecialEventResponseFactory(
-            status=operations_models.SpecialEventResponseStatus.NEW
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEventResponse.status,
+            )
+            .filter(
+                operations_models.SpecialEventResponse.id == event_response.id,
+            )
+            .one()
         )
-        special_event_id = event_response.event.id
-        response_id = event_response.id
+        assert db_response.status == response_status
+
+    def test_set_response_status_new(self, authenticated_client):
+        event_response = operations_factories.SpecialEventResponseFactory(
+            status=operations_models.SpecialEventResponseStatus.WITHDRAWN,
+        )
 
         response = self.post_to_endpoint(
-            authenticated_client, special_event_id=special_event_id, response_id=response_id
+            authenticated_client,
+            special_event_id=event_response.eventId,
+            response_id=event_response.id,
+            form={"response_status": operations_models.SpecialEventResponseStatus.NEW.value},
         )
 
         assert response.status_code == 303
 
-        db.session.refresh(event_response)
-        assert event_response.status == operations_models.SpecialEventResponseStatus.PRESELECTED
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEventResponse.status,
+            )
+            .filter(
+                operations_models.SpecialEventResponse.id == event_response.id,
+            )
+            .one()
+        )
+        assert db_response.status == operations_models.SpecialEventResponseStatus.WITHDRAWN
 
 
-class RejectResponseTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.reject_response"
-    endpoint_kwargs = {"special_event_id": 1, "response_id": 1}
+class BatchValidateResponsesStatusTest(PostEndpointHelper):
+    endpoint = "backoffice_web.operations.batch_validate_responses_status"
+    endpoint_kwargs = {
+        "special_event_id": 1,
+        "response_status": operations_models.SpecialEventResponseStatus.PRESELECTED.value,
+    }
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
-    def test_reject_response(self, authenticated_client):
-        event_response = operations_factories.SpecialEventResponseFactory(
-            status=operations_models.SpecialEventResponseStatus.NEW
-        )
-        special_event_id = event_response.event.id
-        response_id = event_response.id
+    @pytest.mark.parametrize(
+        "response_status",
+        [
+            operations_models.SpecialEventResponseStatus.PRESELECTED,
+            operations_models.SpecialEventResponseStatus.BACKUP,
+            operations_models.SpecialEventResponseStatus.VALIDATED,
+            operations_models.SpecialEventResponseStatus.WITHDRAWN,
+            operations_models.SpecialEventResponseStatus.WAITING,
+            operations_models.SpecialEventResponseStatus.REJECTED,
+        ],
+    )
+    def test_batch_validate_responses_status(self, response_status, authenticated_client):
+        event_response = operations_factories.SpecialEventResponseFactory()
+        event_response2 = operations_factories.SpecialEventResponseFactory(event=event_response.event)
 
         response = self.post_to_endpoint(
-            authenticated_client, special_event_id=special_event_id, response_id=response_id
+            authenticated_client,
+            special_event_id=event_response.eventId,
+            response_status=response_status.value,
+            form={"object_ids": f"{event_response.id},{event_response2.id}"},
         )
-
         assert response.status_code == 303
-
-        db.session.refresh(event_response)
-        assert event_response.status == operations_models.SpecialEventResponseStatus.REJECTED
-
-
-class GetBatchValidateResponsesFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.operations.get_batch_validate_responses_form"
-    endpoint_kwargs = {"special_event_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    # authenticated user + user session + special event
-    expected_num_queries = 3
-
-    def test_get_batch_validate_responses_form(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_id = event.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, special_event_id=event_id))
-            assert response.status_code == 200
-
-
-class PostBatchValidateResponsesFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.get_batch_validate_responses_form"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    endpoint_kwargs = {"special_event_id": 1}
-
-    def test_regular_responses(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEventResponse.status,
+            )
+            .filter(
+                operations_models.SpecialEventResponse.id.in_([event_response.id, event_response2.id]),
+            )
+            .all()
         )
-        event_response_rejected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        event_response_preselected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event.id,
-            form={
-                "object_ids": ",".join(
-                    [str(event_response_new.id), str(event_response_preselected.id), str(event_response_rejected.id)]
-                )
-            },
-        )
-
-        assert response.status_code == 200
-        html_parser.assert_no_alert(response.data)
-        assert html_parser.get_tag(response.data, class_="btn btn-primary", tag="button", string="Valider") is not None
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.NEW
-        assert event_response_rejected.status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert event_response_preselected.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-        object_ids_str = html_parser.extract_input_value(response.data, name="object_ids")
-        object_ids_str_list = object_ids_str.split(",")
-        assert len(object_ids_str_list) == 3
-        assert {int(e) for e in object_ids_str_list} == {
-            event_response_new.id,
-            event_response_preselected.id,
-            event_response_rejected.id,
-        }
-
-    def test_invalid_responses_status(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-        event_response_validated = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-        event_id = event.id
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event_id,
-            form={"object_ids": ",".join([str(event_response_new.id), str(event_response_validated.id)])},
-        )
-
-        assert response.status_code == 200
-        assert (
-            html_parser.extract_alert(response.data)
-            == "Toutes les candidatures séléctionnées ont déjà été retenues. L'action n'aura aucun effet."
-        )
-        assert html_parser.extract(response.data, class_="btn btn-primary", tag="button") == []
-        assert html_parser.extract(response.data, tag="form") == []
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.VALIDATED
-        assert event_response_validated.status == operations_models.SpecialEventResponseStatus.VALIDATED
-
-
-class BatchValidateResponsesTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.batch_validate_responses"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    endpoint_kwargs = {"special_event_id": 1}
-
-    def test_regular(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        event_response_rejected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        event_response_preselected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event.id,
-            form={
-                "object_ids": ",".join(
-                    [str(event_response_new.id), str(event_response_preselected.id), str(event_response_rejected.id)]
-                )
-            },
-            follow_redirects=True,
-        )
-
-        assert response.status_code == 200
-        assert response.request.path == url_for(
-            "backoffice_web.operations.get_event_details", special_event_id=event.id
-        )
-        assert html_parser.extract_alert(response.data) == "Les candidatures ont été retenues."
-
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.VALIDATED
-        assert event_response_rejected.status == operations_models.SpecialEventResponseStatus.VALIDATED
-        assert event_response_preselected.status == operations_models.SpecialEventResponseStatus.VALIDATED
-
-
-class GetBatchPreselectResponsesFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.operations.get_batch_preselect_responses_form"
-    endpoint_kwargs = {"special_event_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    # authenticated user + user session + special event
-    expected_num_queries = 3
-
-    def test_get_batch_preselect_responses_form(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_id = event.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, special_event_id=event_id))
-            assert response.status_code == 200
-
-
-class PostBatchPreselectResponsesFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.get_batch_preselect_responses_form"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    endpoint_kwargs = {"special_event_id": 1}
-
-    def test_regular_responses(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        event_response_rejected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        event_response_validated = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event.id,
-            form={
-                "object_ids": ",".join(
-                    [str(event_response_new.id), str(event_response_validated.id), str(event_response_rejected.id)]
-                )
-            },
-        )
-
-        assert response.status_code == 200
-        html_parser.assert_no_alert(response.data)
-        assert html_parser.get_tag(response.data, class_="btn btn-primary", tag="button", string="Valider") is not None
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.NEW
-        assert event_response_rejected.status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert event_response_validated.status == operations_models.SpecialEventResponseStatus.VALIDATED
-        object_ids_str = html_parser.extract_input_value(response.data, name="object_ids")
-        object_ids_str_list = object_ids_str.split(",")
-        assert len(object_ids_str_list) == 3
-        assert {int(e) for e in object_ids_str_list} == {
-            event_response_new.id,
-            event_response_validated.id,
-            event_response_rejected.id,
-        }
-
-    def test_invalid_responses_status(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-        event_response_preselected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-        event_id = event.id
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event_id,
-            form={"object_ids": ",".join([str(event_response_new.id), str(event_response_preselected.id)])},
-        )
-
-        assert response.status_code == 200
-        assert (
-            html_parser.extract_alert(response.data)
-            == "Toutes les candidatures séléctionnées sont déjà à l'état \"préselectionné\". L'action n'aura aucun effet."
-        )
-        assert html_parser.extract(response.data, class_="btn btn-primary", tag="button") == []
-        assert html_parser.extract(response.data, tag="form") == []
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-        assert event_response_preselected.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-
-
-class BatchPreselectResponsesTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.batch_preselect_responses"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    endpoint_kwargs = {"special_event_id": 1}
-
-    def test_regular(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        event_response_rejected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        event_response_validated = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event.id,
-            form={
-                "object_ids": ",".join(
-                    [str(event_response_new.id), str(event_response_rejected.id), str(event_response_validated.id)]
-                )
-            },
-            follow_redirects=True,
-        )
-
-        assert response.status_code == 200
-        assert response.request.path == url_for(
-            "backoffice_web.operations.get_event_details", special_event_id=event.id
-        )
-        assert html_parser.extract_alert(response.data) == "Les candidatures ont été préselectionnées."
-
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-        assert event_response_rejected.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-        assert event_response_validated.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-
-
-class GetBatchRejectResponsesFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.operations.get_batch_reject_responses_form"
-    endpoint_kwargs = {"special_event_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    # authenticated user + user session + special event
-    expected_num_queries = 3
-
-    def test_get_batch_reject_responses_form(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_id = event.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, special_event_id=event_id))
-            assert response.status_code == 200
-
-
-class PostBatchRejectResponsesFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.get_batch_reject_responses_form"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    endpoint_kwargs = {"special_event_id": 1}
-
-    def test_regular_responses(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        event_response_preselected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-        event_response_validated = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event.id,
-            form={
-                "object_ids": ",".join(
-                    [str(event_response_new.id), str(event_response_validated.id), str(event_response_preselected.id)]
-                )
-            },
-        )
-
-        assert response.status_code == 200
-        html_parser.assert_no_alert(response.data)
-        assert html_parser.get_tag(response.data, class_="btn btn-primary", tag="button", string="Valider") is not None
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.NEW
-        assert event_response_preselected.status == operations_models.SpecialEventResponseStatus.PRESELECTED
-        assert event_response_validated.status == operations_models.SpecialEventResponseStatus.VALIDATED
-        object_ids_str = html_parser.extract_input_value(response.data, name="object_ids")
-        object_ids_str_list = object_ids_str.split(",")
-        assert len(object_ids_str_list) == 3
-        assert {int(e) for e in object_ids_str_list} == {
-            event_response_new.id,
-            event_response_validated.id,
-            event_response_preselected.id,
-        }
-
-    def test_invalid_responses_status(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        event_response_rejected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        event_id = event.id
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event_id,
-            form={"object_ids": ",".join([str(event_response_new.id), str(event_response_rejected.id)])},
-        )
-
-        assert response.status_code == 200
-        assert (
-            html_parser.extract_alert(response.data)
-            == "Toutes les candidatures séléctionnées ont déjà été rejetées. L'action n'aura aucun effet."
-        )
-        assert html_parser.extract(response.data, class_="btn btn-primary", tag="button") == []
-        assert html_parser.extract(response.data, tag="form") == []
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert event_response_rejected.status == operations_models.SpecialEventResponseStatus.REJECTED
-
-
-class BatchRejectResponsesTest(PostEndpointHelper):
-    endpoint = "backoffice_web.operations.batch_reject_responses"
-    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
-    endpoint_kwargs = {"special_event_id": 1}
-
-    def test_regular(self, authenticated_client):
-        event = operations_factories.SpecialEventFactory()
-        event_response_new = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        event_response_preselected = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-        event_response_validated = operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            special_event_id=event.id,
-            form={
-                "object_ids": ",".join(
-                    [str(event_response_new.id), str(event_response_preselected.id), str(event_response_validated.id)]
-                )
-            },
-            follow_redirects=True,
-        )
-
-        assert response.status_code == 200
-        assert response.request.path == url_for(
-            "backoffice_web.operations.get_event_details", special_event_id=event.id
-        )
-        assert html_parser.extract_alert(response.data) == "Les candidatures ont été rejetées."
-
-        assert event_response_new.status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert event_response_preselected.status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert event_response_validated.status == operations_models.SpecialEventResponseStatus.REJECTED
+        assert db_response[0].status == response_status
+        assert db_response[1].status == response_status

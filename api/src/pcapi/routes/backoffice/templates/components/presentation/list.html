@@ -1,0 +1,46 @@
+{% if not hide_search_block %}<div class="pc-search-block rounded p-4">{{ search_block }}</div>{% endif %}
+<div class="vstack gap-4">
+  {{ before_table }}
+  {% if rows_count %}
+    <div class="d-flex justify-content-between {% if not hide_search_block %}mt-5{% endif %}">
+      <p class="num-results hstack text-secondary my-auto gap-2">
+        {{ rows_count }}
+        résultat{{ rows_count | pluralize }}
+        {% if not pagination and not hide_search_block %}
+          affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
+        {% endif %}
+      </p>
+      {% if pagination %}
+        {% include "components/search/pagination.html" %}
+      {% endif %}
+      <div id="{{ table_name }}-menu"
+           class="me-4"></div>
+    </div>
+    <table class="table table-hover pc-table-manager d-none {{ table_class }}"
+           data-pc-table-manager-id="{{ table_name }}"
+           data-pc-table-menu-container-id="{{ table_name }}-menu"
+           data-table-multi-select-id="{{ table_name }}">
+      <thead>
+        <tr class="bg-secondary-subtle fs-7 ">{{ table_header }}</tr>
+      </thead>
+      <tbody>
+        {{ table_body }}
+      </tbody>
+    </table>
+    {% if pagination %}
+      <div class="w-100 d-flex justify-content-center">{% include "components/search/pagination.html" %}</div>
+    {% endif %}
+  {% endif %}
+  <div>
+    <div data-table-multiselect-menu-for="{{ table_name }}"
+         class="pc-batch-action d-none p-0 position-fixed start-50 translate-middle-x">
+      <div class="d-inline-block rounded bg-primary px-3 py-2">
+        <div class="d-flex">{{ multi_select_menu }}</div>
+      </div>
+    </div>
+    {{ after_table }}
+  </div>
+</div>
