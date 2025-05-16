@@ -93,7 +93,7 @@ jobs:
       matrix:
         #chunk: ${{ fromJson(needs.setup.outputs['test-chunks']) }}
         # Manually setting tests to have them have (aproximatively) the same duration
-        chunk: ["cypress/e2e/desk.cy.ts,cypress/e2e/signupJourneyCreateOfferer.cy.ts,cypress/e2e/adageConfirmation.cy.ts", "cypress/e2e/createIndividualOffer.cy.ts,cypress/e2e/editDigitalIndividualOffer.cy.ts,cypress/e2e/searchCollectiveOffer.cy.ts,cypress/e2e/navigation.cy.ts", "cypress/e2e/oaIndividualOffer.cy.ts,cypress/e2e/didacticOnboarding.cy.ts,cypress/e2e/createAccount.cy.ts,cypress/e2e/cookieBanner.cy.ts,cypress/e2e/collaborator.cy.ts", "cypress/e2e/searchIndividualOffer.cy.ts,cypress/e2e/collectiveBooking.cy.ts,cypress/e2e/createCollectiveOffer.cy.ts,cypress/e2e/adage.cy.ts,cypress/e2e/financialManagement.cy.ts"]
+        chunk: ["cypress/e2e/desk.cy.ts,cypress/e2e/signupJourneyCreateOfferer.cy.ts,cypress/e2e/adageConfirmation.cy.ts", "cypress/e2e/editDigitalIndividualOffer.cy.ts,cypress/e2e/searchCollectiveOffer.cy.ts,cypress/e2e/navigation.cy.ts,cypress/e2e/createIndividualOffer.cy.ts", "cypress/e2e/oaIndividualOffer.cy.ts,cypress/e2e/didacticOnboarding.cy.ts,cypress/e2e/createAccount.cy.ts,cypress/e2e/cookieBanner.cy.ts,cypress/e2e/collaborator.cy.ts", "cypress/e2e/searchIndividualOffer.cy.ts,cypress/e2e/collectiveBooking.cy.ts,cypress/e2e/createCollectiveOffer.cy.ts,cypress/e2e/adage.cy.ts,cypress/e2e/financialManagement.cy.ts"]
 
     steps:
       - name: Checkout
