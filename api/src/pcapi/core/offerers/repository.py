@@ -401,14 +401,21 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
 
 
 def get_venue_by_id(venue_id: int) -> models.Venue:
-    return db.session.query(models.Venue).get(venue_id)
+    return (
+        db.session.query(models.Venue)
+        .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+        .get(venue_id)
+    )
 
 
 def get_venues_by_ids(ids: typing.Collection[int]) -> typing.Collection[models.Venue]:
     return (
         db.session.query(models.Venue)
         .filter(models.Venue.id.in_(ids))
-        .options(sa_orm.joinedload(models.Venue.googlePlacesInfo))
+        .options(
+            sa_orm.joinedload(models.Venue.googlePlacesInfo),
+            sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address),
+        )
     )
 
 
