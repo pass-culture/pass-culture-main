@@ -1907,12 +1907,12 @@
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.6.12.tgz#8bfaf4bb061145c8a8acdda6f334691ad716b202"
   integrity sha512-FiaE8xvCdvKC2arYusgtlDNZ77b8ysr8njAYQZwwaIHjy27TbR2tEpLDCmUwSbANNmivtc/xGEiDDwcNppMWlQ==
 
-"@storybook/core@8.6.12":
-  version "8.6.12"
-  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.6.12.tgz#ad6d7587f8a8b9f05764ba39f99c1e67e1ba341f"
-  integrity sha512-t+ZuDzAlsXKa6tLxNZT81gEAt4GNwsKP/Id2wluhmUWD/lwYW0uum1JiPUuanw8xD6TdakCW/7ULZc7aQUBLCQ==
+"@storybook/core@8.6.13":
+  version "8.6.13"
+  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.6.13.tgz#49d5ecee33f6818cf8275291dfbcaf4c87ace6bd"
+  integrity sha512-KGoCEDdc7L2eZMvuedlf/uX8oGFlNsWMsYrzvzriKl8KBwlfDixPxC6R668LPi54NwCY8d3HxGOMOTf7Y0jyVQ==
   dependencies:
-    "@storybook/theming" "8.6.12"
+    "@storybook/theming" "8.6.13"
     better-opn "^3.0.2"
     browser-assert "^1.2.1"
     esbuild "^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0"
@@ -2008,6 +2008,11 @@
   version "8.6.12"
   resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-8.6.12.tgz#2d521f422daf85e0b27179520ce1cfb520284447"
   integrity sha512-6VjZg8HJ2Op7+KV7ihJpYrDnFtd9D1jrQnUS8LckcpuBXrIEbaut5+34ObY8ssQnSqkk2GwIZBBBQYQBCVvkOw==
+
+"@storybook/theming@8.6.13":
+  version "8.6.13"
+  resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-8.6.13.tgz#76c730586064f61090df83517dfa740acfc000c1"
+  integrity sha512-wedypFtCNtatWLAbqnVqChrI8fCsJbu6oAIt5M9zakiSqwI+w1WPZjgkTJ0/jzqAb2bQ+9kjgZu4eK+01NETSw==
 
 "@testing-library/cypress@^10.0.3":
   version "10.0.3"
@@ -7294,12 +7299,12 @@ storybook-addon-remix-react-router@^4.0.0:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
 
-storybook@^8.6.12:
-  version "8.6.12"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.6.12.tgz#dddd11644f0344524577bb600a4dabda9a73af55"
-  integrity sha512-Z/nWYEHBTLK1ZBtAWdhxC0l5zf7ioJ7G4+zYqtTdYeb67gTnxNj80gehf8o8QY9L2zA2+eyMRGLC2V5fI7Z3Tw==
+storybook@^8.6.13:
+  version "8.6.13"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.6.13.tgz#4a325c4c50b6dd664c93818d7ad6025fda3098bd"
+  integrity sha512-RUPf8PHQcaK6k6/jyE0yyUbhQoghxoemvs4mQ75Wl0sZ36JF4TiLvW+618++6eTOwxe+oIu2EUavkaNQTn8xnw==
   dependencies:
-    "@storybook/core" "8.6.12"
+    "@storybook/core" "8.6.13"
 
 "string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
