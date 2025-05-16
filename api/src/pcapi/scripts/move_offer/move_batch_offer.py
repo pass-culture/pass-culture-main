@@ -10,6 +10,7 @@ from pcapi.core import search
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
@@ -214,6 +215,37 @@ def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venu
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
+def _update_destination_venue_to_permanent(destination_venue: offerers_models.Venue) -> bool:
+    if not destination_venue.isPermanent:
+        destination_venue.isPermanent = True
+        db.session.add(destination_venue)
+        logger.info("Destination venue %d updated to permanent", destination_venue.id)
+        return True
+    return False
+
+
+def _create_action_history(origin_venue_id: int, destination_venue_id: int) -> None:
+    db.session.add(
+        history_models.ActionHistory(
+            venueId=origin_venue_id,
+            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            extraData={"destination_venue_id": destination_venue_id},
+        )
+    )
+    db.session.add(
+        history_models.ActionHistory(
+            venueId=destination_venue_id,
+            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            extraData={"origin_venue_id": origin_venue_id},
+        )
+    )
+
+
+def _soft_delete_origin_venue(origin_venue: offerers_models.Venue) -> None:
+    origin_venue.isSoftDeleted = True
+    db.session.add(origin_venue)
+
+
 @atomic()
 def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
@@ -244,13 +276,15 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
             _move_collective_offer_playlist(origin_venue, destination_venue)
             _move_price_category_label(origin_venue, destination_venue)
             _move_finance_incident(origin_venue, destination_venue)
+            destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
+            _soft_delete_origin_venue(origin_venue)
+            _create_action_history(origin_venue_id, destination_venue_id)
+
             if not_dry:
-                on_commit(
-                    partial(
-                        search.reindex_venue_ids,
-                        [origin_venue_id],
-                    )
-                )
+                venue_ids_to_reindex = [origin_venue_id]
+                if destination_venue_updated_to_permanent:
+                    venue_ids_to_reindex.append(destination_venue_id)
+                on_commit(partial(search.reindex_venue_ids, venue_ids_to_reindex))
                 logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
             else:
                 db.session.flush()
