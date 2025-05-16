@@ -386,10 +386,7 @@ class _FIELDS:
     OFFER_VENUE_OTHER_ADDRESS = Field(description="Address that will be shared to the users", example=None)
     COLLECTIVE_OFFER_INTERVENTION_AREA = Field(description="Department codes (eg. '77', '2A')", example="75")
 
-    COLLECTIVE_OFFER_LOCATION = Field(
-        discriminator="type",
-        description=descriptions.COLLECTIVE_OFFER_LOCATION_DESCRIPTION,
-    )
+    COLLECTIVE_OFFER_LOCATION = Field(description=descriptions.COLLECTIVE_OFFER_LOCATION_DESCRIPTION, title="ADDRESS")
     COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL = Field(
         description="Adresse label",
         example="Zénith Paris",

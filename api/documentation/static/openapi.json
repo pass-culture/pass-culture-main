@@ -1731,7 +1731,6 @@
                     "addressId": {
                         "description": "Address id in the pass Culture DB",
                         "example": 1,
-                        "nullable": true,
                         "title": "Addressid",
                         "type": "integer"
                     },
@@ -1744,6 +1743,36 @@
                     },
                     "isVenueAddress": {
                         "description": "Whether the offer is located at the address of the venue",
+                        "enum": [
+                            false
+                        ],
+                        "example": true,
+                        "title": "Isvenueaddress",
+                        "type": "boolean"
+                    },
+                    "type": {
+                        "default": "ADDRESS",
+                        "enum": [
+                            "ADDRESS"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "addressId",
+                    "isVenueAddress"
+                ],
+                "title": "ADDRESS - NOT VENUE",
+                "type": "object"
+            },
+            "CollectiveOfferLocationAddressVenueModel": {
+                "properties": {
+                    "isVenueAddress": {
+                        "description": "Whether the offer is located at the address of the venue",
+                        "enum": [
+                            true
+                        ],
                         "example": true,
                         "title": "Isvenueaddress",
                         "type": "boolean"
@@ -1760,7 +1789,7 @@
                 "required": [
                     "isVenueAddress"
                 ],
-                "title": "CollectiveOfferLocationAddressModel",
+                "title": "ADDRESS - VENUE",
                 "type": "object"
             },
             "CollectiveOfferLocationSchoolModel": {
@@ -1774,7 +1803,7 @@
                         "type": "string"
                     }
                 },
-                "title": "CollectiveOfferLocationSchoolModel",
+                "title": "SCHOOL",
                 "type": "object"
             },
             "CollectiveOfferLocationToBeDefinedModel": {
@@ -1795,7 +1824,7 @@
                         "type": "string"
                     }
                 },
-                "title": "CollectiveOfferLocationToBeDefinedModel",
+                "title": "TO_BE_DEFINED",
                 "type": "object"
             },
             "CollectiveOfferStatus": {
@@ -4401,28 +4430,27 @@
                         "type": "boolean"
                     },
                     "location": {
-                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
-                        "discriminator": {
-                            "mapping": {
-                                "ADDRESS": "#/components/schemas/CollectiveOfferLocationAddressModel",
-                                "SCHOOL": "#/components/schemas/CollectiveOfferLocationSchoolModel",
-                                "TO_BE_DEFINED": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
-                            },
-                            "propertyName": "type"
-                        },
-                        "nullable": true,
-                        "oneOf": [
+                        "anyOf": [
                             {
                                 "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
                             },
                             {
-                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
+                                    }
+                                ]
                             },
                             {
-                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
+                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
                             }
                         ],
-                        "title": "Location"
+                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "nullable": true,
+                        "title": "ADDRESS"
                     },
                     "mentalDisabilityCompliant": {
                         "description": "Is accessible for people with mental or cognitive disability",
@@ -6248,28 +6276,27 @@
                         "type": "boolean"
                     },
                     "location": {
-                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
-                        "discriminator": {
-                            "mapping": {
-                                "ADDRESS": "#/components/schemas/CollectiveOfferLocationAddressModel",
-                                "SCHOOL": "#/components/schemas/CollectiveOfferLocationSchoolModel",
-                                "TO_BE_DEFINED": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
-                            },
-                            "propertyName": "type"
-                        },
-                        "nullable": true,
-                        "oneOf": [
+                        "anyOf": [
                             {
                                 "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
                             },
                             {
-                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
+                                    }
+                                ]
                             },
                             {
-                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
+                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
                             }
                         ],
-                        "title": "Location"
+                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "nullable": true,
+                        "title": "ADDRESS"
                     },
                     "mentalDisabilityCompliant": {
                         "default": false,

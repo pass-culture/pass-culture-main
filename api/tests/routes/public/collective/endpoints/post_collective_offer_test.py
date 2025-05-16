@@ -507,7 +507,13 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"location": ["L'adresseId doit être renseignée"]}
+        assert response.json == {
+            "location.CollectiveOfferLocationAddressModel.addressId": ["field required"],
+            "location.type": [
+                "unexpected value; permitted: 'SCHOOL'",
+                "unexpected value; permitted: 'TO_BE_DEFINED'",
+            ],
+        }
 
     @time_machine.travel(time_travel_str)
     def test_post_offers_with_location_and_offer_venue(self, public_client, payload, institution):

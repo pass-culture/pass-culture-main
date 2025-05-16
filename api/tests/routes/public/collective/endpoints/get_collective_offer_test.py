@@ -104,7 +104,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         )
 
         offer_id = offer.id
-        oa = venue.offererAddress
 
         with assert_num_queries(self.num_queries):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -114,8 +113,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         assert response.json["location"] == {
             "type": "ADDRESS",
-            "addressLabel": oa.label,
-            "addressId": oa.addressId,
             "isVenueAddress": True,
         }
 

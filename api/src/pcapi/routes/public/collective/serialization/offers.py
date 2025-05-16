@@ -217,44 +217,68 @@ class CollectiveOffersListResponseModel(BaseModel):
 
 
 class CollectiveOfferLocationSchoolModel(BaseModel):
-    type: typing.Literal["SCHOOL"] = "SCHOOL"
+    type: typing.Literal["SCHOOL"] = CollectiveLocationType.SCHOOL.value
+
+    class Config:
+        title = CollectiveLocationType.SCHOOL.value
 
 
 class CollectiveOfferLocationToBeDefinedModel(BaseModel):
-    type: typing.Literal["TO_BE_DEFINED"] = "TO_BE_DEFINED"
+    type: typing.Literal["TO_BE_DEFINED"] = CollectiveLocationType.TO_BE_DEFINED.value
     comment: str | None = fields.COLLECTIVE_OFFER_LOCATION_COMMENT
+
+    class Config:
+        title = CollectiveLocationType.TO_BE_DEFINED.value
+
+
+class CollectiveOfferLocationAddressVenueModel(BaseModel):
+    type: typing.Literal["ADDRESS"] = CollectiveLocationType.ADDRESS.value
+    isVenueAddress: typing.Literal[True] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+
+    class Config:
+        title = "ADDRESS - VENUE"
 
 
 class CollectiveOfferLocationAddressModel(BaseModel):
-    type: typing.Literal["ADDRESS"] = "ADDRESS"
+    type: typing.Literal["ADDRESS"] = CollectiveLocationType.ADDRESS.value
     addressLabel: str | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL
-    addressId: int | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_ID
-    isVenueAddress: bool = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+    addressId: int = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_ID
+    isVenueAddress: typing.Literal[False] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+
+    class Config:
+        title = "ADDRESS - NOT VENUE"
 
 
-CollectiveOfferLocation = (
-    CollectiveOfferLocationSchoolModel | CollectiveOfferLocationToBeDefinedModel | CollectiveOfferLocationAddressModel
-)
+CollectiveOfferLocationAddress = typing.Annotated[
+    CollectiveOfferLocationAddressVenueModel | CollectiveOfferLocationAddressModel,
+    Field(discriminator="isVenueAddress"),
+]
+
+CollectiveOfferLocation = typing.Annotated[
+    CollectiveOfferLocationSchoolModel | CollectiveOfferLocationAddress | CollectiveOfferLocationToBeDefinedModel,
+    Field(discriminator="type"),
+]
 
 
 def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> CollectiveOfferLocation | None:
     match offer.locationType:
         case CollectiveLocationType.SCHOOL:
-            return CollectiveOfferLocationSchoolModel(
-                type=offer.locationType.value,
-            )
+            return CollectiveOfferLocationSchoolModel()
         case CollectiveLocationType.TO_BE_DEFINED:
             return CollectiveOfferLocationToBeDefinedModel(
-                type=offer.locationType.value,
                 comment=offer.locationComment,
             )
         case CollectiveLocationType.ADDRESS:
-            return CollectiveOfferLocationAddressModel(
-                type=offer.locationType.value,
-                addressLabel=offer.offererAddress.label if offer.offererAddress else None,
-                addressId=offer.offererAddress.addressId if offer.offererAddress else None,
-                isVenueAddress=(offer.offererAddressId == offer.venue.offererAddressId),
-            )
+            is_venue_address = offer.offererAddressId == offer.venue.offererAddressId
+            if is_venue_address:
+                return CollectiveOfferLocationAddressVenueModel(isVenueAddress=True)
+            else:
+                assert offer.offererAddress
+                return CollectiveOfferLocationAddressModel(
+                    isVenueAddress=False,
+                    addressLabel=offer.offererAddress.label,
+                    addressId=offer.offererAddress.addressId,
+                )
         case _:
             return None
 
@@ -466,20 +490,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
         if end_datetime < start_datetime:
             raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
         return end_datetime
-
-    @validator("location")
-    def validate_location(cls, location: CollectiveOfferLocation | None) -> CollectiveOfferLocation | None:
-        if location is None:
-            return None
-
-        if location.type == CollectiveLocationType.ADDRESS.value:
-            is_venue_address = location.isVenueAddress
-            if is_venue_address is None:
-                raise ValueError("Le champ isVenueAddress doit être renseigné")
-            if not is_venue_address and location.addressId is None:
-                raise ValueError("L'adresseId doit être renseignée")
-
-        return location
 
     @root_validator(pre=True)
     def validate_offer_venue_and_location(cls, values: dict) -> dict:
