@@ -41,7 +41,11 @@ NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR = {
     "domains": "domains must have at least one value",
 }
 # the other fields have the same error message when null
-NON_REQUIRED_NON_NULLABLE_FIELDS = set(PATCH_NON_NULLABLE_FIELDS) - NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR.keys()
+NON_REQUIRED_NON_NULLABLE_FIELDS = (
+    set(PATCH_NON_NULLABLE_FIELDS)
+    - NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR.keys()
+    - {"price"}  # this one is aliased as totalPrice
+)
 
 # there is not DRAFT offer in public API
 # the HIDDEN status is for templates only once the WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API FF is ON

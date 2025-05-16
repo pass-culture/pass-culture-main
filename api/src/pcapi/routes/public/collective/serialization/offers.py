@@ -4,7 +4,6 @@ from datetime import timezone
 from typing import Any
 from typing import Sequence
 
-from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -268,9 +267,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
     bookingLimitDatetime: str = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
-    totalPrice: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
+    price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
     numberOfTickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
-    educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
+    priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     # offerVenue will be replaced with location, for now we send both
@@ -285,6 +284,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     class Config:
         extra = "forbid"
         orm_mode = True
+        allow_population_by_field_name = True
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
@@ -315,9 +315,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
-            totalPrice=offer.collectiveStock.price,
+            price=offer.collectiveStock.price,
             numberOfTickets=offer.collectiveStock.numberOfTickets,
-            educationalPriceDetail=offer.collectiveStock.priceDetail,
+            priceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institution else None,
             educationalInstitutionId=offer.institution.id if offer.institution else None,
             offerVenue={  # type: ignore[arg-type]
@@ -370,7 +370,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     booking_limit_datetime: datetime = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
     total_price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
     number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
-    educational_price_detail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
+    price_detail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     # link to educational institution
     educational_institution_id: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     educational_institution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
@@ -380,7 +380,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_start_datetime = start_datetime_validator("start_datetime")
     _validate_end_datetime = end_datetime_validator("end_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
-    _validate_educational_price_detail = price_detail_validator("educational_price_detail")
+    _validate_price_detail = price_detail_validator("price_detail")
     _validate_contact_phone = phone_number_validator("contact_phone")
     _validate_booking_emails = emails_validator("booking_emails")
     _validate_contact_email = email_validator("contact_email")
@@ -481,12 +481,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     startDatetime: datetime | None = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
     bookingLimitDatetime: datetime | None = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
-    price: float | None = Field(
-        None,
-        description="Collective offer price (in €)",  # TODO: Harmonize with Creation
-        example=100.00,
-        alias="totalPrice",
-    )
+    price: float | None = fields.COLLECTIVE_OFFER_TOTAL_PRICE
     priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
     # educational_institution
@@ -495,7 +490,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
-    _validate_educational_price_detail = price_detail_validator("priceDetail")
+    _validate_price_detail = price_detail_validator("priceDetail")
     _validate_start_datetime = start_datetime_validator("startDatetime")
     _validate_end_datetime = end_datetime_validator("endDatetime")
     _validate_contact_phone = phone_number_validator("contactPhone")
