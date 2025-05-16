@@ -1680,12 +1680,18 @@ def format_special_event_response_status_str(response_status: operations_models.
     match response_status:
         case operations_models.SpecialEventResponseStatus.NEW:
             return "Nouvelle"
+        case operations_models.SpecialEventResponseStatus.WAITING:
+            return "En attente"
+        case operations_models.SpecialEventResponseStatus.PRESELECTED:
+            return "À contacter"
         case operations_models.SpecialEventResponseStatus.VALIDATED:
-            return "Retenue"
+            return "Confirmée"
         case operations_models.SpecialEventResponseStatus.REJECTED:
             return "Rejetée"
-        case operations_models.SpecialEventResponseStatus.PRESELECTED:
-            return "Préselectionnée"
+        case operations_models.SpecialEventResponseStatus.WITHDRAWN:
+            return "Désistée"
+        case operations_models.SpecialEventResponseStatus.BACKUP:
+            return "Backup"
         case _:
             return response_status.value
 
@@ -1694,13 +1700,19 @@ def format_special_event_response_status(response_status: operations_models.Spec
     response_status_str = format_special_event_response_status_str(response_status)
     match response_status:
         case operations_models.SpecialEventResponseStatus.NEW:
-            return format_badge(response_status_str, "info")
-        case operations_models.SpecialEventResponseStatus.VALIDATED:
-            return format_badge(response_status_str, "success")
-        case operations_models.SpecialEventResponseStatus.REJECTED:
-            return format_badge(response_status_str, "danger")
+            return format_badge(response_status_str, "secondary", "stars")
+        case operations_models.SpecialEventResponseStatus.WAITING:
+            return format_badge(response_status_str, "warning", "hourglass-split")
         case operations_models.SpecialEventResponseStatus.PRESELECTED:
-            return format_badge(response_status_str, "info")
+            return format_badge(response_status_str, "info", "pin-angle-fill")
+        case operations_models.SpecialEventResponseStatus.VALIDATED:
+            return format_badge(response_status_str, "success", "check2")
+        case operations_models.SpecialEventResponseStatus.REJECTED:
+            return format_badge(response_status_str, "danger", "x-lg")
+        case operations_models.SpecialEventResponseStatus.WITHDRAWN:
+            return format_badge(response_status_str, "danger", "ban")
+        case operations_models.SpecialEventResponseStatus.BACKUP:
+            return format_badge(response_status_str, "primary", "recycle")
         case _:
             return response_status_str
 

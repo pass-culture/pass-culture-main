@@ -1,67 +1,33 @@
 {% extends "layouts/connected.html" %}
 {% set table_name = "list-table" %}
+{% if self.search_block %}
+  {% set search_block = self.search_block() %}
+{% endif %}
+{% if self.before_table %}
+  {% set before_table = self.before_table() %}
+{% endif %}
+{% if self.table_header %}
+  {% set table_header = self.table_header() %}
+{% endif %}
+{% if self.table_body %}
+  {% set table_body = self.table_body() %}
+{% endif %}
+{% if self.multi_select_menu %}
+  {% set multi_select_menu = self.multi_select_menu() %}
+{% endif %}
+{% if self.after_table %}
+  {% set after_table = self.after_table() %}
+{% endif %}
 {% block page %}
   <div class="pt-3 px-5">
     <div class="d-flex justify-content-between">
       <div class="p-2">
         <h1>
-          {% block title %}{% endblock %}
+          {% block title %}
+          {% endblock title %}
         </h1>
       </div>
     </div>
-    {% if not hide_search_block %}
-      <div class="pc-search-block rounded p-4">
-        {% block search_block %}{% endblock %}
-      </div>
-    {% endif %}
-    <div class="vstack gap-4">
-      {% block before_table %}{% endblock %}
-      {% if rows_count %}
-        <div class="d-flex justify-content-between {% if not hide_search_block %}mt-5{% endif %}">
-          <p class="num-results hstack text-secondary my-auto gap-2">
-            {{ rows_count }}
-            résultat{{ rows_count | pluralize }}
-            {% if not pagination and not hide_search_block %}
-              affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
-            {% endif %}
-          </p>
-          {% if pagination %}
-            {% include "components/search/pagination.html" %}
-          {% endif %}
-          <div id="{{ table_name }}-menu"
-               class="me-4"></div>
-        </div>
-        <table class="table table-hover pc-table-manager d-none {{ table_class }}"
-               data-pc-table-manager-id="{{ table_name }}"
-               data-pc-table-menu-container-id="{{ table_name }}-menu"
-               data-table-multi-select-id="{{ table_name }}">
-          <thead>
-            <tr class="bg-secondary-subtle fs-7 ">
-              {% block table_header %}{% endblock %}
-            </tr>
-          </thead>
-          <tbody>
-            {% block table_body %}{% endblock %}
-          </tbody>
-        </table>
-        {% if pagination %}
-          <div class="w-100 d-flex justify-content-center">{% include "components/search/pagination.html" %}</div>
-        {% endif %}
-      {% endif %}
-      <div>
-        <div data-table-multiselect-menu-for="{{ table_name }}"
-             class="pc-batch-action d-none p-0 position-fixed start-50 translate-middle-x">
-          <div class="d-inline-block rounded bg-primary px-3 py-2">
-            <div class="d-flex">
-              {% block multi_select_menu %}{% endblock %}
-            </div>
-          </div>
-        </div>
-        {% block after_table %}{% endblock %}
-      </div>
-    </div>
+    {% include "components/presentation/list.html" %}
   </div>
 {% endblock page %}

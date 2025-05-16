@@ -2,7 +2,6 @@
 {% set rows_count = rows|length %}
 {% set hide_search_block = True %}
 {% block title %}Liste des sous-catégories{% endblock %}
-{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
 {% block table_header %}
   <th scope="col">pro_label</th>
   <th scope="col">app_label</th>

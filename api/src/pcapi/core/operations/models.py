@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 import enum
 
 import sqlalchemy as sa
@@ -24,7 +25,7 @@ class SpecialEvent(PcObject, Base, Model):
     offererId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True)
     offerer: sa_orm.Mapped[offerers_models.Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True)
-    venue: sa_orm.Mapped[offerers_models.Offerer] = sa_orm.relationship("Venue", foreign_keys=[venueId])
+    venue: sa_orm.Mapped[offerers_models.Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
     __table_args__ = (
         sa.Index(
@@ -33,6 +34,15 @@ class SpecialEvent(PcObject, Base, Model):
             postgresql_using="gin",
         ),
     )
+
+    @property
+    def endImportDate(self) -> date:
+        # TODO (rpaoloni 16/05/2025): replace with a column in db (should be done in pc-36166)
+        return self.eventDate + timedelta(days=7)
+
+    @property
+    def isFinished(self) -> bool:
+        return self.endImportDate < date.today()
 
 
 class SpecialEventQuestion(PcObject, Base, Model):
@@ -45,11 +55,14 @@ class SpecialEventQuestion(PcObject, Base, Model):
     title: str = sa.Column(sa.Text(), nullable=False)
 
 
-class SpecialEventResponseStatus(enum.Enum):
-    NEW = "NEW"
-    VALIDATED = "VALIDATED"
-    REJECTED = "REJECTED"
+class SpecialEventResponseStatus(enum.StrEnum):
     PRESELECTED = "PRESELECTED"
+    BACKUP = "BACKUP"
+    VALIDATED = "VALIDATED"
+    WITHDRAWN = "WITHDRAWN"
+    WAITING = "WAITING"
+    NEW = "NEW"
+    REJECTED = "REJECTED"
 
 
 class SpecialEventResponse(PcObject, Base, Model):
