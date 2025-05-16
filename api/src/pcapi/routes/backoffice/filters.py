@@ -1754,15 +1754,13 @@ def nl2br(text: str) -> str:
 def format_user_subscription_tunnel_step_status(status: str) -> str:
     match status:
         case "ok":
-            markup = Markup('<i class="bi bi-check-circle-fill text-success" title={status}></i>')
+            markup = Markup('<i class="bi bi-check" title={status}></i>')
         case "ko":
-            markup = Markup('<i class="bi bi-exclamation-circle-fill text-danger" title="{status}"></i>')
-        case "error":
-            markup = Markup('<i class="bi bi-x-circle-fill text-danger" title="{status}"></i>')
+            markup = Markup('<i class="bi bi-x-lg" title="{status}"></i>')
         case "canceled":
-            markup = Markup('<i class="bi bi-trash3-fill text-danger" title="{status}"></i>')
+            markup = Markup('<i class="bi bi-trash3-fill" title="{status}"></i>')
         case _:
-            markup = Markup('<i class="bi bi-exclamation-circle-fill text-warning" title="{status}"></i>')
+            markup = Markup('<i class="bi bi-exclamation-lg" title="{status}"></i>')
     return markup.format(status=status)
 
 
