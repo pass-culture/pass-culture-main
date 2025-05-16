@@ -133,24 +133,52 @@ def _move_collective_offers(origin_venue: offerers_models.Venue, destination_ven
             "collective_offer_ids": collective_offer_ids,
             "offers_type": "collective",
         },
-        technical_message_id="offer.move",
+        technical_message_id="collective_offer.move",
     )
 
 
 def _move_collective_offer_template(
     origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue
 ) -> None:
-    db.session.query(educational_models.CollectiveOfferTemplate).filter(
+    collective_offer_templates = db.session.query(educational_models.CollectiveOfferTemplate).filter(
         educational_models.CollectiveOfferTemplate.venueId == origin_venue.id
-    ).update({"venueId": destination_venue.id}, synchronize_session=False)
+    )
+    collective_offer_templates.update({"venueId": destination_venue.id}, synchronize_session=False)
+    collective_offer_template_ids = [
+        collective_offer_template.id for collective_offer_template in collective_offer_templates.all()
+    ]
+    logger.info(
+        "Collective offer templates' venue has changed",
+        extra={
+            "origin_venue_id": origin_venue.id,
+            "destination_venue_id": destination_venue.id,
+            "collective_offer_template_ids": collective_offer_template_ids,
+            "offers_type": "collective",
+        },
+        technical_message_id="collective_offer_template.move",
+    )
 
 
 def _move_collective_offer_playlist(
     origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue
 ) -> None:
-    db.session.query(educational_models.CollectivePlaylist).filter(
+    collective_offer_playlists = db.session.query(educational_models.CollectivePlaylist).filter(
         educational_models.CollectivePlaylist.venueId == origin_venue.id
-    ).update({"venueId": destination_venue.id}, synchronize_session=False)
+    )
+    collective_offer_playlists.update({"venueId": destination_venue.id}, synchronize_session=False)
+    collective_offer_playlist_ids = [
+        collective_offer_playlist.id for collective_offer_playlist in collective_offer_playlists.all()
+    ]
+    logger.info(
+        "Collective offer playlists' venue has changed",
+        extra={
+            "origin_venue_id": origin_venue.id,
+            "destination_venue_id": destination_venue.id,
+            "collective_offer_playlist_ids": collective_offer_playlist_ids,
+            "offers_type": "collective",
+        },
+        technical_message_id="collective_offer_playlist.move",
+    )
 
 
 def _move_price_category_label(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
@@ -190,6 +218,7 @@ def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venu
 def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
     for row in _get_venue_rows(origin, destination):
+        logger.info("Starting to move offers from venue (origin): %d to venue (destination): %d", origin, destination)
         origin_venue_id = int(row[ORIGIN_VENUE_ID_HEADER])
         destination_venue_id = int(row[DESTINATION_VENUE_ID_HEADER])
 
