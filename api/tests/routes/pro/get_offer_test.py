@@ -50,8 +50,7 @@ class Returns200Test:
     # user
     # payload (joined query)
     # user offerer
-    # stocks of offer (a backref)
-    num_queries = 5
+    num_queries = 4
 
     def test_access_by_pro_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
