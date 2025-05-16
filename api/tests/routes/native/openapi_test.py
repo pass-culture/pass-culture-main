@@ -2415,6 +2415,7 @@ def test_public_api(client):
                         "roles": {"items": {"$ref": "#/components/schemas/UserRole"}, "type": "array"},
                         "showEligibleCard": {"title": "Showeligiblecard", "type": "boolean"},
                         "status": {"$ref": "#/components/schemas/YoungStatusResponse"},
+                        "street": {"nullable": True, "title": "Street", "type": "string"},
                         "subscriptionMessage": {
                             "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
                             "nullable": True,

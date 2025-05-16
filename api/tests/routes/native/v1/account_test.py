@@ -91,8 +91,9 @@ class AccountTest:
             "firstName": "john",
             "lastName": "doe",
             "phoneNumber": "+33102030405",
-            "city": "Annecy",
+            "address": "123 rue de la paix",
             "postalCode": "74000",
+            "city": "Annecy",
             "needsToFillCulturalSurvey": True,
         }
         user = users_factories.BeneficiaryGrant18Factory(
@@ -122,6 +123,10 @@ class AccountTest:
 
         EXPECTED_DATA = {
             "id": user.id,
+            "email": self.identifier,
+            "firstName": "john",
+            "lastName": "doe",
+            "phoneNumber": "+33102030405",
             "bookedOffers": {str(booking.stock.offer.id): booking.id},
             "domainsCredit": {
                 "all": {"initial": 30000, "remaining": 17655},
@@ -139,6 +144,7 @@ class AccountTest:
             "hasPassword": True,
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
+            "needsToFillCulturalSurvey": True,
             "roles": ["BENEFICIARY"],
             "recreditAmountToShow": None,
             "requiresIdCheck": True,
@@ -152,8 +158,10 @@ class AccountTest:
             "activityId": users_models.ActivityEnum.STUDENT.name,
             "currency": "EUR",
             "achievements": [],
+            "street": "123 rue de la paix",
+            "postalCode": "74000",
+            "city": "Annecy",
         }
-        EXPECTED_DATA.update(USER_DATA)
 
         assert response.json == EXPECTED_DATA
 
