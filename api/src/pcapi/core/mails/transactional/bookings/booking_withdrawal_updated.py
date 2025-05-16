@@ -48,7 +48,7 @@ def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
             .joinedload(offers_models.Offer.offererAddress)
             .options(
                 sa_orm.joinedload(offerers_models.OffererAddress.address),
-                sa_orm.selectinload(offerers_models.OffererAddress.venues),
+                sa_orm.selectinload(offerers_models.OffererAddress.venue),
             ),
         )
     )
