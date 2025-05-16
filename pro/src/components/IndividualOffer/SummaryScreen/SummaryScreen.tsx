@@ -1,5 +1,6 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate, useLocation, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -28,7 +29,6 @@ import { serializeDateTimeToUTCFromLocalDepartment } from '../StocksEventEdition
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
-import { EventPublicationFormValues } from './EventPublicationForm/types'
 import { validationSchema } from './EventPublicationForm/validationSchema'
 import { OfferSection } from './OfferSection/OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
@@ -48,7 +48,7 @@ export const SummaryScreen = () => {
   const showEventPublicationForm = Boolean(offer?.isEvent)
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const onPublish = async (values: EventPublicationFormValues) => {
+  const onPublish = async () => {
     // Edition mode offers are already published
     /* istanbul ignore next: DEBT, TO FIX */
     if (mode === OFFER_WIZARD_MODE.EDITION || offer === null) {
@@ -59,13 +59,17 @@ export const SummaryScreen = () => {
       const offererResponse = await api.getOfferer(
         offer.venue.managingOfferer.id
       )
+      const publicationTime = watch('publicationTime')
+      const publicationDate = watch('publicationDate')
+      const publicationMode = watch('publicationMode')
+
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
         publicationDate:
-          values.publicationMode === 'later'
+          publicationMode === 'later' && publicationDate && publicationTime
             ? serializeDateTimeToUTCFromLocalDepartment(
-                values.publicationDate,
-                values.publicationTime,
+                publicationDate,
+                publicationTime,
                 offer.venue.departementCode
               )
             : undefined,
@@ -94,15 +98,23 @@ export const SummaryScreen = () => {
     }
   }
 
-  const formik = useFormik<EventPublicationFormValues>({
-    initialValues: {
+  const hookForm = useForm({
+    defaultValues: {
       publicationMode: 'now',
       publicationDate: '',
       publicationTime: '',
     },
-    onSubmit: onPublish,
-    validationSchema: showEventPublicationForm ? validationSchema : undefined,
+    resolver: showEventPublicationForm
+      ? yupResolver(validationSchema)
+      : undefined,
+    mode: 'onBlur',
   })
+
+  const {
+    watch,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = hookForm
 
   if (offer === null) {
     return null
@@ -150,8 +162,8 @@ export const SummaryScreen = () => {
   ]
 
   return (
-    <FormikProvider value={formik}>
-      <Form>
+    <FormProvider {...hookForm}>
+      <form onSubmit={handleSubmit(onPublish)}>
         {mode === OFFER_WIZARD_MODE.CREATION && (
           <div className={styles['offer-preview-banners']}>
             <Callout>
@@ -215,9 +227,8 @@ export const SummaryScreen = () => {
           onClickPrevious={handlePreviousStep}
           step={OFFER_WIZARD_STEP_IDS.SUMMARY}
           isDisabled={
-            (mode !== OFFER_WIZARD_MODE.CREATION
-              ? false
-              : formik.isSubmitting) || Boolean(publishedOfferWithSameEAN)
+            (mode !== OFFER_WIZARD_MODE.CREATION ? false : isSubmitting) ||
+            Boolean(publishedOfferWithSameEAN)
           }
         />
         <RedirectToBankAccountDialog
@@ -226,7 +237,7 @@ export const SummaryScreen = () => {
           venueId={offer.venue.id}
           isDialogOpen={displayRedirectDialog}
         />
-      </Form>
-    </FormikProvider>
+      </form>
+    </FormProvider>
   )
 }
