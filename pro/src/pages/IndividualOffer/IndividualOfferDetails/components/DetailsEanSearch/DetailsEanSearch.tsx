@@ -25,11 +25,11 @@ type EanSearchForm = {
 
 export type DetailsEanSearchProps = {
   isDirtyDraftOffer: boolean
-  productId: string
+  productId?: string
   subcategoryId: string
   initialEan?: string
   eanSubmitError?: string
-  onEanSearch: (ean: string, product: Product) => Promise<void>
+  onEanSearch: (ean: string, product: Product) => void
   onEanReset: () => void
 }
 
@@ -102,7 +102,7 @@ export const DetailsEanSearch = ({
           data.eanSearch,
           selectedOffererId
         )
-        await onEanSearch(data.eanSearch, product)
+        onEanSearch(data.eanSearch, product)
       } catch (err) {
         const fallbackMessage = 'Une erreur est survenue lors de la recherche'
         const errorMessage = isErrorAPIError(err)
@@ -165,15 +165,17 @@ export const DetailsEanSearch = ({
                   })}
               {...register('eanSearch')}
               count={ean?.length}
+              InputExtension={
+                <Button
+                  type="submit"
+                  className={styles['details-ean-search-button']}
+                  disabled={shouldButtonBeDisabled}
+                >
+                  Rechercher
+                </Button>
+              }
             />
           </div>
-          <Button
-            type="submit"
-            className={styles['details-ean-search-button']}
-            disabled={shouldButtonBeDisabled}
-          >
-            Rechercher
-          </Button>
         </div>
         <div role="status" className={styles['details-ean-search-callout']}>
           {isProductBased && (

@@ -3,6 +3,7 @@ import { ForwardedRef, forwardRef, useId } from 'react'
 
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
+import { SuggestedTimeList } from 'ui-kit/form/TimePicker/types'
 
 import styles from './TimePicker.module.scss'
 
@@ -19,6 +20,7 @@ type TimePickerProps = {
   label: string | React.ReactNode
   required?: boolean
   error?: string
+  suggestedTimeList?: SuggestedTimeList
 }
 
 export const TimePicker = forwardRef(
@@ -34,6 +36,7 @@ export const TimePicker = forwardRef(
       value,
       onChange,
       onBlur,
+      suggestedTimeList,
     }: TimePickerProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -58,6 +61,7 @@ export const TimePicker = forwardRef(
             name={name}
             id={labelId}
             aria-describedby={errorId}
+            suggestedTimeList={suggestedTimeList}
           />
         </div>
         <div role="alert" id={errorId}>

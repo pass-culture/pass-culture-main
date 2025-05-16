@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -15,13 +15,13 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 
 import styles from './DetailsSubForm.module.scss'
 
-export const ARTISTIC_INFORMATION_FIELDS = [
+export const ARTISTIC_INFORMATION_FIELDS: (keyof DetailsFormValues)[] = [
   'speaker',
   'author',
   'visa',
@@ -47,9 +47,17 @@ export const DetailsSubForm = ({
   readOnlyFields,
 }: DetailsSubFormProps) => {
   const mode = useOfferWizardMode()
+
   const {
-    values: { categoryId, showType, subcategoryConditionalFields },
-  } = useFormikContext<DetailsFormValues>()
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext<DetailsFormValues>()
+
+  const categoryId = watch('categoryId')
+  const showType = watch('showType')
+  const subcategoryConditionalFields = watch('subcategoryConditionalFields')
+
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
     () => api.getMusicTypes(),
@@ -105,129 +113,117 @@ export const DetailsSubForm = ({
         <div className={styles['sub-form']}>
           {displayArtisticInformations && (
             <FormLayout.Section title="Informations artistiques">
-              {hasMusicType(categoryId, subcategoryConditionalFields) && (
-                <FormLayout.Row>
+              <div className={styles['artistic-info-inputs']}>
+                {hasMusicType(categoryId, subcategoryConditionalFields) && (
                   <Select
                     label="Genre musical"
-                    name="gtl_id"
                     options={musicTypesOptions}
+                    required
                     defaultOption={{
                       label: 'Choisir un genre musical',
                       value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
                     }}
                     disabled={readOnlyFields.includes('gtl_id')}
+                    {...register('gtl_id')}
+                    error={errors.gtl_id?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('showType') && (
-                <>
-                  <FormLayout.Row>
+                )}
+                {subcategoryConditionalFields.includes('showType') && (
+                  <>
                     <Select
                       label="Type de spectacle"
-                      name="showType"
                       options={showTypesOptions}
                       defaultOption={{
                         label: 'Choisir un type de spectacle',
                         value: DEFAULT_DETAILS_FORM_VALUES.showType,
                       }}
                       disabled={readOnlyFields.includes('showType')}
+                      {...register('showType')}
+                      error={errors.showType?.message}
+                      required
                     />
-                  </FormLayout.Row>
-                  <FormLayout.Row>
                     <Select
                       label="Sous-type"
-                      name="showSubType"
                       options={showSubTypeOptions}
                       defaultOption={{
                         label: 'Choisir un sous-type',
                         value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
                       }}
                       disabled={readOnlyFields.includes('showSubType')}
+                      {...register('showSubType')}
+                      error={errors.showSubType?.message}
+                      required
                     />
-                  </FormLayout.Row>
-                </>
-              )}
-              {subcategoryConditionalFields.includes('speaker') && (
-                <FormLayout.Row>
+                  </>
+                )}
+                {subcategoryConditionalFields.includes('speaker') && (
                   <TextInput
-                    isOptional
                     label="Intervenant"
                     maxLength={1000}
-                    name="speaker"
                     disabled={readOnlyFields.includes('speaker')}
+                    {...register('speaker')}
+                    error={errors.speaker?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('author') && (
-                <FormLayout.Row>
+                )}
+                {subcategoryConditionalFields.includes('author') && (
                   <TextInput
-                    isOptional
                     label="Auteur"
                     maxLength={1000}
-                    name="author"
                     disabled={readOnlyFields.includes('author')}
+                    {...register('author')}
+                    error={errors.author?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('visa') && (
-                <FormLayout.Row>
+                )}
+                {subcategoryConditionalFields.includes('visa') && (
                   <TextInput
-                    isOptional
                     label="Visa d’exploitation"
                     maxLength={1000}
-                    name="visa"
                     disabled={readOnlyFields.includes('visa')}
+                    {...register('visa')}
+                    error={errors.visa?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('stageDirector') && (
-                <FormLayout.Row>
+                )}
+                {subcategoryConditionalFields.includes('stageDirector') && (
                   <TextInput
-                    isOptional
                     label="Metteur en scène"
                     maxLength={1000}
-                    name="stageDirector"
                     disabled={readOnlyFields.includes('stageDirector')}
+                    {...register('stageDirector')}
+                    error={errors.stageDirector?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('performer') && (
-                <FormLayout.Row>
+                )}
+                {subcategoryConditionalFields.includes('performer') && (
                   <TextInput
-                    isOptional
                     label="Interprète"
                     maxLength={1000}
-                    name="performer"
                     disabled={readOnlyFields.includes('performer')}
+                    {...register('performer')}
+                    error={errors.performer?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {displayEanField && (
-                <FormLayout.Row>
+                )}
+                {displayEanField && (
                   <TextInput
-                    isOptional
                     label="EAN-13 (European Article Numbering)"
-                    countCharacters
-                    name="ean"
+                    count={watch('ean')?.length}
                     maxLength={13}
                     disabled={readOnlyFields.includes('ean')}
+                    {...register('ean')}
+                    error={errors.ean?.message}
                   />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('durationMinutes') && (
-                <FormLayout.Row>
+                )}
+                {subcategoryConditionalFields.includes('durationMinutes') && (
                   <TimePicker
-                    isOptional
                     label="Durée"
-                    name="durationMinutes"
                     disabled={readOnlyFields.includes('durationMinutes')}
                     suggestedTimeList={{
                       min: '00:00',
                       max: '04:00',
                     }}
+                    {...register('durationMinutes')}
+                    error={errors.durationMinutes?.message}
                   />
-                </FormLayout.Row>
-              )}
+                )}
+              </div>
             </FormLayout.Section>
           )}
         </div>

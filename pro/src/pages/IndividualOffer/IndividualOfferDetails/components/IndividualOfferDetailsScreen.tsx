@@ -1,4 +1,5 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -25,7 +26,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   filterCategories,
   getCategoryStatusFromOfferSubtype,
@@ -159,9 +160,9 @@ export const IndividualOfferDetailsScreen = ({
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.DETAILS,
         offerId: receivedOfferId,
-        venueId: formik.values.venueId,
+        venueId: form.getValues('venueId'),
         offerType: 'individual',
-        subcategoryId: formik.values.subcategoryId,
+        subcategoryId: form.getValues('subcategoryId'),
       })
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
@@ -180,20 +181,25 @@ export const IndividualOfferDetailsScreen = ({
         return
       }
       for (const field in error.body) {
-        formik.setFieldError(field, error.body[field])
+        form.setError(field as keyof DetailsFormValues, {
+          message: error.body[field],
+        })
       }
-      // This is used from scroll to error
-      formik.setStatus('apiError')
     }
   }
-  const formik = useFormik({
-    initialValues,
-    validationSchema: getValidationSchema({
-      isDigitalOffer:
-        categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital),
-    }),
-    onSubmit,
+
+  const form = useForm<DetailsFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver<DetailsFormValues>(
+      getValidationSchema({
+        isDigitalOffer:
+          categoryStatus === CATEGORY_STATUS.ONLINE ||
+          Boolean(offer?.isDigital),
+      })
+    ),
+    mode: 'onBlur',
   })
+
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -216,7 +222,7 @@ export const IndividualOfferDetailsScreen = ({
   // until the form is submitted, the draft offer is not created yet.
   const isOfferButNotProductBased =
     !isDirtyDraftOffer && !isOfferProductBased(offer)
-  const isProductBased = !!formik.values.productId
+  const isProductBased = !!form.watch('productId')
 
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(DEFAULT_DETAILS_FORM_VALUES)
@@ -233,7 +239,7 @@ export const IndividualOfferDetailsScreen = ({
     mode === OFFER_WIZARD_MODE.EDITION &&
     isOfferProductBased(offer)
 
-  const onEanSearch = async (ean: string, product: Product): Promise<void> => {
+  const onEanSearch = (ean: string, product: Product) => {
     const {
       id,
       name,
@@ -268,24 +274,24 @@ export const IndividualOfferDetailsScreen = ({
       gtl_id = gtlId || '19000000'
     }
 
-    await formik.setValues({
-      ...formik.values,
-      ean,
-      name,
-      description: description || '',
-      categoryId,
-      subcategoryId,
-      gtl_id,
-      author,
-      performer,
-      subcategoryConditionalFields,
-      productId: id.toString() || '',
-    })
+    form.setValue('ean', ean)
+    form.setValue('name', name)
+    form.setValue('description', description || '')
+    form.setValue('categoryId', categoryId)
+    form.setValue('subcategoryId', subcategoryId)
+    form.setValue('gtl_id', gtl_id)
+    form.setValue('author', author)
+    form.setValue('performer', performer)
+    form.setValue(
+      'subcategoryConditionalFields',
+      subcategoryConditionalFields as (keyof DetailsFormValues)[]
+    )
+    form.setValue('productId', id.toString() || '')
   }
 
   const onEanReset = () => {
     handleEanImage()
-    formik.resetForm()
+    form.reset()
   }
 
   return (
@@ -294,19 +300,18 @@ export const IndividualOfferDetailsScreen = ({
       {isEanSearchDisplayed && (
         <DetailsEanSearch
           isDirtyDraftOffer={isDirtyDraftOffer}
-          productId={formik.values.productId}
-          subcategoryId={formik.values.subcategoryId}
+          productId={form.watch('productId')}
+          subcategoryId={form.watch('subcategoryId')}
           initialEan={offer?.extraData?.ean}
-          eanSubmitError={formik.status === 'apiError' ? formik.errors.ean : ''}
           onEanSearch={onEanSearch}
           onEanReset={onEanReset}
         />
       )}
       {isEanSearchCalloutAloneDisplayed && <EanSearchCallout />}
-      <FormikProvider value={formik}>
-        <Form>
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormLayout fullWidthActions>
-            <ScrollToFirstErrorAfterSubmit />
+            <ScrollToFirstHookFormErrorAfterSubmit />
             <DetailsForm
               isEanSearchDisplayed={isEanSearchDisplayed}
               isProductBased={isProductBased}
@@ -324,17 +329,20 @@ export const IndividualOfferDetailsScreen = ({
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
             step={OFFER_WIZARD_STEP_IDS.DETAILS}
             isDisabled={
-              formik.isSubmitting ||
+              form.formState.isSubmitting ||
               Boolean(offer && isOfferDisabled(offer.status)) ||
               Boolean(publishedOfferWithSameEAN)
             }
-            dirtyForm={formik.dirty || offer === null}
+            dirtyForm={form.formState.isDirty || offer === null}
           />
-        </Form>
+        </form>
         <RouteLeavingGuardIndividualOffer
-          when={(formik.dirty || hasUpsertedImage) && !formik.isSubmitting}
+          when={
+            (form.formState.isDirty || hasUpsertedImage) &&
+            !form.formState.isSubmitting
+          }
         />
-      </FormikProvider>
+      </FormProvider>
     </>
   )
 }
