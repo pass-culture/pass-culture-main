@@ -197,6 +197,7 @@ class UserProfileGetterDict(GetterDict):
 class UserProfileResponse(ConfiguredBaseModel):
     achievements: list[achievements_serialization.AchievementResponse]
     activity_id: profile_options.ActivityIdEnum | None
+    address: str | None = pydantic_v1.Field(None, alias="street")
     birth_date: datetime.date | None
     booked_offers: dict[str, int]
     city: str | None
