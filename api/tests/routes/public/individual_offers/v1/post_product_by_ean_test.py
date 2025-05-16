@@ -611,7 +611,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 404
-        assert response.json == {"location.AddressLocation.addressId": ["There is no venue with id -1"]}
+        assert response.json == {"location.AddressLocation.addressId": ["There is no address with id -1"]}
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_and_update_offer(self, async_index_offer_ids, client):
