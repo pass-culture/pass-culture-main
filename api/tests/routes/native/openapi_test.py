@@ -2485,6 +2485,7 @@ def test_public_api(client):
                             "type": "array",
                         },
                         "activityId": {"anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}], "nullable": True},
+                        "address": {"nullable": True, "title": "Address", "type": "string"},
                         "birthDate": {"format": "date", "nullable": True, "title": "Birthdate", "type": "string"},
                         "bookedOffers": {
                             "additionalProperties": {"type": "integer"},
