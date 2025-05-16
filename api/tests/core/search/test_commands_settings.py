@@ -65,7 +65,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index, config_path, dry=False)
+            outputs = commands_settings._set_settings(index, config_path, not_dry=True)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -98,7 +98,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index, config_path, dry=False)
+            outputs = commands_settings._set_settings(index, config_path, not_dry=True)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -133,7 +133,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index, config_path, dry=False)
+            outputs = commands_settings._set_settings(index, config_path, not_dry=True)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -157,7 +157,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._get_settings(index, dry=True)
+            outputs = commands_settings._get_settings(index, not_dry=False)
 
         assert not requests_mocker.called
         assert len(outputs) == 2  # dry sim messages: settings fetched + settings displayed
@@ -190,7 +190,7 @@ class AlgoliaSettingsTest:
             outputs = commands_settings._set_settings(
                 index,
                 config_path,
-                dry=True,
+                not_dry=False,
             )
 
         # GET was called but not PUT
