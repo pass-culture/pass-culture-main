@@ -93,19 +93,19 @@ class VenueModel(BaseModel):
 
         contact = venue.contact
 
-        email: str | None
+        email: str | None = None
         if venue.collectiveEmail:
             email = venue.collectiveEmail
         elif contact is not None:
             email = contact.email
 
-        website: str | None
+        website: str | None = None
         if venue.collectiveWebsite:
             website = venue.collectiveWebsite
         elif contact is not None:
             website = contact.website
 
-        phone_number: str | None
+        phone_number: str | None = None
         if venue.collectivePhone:
             phone_number = venue.collectivePhone
         elif contact is not None:
