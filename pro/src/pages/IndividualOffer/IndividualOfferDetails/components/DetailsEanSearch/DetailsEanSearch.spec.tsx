@@ -106,15 +106,17 @@ const getButton = () =>
   })
 
 describe('DetailsEanSearch', () => {
-  it('should display an input and a submit button within a dedicated form', () => {
+  it('should display an input and a submit button within a dedicated form', async () => {
     renderDetailsEanSearch()
 
     const input = getInput()
     const button = getButton()
 
-    expect(input).toBeInTheDocument()
-    expect(button).toBeInTheDocument()
-    expect(button).toHaveAttribute('type', 'submit')
+    await waitFor(() => {
+      expect(input).toBeInTheDocument()
+      expect(button).toBeInTheDocument()
+      expect(button).toHaveAttribute('type', 'submit')
+    })
   })
 
   describe('when the draft offer has not been created yet (dirty)', () => {
@@ -182,28 +184,32 @@ describe('DetailsEanSearch', () => {
     })
 
     describe('when an EAN search is performed succesfully', () => {
-      it('should display a success message', () => {
+      it('should display a success message', async () => {
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
           wasEanSearchPerformedSuccessfully: true,
         })
 
-        const status = screen.getAllByRole('status')
-        expect(
-          status.some(
-            (s) => s.textContent && successMessage.test(s.textContent)
-          )
-        ).toBe(true)
+        await waitFor(() => {
+          const status = screen.getAllByRole('status')
+          expect(
+            status.some(
+              (s) => s.textContent && successMessage.test(s.textContent)
+            )
+          ).toBe(true)
+        })
       })
 
-      it('should be entirely disabled', () => {
+      it('should be entirely disabled', async () => {
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
           wasEanSearchPerformedSuccessfully: true,
         })
 
-        expect(getInput()).toBeDisabled()
-        expect(getButton()).toBeDisabled()
+        await waitFor(() => {
+          expect(getInput()).toBeDisabled()
+          expect(getButton()).toBeDisabled()
+        })
       })
 
       it('should clear the form when the clear button is clicked', async () => {
@@ -224,7 +230,7 @@ describe('DetailsEanSearch', () => {
         expect(onEanReset.mock.calls.length).toBe(1)
       })
 
-      it('should display an error message if POST API ends with an EAN err', () => {
+      it('should display an error message if POST API ends with an EAN err', async () => {
         const eanSubmitError = 'This EAN is already used'
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
@@ -232,7 +238,9 @@ describe('DetailsEanSearch', () => {
           eanSubmitError,
         })
 
-        expect(screen.queryByText(eanSubmitError)).toBeInTheDocument()
+        await waitFor(() => {
+          expect(screen.queryByText(eanSubmitError)).toBeInTheDocument()
+        })
       })
     })
 

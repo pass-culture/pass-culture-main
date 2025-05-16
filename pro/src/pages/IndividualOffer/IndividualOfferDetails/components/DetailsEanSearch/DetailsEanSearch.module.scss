@@ -14,25 +14,6 @@ $icon-size: rem.torem(20px);
   margin-top: rem.torem(16px);
 }
 
-.details-ean-search-button {
-  width: 100%;
-  margin-top: rem.torem(24px);
-}
-
-@media screen and (min-width: size.$tablet) {
-  .details-ean-search-button {
-    margin-top: 0;
-    width: auto;
-    position: absolute;
-    right: 0;
-    top: rem.torem(48px);
-  }
-
-  .details-ean-search-container {
-    max-width: rem.torem(340px);
-  }
-}
-
 .clear-button {
   justify-content: center;
   width: calc(#{$icon-size} + #{rem.torem(2px)});
@@ -53,9 +34,5 @@ $icon-size: rem.torem(20px);
   &-icon {
     width: $icon-size;
     height: $icon-size;
-
-    path {
-      fill: var(--color-icon-default);
-    }
   }
 }
