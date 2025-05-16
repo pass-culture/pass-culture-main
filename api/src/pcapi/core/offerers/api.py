@@ -82,6 +82,7 @@ from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
+import pcapi.utils.string as string_utils
 from pcapi.workers.match_acceslibre_job import match_acceslibre_job
 
 from . import exceptions
@@ -1935,6 +1936,9 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
         pass
     else:
         filters.append(finance_models.BankAccount.id == dehumanized_id)
+
+    if string_utils.is_numeric(search_query):
+        filters.append(finance_models.BankAccount.id == int(search_query))
 
     try:
         iban = schwifty.IBAN(search_query)

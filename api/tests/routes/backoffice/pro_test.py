@@ -763,6 +763,10 @@ class SearchBankAccountTest:
         bank_accounts = finance_factories.BankAccountFactory.create_batch(3)
         self._search_for_one(authenticated_client, humanize(bank_accounts[2].id), bank_accounts[2].id)
 
+    def test_search_bank_account_by_id(self, authenticated_client):
+        bank_accounts = finance_factories.BankAccountFactory.create_batch(3)
+        self._search_for_one(authenticated_client, bank_accounts[2].id, bank_accounts[2].id)
+
     @pytest.mark.parametrize("search_query", ["FR7612345000000123456789008", "FR76 1234 5000 0001 2345 6789 008"])
     def test_search_bank_account_by_iban(self, authenticated_client, search_query):
         bank_account = finance_factories.BankAccountFactory(label="Expected", iban="FR7612345000000123456789008")
@@ -775,18 +779,6 @@ class SearchBankAccountTest:
         )
         finance_factories.InvoiceFactory(bankAccount=finance_factories.BankAccountFactory(), reference="F250000551")
         self._search_for_one(authenticated_client, "F250000550", expected_invoice.bankAccountId)
-
-    def test_search_bank_account_by_id_not_available(self, authenticated_client):
-        bank_account = finance_factories.BankAccountFactory()
-        search_query = bank_account.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(self.endpoint, q=search_query, pro_type=TypeOptions.BANK_ACCOUNT.name)
-            )
-            assert response.status_code == 200
-
-        assert len(html_parser.extract_cards_text(response.data)) == 0
 
     @pytest.mark.parametrize("search_query", ["123", "FR76123450000001234567890", "Mon compte", "F250000553"])
     def test_search_bank_account_no_result(self, authenticated_client, search_query):
