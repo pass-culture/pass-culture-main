@@ -280,7 +280,9 @@ class _FIELDS:
         description="Booking limit datetime. It must be anterior to the `start_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
     )
-    COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")
+    COLLECTIVE_OFFER_TOTAL_PRICE = Field(
+        example=100.00, description="Collective offer price (in €)", alias="totalPrice"
+    )
     COLLECTIVE_OFFER_NB_OF_TICKETS = Field(example=10, description="Number of tickets for your collective offer")
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="The explanation of the offer price",

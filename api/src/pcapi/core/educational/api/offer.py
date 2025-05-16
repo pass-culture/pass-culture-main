@@ -626,7 +626,7 @@ def create_collective_offer_public(
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
         numberOfTickets=body.number_of_tickets,
-        priceDetail=body.educational_price_detail,
+        priceDetail=body.price_detail,
     )
 
     offers_api.update_offer_fraud_information(offer=collective_offer, user=None)

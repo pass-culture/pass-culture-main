@@ -40,7 +40,7 @@ PATCH_NON_NULLABLE_FIELDS = (
     "interventionArea",
     "startDatetime",
     "endDatetime",
-    "totalPrice",
+    "price",
     "numberOfTickets",
     "audioDisabilityCompliant",
     "mentalDisabilityCompliant",
