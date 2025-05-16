@@ -37,9 +37,7 @@ def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
                 offers_models.Offer.withdrawalDelay,
                 offers_models.Offer.withdrawalDetails,
                 offers_models.Offer.withdrawalType,
-            )
-            .joinedload(offers_models.Offer.venue)
-            .load_only(offerers_models.Venue.street),
+            ),
             sa_orm.joinedload(bookings_models.Booking.activationCode).load_only(offers_models.ActivationCode.code),
             sa_orm.joinedload(bookings_models.Booking.stock)
             .load_only(offers_models.Stock.id)
