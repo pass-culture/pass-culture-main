@@ -97,8 +97,9 @@ class AccountTest:
             "firstName": "john",
             "lastName": "doe",
             "phoneNumber": "+33102030405",
-            "city": "Annecy",
+            "address": "123 rue de la paix",
             "postalCode": "74000",
+            "city": "Annecy",
             "needsToFillCulturalSurvey": True,
         }
         user = users_factories.BeneficiaryGrant18Factory(
@@ -158,6 +159,9 @@ class AccountTest:
             "activityId": users_models.ActivityEnum.STUDENT.name,
             "currency": "EUR",
             "achievements": [],
+            "address": "123 rue de la paix",
+            "postalCode": "74000",
+            "city": "Annecy",
         }
         EXPECTED_DATA.update(USER_DATA)
 
