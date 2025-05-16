@@ -1,3 +1,4 @@
+from contextlib import suppress
 import dataclasses
 import datetime
 import decimal
@@ -2232,6 +2233,23 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
     delete_mediations(offer_ids)
 
 
+def _format_error_extra(error: Exception, ids: typing.Collection[int]) -> dict:
+    return {"ids": ids, "error": str(error)}
+
+
+def _format_db_error_extra(error: sa.exc.IntegrityError, ids: typing.Collection[int]) -> dict:
+    extra = _format_error_extra(error, ids)
+
+    with suppress(Exception):
+        extra["details"] = {
+            "orig": str(error.orig),
+            "code": error.code,
+            "params": error.params,
+        }
+
+    return extra
+
+
 @atomic()
 def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], offer_chunk_size: int = 16) -> None:
     """Delete a set of offers and all of their related objects and
@@ -2243,20 +2261,33 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
         very few related objects and kept quite small otherwise
         because of the transaction that should not last long.
     """
+
+    def delete_offers_related_objects_round(idx: int, chunk: typing.Collection[int]) -> None:
+        start = time.time()
+
+        delete_offers_related_objects(chunk)
+
+        unindex_offers_partial = functools.partial(search.unindex_offer_ids, chunk)
+        on_commit(unindex_offers_partial)
+
+        models.Offer.query.filter(models.Offer.id.in_(chunk)).delete(synchronize_session=False)
+        db.session.flush()
+
+        log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}
+        logger.info("delete offers and related objects: round %d, end", idx, extra=log_extra)
+
     for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=offer_chunk_size)):
-        with atomic():
-            start = time.time()
-
-            delete_offers_related_objects(chunk)
-
-            unindex_offers_partial = functools.partial(search.unindex_offer_ids, chunk)
-            on_commit(unindex_offers_partial)
-
-            models.Offer.query.filter(models.Offer.id.in_(chunk)).delete(synchronize_session=False)
-            db.session.flush()
-
-            log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}
-            logger.info("delete offers and related objects: round %d, end", idx, extra=log_extra)
+        try:
+            with atomic():
+                delete_offers_related_objects_round(idx, chunk)
+        except sa.exc.IntegrityError as err:
+            extra = _format_db_error_extra(err, chunk)
+            logger.error("delete_offers_and_all_related_objects: error", extra=extra)
+            continue
+        except Exception as err:
+            extra = _format_error_extra(err, chunk)
+            logger.error("delete_offers_and_all_related_objects: error", extra=extra)
+            continue
 
 
 def delete_unbookable_unbooked_old_offers(

@@ -1290,7 +1290,7 @@ def offer_has_timestamped_stocks(offer_id: int) -> bool:
 
 
 def get_unbookable_unbooked_old_offer_ids(
-    min_id: int = 0, max_id: int | None = None, batch_size: int = 10_000
+    min_id: int = 0, max_id: int | None = None, batch_size: int = 5_000
 ) -> typing.Generator[int, None, None]:
     """Find unbookable unbooked old offer ids.
 
