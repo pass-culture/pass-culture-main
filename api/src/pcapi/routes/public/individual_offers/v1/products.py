@@ -482,6 +482,7 @@ def _create_or_update_ean_offers(
             try:
                 offer.lastProvider = provider
                 offer.isActive = True
+                offer.offererAddress = offerer_address
 
                 ean = offer.ean
                 stock_data = serialized_products_stocks[ean]
