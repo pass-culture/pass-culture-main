@@ -407,3 +407,75 @@ class PostProductBlacklistTest(PostEndpointHelper):
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         assert offer.status == OfferStatus.REJECTED
         assert unlinked_offer.status == OfferStatus.REJECTED
+
+
+class LinkUnlinkedOfferToProductButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Associer les offres au produit"
+
+    @property
+    def path(self):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(ean=ean)
+        offers_factories.OfferFactory.create(ean=ean)
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+
+class GetProductLinkOfferFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.confirm_link_offers_forms"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_confirm_product_link_offers_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+
+        unlinked_offers = [offers_factories.OfferFactory.create(ean="1234567891234") for _ in range(10)]
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"object_ids": ",".join([str(offer.id) for offer in unlinked_offers])},
+        )
+        assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous associer 10 offres au produit ?" in response_text
+        assert "Vous allez associer 10 offres. Voulez vous continuer ?" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Confirmer l'association" in buttons
+
+
+class LinkUnlinkedOfferToProductTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.batch_link_offers_to_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_confirm_product_link_offers_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+        unlinked_offers = [offers_factories.OfferFactory.create(ean="1234567891234") for _ in range(10)]
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"object_ids": ",".join([str(offer.id) for offer in unlinked_offers])},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+        assert "Les offres ont été associées au produit avec succès" in html_parser.extract_alerts(response.data)
+        assert len(product.offers) == len(unlinked_offers)
+        assert product.offers == unlinked_offers
+        assert len({offer.name for offer in unlinked_offers}) == 1
+        assert product.name == unlinked_offers[0].name
+        assert len({offer.description for offer in unlinked_offers}) == 1
+        assert product.description == unlinked_offers[0].description
