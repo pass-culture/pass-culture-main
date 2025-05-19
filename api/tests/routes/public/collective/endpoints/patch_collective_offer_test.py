@@ -1013,10 +1013,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.json["location"] == {
             "type": "SCHOOL",
-            "addressLabel": None,
-            "addressId": None,
-            "comment": None,
-            "isVenueAddress": False,
         }
 
         db.session.refresh(collective_offer)

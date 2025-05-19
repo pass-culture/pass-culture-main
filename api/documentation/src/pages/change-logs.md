@@ -15,6 +15,8 @@ title: Pass Culture API change logs
 
 ## May 2025
 
+- A new `location` attribute has been added to the request body of the [**Post Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic). The `offerVenue` attribute is now optional, you must provide either `location` or `offerVenue` when creating a collective offer.
+
 - The response of the following endpoints now includes a new `offerStatus` field (see details [here](docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions)):
   - [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
   - [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)

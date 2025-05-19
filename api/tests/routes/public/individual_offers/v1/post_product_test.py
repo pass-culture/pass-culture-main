@@ -392,7 +392,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
         assert response.status_code == 404
         assert response.json == {
-            "location.AddressLocation.addressId": [f"There is no venue with id {not_existing_address_id}"]
+            "location.AddressLocation.addressId": [f"There is no address with id {not_existing_address_id}"]
         }
 
     @pytest.mark.usefixtures("db_session")

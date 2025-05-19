@@ -14,7 +14,9 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
@@ -201,6 +203,61 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert "location" in json
 
     @time_machine.travel(time_travel_str)
+    def test_post_offers_with_school_location(
+        self, public_client, payload, venue_provider, domain, institution, national_program, venue
+    ):
+        del payload["offerVenue"]
+        payload["location"] = {"type": "SCHOOL"}
+
+        with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+            mock.return_value = ["anything", "it does not matter"]
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+
+        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+
+        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
+        assert offer.venueId == venue.id
+        assert offer.name == payload["name"]
+        assert offer.domains == [domain]
+        assert offer.institutionId == institution.id
+        assert offer.interventionArea == []
+        assert offer.offerVenue == {
+            "addressType": "school",
+            "otherAddress": "",
+            "venueId": None,
+        }
+        assert offer.providerId == venue_provider.providerId
+        assert offer.hasImage is True
+        assert offer.isPublicApi
+        assert offer.nationalProgramId == national_program.id
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
+        assert offer.formats == [EacFormat.CONCERT]
+
+        # stock data
+        assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
+            tzinfo=None
+        )
+        assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["endDatetime"]).replace(tzinfo=None)
+        assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(
+            payload["bookingLimitDatetime"]
+        ).replace(tzinfo=None)
+        assert offer.collectiveStock.price == decimal.Decimal(payload["totalPrice"])
+        assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
+
+        json = response.json
+        assert json["name"] == "Some offer"
+        assert json["location"] == {"type": "SCHOOL"}
+        assert json["offerVenue"] == {
+            "addressType": "school",
+            "otherAddress": None,
+            "venueId": None,
+        }
+
+    @time_machine.travel(time_travel_str)
     def test_post_offers_without_end_datetime(self, public_client, payload):
         del payload["endDatetime"]
 
@@ -305,7 +362,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.locationComment is None
 
     @time_machine.travel(time_travel_str)
-    def test_post_offers_offer_venue_other(self, public_client, minimal_payload, venue):
+    def test_post_offers_offer_venue_other(self, public_client, minimal_payload):
         payload = {
             **minimal_payload,
             "offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None},
@@ -321,6 +378,169 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.offererAddressId is None
         assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "In Paris"
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_to_be_defined(self, public_client, minimal_payload):
+        del minimal_payload["offerVenue"]
+
+        payload = {
+            **minimal_payload,
+            "location": {"type": "TO_BE_DEFINED", "comment": "In Paris"},
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddressId is None
+        assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationComment == "In Paris"
+
+        assert offer.offerVenue == {
+            "addressType": "other",
+            "otherAddress": "In Paris",
+            "venueId": None,
+        }
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_on_venue(self, public_client, minimal_payload, venue):
+        del minimal_payload["offerVenue"]
+
+        payload = {
+            **minimal_payload,
+            "location": {"type": "ADDRESS", "isVenueAddress": True},
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddressId == venue.offererAddressId
+        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+        assert offer.offerVenue == {
+            "addressType": "offererVenue",
+            "otherAddress": "",
+            "venueId": venue.id,
+        }
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_other_address(self, public_client, minimal_payload, venue):
+        del minimal_payload["offerVenue"]
+
+        address = geography_factories.AddressFactory()
+
+        payload = {
+            **minimal_payload,
+            "location": {
+                "type": "ADDRESS",
+                "addressLabel": "My second address",
+                "addressId": address.id,
+                "isVenueAddress": False,
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress)
+            .filter_by(addressId=address.id, offererId=venue.managingOffererId)
+            .one()
+        )
+
+        assert offer.offererAddressId == offerer_address.id
+        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+        assert offer.offerVenue == {
+            "addressType": "other",
+            "otherAddress": offerer_address.address.fullAddress,
+            "venueId": None,
+        }
+
+        assert offerer_address.label == "My second address"
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_other_not_existing_venue(self, public_client, minimal_payload):
+        del minimal_payload["offerVenue"]
+        not_existing_address_id = -1
+
+        payload = {
+            **minimal_payload,
+            "location": {
+                "type": "ADDRESS",
+                "addressLabel": "My second address",
+                "addressId": not_existing_address_id,
+                "isVenueAddress": False,
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"location.AddressLocation.addressId": ["There is no address with id -1"]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_location_address_with_no_address_id(self, public_client, minimal_payload, venue):
+        del minimal_payload["offerVenue"]
+
+        payload = {
+            **minimal_payload,
+            "location": {
+                "type": "ADDRESS",
+                "addressLabel": "My second address",
+                "isVenueAddress": False,
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "location.CollectiveOfferLocationAddressModel.addressId": ["field required"],
+            "location.type": [
+                "unexpected value; permitted: 'SCHOOL'",
+                "unexpected value; permitted: 'TO_BE_DEFINED'",
+            ],
+        }
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_with_location_and_offer_venue(self, public_client, payload, institution):
+        payload["location"] = {"type": "SCHOOL"}
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "__root__": [
+                "Les champs offerVenue et location sont mutuellement exclusifs. Vous ne pouvez pas remplir les deux en même temps",
+            ]
+        }
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_without_location_and_offer_venue(self, public_client, payload):
+        del payload["offerVenue"]
+        # location is not already present in payload so no del payload["location"]
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "__root__": ["Le remplissage de l'un des champs offerVenue ou location est obligatoire."]
+        }
 
     @time_machine.travel(time_travel_str)
     def test_post_offers_with_uai_and_institution_id(self, public_client, payload, institution):

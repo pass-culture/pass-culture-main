@@ -390,20 +390,17 @@ class _FIELDS:
     OFFER_VENUE_OTHER_ADDRESS = Field(description="Address that will be shared to the users", example=None)
     COLLECTIVE_OFFER_INTERVENTION_AREA = Field(description="Department codes (eg. '77', '2A')", example="75")
 
-    COLLECTIVE_OFFER_LOCATION_TYPE = Field(
-        description="Type of location: SCHOOL, TO_BE_DEFINED, or ADDRESS",
-        example="SCHOOL",
-    )
+    COLLECTIVE_OFFER_LOCATION = Field(description=descriptions.COLLECTIVE_OFFER_LOCATION_DESCRIPTION, title="ADDRESS")
     COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL = Field(
-        description="Adresse label (only if type=ADDRESS)",
+        description="Adresse label",
         example="Zénith Paris",
     )
     COLLECTIVE_OFFER_LOCATION_ADDRESS_ID = Field(
-        description="Address id in the pass Culture DB (only if type=ADDRESS)",
+        description="Address id in the pass Culture DB",
         example=1,
     )
     COLLECTIVE_OFFER_LOCATION_COMMENT = Field(
-        description="Comment (only if type=TO_BE_DEFINED)",
+        description="Comment",
         example="Lieu à définir avec l'organisateur",
     )
     COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS = Field(
