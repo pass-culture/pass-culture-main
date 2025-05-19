@@ -1,13 +1,13 @@
-from dataclasses import dataclass
-from datetime import datetime
-from functools import partial
 import json
 import logging
 import typing
+from dataclasses import dataclass
+from datetime import datetime
+from functools import partial
 
-from pydantic.v1 import parse_obj_as
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models

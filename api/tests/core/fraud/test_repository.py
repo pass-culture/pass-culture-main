@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi.core.fraud import repository as fraud_repository
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.core.fraud import repository as fraud_repository
 
 
 @pytest.mark.usefixtures("db_session")

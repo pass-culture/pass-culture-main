@@ -1,11 +1,11 @@
 from decimal import Decimal
 
+import sqlalchemy as sa
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
 from markupsafe import Markup
-import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import subcategories
@@ -16,8 +16,8 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice.filters import format_offer_subcategory
 from pcapi.routes.backoffice.forms import empty as empty_forms
 
-from . import forms
 from .. import utils
+from . import forms
 
 
 offer_price_limitation_rules_blueprint = utils.child_backoffice_blueprint(

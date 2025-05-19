@@ -8,16 +8,16 @@ import factory
 from factory.faker import faker
 
 import pcapi.core.artist.models as artist_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.models as offers_models
+import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.factories import BaseFactory
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.schemas import VenueTypeCode
-import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.date import timespan_str_to_numrange

@@ -6,10 +6,10 @@ from operator import itemgetter
 from unittest import mock
 from unittest.mock import patch
 
-from flask import g
-from flask import url_for
 import openpyxl
 import pytest
+from flask import g
+from flask import url_for
 
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories

@@ -1,13 +1,13 @@
 import datetime
 
-from flask import url_for
 import pytest
+from flask import url_for
 
+import pcapi.utils.db as db_utils
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.testing import assert_num_queries
-import pcapi.utils.db as db_utils
 
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LAT
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LON

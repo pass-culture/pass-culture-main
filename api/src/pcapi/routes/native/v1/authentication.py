@@ -3,11 +3,11 @@ import logging
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
+import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
-import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models

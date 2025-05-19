@@ -5,12 +5,12 @@ import typing
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+import pcapi.core.offers.models as offers_models
+import pcapi.core.users.models as users_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
-import pcapi.core.offers.models as offers_models
-import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.pc_object import BaseQuery

@@ -1,14 +1,14 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.core import mails
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
+import pcapi.core.offerers.models as offerers_models
+from pcapi.core import mails
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.utils import format_price
-import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.utils.date import get_date_formatted_for_email
 

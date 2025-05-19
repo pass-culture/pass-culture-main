@@ -1,14 +1,14 @@
+import logging
+import typing
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-import logging
-import typing
 
+import pcapi.core.offers.repository as offers_repository
 from pcapi import settings
 from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
-import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import (

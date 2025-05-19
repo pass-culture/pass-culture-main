@@ -2,9 +2,9 @@ import datetime
 import decimal
 import re
 
+import pytz
 from babel import numbers
 from flask import Flask
-import pytz
 
 from pcapi.utils.clean_accents import clean_accents
 

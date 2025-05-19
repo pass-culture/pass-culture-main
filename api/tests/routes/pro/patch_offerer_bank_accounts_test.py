@@ -1,9 +1,8 @@
-from collections import namedtuple
 import datetime
+from collections import namedtuple
 
 import pytest
 
-from pcapi.core import token
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
@@ -12,6 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.token.serialization as token_serialization
 import pcapi.core.users.factories as users_factories
+from pcapi.core import token
 from pcapi.models import db
 
 

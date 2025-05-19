@@ -1,13 +1,13 @@
 import datetime
 import decimal
 
+import pcapi.core.educational.schemas as educational_schemas
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
-import pcapi.core.educational.schemas as educational_schemas
 
 from .. import testing
 

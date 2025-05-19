@@ -1,8 +1,8 @@
+import itertools
+import typing
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
-import itertools
-import typing
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres.book import BOOK_MACRO_SECTIONS

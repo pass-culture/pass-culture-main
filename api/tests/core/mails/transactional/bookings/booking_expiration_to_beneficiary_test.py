@@ -3,11 +3,12 @@ from datetime import timedelta
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary import (
     get_expired_bookings_to_beneficiary_data,
 )
@@ -16,7 +17,6 @@ from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary i
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
-import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")

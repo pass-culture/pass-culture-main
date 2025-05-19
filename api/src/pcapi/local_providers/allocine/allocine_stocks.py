@@ -1,10 +1,11 @@
-from datetime import datetime
 import decimal
 import logging
 import uuid
+from datetime import datetime
 
 import PIL
 
+import pcapi.core.providers.models as providers_models
 from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories
@@ -16,7 +17,6 @@ from pcapi.core.providers.allocine import build_movie_id_at_providers
 from pcapi.core.providers.allocine import create_generic_movie
 from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
-import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api

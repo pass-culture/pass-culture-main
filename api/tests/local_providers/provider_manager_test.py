@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pytest
 import requests_mock
 
-from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.offers.models import Offer
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider

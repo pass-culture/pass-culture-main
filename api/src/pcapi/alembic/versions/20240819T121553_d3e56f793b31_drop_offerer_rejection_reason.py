@@ -1,7 +1,7 @@
 """drop column: offerer.rejectionReason"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.offerers.models import OffererRejectionReason
 from pcapi.utils.db import MagicEnum

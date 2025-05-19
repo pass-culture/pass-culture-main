@@ -1,21 +1,21 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi import settings
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
-from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
-from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders
-from pcapi.core.subscription.ubble import errors as ubble_errors
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 import pcapi.notifications.push.testing as push_testing
+from pcapi import settings
+from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
+from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders
+from pcapi.core.subscription.ubble import errors as ubble_errors
 
 
 def build_user_with_ko_retryable_ubble_fraud_check(

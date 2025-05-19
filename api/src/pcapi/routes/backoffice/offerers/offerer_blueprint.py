@@ -1,8 +1,10 @@
 import datetime
 import decimal
-from functools import partial
 import typing
+from functools import partial
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -10,8 +12,6 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
@@ -47,9 +47,9 @@ from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
 
-from . import forms as offerer_forms
 from .. import utils
 from ..forms import empty as empty_forms
+from . import forms as offerer_forms
 
 
 offerer_blueprint = utils.child_backoffice_blueprint(

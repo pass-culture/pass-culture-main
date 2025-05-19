@@ -7,14 +7,14 @@ import pytz
 import sqlalchemy.exc as sa_exc
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.finance import factories
-from pcapi.core.finance import models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.utils.db as db_utils
+from pcapi.core.finance import factories
+from pcapi.core.finance import models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.repository import repository
-import pcapi.utils.db as db_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

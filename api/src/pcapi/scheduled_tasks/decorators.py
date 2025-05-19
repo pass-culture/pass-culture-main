@@ -1,7 +1,7 @@
-from functools import wraps
 import logging
 import time
 import typing
+from functools import wraps
 
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle

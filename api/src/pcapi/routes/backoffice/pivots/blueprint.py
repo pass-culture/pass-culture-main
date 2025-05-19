@@ -13,10 +13,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.repository.session_management import mark_transaction_as_invalid
 
-from . import forms
 from .. import autocomplete
 from .. import utils
 from ..forms import empty as empty_forms
+from . import forms
 from .contexts import get_context
 
 

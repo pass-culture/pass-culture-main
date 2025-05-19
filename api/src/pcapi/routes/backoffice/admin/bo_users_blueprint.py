@@ -1,14 +1,14 @@
 import datetime
-from functools import partial
 import typing
+from functools import partial
 
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 

@@ -1,8 +1,8 @@
+import logging
+import typing
 from datetime import date
 from datetime import datetime
 from decimal import Decimal
-import logging
-import typing
 
 from pydantic.v1 import Field
 from pydantic.v1 import root_validator

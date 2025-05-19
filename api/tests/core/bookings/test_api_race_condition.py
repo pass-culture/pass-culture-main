@@ -1,7 +1,7 @@
 import contextlib
-from datetime import datetime
 import logging
 import threading
+from datetime import datetime
 from unittest.mock import patch
 
 import pytest

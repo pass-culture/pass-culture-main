@@ -1,7 +1,7 @@
-from contextlib import contextmanager
 import datetime
 import logging
 import typing
+from contextlib import contextmanager
 
 from pcapi.connectors.dms import models as ds_models
 from pcapi.models import db

@@ -1,11 +1,11 @@
 import pytest
 
-from pcapi.core import search
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 import pcapi.core.users.factories as users_factories
+from pcapi.core import search
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

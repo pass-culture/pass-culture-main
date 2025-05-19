@@ -2,9 +2,9 @@ from datetime import date
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories

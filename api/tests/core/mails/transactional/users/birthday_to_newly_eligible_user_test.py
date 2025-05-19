@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_17_email_to_newly_eligible_user,
@@ -11,7 +12,6 @@ from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user_v3,
 )
-import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

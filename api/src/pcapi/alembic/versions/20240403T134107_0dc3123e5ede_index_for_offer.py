@@ -1,7 +1,7 @@
 """Index creation for offer.offererAdressId"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi import settings
 

@@ -6,12 +6,12 @@ import typing
 
 from urllib3 import exceptions as urllib3_exceptions
 
-from pcapi import settings
-from pcapi.core.categories import subcategories
-from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.repository as providers_repository
+from pcapi import settings
+from pcapi.core.categories import subcategories
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache

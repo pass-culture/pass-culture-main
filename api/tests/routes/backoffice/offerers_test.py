@@ -1,11 +1,11 @@
 import datetime
+import re
 from decimal import Decimal
 from operator import attrgetter
-import re
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi import settings
 from pcapi.connectors.clickhouse import queries as clickhouse_queries

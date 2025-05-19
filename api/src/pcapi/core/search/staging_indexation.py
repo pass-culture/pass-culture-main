@@ -1,9 +1,9 @@
 import logging
 
+import pcapi.core.offers.models as offers_models
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers import models as offerer_models
-import pcapi.core.offers.models as offers_models
 from pcapi.models import db
 
 

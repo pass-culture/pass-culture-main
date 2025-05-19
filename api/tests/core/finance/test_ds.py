@@ -1,6 +1,6 @@
-from collections import namedtuple
 import datetime
 import random
+from collections import namedtuple
 from unittest.mock import patch
 
 import pytest

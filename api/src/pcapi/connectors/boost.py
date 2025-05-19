@@ -6,13 +6,13 @@ from typing import Any
 
 from pydantic.v1 import parse_obj_as
 
+import pcapi.core.providers.repository as providers_repository
 from pcapi import settings
 from pcapi.connectors.serialization.boost_serializers import LoginBoost
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
 from pcapi.core.external_bookings.boost.exceptions import BoostLoginException
 from pcapi.core.providers.models import BoostCinemaDetails
-import pcapi.core.providers.repository as providers_repository
 from pcapi.repository import repository
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests

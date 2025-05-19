@@ -2,8 +2,8 @@ from typing import Any
 
 import pytest
 
-from pcapi.core.history import models as history_models
 import pcapi.core.users.factories as users_factories
+from pcapi.core.history import models as history_models
 
 
 @pytest.mark.usefixtures("db_session")

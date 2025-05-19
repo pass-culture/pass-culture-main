@@ -1,8 +1,8 @@
 import re
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.providers import repository as providers_repository
 

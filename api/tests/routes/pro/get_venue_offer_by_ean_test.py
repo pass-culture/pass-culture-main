@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 
 
 @pytest.mark.usefixtures("db_session")

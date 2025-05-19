@@ -3,19 +3,19 @@ import datetime
 import logging
 from unittest import mock
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
-import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
 

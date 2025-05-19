@@ -1,10 +1,10 @@
-from datetime import date
-from datetime import datetime
 import logging
 import typing
+from datetime import date
+from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import jwt
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.utils.date import utc_datetime_to_department_timezone

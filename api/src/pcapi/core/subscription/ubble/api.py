@@ -9,23 +9,23 @@ import tempfile
 import flask
 from pydantic.v1.networks import HttpUrl
 
+import pcapi.core.external.batch as batch_notification
+import pcapi.core.fraud.models as fraud_models
+import pcapi.core.fraud.ubble.constants as ubble_fraud_constants
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.repository as pcapi_repository
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
-import pcapi.core.external.batch as batch_notification
 from pcapi.core.external.batch import track_ubble_ko_event
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
-import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
-import pcapi.core.fraud.ubble.constants as ubble_fraud_constants
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
-import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 

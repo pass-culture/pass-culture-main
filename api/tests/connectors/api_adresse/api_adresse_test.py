@@ -1,7 +1,7 @@
 import csv
+import json
 from hashlib import md5
 from io import StringIO
-import json
 from unittest.mock import call
 from unittest.mock import patch
 

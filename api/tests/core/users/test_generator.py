@@ -1,17 +1,17 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
 import pcapi.core.finance.models as finance_models
-from pcapi.core.fraud import repository as fraud_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
-from pcapi.core.users import constants as users_constants
 import pcapi.core.users.generator as users_generator
 import pcapi.core.users.models as users_models
+from pcapi.core.fraud import repository as fraud_repository
+from pcapi.core.users import constants as users_constants
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

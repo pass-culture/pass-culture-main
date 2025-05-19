@@ -1,18 +1,18 @@
 import datetime
-from itertools import groupby
 import logging
+from itertools import groupby
 from operator import attrgetter
 
+import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.educational.repository as educational_repository
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.bookings.api import recompute_dnBookedQuantity
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
-import pcapi.core.educational.repository as educational_repository
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery

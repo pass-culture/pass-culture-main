@@ -1,5 +1,5 @@
-from functools import partial
 import logging
+from functools import partial
 
 from pcapi.core.external.zendesk_sell_backends import zendesk_backend
 from pcapi.core.external.zendesk_sell_backends.base import ContactFoundMoreThanOneError

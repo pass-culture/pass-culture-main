@@ -2,9 +2,9 @@ import dataclasses
 import decimal
 import pathlib
 
+import pytest
 from geoalchemy2.elements import WKBElement
 from geoalchemy2.shape import to_shape
-import pytest
 from shapely.geometry.base import BaseGeometry
 
 from pcapi.core.geography import api

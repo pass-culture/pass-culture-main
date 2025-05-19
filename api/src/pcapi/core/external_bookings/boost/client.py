@@ -5,13 +5,13 @@ import typing
 
 from pydantic.v1 import parse_obj_as
 
-from pcapi.connectors import boost
-from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
+from pcapi.connectors import boost
+from pcapi.connectors.serialization import boost_serializers
+from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.utils.queue import add_to_queue
 
 from . import constants

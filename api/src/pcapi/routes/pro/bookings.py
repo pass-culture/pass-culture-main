@@ -1,13 +1,13 @@
-from datetime import date
 import math
+from datetime import date
 from typing import cast
 
 from flask_login import current_user
 from flask_login import login_required
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingExportType
-import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import repository as users_repository

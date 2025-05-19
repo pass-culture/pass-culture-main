@@ -1,8 +1,8 @@
-from decimal import Decimal
-from decimal import InvalidOperation
 import enum
 import re
 import typing
+from decimal import Decimal
+from decimal import InvalidOperation
 
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator

@@ -1,13 +1,13 @@
-from collections import defaultdict
 import datetime
-from enum import Enum
 import random
 import string
 import uuid
+from collections import defaultdict
+from enum import Enum
 
-from dateutil.relativedelta import relativedelta
 import factory
 import pytz
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers

@@ -2,17 +2,17 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 
-from flask import url_for
 import pytest
+from flask import url_for
 
-from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
+from pcapi.core.testing import assert_num_queries
 
 
 @pytest.mark.usefixtures("db_session")

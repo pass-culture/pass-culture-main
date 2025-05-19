@@ -6,19 +6,19 @@ import re
 import pytest
 import time_machine
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.constants as providers_constants
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.connectors import titelive
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.fraud.factories import ProductWhitelistFactory
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.providers.constants as providers_constants
-import pcapi.core.providers.factories as providers_factories
-import pcapi.core.providers.models as providers_models
-import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.titelive_book_search import TiteliveBookSearch
 from pcapi.core.providers.titelive_book_search import extract_eans_from_titelive_response
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch

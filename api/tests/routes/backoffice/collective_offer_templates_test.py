@@ -1,8 +1,8 @@
-from dataclasses import asdict
 import datetime
+from dataclasses import asdict
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories

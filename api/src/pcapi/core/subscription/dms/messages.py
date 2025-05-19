@@ -1,7 +1,7 @@
-from dataclasses import dataclass
 import datetime
 import enum
 import logging
+from dataclasses import dataclass
 
 from pcapi import settings
 from pcapi.core.fraud import models as fraud_models

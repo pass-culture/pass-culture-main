@@ -4,10 +4,6 @@ import typing
 
 from sqlalchemy import exc as sqlalchemy_exceptions
 
-from pcapi import settings
-from pcapi.core.external import batch
-from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.finance import deposit_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.fraud.api as fraud_api
@@ -16,6 +12,12 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.transactional as transactional_mails
+import pcapi.repository as pcapi_repository
+import pcapi.utils.postal_code as postal_code_utils
+from pcapi import settings
+from pcapi.core.external import batch
+from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import deposit_api
 from pcapi.core.subscription import machines as subscription_machines
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -30,8 +32,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-import pcapi.repository as pcapi_repository
-import pcapi.utils.postal_code as postal_code_utils
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions

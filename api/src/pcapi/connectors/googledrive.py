@@ -23,13 +23,13 @@ proper backend is chosen depending on the environment (see
   a temporary service account in GOOGLE_DRIVE_SERVICE_ACCOUNT_INFO.
 """
 
-from io import BytesIO
 import json
 import pathlib
 import typing
+from io import BytesIO
 
-from google.oauth2 import service_account
 import googleapiclient.discovery
+from google.oauth2 import service_account
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
 

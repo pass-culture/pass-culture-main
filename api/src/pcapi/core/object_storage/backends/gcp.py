@@ -1,9 +1,9 @@
 import logging
 
+import google.cloud.storage.retry
 from google.cloud.exceptions import NotFound
 from google.cloud.storage.bucket import Bucket
 from google.cloud.storage.client import Client
-import google.cloud.storage.retry
 from google.oauth2.service_account import Credentials
 
 from pcapi import settings

@@ -1,7 +1,7 @@
 """update collective offer template's contact's constraints"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

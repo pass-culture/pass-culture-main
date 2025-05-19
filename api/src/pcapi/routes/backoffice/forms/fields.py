@@ -1,15 +1,15 @@
 import datetime
-from functools import partial
 import json
 import typing
+from functools import partial
 
 import email_validator
+import wtforms
+import wtforms_sqlalchemy.fields
 from flask import render_template
 from flask import url_for
-import wtforms
 from wtforms import ValidationError
 from wtforms import validators
-import wtforms_sqlalchemy.fields
 
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.utils import phone_number

@@ -1,7 +1,7 @@
 import pydantic.v1 as pydantic_v1
 
-from pcapi import settings
 import pcapi.core.educational.models as educational_models
+from pcapi import settings
 
 from .base import BaseQuery
 

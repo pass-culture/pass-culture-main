@@ -1,12 +1,13 @@
+import warnings
 from copy import deepcopy
 from datetime import datetime
 from unittest.mock import call
 from unittest.mock import patch
-import warnings
 
-from brevo_python.models.request_contact_import import RequestContactImport
 import pytest
+from brevo_python.models.request_contact_import import RequestContactImport
 
+import pcapi.core.users.testing as sendinblue_testing
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.sendinblue import SendinblueUserUpdateData
@@ -17,7 +18,6 @@ from pcapi.core.external.sendinblue import format_pro_attributes
 from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
-import pcapi.core.users.testing as sendinblue_testing
 from pcapi.tasks.serialization import sendinblue_tasks
 
 from . import common_pro_attributes

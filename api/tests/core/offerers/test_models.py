@@ -1,19 +1,19 @@
 import datetime
 
 import pytest
-from sqlalchemy.exc import IntegrityError
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.exc import IntegrityError
 
-from pcapi import settings
-from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
-from pcapi.core.offerers import factories
-from pcapi.core.offerers import models
 import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.offerers import factories
+from pcapi.core.offerers import models
+from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus

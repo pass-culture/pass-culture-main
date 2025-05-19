@@ -2,14 +2,14 @@ import datetime
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.models import Weekday
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import timespan_str_to_numrange

@@ -23,7 +23,6 @@ details).
   which should be rare.
 """
 
-from collections import defaultdict
 import csv
 import datetime
 import decimal
@@ -36,32 +35,36 @@ import tempfile
 import time
 import typing
 import zipfile
+from collections import defaultdict
 
-from flask import current_app as app
-from flask import render_template
 import pytz
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
+from flask import current_app as app
+from flask import render_template
 
-from pcapi import settings
-from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.models as educational_models
-from pcapi.core.finance import deposit_api
-from pcapi.core.history import api as history_api
 import pcapi.core.history.models as history_models
-from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
-from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
-from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
-from pcapi.core.object_storage import store_public_object
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.reference.models as reference_models
 import pcapi.core.users.models as users_models
+import pcapi.utils.date as date_utils
+import pcapi.utils.db as db_utils
+import pcapi.utils.pdf as pdf_utils
+from pcapi import settings
+from pcapi.connectors import googledrive
+from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.finance import deposit_api
+from pcapi.core.history import api as history_api
+from pcapi.core.logging import log_elapsed
+from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
+from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
+from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
+from pcapi.core.object_storage import store_public_object
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
@@ -71,9 +74,6 @@ from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
-import pcapi.utils.date as date_utils
-import pcapi.utils.db as db_utils
-import pcapi.utils.pdf as pdf_utils
 
 from . import conf
 from . import exceptions

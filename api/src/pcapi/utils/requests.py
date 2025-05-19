@@ -20,9 +20,9 @@ from typing import Callable
 import gql.transport.exceptions
 import gql.transport.requests
 import requests  # noqa: TID251
+import zeep
 from requests.adapters import HTTPAdapter  # noqa: TID251
 from urllib3.util.retry import Retry
-import zeep
 
 
 # fmt: off

@@ -4,6 +4,8 @@ from datetime import timedelta
 import pytest
 import sqlalchemy.exc
 
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
@@ -13,8 +15,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import DepositType
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.repository import repository
 

@@ -1,6 +1,6 @@
-from collections import abc
 import contextlib
 import typing
+from collections import abc
 
 
 if typing.TYPE_CHECKING:

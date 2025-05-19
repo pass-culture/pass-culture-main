@@ -2,15 +2,15 @@ from datetime import date
 from datetime import datetime
 from unittest.mock import patch
 
-from brevo_python import RequestContactImport
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from brevo_python import RequestContactImport
+from dateutil.relativedelta import relativedelta
 
-from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.external.automations import user as user_automations
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
+from pcapi.core.external.automations import user as user_automations
 from pcapi.core.users.models import UserRole
 
 

@@ -1,15 +1,15 @@
+import itertools
+import logging
+import re
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-import itertools
-import logging
-import re
 
-from dateutil.relativedelta import relativedelta
-from faker import Faker
 import sqlalchemy as sa
 import time_machine
+from dateutil.relativedelta import relativedelta
+from faker import Faker
 
 from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factory

@@ -1,7 +1,5 @@
 import abc
 import dataclasses
-from datetime import datetime
-from datetime import timedelta
 import enum
 import hashlib
 import json
@@ -11,9 +9,11 @@ import secrets
 import time
 import typing
 import uuid
+from datetime import datetime
+from datetime import timedelta
 
-from flask import current_app as app
 import jwt
+from flask import current_app as app
 
 from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions

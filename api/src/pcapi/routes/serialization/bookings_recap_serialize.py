@@ -1,7 +1,7 @@
+import typing
 from datetime import date
 from datetime import datetime
 from enum import Enum
-import typing
 
 from pydantic.v1 import root_validator
 

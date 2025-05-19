@@ -5,15 +5,15 @@ from unittest.mock import patch
 import pytest
 import schwifty
 
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.ds import update_ds_applications_for_procedure
-import pcapi.core.finance.factories as finance_factories
 from pcapi.core.history import models as history_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.models import db
 

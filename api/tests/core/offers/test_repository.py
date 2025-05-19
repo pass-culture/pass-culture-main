@@ -9,21 +9,21 @@ import sqlalchemy.orm as sa_orm
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.constants as providers_constants
+import pcapi.core.providers.factories as providers_factories
+import pcapi.repository.repository as db_repository
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
-import pcapi.core.providers.constants as providers_constants
-import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models import offer_mixin
-import pcapi.repository.repository as db_repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 

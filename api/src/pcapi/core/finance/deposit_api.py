@@ -2,17 +2,17 @@ import datetime
 import decimal
 import logging
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
 
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.categories.models import ReimbursementRuleChoices
-from pcapi.core.external import batch as push_notifications
 import pcapi.core.external.attributes.api as external_attributes_api
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
+from pcapi.core.categories.models import ReimbursementRuleChoices
+from pcapi.core.external import batch as push_notifications
+from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.repository import transaction
 

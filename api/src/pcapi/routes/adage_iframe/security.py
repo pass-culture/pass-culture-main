@@ -1,6 +1,6 @@
-from functools import wraps
 import logging
 import typing
+from functools import wraps
 
 import flask
 from jwt import ExpiredSignatureError

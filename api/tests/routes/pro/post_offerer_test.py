@@ -1,14 +1,14 @@
-from datetime import datetime
 import json
+from datetime import datetime
 
 import pytest
 
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 

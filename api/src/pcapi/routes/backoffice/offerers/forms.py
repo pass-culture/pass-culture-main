@@ -1,9 +1,9 @@
 import re
 import typing
 
-from flask_wtf import FlaskForm
 import sqlalchemy.orm as sa_orm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models

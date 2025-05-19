@@ -4,9 +4,11 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
 import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (
     get_booking_cancellation_by_beneficiary_to_pro_email_data,
 )
@@ -14,8 +16,6 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
     send_booking_cancellation_by_beneficiary_to_pro_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 
 

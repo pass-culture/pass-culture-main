@@ -4,17 +4,17 @@ Documentation of the API: https://acceslibre.beta.gouv.fr/api/docs/
 Further explanations at: https://schema.data.gouv.fr/MTES-MCT/acceslibre-schema/0.0.14/documentation.html
 """
 
-from datetime import datetime
 import enum
 import json
 import logging
-from math import ceil
 import time
+from datetime import datetime
+from math import ceil
 from typing import Any
 from typing import TypedDict
 
-from dateutil import parser
 import pydantic.v1 as pydantic_v1
+from dateutil import parser
 from rapidfuzz import fuzz
 
 from pcapi import settings

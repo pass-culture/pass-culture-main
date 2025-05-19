@@ -2,16 +2,16 @@ import logging
 
 import click
 
-from pcapi import settings
-from pcapi.connectors.dms.utils import import_ds_applications
 import pcapi.core.chronicles.api as chronicles_api
-from pcapi.core.mails.transactional.users import online_event_reminder
-from pcapi.core.users import ds as users_ds
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
+import pcapi.scheduled_tasks.decorators as cron_decorators
+from pcapi import settings
+from pcapi.connectors.dms.utils import import_ds_applications
+from pcapi.core.mails.transactional.users import online_event_reminder
+from pcapi.core.users import ds as users_ds
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 
 

@@ -4,18 +4,19 @@ from datetime import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import pytest
+import time_machine
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
-import pytest
 from sqlalchemy.orm import joinedload
-import time_machine
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.api as users_api
 from pcapi import settings
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud import repository as fraud_repository
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
@@ -24,7 +25,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status
-import pcapi.core.users.api as users_api
 from pcapi.models import db
 from pcapi.utils.string import u_nbsp
 

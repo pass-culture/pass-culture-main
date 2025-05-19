@@ -1,29 +1,29 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
 import logging
 import random
 import typing
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from unittest.mock import patch
 
 import sqlalchemy as sa
 
-from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
-from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
-from pcapi.core.bookings import api as bookings_api
-from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
-from pcapi.core.finance import api as finance_api
-from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
-from pcapi.core.finance import utils as finance_utils
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.models import db
 
 

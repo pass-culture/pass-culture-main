@@ -1,28 +1,28 @@
-from dataclasses import dataclass
 import datetime
 import decimal
 import enum
 import logging
 import typing
+from dataclasses import dataclass
 
 import psycopg2.extras
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.elements import UnaryExpression
 
-from pcapi import settings
 import pcapi.core.bookings.constants as bookings_constants
+from pcapi import settings
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion

@@ -5,6 +5,9 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.repository as pcapi_repository
+import pcapi.utils.email as email_utils
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
@@ -14,7 +17,6 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
@@ -27,9 +29,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-import pcapi.repository as pcapi_repository
 from pcapi.repository import repository
-import pcapi.utils.email as email_utils
 
 from . import repository as dms_repository
 

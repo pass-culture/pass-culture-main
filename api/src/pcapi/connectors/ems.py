@@ -6,8 +6,8 @@ import hmac
 import json
 
 import pydantic.v1 as pydantic_v1
-from requests.auth import HTTPBasicAuth  # noqa: TID251
 import sentry_sdk
+from requests.auth import HTTPBasicAuth  # noqa: TID251
 
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers

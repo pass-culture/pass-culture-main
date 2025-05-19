@@ -1,6 +1,6 @@
+import pcapi.core.users.repository as users_repository
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.users.models import User
-import pcapi.core.users.repository as users_repository
 from pcapi.models.api_errors import ForbiddenError
 
 

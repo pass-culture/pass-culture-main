@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.finance.deposit_api import recredit_users
 import pcapi.core.finance.models as finance_models
+from pcapi.core.finance.deposit_api import recredit_users
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.models import db

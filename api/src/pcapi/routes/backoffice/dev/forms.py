@@ -1,7 +1,7 @@
 import datetime
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.fraud.models import UBBLE_OK_REASON_CODE
 from pcapi.core.fraud.models import UBBLE_REASON_CODE_MAPPING

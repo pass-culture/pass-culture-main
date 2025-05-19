@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from dateutil import parser
 import pytest
+from dateutil import parser
 
 from pcapi.connectors import acceslibre
 from pcapi.connectors.acceslibre import AcceslibreActivity

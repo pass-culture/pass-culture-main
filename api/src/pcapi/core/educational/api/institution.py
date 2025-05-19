@@ -1,9 +1,9 @@
 import csv
-from datetime import datetime
-from decimal import Decimal
 import logging
 import os
 import typing
+from datetime import datetime
+from decimal import Decimal
 
 from sqlalchemy import orm as sa_orm
 

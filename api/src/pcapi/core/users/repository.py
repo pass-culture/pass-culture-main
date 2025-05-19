@@ -1,19 +1,19 @@
-from datetime import date
-from datetime import datetime
 import logging
 import typing
+from datetime import date
+from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
+import pcapi.utils.email as email_utils
 from pcapi.models import db
 from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import crypto
-import pcapi.utils.email as email_utils
 
 from . import exceptions
 from . import models

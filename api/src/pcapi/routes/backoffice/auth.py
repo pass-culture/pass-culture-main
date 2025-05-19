@@ -2,6 +2,7 @@ import datetime
 import logging
 import secrets
 
+import werkzeug
 from authlib.integrations.base_client import MismatchingStateError
 from flask import redirect
 from flask import render_template
@@ -9,7 +10,6 @@ from flask import session
 from flask import url_for
 from flask_login import login_user
 from flask_login import logout_user
-import werkzeug
 
 from pcapi import settings
 from pcapi.core.auth import api as auth_api

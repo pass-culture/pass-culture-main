@@ -1,13 +1,13 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.cultural_survey import models as cultural_survey_models
-from pcapi.core.external.attributes import models as attributes_models
-from pcapi.core.external.batch_utils import shorten_for_batch
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.models as offers_models
+from pcapi.core.cultural_survey import models as cultural_survey_models
+from pcapi.core.external.attributes import models as attributes_models
+from pcapi.core.external.batch_utils import shorten_for_batch
 from pcapi.notifications.push.trigger_events import BatchEvent
 from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
 from pcapi.notifications.push.trigger_events import TrackBatchEventsRequest

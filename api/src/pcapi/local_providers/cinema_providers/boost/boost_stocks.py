@@ -1,8 +1,8 @@
-from datetime import datetime
 import decimal
 import logging
-from typing import Iterator
 import uuid
+from datetime import datetime
+from typing import Iterator
 
 import PIL
 

@@ -1,7 +1,7 @@
 import decimal
 
-from pydantic.v1 import ValidationError
 import pytest
+from pydantic.v1 import ValidationError
 from pytest import fixture
 
 from pcapi.routes.serialization import BaseModel

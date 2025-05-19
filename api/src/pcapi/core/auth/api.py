@@ -1,12 +1,12 @@
 import re
 
 import google.auth
+import googleapiclient.discovery
 from google.auth import credentials as auth_credentials
 from google.auth import iam
 from google.auth.transport import requests as auth_requests
 from google.oauth2 import id_token
 from google.oauth2 import service_account
-import googleapiclient.discovery
 
 from pcapi import settings
 

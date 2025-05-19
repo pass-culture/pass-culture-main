@@ -2,12 +2,12 @@ import logging
 
 import sqlalchemy.orm as sa_orm
 
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.token as token_utils
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.core.finance import models as finance_models
-import pcapi.core.mails.transactional as transactional_mails
-import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models

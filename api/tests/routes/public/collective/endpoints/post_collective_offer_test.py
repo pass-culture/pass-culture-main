@@ -1,7 +1,7 @@
+import decimal
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-import decimal
 from pathlib import Path
 from unittest.mock import patch
 

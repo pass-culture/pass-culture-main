@@ -2,8 +2,8 @@
 Add locationType and locationComment to collective_offer
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.utils.db import MagicEnum

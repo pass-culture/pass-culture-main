@@ -6,21 +6,21 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors import api_adresse
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
-from pcapi.core.geography import models as geography_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.users.factories as users_factories
+from pcapi.connectors import api_adresse
+from pcapi.core.categories import subcategories
+from pcapi.core.geography import models as geography_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
-import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date

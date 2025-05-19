@@ -3,13 +3,13 @@ import itertools
 import logging
 import re
 
-from pcapi import settings
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
-from pcapi.core.fraud import exceptions as fraud_exceptions
-from pcapi.core.fraud import repository as fraud_repository
 import pcapi.core.fraud.utils as fraud_utils
 import pcapi.core.mails.transactional as transaction_mails
+from pcapi import settings
+from pcapi.core.fraud import exceptions as fraud_exceptions
+from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions

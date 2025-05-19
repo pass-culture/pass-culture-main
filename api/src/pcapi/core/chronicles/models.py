@@ -2,8 +2,8 @@ import datetime
 import logging
 
 import sqlalchemy as sa
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.elements import BinaryExpression
 
 from pcapi.core.offers.models import Offer

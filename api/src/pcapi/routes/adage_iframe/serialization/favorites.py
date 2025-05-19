@@ -1,5 +1,5 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.repository import get_venue_by_id

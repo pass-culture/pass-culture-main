@@ -1,16 +1,16 @@
 import datetime
 import decimal
-from io import BytesIO
 import logging
 import re
 import warnings
+from io import BytesIO
 
+import flask
+import sqlalchemy as sa
 from PIL import Image
 from PIL import UnidentifiedImageError
 from dateutil.relativedelta import relativedelta
-import flask
 from pydantic.v1 import HttpUrl
-import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music

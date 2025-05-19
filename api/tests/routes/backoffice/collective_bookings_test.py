@@ -1,9 +1,9 @@
 import datetime
 from io import BytesIO
 
-from flask import url_for
 import openpyxl
 import pytest
+from flask import url_for
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories

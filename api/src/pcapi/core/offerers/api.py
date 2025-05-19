@@ -1,33 +1,48 @@
 import dataclasses
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
 import decimal
 import functools
 import itertools
 import logging
-from math import ceil
 import re
 import secrets
 import time
 import typing
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from math import ceil
 
 import jwt
-from psycopg2.extras import NumericRange
 import pytz
 import schwifty
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import INTERVAL
 import sqlalchemy.orm as sa_orm
+from psycopg2.extras import NumericRange
+from sqlalchemy.dialects.postgresql import INTERVAL
 
+import pcapi.connectors.acceslibre as accessibility_provider
+import pcapi.connectors.thumb_storage as storage
+import pcapi.core.educational.api.adage as adage_api
+import pcapi.core.educational.api.address as educational_address_api
+import pcapi.core.finance.models as finance_models
+import pcapi.core.history.api as history_api
+import pcapi.core.history.models as history_models
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.models as providers_models
+import pcapi.core.users.models as users_models
+import pcapi.routes.serialization.base as serialize_base
+import pcapi.utils.date as date_utils
+import pcapi.utils.db as db_utils
+import pcapi.utils.email as email_utils
+import pcapi.utils.string as string_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
-import pcapi.connectors.acceslibre as accessibility_provider
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
-import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import constants as bookings_constants
@@ -40,23 +55,13 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
-import pcapi.core.educational.api.adage as adage_api
-import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
-import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
-import pcapi.core.history.api as history_api
-import pcapi.core.history.models as history_models
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.models as offers_models
-import pcapi.core.providers.models as providers_models
 from pcapi.core.users import repository as users_repository
-import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
@@ -71,7 +76,6 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
-import pcapi.routes.serialization.base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
 from pcapi.utils import human_ids
@@ -79,10 +83,6 @@ from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
-import pcapi.utils.date as date_utils
-import pcapi.utils.db as db_utils
-import pcapi.utils.email as email_utils
-import pcapi.utils.string as string_utils
 from pcapi.workers.match_acceslibre_job import match_acceslibre_job
 
 from . import exceptions

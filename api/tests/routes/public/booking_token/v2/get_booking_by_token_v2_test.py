@@ -1,15 +1,15 @@
 from datetime import datetime
 from datetime import timedelta
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
-from pcapi.core import testing
-from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core import testing
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories
 from pcapi.utils import date
 from pcapi.utils.human_ids import humanize
 

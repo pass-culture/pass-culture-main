@@ -1,8 +1,8 @@
+import pcapi.core.offers.api as offers_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 from pcapi.workers import worker

@@ -1,9 +1,9 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
 from pcapi.core.history import models as history_models

@@ -1,9 +1,9 @@
 from datetime import date
 from datetime import timedelta
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories

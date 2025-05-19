@@ -2,8 +2,8 @@ import dataclasses
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
+from pcapi import settings
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.reported_offer_by_user import get_reported_offer_email_data
 from pcapi.core.mails.transactional.users.reported_offer_by_user import send_email_reported_offer_by_user

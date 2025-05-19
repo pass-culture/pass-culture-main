@@ -1,17 +1,22 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
-from decimal import Decimal
 import hashlib
 import hmac
 import json
 import re
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
-from pytest import approx
 import time_machine
+from pytest import approx
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.repository as providers_api
+import pcapi.notifications.push.testing as push_testing
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import Booking
@@ -22,15 +27,11 @@ from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutExcept
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography.factories import AddressFactory
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import InactiveProvider
-import pcapi.core.providers.factories as providers_factories
-import pcapi.core.providers.repository as providers_api
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
@@ -38,7 +39,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
 

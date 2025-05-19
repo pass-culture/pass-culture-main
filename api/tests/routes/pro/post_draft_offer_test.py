@@ -1,11 +1,11 @@
 import pytest
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
+from pcapi.core.categories import subcategories
+from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offers.models import Offer
 from pcapi.models import db
 
 

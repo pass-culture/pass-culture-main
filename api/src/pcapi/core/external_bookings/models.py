@@ -1,8 +1,8 @@
+import json
+import typing
 from dataclasses import dataclass
 from functools import partial
 from functools import wraps
-import json
-import typing
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.users.models as users_models

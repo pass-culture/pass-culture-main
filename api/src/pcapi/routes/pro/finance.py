@@ -1,11 +1,11 @@
 import datetime
 from io import BytesIO
 
+import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 from flask_login import login_required
 from pypdf import PdfReader
 from pypdf import PdfWriter
-import sqlalchemy.orm as sa_orm
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository

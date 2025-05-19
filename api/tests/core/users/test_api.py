@@ -1,20 +1,23 @@
 import dataclasses
 import datetime
-from decimal import Decimal
 import json
 import logging
 import os
 import pathlib
-from unittest import mock
 import zipfile
+from decimal import Decimal
+from unittest import mock
 
-from dateutil.relativedelta import relativedelta
 import fakeredis
-from flask import current_app
-from flask_jwt_extended.utils import decode_token
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
+from flask import current_app
+from flask_jwt_extended.utils import decode_token
 
+import pcapi.core.fraud.factories as fraud_factories
+import pcapi.core.fraud.models as fraud_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
@@ -28,13 +31,10 @@ from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
 from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories

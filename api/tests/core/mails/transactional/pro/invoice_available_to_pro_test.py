@@ -2,11 +2,11 @@ import datetime
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.finance import factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

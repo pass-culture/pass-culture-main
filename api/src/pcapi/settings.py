@@ -1,14 +1,14 @@
 """config"""
 
 import base64
-from datetime import datetime
 import json
-from logging import INFO as LOG_LEVEL_INFO
 import os
+from datetime import datetime
+from logging import INFO as LOG_LEVEL_INFO
 from pathlib import Path
 
-from dotenv import load_dotenv
 import semver
+from dotenv import load_dotenv
 
 from .utils import secrets as secrets_utils
 from .utils import settings as utils

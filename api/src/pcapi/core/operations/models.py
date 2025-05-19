@@ -1,7 +1,7 @@
+import enum
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
-import enum
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm

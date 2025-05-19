@@ -1,5 +1,5 @@
-from decimal import Decimal
 import re
+from decimal import Decimal
 
 from pcapi.connectors import api_adresse
 from pcapi.core.geography import models as geography_models

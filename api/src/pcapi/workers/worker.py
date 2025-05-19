@@ -5,10 +5,10 @@ from typing import Iterable
 
 import click
 import redis
+import sentry_sdk
 from rq import Queue
 from rq import Worker
 from rq.job import Job
-import sentry_sdk
 
 from pcapi import settings
 from pcapi.models import db

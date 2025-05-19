@@ -1,10 +1,10 @@
-from decimal import Decimal
 import itertools
 import pathlib
+from decimal import Decimal
 
-from pcapi.connectors import thumb_storage
 import pcapi.core.offers.models as offers_models
 import pcapi.sandboxes.thumbs.generic_pictures as generic_pictures_thumbs
+from pcapi.connectors import thumb_storage
 
 
 def get_occurrence_short_name_or_none(concatened_names_with_a_date: str) -> str | None:

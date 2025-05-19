@@ -1,7 +1,7 @@
 """Add NOT NULL constraint on user_account_update_request."dsTechnicalId" (step 3 of 4)"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: post

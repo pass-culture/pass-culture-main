@@ -1,13 +1,13 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import pytest
 import time_machine
 
+import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import CollectiveBooking
-import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus

@@ -1,14 +1,14 @@
 import csv
 import datetime
-from io import TextIOWrapper
 import logging
+from io import TextIOWrapper
 from typing import Iterable
 
 import click
+import schwifty
 from click_option_group import RequiredMutuallyExclusiveOptionGroup
 from click_option_group import optgroup
 from flask import Blueprint
-import schwifty
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend

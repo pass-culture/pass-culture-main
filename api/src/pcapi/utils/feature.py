@@ -1,5 +1,5 @@
-from functools import wraps
 import typing
+from functools import wraps
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle

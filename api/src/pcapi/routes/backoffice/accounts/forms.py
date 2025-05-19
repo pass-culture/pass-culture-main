@@ -1,8 +1,8 @@
 import datetime
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models

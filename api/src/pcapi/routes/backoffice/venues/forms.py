@@ -1,8 +1,8 @@
 import typing
 
-from flask_wtf import FlaskForm
 import sqlalchemy.orm as sa_orm
 import wtforms
+from flask_wtf import FlaskForm
 from wtforms import validators
 
 from pcapi.connectors import acceslibre as acceslibre_connector

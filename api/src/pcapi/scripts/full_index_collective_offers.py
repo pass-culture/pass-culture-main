@@ -6,8 +6,8 @@ import time
 import click
 import pytz
 
-from pcapi.core import search
 import pcapi.core.educational.models as collective_offers_models
+from pcapi.core import search
 from pcapi.core.search.backends import algolia
 from pcapi.utils.blueprint import Blueprint
 

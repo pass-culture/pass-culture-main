@@ -1,5 +1,5 @@
-from flask import g
 import pytest
+from flask import g
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories

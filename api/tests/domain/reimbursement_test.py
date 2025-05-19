@@ -5,14 +5,14 @@ from decimal import Decimal
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.bookings.models import Booking
+from pcapi.core.categories import subcategories
 from pcapi.domain import reimbursement
 
 

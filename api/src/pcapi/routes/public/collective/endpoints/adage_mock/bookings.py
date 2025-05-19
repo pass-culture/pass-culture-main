@@ -1,6 +1,6 @@
+import logging
 from contextlib import suppress
 from datetime import datetime
-import logging
 
 import sqlalchemy.orm as sa_orm
 

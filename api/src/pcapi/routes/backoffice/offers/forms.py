@@ -1,14 +1,14 @@
 import enum
-from functools import partial
 import json
 import re
 import typing
+from functools import partial
 from urllib.parse import urlencode
 
+import wtforms
 from flask import flash
 from flask import url_for
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories

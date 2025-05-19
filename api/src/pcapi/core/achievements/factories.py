@@ -3,8 +3,8 @@ import datetime
 import factory
 
 import pcapi.core.bookings.factories as booking_factories
-from pcapi.core.factories import BaseFactory
 import pcapi.core.users.factories as users_factories
+from pcapi.core.factories import BaseFactory
 
 from . import models
 

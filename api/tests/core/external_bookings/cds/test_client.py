@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors.cine_digital_service import ResourceCDS
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 
 
 def create_show_cds(

@@ -1,24 +1,24 @@
 import logging
 
+import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 from flask_login import login_required
-import sqlalchemy.orm as sa_orm
 
+import pcapi.core.educational.exceptions as educational_exceptions
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
+import pcapi.core.finance.repository as finance_repository
+import pcapi.core.offerers.exceptions as offerers_exceptions
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.repository as offers_repository
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.connectors.entreprise import sirene
-import pcapi.core.educational.exceptions as educational_exceptions
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.exceptions as finance_exceptions
-import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
-import pcapi.core.offerers.exceptions as offerers_exceptions
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.repository as offers_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError

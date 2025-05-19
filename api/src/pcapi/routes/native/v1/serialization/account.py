@@ -1,25 +1,25 @@
 import datetime
-from enum import Enum
 import typing
+from enum import Enum
 
+import pydantic.v1 as pydantic_v1
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
-import pydantic.v1 as pydantic_v1
 from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
+import pcapi.core.users.models as users_models
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
-import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle

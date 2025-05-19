@@ -1,6 +1,6 @@
 import copy
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from unittest.mock import MagicMock
 from unittest.mock import patch
 

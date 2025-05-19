@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.finance.models import DepositType
 from pcapi.core.fraud import models as fraud_models

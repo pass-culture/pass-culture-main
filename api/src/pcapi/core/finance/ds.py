@@ -8,8 +8,8 @@ from pcapi.connectors.dms.serializer import ApplicationDetail
 from pcapi.connectors.dms.serializer import MarkWithoutContinuationApplicationDetail
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
 from pcapi.models import db
-from pcapi.use_cases.save_venue_bank_informations import ImportBankAccountFactory
 from pcapi.use_cases.save_venue_bank_informations import PROCEDURE_ID_VERSION_MAP
+from pcapi.use_cases.save_venue_bank_informations import ImportBankAccountFactory
 
 
 logger = logging.getLogger(__name__)

@@ -10,9 +10,9 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.offers.exceptions as offers_exceptions
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError

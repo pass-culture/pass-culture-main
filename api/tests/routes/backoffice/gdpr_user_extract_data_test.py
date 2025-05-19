@@ -2,8 +2,8 @@ import datetime
 import os
 from random import randbytes
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi import settings
 from pcapi.core.permissions import models as perm_models

@@ -1,17 +1,17 @@
+import logging
 from datetime import datetime
 from datetime import timedelta
-import logging
 
-from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.offers import models as offers_models
 
 
 logger = logging.getLogger(__name__)

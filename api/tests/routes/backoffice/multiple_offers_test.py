@@ -2,8 +2,8 @@ import dataclasses
 import datetime
 
 import factory
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models

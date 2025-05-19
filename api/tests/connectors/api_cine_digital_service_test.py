@@ -2,12 +2,12 @@ from unittest import mock
 
 import pytest
 
+import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import _build_url
 from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import put_resource
 from pcapi.connectors.serialization.cine_digital_service_serializers import CancelBookingCDS
-import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 
 
 class CineDigitalServiceBuildUrlTest:

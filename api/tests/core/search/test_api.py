@@ -4,17 +4,17 @@ from unittest import mock
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.search.testing as search_testing
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import redis_queues
 from pcapi.core.search.backends import serialization
-import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 

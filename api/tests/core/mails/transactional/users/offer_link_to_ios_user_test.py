@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
+from pcapi import settings
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.offer_link_to_ios_user import get_offer_link_to_ios_user_email_data
 from pcapi.core.mails.transactional.users.offer_link_to_ios_user import send_offer_link_to_ios_user_email

@@ -1,6 +1,6 @@
+import uuid
 from datetime import timedelta
 from unittest import mock
-import uuid
 
 import pytest
 

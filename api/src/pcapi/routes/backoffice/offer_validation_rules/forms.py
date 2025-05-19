@@ -2,8 +2,8 @@ import enum
 import json
 import re
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE

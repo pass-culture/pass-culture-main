@@ -2,9 +2,9 @@ import enum
 import re
 import typing
 
+import wtforms
 from flask import url_for
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants

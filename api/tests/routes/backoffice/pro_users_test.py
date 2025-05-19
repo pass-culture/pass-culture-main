@@ -1,8 +1,8 @@
 import datetime
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import models as fraud_models

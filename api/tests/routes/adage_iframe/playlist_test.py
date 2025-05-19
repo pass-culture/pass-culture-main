@@ -1,12 +1,12 @@
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import OfferAddressType
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 
 

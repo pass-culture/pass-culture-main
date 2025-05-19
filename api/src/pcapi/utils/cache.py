@@ -1,14 +1,14 @@
+import json
 from functools import partial
 from functools import wraps
 from hashlib import sha256
-import json
 from typing import Any
 from typing import Callable
 from typing import Iterable
 from typing import cast
 
-from flask import current_app
 import pydantic.v1 as pydantic_v1
+from flask import current_app
 
 
 class _CacheProxy:

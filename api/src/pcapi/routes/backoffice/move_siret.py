@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -7,8 +9,6 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api

@@ -1,5 +1,5 @@
-from functools import wraps
 import typing
+from functools import wraps
 
 import flask
 

@@ -5,26 +5,26 @@ from datetime import time
 from datetime import timedelta
 from io import StringIO
 
-from dateutil import tz
 import pytest
+from dateutil import tz
 from pytest import fixture
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.bookings.repository as booking_repository
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
-import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.utils.date import get_department_timezone

@@ -2,11 +2,11 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.educational import testing as educational_testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
-from pcapi.core.mails import testing as mails_testing
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.educational import testing as educational_testing
+from pcapi.core.mails import testing as mails_testing
 from pcapi.models import db
 
 from tests.conftest import TestClient

@@ -1,5 +1,5 @@
-from decimal import Decimal
 import json
+from decimal import Decimal
 
 
 class MockAggregatedRevenueQueryResult:

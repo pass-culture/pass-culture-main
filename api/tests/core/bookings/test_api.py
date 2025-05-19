@@ -1,17 +1,29 @@
 import dataclasses
-from datetime import datetime
-from datetime import timedelta
 import json
 import logging
 import re
+from datetime import datetime
+from datetime import timedelta
 from unittest import mock
 from unittest.mock import patch
 
 import pytest
-from sqlalchemy import create_engine
 import sqlalchemy.exc
+from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
+import pcapi.core.educational.factories as educational_factories
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.exceptions as providers_exceptions
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.users.factories as users_factories
+import pcapi.notifications.push.testing as push_testing
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.core import search
@@ -26,33 +38,21 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingRecreditType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
-import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.external_bookings.ems import constants
-import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.factories as finance_factories
-import pcapi.core.finance.models as finance_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models as offers_models
-import pcapi.core.providers.exceptions as providers_exceptions
-import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.constants import SuspensionReason
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models import feature
-import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
 from pcapi.utils.requests import exceptions as requests_exception

@@ -1,17 +1,17 @@
 import dataclasses
 from unittest.mock import patch
 
-from brevo_python.rest import ApiException
 import pytest
+from brevo_python.rest import ApiException
 from urllib3.response import HTTPResponse
 
+import pcapi.core.users.constants as users_constants
+import pcapi.core.users.factories as users_factories
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
-import pcapi.core.users.constants as users_constants
-import pcapi.core.users.factories as users_factories
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.utils import requests
 

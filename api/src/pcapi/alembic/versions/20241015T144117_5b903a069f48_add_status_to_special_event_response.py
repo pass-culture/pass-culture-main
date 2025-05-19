@@ -1,7 +1,7 @@
 """Add status column to SpecialEventResponse"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.operations.models import SpecialEventResponseStatus
 from pcapi.utils.db import MagicEnum

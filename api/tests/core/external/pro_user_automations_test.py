@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from brevo_python import RequestContactImport
 import pytest
+from brevo_python import RequestContactImport
 
 from pcapi import settings
 from pcapi.core.external.automations.pro_user import pro_no_active_offers_since_40_days_automation

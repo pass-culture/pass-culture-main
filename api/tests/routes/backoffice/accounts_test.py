@@ -4,10 +4,10 @@ import os
 import re
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
-from flask import url_for
 import pytest
 import pytz
+from dateutil.relativedelta import relativedelta
+from flask import url_for
 
 from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import models as dms_models

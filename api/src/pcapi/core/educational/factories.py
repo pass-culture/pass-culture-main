@@ -2,8 +2,8 @@ import datetime
 import re
 import typing
 
-from dateutil.relativedelta import relativedelta
 import factory
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants

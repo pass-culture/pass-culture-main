@@ -5,17 +5,17 @@ from decimal import Decimal
 from typing import Any
 from unittest.mock import patch
 
-from dateutil.tz import tz
 import pytest
+from dateutil.tz import tz
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.factories import ExternalBookingFactory
+from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 

@@ -1,10 +1,10 @@
-from collections import abc
 import contextlib
 import datetime
 import logging
+from collections import abc
 
-from flask import current_app
 import redis
+from flask import current_app
 
 from pcapi import settings
 

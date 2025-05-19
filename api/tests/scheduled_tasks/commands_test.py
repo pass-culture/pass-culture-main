@@ -6,12 +6,12 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offers.factories as offers_factories
+import pcapi.notifications.push.testing as notifications_testing
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     get_booking_event_reminder_to_beneficiary_email_data,
 )
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
-import pcapi.notifications.push.testing as notifications_testing
 from pcapi.scheduled_tasks.commands import _send_notification_favorites_not_booked
 from pcapi.scheduled_tasks.commands import send_email_reminder_tomorrow_event_to_beneficiaries
 

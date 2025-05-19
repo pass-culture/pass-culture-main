@@ -1,5 +1,5 @@
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.models import db
 from pcapi.models.feature import Feature

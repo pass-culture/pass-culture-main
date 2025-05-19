@@ -1,10 +1,10 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 
 

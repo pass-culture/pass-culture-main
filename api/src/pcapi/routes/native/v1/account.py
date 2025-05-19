@@ -1,16 +1,17 @@
 import logging
 
-from flask import current_app as app
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
+from flask import current_app as app
 
+import pcapi.core.bookings.exceptions as bookings_exceptions
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.users.models as users_models
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
 from pcapi.core import token as token_utils
-import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud.phone_validation import sending_limit
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -20,7 +21,6 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
-import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
 from pcapi.models import api_errors

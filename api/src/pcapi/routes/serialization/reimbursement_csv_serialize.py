@@ -1,21 +1,21 @@
-from collections import namedtuple
 import csv
 import datetime
 import decimal
-from io import StringIO
 import typing
+from collections import namedtuple
+from io import StringIO
 from typing import Callable
 from typing import Iterable
 
+import pytz
 from pydantic.v1 import ConstrainedList
 from pydantic.v1 import validator
 from pydantic.v1.main import BaseModel
-import pytz
 
-from pcapi.core.bookings.repository import serialize_offer_type_educational_or_individual
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
+from pcapi.core.bookings.repository import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone

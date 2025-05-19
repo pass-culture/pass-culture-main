@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
-from flask import url_for
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
+from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
 

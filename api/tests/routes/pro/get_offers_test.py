@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import testing
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
+from pcapi.core.categories import subcategories
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferStatus
 
 

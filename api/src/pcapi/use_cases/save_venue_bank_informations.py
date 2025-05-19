@@ -1,12 +1,13 @@
-from datetime import datetime
 import logging
-from textwrap import shorten
 import typing
+from datetime import datetime
+from textwrap import shorten
 
 import schwifty
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi import settings
 from pcapi.connectors.dms.serializer import ApplicationDetail
 from pcapi.core.educational import models as educational_models
@@ -14,7 +15,6 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.history import models as history_models
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.domain.demarches_simplifiees import archive_dossier
@@ -23,7 +23,8 @@ from pcapi.models import db
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.offerers.models import Venue, Offerer
+    from pcapi.core.offerers.models import Offerer
+    from pcapi.core.offerers.models import Venue
 
 from pcapi.utils.db import make_timerange
 

@@ -1,5 +1,5 @@
-from collections import defaultdict
 import datetime
+from collections import defaultdict
 
 from pcapi.connectors.entreprise import exceptions
 from pcapi.connectors.entreprise import models

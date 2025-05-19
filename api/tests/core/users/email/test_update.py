@@ -4,13 +4,13 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.exc import IntegrityError
 
+import pcapi.core.users.constants as users_constants
+import pcapi.core.users.email.update as email_update
+import pcapi.core.users.exceptions as users_exceptions
 from pcapi.core import token as token_utils
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import factories as users_factories
-import pcapi.core.users.constants as users_constants
-import pcapi.core.users.email.update as email_update
-import pcapi.core.users.exceptions as users_exceptions
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import encode_jwt_payload

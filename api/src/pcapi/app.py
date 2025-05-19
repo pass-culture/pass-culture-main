@@ -28,8 +28,8 @@ csrf.init_app(app)
 
 
 with app.app_context():
-    from pcapi.routes import install_all_routes
     import pcapi.utils.login_manager  # noqa F401
+    from pcapi.routes import install_all_routes
 
     install_all_routes(app)
 

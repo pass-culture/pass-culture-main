@@ -5,10 +5,10 @@ from flask import abort
 from flask import request
 from sqlalchemy.orm import joinedload
 
-from pcapi import settings
 import pcapi.connectors.recommendation as recommendation_api
-from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.geography.repository as geography_repository
+from pcapi import settings
+from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.history import api as history_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users.models import User

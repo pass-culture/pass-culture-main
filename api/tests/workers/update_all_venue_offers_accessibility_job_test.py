@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 
 

@@ -6,14 +6,14 @@ Further explanations at: https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.ht
 
 import csv
 import enum
-from hashlib import md5
-from io import StringIO
 import json
 import logging
 import re
+from hashlib import md5
+from io import StringIO
 
-from flask import current_app
 import pydantic.v1 as pydantic_v1
+from flask import current_app
 
 from pcapi import settings
 from pcapi.core.geography.constants import MAX_LATITUDE

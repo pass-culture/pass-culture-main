@@ -5,8 +5,8 @@ import logging
 import random
 import typing
 
-from psycopg2.extras import DateTimeRange
 import sqlalchemy as sa
+from psycopg2.extras import DateTimeRange
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable

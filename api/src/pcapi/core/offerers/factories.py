@@ -3,16 +3,16 @@ import typing
 
 import factory
 
-from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
-from pcapi.core.factories import BaseFactory
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.users.factories as users_factories
+import pcapi.utils.postal_code as postal_code_utils
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.core.factories import BaseFactory
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import timespan_str_to_numrange
-import pcapi.utils.postal_code as postal_code_utils
 
 from . import api
 from . import models

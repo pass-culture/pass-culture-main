@@ -6,13 +6,13 @@ import fakeredis
 import pytest
 import time_machine
 
-from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
+from pcapi.core import token as token_utils
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.suspicious_login_email import get_suspicious_login_email_data
 from pcapi.core.mails.transactional.users.suspicious_login_email import send_suspicious_login_email
 from pcapi.core.users import constants
-import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import LoginDeviceHistory
 
 
