@@ -1,6 +1,8 @@
 import dataclasses
 import enum
 
+import pydantic.v1 as pydantic_v1
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -8,13 +10,11 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import pydantic.v1 as pydantic_v1
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
+import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import get_by_ean13
-import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
@@ -28,6 +28,8 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offers.serializer import OfferSerializer
 from pcapi.utils import requests
+
+from . import forms
 
 
 list_products_blueprint = utils.child_backoffice_blueprint(
@@ -346,4 +348,36 @@ def blacklist_product(product_id: int) -> utils.BackofficeResponse:
         db.session.rollback()
         flash("Une erreur s'est produite lors de l'opération", "warning")
 
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/link_offers/confirm", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
+    form = forms.BatchLinkOfferToProductForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.batch_link_offers_to_product", product_id=product_id),
+        div_id="batch-link-to-product-modal",
+        title=Markup("Voulez-vous associer {number_of_offers} offre(s) au produit ?").format(
+            number_of_offers=len(form.object_ids_list)
+        ),
+        button_text="Confirmer l'association",
+        information=Markup("Vous allez associer {number_of_offers} offre(s). Voulez vous continuer ?").format(
+            number_of_offers=len(form.object_ids_list),
+        ),
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/link_offers", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
+    form = forms.BatchLinkOfferToProductForm()
+    product = db.session.query(offers_models.Product).get(product_id)
+    offers = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
+    for offer in offers:
+        offer.name = product.name
+        offer.productId = product.id
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)

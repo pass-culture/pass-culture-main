@@ -3,11 +3,11 @@ import json
 import re
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
@@ -408,3 +408,61 @@ class PostProductBlacklistTest(PostEndpointHelper):
         assert product.gcuCompatibilityType == product_gcu_compatibility
         assert offer.status == offer_status
         assert unlinked_offer.status == offer_status
+
+
+class GetProductLinkOfferFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.confirm_link_offers_forms"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def test_confirm_product_link_offers_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+
+        unlinked_offers = [offers_factories.OfferFactory.create(ean="1234567891234") for _ in range(10)]
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"object_ids": ",".join([str(offer.id) for offer in unlinked_offers])},
+        )
+        assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous associer 10 offre(s) au produit ?" in response_text
+        assert "Vous allez associer 10 offre(s). Voulez vous continuer ?" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Confirmer l'association" in buttons
+
+
+class LinkUnlinkedOfferToProductTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.batch_link_offers_to_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def test_confirm_product_link_offers_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+        unlinked_offers = [offers_factories.OfferFactory.create(ean="1234567891234") for _ in range(10)]
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"object_ids": ",".join([str(offer.id) for offer in unlinked_offers])},
+        )
+
+        assert response.status_code == 303
+        assert len(product.offers) == len(unlinked_offers)
+        assert product.offers == unlinked_offers
+        assert len({offer.name for offer in unlinked_offers}) == 1
+        assert product.name == unlinked_offers[0].name
+        assert len({offer.description for offer in unlinked_offers}) == 1
+        assert product.description == unlinked_offers[0].description
