@@ -117,7 +117,9 @@ def test_public_api(client):
                 },
                 "ArtistResponse": {
                     "properties": {
+                        "description": {"title": "Description", "type": "string", "nullable": True},
                         "id": {"title": "Id", "type": "string"},
+                        "image": {"title": "Image", "type": "string", "nullable": True},
                         "name": {"title": "Name", "type": "string"},
                     },
                     "required": ["id", "name"],
