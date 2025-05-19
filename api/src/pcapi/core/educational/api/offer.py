@@ -1327,7 +1327,6 @@ def move_collective_offer_venue(
             ),
         )
         .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
-        .all()
     )
 
     # Use a different OA if the offer uses the venue's OA
@@ -1341,17 +1340,16 @@ def move_collective_offer_venue(
     collective_offer.venue = destination_venue
     db.session.add(collective_offer)
 
-    for collective_booking in collective_bookings:
-        collective_booking.venueId = destination_venue.id
-        db.session.add(collective_booking)
+    if with_restrictions:
+        for collective_booking in collective_bookings.all():
+            collective_booking.venueId = destination_venue.id
+            db.session.add(collective_booking)
 
-        # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
-        # used for pricing (same as venue pricing point at the time pricing was processed)
-        pricing = collective_booking.pricings[0] if collective_booking.pricings else None
-        if pricing and pricing.pricingPointId != destination_pricing_point_id and with_restrictions:
-            raise offers_exceptions.BookingsHaveOtherPricingPoint()
-
-        if with_restrictions:
+            # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+            # used for pricing (same as venue pricing point at the time pricing was processed)
+            pricing = collective_booking.pricings[0] if collective_booking.pricings else None
+            if pricing and pricing.pricingPointId != destination_pricing_point_id:
+                raise offers_exceptions.BookingsHaveOtherPricingPoint()
             finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
             if finance_event:
                 finance_event.venueId = destination_venue.id
@@ -1360,7 +1358,14 @@ def move_collective_offer_venue(
                     finance_event.status = finance_models.FinanceEventStatus.READY
                     finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
                 db.session.add(finance_event)
-
+    else:
+        collective_bookings_to_update = db.session.query(educational_models.CollectiveBooking).filter(
+            educational_models.CollectiveBooking.id.in_(
+                collective_bookings.with_entities(educational_models.CollectiveBooking.id)
+            )
+        )
+        collective_bookings_to_update.update({"venueId": destination_venue.id}, synchronize_session=False)
+        db.session.add_all(collective_bookings_to_update)
     db.session.flush()
 
 

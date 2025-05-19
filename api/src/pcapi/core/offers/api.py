@@ -1857,26 +1857,13 @@ def move_offer(
     if destination_venue not in venue_choices:
         raise exceptions.ForbiddenDestinationVenue()
 
-    bookings = (
+    bookings_ids = (
         db.session.query(bookings_models.Booking)
+        .with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
-        .outerjoin(
-            # max 1 row joined thanks to idx_uniq_booking_id
-            finance_models.Pricing,
-            sa.and_(
-                finance_models.Pricing.bookingId == bookings_models.Booking.id,
-                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
-            ),
-        )
-        .options(
-            sa_orm.load_only(bookings_models.Booking.status),
-            sa_orm.contains_eager(bookings_models.Booking.pricings).load_only(
-                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
-            ),
-        )
         .filter(models.Stock.offerId == offer.id)
-        .all()
     )
+    bookings = db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(bookings_ids))
 
     # After offer is moved, price categories must remain linked to labels defined for the related venue.
     # Extra SQL queries to avoid multiplying the number of rows in case of many labels
@@ -1901,8 +1888,7 @@ def move_offer(
             price_category.priceCategoryLabel = labels_mapping[price_category.priceCategoryLabel]
             db.session.add(price_category)
 
-        for booking in bookings:
-            booking.venueId = destination_venue.id
+        bookings.update({"venueId": destination_venue.id}, synchronize_session=False)
 
     on_commit(
         partial(
