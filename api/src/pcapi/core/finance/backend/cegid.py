@@ -304,8 +304,3 @@ class CegidFinanceBackend(BaseFinanceBackend):
         if response.status_code == 500 and ("application/json" in response.headers.get("content-type", "")):
             return response.json().get("exceptionType")
         return None
-
-    @property
-    def time_to_sleep_between_two_sync_requests(self) -> int:
-        # In seconds
-        return 10
