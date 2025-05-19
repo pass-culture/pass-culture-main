@@ -1,22 +1,32 @@
+import dataclasses
+import enum
+
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
 from flask import flash
+from flask import redirect
 from flask import render_template
+from flask import request
+from flask import url_for
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
+import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import get_by_ean13
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offers.serializer import OfferSerializer
+from pcapi.utils import requests
 
 
 list_products_blueprint = utils.child_backoffice_blueprint(
@@ -25,6 +35,52 @@ list_products_blueprint = utils.child_backoffice_blueprint(
     url_prefix="/pro/product",
     permission=perm_models.Permissions.READ_OFFERS,
 )
+
+
+class ProductDetailsActionType(enum.StrEnum):
+    SYNCHRO_TITELIVE = enum.auto()
+    WHITELIST = enum.auto()
+    BLACKLIST = enum.auto()
+
+
+@dataclasses.dataclass
+class ProductDetailsAction:
+    type: ProductDetailsActionType
+    position: int
+    inline: bool
+
+
+class ProductDetailsActions:
+    def __init__(self, threshold: int) -> None:
+        self.current_pos = 0
+        self.actions: list[ProductDetailsAction] = []
+        self.threshold = threshold
+
+    def add_action(self, action_type: ProductDetailsActionType) -> None:
+        self.actions.append(
+            ProductDetailsAction(type=action_type, position=self.current_pos, inline=self.current_pos < self.threshold)
+        )
+        self.current_pos += 1
+
+    def __contains__(self, action_type: ProductDetailsActionType) -> bool:
+        return action_type in [e.type for e in self.actions]
+
+    @property
+    def inline_actions(self) -> list[ProductDetailsActionType]:
+        return [action.type for action in self.actions if action.inline]
+
+    @property
+    def additional_actions(self) -> list[ProductDetailsActionType]:
+        return [action.type for action in self.actions if not action.inline]
+
+
+def _get_product_details_actions(threshold: int) -> ProductDetailsActions:
+    product_details_actions = ProductDetailsActions(threshold)
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        product_details_actions.add_action(ProductDetailsActionType.SYNCHRO_TITELIVE)
+        product_details_actions.add_action(ProductDetailsActionType.WHITELIST)
+        product_details_actions.add_action(ProductDetailsActionType.BLACKLIST)
+    return product_details_actions
 
 
 @list_products_blueprint.route("/<int:product_id>", methods=["GET"])
@@ -79,6 +135,8 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             .all()
         )
 
+    allowed_actions = _get_product_details_actions(threshold=4)
+
     active_offers_count = sum(offer.isActive for offer in product.offers)
     approved_active_offers_count = sum(
         1 for offer in product.offers if offer.validation == OfferValidationStatus.APPROVED and offer.isActive
@@ -94,7 +152,9 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             titelive_data = get_by_ean13(product.ean)
         except Exception as err:
             flash(
-                Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+                Markup(
+                    "Une erreur s’est produite lors de la récupération des informations via l’API Titelive: {message}"
+                ).format(message=str(err) or err.__class__.__name__),
                 "warning",
             )
             titelive_data = {}
@@ -130,6 +190,8 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         "products/details.html",
         product=product,
         provider_name=product.lastProvider.name if product.lastProvider else None,
+        allowed_actions=allowed_actions,
+        action=ProductDetailsActionType,
         product_offers=[OfferSerializer.from_orm(offer).dict() for offer in product.offers],
         unlinked_offers=[OfferSerializer.from_orm(offer).dict() for offer in unlinked_offers],
         titelive_data=titelive_data,
@@ -141,3 +203,64 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         ineligibility_reasons=ineligibility_reasons,
         product_whitelist=product_whitelist,
     )
+
+
+@list_products_blueprint.route("/<int:product_id>/synchro_titelive", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_synchronize_with_titelive_form(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    try:
+        titelive_data = get_by_ean13(product.ean)
+    except Exception as err:
+        mark_transaction_as_invalid()
+        return render_template(
+            "components/turbo/modal_empty_form.html",
+            form=empty_forms.BatchForm(),
+            div_id=f"synchro-product-modal-{product.id}",
+            messages=[
+                f"Une erreur s’est produite lors de la récupération des informations via l’API Titelive: {str(err) or err.__class__.__name__}"
+            ],
+        )
+    try:
+        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+    except Exception:
+        ineligibility_reasons = None
+    else:
+        ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
+
+    return render_template(
+        "products/titelive_synchro_modal.html",
+        form=empty_forms.EmptyForm(),
+        dst=url_for(".synchronize_product_with_titelive", product_id=product_id),
+        title="Données récupérées via l'API Titelive",
+        titelive_data=titelive_data,
+        div_id=f"synchro-product-modal-{product.id}",
+        button_text="Mettre le produit à jour avec ces informations",
+        ineligibility_reasons=ineligibility_reasons,
+        product_whitelist=None,
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/synchro-titelive", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    try:
+        titelive_product = offers_api.get_new_product_from_ean13(product.ean)
+        offers_api.fetch_or_update_product_with_titelive_data(titelive_product)
+    except requests.ExternalAPIException as err:
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+            "warning",
+        )
+    else:
+        flash("Le produit a été synchronisé avec Titelive", "success")
+
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
