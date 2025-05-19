@@ -310,6 +310,20 @@ def post_event_price_categories(
     new_labels_and_prices = {(p.label, finance_utils.cents_to_full_unit(p.price)) for p in body.price_categories}
     check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
 
+    existing_price_categories_count = offers_repository.get_offer_price_categories(offer.id).count()
+
+    if (
+        existing_price_categories_count + len(body.price_categories)
+        > offers_models.Offer.MAX_PRICE_CATEGORIES_PER_OFFER
+    ):
+        raise api_errors.ApiErrors(
+            {
+                "priceCategories": [
+                    f"An offer cannot have more than {offers_models.Offer.MAX_PRICE_CATEGORIES_PER_OFFER} price categories"
+                ]
+            }
+        )
+
     created_price_categories: list[offers_models.PriceCategory] = []
     try:
         with repository.transaction():

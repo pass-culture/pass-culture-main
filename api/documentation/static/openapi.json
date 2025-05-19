@@ -2735,6 +2735,7 @@
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
+                        "maxItems": 50,
                         "nullable": true,
                         "title": "Pricecategories",
                         "type": "array"
@@ -6423,6 +6424,7 @@
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
+                        "maxItems": 50,
                         "title": "Pricecategories",
                         "type": "array"
                     }

@@ -692,6 +692,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return tuple(parent_args)
 
     MAX_STOCKS_PER_OFFER = 2_500
+    MAX_PRICE_CATEGORIES_PER_OFFER = 50
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     author: sa_orm.Mapped["User | None"] = relationship(

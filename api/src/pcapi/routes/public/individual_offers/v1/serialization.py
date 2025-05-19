@@ -524,7 +524,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
 
 
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryCreation] = fields.PRICE_CATEGORIES
+    price_categories: list[PriceCategoryCreation] = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -558,7 +558,7 @@ class EventOfferCreation(OfferCreationBase):
     event_duration: int | None = fields.EVENT_DURATION
     location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
-    price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES
+    price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
     publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 

@@ -199,6 +199,10 @@ class _FIELDS:
     PRICE_CATEGORY_ID = Field(description="Price category id", example=12)
     PRICE_CATEGORY_LABEL = Field(description="Price category label", example="Carré or")
     PRICE_CATEGORIES = Field(description="Available price categories for this offer stocks")
+    PRICE_CATEGORIES_WITH_MAX_ITEMS = Field(
+        description="Available price categories for this offer stocks",
+        max_items=Offer.MAX_PRICE_CATEGORIES_PER_OFFER,
+    )
     BEGINNING_DATETIME = Field(
         description="Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
