@@ -15,6 +15,11 @@
     {% endcall %}
   </div>
 {% endblock %}
+{% block action_buttons %}
+  {% if action.SYNCHRO_TITELIVE in allowed_actions.inline_actions and product.ean and titelive_data and titelive_data.oeuvre %}
+    {{ action_bar_button("arrow-repeat", "Synchronisation Titelive", modal_id="#synchro-product-modal-" + product.id|string) }}
+  {% endif %}
+{% endblock action_buttons %}
 {% block details_container %}
   {% call details_content_wrapper("product-details") %}
     <!-- INFO -->
@@ -491,3 +496,10 @@
     </div>
 </div>
 {% endblock side_column %}
+{% block extra_main_content %}
+<!-- HIDDEN FORMS/AND MODALS -->
+{% if action.SYNCHRO_TITELIVE in allowed_actions %}
+{{ build_lazy_modal(url_for('backoffice_web.product.get_product_synchro_with_titelive_form', product_id=product.id)
+, "synchro-product-modal-" + product.id|string) }}
+{% endif %}
+{% endblock extra_main_content %}
