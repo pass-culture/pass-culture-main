@@ -242,10 +242,7 @@ class Returns400Test:
 
     def test_create_multiple_price_categories_with_already_existing_price_category(self, client):
         offer = offers_factories.EventOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         offers_factories.PriceCategoryFactory(
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="cat gold", venue=offer.venue),
@@ -264,6 +261,18 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["The price category cat gold already exists"]}
 
+    def test_should_raise_400_because_more_than_50_price_categories_count_sent(self, client):
+        offer = offers_factories.EventOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        response = client.with_session_auth("user@example.com").post(
+            f"/offers/{offer.id}/price_categories",
+            json={"priceCategories": [{"price": i * 100, "label": f"Tarif {i}"} for i in range(51)]},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["ensure this value has at most 50 items"]}
+
     @pytest.mark.parametrize(
         "status", [offers_models.OfferValidationStatus.PENDING, offers_models.OfferValidationStatus.REJECTED]
     )
@@ -273,10 +282,7 @@ class Returns400Test:
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
         )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {
             "priceCategories": [

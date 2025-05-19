@@ -635,7 +635,9 @@ class EditPriceCategoryModel(BaseModel):
 
 
 class PriceCategoryBody(BaseModel):
-    price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel]
+    price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel] = Field(
+        max_items=offers_models.Offer.MAX_PRICE_CATEGORIES_PER_OFFER
+    )
 
     @validator("price_categories")
     def get_unique_price_categories(
