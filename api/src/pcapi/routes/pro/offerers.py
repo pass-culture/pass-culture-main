@@ -332,11 +332,11 @@ def get_offerer_headline_offer(
 
     try:
         offerer_headline_offer = repository.get_offerer_headline_offer(offerer_id)
-    except offerers_exceptions.TooManyHeadlineOffersForOfferer:
+    except sa_orm.exc.MultipleResultsFound:
         raise ResourceNotFoundError({"global": "Une entité juridique ne peut avoir qu’une seule offre à la une"})
-
-    if not offerer_headline_offer:
+    except sa_orm.exc.NoResultFound:
         raise ResourceNotFoundError()
+
     return headline_offer_serialize.HeadLineOfferResponseModel.from_orm(offerer_headline_offer)
 
 
