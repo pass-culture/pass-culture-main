@@ -73,7 +73,11 @@ Finally, it becomes `REIMBURSED` after a short period of time (check the officia
 
 If the offer is cancelled either by the school or using the [Cancel Collective Booking endpoint](/rest-api#tag/Collective-Bookings/operation/CancelCollectiveBooking), it becomes `CANCELLED`.
 
-### Offer location
+### Offer location (⚠️ DEPRECATED)
+
+:::warning
+The `offerVenue` field will be replaced with the `location` field in the coming months. See [here](/docs/understanding-our-api/resources/collective-offers#-offers-location) for details on the new `location` field.
+:::
 
 A collective offer is always linked to an administrative venue: its the `venueId` field. However it can take place at an address other than the venue address.
 
@@ -172,8 +176,84 @@ Here are the allowed actions depending on the offer status:
 
 ### Current state of developments
 
-Those limitations are currently enforced **only** on the following endpoints :
+Those limitations are currently enforced **only** on the following endpoints:
 
 * [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers)
 
 The new status is available in the `offerStatus` field.
+
+## 📍 Offers location
+
+### General description
+
+Collective offers are geotagged in Adage application using their location.
+
+You can specify a collective offer's location:
+
+- At creation: [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
+- At update: [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
+
+:::warning
+`location` defines where the event takes place, `venueId` defines the administrative/billing address.
+:::
+
+### Location types
+
+The offer's location is specified using the `location` field, which supports three types:
+
+#### 1. Location of type `ADDRESS`
+
+There are two different cases of `ADDRESS` location.
+
+* `"isVenueAddress" = true`
+
+An `ADDRESS` location with `"isVenueAddress" = true` indicates that **the offer shares the same address as the venue**. This is common for cultural partners to organize an event where the offer's location matches the venue's location.
+
+Example of the `location` field for type `ADDRESS` and `isVenueAddress = true`:
+```json
+{
+  "type": "ADDRESS",
+  "isVenueAddress": true
+}
+```
+
+* `"isVenueAddress" = false`
+
+:::tip
+You can manage addresses using the [**Addresses endpoints**](/rest-api#tags/Addresses)
+:::
+
+An `ADDRESS` location with `"isVenueAddress" = false` indicates that **the offer’s address differs from the venue’s address**.
+
+Example of the `location` field for type `ADDRESS` and `isVenueAddress = false`:
+```json
+{
+  "type": "ADDRESS",
+  "addressId": 1,
+  "addressLabel": "Mon théâtre",
+  "isVenueAddress": false
+}
+```
+
+#### 2. Location of type `SCHOOL`
+
+A `SCHOOL` location indicates that the offer takes place inside the educational institution.
+
+Example of the `location` field for type `SCHOOL`:
+```json
+{
+  "type": "SCHOOL"
+}
+```
+
+#### 3. Location of type `TO_BE_DEFINED`
+
+A `TO_BE_DEFINED` location indicates that the offer location is not precisely defined. The `comment` field can be filled in this case.
+
+Example of the `location` field for type `TO_BE_DEFINED`:
+```json
+{
+  "type": "TO_BE_DEFINED",
+  "comment": "Will be clarified later"
+}
+```
