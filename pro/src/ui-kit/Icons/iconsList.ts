@@ -3,6 +3,7 @@ import fullArchiveIcon from 'icons/full-archive.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
+import fullBookIcon from 'icons/full-book.svg'
 import fullBoostedIcon from 'icons/full-boosted.svg'
 import fullBurgerIcon from 'icons/full-burger.svg'
 import fullCheckIcon from 'icons/full-check.svg'
@@ -149,6 +150,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullShowIcon },
   { src: fullHideIcon },
   { src: fullBackIcon },
+  { src: fullBookIcon },
   { src: fullNextIcon },
   { src: fullWaitIcon },
   { src: fullRefreshIcon },
