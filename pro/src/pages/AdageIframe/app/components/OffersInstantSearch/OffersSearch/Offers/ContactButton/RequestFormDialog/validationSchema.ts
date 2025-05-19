@@ -13,7 +13,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
-export const validationSchema = () =>
+export const validationSchema =
   yup.object().shape({
     teacherEmail: yup
       .string()
@@ -25,9 +25,9 @@ export const validationSchema = () =>
       message: 'Veuillez entrer un numéro de téléphone valide',
       test: isPhoneValid,
     }),
-    offerDate: yup.date().nullable(),
-    nbStudents: yup.number().nullable().min(0, 'Nombre positif attendu'),
-    nbTeachers: yup.number().nullable().min(0, 'Nombre positif attendu'),
+    offerDate: yup.string(),
+    nbStudents: yup.number().min(0, 'Nombre positif attendu'),
+    nbTeachers: yup.number().min(0, 'Nombre positif attendu'),
     description: yup
       .string()
       .nullable()

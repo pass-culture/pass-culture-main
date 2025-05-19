@@ -169,10 +169,10 @@ describe('RequestFormDialog', () => {
 
     expect(apiAdage.createCollectiveRequest).toHaveBeenCalledWith(1, {
       comment: 'Test description',
-      phoneNumber: undefined,
+      phoneNumber: '',
       requestedDate: today,
-      totalTeachers: undefined,
-      totalStudents: undefined,
+      totalTeachers: 0,
+      totalStudents: 0,
     })
     expect(notifySuccess).toHaveBeenCalledWith(
       'Votre demande a bien été envoyée'
@@ -267,10 +267,10 @@ describe('RequestFormDialog', () => {
       iframeFrom: '/',
       collectiveOfferTemplateId: 1,
       comment: 'Test description',
-      phoneNumber: undefined,
+      phoneNumber: '',
       requestedDate: undefined,
-      totalStudents: undefined,
-      totalTeachers: undefined,
+      totalStudents: 0,
+      totalTeachers: 0,
     })
   })
 

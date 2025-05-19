@@ -1,4 +1,5 @@
-import { useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -49,9 +50,20 @@ export const RequestFormDialog = ({
     teacherEmail: userEmail ?? '',
     description: '',
     offerDate: '',
+    nbTeachers: 0,
+    nbStudents: 0,
+    teacherPhone: '',
   }
-  const onSubmit = async (formValues: RequestFormValues) => {
-    const payload = createCollectiveRequestPayload(formValues)
+
+  const hookForm = useForm<RequestFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+  })
+
+  const { watch } = hookForm
+
+  const onSubmit = async () => {
+    const payload = createCollectiveRequestPayload(hookForm.getValues())
     try {
       await apiAdage.createCollectiveRequest(offerId, payload)
       notify.success('Votre demande a bien été envoyée')
@@ -70,23 +82,17 @@ export const RequestFormDialog = ({
       await apiAdage.logRequestFormPopinDismiss({
         iframeFrom: location.pathname,
         collectiveOfferTemplateId: offerId,
-        comment: formik.values.description,
-        phoneNumber: formik.values.teacherPhone,
-        requestedDate: isDateValid(formik.values.offerDate)
-          ? new Date(formik.values.offerDate).toISOString()
+        comment: watch('description'),
+        phoneNumber: watch('teacherPhone'),
+        requestedDate: isDateValid(watch('offerDate'))
+          ? watch('offerDate')
           : undefined,
-        totalStudents: formik.values.nbStudents,
-        totalTeachers: formik.values.nbTeachers,
+        totalStudents: watch('nbStudents'),
+        totalTeachers: watch('nbTeachers'),
       })
     }
     closeModal()
   }
-
-  const formik = useFormik<RequestFormValues>({
-    onSubmit: onSubmit,
-    initialValues: initialValues,
-    validationSchema: validationSchema,
-  })
 
   const logContactUrl = () => {
     apiAdage.logContactUrlClick({
@@ -214,11 +220,13 @@ export const RequestFormDialog = ({
                 fois l’offre publiée.
               </Callout>
             )}
-            <DefaultFormContact
-              closeRequestFormDialog={closeRequestFormDialog}
-              formik={formik}
-              isPreview={isPreview}
-            />
+            <FormProvider {...hookForm}>
+              <DefaultFormContact
+                closeRequestFormDialog={closeRequestFormDialog}
+                submit={onSubmit}
+                isPreview={isPreview}
+              />
+            </FormProvider>
           </>
         )}
     </div>
@@ -257,11 +265,13 @@ export const RequestFormDialog = ({
               l’offre publiée.
             </Callout>
           )}
-          <DefaultFormContact
-            closeRequestFormDialog={closeRequestFormDialog}
-            formik={formik}
-            isPreview={isPreview}
-          />
+          <FormProvider {...hookForm}>
+            <DefaultFormContact
+              closeRequestFormDialog={closeRequestFormDialog}
+              submit={onSubmit}
+              isPreview={isPreview}
+            />
+          </FormProvider>
         </>
       ) : (
         <Callout className={styles['contact-readonly']}>
