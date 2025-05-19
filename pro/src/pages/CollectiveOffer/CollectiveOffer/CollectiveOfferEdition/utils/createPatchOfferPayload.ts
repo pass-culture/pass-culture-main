@@ -141,6 +141,7 @@ const locationFields: (keyof OfferEducationalFormValues)[] = [
   'postalCode',
   'banId',
   'coords',
+  'inseeCode'
 ]
 
 const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
