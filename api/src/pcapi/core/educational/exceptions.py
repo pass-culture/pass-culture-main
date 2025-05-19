@@ -249,3 +249,7 @@ class IllegalNationalProgram(Exception):
 
 class InactiveNationalProgram(Exception):
     pass
+
+
+class CollectiveOfferNotAssociatedToInstitution(Exception):
+    pass

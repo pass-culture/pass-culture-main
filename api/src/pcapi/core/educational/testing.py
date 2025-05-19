@@ -1,11 +1,13 @@
 from pcapi.core.educational import models
-from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
-from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
-from pcapi.core.educational.schemas import EducationalBookingResponse
+from pcapi.serialization.educational.adage import shared as adage_serialize
 
 
 AdageRequestItem = (
-    str | AdageCollectiveOffer | AdageCollectiveRequest | EducationalBookingResponse | dict[str, int | str | None]
+    str
+    | adage_serialize.AdageCollectiveOffer
+    | adage_serialize.AdageCollectiveRequest
+    | adage_serialize.EducationalBookingResponse
+    | dict[str, int | str | None]
 )
 
 adage_requests: list[dict[str, AdageRequestItem | None]] = []

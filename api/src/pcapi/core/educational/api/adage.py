@@ -14,8 +14,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import address as address_api
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
-from pcapi.core.educational.schemas import AdageCulturalPartner
-from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
@@ -25,6 +23,7 @@ from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import venues_serialize
+from pcapi.serialization.educational.adage import shared as adage_serialize
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
 
@@ -42,7 +41,9 @@ def find_collective_bookings_for_adage(
     )
 
 
-def get_cultural_partners(*, since_date: datetime | None = None, force_update: bool = False) -> AdageCulturalPartners:
+def get_cultural_partners(
+    *, since_date: datetime | None = None, force_update: bool = False
+) -> adage_serialize.AdageCulturalPartners:
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
 
@@ -64,7 +65,7 @@ def get_cultural_partners(*, since_date: datetime | None = None, force_update: b
 
     cultural_partners_json = typing.cast(str, cultural_partners_json)
     cultural_partners = json.loads(cultural_partners_json)
-    return parse_obj_as(AdageCulturalPartners, {"partners": cultural_partners})
+    return parse_obj_as(adage_serialize.AdageCulturalPartners, {"partners": cultural_partners})
 
 
 def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
@@ -105,7 +106,7 @@ def get_venue_by_id_for_adage_iframe(
     return venue, relative
 
 
-def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPartner]) -> None:
+def synchronize_adage_ids_on_offerers(partners_from_adage: list[adage_serialize.AdageCulturalPartner]) -> None:
     adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
     existing_sirens: dict[str, bool] = dict(
         db.session.query(offerers_models.Offerer)

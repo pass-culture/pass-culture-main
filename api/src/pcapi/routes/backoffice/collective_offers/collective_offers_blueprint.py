@@ -18,7 +18,6 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.api import offer as collective_offer_api
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
@@ -39,6 +38,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.serialization.educational.adage.shared import serialize_collective_offer
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import urls
 

@@ -16,13 +16,10 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import api as finance_api
@@ -49,6 +46,7 @@ from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.serialization.educational.adage import shared as adage_serialize
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
 
@@ -71,7 +69,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
     if active_collective_bookings is None:
         return
 
-    data = EducationalBookingEdition(
+    data = adage_serialize.EducationalBookingEdition(
         **prebooking.serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
@@ -536,7 +534,9 @@ def update_collective_offer_educational_institution(
     db.session.flush()
 
     if offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
-        on_commit(partial(adage_client.notify_institution_association, serialize_collective_offer(offer)))
+        on_commit(
+            partial(adage_client.notify_institution_association, adage_serialize.serialize_collective_offer(offer))
+        )
 
     return offer
 
@@ -1034,7 +1034,8 @@ def create_offer_request(
     transactional_mails.send_new_request_made_by_redactor_to_pro(request)
     on_commit(
         partial(
-            adage_client.notify_redactor_when_collective_request_is_made, serialize_collective_offer_request(request)
+            adage_client.notify_redactor_when_collective_request_is_made,
+            adage_serialize.serialize_collective_offer_request(request),
         )
     )
 

@@ -2,11 +2,11 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.adage_backends.adage import AdageHttpClient
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
-from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import AdageInvalidEmailException
 from pcapi.routes.adage.v1.serialization import prebooking
+from pcapi.serialization.educational.adage.shared import serialize_collective_offer
+from pcapi.serialization.educational.adage.shared import serialize_collective_offer_request
 from pcapi.utils import requests
 
 

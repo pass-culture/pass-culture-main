@@ -18,7 +18,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import Ministry
 from pcapi.models import db
-from pcapi.routes.adage.v1.serialization import constants
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
@@ -264,7 +263,7 @@ class ReturnsErrorTest:
         response = client.post("/adage/v1/prebookings/404/confirm")
 
         assert response.status_code == 404
-        assert response.json == {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
+        assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_no_deposit_for_collective_bookings(self, client) -> None:

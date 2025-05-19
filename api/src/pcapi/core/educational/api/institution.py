@@ -13,11 +13,11 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage_backends import get_adage_educational_institutions
-from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.repository import find_educational_year_by_date
 from pcapi.models import db
+from pcapi.serialization.educational.adage.shared import AdageEducationalInstitution
 from pcapi.utils import db as db_utils
 from pcapi.utils import postal_code as postal_code_utils
 
