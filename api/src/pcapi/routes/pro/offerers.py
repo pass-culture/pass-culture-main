@@ -22,7 +22,6 @@ from pcapi.core.offerers import repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import headline_offer_serialize
@@ -143,17 +142,6 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
             offerers_serialize.GetOffererMemberResponseModel(email=member[0], status=member[1]) for member in members
         ]
     )
-
-
-@private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
-@login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def delete_api_key(api_key_prefix: str) -> None:
-    with transaction():
-        try:
-            api.delete_api_key_by_user(current_user, api_key_prefix)
-        except (sa_orm.exc.NoResultFound, offerers_exceptions.ApiKeyDeletionDenied):
-            raise ApiErrors({"prefix": "not found"}, 404)
 
 
 @private_api.route("/offerers", methods=["POST"])

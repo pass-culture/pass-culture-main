@@ -904,15 +904,6 @@ def _create_prefix(env: str, prefix_identifier: str) -> str:
     return f"{env}{API_KEY_SEPARATOR}{prefix_identifier}"
 
 
-def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None:
-    api_key = db.session.query(models.ApiKey).filter_by(prefix=api_key_prefix).one()
-
-    if not users_repository.has_access(user, api_key.offererId):
-        raise exceptions.ApiKeyDeletionDenied()
-
-    db.session.delete(api_key)
-
-
 def _initialize_offerer(offerer: offerers_models.Offerer) -> None:
     if settings.IS_INTEGRATION:
         offerer.validationStatus = ValidationStatus.VALIDATED
