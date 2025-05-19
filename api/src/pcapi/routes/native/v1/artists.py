@@ -1,5 +1,7 @@
 import logging
 
+from flask import abort
+
 from pcapi.core.artist.models import Artist
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
@@ -16,6 +18,8 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(response_model=serializers.ArtistResponse, api=blueprint.api, on_error_statuses=[404])
 @atomic()
 def get_artist(artist_id: str) -> serializers.ArtistResponse:
-    artist = db.session.query(Artist).get_or_404(artist_id)
+    artist = db.session.query(Artist).filter(Artist.id == artist_id).one_or_none()
+    if not artist:
+        abort(404)
 
     return serializers.ArtistResponse.from_orm(artist)
