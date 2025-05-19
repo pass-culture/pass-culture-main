@@ -289,8 +289,7 @@ def _update_user_information(
 
 
 def update_user_information_from_external_source(
-    user: models.User,
-    data: common_fraud_models.IdentityCheckContent,
+    user: models.User, data: common_fraud_models.IdentityCheckContent, *, id_piece_number: str | None = None
 ) -> models.User:
     first_name = data.get_first_name()
     last_name = data.get_last_name()
@@ -308,7 +307,7 @@ def update_user_information_from_external_source(
         address=data.get_address(),
         city=data.get_city(),
         civility=data.get_civility(),
-        id_piece_number=data.get_id_piece_number(),
+        id_piece_number=id_piece_number or data.get_id_piece_number(),
         ine_hash=data.get_ine_hash(),
         married_name=data.get_married_name(),
         postal_code=data.get_postal_code(),
