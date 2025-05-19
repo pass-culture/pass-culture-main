@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import pytest
+import sqlalchemy.orm as sa_orm
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -280,12 +281,11 @@ class GetOffererHeadlineOfferTest:
         offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
         offers_factories.HeadlineOfferFactory(offer=other_offer, venue=other_venue)
 
-        with pytest.raises(exceptions.TooManyHeadlineOffersForOfferer):
+        with pytest.raises(sa_orm.exc.MultipleResultsFound):
             repository.get_offerer_headline_offer(offerer.id)
 
     def test_returns_no_headline_offer(self):
         offerer = offerers_factories.OffererFactory()
 
-        headline_offer = repository.get_offerer_headline_offer(offerer.id)
-
-        assert headline_offer == None
+        with pytest.raises(sa_orm.exc.NoResultFound):
+            repository.get_offerer_headline_offer(offerer.id)

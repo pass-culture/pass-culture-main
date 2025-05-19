@@ -1,3 +1,4 @@
+import sqlalchemy.orm as sa_orm
 from flask import abort
 
 import pcapi.core.offerers.repository as offerers_repository
@@ -27,7 +28,9 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
 def get_offerer_headline_offer(
     offerer_id: int,
 ) -> serializers.OffererHeadLineOfferResponseModel:
-    offerer_headline_offer = offerers_repository.get_offerer_headline_offer(offerer_id)
-    if not offerer_headline_offer:
+    try:
+        offerer_headline_offer = offerers_repository.get_offerer_headline_offer(offerer_id)
+    except sa_orm.exc.NoResultFound:
         abort(404)
+
     return serializers.OffererHeadLineOfferResponseModel.from_orm(offerer_headline_offer)

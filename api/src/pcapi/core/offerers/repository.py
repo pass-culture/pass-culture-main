@@ -1058,22 +1058,17 @@ def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> 
     )
 
 
-def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer | None:
-    try:
-        offer = (
-            db.session.query(offers_models.Offer)
-            .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
-            .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
-            .join(offers_models.HeadlineOffer, offers_models.HeadlineOffer.offerId == offers_models.Offer.id)
-            .options(
-                sa_orm.contains_eager(offers_models.Offer.headlineOffers),
-                sa_orm.joinedload(offers_models.Offer.mediations),
-                sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
-            )
-            .filter(models.Offerer.id == offerer_id, offers_models.HeadlineOffer.isActive == True)
-            .one_or_none()
+def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
+    return (
+        db.session.query(offers_models.Offer)
+        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
+        .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
+        .join(offers_models.HeadlineOffer, offers_models.HeadlineOffer.offerId == offers_models.Offer.id)
+        .options(
+            sa_orm.contains_eager(offers_models.Offer.headlineOffers),
+            sa_orm.joinedload(offers_models.Offer.mediations),
+            sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
         )
-
-    except sa_orm.exc.MultipleResultsFound:
-        raise exceptions.TooManyHeadlineOffersForOfferer
-    return offer
+        .filter(models.Offerer.id == offerer_id, offers_models.HeadlineOffer.isActive == True)
+        .one()
+    )

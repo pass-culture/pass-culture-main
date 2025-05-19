@@ -85,10 +85,6 @@ class OffererAddressCreationError(Exception):
     pass
 
 
-class TooManyHeadlineOffersForOfferer(Exception):
-    pass
-
-
 class CannotSuspendOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
