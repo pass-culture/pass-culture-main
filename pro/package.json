@@ -76,7 +76,7 @@
     "@storybook/addon-a11y": "^8.6.12",
     "@storybook/addon-controls": "^8.6.12",
     "@storybook/addon-docs": "^8.6.12",
-    "@storybook/blocks": "^8.6.11",
+    "@storybook/blocks": "^8.6.13",
     "@storybook/react": "^8.6.12",
     "@storybook/react-vite": "^8.6.12",
     "@testing-library/cypress": "^10.0.3",
