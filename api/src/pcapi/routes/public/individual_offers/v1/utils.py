@@ -1,7 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -17,16 +16,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 from . import constants
 from . import serialization
-
-
-def get_address_or_raise_404(address_id: int) -> geography_models.Address:
-    address = db.session.query(geography_models.Address).filter(geography_models.Address.id == address_id).one_or_none()
-
-    if not address:
-        raise api_errors.ResourceNotFoundError(
-            {"location.AddressLocation.addressId": [f"There is no venue with id {address_id}"]}
-        )
-    return address
 
 
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
@@ -220,7 +209,7 @@ def extract_venue_and_offerer_address_from_location(
     venue = get_venue_with_offerer_address(location.venue_id)
 
     if location.type == "address":
-        address = get_address_or_raise_404(location.address_id)
+        address = public_utils.get_address_or_raise_404(location.address_id)
         offerer_address = offerers_api.get_or_create_offerer_address(
             offerer_id=venue.managingOffererId,
             address_id=address.id,

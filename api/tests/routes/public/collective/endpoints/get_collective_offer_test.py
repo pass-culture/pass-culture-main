@@ -91,10 +91,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         assert response.json["location"] == {
             "type": "SCHOOL",
-            "addressLabel": None,
-            "addressId": None,
-            "comment": None,
-            "isVenueAddress": False,
         }
 
     def test_get_offer_on_address_venue_location(self, client):
@@ -108,7 +104,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         )
 
         offer_id = offer.id
-        oa = venue.offererAddress
 
         with assert_num_queries(self.num_queries):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -118,9 +113,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         assert response.json["location"] == {
             "type": "ADDRESS",
-            "addressLabel": oa.label,
-            "addressId": oa.addressId,
-            "comment": None,
             "isVenueAddress": True,
         }
 
@@ -150,7 +142,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             "type": "ADDRESS",
             "addressLabel": oa.label,
             "addressId": oa.addressId,
-            "comment": None,
             "isVenueAddress": False,
         }
 
@@ -173,9 +164,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         assert response.json["location"] == {
             "type": "TO_BE_DEFINED",
             "comment": "In space",
-            "addressLabel": None,
-            "addressId": None,
-            "isVenueAddress": False,
         }
 
     def test_offer_does_not_exists(self, client):

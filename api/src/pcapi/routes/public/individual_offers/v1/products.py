@@ -29,6 +29,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services import authorization
@@ -295,7 +296,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
             offerer_address = venue.offererAddress  # default offerer_address
 
             if body.location.type == "address":
-                address = utils.get_address_or_raise_404(body.location.address_id)
+                address = public_utils.get_address_or_raise_404(body.location.address_id)
                 offerer_address = offerers_api.get_or_create_offerer_address(
                     offerer_id=venue.managingOffererId,
                     address_id=address.id,
@@ -362,7 +363,7 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         raise api_errors.ApiErrors({"location": ["Cannot create product offer for virtual venues"]})
 
     if body.location.type == "address":
-        address = utils.get_address_or_raise_404(body.location.address_id)
+        address = public_utils.get_address_or_raise_404(body.location.address_id)
         address_id = address.id
         address_label = body.location.address_label
 

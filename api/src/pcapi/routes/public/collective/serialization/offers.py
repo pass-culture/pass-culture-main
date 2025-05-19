@@ -1,9 +1,9 @@
 import decimal
+import typing
 from datetime import datetime
 from datetime import timezone
-from typing import Any
-from typing import Sequence
 
+from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -83,7 +83,9 @@ def validate_price(price: float | None) -> float:
     return price
 
 
-def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+def validate_booking_limit_datetime(
+    booking_limit_datetime: datetime | None, values: dict[str, typing.Any]
+) -> datetime | None:
     if (
         booking_limit_datetime is not None
         and "start_datetime" in values
@@ -93,7 +95,7 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, val
     return booking_limit_datetime
 
 
-def validate_start_datetime(start_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+def validate_start_datetime(start_datetime: datetime | None, values: dict[str, typing.Any]) -> datetime | None:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
     if not start_datetime:
         return None
@@ -106,7 +108,7 @@ def validate_start_datetime(start_datetime: datetime | None, values: dict[str, A
     return start_datetime
 
 
-def validate_end_datetime(end_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+def validate_end_datetime(end_datetime: datetime | None, values: dict[str, typing.Any]) -> datetime | None:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
     if not end_datetime:
         return None
@@ -192,7 +194,7 @@ class CollectiveOffersResponseModel(BaseModel):
     status: str = fields.COLLECTIVE_OFFER_STATUS
     offerStatus: str = fields.COLLECTIVE_OFFER_OFFER_STATUS
     venueId: int = fields.VENUE_ID
-    bookings: Sequence[CollectiveBookingResponseModel]
+    bookings: typing.Sequence[CollectiveBookingResponseModel]
 
     class Config:
         orm_mode = True
@@ -214,32 +216,71 @@ class CollectiveOffersListResponseModel(BaseModel):
     __root__: list[CollectiveOffersResponseModel]
 
 
-class CollectiveOfferLocationModel(BaseModel):
-    type: CollectiveLocationType = fields.COLLECTIVE_OFFER_LOCATION_TYPE
-    # TODO: when we add POST and PATCH routes, this model will take into account the location type
-    addressLabel: str | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL
-    addressId: int | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_ID
-    comment: str | None = fields.COLLECTIVE_OFFER_LOCATION_COMMENT
-    isVenueAddress: bool = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+class CollectiveOfferLocationSchoolModel(BaseModel):
+    type: typing.Literal["SCHOOL"] = CollectiveLocationType.SCHOOL.value
 
     class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+        title = CollectiveLocationType.SCHOOL.value
 
-    @classmethod
-    def from_offer(cls, offer: CollectiveOffer) -> "CollectiveOfferLocationModel | None":
-        if offer.locationType is None:
+
+class CollectiveOfferLocationToBeDefinedModel(BaseModel):
+    type: typing.Literal["TO_BE_DEFINED"] = CollectiveLocationType.TO_BE_DEFINED.value
+    comment: str | None = fields.COLLECTIVE_OFFER_LOCATION_COMMENT
+
+    class Config:
+        title = CollectiveLocationType.TO_BE_DEFINED.value
+
+
+class CollectiveOfferLocationAddressVenueModel(BaseModel):
+    type: typing.Literal["ADDRESS"] = CollectiveLocationType.ADDRESS.value
+    isVenueAddress: typing.Literal[True] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+
+    class Config:
+        title = "ADDRESS - VENUE"
+
+
+class CollectiveOfferLocationAddressModel(BaseModel):
+    type: typing.Literal["ADDRESS"] = CollectiveLocationType.ADDRESS.value
+    addressLabel: str | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL
+    addressId: int = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_ID
+    isVenueAddress: typing.Literal[False] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
+
+    class Config:
+        title = "ADDRESS - OTHER"
+
+
+CollectiveOfferLocationAddress = typing.Annotated[
+    CollectiveOfferLocationAddressVenueModel | CollectiveOfferLocationAddressModel,
+    Field(discriminator="isVenueAddress"),
+]
+
+CollectiveOfferLocation = typing.Annotated[
+    CollectiveOfferLocationSchoolModel | CollectiveOfferLocationAddress | CollectiveOfferLocationToBeDefinedModel,
+    Field(discriminator="type"),
+]
+
+
+def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> CollectiveOfferLocation | None:
+    match offer.locationType:
+        case CollectiveLocationType.SCHOOL:
+            return CollectiveOfferLocationSchoolModel()
+        case CollectiveLocationType.TO_BE_DEFINED:
+            return CollectiveOfferLocationToBeDefinedModel(
+                comment=offer.locationComment,
+            )
+        case CollectiveLocationType.ADDRESS:
+            is_venue_address = offer.offererAddressId == offer.venue.offererAddressId
+            if is_venue_address:
+                return CollectiveOfferLocationAddressVenueModel(isVenueAddress=True)
+            else:
+                assert offer.offererAddress
+                return CollectiveOfferLocationAddressModel(
+                    isVenueAddress=False,
+                    addressLabel=offer.offererAddress.label,
+                    addressId=offer.offererAddress.addressId,
+                )
+        case _:
             return None
-
-        oa = offer.offererAddress
-
-        return CollectiveOfferLocationModel(
-            type=offer.locationType,
-            comment=offer.locationComment,
-            addressLabel=oa.label if oa else None,
-            addressId=oa.addressId if oa else None,
-            isVenueAddress=(offer.offererAddressId == offer.venue.offererAddressId),
-        )
 
 
 class GetPublicCollectiveOfferResponseModel(BaseModel):
@@ -274,10 +315,10 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     # offerVenue will be replaced with location, for now we send both
     offerVenue: OfferVenueModel
-    location: CollectiveOfferLocationModel | None
+    location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageUrl: str | None = fields.IMAGE_URL
-    bookings: Sequence[CollectiveBookingResponseModel]
+    bookings: typing.Sequence[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
     formats: list[EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
 
@@ -288,7 +329,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
-        location = CollectiveOfferLocationModel.from_offer(offer)
+        location = get_collective_offer_location_from_offer(offer)
 
         return cls(
             id=offer.id,
@@ -325,12 +366,12 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
                 "addressType": offer.offerVenue["addressType"],
                 "otherAddress": offer.offerVenue["otherAddress"] or None,
             },
+            location=location,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             bookings=offer.collectiveStock.collectiveBookings,
             nationalProgram=offer.nationalProgram,
             formats=offer.formats,
-            location=location,
         )
 
 
@@ -359,7 +400,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = fields.MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT
     motor_disability_compliant: bool = fields.MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT
     visual_disability_compliant: bool = fields.VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT
-    offer_venue: OfferVenueModel
+    offer_venue: OfferVenueModel | None
+    location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     isActive: bool = fields.COLLECTIVE_OFFER_IS_ACTIVE
     image_file: str | None = fields.IMAGE_FILE
     image_credit: str | None = fields.IMAGE_CREDIT
@@ -440,7 +482,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     @validator("end_datetime", pre=False)
     def validate_end_datetime_vs_start_datetime(
-        cls, end_datetime: datetime | None, values: dict[str, Any]
+        cls, end_datetime: datetime | None, values: dict[str, typing.Any]
     ) -> datetime | None:
         start_datetime = values.get("start_datetime")
         if not start_datetime or not end_datetime:
@@ -449,6 +491,21 @@ class PostCollectiveOfferBodyModel(BaseModel):
         if end_datetime < start_datetime:
             raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
         return end_datetime
+
+    @root_validator(pre=True)
+    def validate_offer_venue_and_location(cls, values: dict) -> dict:
+        offer_venue = values.get("offerVenue")
+        location = values.get("location")
+        if offer_venue is not None and location is not None:
+            raise ValueError(
+                "Les champs offerVenue et location sont mutuellement exclusifs. "
+                "Vous ne pouvez pas remplir les deux en même temps"
+            )
+
+        if offer_venue is None and location is None:
+            raise ValueError("Le remplissage de l'un des champs offerVenue ou location est obligatoire.")
+
+        return values
 
     class Config:
         alias_generator = to_camel
@@ -535,7 +592,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(
-        cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
+        cls, booking_limit_datetime: datetime | None, values: dict[str, typing.Any]
     ) -> datetime | None:
         start = values.get("startDatetime")
         if booking_limit_datetime is not None and start is not None and booking_limit_datetime > start:
@@ -549,7 +606,9 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return startDatetime
 
     @validator("endDatetime", pre=False)
-    def validate_end_limit_datetime(cls, endDatetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+    def validate_end_limit_datetime(
+        cls, endDatetime: datetime | None, values: dict[str, typing.Any]
+    ) -> datetime | None:
         start_datetime = values.get("startDatetime")
         if not endDatetime:
             raise ValueError("La date de fin de l'évènement ne peut pas être vide.")

@@ -47,6 +47,16 @@ OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION = """
 - `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).
 """
 
+COLLECTIVE_OFFER_LOCATION_DESCRIPTION = """
+Indicates where the collective offer will take place.
+
+You have **three options** for the location:
+
+- `"SCHOOL"`: Use this if the offer takes place in the school.
+- `"ADDRESS"`: Use this if the offer takes place in a specified address.
+- `"TO_BE_DEFINED"`: Use this if the offer location is not precisely defined.
+"""
+
 COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
     "[⚠️ DEPRECATED - use `offerStatus` instead]"
     + "\n\n"
