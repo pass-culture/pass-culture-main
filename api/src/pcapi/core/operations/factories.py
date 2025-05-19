@@ -17,6 +17,7 @@ class SpecialEventFactory(BaseFactory):
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
     title = factory.Sequence("Opération #{}".format)
     eventDate = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=7))
+    endImportDate = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=6))
 
 
 class SpecialEventQuestionFactory(BaseFactory):

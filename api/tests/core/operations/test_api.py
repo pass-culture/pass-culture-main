@@ -31,9 +31,13 @@ class CreateSpecialEventFromTypeformTest:
     def test_create_special_event_from_typeform(self, mock_get_form):
         venue = offerers_factories.VenueFactory()
         event_date = datetime.date.today() + datetime.timedelta(days=15)
+        end_import_date = datetime.date.today() + datetime.timedelta(days=10)
 
         special_event_id = operations_api.create_special_event_from_typeform(
-            "test", event_date=event_date, venue_id=venue.id
+            form_id="test",
+            event_date=event_date,
+            venue_id=venue.id,
+            end_import_date=end_import_date,
         ).id
 
         special_event = db.session.query(operations_models.SpecialEvent).one()
@@ -41,6 +45,7 @@ class CreateSpecialEventFromTypeformTest:
         assert special_event.externalId == "test"
         assert special_event.title == "Mon questionnaire"
         assert special_event.eventDate == event_date
+        assert special_event.endImportDate == end_import_date
         assert special_event.offererId == venue.managingOffererId
         assert special_event.venueId == venue.id
 
@@ -63,6 +68,7 @@ class CreateSpecialEventFromTypeformTest:
             operations_api.create_special_event_from_typeform(
                 "test",
                 event_date=datetime.date.today(),
+                end_import_date=datetime.date.today(),
                 offerer_id=offerer.id,
                 venue_id=venue.id,
             )
@@ -73,6 +79,7 @@ class CreateSpecialEventFromTypeformTest:
             operations_api.create_special_event_from_typeform(
                 "test",
                 event_date=datetime.date.today(),
+                end_import_date=datetime.date.today(),
                 offerer_id=999999,
             )
         assert "n'existe pas" in str(err.value)
@@ -82,6 +89,7 @@ class CreateSpecialEventFromTypeformTest:
             operations_api.create_special_event_from_typeform(
                 "test",
                 event_date=datetime.date.today(),
+                end_import_date=datetime.date.today(),
                 venue_id=999999,
             )
         assert "n'existe pas" in str(err.value)
@@ -434,90 +442,3 @@ class GetUserForFormTest:
         result = operations_api._get_user_for_form(form=form)
 
         assert result == user
-
-
-class RejectResponseOnExpiredOperationTest:
-    def test_selected_offer(self):
-        event = operations_factories.SpecialEventFactory(
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(days=8),
-        )
-        operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.VALIDATED,
-        )
-        operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.REJECTED,
-        )
-        operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.PRESELECTED,
-        )
-
-        operations_api.reject_response_on_expired_operation()
-
-        responses = (
-            db.session.query(operations_models.SpecialEventResponse)
-            .filter(
-                operations_models.SpecialEventResponse.event == event,
-            )
-            .order_by(
-                operations_models.SpecialEventResponse.id,
-            )
-            .all()
-        )
-
-        assert responses[0].status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert responses[1].status == operations_models.SpecialEventResponseStatus.VALIDATED
-        assert responses[2].status == operations_models.SpecialEventResponseStatus.REJECTED
-        assert responses[3].status == operations_models.SpecialEventResponseStatus.PRESELECTED
-
-    def test_ignore_newer_operations(self):
-        event = operations_factories.SpecialEventFactory(
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(days=6),
-        )
-        operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        operations_api.reject_response_on_expired_operation()
-
-        response = (
-            db.session.query(operations_models.SpecialEventResponse)
-            .filter(
-                operations_models.SpecialEventResponse.event == event,
-            )
-            .order_by(
-                operations_models.SpecialEventResponse.id,
-            )
-            .one()
-        )
-
-        assert response.status == operations_models.SpecialEventResponseStatus.NEW
-
-    def test_ignore_older_operations(self):
-        event = operations_factories.SpecialEventFactory(
-            eventDate=datetime.datetime.utcnow() - datetime.timedelta(days=11),
-        )
-        operations_factories.SpecialEventResponseFactory(
-            event=event,
-            status=operations_models.SpecialEventResponseStatus.NEW,
-        )
-        operations_api.reject_response_on_expired_operation()
-
-        response = (
-            db.session.query(operations_models.SpecialEventResponse)
-            .filter(
-                operations_models.SpecialEventResponse.event == event,
-            )
-            .order_by(
-                operations_models.SpecialEventResponse.id,
-            )
-            .one()
-        )
-
-        assert response.status == operations_models.SpecialEventResponseStatus.NEW

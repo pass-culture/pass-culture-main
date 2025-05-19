@@ -50,6 +50,21 @@ class CreateSpecialEventForm(FlaskForm):
         validators=(wtforms.validators.DataRequired("La date de l'opération est obligatoire"),),
     )
 
+    end_import_date = fields.PCDateField(
+        "Date de clôture des candidatures",
+        validators=(wtforms.validators.DataRequired("La date de clôture des candidatures est obligatoire"),),
+    )
+
+    venue = fields.PCTomSelectField(
+        "Partenaire culturel",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+
     def filter_typeform_id(self, data: str | None) -> str | None:
         if data:
             try:
@@ -72,6 +87,13 @@ class CreateSpecialEventForm(FlaskForm):
                 "La date de l'évènement ne peut pas être dans le passé",
             )
         return event_date
+
+    def validate_end_import_date(self, end_import_date: fields.PCStringField) -> fields.PCStringField:
+        if end_import_date.data < datetime.date.today():
+            raise wtforms.validators.ValidationError(
+                "La date de clôture des candidatures ne peut pas être dans le passé",
+            )
+        return end_import_date
 
 
 class OperationResponseForm(utils.PCForm):

@@ -6,6 +6,7 @@ from flask import url_for
 
 from pcapi.connectors import typeform
 from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
@@ -105,33 +106,47 @@ class CreateEventTest(PostEndpointHelper):
     def test_create_event(self, authenticated_client):
         # Data come from TestingBackend
         typeform_id = "1a2b3c4d5"
+        venue = offerers_factories.VenueFactory()
+        event_date = datetime.date.today() + datetime.timedelta(days=7)
+        end_import_date = datetime.date.today() + datetime.timedelta(days=6)
 
         response = self.post_to_endpoint(
             authenticated_client,
             form={
                 "typeform_id": typeform_id,
-                "event_date": datetime.date.today().isoformat(),
+                "event_date": event_date.isoformat(),
+                "end_import_date": end_import_date.isoformat(),
+                "venue": venue.id,
             },
-            expected_num_queries=self.expected_num_queries_with_job,
+            expected_num_queries=self.expected_num_queries_with_job + 1,  # retrieve the venue
         )
         assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == "L'opération spéciale Jeu concours 1a2b3c4d5 a été importée."
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"L'opération spéciale Jeu concours {typeform_id} a été importée."
+        )
         special_event = db.session.query(operations_models.SpecialEvent).one()
-        assert special_event.eventDate == datetime.date.today()
+        assert special_event.eventDate == event_date
+        assert special_event.endImportDate == end_import_date
         assert special_event.externalId == typeform_id
+        assert special_event.venueId == venue.id
         assert db.session.query(operations_models.SpecialEventQuestion).count() == 3
         assert db.session.query(operations_models.SpecialEventResponse).count() == 1
         assert db.session.query(operations_models.SpecialEventAnswer).count() == 3
 
     def test_create_event_already_exists(self, authenticated_client, special_events):
         # Data come from TestingBackend
+        event_date = datetime.date.today() + datetime.timedelta(days=7)
+        end_import_date = datetime.date.today() + datetime.timedelta(days=6)
+
         response = self.post_to_endpoint(
             authenticated_client,
             form={
                 "typeform_id": "abCd1234",
-                "event_date": datetime.date.today().isoformat(),
+                "event_date": event_date.isoformat(),
+                "end_import_date": end_import_date.isoformat(),
             },
             expected_num_queries=self.expected_num_queries,
         )
@@ -144,11 +159,15 @@ class CreateEventTest(PostEndpointHelper):
 
     @patch("pcapi.connectors.typeform.get_form", side_effect=typeform.NotFoundException)
     def test_create_event_not_found(self, mock_get_form, authenticated_client):
+        event_date = datetime.date.today() + datetime.timedelta(days=7)
+        end_import_date = datetime.date.today() + datetime.timedelta(days=6)
+
         response = self.post_to_endpoint(
             authenticated_client,
             form={
                 "typeform_id": "1a2b3c4d5e",
-                "event_date": datetime.date.today().isoformat(),
+                "event_date": event_date.isoformat(),
+                "end_import_date": end_import_date.isoformat(),
             },
             expected_num_queries=self.expected_num_queries,
         )
@@ -246,7 +265,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert rows[0]["Candidat"] == no_user_incomplete_response.email
         assert rows[0]["État de la candidature"] == "Nouvelle"
         assert rows[0]["Candidatures totales"] == "-"
-        assert rows[0]["Candidatures effectives"] == "-"
+        assert rows[0]["Participations effectives"] == "-"
         assert rows[0]["Éligibilité"] == "-"
         assert rows[0]["Date de réponse"] == format_date(no_user_incomplete_response.dateSubmitted, "%d/%m/%Y à %Hh%M")
 
@@ -254,7 +273,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert rows[1]["Candidat"] == f"{full_response.user.full_name} ({full_response.user.id})"
         assert rows[1]["État de la candidature"] == "À contacter"
         assert rows[1]["Candidatures totales"] == "1"
-        assert rows[1]["Candidatures effectives"] == "0"
+        assert rows[1]["Participations effectives"] == "0"
         assert rows[1]["Éligibilité"] == "Pass 18"
         assert rows[1]["Date de réponse"] == format_date(full_response.dateSubmitted, "%d/%m/%Y à %Hh%M")
 
