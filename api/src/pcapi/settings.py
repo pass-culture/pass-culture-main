@@ -249,16 +249,18 @@ TITELIVE_EPAGINE_API_USERNAME = os.environ.get("TITELIVE_EPAGINE_API_USERNAME", 
 TITELIVE_EPAGINE_API_PASSWORD = secrets_utils.get("TITELIVE_EPAGINE_API_PASSWORD", "")
 TITELIVE_GENERATE_FROM_FILE_IN_DEV = bool(int(os.environ.get("TITELIVE_GENERATE_FROM_FILE_IN_DEV", 0)))
 
-# CHARLIE URLS
-CHARLIE_BOOKING_URL = os.environ.get(
-    "CHARLIE_API_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/create"
+# EXTERNAL TICKETING SERVICE URLS
+EXTERNAL_TICKETING_SERVICE_BOOKING_URL = os.environ.get(
+    "EXTERNAL_TICKETING_SERVICE_BOOKING_URL",
+    "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/create",
 )
-CHARLIE_CANCEL_BOOKING_URL = os.environ.get(
-    "CHARLIE_CANCEL_BOOKING_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel"
+EXTERNAL_TICKETING_SERVICE_CANCEL_BOOKING_URL = os.environ.get(
+    "EXTERNAL_TICKETING_SERVICE_CANCEL_BOOKING_URL",
+    "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel",
 )
 
-CHARLIE_NOTIFICATION_EXTERNAL_URL = os.environ.get(
-    "CHARLIE_NOTIFICATION_EXTERNAL_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/notify"
+EXTERNAL_NOTIFICATION_URL = os.environ.get(
+    "EXTERNAL_NOTIFICATION_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/notify"
 )
 
 # UBBLE

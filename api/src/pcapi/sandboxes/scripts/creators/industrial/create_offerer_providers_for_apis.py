@@ -26,23 +26,23 @@ def create_offerer_provider(
     isActive: bool = True,
     enabledForPro: bool = True,
     provider_name: str | None = None,
-    with_charlie_url: bool = False,
+    with_ticketing_service: bool = False,
 ) -> tuple[offerers_models.Offerer, providers_models.Provider]:
     offerer = offerers_factories.OffererFactory.create(name=name)
     if provider_name is None:
         provider_name = name
     booking_url = None
     cancel_booking_url = None
-    if with_charlie_url:
-        booking_url = settings.CHARLIE_BOOKING_URL
-        cancel_booking_url = settings.CHARLIE_CANCEL_BOOKING_URL
+    if with_ticketing_service:
+        booking_url = settings.EXTERNAL_TICKETING_SERVICE_BOOKING_URL
+        cancel_booking_url = settings.EXTERNAL_TICKETING_SERVICE_CANCEL_BOOKING_URL
     provider = providers_factories.PublicApiProviderFactory.create(
         name=provider_name,
         isActive=isActive,
         enabledForPro=enabledForPro,
         bookingExternalUrl=booking_url,
         cancelExternalUrl=cancel_booking_url,
-        notificationExternalUrl=settings.CHARLIE_NOTIFICATION_EXTERNAL_URL,
+        notificationExternalUrl=settings.EXTERNAL_NOTIFICATION_URL,
         hmacKey="S3cr3tK3y",
     )
 
@@ -64,7 +64,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
     in_five_days = now + datetime.timedelta(days=5)
     in_ten_days = now + datetime.timedelta(days=10)
-    offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_charlie_url=True)
+    offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_ticketing_service=True)
     user = users_factories.ProFactory.create(
         email=user_email,
         firstName="Pro",

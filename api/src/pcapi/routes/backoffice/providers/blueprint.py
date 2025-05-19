@@ -152,7 +152,7 @@ def create_provider() -> utils.BackofficeResponse:
         )
         flash(
             Markup(
-                "La clé de chiffrage des requêtes entre le partenaire et le pass Culture dans le cadre de l'API Charlie est : <pre>{key}</pre>"
+                "La clé de chiffrage des requêtes entre le service de billetterie du partenaire et le pass Culture est : <pre>{key}</pre>"
             ).format(key=provider.hmacKey),
             "success",
         )

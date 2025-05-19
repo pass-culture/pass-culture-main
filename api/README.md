@@ -18,7 +18,7 @@ Spectree :
 * [API publique](https://developers.passculture.pro/rest-api)
 
 ## Liens des mocks API
-* [API "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
+* [Mock API billeterie](https://mock-api-billeterie.ehp.passculture.team/)
 
 ## Démarrage du serveur back api
 
