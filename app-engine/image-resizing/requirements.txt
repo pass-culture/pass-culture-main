@@ -1,5 +1,5 @@
 Flask<3
-flask-cors==4.0.2
+flask-cors==6.0.0
 appengine-python-standard>=0.2.2
 google-cloud-storage==2.5.0
 gunicorn==23.0.0
