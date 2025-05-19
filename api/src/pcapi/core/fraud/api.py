@@ -571,8 +571,9 @@ def handle_ok_manual_review(
         raise FraudCheckError("Pas de vérification d'identité effectuée")
 
     source_data: common_models.IdentityCheckContent = fraud_check.source_data()
+    id_piece_number = user.idPieceNumber or source_data.get_id_piece_number()
     try:
-        _check_id_piece_number_unicity(user, source_data.get_id_piece_number())
+        _check_id_piece_number_unicity(user, id_piece_number)
         _check_ine_hash_unicity(user, source_data.get_ine_hash())
     except DuplicateIdPieceNumber as err:
         raise FraudCheckError(
@@ -583,7 +584,7 @@ def handle_ok_manual_review(
             f"Le numéro INE {err.ine_hash} est déjà utilisé par l'utilisateur {err.duplicate_user_id}"
         ) from err
 
-    users_api.update_user_information_from_external_source(user, source_data)
+    users_api.update_user_information_from_external_source(user, source_data, id_piece_number=id_piece_number)
 
     if eligibility is None:
         eligibility = eligibility_api.get_pre_decree_or_current_eligibility(user)

@@ -32,6 +32,7 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1878,7 +1879,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    def test_pre_decree_eligibility_from_v3_eligibility(self, authenticated_client, legit_user):
+    def test_pre_decree_eligibility_when_beneficiary_of_post_decree_credit(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
@@ -1932,6 +1933,33 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         assert response.status_code == 200  # after redirect
         assert html_parser.extract_alert(response.data) == f"Une erreur s'est produite : {exception_class.__name__}"
+
+    def test_uses_most_recent_id_number(self, authenticated_client):
+        first_beneficiary = users_factories.BeneficiaryFactory()
+        would_be_beneficiary = users_factories.ProfileCompletedUserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=would_be_beneficiary,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.KO,
+            reasonCodes=[
+                fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
+                fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
+            ],
+            resultContent=fraud_factories.UbbleContentFactory(id_document_number=first_beneficiary.idPieceNumber),
+        )
+        admin_user = users_factories.AdminFactory()
+        new_id_piece_number = "123456789012"
+        users_api.update_user_info(would_be_beneficiary, author=admin_user, id_piece_number=new_id_piece_number)
+
+        form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE17_18.name,
+            "reason": "test",
+        }
+        response = self.post_to_endpoint(authenticated_client, user_id=would_be_beneficiary.id, form=form)
+
+        assert response.status_code == 303
+        assert would_be_beneficiary.is_beneficiary
 
 
 class GetPublicAccountHistoryTest:
