@@ -95,6 +95,8 @@ def create_event() -> utils.BackofficeResponse:
         special_event = operations_api.create_special_event_from_typeform(
             form_id=form.typeform_id.data,
             event_date=form.event_date.data,
+            end_import_date=form.end_import_date.data,
+            venue_id=form.venue.data[0] if form.venue.data else None,
         )
     except typeform.NotFoundException:
         mark_transaction_as_invalid()

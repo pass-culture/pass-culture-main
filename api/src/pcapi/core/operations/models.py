@@ -1,7 +1,6 @@
 import enum
 from datetime import date
 from datetime import datetime
-from datetime import timedelta
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -21,6 +20,7 @@ class SpecialEvent(PcObject, Base, Model):
     )
     externalId: str = sa.Column(sa.Text(), index=True, unique=True, nullable=False)
     title: str = sa.Column(sa.Text(), nullable=False)
+    endImportDate: date = sa.Column(sa.Date, index=True, nullable=False)
     eventDate: date = sa.Column(sa.Date, index=True, nullable=False, server_default=sa.func.now())
     offererId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True)
     offerer: sa_orm.Mapped[offerers_models.Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
@@ -34,11 +34,6 @@ class SpecialEvent(PcObject, Base, Model):
             postgresql_using="gin",
         ),
     )
-
-    @property
-    def endImportDate(self) -> date:
-        # TODO (rpaoloni 16/05/2025): replace with a column in db (should be done in pc-36166)
-        return self.eventDate + timedelta(days=7)
 
     @property
     def isFinished(self) -> bool:
