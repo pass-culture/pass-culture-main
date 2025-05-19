@@ -375,7 +375,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
 
     offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
-        "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
+        "OffererAddress", foreign_keys=[offererAddressId], back_populates="venue"
     )
 
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
@@ -1342,7 +1342,7 @@ class OffererAddress(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship("Venue", back_populates="offererAddress")
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", uselist=False, back_populates="offererAddress")
 
     __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
 
