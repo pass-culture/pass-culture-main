@@ -5,12 +5,14 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 from pcapi.utils import requests
 
@@ -286,3 +288,122 @@ class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
             "date_parution": "2014-10-02 00:00:00",
             "num_in_collection": "5833",
         }
+
+
+class WhitelistProductButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Whitelist"
+
+    @property
+    def path(self):
+        product = offers_factories.ProductFactory.create(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        )
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+
+class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_whitelist_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + user + product
+    expected_num_queries = 3
+
+    def test_confirm_product_whitelist_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(name="One Piece")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Whitelister le produit {product.name}" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Whitelister le produit" in buttons
+
+
+class PostProductWhitelistTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.whitelist_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_whitelist_product(self, authenticated_client):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(
+            ean=ean,
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        )
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert "Le produit a été marqué compatible avec les CGU" in html_parser.extract_alerts(response.data)
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.COMPATIBLE
+
+
+class BlacklistProductButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Blacklist"
+
+    @property
+    def path(self):
+        product = offers_factories.ProductFactory.create(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        )
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+
+class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_blacklist_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + user + product
+    expected_num_queries = 3
+
+    def test_confirm_product_blacklist_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(name="One Piece")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Blacklister le produit {product.name}" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Blacklister le produit" in buttons
+
+
+class PostProductBlacklistTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.blacklist_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_blacklist_product(self, authenticated_client):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(
+            ean=ean, gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        )
+        offer = offers_factories.OfferFactory.create(product=product)
+        offers_factories.StockFactory.create(offer=offer, price=10)
+
+        unlinked_offer = offers_factories.OfferFactory.create(ean=ean)
+        offers_factories.StockFactory.create(offer=unlinked_offer, price=10)
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert (
+            "Le produit a été marqué incompatible avec les CGU et les offres ont été désactivées"
+            in html_parser.extract_alerts(response.data)
+        )
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert offer.status == OfferStatus.REJECTED
+        assert unlinked_offer.status == OfferStatus.REJECTED
