@@ -109,7 +109,7 @@ class SearchEanTest(GetEndpointHelper):
     @patch(
         "pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=fixtures.INELIGIBLE_BOOK_BY_EAN_FIXTURE
     )
-    def test_search_ean_with_ineligibility_reason(self, mock_get_by_ean13, authenticated_client):
+    def test_search_ean_with_ineligibility_reasons(self, mock_get_by_ean13, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
             assert response.status_code == 200

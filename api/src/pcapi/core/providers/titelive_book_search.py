@@ -98,20 +98,20 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         return product
 
     def is_book_article_allowed(self, article: TiteLiveBookArticle, title: str) -> bool:
-        ineligibility_reason = get_ineligibility_reason(article, title)
+        ineligibility_reasons = get_ineligibility_reasons(article, title)
 
-        if not ineligibility_reason:
+        if not ineligibility_reasons:
             return True
 
         if article.gencod in self.product_whitelist_eans:
             logger.info(
                 "Allowing ean=%s even if ineligible reason=%s as it is a whitelisted product",  # TODO called twice = logged twice
                 article.gencod,
-                ineligibility_reason,
+                ineligibility_reasons,
             )
             return True
 
-        logger.info("Rejecting ineligible ean=%s because reason=%s", article.gencod, ineligibility_reason)
+        logger.info("Rejecting ineligible ean=%s because reason=%s", article.gencod, ineligibility_reasons)
         return False
 
     def get_product_info_from_search_response(self, titelive_json_response: list[dict]) -> list[TiteLiveBookWork]:
@@ -160,56 +160,57 @@ def get_gtl_id(article: TiteLiveBookArticle) -> str:
     return gtl_id.code
 
 
-def get_ineligibility_reason(article: TiteLiveBookArticle, title: str) -> str | None:
+def get_ineligibility_reasons(article: TiteLiveBookArticle, title: str) -> list[str] | None:
     # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
     # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...
+    reasons = []
     article_tva = float(article.taux_tva) if article.taux_tva else None
     if article_tva == float(constants.BASE_VAT):
-        return "vat-20"
+        reasons.append("vat-20")
 
     if article_tva == float(constants.PAPER_PRESS_VAT) and article.codesupport == constants.PAPER_PRESS_SUPPORT_CODE:
-        return "press"
+        reasons.append("press")
 
     if article.codesupport == constants.CALENDAR_SUPPORT_CODE:
-        return "calendar"
+        reasons.append("calendar")
 
     if article.codesupport == constants.POSTER_SUPPORT_CODE:
-        return "poster"
+        reasons.append("poster")
 
     if article.codesupport == constants.PAPER_CONSUMABLE_SUPPORT_CODE:
-        return "paper-consumable"
+        reasons.append("paper-consumable")
 
     # Coffrets (contenant un produit + un petit livret)
     if article.codesupport == constants.BOX_SUPPORT_CODE:
-        return "box"
+        reasons.append("box")
 
     # Oracles contenant des jeux de tarot
     if article.codesupport == constants.OBJECT_SUPPORT_CODE:
-        return "object"
+        reasons.append("object")
 
     # ouvrage "lectorat 18+" (Pornographie / ultra-violence)
     if article.id_lectorat == constants.LECTORAT_EIGHTEEN_ID:
-        return "pornography-or-violence"
+        reasons.append("pornography-or-violence")
 
     # Toeic or toefl
     if constants.TOEIC_TEXT in title or constants.TOEFL_TEXT in title:
-        return "toeic-toefl"
+        reasons.append("toeic-toefl")
 
     # --- GTL-based categorization ---
     gtl_id = get_gtl_id(article)
     if gtl_id == EMPTY_GTL.code:
-        return "empty-gtl"
+        reasons.append("empty-gtl")
 
     gtl_level_01_code = gtl_id[:2]
 
     # ouvrage du rayon scolaire
     if gtl_level_01_code == constants.GTL_LEVEL_01_SCHOOL:
-        return "school"
+        reasons.append("school")
 
     # ouvrage du rayon parascolaire,
     # code de la route (méthode d'apprentissage + codes basiques), code nautique, code aviation, etc...
     if gtl_level_01_code == constants.GTL_LEVEL_01_EXTRACURRICULAR:
-        return "extracurricular"
+        reasons.append("extracurricular")
 
     # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
     gtl_level_02_code = gtl_id[2:4]
@@ -217,17 +218,17 @@ def get_ineligibility_reason(article: TiteLiveBookArticle, title: str) -> str | 
         constants.GTL_LEVEL_02_BEFORE_3,
         constants.GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
     ]:
-        return "small-young"
+        reasons.append("small-young")
 
     # --- Default categorization ---
     if article.codesupport not in constants.TITELIVE_BOOK_SUPPORTS_BY_CODE:
         # If we find no known support code, the product is deemed ineligible
-        return "no-known-codesupport"
+        reasons.append("no-known-codesupport")
 
-    if not constants.TITELIVE_BOOK_SUPPORTS_BY_CODE[article.codesupport]["is_allowed"]:
-        return "uneligible-product-subcategory"
+    if article.codesupport and not constants.TITELIVE_BOOK_SUPPORTS_BY_CODE[article.codesupport]["is_allowed"]:
+        reasons.append("uneligible-product-subcategory")
 
-    return None
+    return reasons
 
 
 def get_book_format(codesupport: str | None) -> str | None:

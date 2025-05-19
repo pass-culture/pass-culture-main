@@ -631,6 +631,27 @@ def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, wi
             return status.value
 
 
+def format_product_cgu_compatibility_status(
+    cgu_compatibility: offers_models.GcuCompatibilityType, provider_name: str | None, with_badge: bool = False
+) -> str:
+    prefix = "\u2022\u00a0"  # bullet(•) + no-break space
+    match cgu_compatibility:
+        case offers_models.GcuCompatibilityType.COMPATIBLE:
+            return format_badge(f"{prefix}Compatible", "success") if with_badge else "Compatible"
+        case offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
+            return (
+                format_badge(f"{prefix}Incompatible (Fraude & Conformité)", "danger")
+                if with_badge
+                else "Incompatible (Fraude & Conformité)"
+            )
+        case offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
+            return (
+                format_badge(f"{prefix}Incompatible (Provider)", "danger") if with_badge else "Incompatible (Provider)"
+            )
+        case _:
+            return cgu_compatibility.value
+
+
 def format_offer_status(status: offer_mixin.OfferStatus) -> str:
     match status:
         case offer_mixin.OfferStatus.DRAFT | offer_mixin.CollectiveOfferStatus.DRAFT:
@@ -1821,6 +1842,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_collective_offer_rejection_reason"] = format_collective_offer_rejection_reason
+    app.jinja_env.filters["format_product_cgu_compatibility_status"] = format_product_cgu_compatibility_status
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
     app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
