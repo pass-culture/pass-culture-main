@@ -401,10 +401,33 @@
               <option value="dateCreated">Date de création</option>
             </select>
           </div>
+          {% if has_permission("PRO_FRAUD_ACTIONS") %}
+            <div class="btn-group btn-group-sm"
+                 data-toggle="pc-batch-confirm-btn-group"
+                 data-toggle-id="table-link-offer-to-product-btn-group"
+                 data-pc-table-multi-select-id="table-link-offer-to-product-validation"
+                 data-input-ids-name="object_ids">
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-use-confirmation-modal="true"
+                      data-mode="fetch"
+                      data-fetch-url="{{ url_for('backoffice_web.product.confirm_link_offers_forms', product_id=product.id) }}"
+                      data-modal-selector="#batch-link-to-product-modal">Associer les offres au produit</button>
+            </div>
+          {% endif %}
           <table id="unlinked-offers-table"
-                 class="mt-3 table table-borderless table-hover">
+                 class="mt-3 table table-borderless table-hover"
+                 data-table-multi-select-id="table-link-offer-to-product-validation">
             <thead class="table-light">
               <tr class="table-secondary fs-7">
+                {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                  <th scope="col">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           name="pc-table-multi-select-check-all" />
+                  </th>
+                {% endif %}
                 <th>ID</th>
                 <th>Nom</th>
                 <th>Partenaire culturel</th>
@@ -417,6 +440,10 @@
           </table>
           <div id="unlinked-offers-pagination"
                class="pagination"></div>
+          {% if has_permission("PRO_FRAUD_ACTIONS") %}
+            {{ build_lazy_modal(url_for("backoffice_web.product.confirm_link_offers_forms", product_id=product.id) ,
+            "batch-link-to-product-modal", "true") }}
+          {% endif %}
           {# djlint:off #}
             <script>
                 const unlinked_offers = {{ unlinked_offers | tojson }};
@@ -428,6 +455,9 @@
                   filterSelectSelector: '#filter-select-unlinked-offer',
                   itemsPerPage: 20,
                   rowRenderer: offer => `
+                      <td>
+                        <input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-${offer.id}" data-id="${offer.id}" />
+                      </td>
                       <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
                       <td>${offer.name}</td>
                       <td>
