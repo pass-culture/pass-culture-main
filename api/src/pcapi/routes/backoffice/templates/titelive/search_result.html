@@ -75,9 +75,10 @@
                     {% endfor %}
                   </ul>
                   <ul class="list-group list-group-flush">
-                    {% if ineligibility_reason %}
+                    {% if ineligibility_reasons %}
                       <li class="list-group-item">
-                        <b>Inéligible pass Culture :</b> {{ ineligibility_reason | format_badge("danger") }}
+                        <b>Inéligible pass Culture :</b>
+                        {% for ineligibility_reason in ineligibility_reasons %}{{ ineligibility_reason | format_badge("danger") }}{% endfor %}
                       </li>
                     {% endif %}
                     <li class="list-group-item">

@@ -750,7 +750,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     lastValidationPrice: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=True)
     name: str = sa.Column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship("PriceCategory", back_populates="offer")
-    product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(Product, backref="offers")
+    product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
+        Product, backref=sa_orm.backref("offers", order_by="Offer.id")
+    )
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True)
     rankingWeight = sa.Column(sa.Integer, nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
