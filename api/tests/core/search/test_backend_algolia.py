@@ -9,9 +9,9 @@ import time_machine
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.search import redis_queues
+from pcapi.core.search import serialization
 from pcapi.core.search.backends import algolia
-from pcapi.core.search.backends import redis_queues
-from pcapi.core.search.backends import serialization
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
