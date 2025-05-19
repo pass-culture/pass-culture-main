@@ -1240,27 +1240,6 @@ export class DefaultService {
     });
   }
   /**
-   * delete_api_key <DELETE>
-   * @param apiKeyPrefix
-   * @returns void
-   * @throws ApiError
-   */
-  public deleteApiKey(
-    apiKeyPrefix: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/offerers/api_keys/{api_key_prefix}',
-      path: {
-        'api_key_prefix': apiKeyPrefix,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * list_educational_offerers <GET>
    * @param offererId
    * @returns GetEducationalOfferersResponseModel OK

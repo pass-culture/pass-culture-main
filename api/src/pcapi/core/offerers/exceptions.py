@@ -9,10 +9,6 @@ class ApiKeyPrefixGenerationError(Exception):
     pass
 
 
-class ApiKeyDeletionDenied(Exception):
-    pass
-
-
 class CannotFindOffererForOfferId(Exception):
     pass
 
