@@ -34,6 +34,8 @@ dependencies = [
   "flask-wtf==1.2.2",
   "flask==2.0.*",
   "flower==2.0.1",
+  # FIXME (fseguin-pass) tornado is a flower dependency. Dependabot cannot bump it to 6.5 so we bump it here manually
+  "tornado (>=6.5,<7.0)",
   "geoalchemy2>=0.17.1",
   "google-api-python-client==2.169.0",
   "google-auth==2.40.1",
