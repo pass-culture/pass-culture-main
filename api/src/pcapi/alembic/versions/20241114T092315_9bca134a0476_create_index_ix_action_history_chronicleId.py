@@ -1,7 +1,7 @@
 """create index ix_action_history_chronicleId"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: post

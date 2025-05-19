@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi import settings
 from pcapi.core import search
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
 

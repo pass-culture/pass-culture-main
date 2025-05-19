@@ -3,9 +3,9 @@ import enum
 import typing
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
-import sqlalchemy.orm as sa_orm
 
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.users import models as users_models

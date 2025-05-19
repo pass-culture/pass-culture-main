@@ -1,14 +1,15 @@
 import copy
 import datetime
-from io import BytesIO
 import json
 import pathlib
+from io import BytesIO
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
+import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
@@ -29,7 +30,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import trigger_events
-import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.string import u_nbsp

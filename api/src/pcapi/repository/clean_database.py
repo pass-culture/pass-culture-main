@@ -3,12 +3,7 @@ import typing
 import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
 
-from pcapi import settings
-from pcapi.connectors.dms import models as dms_models
-from pcapi.core.achievements import models as achievements_models
-from pcapi.core.artist import models as artist_models
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.chronicles import models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
@@ -17,10 +12,15 @@ import pcapi.core.geography.models as geography_models
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
-from pcapi.core.operations import models as operations_models
 import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
+from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
+from pcapi.core.achievements import models as achievements_models
+from pcapi.core.artist import models as artist_models
+from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.operations import models as operations_models
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import Model
 from pcapi.models import db

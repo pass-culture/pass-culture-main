@@ -1,25 +1,25 @@
+import enum
+import logging
+import urllib.parse
 from dataclasses import dataclass
 from datetime import datetime
-import enum
 from enum import Enum
 from itertools import islice
-import logging
 from typing import Any
 from typing import Callable
 from typing import Iterable
-import urllib.parse
 
 import brevo_python
 from brevo_python.api.contacts_api import ContactsApi
 from brevo_python.models.created_process_id import CreatedProcessId
 from brevo_python.rest import ApiException as SendinblueApiException
 
+import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.celery_tasks.sendinblue import update_contact_attributes_task_celery
 from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
-import pcapi.core.users.models as users_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task_cloud_tasks
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest

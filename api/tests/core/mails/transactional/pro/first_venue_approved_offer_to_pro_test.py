@@ -1,7 +1,9 @@
 import pytest
 
-from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import (
     get_first_venue_approved_offer_email_data,
 )
@@ -9,8 +11,6 @@ from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import
     send_first_venue_approved_offer_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.settings import PRO_URL
 

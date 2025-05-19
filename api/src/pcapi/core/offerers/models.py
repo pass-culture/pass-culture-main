@@ -1,15 +1,17 @@
-from datetime import date
-from datetime import datetime
 import decimal
 import enum
 import logging
 import os
 import re
 import typing
+from datetime import date
+from datetime import datetime
 
 import psycopg2.extras
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_psql
+import sqlalchemy.orm as sa_orm
+import sqlalchemy.sql.functions as sa_func
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
@@ -17,21 +19,21 @@ from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
-import sqlalchemy.sql.functions as sa_func
 from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import LargeBinary
 
+import pcapi.core.finance.models as finance_models
+import pcapi.utils.db as db_utils
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
 from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
-import pcapi.core.finance.models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import BannerMetaModel
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -53,9 +55,7 @@ from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import numranges_to_timespan_str
-import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
-import pcapi.utils.postal_code as postal_code_utils
 
 
 if typing.TYPE_CHECKING:

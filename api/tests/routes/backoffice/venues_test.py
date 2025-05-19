@@ -1,13 +1,13 @@
+import json
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
-import json
 from operator import attrgetter
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
 import sqlalchemy as sa
+from flask import url_for
 
 from pcapi.connectors import api_adresse
 from pcapi.connectors.clickhouse import queries as clickhouse_queries

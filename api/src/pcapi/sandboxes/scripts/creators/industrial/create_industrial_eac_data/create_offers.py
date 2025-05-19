@@ -1,9 +1,9 @@
+import typing
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from itertools import count
 from itertools import cycle
-import typing
 
 import sqlalchemy as sa
 

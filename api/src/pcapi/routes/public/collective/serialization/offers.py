@@ -1,6 +1,6 @@
+import decimal
 from datetime import datetime
 from datetime import timezone
-import decimal
 from typing import Any
 from typing import Sequence
 

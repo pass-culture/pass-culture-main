@@ -1,23 +1,23 @@
 import datetime
 import decimal
 import logging
-from typing import Iterator
 import uuid
+from typing import Iterator
 
 import PIL
 
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.exceptions as offers_exceptions
+import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
+import pcapi.core.providers.models as providers_models
 from pcapi.connectors import thumb_storage
 from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import api as offers_api
-import pcapi.core.offers.exceptions as offers_exceptions
-import pcapi.core.offers.models as offers_models
-import pcapi.core.offers.repository as offers_repository
-import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api

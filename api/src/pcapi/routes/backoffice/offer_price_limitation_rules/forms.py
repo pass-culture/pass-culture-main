@@ -1,7 +1,7 @@
 import typing
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories

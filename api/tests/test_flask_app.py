@@ -1,7 +1,7 @@
 import logging
 
-from flask import url_for
 import pytest
+from flask import url_for
 from werkzeug.routing import IntegerConverter
 from werkzeug.routing import PathConverter
 from werkzeug.routing import UnicodeConverter

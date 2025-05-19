@@ -1,7 +1,7 @@
 from io import BytesIO
 
-from pypdf import PdfReader
 import pytest
+from pypdf import PdfReader
 
 from pcapi.core.finance import factories
 from pcapi.core.offerers import factories as offerers_factories

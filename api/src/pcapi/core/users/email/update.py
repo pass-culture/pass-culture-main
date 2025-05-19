@@ -1,12 +1,12 @@
-from datetime import datetime
 import enum
 import logging
+from datetime import datetime
 
 from flask import current_app as app
 
+import pcapi.core.external.sendinblue as external_contacts
 from pcapi import settings
 from pcapi.core import token as token_utils
-import pcapi.core.external.sendinblue as external_contacts
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.users import api
 from pcapi.core.users import constants

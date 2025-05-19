@@ -1,6 +1,6 @@
 import dataclasses
-from datetime import datetime
 import enum
+from datetime import datetime
 
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models

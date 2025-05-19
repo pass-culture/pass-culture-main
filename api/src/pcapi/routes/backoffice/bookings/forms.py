@@ -2,8 +2,8 @@ import datetime
 import enum
 import typing
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories

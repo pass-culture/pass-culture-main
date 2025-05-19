@@ -1,16 +1,16 @@
+import decimal
+import logging
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-import decimal
-import logging
 
+import pcapi.utils.date as date_utils
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models.event_occurence import EventOccurrence
 from pcapi.sandboxes.scripts.utils.select import remove_every
-import pcapi.utils.date as date_utils
 
 from . import utils
 

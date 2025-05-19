@@ -6,31 +6,31 @@ import logging
 import pydantic.v1 as pydantic_v1
 import sentry_sdk
 
-from pcapi import settings
-from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
-from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.bookings.utils import generate_hmac_signature
-from pcapi.core.external_bookings.boost.client import BoostClientAPI
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
-from pcapi.core.external_bookings.cgr.client import CGRClientAPI
-from pcapi.core.external_bookings.ems.client import EMSClientAPI
 import pcapi.core.external_bookings.models as external_bookings_models
-from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
+import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
+import pcapi.utils.cinema_providers as cinema_providers_utils
+from pcapi import settings
+from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
+from pcapi.core.bookings.constants import RedisExternalBookingType
+from pcapi.core.bookings.utils import generate_hmac_signature
+from pcapi.core.external_bookings.boost.client import BoostClientAPI
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.external_bookings.cgr.client import CGRClientAPI
+from pcapi.core.external_bookings.ems.client import EMSClientAPI
+from pcapi.core.external_bookings.models import Ticket
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.session_management import on_commit
-import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import requests
-import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.queue import add_to_queue
 
 from . import exceptions

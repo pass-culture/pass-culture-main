@@ -1,9 +1,9 @@
+import pcapi.core.users.models as users_models
 from pcapi.core import mails
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import constants
-import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.utils.urls import generate_firebase_dynamic_link
 

@@ -2,8 +2,8 @@
 create discord_user table
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

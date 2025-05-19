@@ -1,7 +1,7 @@
 from unittest import mock
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.external.zendesk_sell_backends import base as zendesk_sell
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing

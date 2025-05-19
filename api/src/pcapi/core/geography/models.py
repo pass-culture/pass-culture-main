@@ -1,9 +1,9 @@
 import dataclasses
-from decimal import Decimal
 import typing
+from decimal import Decimal
 
-from geoalchemy2 import Geometry
 import sqlalchemy as sa
+from geoalchemy2 import Geometry
 from sqlalchemy import orm as sa_orm
 
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER

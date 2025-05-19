@@ -1,18 +1,18 @@
+import logging
+import sys
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-import logging
-import sys
 from unittest.mock import patch
 
-from pydantic.v1 import parse_obj_as
 import pytest
 import requests_mock
+from pydantic.v1 import parse_obj_as
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import models as history_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
 

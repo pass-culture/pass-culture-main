@@ -1,14 +1,14 @@
-from copy import deepcopy
 import datetime
 import html
+from copy import deepcopy
 
 import pytest
 
+import pcapi.core.providers.constants as providers_constants
 from pcapi import settings
 from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories
-import pcapi.core.providers.constants as providers_constants
 from pcapi.utils import date as date_utils
 
 from tests.connectors.titelive import fixtures

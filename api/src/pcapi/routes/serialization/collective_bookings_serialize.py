@@ -1,13 +1,13 @@
 import csv
-from datetime import datetime
 import decimal
+import typing
+from datetime import datetime
 from enum import Enum
 from io import BytesIO
 from io import StringIO
-import typing
 
-from pydantic.v1 import root_validator
 import xlsxwriter
+from pydantic.v1 import root_validator
 
 from pcapi.core.bookings.utils import convert_collective_booking_dates_utc_to_venue_timezone
 from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_timezone

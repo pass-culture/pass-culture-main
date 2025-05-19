@@ -1,16 +1,16 @@
+import logging
 from itertools import cycle
 from itertools import islice
-import logging
 from pathlib import Path
 from shutil import copyfile
 
+import pcapi.core.offers.factories as offers_factories
+import pcapi.sandboxes
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.object_storage import delete_public_object_recursively
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
-import pcapi.sandboxes
 from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 

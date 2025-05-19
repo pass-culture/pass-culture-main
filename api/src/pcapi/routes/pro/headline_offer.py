@@ -3,9 +3,9 @@ import logging
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers import exceptions
 from pcapi.models import api_errors
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api

@@ -1,11 +1,11 @@
 import datetime
 from decimal import Decimal
 
+import pcapi.core.finance.repository as finance_repository
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock

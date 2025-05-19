@@ -1,7 +1,7 @@
 """Recreate index: ix_action_history_bankAccountId, with condition: not null"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi import settings
 

@@ -5,11 +5,11 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import get_reminder_7_days_before_event_email_data
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

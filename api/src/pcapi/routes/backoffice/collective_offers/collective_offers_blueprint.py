@@ -2,6 +2,8 @@ import datetime
 import re
 import typing
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -10,8 +12,6 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 

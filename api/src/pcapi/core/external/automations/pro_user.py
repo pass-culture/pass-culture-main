@@ -1,5 +1,5 @@
-from pcapi import settings
 import pcapi.connectors.big_query.queries as big_queries
+from pcapi import settings
 from pcapi.core.external.sendinblue import add_contacts_to_list
 
 

@@ -2,10 +2,10 @@ import logging
 import sys
 import time
 
+import sqlalchemy.exc
 from alembic import context
 from sqlalchemy import create_engine
 from sqlalchemy import schema
-import sqlalchemy.exc
 
 from pcapi import settings
 from pcapi.models import Base

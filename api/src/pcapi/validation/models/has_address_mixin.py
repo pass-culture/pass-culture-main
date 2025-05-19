@@ -1,6 +1,6 @@
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_address_mixin import HasAddressMixin
-import pcapi.utils.postal_code as postal_code_utils
 
 
 def validate(obj: HasAddressMixin, api_errors: ApiErrors) -> ApiErrors:

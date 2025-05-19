@@ -5,18 +5,19 @@ import typing
 import click
 import sqlalchemy.orm as sa_orm
 
-from pcapi import settings
 import pcapi.connectors.big_query.queries as big_query_queries
 import pcapi.core.bookings.api as bookings_api
+import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.providers.repository as providers_repository
+from pcapi import settings
 from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
-import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.external.automations import pro_user as pro_user_automations
 from pcapi.core.external.automations import user as user_automations
 from pcapi.core.external.automations import venue as venue_automations
 from pcapi.core.finance import ds
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import (
     find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago,
 )
@@ -24,7 +25,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
-import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_users_that_had_birthday_since

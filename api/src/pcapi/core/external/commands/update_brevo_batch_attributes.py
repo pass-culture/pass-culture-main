@@ -4,9 +4,9 @@ Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
 
-from dataclasses import dataclass
 import logging
 import time
+from dataclasses import dataclass
 
 import sqlalchemy as sa
 import urllib3.exceptions

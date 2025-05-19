@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declared_attr
-import sqlalchemy.orm as sa_orm
 
 
 if TYPE_CHECKING:

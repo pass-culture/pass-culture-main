@@ -4,38 +4,38 @@ import functools
 import hashlib
 import json as json_lib
 import os
-from pathlib import Path
-from pprint import pprint
 import sys
 import time
 import typing
+import urllib.parse
+from pathlib import Path
+from pprint import pprint
 from unittest.mock import MagicMock
 from unittest.mock import patch
-import urllib.parse
 
+import ecdsa
+import pytest
+import requests_mock
+import sqlalchemy as sa
 from alembic import command
 from alembic.config import Config
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-import ecdsa
 from faker import Faker
 from flask import Flask
 from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
-import pytest
 from requests.auth import _basic_auth_str  # noqa: TID251
-import requests_mock
-import sqlalchemy as sa
 
-from pcapi.celery_tasks.celery import celery_init_app
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
-from pcapi.core.users import testing as users_testing
 import pcapi.core.users.models as users_models
+from pcapi.celery_tasks.celery import celery_init_app
+from pcapi.core.users import testing as users_testing
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.models import db
 from pcapi.models.feature import install_feature_flags

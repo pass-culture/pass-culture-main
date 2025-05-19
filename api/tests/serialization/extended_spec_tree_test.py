@@ -6,8 +6,8 @@ from spectree import Tag
 
 from pcapi.serialization.decorator import feature_flag_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.spec_tree import _AUTHENTICATION_ATTRIBUTE
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.spec_tree import add_security_scheme
 
 

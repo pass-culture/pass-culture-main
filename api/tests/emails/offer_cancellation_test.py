@@ -3,16 +3,16 @@ from datetime import timedelta
 from datetime import timezone
 from unittest.mock import patch
 
-from bs4 import BeautifulSoup
 import pytest
+from bs4 import BeautifulSoup
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.mails.transactional.bookings.booking_cancellation import (
-    get_booking_cancellation_confirmation_by_pro_email_data,
-)
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.mails.transactional.bookings.booking_cancellation import (
+    get_booking_cancellation_confirmation_by_pro_email_data,
+)
 
 
 class MakeOffererDrivenCancellationEmailForOffererTest:

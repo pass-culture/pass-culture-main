@@ -1,7 +1,7 @@
 """Set questionId not nullable for table special_event_answer"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: post

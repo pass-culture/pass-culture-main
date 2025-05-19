@@ -1,13 +1,13 @@
-from collections import defaultdict
 import typing
+from collections import defaultdict
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
 from flask_login import current_user
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offers import api as offers_api
@@ -16,8 +16,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
-from . import forms
 from .. import utils
+from . import forms
 
 
 multiple_offers_blueprint = utils.child_backoffice_blueprint(

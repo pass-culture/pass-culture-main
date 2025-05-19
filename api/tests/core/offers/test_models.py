@@ -1,16 +1,16 @@
 import datetime
 
 import pytest
-from sqlalchemy import exc as sa_exc
 import time_machine
+from sqlalchemy import exc as sa_exc
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
-import pcapi.core.providers.factories as providers_factories
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors

@@ -1,16 +1,16 @@
-from dataclasses import dataclass
 import datetime
 import decimal
 import enum
 import typing
+from dataclasses import dataclass
 
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql as sa_sql
 
-from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.constants as provider_constants
+from pcapi.core.offerers.models import Venue
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -18,8 +18,8 @@ from pcapi.models.pc_object import PcObject
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.educational.models import CollectiveOffer
     import pcapi.core.offerers.models as offerers_models
+    from pcapi.core.educational.models import CollectiveOffer
 
 
 class Provider(PcObject, Base, Model, DeactivableMixin):

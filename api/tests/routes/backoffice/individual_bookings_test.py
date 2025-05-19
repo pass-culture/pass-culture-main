@@ -1,12 +1,12 @@
 import dataclasses
 import datetime
-from io import BytesIO
 import re
+from io import BytesIO
 
 import factory
-from flask import url_for
 import openpyxl
 import pytest
+from flask import url_for
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models

@@ -5,8 +5,8 @@ from io import BytesIO
 import openpyxl
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.routes.serialization.collective_bookings_serialize import COLLECTIVE_BOOKING_EXPORT_HEADER
 

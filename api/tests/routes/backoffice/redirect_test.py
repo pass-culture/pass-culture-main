@@ -1,8 +1,8 @@
 import logging
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.connectors import virustotal
 from pcapi.core.testing import assert_num_queries

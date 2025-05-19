@@ -1,8 +1,8 @@
 import dataclasses
 import datetime
-from functools import partial
 import logging
 import typing
+from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm

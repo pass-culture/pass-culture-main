@@ -6,8 +6,8 @@ import pytest
 import time_machine
 
 import pcapi.core.token as token_utils
-from pcapi.core.users import constants
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users import constants
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

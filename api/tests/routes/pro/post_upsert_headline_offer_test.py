@@ -4,11 +4,11 @@ from unittest import mock
 
 import pytest
 
-from pcapi.core import search
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import search
+from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 
 

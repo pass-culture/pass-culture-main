@@ -1,13 +1,13 @@
-from io import StringIO
 import json
+from io import StringIO
 from unittest import mock
 
-from algoliasearch.search_index import SearchIndex
 import pytest
 import requests_mock
+from algoliasearch.search_index import SearchIndex
 
-from pcapi import settings
 import pcapi.core.search.commands.settings as commands_settings
+from pcapi import settings
 
 
 class AlgoliaSettingsTest:

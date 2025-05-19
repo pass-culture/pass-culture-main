@@ -2,15 +2,15 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
+import pytz
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 from markupsafe import Markup
-import pytz
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import subcategories

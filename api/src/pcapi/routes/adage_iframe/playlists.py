@@ -1,13 +1,13 @@
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
 from sqlalchemy.sql.expression import func
 
+import pcapi.core.educational.api.institution as institution_api
+import pcapi.core.educational.api.playlists as playlists_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
-import pcapi.core.educational.api.institution as institution_api
-import pcapi.core.educational.api.playlists as playlists_api
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
@@ -16,10 +16,10 @@ from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization import playlists as playlists_serializers
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
 

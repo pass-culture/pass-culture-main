@@ -5,8 +5,8 @@ import dateutil
 import pytest
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
-from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.date import METROPOLE_TIMEZONE
+from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.date import default_timezone_to_local_datetime
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email

@@ -5,12 +5,12 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core import testing
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
-import pcapi.core.providers.factories as providers_factories
 from pcapi.models import db
 
 

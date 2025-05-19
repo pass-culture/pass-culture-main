@@ -1,19 +1,20 @@
-from datetime import datetime
 import enum
+from datetime import datetime
 from typing import Any
 from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
+import sqlalchemy.orm as sa_orm
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
-import sqlalchemy.orm as sa_orm
 
-from pcapi import settings
-from pcapi.core.offerers import schemas as offerers_schemas
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
+import pcapi.utils.date as date_utils
+from pcapi import settings
+from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.core.offerers.models import Target
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -23,7 +24,6 @@ from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 from pcapi.routes.shared import validation
 from pcapi.serialization.utils import to_camel
-import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
 
 

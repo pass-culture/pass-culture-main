@@ -1,12 +1,12 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import sqlalchemy as sa
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import OffererDailyViewsLast180Days
 from pcapi.connectors.big_query.queries.offerer_stats import OffererTopOffersAndTotalViewsLast30Days
-from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 

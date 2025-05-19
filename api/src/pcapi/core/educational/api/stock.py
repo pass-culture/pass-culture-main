@@ -1,6 +1,6 @@
 import datetime
-from functools import partial
 import logging
+from functools import partial
 
 import sqlalchemy.orm as sa_orm
 

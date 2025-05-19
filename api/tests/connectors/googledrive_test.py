@@ -1,8 +1,8 @@
 import functools
 import io
 import json
-from unittest import mock
 import urllib.parse
+from unittest import mock
 
 import httplib2
 import pytest

@@ -1,12 +1,12 @@
 import pytest
 
-from pcapi.core.bookings import factories as booking_factory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
+import pcapi.core.users.factories as users_factories
+from pcapi.core.bookings import factories as booking_factory
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
 

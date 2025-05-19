@@ -1,13 +1,14 @@
 import datetime
-from decimal import Decimal
 import json
 import logging
+from decimal import Decimal
 from unittest import mock
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi import settings as pcapi_settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import conf
@@ -17,7 +18,6 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories

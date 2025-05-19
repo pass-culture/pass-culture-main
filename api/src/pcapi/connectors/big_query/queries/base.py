@@ -1,5 +1,5 @@
-from collections.abc import Mapping
 import typing
+from collections.abc import Mapping
 
 import pydantic.v1 as pydantic_v1
 

@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core import search
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core import search
 from pcapi.core.offers.models import Mediation
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize

@@ -1,12 +1,12 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import siret_api
 from pcapi.core.history import models as history_models
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
 

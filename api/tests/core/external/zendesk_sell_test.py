@@ -1,6 +1,6 @@
 import logging
-from unittest.mock import patch
 import urllib.parse
+from unittest.mock import patch
 
 import pytest
 import requests_mock

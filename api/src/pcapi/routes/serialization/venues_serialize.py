@@ -1,10 +1,10 @@
-from datetime import datetime
 import enum
-from io import BytesIO
 import typing
+from datetime import datetime
+from io import BytesIO
 
-from PIL import Image
 import pydantic.v1 as pydantic_v1
+from PIL import Image
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict

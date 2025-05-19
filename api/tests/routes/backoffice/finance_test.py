@@ -3,10 +3,10 @@ import decimal
 from secrets import compare_digest
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
-from flask import url_for
 import pytest
 import sqlalchemy as sa
+from dateutil.relativedelta import relativedelta
+from flask import url_for
 
 from pcapi.core import testing
 from pcapi.core.bookings import api as bookings_api

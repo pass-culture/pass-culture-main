@@ -2,8 +2,8 @@ from collections.abc import Iterable
 from datetime import date
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models

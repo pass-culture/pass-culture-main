@@ -1,8 +1,8 @@
+import datetime
+import logging
 from base64 import b64decode
 from csv import DictReader
-import datetime
 from decimal import Decimal
-import logging
 from pathlib import Path
 from unittest import mock
 

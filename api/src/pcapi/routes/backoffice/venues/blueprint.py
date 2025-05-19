@@ -1,9 +1,11 @@
-from datetime import datetime
 import decimal
-from functools import partial
 import logging
 import typing
+from datetime import datetime
+from functools import partial
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -12,8 +14,6 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.clickhouse import queries as clickhouse_queries

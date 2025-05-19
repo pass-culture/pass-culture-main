@@ -2,8 +2,8 @@
 create product_mediation table that will store the image url of the product
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 from pcapi.core.offers.models import ImageType

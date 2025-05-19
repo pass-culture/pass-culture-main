@@ -1,17 +1,17 @@
-from datetime import datetime
-from datetime import timedelta
 import hashlib
 import json
 import logging
-from unittest import mock
 import uuid
+from datetime import datetime
+from datetime import timedelta
+from unittest import mock
 
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
 import fakeredis
 import jwt
 import pytest
 import time_machine
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 from pcapi import settings
 from pcapi.core import token as token_tools

@@ -1,16 +1,16 @@
-from itertools import islice
 import logging
 import typing
+from itertools import islice
 
 import click
 
+import pcapi.core.educational.repository as collective_offers_repository
+import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.repository as offers_repository
 from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
-import pcapi.core.educational.repository as collective_offers_repository
 from pcapi.core.offerers import api as offerers_api
-import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search import staging_indexation
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint

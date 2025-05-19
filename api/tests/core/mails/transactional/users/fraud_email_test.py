@@ -1,5 +1,5 @@
-from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
+from pcapi import settings
 from pcapi.core.mails.transactional.users.fraud_emails import _send_fraud_mail
 
 

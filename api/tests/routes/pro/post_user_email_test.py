@@ -5,8 +5,8 @@ from urllib.parse import urlparse
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
+from pcapi import settings
 from pcapi.core.users import factories as users_factories
 
 

@@ -1,6 +1,6 @@
+import pytest
 from flask import url_for
 from flask_login import login_user
-import pytest
 
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models

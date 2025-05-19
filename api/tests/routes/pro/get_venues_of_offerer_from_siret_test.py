@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core import testing
 from pcapi.core.testing import assert_num_queries
 
 

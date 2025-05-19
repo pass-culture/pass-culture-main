@@ -6,11 +6,11 @@ import time_machine
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.finance import api
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.models import db
 
 

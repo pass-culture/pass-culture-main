@@ -1,14 +1,14 @@
+import logging
+import typing
 from abc import abstractmethod
 from collections.abc import Iterator
 from datetime import datetime
-import logging
-import typing
 
-from pcapi.connectors.thumb_storage import create_thumb
-from pcapi.core import search
 import pcapi.core.finance.api as finance_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
+from pcapi.connectors.thumb_storage import create_thumb
+from pcapi.core import search
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.chunk_manager import get_object_from_current_chunks
 from pcapi.local_providers.chunk_manager import save_chunks

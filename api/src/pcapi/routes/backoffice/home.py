@@ -1,8 +1,8 @@
+import sqlalchemy as sa
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask_login import current_user
-import sqlalchemy as sa
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.educational import models as educational_models

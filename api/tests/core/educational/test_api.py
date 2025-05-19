@@ -4,18 +4,18 @@ import json
 from unittest import mock
 
 import dateutil
-from flask import current_app
 import pytest
 import time_machine
+from flask import current_app
 
+import pcapi.core.educational.api.institution as institution_api
+import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import stock as educational_api_stock
-import pcapi.core.educational.api.institution as institution_api
 from pcapi.core.educational.api.offer import PATCH_DETAILS_FIELDS_PUBLIC
 from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus

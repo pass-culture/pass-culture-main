@@ -11,12 +11,12 @@ from pcapi.core.educational.repository import find_educational_institution_by_ua
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization.adage_authentication import (
-    get_redactor_information_from_adage_authentication,
-)
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedResponse
 from pcapi.routes.adage_iframe.serialization.adage_authentication import EducationalInstitutionProgramModel
+from pcapi.routes.adage_iframe.serialization.adage_authentication import (
+    get_redactor_information_from_adage_authentication,
+)
 from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 

@@ -1,19 +1,19 @@
+import hmac
+import typing
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from hashlib import sha256
-import hmac
-import typing
 from zoneinfo import ZoneInfo
 
-from dateutil import tz
 import pytz
+from dateutil import tz
 
-from pcapi import settings
-from pcapi.core.categories import subcategories
 import pcapi.utils.date as date_utils
 import pcapi.utils.postal_code as postal_code_utils
+from pcapi import settings
+from pcapi.core.categories import subcategories
 
 
 if typing.TYPE_CHECKING:

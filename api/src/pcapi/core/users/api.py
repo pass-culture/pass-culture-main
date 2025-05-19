@@ -1,26 +1,44 @@
-from dataclasses import asdict
 import datetime
-from decimal import Decimal
 import enum
-from io import BytesIO
 import itertools
 import logging
-from pathlib import Path
 import random
 import re
 import typing
 import zipfile
+from dataclasses import asdict
+from decimal import Decimal
+from io import BytesIO
+from pathlib import Path
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask import render_template
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
-import sqlalchemy as sa
 from sqlalchemy import func
-import sqlalchemy.orm as sa_orm
 
+import pcapi.core.bookings.models as bookings_models
+import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.fraud.api as fraud_api
+import pcapi.core.fraud.common.models as common_fraud_models
+import pcapi.core.history.api as history_api
+import pcapi.core.history.models as history_models
+import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
+import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
+import pcapi.core.users.constants as users_constants
+import pcapi.core.users.ds as users_ds
+import pcapi.core.users.repository as users_repository
+import pcapi.core.users.utils as users_utils
+import pcapi.utils.date as date_utils
+import pcapi.utils.email as email_utils
+import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors.beamer import BeamerException
@@ -29,8 +47,6 @@ from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core import mails as mails_api
 from pcapi.core import object_storage
 from pcapi.core import token as token_utils
-import pcapi.core.bookings.models as bookings_models
-import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.chronicles import constants as chronicles_constants
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -38,25 +54,12 @@ from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import models as fraud_models
-import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.common.models as common_fraud_models
 from pcapi.core.geography.repository import get_iris_from_address
-import pcapi.core.history.api as history_api
 from pcapi.core.history.api import add_action
-import pcapi.core.history.models as history_models
 from pcapi.core.mails import get_raw_contact_data
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
-import pcapi.core.offerers.api as offerers_api
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
-import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
-import pcapi.core.users.constants as users_constants
-import pcapi.core.users.ds as users_ds
-import pcapi.core.users.repository as users_repository
-import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import random_password
 from pcapi.models import db
@@ -71,10 +74,7 @@ from pcapi.repository.session_management import is_managed_transaction
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.clean_accents import clean_accents
-import pcapi.utils.date as date_utils
-import pcapi.utils.email as email_utils
 from pcapi.utils.pdf import generate_pdf_from_html
-import pcapi.utils.postal_code as postal_code_utils
 from pcapi.utils.requests import ExternalAPIException
 
 from . import constants

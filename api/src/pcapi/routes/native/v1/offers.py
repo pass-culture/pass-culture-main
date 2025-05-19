@@ -1,12 +1,12 @@
 from sqlalchemy.orm import joinedload
 
+import pcapi.core.chronicles.api as chronicles_api
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
 from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
 from pcapi.core.categories.app_search_tree import SEARCH_NODES
 from pcapi.core.categories.models import GenreType
-import pcapi.core.chronicles.api as chronicles_api
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offers import api
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Offer

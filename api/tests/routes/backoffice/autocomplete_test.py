@@ -2,8 +2,8 @@ import datetime
 import re
 from unittest import mock
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.connectors import api_adresse
 from pcapi.core.criteria import factories as criteria_factories

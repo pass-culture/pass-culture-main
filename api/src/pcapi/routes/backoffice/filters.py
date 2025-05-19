@@ -8,19 +8,19 @@ import typing
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
+import psycopg2.extras
+import pytz
 from flask import Flask
 from flask import url_for
 from markupsafe import Markup
 from markupsafe import escape
-import psycopg2.extras
-import pytz
 
+import pcapi.core.categories.genres.music
 from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres import show
-import pcapi.core.categories.genres.music
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.criteria import models as criteria_models

@@ -1,12 +1,12 @@
-from collections.abc import Sequence
 import csv
+import typing
+from collections.abc import Sequence
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from io import BytesIO
 from io import StringIO
-import typing
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm

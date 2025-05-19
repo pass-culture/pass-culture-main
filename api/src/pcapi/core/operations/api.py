@@ -1,7 +1,7 @@
-from contextlib import suppress
 import datetime
-from functools import partial
 import logging
+from contextlib import suppress
+from functools import partial
 from traceback import format_exc
 
 import sqlalchemy as sa

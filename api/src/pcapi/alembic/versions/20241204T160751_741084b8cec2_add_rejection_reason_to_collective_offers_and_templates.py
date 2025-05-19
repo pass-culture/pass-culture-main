@@ -1,7 +1,7 @@
 """Add rejectionReason to collectiveOffer and collectiveOfferTemplate"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.educational.models import CollectiveOfferRejectionReason
 from pcapi.utils.db import MagicEnum

@@ -1,7 +1,7 @@
 """Add gcuCompatibilityType to Product table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.utils.db import MagicEnum

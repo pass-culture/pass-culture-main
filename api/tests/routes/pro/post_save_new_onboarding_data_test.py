@@ -2,13 +2,13 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.users.factories as users_factories
-import pcapi.core.users.models as users_models
 from pcapi.models import db
 
 from tests.connectors import sirene_test_data

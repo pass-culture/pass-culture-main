@@ -1,9 +1,9 @@
+import typing
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-import typing
 
 import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm

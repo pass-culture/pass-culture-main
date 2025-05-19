@@ -2,16 +2,16 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.schemas import VenueTypeCode
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
-import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 

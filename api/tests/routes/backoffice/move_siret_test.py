@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import factories as finance_factories

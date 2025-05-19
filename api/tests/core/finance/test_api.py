@@ -1,10 +1,10 @@
 import csv
 import datetime
-from decimal import Decimal
 import io
 import pathlib
-from unittest import mock
 import zipfile
+from decimal import Decimal
+from unittest import mock
 
 import pytest
 import pytz

@@ -1,28 +1,28 @@
 import datetime
-from functools import lru_cache
 import json
 import logging
 import math
-from operator import attrgetter
 import typing
+from functools import lru_cache
+from operator import attrgetter
 
 from pydantic.v1.tools import parse_obj_as
 
+import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
+import pcapi.core.bookings.models as bookings_models
+import pcapi.core.external_bookings.cds.constants as cds_constants
+import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.users.models as users_models
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
 from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
-import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
-import pcapi.core.bookings.models as bookings_models
-import pcapi.core.external_bookings.cds.constants as cds_constants
-import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
-import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import Ticket
-import pcapi.core.users.models as users_models
 from pcapi.utils.queue import add_to_queue
 
 from . import constants

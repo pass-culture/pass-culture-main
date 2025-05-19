@@ -4,16 +4,16 @@ import hmac
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories
 import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
+from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
+from pcapi.models import db
 
 
 class Returns204Test:

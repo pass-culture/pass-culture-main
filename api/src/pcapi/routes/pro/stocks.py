@@ -1,15 +1,15 @@
 import logging
 
-from flask_login import current_user
-from flask_login import login_required
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask_login import current_user
+from flask_login import login_required
 
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import transaction

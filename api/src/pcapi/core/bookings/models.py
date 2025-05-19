@@ -1,25 +1,25 @@
-from datetime import datetime
 import decimal
-from decimal import Decimal
 import enum
+from datetime import datetime
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Label
 
+import pcapi.core.finance.models as finance_models
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.utils import SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE
 from pcapi.core.bookings.utils import get_cooldown_datetime_by_subcategories
 from pcapi.core.categories import subcategories
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users import models as users_models

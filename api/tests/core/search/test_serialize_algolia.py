@@ -1,9 +1,9 @@
 import datetime
 import decimal
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi.core.artist import factories as artists_factories
 from pcapi.core.artist import models as artists_models

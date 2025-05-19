@@ -3,9 +3,10 @@ import datetime
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     get_booking_event_reminder_to_beneficiary_email_data,
 )
@@ -13,7 +14,6 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
     send_individual_booking_event_reminder_email_to_beneficiary,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offers.factories as offers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

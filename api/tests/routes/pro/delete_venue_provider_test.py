@@ -1,8 +1,8 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.providers import api as providers_api
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers import api as providers_api
 
 
 @pytest.mark.usefixtures("db_session")

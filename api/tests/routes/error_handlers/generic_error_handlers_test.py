@@ -1,7 +1,7 @@
-from datetime import datetime
 import io
 import logging
 import pathlib
+from datetime import datetime
 
 import pytest
 import sqlalchemy as sa

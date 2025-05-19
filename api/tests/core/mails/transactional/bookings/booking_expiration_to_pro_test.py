@@ -1,11 +1,11 @@
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

@@ -1,7 +1,7 @@
 """Create titelive gtl mapping table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.offers.models import TiteliveGtlType
 from pcapi.utils.db import MagicEnum

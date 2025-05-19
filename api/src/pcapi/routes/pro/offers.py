@@ -1,24 +1,24 @@
 import logging
 
+import sqlalchemy as sqla
+import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-import sqlalchemy as sqla
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
+import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
-import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.repository as offers_repository
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.core.reminders.external import reminders_notifications
 from pcapi.models import api_errors

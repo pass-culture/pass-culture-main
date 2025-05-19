@@ -4,8 +4,8 @@ from datetime import timedelta
 import pytest
 import time_machine
 
-from pcapi.core.bookings import factories as booking_factories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     get_booking_cancellation_by_beneficiary_email_data,
 )

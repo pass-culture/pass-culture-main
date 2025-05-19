@@ -4,8 +4,8 @@ import logging
 import time
 import typing
 
-from flask import current_app
 import sqlalchemy.orm as sa_orm
+from flask import current_app
 
 from pcapi import settings
 from pcapi.connectors import googledrive

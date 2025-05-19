@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories

@@ -1,9 +1,9 @@
 from pathlib import Path
 
+import pcapi.sandboxes
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Model
-import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
 
 

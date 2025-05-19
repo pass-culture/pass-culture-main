@@ -4,13 +4,13 @@ from datetime import timedelta
 import pytest
 import time_machine
 
-from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
+from pcapi.core.categories import subcategories
+from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils.human_ids import humanize
 
 

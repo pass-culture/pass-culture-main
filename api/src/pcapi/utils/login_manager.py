@@ -1,15 +1,15 @@
-from datetime import datetime
-from datetime import timedelta
 import logging
 import os
 import signal
 import uuid
+from datetime import datetime
+from datetime import timedelta
 
 import flask
+import werkzeug.datastructures
 from flask import current_app as app
 from flask_login import logout_user
 from sqlalchemy.exc import InternalError
-import werkzeug.datastructures
 
 import pcapi.core.users.backoffice.api as backoffice_api
 import pcapi.core.users.models as users_models

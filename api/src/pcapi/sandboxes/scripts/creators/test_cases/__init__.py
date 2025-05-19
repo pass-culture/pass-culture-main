@@ -1,15 +1,16 @@
 import datetime
-from functools import wraps
 import itertools
 import logging
 import pathlib
 import random
 import time
 import typing
+from functools import wraps
 
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
 
+import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.core.achievements import factories as achievements_factories
@@ -38,10 +39,10 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.repository.session_management import atomic
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_free_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
     create_specific_cashflow_batch_without_invoice,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_free_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import (
     create_industrial_offer_price_limitation_rules,
@@ -55,7 +56,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 

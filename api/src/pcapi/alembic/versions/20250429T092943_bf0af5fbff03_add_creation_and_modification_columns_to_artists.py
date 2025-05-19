@@ -1,7 +1,7 @@
 """add `date_created` and `date_modified` columns to `artist` table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # pre/post deployment: pre

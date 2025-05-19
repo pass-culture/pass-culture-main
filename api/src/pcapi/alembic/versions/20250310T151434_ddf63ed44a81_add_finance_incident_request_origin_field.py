@@ -1,7 +1,7 @@
 """Add origin and comment fields to finance_incident table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.finance.models import FinanceIncidentRequestOrigin
 from pcapi.utils.db import MagicEnum

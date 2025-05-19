@@ -1,8 +1,8 @@
 import logging
 from unittest.mock import patch
 
-from brevo_python.rest import ApiException as SendinblueApiException
 import pytest
+from brevo_python.rest import ApiException as SendinblueApiException
 from urllib3.response import HTTPResponse
 
 from pcapi.core.mails import models

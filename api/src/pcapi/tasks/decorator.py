@@ -1,11 +1,11 @@
-from functools import wraps
 import json
 import logging
 import typing
+from functools import wraps
 
+import pydantic.v1 as pydantic_v1
 from flask.blueprints import Blueprint
 from flask.globals import request
-import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors

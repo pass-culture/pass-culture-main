@@ -2,10 +2,10 @@ import datetime
 
 import pytest
 
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.offer_metadata import get_metadata_from_offer
 from pcapi.core.providers.constants import BookFormat
 

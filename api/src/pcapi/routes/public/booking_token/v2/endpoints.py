@@ -1,11 +1,11 @@
 from flask_login import current_user
 
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings import validation as bookings_validation
-import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.public import spectree_schemas

@@ -1,5 +1,5 @@
-from datetime import datetime
 import enum
+from datetime import datetime
 
 import pydantic.v1 as pydantic_v1
 

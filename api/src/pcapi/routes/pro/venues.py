@@ -1,13 +1,13 @@
 import flask
+import pydantic.v1 as pydantic_v1
+import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-import pydantic.v1 as pydantic_v1
-import sqlalchemy.orm as sa_orm
 
+import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
 from pcapi.connectors.entreprise import sirene
-import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models

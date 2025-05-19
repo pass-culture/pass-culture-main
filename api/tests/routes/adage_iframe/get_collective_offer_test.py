@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from flask import url_for
 import pytest
 import time_machine
+from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models

@@ -6,13 +6,13 @@ import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import get_email_data_from_offer
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_approval_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_rejection_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.settings import PRO_URL
 

@@ -1,6 +1,6 @@
+import decimal
 from datetime import date
 from datetime import datetime
-import decimal
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas as educational_schemas

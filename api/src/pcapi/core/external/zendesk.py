@@ -7,8 +7,8 @@ So ZENDESK_API_URL will be empty for non-production platforms, except when worki
 is limited to 14 days after creation.
 """
 
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Iterable
 
 from markupsafe import Markup

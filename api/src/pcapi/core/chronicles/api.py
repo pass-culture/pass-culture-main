@@ -1,9 +1,9 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from re import search
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
+from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors import typeform
 from pcapi.core.offers import models as offers_models

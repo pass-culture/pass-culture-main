@@ -1,30 +1,30 @@
 import base64
+import random
+import string
+import typing
+import uuid
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-import random
-import string
-import typing
-import uuid
 
-from dateutil.relativedelta import relativedelta
 import factory
+import time_machine
+from dateutil.relativedelta import relativedelta
 from factory import LazyAttribute
 from factory import LazyFunction
-import time_machine
 
+import pcapi.core.finance.models as finance_models
+import pcapi.core.users.constants as users_constants
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
 from pcapi.core.finance.conf import RECREDIT_TYPE_AGE_MAPPING
-import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
-import pcapi.core.users.constants as users_constants
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources

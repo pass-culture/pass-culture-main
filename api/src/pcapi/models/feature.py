@@ -1,8 +1,8 @@
 import enum
 import logging
 
-from alembic import op
 import flask
+from alembic import op
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Text

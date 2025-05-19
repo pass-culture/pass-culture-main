@@ -1,13 +1,13 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import url_for
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings

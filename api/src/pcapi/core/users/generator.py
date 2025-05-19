@@ -2,11 +2,11 @@ import dataclasses
 import datetime
 import enum
 
-from pcapi import settings
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.users import constants as users_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi import settings
+from pcapi.core.users import constants as users_constants
 
 from . import exceptions
 

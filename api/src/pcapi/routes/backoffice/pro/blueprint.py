@@ -1,5 +1,5 @@
-from functools import partial
 import typing
+from functools import partial
 
 from flask import flash
 from flask import redirect

@@ -5,9 +5,9 @@ import re
 import typing
 from urllib.parse import urlencode
 
+import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models

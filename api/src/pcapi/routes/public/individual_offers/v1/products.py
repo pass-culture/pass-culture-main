@@ -2,11 +2,11 @@ import copy
 import datetime
 import logging
 
-from flask import request
-from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from flask import request
+from psycopg2.errorcodes import UNIQUE_VIOLATION
 
 from pcapi import repository
 from pcapi.core import search

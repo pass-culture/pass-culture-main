@@ -1,11 +1,12 @@
-from dataclasses import asdict
 import json
 import logging
+from dataclasses import asdict
 from typing import Iterable
 
 import brevo_python
 from brevo_python.rest import ApiException as SendinblueApiException
 
+import pcapi.tasks.serialization.sendinblue_tasks as serializers
 from pcapi import settings
 from pcapi.celery_tasks.sendinblue import send_transactional_email_primary_task_celery
 from pcapi.celery_tasks.sendinblue import send_transactional_email_secondary_task_celery
@@ -13,7 +14,6 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task_cloud_tasks
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task_cloud_tasks
-import pcapi.tasks.serialization.sendinblue_tasks as serializers
 from pcapi.utils import email as email_utils
 from pcapi.utils.email import is_email_whitelisted
 from pcapi.utils.requests import ExternalAPIException

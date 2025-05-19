@@ -6,10 +6,10 @@ import secrets
 
 import factory
 
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.providers.repository as providers_repository
 from pcapi.utils.crypto import encrypt
 
 from . import models

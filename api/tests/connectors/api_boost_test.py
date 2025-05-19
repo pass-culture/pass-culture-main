@@ -4,10 +4,10 @@ import logging
 import pytest
 import time_machine
 
-from pcapi import settings
-from pcapi.connectors import boost
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.providers.factories as providers_factories
+from pcapi import settings
+from pcapi.connectors import boost
 from pcapi.routes.serialization import BaseModel
 
 

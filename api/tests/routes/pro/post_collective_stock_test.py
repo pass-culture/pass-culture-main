@@ -4,11 +4,11 @@ import decimal
 import pytest
 import time_machine
 
-from pcapi import settings
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.offerers.factories as offerers_factories
+from pcapi import settings
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus

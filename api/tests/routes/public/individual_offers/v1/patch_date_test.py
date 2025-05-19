@@ -6,8 +6,8 @@ from unittest import mock
 
 import pytest
 
-from pcapi.core.bookings import factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models

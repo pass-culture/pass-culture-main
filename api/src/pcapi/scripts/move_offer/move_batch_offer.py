@@ -1,8 +1,8 @@
 import csv
-from functools import partial
 import logging
 import os
 import typing
+from functools import partial
 
 import click
 

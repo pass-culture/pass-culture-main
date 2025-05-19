@@ -2,14 +2,14 @@ import datetime
 import enum
 import logging
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
 
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models

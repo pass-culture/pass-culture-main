@@ -9,14 +9,14 @@ import sqlalchemy.sql.sqltypes as sa_sqltypes
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
-from pcapi.core.geography import models as geography_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
-from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
+from pcapi.core.geography import models as geography_models
+from pcapi.models import db
+from pcapi.models.pc_object import BaseQuery
 
 from . import models
 from . import utils

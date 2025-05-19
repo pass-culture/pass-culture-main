@@ -1,6 +1,6 @@
+import logging
 from datetime import date
 from enum import Enum
-import logging
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking

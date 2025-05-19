@@ -3,10 +3,10 @@ from datetime import date
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.pro import offerer_closed
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories

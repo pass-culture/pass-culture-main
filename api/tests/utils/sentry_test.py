@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from pydantic.v1 import BaseModel
 import pytest
+from pydantic.v1 import BaseModel
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories

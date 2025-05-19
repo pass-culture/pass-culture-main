@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -12,7 +13,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries

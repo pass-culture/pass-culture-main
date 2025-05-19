@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import patch
 
+import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from flask import g
 from flask import url_for
-import pytest
 
 from pcapi import settings
 from pcapi.connectors import discord as discord_connector

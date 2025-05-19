@@ -1,5 +1,7 @@
 from __future__ import annotations  # to type models before their declaration
 
+import enum
+import typing
 from dataclasses import asdict
 from dataclasses import dataclass
 from dataclasses import field
@@ -7,18 +9,16 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
-import enum
 from operator import attrgetter
-import typing
 from uuid import UUID
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList

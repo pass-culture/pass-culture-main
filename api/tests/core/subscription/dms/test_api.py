@@ -2,16 +2,17 @@ import datetime
 from unittest import mock
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
+from dateutil.relativedelta import relativedelta
 
+import pcapi.core.mails.testing as mails_testing
+import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -21,7 +22,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.constants import ELIGIBILITY_END_AGE
 from pcapi.models import db
-import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application

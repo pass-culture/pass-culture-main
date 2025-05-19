@@ -4,10 +4,10 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cgr.client as cgr_client
-from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures

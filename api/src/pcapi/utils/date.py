@@ -5,10 +5,10 @@ from datetime import timedelta
 from datetime import timezone as tz
 from zoneinfo import ZoneInfo
 
+import pytz
 from babel.dates import format_date
 from dateutil.parser import parserinfo
 from psycopg2.extras import NumericRange
-import pytz
 
 import pcapi.utils.postal_code as postal_code_utils
 

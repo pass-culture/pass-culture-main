@@ -2,11 +2,11 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.users.factories as users_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
-import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 

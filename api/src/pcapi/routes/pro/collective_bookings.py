@@ -1,6 +1,6 @@
-from datetime import datetime
 import logging
 import math
+from datetime import datetime
 from typing import cast
 
 from dateutil import parser
@@ -21,8 +21,8 @@ from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingRe
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
-from . import blueprint
 from ..serialization.collective_bookings_serialize import serialize_collective_booking
+from . import blueprint
 
 
 logger = logging.getLogger(__name__)

@@ -1,12 +1,12 @@
-from functools import wraps
 import logging
 import typing
+from functools import wraps
 
+import sentry_sdk
 from flask import _request_ctx_stack
 from flask import request
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
-import sentry_sdk
 
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email

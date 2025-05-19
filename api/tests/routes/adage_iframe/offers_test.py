@@ -1,13 +1,13 @@
 import logging
 
-from flask import url_for
 import pytest
+from flask import url_for
 
+import pcapi.core.educational.testing as adage_api_testing
+import pcapi.core.educational.utils as educational_utils
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import AdageFrontRoles
-import pcapi.core.educational.testing as adage_api_testing
-import pcapi.core.educational.utils as educational_utils
 from pcapi.models import db
 
 

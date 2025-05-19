@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 
 
 @pytest.mark.usefixtures("db_session")

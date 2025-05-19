@@ -3,8 +3,8 @@ import urllib.parse
 
 import pytest
 
-from pcapi.connectors import recommendation
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors import recommendation
 from pcapi.utils import requests
 
 

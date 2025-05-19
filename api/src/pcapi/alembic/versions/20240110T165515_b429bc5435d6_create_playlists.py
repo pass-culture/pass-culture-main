@@ -1,7 +1,7 @@
 """Create `collective_playlist` table"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.educational.models import PlaylistType
 from pcapi.utils.db import MagicEnum

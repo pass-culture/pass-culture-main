@@ -1,12 +1,12 @@
 import datetime
 from decimal import Decimal
 
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.finance import utils as finance_utils
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 

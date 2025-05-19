@@ -2,6 +2,7 @@ import datetime
 import logging
 import random
 
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import BookingFactory
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
@@ -12,7 +13,6 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import CinemaStockProviderFactory
 from pcapi.core.offers.factories import EventOfferFactory
-import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users.factories import BeneficiaryGrant18Factory

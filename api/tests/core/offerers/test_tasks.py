@@ -1,6 +1,6 @@
-from dataclasses import asdict
 import datetime
 import json
+from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest

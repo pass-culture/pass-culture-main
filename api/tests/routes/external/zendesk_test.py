@@ -1,13 +1,13 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.finance.factories as finance_factories
-from pcapi.core.finance.models import BankAccountApplicationStatus
 import pcapi.core.history.factories as history_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi import settings
+from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.users import constants as user_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing

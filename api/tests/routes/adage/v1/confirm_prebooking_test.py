@@ -1,6 +1,6 @@
+import logging
 from datetime import datetime
 from decimal import Decimal
-import logging
 
 import pytest
 import time_machine

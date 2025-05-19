@@ -1,8 +1,8 @@
 import datetime
 from operator import attrgetter
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models

@@ -1,7 +1,7 @@
 """Validate 'stock_eventOpeningHoursId_fkey' and 'check_stock_with_opening_hours_does_not_have_beginningDatetime' constraints"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi import settings
 

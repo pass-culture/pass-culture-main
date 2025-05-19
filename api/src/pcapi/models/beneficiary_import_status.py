@@ -1,6 +1,6 @@
-from datetime import datetime
 import enum
 import typing
+from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm

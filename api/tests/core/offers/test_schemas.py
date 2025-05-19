@@ -1,12 +1,12 @@
-from copy import deepcopy
 import datetime
+from copy import deepcopy
 
 import pytest
 import pytz
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.exceptions as offers_exceptions
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.schemas import CreateEventOpeningHoursModel
 from pcapi.core.offers.schemas import PatchDraftOfferBodyModel
 from pcapi.core.offers.schemas import PostDraftOfferBodyModel

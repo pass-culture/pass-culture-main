@@ -1,9 +1,9 @@
 import datetime
 import logging
 
+import pcapi.core.offers.factories as offer_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import Subcategory
-import pcapi.core.offers.factories as offer_factories
 
 
 logger = logging.getLogger(__name__)

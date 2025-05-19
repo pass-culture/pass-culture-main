@@ -4,24 +4,24 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
 
-from pcapi.connectors.dms import api as dms_connector_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.subscription.api as subscription_api
-from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.models as subscription_models
+import pcapi.notifications.push.testing as push_testing
+from pcapi.connectors.dms import api as dms_connector_api
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.models import db
-import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.subscription.dms.import_dms_applications import import_all_updated_dms_applications
 
 from tests.scripts.beneficiary import fixture

@@ -1,11 +1,15 @@
 import datetime
 import decimal
-from functools import partial
 import logging
+from functools import partial
 
-from pydantic.v1.error_wrappers import ValidationError
 import sqlalchemy.orm as sa_orm
+from pydantic.v1.error_wrappers import ValidationError
 
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
+import pcapi.core.finance.repository as finance_repository
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
@@ -17,10 +21,6 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
 from pcapi.core.educational.schemas import RedactorInformation
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.models as finance_models
-import pcapi.core.finance.repository as finance_repository
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db

@@ -1,8 +1,8 @@
 """has address mixin"""
 
+import sqlalchemy.orm as sa_orm
 from sqlalchemy import Column
 from sqlalchemy import String
-import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declarative_mixin
 
 

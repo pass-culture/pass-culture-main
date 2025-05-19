@@ -1,7 +1,7 @@
 from unittest import mock
 
-from google.cloud import tasks_v2
 import pytest
+from google.cloud import tasks_v2
 
 from pcapi import settings
 from pcapi.routes.serialization import BaseModel

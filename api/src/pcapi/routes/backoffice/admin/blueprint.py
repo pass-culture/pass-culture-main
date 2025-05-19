@@ -1,3 +1,5 @@
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -5,8 +7,6 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
@@ -19,10 +19,10 @@ from pcapi.models import db
 from pcapi.models import feature as feature_models
 from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
 
-from . import forms
 from .. import blueprint
 from .. import utils
 from ..forms import empty as empty_forms
+from . import forms
 
 
 @blueprint.backoffice_web.route("/admin/roles", methods=["GET"])

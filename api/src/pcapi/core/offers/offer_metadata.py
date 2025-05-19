@@ -1,8 +1,8 @@
 import datetime
 import typing
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.providers import constants as providers_constants

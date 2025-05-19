@@ -4,6 +4,12 @@ import sys
 import time
 import typing
 
+import flask.wrappers
+import prometheus_flask_exporter.multiprocess
+import redis
+import sentry_sdk
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
 from flask import Response
@@ -11,14 +17,8 @@ from flask import g
 from flask import jsonify
 from flask import request
 from flask.logging import default_handler
-import flask.wrappers
 from flask_login import LoginManager
 from flask_login import current_user
-import prometheus_flask_exporter.multiprocess
-import redis
-import sentry_sdk
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 

@@ -1,13 +1,13 @@
-from functools import wraps
 import logging
 import typing
+from functools import wraps
 
 import flask
+import sentry_sdk
 from flask import _request_ctx_stack
 from flask import g
 from flask import request
 from flask_login import current_user
-import sentry_sdk
 from werkzeug.local import LocalProxy
 
 from pcapi import settings

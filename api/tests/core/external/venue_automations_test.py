@@ -1,16 +1,16 @@
 from datetime import datetime
 from unittest.mock import patch
 
+import pytest
 from brevo_python import RequestContactImport
 from dateutil.relativedelta import relativedelta
-import pytest
 
-from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.external.automations import venue as venue_automations
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi import settings
+from pcapi.core.external.automations import venue as venue_automations
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 

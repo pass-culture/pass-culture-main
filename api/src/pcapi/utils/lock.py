@@ -1,10 +1,10 @@
-from contextlib import contextmanager
 import datetime
 import time
 import typing
+from contextlib import contextmanager
 
-from flask import current_app
 import redis
+from flask import current_app
 
 
 class LockError(Exception):

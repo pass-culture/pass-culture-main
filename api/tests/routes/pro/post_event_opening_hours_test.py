@@ -3,11 +3,11 @@ import datetime
 
 import pytest
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.core.categories import subcategories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 

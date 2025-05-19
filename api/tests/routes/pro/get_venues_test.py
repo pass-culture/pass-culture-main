@@ -1,12 +1,12 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
-import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

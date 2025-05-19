@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer

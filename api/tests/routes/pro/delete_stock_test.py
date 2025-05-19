@@ -1,13 +1,13 @@
 import pytest
 
-from pcapi.core.bookings import factories as bookings_factory
-from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
+from pcapi.core.bookings import factories as bookings_factory
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
-import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
 
 from tests.conftest import TestClient

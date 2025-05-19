@@ -1,14 +1,14 @@
-from collections import abc
 import logging
 import typing
+from collections import abc
 
 import algoliasearch.http.requester
 import algoliasearch.search_client
 
-from pcapi import settings
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+from pcapi import settings
 from pcapi.core.search import SearchError
 from pcapi.core.search.backends import base
 from pcapi.utils import human_ids

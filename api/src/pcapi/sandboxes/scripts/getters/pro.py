@@ -1,16 +1,16 @@
 import datetime
 
-from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
-from pcapi.core.categories.models import EacFormat
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import api as offerers_api
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db

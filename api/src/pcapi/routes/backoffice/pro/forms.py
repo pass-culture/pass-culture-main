@@ -3,8 +3,8 @@ import re
 import typing
 import urllib.parse
 
-from flask_wtf import FlaskForm
 import wtforms
+from flask_wtf import FlaskForm
 
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models

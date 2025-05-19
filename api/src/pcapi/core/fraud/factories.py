@@ -1,22 +1,22 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
 import random
 import string
 import typing
 import urllib.parse
 import uuid
+from datetime import date
+from datetime import datetime
+from datetime import time
 
+import factory.fuzzy
 from dateutil.relativedelta import relativedelta
 from factory.declarations import LazyAttribute
-import factory.fuzzy
 
+import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core import factories
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-import pcapi.core.users.factories as users_factories
 from pcapi.models.feature import FeatureToggle
 
 from . import models

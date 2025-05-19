@@ -1,10 +1,10 @@
-from dataclasses import asdict
 import datetime
+from dataclasses import asdict
 from decimal import Decimal
 from unittest.mock import patch
 
-from flask import url_for
 import pytest
+from flask import url_for
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions

@@ -3,11 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.schemas import VenueTypeCode
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.categories import subcategories
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus

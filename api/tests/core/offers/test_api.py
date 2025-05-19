@@ -1,39 +1,46 @@
 import copy
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
 import decimal
-from decimal import Decimal
 import logging
 import os
 import pathlib
 import re
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
 
-from factory.faker import faker
 import pytest
 import pytz
 import sqlalchemy as sa
 import time_machine
+from factory.faker import faker
 
-from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
-from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.categories import subcategories
-from pcapi.core.categories.models import EacFormat
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
-from pcapi.core.external_bookings.boost import constants as boost_constants
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.repository as providers_repository
+import pcapi.core.reactions.factories as reactions_factories
+import pcapi.core.reactions.models as reactions_models
+import pcapi.core.search.testing as search_testing
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.core import search
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.models import EacFormat
+from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -44,14 +51,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
-import pcapi.core.providers.factories as providers_factories
-import pcapi.core.providers.repository as providers_repository
-import pcapi.core.reactions.factories as reactions_factories
-import pcapi.core.reactions.models as reactions_models
-import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import assert_num_queries
-import pcapi.core.users.factories as users_factories
-import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
@@ -62,11 +62,11 @@ from pcapi.utils.date import timespan_str_to_numrange
 from pcapi.utils.human_ids import humanize
 
 import tests
+import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures
 from tests.connectors.cgr import soap_definitions
 from tests.connectors.titelive import fixtures
 from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
 from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
-import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures
 
 
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"

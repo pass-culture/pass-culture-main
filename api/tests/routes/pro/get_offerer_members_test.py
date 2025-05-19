@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 

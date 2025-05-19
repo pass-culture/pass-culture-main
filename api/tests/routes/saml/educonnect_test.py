@@ -3,21 +3,21 @@ import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
-from flask_jwt_extended.utils import create_access_token
 import pytest
 import time_machine
+from dateutil.relativedelta import relativedelta
+from flask_jwt_extended.utils import create_access_token
 
-from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.notifications.push.testing as push_testing
+from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_status
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.models import db
-import pcapi.notifications.push.testing as push_testing
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

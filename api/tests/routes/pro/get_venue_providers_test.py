@@ -3,9 +3,9 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core import testing
 from pcapi.core.providers.repository import get_provider_by_local_class
 
 

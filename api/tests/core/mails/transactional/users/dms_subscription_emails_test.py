@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.dms_subscription_emails import (
     send_pre_subscription_from_dms_error_email_to_beneficiary,

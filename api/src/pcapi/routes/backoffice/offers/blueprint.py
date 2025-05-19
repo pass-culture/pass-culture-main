@@ -1,14 +1,16 @@
-from collections import namedtuple
 import dataclasses
 import datetime
 import decimal
 import enum
 import functools
-from io import BytesIO
 import logging
 import re
 import typing
+from collections import namedtuple
+from io import BytesIO
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -18,9 +20,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
-import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-import sqlalchemy.orm as sa_orm
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 

@@ -1,8 +1,8 @@
-from datetime import datetime
 import logging
-from os import path
 import random
 import string
+from datetime import datetime
+from os import path
 
 from flask import current_app as app
 from saml2 import BINDING_HTTP_POST

@@ -16,18 +16,18 @@ from uuid import UUID
 import psycopg2.extras
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_psql
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.ext.mutable as sa_mutable
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.selectable import Exists
 
+import pcapi.utils.db as db_utils
 from pcapi import settings
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
-import pcapi.utils.db as db_utils
 
 from . import utils
 

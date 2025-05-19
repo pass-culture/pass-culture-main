@@ -2,9 +2,9 @@ import datetime
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.models import db

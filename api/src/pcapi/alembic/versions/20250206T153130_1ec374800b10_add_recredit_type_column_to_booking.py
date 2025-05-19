@@ -1,7 +1,7 @@
 """Add usedRecreditType column to Booking"""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from pcapi.core.bookings.models import BookingRecreditType
 from pcapi.utils.db import MagicEnum
