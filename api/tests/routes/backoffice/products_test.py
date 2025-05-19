@@ -9,8 +9,13 @@ import pytest
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
+from pcapi.models import db
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 from pcapi.utils import requests
 
@@ -108,6 +113,43 @@ class GetProductDetailsTest(GetEndpointHelper):
 
         badges = html_parser.extract_badges(response.data)
         assert "• Compatible" in badges
+
+    @pytest.mark.parametrize(
+        "cgu_compatibility, product_state, action",
+        [
+            (offers_models.GcuCompatibilityType.COMPATIBLE, "Whitelist", "Blacklist"),
+            (offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE, "Blacklist", "Whitelist"),
+        ],
+    )
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_get_detail_product_display_product_action_button(
+        self, mock_get_by_ean13, cgu_compatibility, product_state, action, client
+    ):
+        mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+
+        product = offers_factories.ProductFactory.create(gcuCompatibilityType=cgu_compatibility)
+        manage_offers = (
+            db.session.query(perm_models.Permission)
+            .filter_by(name=perm_models.Permissions.PRO_FRAUD_ACTIONS.name)
+            .one()
+        )
+        read_offers = (
+            db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        )
+        role = perm_factories.RoleFactory.create(permissions=[read_offers, manage_offers])
+        user = users_factories.UserFactory.create()
+        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+
+        authenticated_client = client.with_bo_session_auth(user)
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Synchronisation Titelive" in buttons
+        assert product_state not in buttons
+        assert action in buttons
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product_without_ean(self, mock_get_by_ean13, authenticated_client):
@@ -272,3 +314,97 @@ class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
             "date_parution": "2014-10-02 00:00:00",
             "num_in_collection": "5833",
         }
+
+
+class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_whitelist_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    expected_num_queries = 3
+
+    def test_confirm_product_whitelist_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(name="One Piece")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Whitelisté le produit {product.name}" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Whitelisté le produit" in buttons
+
+
+class PostProductWhitelistTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.whitelist_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def test_whitelist_product(self, authenticated_client):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(
+            ean=ean,
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        )
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id)
+        assert response.status_code == 303
+
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.COMPATIBLE
+
+
+class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_blacklist_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    expected_num_queries = 3
+
+    def test_confirm_product_blacklist_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(name="One Piece")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Blacklister le produit {product.name}" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Blacklister le produit" in buttons
+
+
+class PostProductBlacklistTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.blacklist_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    @pytest.mark.parametrize(
+        "idAtProviders, product_gcu_compatibility, offer_status",
+        [
+            ("1234567899999", offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE, OfferStatus.REJECTED),
+            (None, offers_models.GcuCompatibilityType.COMPATIBLE, OfferStatus.ACTIVE),
+        ],
+    )
+    def test_blacklist_product(self, idAtProviders, product_gcu_compatibility, offer_status, authenticated_client):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(
+            ean=ean, idAtProviders=idAtProviders, gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        )
+        offer = offers_factories.OfferFactory.create(product=product)
+        offers_factories.StockFactory.create(offer=offer, price=10)
+
+        unlinked_offer = offers_factories.OfferFactory.create(ean=ean)
+        offers_factories.StockFactory.create(offer=unlinked_offer, price=10)
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id)
+        assert response.status_code == 303
+
+        assert product.gcuCompatibilityType == product_gcu_compatibility
+        assert offer.status == offer_status
+        assert unlinked_offer.status == offer_status

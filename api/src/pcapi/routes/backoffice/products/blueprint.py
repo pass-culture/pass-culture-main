@@ -6,6 +6,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
 from markupsafe import Markup
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
@@ -280,5 +281,69 @@ def synchro_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
         )
     else:
         flash("Le produit a été Synchroniser avec Titelive", "success")
+
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/whitelist", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.whitelist_product", product_id=product.id),
+        div_id=f"whitelist-product-modal-{product.id}",
+        title=f"Whitelisté le produit  {product.name}",
+        button_text="Whitelisté le produit",
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/whitelist", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def whitelist_product(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/blacklist", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.blacklist_product", product_id=product.id),
+        div_id=f"blacklist-product-modal-{product.id}",
+        title=f"Blacklister le produit  {product.name}",
+        button_text="Blacklister le produit",
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/blacklist", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def blacklist_product(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    if offers_api.reject_inappropriate_products([product.ean], current_user, rejected_by_fraud_action=True):
+        db.session.commit()
+        flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
+    else:
+        db.session.rollback()
+        flash("Une erreur s'est produite lors de l'opération", "warning")
 
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
