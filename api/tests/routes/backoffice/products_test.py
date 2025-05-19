@@ -1,4 +1,3 @@
-import html
 import json
 import re
 from unittest.mock import patch
@@ -6,18 +5,21 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
+from pcapi.utils import requests
 
 from tests.connectors.titelive import fixtures
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -95,7 +97,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
         assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
         assert "Inéligible pass Culture :" not in card_text[0]
-        assert "EAN white listé : Non" in card_text[0]
+        assert "EAN whitelisté : Non" in card_text[0]
 
         buttons = html_parser.extract(response.data, "button")
         assert "Offres liées" in buttons
@@ -159,3 +161,128 @@ class GetProductDetailsTest(GetEndpointHelper):
                         assert offers[0]["name"] == unlinked_offer.name
                         assert offers[0]["venue_name"] == unlinked_offer.venue.name
                         assert offers[0]["status"] == "Épuisée"
+
+
+class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Synchronisation Titelive"
+
+    @property
+    def path(self):
+        product = offers_factories.ProductFactory.create()
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+    def test_button_when_can_add_one(self, authenticated_client):
+        with patch(
+            "pcapi.routes.backoffice.products.blueprint.get_by_ean13", return_value=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+        ):
+            super().test_button_when_can_add_one(authenticated_client)
+
+    def test_no_button(self, client, roles_with_permissions):
+        with patch(
+            "pcapi.routes.backoffice.products.blueprint.get_by_ean13", return_value=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+        ):
+            super().test_no_button(client, roles_with_permissions)
+
+
+class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_synchronize_with_titelive_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + user + product
+    expected_num_queries = 3
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_confirm_product_synchronization_with_titelive_form(self, mock_get_by_ean13, authenticated_client):
+        article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
+        mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+
+        product = offers_factories.ProductFactory.create()
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        card_titles = html_parser.extract_cards_titles(response.data)
+        card_text = html_parser.extract_cards_text(response.data)
+        card_ean = soup.select("div.pc-ean-result")
+
+        assert card_ean
+        assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
+        assert soup.select(
+            f'div.pc-ean-result img[src="{fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]["imagesUrl"]["recto"]}"]'
+        )
+        assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
+        assert "EAN-13 : " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
+        assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+
+        assert "Prix HT : 8,30 €" in card_text[0]
+        assert "Taux TVA : 5,50 %" in card_text[0]
+        assert "Code CLIL : " + article["code_clil"] in card_text[0]
+        assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
+        assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
+        assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
+        assert "Inéligible pass Culture :" not in card_text[0]
+        assert "EAN whitelisté : Non" in card_text[0]
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Mettre le produit à jour avec ces informations" in buttons
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_confirm_product_synchronization_fails_to_retrieve_titelive_data_form(
+        self, mock_get_by_ean13, authenticated_client
+    ):
+        mock_get_by_ean13.side_effect = requests.ExternalAPIException(is_retryable=True)
+
+        product = offers_factories.ProductFactory.create()
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 for ROLLBACK
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert (
+            "Une erreur s’est produite lors de la récupération des informations via l’API Titelive: ExternalAPIException"
+            in html_parser.extract_alert(response.data)
+        )
+
+
+class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.synchronize_product_with_titelive"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    @patch("pcapi.connectors.titelive.get_by_ean13")
+    def test_whitelist_product(self, mock_get_by_ean13, authenticated_client):
+        mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+        article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
+        oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
+
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(ean=ean, extraData={})
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id)
+        assert response.status_code == 303
+
+        assert product.name == oeuvre["titre"]
+        assert product.description == article["resume"]
+        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert product.thumbCount == int(article.get("image", 0))
+        assert product.extraData == {
+            "rayon": "Littérature française Récits, Aventures, Voyages",
+            "author": "Jean-Christophe Rufin",
+            "csr_id": "0105",
+            "gtl_id": "01050000",
+            "editeur": "FOLIO",
+            "code_clil": "3665",
+            "collection": "Folio",
+            "prix_livre": 8.3,
+            "schoolbook": False,
+            "comic_series": "Non précisée",
+            "distributeur": "SODIS",
+            "date_parution": "2014-10-02 00:00:00",
+            "num_in_collection": "5833",
+        }
