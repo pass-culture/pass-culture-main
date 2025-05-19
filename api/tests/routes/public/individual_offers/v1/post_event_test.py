@@ -657,16 +657,24 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             {"price": 15000, "label": "rond d'argent", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
         ]
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json=payload,
-        )
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
         assert response.status_code == 400
         assert response.json == {
             "priceCategories": [
                 "Price category `idAtProvider` must be unique. Duplicated value : comment_ça_ça_ne_marche_pas?"
             ]
         }
+
+    def test_should_raise_400_because_more_than_50_price_categories_count_sent(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["priceCategories"] = [{"price": i * 100, "label": f"Tarif {i}"} for i in range(51)]
+
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["ensure this value has at most 50 items"]}
 
     def test_should_not_raise_if_id_at_provider_is_none(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)

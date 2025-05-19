@@ -127,12 +127,12 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
                 {
                     "price": 1500,
                     "label": "triangle argent",
-                    "idAtProvider": "id_qui_apparait_dos_veces_dirait_les_espagnols",
+                    "idAtProvider": "id_qui_apparait_dos_veces_diraient_les_espagnols",
                 },
                 {
                     "price": 1600,
                     "label": "triangle argent 2",
-                    "idAtProvider": "id_qui_apparait_dos_veces_dirait_les_espagnols",
+                    "idAtProvider": "id_qui_apparait_dos_veces_diraient_les_espagnols",
                 },
             ],
         }
@@ -144,7 +144,7 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {
             "priceCategories": [
-                "Price category `idAtProvider` must be unique. Duplicated value : id_qui_apparait_dos_veces_dirait_les_espagnols"
+                "Price category `idAtProvider` must be unique. Duplicated value : id_qui_apparait_dos_veces_diraient_les_espagnols"
             ]
         }
 
@@ -188,7 +188,7 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
-    def test_create_existing_price_categories(self, client):
+    def test_should_raise_400_because_of_existing_price_categories(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         payload = self._get_base_payload()
@@ -208,3 +208,32 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         assert response.json == {
             "priceCategories": ["The price category carre or already exists"],
         }
+
+    # serializer check
+    def test_should_raise_400_because_more_than_50_price_categories_count_sent(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json={"priceCategories": [{"price": i * 100, "label": f"Tarif {i}"} for i in range(51)]},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["ensure this value has at most 50 items"]}
+
+    # controller check
+    def test_should_raise_400_because_exceeds_max_price_categories_count(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        # already has 50 price categories
+        offers_factories.PriceCategoryFactory.create_batch(50, offer=event)
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json={"priceCategories": [{"price": 100, "label": "51ème tarif !"}]},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["An offer cannot have more than 50 price categories"]}

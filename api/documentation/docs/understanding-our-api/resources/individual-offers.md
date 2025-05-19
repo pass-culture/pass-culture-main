@@ -84,7 +84,7 @@ Creating a `event` offer with its stocks is a three steps process.
 You will need to first **[create the event](/rest-api/#tag/Event-Offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api/#tag/Event-Offer-Prices/operation/PostEventPriceCategories)** and finally to **[create its stocks](/rest-api/#tag/Event-Offer-Stocks/operation/PostEventStocks)**.
 
 Here are the rules you should be aware of when creating an event:
-- the **number of price categories for an event** is limited to **`10`**
+- the **number of price categories for an event** is limited to **`50`**
 - the **number of stocks for an event** is limited to **`10 000`**
 
 
