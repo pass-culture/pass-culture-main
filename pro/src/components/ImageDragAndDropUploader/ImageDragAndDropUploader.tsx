@@ -52,10 +52,17 @@ export const ImageDragAndDropUploader = ({
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
   const previousDraftImage = usePrevious(draftImage)
 
+  const [refToFocusOnClose, setRefToFocusOnClose] = useState<
+    React.RefObject<HTMLElement> | undefined
+  >(inputDragAndDropRef)
+
   const hasImage = imageUrl && originalImageUrl
   const shouldDisplayActions = hasImage && !hideActionButtons
 
   useEffect(() => {
+    // This is to manage the focus when ImageDragAndDropUploader is re-rendered
+    // after an image deletion (after a button action click, not as a result
+    // of a deletion from the modal options)
     if (previousDraftImage && !draftImage) {
       inputDragAndDropRef.current?.focus()
     }
@@ -64,6 +71,7 @@ export const ImageDragAndDropUploader = ({
   const onImageDeleteHandler = () => {
     setIsModalImageOpen(false)
     setDraftImage(undefined)
+    setRefToFocusOnClose(inputDragAndDropRef)
     onImageDelete()
     notify.success('L’image a bien été supprimée')
   }
@@ -71,6 +79,7 @@ export const ImageDragAndDropUploader = ({
   const onImageUploadHandler = (values: OnImageUploadArgs) => {
     setIsModalImageOpen(false)
     setDraftImage(values.imageFile)
+    setRefToFocusOnClose(updateImageRef)
     onImageUpload(values)
     notify.success('Votre image a bien été enregistrée')
   }
@@ -117,8 +126,7 @@ export const ImageDragAndDropUploader = ({
               </Button>
             )
           }
-          refToFocusOnClose={inputDragAndDropRef}
-          preferNonNullRefToFocusOnClose
+          refToFocusOnClose={refToFocusOnClose}
         />
         {shouldDisplayActions && (
           <Button

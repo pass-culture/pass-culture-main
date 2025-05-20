@@ -46,15 +46,7 @@ export type DialogBuilderProps = {
   className?: string
   variant?: DialogVariant
   /**
-   * Either the auto focus on the trigger element when the dialog is closed
-   * is disabled or not. This should generally be tied to the `refToFocusOnClose` prop.
-   * This can be useful when trigger element is not a button (e.g. an input, like in the ImageDragAndDropUploader).
-   * @default false
-   */
-  preferNonNullRefToFocusOnClose?: boolean
-  /**
    * Ref of the element to focus on when the dialog is closed.
-   * This needs to be used in conjunction with the `disableAutoFocusOnTrigger` prop, set to true.
    * If refToFocusOnClose.current is null, the trigger element will be focused as a fallback.
    */
   refToFocusOnClose?: React.RefObject<HTMLElement>
@@ -90,7 +82,6 @@ export function DialogBuilder({
   closeButtonClassName,
   className,
   variant = 'default',
-  preferNonNullRefToFocusOnClose = false,
   refToFocusOnClose,
 }: DialogBuilderProps) {
   const contentRef = useRef<HTMLDivElement>(null)
@@ -133,18 +124,15 @@ export function DialogBuilder({
                 e.preventDefault()
               }
             }}
-            {...(preferNonNullRefToFocusOnClose
-              ? {
-                  onCloseAutoFocus: (ev: any) => {
-                    if (!refToFocusOnClose?.current) {
-                      return
-                    } else {
-                      ev.preventDefault()
-                      refToFocusOnClose.current.focus()
-                    }
-                  },
-                }
-              : {})}
+            onCloseAutoFocus={(ev: any) => {
+              ev.preventDefault()
+
+              if (!refToFocusOnClose) {
+                return
+              }
+
+              refToFocusOnClose.current?.focus()
+            }}
           >
             <DialogBuilderCloseButton
               closeButtonClassName={closeButtonClassName}
