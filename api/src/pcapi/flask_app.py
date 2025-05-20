@@ -317,3 +317,8 @@ def _set_python_prompt() -> None:
         reset = _non_printable("\x1b[0m")
 
         sys.ps1 = f"{color}{env} >>> {reset}"
+
+
+# Install soft deletion hook if enabled
+if settings.SOFTDELETE_ENABLED:
+    pass
