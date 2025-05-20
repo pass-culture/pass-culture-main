@@ -35,8 +35,6 @@ pytestmark = [
     pytest.mark.backoffice,
 ]
 
-# TODO Brice Bosson 27/09/2023 : remove products from manual offers when products will be restricted to synchronized offers only
-
 
 @pytest.mark.usefixtures("db_session")
 class MultipleOffersHomeTest(GetEndpointHelper):

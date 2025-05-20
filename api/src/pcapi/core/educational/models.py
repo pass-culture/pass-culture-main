@@ -1511,7 +1511,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         return cls.endDatetime <= sa.func.now()
 
     @hybrid_property
-    def isEventExpired(self) -> bool:  # todo rewrite
+    def isEventExpired(self) -> bool:
         return self.startDatetime <= datetime.datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
