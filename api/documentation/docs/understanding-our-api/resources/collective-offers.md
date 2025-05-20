@@ -73,26 +73,6 @@ Finally, it becomes `REIMBURSED` after a short period of time (check the officia
 
 If the offer is cancelled either by the school or using the [Cancel Collective Booking endpoint](/rest-api#tag/Collective-Bookings/operation/CancelCollectiveBooking), it becomes `CANCELLED`.
 
-### Offer location (⚠️ DEPRECATED)
-
-:::warning
-The `offerVenue` field will be replaced with the `location` field in the coming months. See [here](/docs/understanding-our-api/resources/collective-offers#-offers-location) for details on the new `location` field.
-:::
-
-A collective offer is always linked to an administrative venue: its the `venueId` field. However it can take place at an address other than the venue address.
-
-There are two location types: at school or elsewhere. For the latter, there are two ways to specify the location: either using a venue's id (from our database, usually one of your venue), or using a free text field.
-
-The location must be specified under the `offerVenue` object which contains three fields:
-
-* `addressType` (`OFFERER_VENUE`, `SCHOOL` or `OTHER`);
-* `venueId` (`null` when type is `SCHOOL` or `OTHER`);
-* `otherAddress` (not `null` only if `addressType` equals `OTHER`).
-
-:::warning
-`offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
-:::
-
 ## Creation rules
 
 ### Offer templates
@@ -183,6 +163,26 @@ Those limitations are currently enforced **only** on the following endpoints:
 The new status is available in the `offerStatus` field.
 
 ## 📍 Offers location
+
+### Current offer location (⚠️ DEPRECATED)
+
+:::warning
+The `offerVenue` field will be replaced with the `location` field in the coming months. See the next section [here](/docs/understanding-our-api/resources/collective-offers#general-description-1) for details on the new `location` field.
+:::
+
+A collective offer is always linked to an administrative venue: its the `venueId` field. However it can take place at an address other than the venue address.
+
+There are two location types: at school or elsewhere. For the latter, there are two ways to specify the location: either using a venue id (from our database, usually one of your venue), or using a free text field.
+
+The location must be specified under the `offerVenue` object which contains three fields:
+
+* `addressType` (`OFFERER_VENUE`, `SCHOOL` or `OTHER`);
+* `venueId` (`null` when type is `SCHOOL` or `OTHER`);
+* `otherAddress` (not `null` only if `addressType` equals `OTHER`).
+
+:::warning
+`offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
+:::
 
 ### General description
 
