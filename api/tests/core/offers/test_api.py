@@ -5049,7 +5049,7 @@ class EditPriceCategoryTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(MOVE_OFFER_TEST=True)
+@pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveOfferTest:
     def test_move_physical_offer_without_pricing_point(self):
         """Moving an offer from a venue without pricing point to another venue

@@ -1847,8 +1847,8 @@ def move_offer(
     offer: models.Offer,
     destination_venue: offerers_models.Venue,
 ) -> None:
-    if not feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
-        raise NotImplementedError("This feature is not yet available")
+    if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
+        raise NotImplementedError("Activate VENUE_REGULARIZATION to use this feature")
 
     offer_id = offer.id
     original_venue = offer.venue
