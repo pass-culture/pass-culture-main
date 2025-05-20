@@ -259,8 +259,6 @@ def remove_db_session(exc: BaseException | None = None) -> None:
             },
             exc_info=True,
         )
-        del db.session
-        logger.error("Deleted Session object")
 
 
 @app.teardown_request
@@ -272,8 +270,6 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
             session_management._manage_session()
             db.session.autoflush = True
         except Exception as exception:
-            # this may break the session's internal states but we will detroy it anyway
-            db.session.connection().execute("ROLLBACK")
             logger.error(
                 "An error happened while managing the transaction",
                 extra={
