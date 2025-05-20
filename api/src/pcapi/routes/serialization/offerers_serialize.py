@@ -112,7 +112,6 @@ class GetOffererResponseModel(BaseModel):
     postalCode: str
     siren: str
     street: str | None
-    # FIXME (mageoffray, 2023-09-14): optional until we populate the database
     hasValidBankAccount: bool
     hasPendingBankAccount: bool
     hasNonFreeOffer: bool

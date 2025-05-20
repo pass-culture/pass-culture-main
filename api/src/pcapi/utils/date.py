@@ -265,7 +265,7 @@ def format_offset(off: timedelta | None, sep: str = ":") -> str:
     "+00:00"
 
     This is a backport from Python 3.12
-    TODO delete this function once we upgrade to Python 3.11
+    TODO delete this function once we upgrade to Python 3.12
     """
     s = ""
     if off is not None:
