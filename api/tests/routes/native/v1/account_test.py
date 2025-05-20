@@ -46,8 +46,11 @@ from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
+from pcapi.utils import requests
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
+
+from tests.connectors.beneficiaries.ubble_fixtures import build_ubble_identification_v2_response
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -1911,54 +1914,42 @@ def build_user_at_id_check(age):
 
 
 class IdentificationSessionTest:
-    @pytest.mark.features(WIP_UBBLE_V2=False)
-    def test_request(self, client, ubble_mock):
+    def test_request(self, client, requests_mock):
         user = build_user_at_id_check(18)
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
 
         client.with_token(user.email)
-
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 2
-        assert ubble_mock.call_count == 1
-
-        assert ubble_mock.request_history[0].json() == {
-            "data": {
-                "type": "identifications",
-                "attributes": {
-                    "identification-form": {"external-user-id": user.id, "phone-number": None},
-                    "reference-data": {"first-name": "Sally", "last-name": "Mara"},
-                    "webhook": "http://localhost/webhooks/ubble/application_status",
-                    "redirect_url": "http://example.com/deeplink",
-                },
-            }
-        }
 
         check = next(check for check in user.beneficiaryFraudChecks if check.type == fraud_models.FraudCheckType.UBBLE)
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert check.status == fraud_models.FraudCheckStatus.STARTED
-        assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
+        assert response.json["identificationUrl"] == "https://verification.ubble.example.com/"
 
     @pytest.mark.parametrize("age", [14, 19, 20])
-    def test_request_not_eligible(self, client, ubble_mock, age):
+    @patch("pcapi.core.subscription.ubble.api.start_ubble_workflow")
+    def test_request_not_eligible(self, start_ubble_mock, client, age):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5))
 
         client.with_token(user.email)
-
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 400
         assert response.json["code"] == "IDCHECK_NOT_ELIGIBLE"
+        start_ubble_mock.assert_not_called()
         assert len(user.beneficiaryFraudChecks) == 0
-        assert ubble_mock.call_count == 0
 
-    @pytest.mark.features(WIP_UBBLE_V2=False)
-    def test_request_connection_error(self, client, ubble_mock_connection_error):
+    def test_request_connection_error(self, client, requests_mock):
         user = build_user_at_id_check(18)
+        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 
         client.with_token(user.email)
-
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 503
@@ -1969,14 +1960,12 @@ class IdentificationSessionTest:
             .count()
             == 0
         )
-        assert ubble_mock_connection_error.call_count == 1
 
-    @pytest.mark.features(WIP_UBBLE_V2=False)
-    def test_request_ubble_http_error_status(self, client, ubble_mock_http_error_status):
+    def test_request_ubble_http_error_status(self, client, requests_mock):
         user = build_user_at_id_check(18)
+        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=404)
 
         client.with_token(user.email)
-
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 500
@@ -1987,7 +1976,6 @@ class IdentificationSessionTest:
             .count()
             == 0
         )
-        assert ubble_mock_http_error_status.call_count == 1
 
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status",
@@ -2020,10 +2008,12 @@ class IdentificationSessionTest:
         assert response.json["code"] == "IDCHECK_ALREADY_PROCESSED"
         assert len(user.beneficiaryFraudChecks) == 1
 
-    @pytest.mark.features(WIP_UBBLE_V2=False)
-    def test_request_ubble_second_check_after_first_aborted(self, client, ubble_mock):
+    def test_request_ubble_second_check_after_first_aborted(self, client, requests_mock):
         user = build_user_at_id_check(18)
-        client.with_token(user.email)
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
 
         # Perform first id check with Ubble
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -2037,18 +2027,17 @@ class IdentificationSessionTest:
 
         # Initiate second id check with Ubble
         # Accepted because the first one was canceled
+        client.with_token(user.email)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 3
-        assert ubble_mock.call_count == 1
 
         sorted_fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda x: x.id)
         check = sorted_fraud_checks[-1]
         assert check.type == fraud_models.FraudCheckType.UBBLE
-        assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
+        assert response.json["identificationUrl"] == "https://verification.ubble.example.com/"
 
-    @pytest.mark.features(WIP_UBBLE_V2=False)
     @pytest.mark.parametrize(
         "retry_number,expected_status",
         [(1, 200), (2, 200), (3, 400), (4, 400)],
@@ -2061,9 +2050,12 @@ class IdentificationSessionTest:
             fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
         ],
     )
-    def test_request_ubble_retry(self, client, ubble_mock, reason, retry_number, expected_status):
+    def test_request_ubble_retry(self, client, requests_mock, reason, retry_number, expected_status):
         user = build_user_at_id_check(18)
-        client.with_token(user.email)
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
 
         # Perform previous Ubble identifications
         for _ in range(0, retry_number):
@@ -2079,6 +2071,7 @@ class IdentificationSessionTest:
 
         len_fraud_checks_before = len(user.beneficiaryFraudChecks)
 
+        client.with_token(user.email)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == expected_status
@@ -2096,9 +2089,12 @@ class IdentificationSessionTest:
             fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
         ],
     )
-    def test_request_ubble_retry_not_allowed(self, client, ubble_mock, reason):
+    def test_request_ubble_retry_not_allowed(self, client, requests_mock, reason):
         user = build_user_at_id_check(18)
-        client.with_token(user.email)
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
 
         # Perform previous Ubble identification
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -2111,17 +2107,15 @@ class IdentificationSessionTest:
             ),
         )
 
+        client.with_token(user.email)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 400
         assert len(user.beneficiaryFraudChecks) == 2  # 2 previous ubble checks
 
-    def test_allow_rerun_identification_from_started(self, client, ubble_mock):
+    def test_allow_rerun_identification_from_started(self, client, requests_mock):
         user = build_user_at_id_check(18)
-        client.with_token(user.email)
-
         expected_url = "https://id.ubble.ai/ef055567-3794-4ca5-afad-dce60fe0f227"
-
         ubble_content = fraud_factories.UbbleContentFactory(
             status=ubble_serializers.UbbleIdentificationStatus.INITIATED,
             identification_url=expected_url,
@@ -2133,11 +2127,16 @@ class IdentificationSessionTest:
             resultContent=ubble_content,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
+        )
+
+        client.with_token(user.email)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 2  # profile, ubble
-        assert ubble_mock.call_count == 0
 
         check = [
             fraud_check

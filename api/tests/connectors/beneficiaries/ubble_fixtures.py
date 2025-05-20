@@ -1,4 +1,39 @@
+import copy
+import datetime
+
+from dateutil.relativedelta import relativedelta
+
 from pcapi.connectors.serialization import ubble_serializers
+from pcapi.utils.date import DATE_ISO_FORMAT
+
+
+def build_ubble_identification_v2_response(
+    status: str | None = None,
+    response_codes: list[dict] | None = None,
+    declared_data: dict | None = None,
+    documents: list[dict] | None = None,
+    birth_date: datetime.date | None = None,
+    created_on: datetime.datetime | None = None,
+    age_at_registration: int | None = None,
+) -> dict:
+    identification_response = copy.deepcopy(UBBLE_IDENTIFICATION_V2_RESPONSE)
+    if status is not None:
+        identification_response["status"] = status
+    if response_codes is not None:
+        identification_response["response_codes"] = response_codes
+    if declared_data is not None:
+        identification_response["declared_data"] = declared_data
+    if documents is not None:
+        identification_response["documents"] = documents
+    if birth_date is not None and len(identification_response["documents"]) > 0:
+        identification_response["documents"][0]["birth_date"] = birth_date.isoformat()
+    if created_on is not None:
+        identification_response["created_on"] = created_on.isoformat() + "Z"
+    if age_at_registration is not None and birth_date is None:
+        registration_date = datetime.datetime.strptime(identification_response["created_on"], DATE_ISO_FORMAT)
+        years_before_registration = registration_date - relativedelta(years=age_at_registration, months=1)
+        identification_response["documents"][0]["birth_date"] = years_before_registration.date().isoformat()
+    return identification_response
 
 
 UBBLE_IDENTIFICATION_V2_RESPONSE = {

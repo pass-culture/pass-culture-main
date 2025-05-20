@@ -1,4 +1,3 @@
-import copy
 import datetime
 import json
 import pathlib
@@ -36,6 +35,7 @@ from pcapi.utils.string import u_nbsp
 
 import tests
 from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_IDENTIFICATION_V2_RESPONSE
+from tests.connectors.beneficiaries.ubble_fixtures import build_ubble_identification_v2_response
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
@@ -47,7 +47,6 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleWorkflowV2Test:
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_ubble_workflow(self, requests_mock):
         user = users_factories.UserFactory()
         requests_mock.post(
@@ -77,7 +76,6 @@ class UbbleWorkflowV2Test:
             "user_id": user.id,
         }
 
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_applicant_creation_flow(self, requests_mock):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -134,7 +132,6 @@ class UbbleWorkflowV2Test:
         )
         assert attempt_identification_request.json()["redirect_url"] == "https://redirect.example.com"
 
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_applicant_creation_flow_updates_fraud_check(self, requests_mock):
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -547,35 +544,6 @@ class UbbleWorkflowV2Test:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_TOO_OLD]
 
 
-def build_ubble_identification_v2_response(
-    status: str | None = None,
-    response_codes: list[dict] | None = None,
-    declared_data: dict | None = None,
-    documents: list[dict] | None = None,
-    birth_date: datetime.date | None = None,
-    created_on: datetime.datetime | None = None,
-    age_at_registration: int | None = None,
-) -> dict:
-    identification_response = copy.deepcopy(UBBLE_IDENTIFICATION_V2_RESPONSE)
-    if status is not None:
-        identification_response["status"] = status
-    if response_codes is not None:
-        identification_response["response_codes"] = response_codes
-    if declared_data is not None:
-        identification_response["declared_data"] = declared_data
-    if documents is not None:
-        identification_response["documents"] = documents
-    if birth_date is not None and len(identification_response["documents"]) > 0:
-        identification_response["documents"][0]["birth_date"] = birth_date.isoformat()
-    if created_on is not None:
-        identification_response["created_on"] = created_on.isoformat() + "Z"
-    if age_at_registration is not None and birth_date is None:
-        registration_date = datetime.datetime.strptime(identification_response["created_on"], DATE_ISO_FORMAT)
-        years_before_registration = registration_date - relativedelta(years=age_at_registration, months=1)
-        identification_response["documents"][0]["birth_date"] = years_before_registration.date().isoformat()
-    return identification_response
-
-
 IDENTIFICATION_STATE_PARAMETERS = [
     (
         IdentificationState.INITIATED,
@@ -611,32 +579,7 @@ IDENTIFICATION_STATE_PARAMETERS = [
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_UBBLE_V2=False)
 class UbbleWorkflowV1Test:
-    def test_start_ubble_workflow(self, ubble_mock):
-        user = users_factories.UserFactory()
-        redirect_url = ubble_subscription_api.start_ubble_workflow(
-            user, "Kid", "Paddle", redirect_url="https://example.com"
-        )
-        assert redirect_url == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
-
-        fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
-        assert fraud_check.thirdPartyId is not None
-        assert fraud_check.resultContent is not None
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
-        assert fraud_check.source_data().gender == users_models.GenderEnum.M
-
-        ubble_request = ubble_mock.last_request.json()
-        assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
-
-        assert push_testing.requests[0] == {
-            "can_be_asynchronously_retried": True,
-            "event_name": "user_identity_check_started",
-            "event_payload": {"type": "ubble"},
-            "user_id": user.id,
-        }
-
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
     def test_update_ubble_workflow(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()
@@ -656,7 +599,6 @@ class UbbleWorkflowV1Test:
         assert ubble_content["status"] == status.value
         assert fraud_check.status == fraud_check_status
 
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
     def test_update_ubble_workflow_with_v2_feature_flag(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()

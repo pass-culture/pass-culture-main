@@ -158,7 +158,6 @@ class FeatureToggle(enum.Enum):
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
-    WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
     WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
 
     def is_active(self) -> bool:
