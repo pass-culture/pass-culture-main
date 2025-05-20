@@ -13,14 +13,23 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+:::warning
+💡 Important notice regarding location for collective offers.
+
+- The field `offerVenue` must not be used anymore. In order to locate a collective offer, you must now use the `location` attribute in the [**create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and the [**update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
+
+**You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#-offers-location).**
+:::
+
 ## June 2025
 
 - The number of price categories per offer is now limited to 50 (endpoints: [**Create Price Categories**](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories), [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer))
 
 ## May 2025
 
+- The `offerVenue` attribute for collective offers is deprecated and will be removed in a future version. Please use the `location` attribute instead for specifying offer locations.
 - The `isActive` field is now optional in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic). Calls to this endpoint should not provide this attribute anymore as it is deprecated.
-- A new `location` attribute has been added to the request body of the [**Post Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic). The `offerVenue` attribute is now optional, you must provide either `location` or `offerVenue` when creating a collective offer.
+- A new `location` attribute has been added to the request bodies of the [**Post Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and [**Patch Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic). The `offerVenue` attribute is now optional, you must provide either `location` or `offerVenue` when creating or updating a collective offer.
 - The response of the following endpoints now includes a new `offerStatus` field (see details [here](docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions)):
   - [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
   - [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)

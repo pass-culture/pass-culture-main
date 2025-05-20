@@ -37,6 +37,7 @@ PATCH_NON_NULLABLE_FIELDS = (
     "domains",
     "students",
     "offerVenue",
+    "location",
     "interventionArea",
     "startDatetime",
     "endDatetime",
@@ -288,6 +289,7 @@ def patch_collective_offer_public(
     Update Collective Offer
     """
     new_values = body.dict(exclude_unset=True)
+
     image_as_bytes = None
     image_file = False
     # checking data
@@ -433,7 +435,10 @@ def patch_collective_offer_public(
     # real edition
     try:
         offer = educational_api_offer.edit_collective_offer_public(
-            provider_id=current_api_key.providerId, new_values=new_values, offer=offer
+            provider_id=current_api_key.providerId,
+            new_values=new_values,
+            offer=offer,
+            location_body=body.location,
         )
 
     # venue errors

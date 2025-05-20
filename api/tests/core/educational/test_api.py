@@ -746,6 +746,7 @@ class CheckAllowedActionTest:
             "domains",
             "students",
             "offerVenue",
+            "location",
             "interventionArea",
             "durationMinutes",
             "audioDisabilityCompliant",

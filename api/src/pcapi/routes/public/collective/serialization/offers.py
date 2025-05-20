@@ -523,6 +523,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     domains: list[int] | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS
     students: list[str] | None = fields.COLLECTIVE_OFFER_STUDENT_LEVELS
     offerVenue: OfferVenueModel | None
+    location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     interventionArea: list[str] | None = fields.COLLECTIVE_OFFER_INTERVENTION_AREA
     durationMinutes: int | None = fields.DURATION_MINUTES
     audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
@@ -623,6 +624,18 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if institution_id is not None and uai is not None:
             raise ValueError(
                 "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
+                "Vous ne pouvez pas remplir les deux en même temps"
+            )
+
+        return values
+
+    @root_validator(pre=True)
+    def validate_offer_venue_and_location(cls, values: dict) -> dict:
+        offer_venue = values.get("offerVenue")
+        location = values.get("location")
+        if offer_venue is not None and location is not None:
+            raise ValueError(
+                "Les champs offerVenue et location sont mutuellement exclusifs. "
                 "Vous ne pouvez pas remplir les deux en même temps"
             )
 

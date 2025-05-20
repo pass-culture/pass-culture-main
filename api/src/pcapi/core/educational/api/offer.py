@@ -713,6 +713,7 @@ def edit_collective_offer_public(
     provider_id: int,
     new_values: dict,
     offer: educational_models.CollectiveOffer,
+    location_body: public_api_collective_offers_serialize.CollectiveOfferLocation | None,
 ) -> educational_models.CollectiveOffer:
     if not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active() and not offer.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
@@ -768,8 +769,12 @@ def edit_collective_offer_public(
             booking_limit_datetime=after_update_booking_limit_datetime,
         )
 
+    if "offerVenue" in new_values and "location" in new_values:
+        raise ValueError("Cannot receive offerVenue and location at the same time")
+
     # when we receive offerVenue, we also write to OA fields
     offer_venue = new_values.get("offerVenue")
+
     if offer_venue is not None:
         location_venue = None
         if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
@@ -793,6 +798,20 @@ def edit_collective_offer_public(
         new_values["locationType"] = location.location_type
         new_values["locationComment"] = location.location_comment
         new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
+
+    # when we receive location, we also write to offerVenue
+    elif location_body is not None:
+        location, offer_venue_dict = _get_location_and_offer_venue_from_public_model(
+            location_body=location_body, venue=offer.venue
+        )
+
+        new_values["locationType"] = location.location_type
+        new_values["locationComment"] = location.location_comment
+        new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
+        new_values.pop("location", None)
+
+        # Also update offerVenue to keep backward compatibility
+        new_values["offerVenue"] = offer_venue_dict
 
     # This variable is meant for Adage mailing
     updated_fields = []
