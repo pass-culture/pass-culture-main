@@ -5578,7 +5578,7 @@
                                 "$ref": "#/components/schemas/OfferAddressType"
                             }
                         ],
-                        "description": "\n- `offererVenue` means a db-known venue (`venueId` field is then mandatory).\n- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).\n- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).\n",
+                        "description": "\n[DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.\n- `offererVenue` means a db-known venue (`venueId` field is then mandatory).\n- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).\n- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).\n",
                         "example": "offererVenue"
                     },
                     "otherAddress": {
@@ -6037,6 +6037,29 @@
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
+                    },
+                    "location": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
+                            },
+                            {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
+                                    }
+                                ]
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
+                            }
+                        ],
+                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "nullable": true,
+                        "title": "ADDRESS"
                     },
                     "mentalDisabilityCompliant": {
                         "description": "Is accessible for people with mental or cognitive disability",

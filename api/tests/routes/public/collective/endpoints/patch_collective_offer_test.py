@@ -13,7 +13,9 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
@@ -991,17 +993,119 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "global": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]
         }
 
-    def test_patch_offer_with_school_location(self, client):
+    def test_patch_offer_update_to_school_location(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
 
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        collective_offer = educational_factories.CollectiveOfferOnSchoolLocationFactory(
+        collective_offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, provider=venue_provider.provider
         )
 
+        payload = {"location": {"type": "SCHOOL"}}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{collective_offer.id}", json=payload
+            )
+        assert response.status_code == 200
+
+        assert response.json["location"] == {
+            "type": "SCHOOL",
+        }
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+        assert collective_offer.locationComment is None
+        assert collective_offer.offererAddressId is None
+
+        assert collective_offer.offerVenue == {
+            "venueId": None,
+            "addressType": "school",
+            "otherAddress": "",
+        }
+
+    def test_patch_offer_update_to_to_be_defined_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        collective_offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider
+        )
+
+        payload = {"location": {"type": "TO_BE_DEFINED", "comment": "In Paris"}}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{collective_offer.id}", json=payload
+            )
+        assert response.status_code == 200
+
+        assert response.json["location"] == {
+            "type": "TO_BE_DEFINED",
+            "comment": "In Paris",
+        }
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
+        assert collective_offer.locationComment == "In Paris"
+        assert collective_offer.offererAddressId is None
+
+        assert collective_offer.offerVenue == {
+            "venueId": None,
+            "addressType": "other",
+            "otherAddress": "In Paris",
+        }
+
+    def test_patch_offer_update_to_address_on_venue_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        collective_offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider
+        )
+
+        payload = {"location": {"type": "ADDRESS", "isVenueAddress": True}}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{collective_offer.id}", json=payload
+            )
+        assert response.status_code == 200
+
+        assert response.json["location"] == {
+            "type": "ADDRESS",
+            "isVenueAddress": True,
+        }
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert collective_offer.locationComment is None
+        assert collective_offer.offererAddressId == venue.offererAddressId
+
+        assert collective_offer.offerVenue == {
+            "venueId": venue.id,
+            "addressType": "offererVenue",
+            "otherAddress": "",
+        }
+
+    def test_patch_offer_update_to_address_on_other_location(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        collective_offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider
+        )
+
+        address = geography_factories.AddressFactory(street="123 rue de la paix", postalCode="75000", city="Paris")
+
         payload = {
-            "name": "New name",
+            "location": {
+                "type": "ADDRESS",
+                "isVenueAddress": False,
+                "addressLabel": "My second address",
+                "addressId": address.id,
+            }
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -1009,14 +1113,76 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             )
         assert response.status_code == 200
 
-        assert "location" in response.json
-
         assert response.json["location"] == {
-            "type": "SCHOOL",
+            "type": "ADDRESS",
+            "isVenueAddress": False,
+            "addressLabel": "My second address",
+            "addressId": address.id,
         }
 
+        offerer_address = (
+            db.session.query(offerers_models.OffererAddress)
+            .filter_by(addressId=address.id, offererId=venue.managingOffererId)
+            .one()
+        )
+
         db.session.refresh(collective_offer)
-        assert collective_offer.name == "New name"
+        assert offerer_address.label == "My second address"
+
+        assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert collective_offer.locationComment is None
+        assert not collective_offer.offererAddressId == venue.offererAddressId
+        assert collective_offer.offererAddressId == offerer_address.id
+
+        assert collective_offer.offerVenue == {
+            "venueId": None,
+            "addressType": "other",
+            "otherAddress": "123 rue de la paix 75000 Paris",
+        }
+
+    def test_patch_offer_with_both_location_and_offer_venue(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+
+        payload = {
+            "location": {"type": "SCHOOL"},
+            "offerVenue": {
+                "venueId": None,
+                "addressType": "school",
+                "otherAddress": None,
+            },
+        }
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{collective_offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "__root__": [
+                "Les champs offerVenue et location sont mutuellement exclusifs. "
+                "Vous ne pouvez pas remplir les deux en même temps"
+            ]
+        }
+
+    def test_patch_offer_with_both_location_and_offer_venue_none(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+
+        payload = {"location": {"type": "SCHOOL"}, "offerVenue": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{collective_offer.id}", json=payload
+            )
+
+        assert response.status_code == 400
+        assert response.json == {"offerVenue": ["Ce champ peut ne pas être présent mais ne peut pas être null."]}
 
 
 @pytest.mark.usefixtures("db_session")
