@@ -124,7 +124,7 @@ def _move_individual_offers(origin_venue: offerers_models.Venue, destination_ven
 def _move_collective_offers(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
     collective_offer_ids = []
     for collective_offer in origin_venue.collectiveOffers:
-        educational_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        educational_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
         collective_offer_ids.append(collective_offer.id)
     logger.info(
         "Collective offers' venue has changed",

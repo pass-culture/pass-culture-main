@@ -1619,7 +1619,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch CollectiveOffer
     # - _is_collective_offer_price_editable
     expected_num_queries = 4
-    expected_num_queries_with_ff = expected_num_queries + 1  # FF MOVE_OFFER_TEST
+    expected_num_queries_with_ff = expected_num_queries + 1  # FF VENUE_REGULARIZATION
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -1781,7 +1781,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Entité juridique"] == "Offerer Top Acteur"
 
-    @pytest.mark.features(MOVE_OFFER_TEST=True)
+    @pytest.mark.features(VENUE_REGULARIZATION=True)
     def test_move_offer(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")

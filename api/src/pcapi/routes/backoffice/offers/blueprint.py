@@ -1188,7 +1188,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             pass
 
     move_offer_form = None
-    if FeatureToggle.MOVE_OFFER_TEST.is_active():
+    if FeatureToggle.VENUE_REGULARIZATION.is_active():
         try:
             venue_choices = offers_api.check_can_move_offer(offer)
             move_offer_form = forms.EditOfferVenueForm()
@@ -1551,7 +1551,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/move-offer", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def move_offer(offer_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.MOVE_OFFER_TEST.is_active():
+    if not FeatureToggle.VENUE_REGULARIZATION.is_active():
         raise NotImplementedError("This feature is not active")
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
 

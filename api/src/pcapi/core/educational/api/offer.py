@@ -1277,24 +1277,63 @@ def check_can_move_collective_offer_venue(
     return venues_choices
 
 
+def create_new_location_if_offer_uses_origin_venue_location(
+    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+) -> None:
+    # Use a different OA if the offer uses the venue's OA
+    source_venue = collective_offer.venue
+    if collective_offer.offererAddress and collective_offer.offererAddress == source_venue.offererAddress:
+        destination_oa = offerers_api.get_or_create_offerer_address(
+            source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.common_name
+        )
+        db.session.add(destination_oa)
+        collective_offer.offererAddress = destination_oa
+
+
+def move_collective_offer_for_regularization(
+    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+) -> None:
+    if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
+        raise NotImplementedError("Activate VENUE_REGULARIZATION to use this feature")
+
+    venue_choices = check_can_move_collective_offer_venue(collective_offer, with_restrictions=False)
+
+    if destination_venue not in venue_choices:
+        raise offers_exceptions.ForbiddenDestinationVenue()
+
+    create_new_location_if_offer_uses_origin_venue_location(collective_offer, destination_venue)
+    collective_offer.venue = destination_venue
+    db.session.add(collective_offer)
+
+    collective_bookings_subquery = (
+        db.session.query(educational_models.CollectiveBooking)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+    )
+    collective_bookings_to_update = db.session.query(educational_models.CollectiveBooking).filter(
+        educational_models.CollectiveBooking.id.in_(
+            collective_bookings_subquery.with_entities(educational_models.CollectiveBooking.id)
+        )
+    )
+
+    collective_bookings_to_update.update({"venueId": destination_venue.id}, synchronize_session=False)
+    db.session.add_all(collective_bookings_to_update)
+
+    db.session.flush()
+
+
 def move_collective_offer_venue(
     collective_offer: educational_models.CollectiveOffer,
     destination_venue: offerers_models.Venue,
-    with_restrictions: bool = True,
 ) -> None:
-    venue_choices = check_can_move_collective_offer_venue(collective_offer, with_restrictions=with_restrictions)
+    venue_choices = check_can_move_collective_offer_venue(collective_offer)
 
     if destination_venue not in venue_choices:
         raise offers_exceptions.ForbiddenDestinationVenue()
 
     destination_pricing_point_link = destination_venue.current_pricing_point_link
-    if not with_restrictions:
-        destination_pricing_point_id = (
-            destination_pricing_point_link.pricingPointId if destination_pricing_point_link else None
-        )
-    else:
-        assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
-        destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     collective_bookings = (
         db.session.query(educational_models.CollectiveBooking)
@@ -1329,43 +1368,28 @@ def move_collective_offer_venue(
         .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
     )
 
-    # Use a different OA if the offer uses the venue's OA
-    source_venue = collective_offer.venue
-    if collective_offer.offererAddress and collective_offer.offererAddress == source_venue.offererAddress:
-        destination_oa = offerers_api.get_or_create_offerer_address(
-            source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.common_name
-        )
-        db.session.add(destination_oa)
-        collective_offer.offererAddress = destination_oa
+    create_new_location_if_offer_uses_origin_venue_location(collective_offer, destination_venue)
     collective_offer.venue = destination_venue
     db.session.add(collective_offer)
 
-    if with_restrictions:
-        for collective_booking in collective_bookings.all():
-            collective_booking.venueId = destination_venue.id
-            db.session.add(collective_booking)
+    for collective_booking in collective_bookings.all():
+        assert not collective_booking.isReimbursed
+        collective_booking.venueId = destination_venue.id
+        db.session.add(collective_booking)
 
-            # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
-            # used for pricing (same as venue pricing point at the time pricing was processed)
-            pricing = collective_booking.pricings[0] if collective_booking.pricings else None
-            if pricing and pricing.pricingPointId != destination_pricing_point_id:
-                raise offers_exceptions.BookingsHaveOtherPricingPoint()
-            finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
-            if finance_event:
-                finance_event.venueId = destination_venue.id
-                finance_event.pricingPointId = destination_pricing_point_id
-                if finance_event.status == finance_models.FinanceEventStatus.PENDING:
-                    finance_event.status = finance_models.FinanceEventStatus.READY
-                    finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
-                db.session.add(finance_event)
-    else:
-        collective_bookings_to_update = db.session.query(educational_models.CollectiveBooking).filter(
-            educational_models.CollectiveBooking.id.in_(
-                collective_bookings.with_entities(educational_models.CollectiveBooking.id)
-            )
-        )
-        collective_bookings_to_update.update({"venueId": destination_venue.id}, synchronize_session=False)
-        db.session.add_all(collective_bookings_to_update)
+        # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+        # used for pricing (same as venue pricing point at the time pricing was processed)
+        pricing = collective_booking.pricings[0] if collective_booking.pricings else None
+        if pricing and pricing.pricingPointId != destination_pricing_point_id:
+            raise offers_exceptions.BookingsHaveOtherPricingPoint()
+        finance_event = collective_booking.finance_events[0] if collective_booking.finance_events else None
+        if finance_event:
+            finance_event.venueId = destination_venue.id
+            finance_event.pricingPointId = destination_pricing_point_id
+            if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                finance_event.status = finance_models.FinanceEventStatus.READY
+                finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(collective_booking)
+            db.session.add(finance_event)
     db.session.flush()
 
 
