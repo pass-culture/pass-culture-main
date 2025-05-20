@@ -79,6 +79,7 @@ def payload_fixture(minimal_payload, venue_provider, domain, institution, nation
         "imageCredit": "pouet",
         "imageFile": image_data.GOOD_IMAGE,
         "endDatetime": minimal_payload["startDatetime"],
+        "isActive": True,
     }
 
 
@@ -105,7 +106,6 @@ def minimal_payload_fixture(domain, institution, venue):
             "addressType": "offererVenue",
             "otherAddress": "",
         },
-        "isActive": True,
         "startDatetime": booking_beginning.isoformat(timespec="seconds"),
         "bookingLimitDatetime": booking_limit.isoformat(timespec="seconds"),
         "totalPrice": 600,
