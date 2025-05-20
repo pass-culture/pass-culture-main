@@ -1067,18 +1067,19 @@ def create_mediation(
     return mediation
 
 
-def delete_mediations(offer_ids: typing.Collection[int]) -> None:
+def delete_mediations(offer_ids: typing.Collection[int], reindex: bool = True) -> None:
     mediations = db.session.query(models.Mediation).filter(models.Mediation.offerId.in_(offer_ids)).all()
 
     _delete_mediations_and_thumbs(mediations)
 
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            offer_ids,
-            reason=search.IndexationReason.MEDIATION_DELETION,
-        ),
-    )
+    if reindex:
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids,
+                reason=search.IndexationReason.MEDIATION_DELETION,
+            ),
+        )
 
 
 def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
@@ -2216,7 +2217,7 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
     for model in related_models:
         model.query.filter(model.offerId.in_(offer_ids)).delete(synchronize_session=False)  # type: ignore[attr-defined]
 
-    delete_mediations(offer_ids)
+    delete_mediations(offer_ids, reindex=False)
 
 
 def _format_error_extra(error: Exception, ids: typing.Collection[int]) -> dict:
