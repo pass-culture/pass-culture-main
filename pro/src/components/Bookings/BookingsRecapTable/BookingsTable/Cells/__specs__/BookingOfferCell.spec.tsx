@@ -17,7 +17,7 @@ describe('bookings offer cell', () => {
       booking: bookingRecapFactory({
         stock: bookingRecapStockFactory({
           offerId: offerId,
-          offerIsbn: '97834567654',
+          offerEan: '97834567654',
           offerName: 'La Guitare pour les nuls',
           offerIsEducational: false,
           eventBeginningDatetime: new Date().toISOString(),
@@ -61,7 +61,7 @@ describe('bookings offer cell', () => {
           offerId: offerId,
           offerName: 'La danse des poireaux',
           offerIsEducational: false,
-          offerIsbn: null
+          offerEan: null
         }),
       }),
     }
@@ -87,7 +87,7 @@ describe('bookings offer cell', () => {
         numberOfTickets: 1,
         offerId: offerId,
         offerIsEducational: true,
-        offerIsbn: null,
+        offerEan: null,
         offerName: 'ma super offre collective',
       },
     })
@@ -110,7 +110,7 @@ describe('bookings offer cell', () => {
         numberOfTickets: 1,
         offerId: offerId,
         offerIsEducational: true,
-        offerIsbn: null,
+        offerEan: null,
         offerName: 'ma super offre collective 2',
       },
     })

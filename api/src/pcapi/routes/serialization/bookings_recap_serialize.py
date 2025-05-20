@@ -28,9 +28,7 @@ class BookingRecapResponseStockModel(BaseModel):
     event_beginning_datetime: datetime | None
     offer_id: int
     offer_is_educational: bool
-    # FIXME: Field should be called offerEan but it is shared with
-    # collective bookings. We have to adapt the pro front to change name
-    offer_isbn: str | None
+    offer_ean: str | None
     offer_name: str
 
     class Config:
@@ -136,7 +134,7 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
             "offerName": booking.offerName,
             "offerId": booking.offerId,
             "eventBeginningDatetime": stock_beginning_datetime.isoformat() if stock_beginning_datetime else None,
-            "offerIsbn": booking.offerEan,
+            "offerEan": booking.offerEan,
             "offerIsEducational": False,
         },
         beneficiary={  # type: ignore[arg-type]

@@ -201,7 +201,7 @@ export const collectiveBookingCollectiveStockFactory = (
   numberOfTickets: 1,
   offerId: 1,
   offerIsEducational: true,
-  offerIsbn: null,
+  offerEan: null,
   offerName: 'ma super offre collective',
   ...customCollectiveBookingCollectiveStock,
 })

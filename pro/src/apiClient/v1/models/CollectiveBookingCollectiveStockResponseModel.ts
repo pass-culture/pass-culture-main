@@ -7,9 +7,9 @@ export type CollectiveBookingCollectiveStockResponseModel = {
   eventEndDatetime: string;
   eventStartDatetime: string;
   numberOfTickets: number;
+  offerEan?: string | null;
   offerId: number;
   offerIsEducational: boolean;
-  offerIsbn?: string | null;
   offerName: string;
 };
 
