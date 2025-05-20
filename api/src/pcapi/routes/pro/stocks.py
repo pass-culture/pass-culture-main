@@ -232,6 +232,7 @@ def bulk_update_event_stocks(
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(response_model=stock_serialize.StockIdResponseModel, api=blueprint.pro_private_schema)
+@atomic()
 def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
     # fmt: off
     stock = (
