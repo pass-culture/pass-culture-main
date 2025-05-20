@@ -612,7 +612,7 @@ def create_collective_offer_public(
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
 
     if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-        validation.validate_national_program(body.nationalProgramId, educational_domains)
+        validation.validate_national_program(body.national_program_id, educational_domains)
 
     if len(educational_domains) != len(body.domains):
         raise exceptions.EducationalDomainsNotFound()
@@ -679,7 +679,7 @@ def create_collective_offer_public(
         interventionArea=[],
         institution=institution,
         providerId=requested_id,
-        nationalProgramId=body.nationalProgramId,
+        nationalProgramId=body.national_program_id,
         formats=body.formats,
         bookingEmails=body.booking_emails,
         locationType=location.location_type,

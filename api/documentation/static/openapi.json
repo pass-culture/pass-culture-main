@@ -6273,6 +6273,7 @@
                     "isActive": {
                         "description": "[\u26a0\ufe0f DEPRECATED] Is your offer active",
                         "example": true,
+                        "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
@@ -6390,7 +6391,6 @@
                     "contactPhone",
                     "domains",
                     "students",
-                    "isActive",
                     "startDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",

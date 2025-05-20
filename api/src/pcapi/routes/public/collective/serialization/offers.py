@@ -402,10 +402,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
     visual_disability_compliant: bool = fields.VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT
     offer_venue: OfferVenueModel | None
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
-    isActive: bool = fields.COLLECTIVE_OFFER_IS_ACTIVE
+    is_active: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
     image_file: str | None = fields.IMAGE_FILE
     image_credit: str | None = fields.IMAGE_CREDIT
-    nationalProgramId: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
+    national_program_id: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
     # stock part
     start_datetime: datetime = fields.COLLECTIVE_OFFER_START_DATETIME
     end_datetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
