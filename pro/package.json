@@ -118,7 +118,7 @@
     "stylelint": "^16.19.1",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^13.1.0",
-    "tree-dump": "^1.0.2",
+    "tree-dump": "^1.0.3",
     "ts-unused-exports": "^10.1.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
