@@ -5,6 +5,7 @@ import typing
 from functools import partial
 
 import click
+from sqlalchemy import exc as sa_exc
 
 from pcapi.core import search
 from pcapi.core.educational import models as educational_models
@@ -274,25 +275,31 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
         if invalidity_reason:
             invalid_venues.append((origin_venue_id, destination_venue_id, invalidity_reason))
         else:
-            _move_individual_offers(origin_venue, destination_venue)
-            _move_collective_offers(origin_venue, destination_venue)
-            _move_collective_offer_template(origin_venue, destination_venue)
-            _move_collective_offer_playlist(origin_venue, destination_venue)
-            _move_price_category_label(origin_venue, destination_venue)
-            _move_finance_incident(origin_venue, destination_venue)
-            destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
-            _soft_delete_origin_venue(origin_venue)
-            _create_action_history(origin_venue_id, destination_venue_id)
+            try:
+                with atomic():
+                    _move_individual_offers(origin_venue, destination_venue)
+                    _move_collective_offers(origin_venue, destination_venue)
+                    _move_collective_offer_template(origin_venue, destination_venue)
+                    _move_collective_offer_playlist(origin_venue, destination_venue)
+                    _move_price_category_label(origin_venue, destination_venue)
+                    _move_finance_incident(origin_venue, destination_venue)
+                    destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
+                    _soft_delete_origin_venue(origin_venue)
+                    _create_action_history(origin_venue_id, destination_venue_id)
 
-            if not_dry:
-                venue_ids_to_reindex = [origin_venue_id]
-                if destination_venue_updated_to_permanent:
-                    venue_ids_to_reindex.append(destination_venue_id)
-                on_commit(partial(search.reindex_venue_ids, venue_ids_to_reindex))
-                logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
-            else:
-                db.session.flush()
-                mark_transaction_as_invalid()
+                    if not_dry:
+                        venue_ids_to_reindex = [origin_venue_id]
+                        if destination_venue_updated_to_permanent:
+                            venue_ids_to_reindex.append(destination_venue_id)
+                        on_commit(partial(search.reindex_venue_ids, venue_ids_to_reindex))
+                        logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
+                    else:
+                        db.session.flush()
+                        mark_transaction_as_invalid()
+            except sa_exc.SQLAlchemyError as error:
+                invalid_venues.append((origin_venue.id, destination_venue.id, "SQL error: " + str(error)))
+            except Exception as exception:
+                invalid_venues.append((origin_venue.id, destination_venue.id, "Python exception: " + str(exception)))
     _extract_invalid_venues_to_csv(invalid_venues)
 
 
