@@ -102,16 +102,17 @@ def _fill_missing_content_test_fields(
     assert isinstance(previous_ubble_content, fraud_models.UbbleContent)
 
     user = fraud_check.user
+    is_test_identification = (
+        ubble_fraud_api.does_match_ubble_test_names(content) or previous_ubble_content.external_applicant_id is not None
+    )
     should_fill_content = (
-        ubble_fraud_api.does_match_ubble_test_names(content)
-        and previous_ubble_content.external_applicant_id is not None
-        and content.status == ubble_serializers.UbbleIdentificationStatus.APPROVED
+        is_test_identification and content.status == ubble_serializers.UbbleIdentificationStatus.APPROVED
     )
     if should_fill_content:
         content.birth_date = previous_ubble_content.birth_date
+        content.id_document_number = previous_ubble_content.id_document_number
         content.first_name = user.firstName
         content.last_name = user.lastName
-        content.id_document_number = f"{user.id:012}"
 
     if ubble_fraud_api.does_match_ubble_test_email(user.email):
         content.birth_date = user.birth_date

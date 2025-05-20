@@ -92,6 +92,7 @@ def _get_ubble_intermediate_code_choices() -> list[tuple[int, str]]:
 
 class UbbleConfigurationForm(utils.PCForm):
     birth_date = fields.PCDateField("Date de naissance")
+    id_document_number = fields.PCStringField("Numéro de pièce d'identité")
     final_response_code = fields.PCSelectField(
         "Code de réponse final", choices=_get_ubble_final_code_choices(), default=10000
     )
