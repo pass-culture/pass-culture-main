@@ -20,11 +20,11 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
 import {
-  EVENT_ADDRESS_VENUE_LABEL,
-  EVENT_ADDRESS_VENUE_SELECT_LABEL,
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
+  EVENT_ADDRESS_VENUE_LABEL,
+  EVENT_ADDRESS_VENUE_SELECT_LABEL,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 

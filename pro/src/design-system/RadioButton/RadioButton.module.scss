@@ -1,0 +1,348 @@
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_outline.scss" as outline;
+
+.radio-button {
+  // ---------------
+  // Variant Default
+  // ---------------
+
+  // Sizing to "hug" (content width) by default
+  display: inline-flex;
+  flex-direction: column;
+
+  &.sizing-fill {
+    display: flex;
+  }
+
+  > .radio-button-label {
+    display: inline-flex;
+    align-items: center;
+    flex-grow: 1;
+    gap: rem.torem(12px);
+    cursor: pointer;
+    color: var(--color-text-default);
+
+    .radio-button-input {
+      display: flex;
+      align-items: center;
+      height: rem.torem(20px);
+      min-width: rem.torem(20px);
+      width: rem.torem(20px);
+      border: rem.torem(2px) solid var(--color-border-default);
+      border-radius: 50%;
+      background-color: transparent;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+    }
+  }
+
+  &.is-checked,
+  &:has(:checked) {
+    > .radio-button-label {
+      @include fonts.body-accent;
+
+      .radio-button-input {
+        border-color: var(--color-border-brand-primary);
+        background-color: var(--color-icon-brand-primary);
+        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
+      }
+    }
+  }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid var(--color-outline-default);
+    outline-offset: rem.torem(2px);
+    border-radius: rem.torem(6px);
+  }
+
+  &:hover:not(.is-disabled) {
+    > .radio-button-label {
+      color: var(--color-text-brand-primary-hover);
+
+      &:active {
+        opacity: 0.6;
+        color: var(--color-text-default);
+
+        > .radio-button-input {
+          border-color: var(--color-border-default);
+        }
+      }
+
+      > .radio-button-input {
+        border-color: var(--color-icon-brand-primary-hover);
+      }
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      > .radio-button-label {
+        color: var(--color-text-brand-primary-hover);
+
+        &:active {
+          color: var(--color-text-default);
+
+          > .radio-button-input {
+            border-color: var(--color-icon-brand-primary);
+          }
+        }
+
+        > .radio-button-input {
+          border-color: var(--color-border-brand-primary-hover);
+          background-color: var(--color-icon-brand-primary-hover);
+        }
+      }
+    }
+  }
+
+  &.is-disabled {
+    > .radio-button-label {
+      cursor: default;
+      color: var(--color-text-disabled);
+
+      > .radio-button-input {
+        cursor: default;
+        border-color: var(--color-border-disabled);
+      }
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      > .radio-button-label > .radio-button-input {
+        background-color: var(--color-icon-disabled);
+      }
+    }
+  }
+
+  // ---------------
+  // Variant Detailed
+  // ---------------
+
+  &.variant-detailed {
+    border: rem.torem(1px) solid black;
+    border-color: var(--color-border-default);
+    border-radius: rem.torem(8px);
+
+    > .radio-button-label {
+      padding: rem.torem(16px);
+
+      .description {
+        @include fonts.body-xs;
+
+        color: var(--color-text-default);
+      }
+
+      .right-text {
+        @include fonts.body;
+
+        margin-left: auto;
+        color: var(--color-text-default);
+      }
+
+      .right-tag {
+        margin-left: auto;
+      }
+
+      .right-icon {
+        color: var(--color-icon-brand-primary);
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+
+        &-svg {
+          width: rem.torem(32px);
+          height: rem.torem(32px);
+        }
+      }
+
+      .right-image {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+
+        &-img-small {
+          border-radius: rem.torem(8px);
+          width: rem.torem(40px);
+          height: rem.torem(40px);
+        }
+
+        &-img-medium {
+          border-radius: rem.torem(8px);
+          width: rem.torem(80px);
+          height: rem.torem(80px);
+        }
+
+        &-img-large {
+          border-radius: rem.torem(8px);
+          width: rem.torem(120px);
+          height: rem.torem(120px);
+        }
+      }
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      background-color: var(--color-background-brand-primary-selected);
+      border-color: var(--color-border-brand-primary);
+
+      > .radio-button-label > .radio-button-input {
+        box-shadow: inset 0 0 0 rem.torem(3px)
+          var(--color-background-brand-primary-selected);
+      }
+    }
+
+    &:hover:not(.is-disabled) {
+      border-color: var(--color-border-brand-primary-hover);
+
+      > .radio-button-label {
+        > .radio-button-input {
+          border-color: var(--color-border-brand-primary-hover);
+        }
+
+        .description {
+          color: var(--color-text-brand-primary-hover);
+        }
+
+        .right-icon {
+          color: var(--color-icon-brand-primary-hover);
+        }
+
+        &:active {
+          opacity: 0.6;
+          color: var(--color-text-default);
+
+          > .radio-button-input {
+            border-color: var(--color-border-default);
+          }
+
+          .description {
+            color: var(--color-text-default);
+          }
+
+          .right-icon {
+            color: var(--color-icon-brand-primary);
+          }
+        }
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        border-color: var(--color-border-brand-primary-hover);
+
+        > .radio-button-label {
+          color: var(--color-text-brand-primary-hover);
+
+          > .radio-button-input {
+            box-shadow: inset 0 0 0 rem.torem(3px)
+              var(--color-background-brand-primary-selected);
+            border-color: var(--color-border-brand-primary-hover);
+            background-color: var(--color-icon-brand-primary-hover);
+          }
+
+          .description {
+            color: var(--color-text-brand-primary-hover);
+          }
+
+          .right-text {
+            color: var(--color-text-brand-primary-hover);
+          }
+        }
+
+        &:active {
+          > .radio-button-input {
+            border-color: var(--color-border-brand-primary);
+            background-color: var(--color-background-brand-primary);
+          }
+
+          .right-text {
+            color: var(--color-text-default);
+          }
+        }
+      }
+
+      &:active {
+        border-color: var(--color-border-subtle);
+
+        &.is-checked,
+        &:has(:checked) {
+          border-color: var(--color-border-brand-primary);
+        }
+      }
+    }
+
+    &.is-disabled {
+      border-color: var(--color-border-disabled);
+      background-color: var(--color-background-disabled);
+
+      > .radio-button-label {
+        color: var(--color-text-disabled);
+
+        .description {
+          color: var(--color-text-disabled);
+        }
+
+        .right-icon {
+          color: var(--color-icon-disabled);
+        }
+
+        .right-text {
+          color: var(--color-text-disabled);
+        }
+
+        .right-image {
+          opacity: 0.6;
+        }
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        > .radio-button-label > .radio-button-input {
+          background-color: var(--color-icon-disabled);
+          border-color: var(--color-border-disabled);
+        }
+      }
+    }
+  }
+
+  // -------------------
+  // Children on checked
+  // -------------------
+
+  &.has-children {
+    // Automatically sizing to "fill" (full width) if has children
+    display: flex;
+
+    &.variant-detailed {
+      background-color: transparent;
+
+      > .radio-button-label {
+        opacity: 1;
+      }
+
+      &:hover {
+        &:active {
+          background-color: transparent;
+
+          > .radio-button-label {
+            opacity: 1;
+          }
+
+          &.is-checked,
+          &:has(:checked) {
+            background-color: transparent;
+
+            > .radio-button-label {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .children-on-checked {
+    padding: 0 rem.torem(16px) rem.torem(16px);
+  }
+}
