@@ -1,9 +1,9 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullErrorIcon from 'icons/full-error.svg'
 import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import {
   STEP_ID_BANK_INFORMATIONS,
@@ -54,12 +54,10 @@ export const ReimbursementsTabs = ({
       {
         id: STEP_ID_INCOMES,
         label: (
-          <>
+          <div className={styles['label-with-tag']}>
             Chiffre d’affaires&nbsp;
-            <Tag className={styles['tabs-tab-new']} variant={TagVariant.BLUE}>
-              Nouveau
-            </Tag>
-          </>
+            <Tag label="Nouveau" variant={TagVariant.NEW} />
+          </div>
         ),
         url: '/remboursements/revenus',
       },

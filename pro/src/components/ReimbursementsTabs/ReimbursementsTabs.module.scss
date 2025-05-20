@@ -5,3 +5,8 @@
   color: var(--color-icon-error);
   vertical-align: sub;
 }
+
+.label-with-tag {
+  display: flex;
+  gap: rem.torem(8px);
+}
