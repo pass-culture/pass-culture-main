@@ -4,6 +4,7 @@ import logging
 import operator
 import typing
 
+import psycopg2
 import pytz
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
@@ -1299,6 +1300,14 @@ def get_unbookable_unbooked_old_offer_ids(
     * An unbooked offer is an offer without any known booking (not event
     cancelled).
     * An old offer is an offer that has been created more than a year ago.
+
+    Notes:
+        Offer ids are yielded using multiple queries over small intervals. If
+        an error occurs, the query is retried a couple times at most. If this
+        is not enough or a really unexpected error happens, the batch is
+        ignored.
+        -> This means rows might be ignored. But it is better than
+        stopping everything.
     """
     query = """
         SELECT
@@ -1342,10 +1351,35 @@ def get_unbookable_unbooked_old_offer_ids(
             )
     """
 
+    def run_with_retry(query: str, start_id: int, batch_size: int) -> set[int]:  # type: ignore[return]
+        for idx in reversed(range(5)):
+            try:
+                rows = db.session.execute(sa.text(query), {"min_id": start_id, "max_id": start_id + batch_size})
+                return {row[0] for row in rows}
+            except psycopg2.errors.OperationalError as e:
+                error_msg = "Error: %s between rows %s and %s"
+                logger.info(error_msg, type(e).__name__, start_id, start_id + batch_size)
+
+                db.session.rollback()
+
+                if idx == 0:
+                    raise
+
     if max_id is None:
         max_id = models.Offer.query.order_by(models.Offer.id.desc()).first().id
 
     while min_id < max_id:
-        rows = db.session.execute(sa.text(query), {"min_id": min_id, "max_id": min_id + batch_size})
-        yield from {row[0] for row in rows}
+        try:
+            yield from run_with_retry(query, min_id, batch_size)
+        except psycopg2.errors.OperationalError as e:
+            # duplicate information to simplify some search
+            extra = {"min_id": min_id, "max_id": min_id + batch_size, "error": str(e)}
+            error_msg = "Too many retries: could not fetch rows between %d and %d: %s"
+            logger.error(error_msg, min_id, min_id + batch_size, str(e), extra=extra)
+        except Exception as err:
+            # duplicate information to simplify some search
+            extra = {"min_id": min_id, "max_id": min_id + batch_size, "error": str(err)}
+            error_msg = "Failed to fetch rows"
+            logger.error(error_msg, min_id, min_id + batch_size, extra=extra)
+
         min_id += batch_size

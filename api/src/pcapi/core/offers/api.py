@@ -2278,7 +2278,11 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
 
 
 def delete_unbookable_unbooked_old_offers(
-    min_id: int = 0, max_id: int | None = None, offer_chunk_size: int = 16
+    min_id: int = 0,
+    max_id: int | None = None,
+    query_batch_size: int = 5_000,
+    filter_batch_size: int = 2_500,
+    delete_batch_size: int = 32,
 ) -> None:
     """Delete all unusable offers.
 
@@ -2291,14 +2295,20 @@ def delete_unbookable_unbooked_old_offers(
     Each offer should also be unindexed.
     """
     start = time.time()
-    log_extra = {"min_id": min_id, "max_id": max_id, "offer_chunk_size": offer_chunk_size}
+    log_extra = {
+        "min_id": min_id,
+        "max_id": max_id,
+        "query_batch_size": query_batch_size,
+        "filter_batch_size": filter_batch_size,
+        "delete_batch_size": delete_batch_size,
+    }
     logger.info("delete_unbookable_unbooked_unmodified_old_offers start", extra=log_extra)
 
-    offer_ids = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id)
-    for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=2_500)):
+    offer_ids = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id, batch_size=query_batch_size)
+    for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=filter_batch_size)):
         inner_start = time.time()
 
-        delete_offers_and_all_related_objects(chunk, offer_chunk_size)
+        delete_offers_and_all_related_objects(chunk, delete_batch_size)
 
         extra = {
             "round": idx,
