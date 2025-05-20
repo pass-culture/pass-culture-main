@@ -866,8 +866,8 @@ def get_collective_offer_price_form(collective_offer_id: int) -> utils.Backoffic
 @atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_move_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
-    if not feature.FeatureToggle.MOVE_OFFER_TEST.is_active():
-        raise feature.DisabledFeatureError("MOVE_OFFER_TEST is inactive")
+    if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
+        raise feature.DisabledFeatureError("VENUE_REGULARIZATION is inactive")
 
     collective_offer = (
         db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
@@ -927,5 +927,5 @@ def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
         .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
     ).one()
 
-    collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+    collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
     return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)

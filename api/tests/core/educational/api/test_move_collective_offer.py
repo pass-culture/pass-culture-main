@@ -61,6 +61,7 @@ def create_offer_by_booking_state(venue, state):
     return collective_offer
 
 
+@pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveCollectiveOfferSuccessTest:
     def test_move_collective_offer_with_its_own_OA(self):
         """
@@ -72,7 +73,7 @@ class MoveCollectiveOfferSuccessTest:
         assert collective_offer.offererAddress != source_venue.offererAddress
         offer_OA_id = collective_offer.offererAddressId
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.offererAddressId == offer_OA_id
@@ -86,7 +87,7 @@ class MoveCollectiveOfferSuccessTest:
         source_venue = collective_offer.venue
         assert collective_offer.offererAddress == source_venue.offererAddress
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         # Same address, different OA, label is venue's common name
@@ -109,7 +110,7 @@ class MoveCollectiveOfferSuccessTest:
         assert collective_offer.offererAddress == source_venue.offererAddress
         assert destination_OA != collective_offer.offererAddress
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.offererAddress == destination_OA
@@ -123,7 +124,7 @@ class MoveCollectiveOfferSuccessTest:
         assert collective_offer.venue.current_pricing_point_link is None
         assert destination_venue.current_pricing_point_link is None
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
@@ -143,7 +144,7 @@ class MoveCollectiveOfferSuccessTest:
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
@@ -155,7 +156,7 @@ class MoveCollectiveOfferSuccessTest:
         venue, destination_venue = venues_with_same_pricing_point
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
@@ -167,7 +168,7 @@ class MoveCollectiveOfferSuccessTest:
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer, startDatetime=yesterday)
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
@@ -179,7 +180,7 @@ class MoveCollectiveOfferSuccessTest:
             collectiveStock__collectiveOffer=collective_offer, status=CollectiveBookingStatus.CONFIRMED
         )
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         db.session.refresh(collective_booking)
@@ -204,7 +205,7 @@ class MoveCollectiveOfferSuccessTest:
         )
         assert finance_event.venue == venue
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         db.session.refresh(collective_booking)
@@ -233,7 +234,7 @@ class MoveCollectiveOfferSuccessTest:
             event=finance_event,
         )
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         db.session.refresh(collective_booking)
@@ -250,7 +251,7 @@ class MoveCollectiveOfferSuccessTest:
             collectiveStock__collectiveOffer=collective_offer
         )
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         assert collective_offer.venue == destination_venue
         assert collective_booking.venue == destination_venue
@@ -274,7 +275,7 @@ class MoveCollectiveOfferSuccessTest:
             collectiveStock__collectiveOffer=collective_offer
         )
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         assert collective_offer.venue == destination_venue
         assert collective_booking.venue == destination_venue
@@ -301,7 +302,7 @@ class MoveCollectiveOfferSuccessTest:
             collectiveStock__collectiveOffer=collective_offer
         )
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         assert collective_offer.venue == destination_venue
         assert collective_booking.venue == destination_venue
@@ -315,7 +316,7 @@ class MoveCollectiveOfferSuccessTest:
         destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         collective_offer = educational_factories.create_collective_offer_by_status(state, venue=venue)
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
@@ -335,7 +336,7 @@ class MoveCollectiveOfferSuccessTest:
         destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         collective_offer = create_offer_by_booking_state(venue, state)
 
-        collective_offer_api.move_collective_offer_venue(collective_offer, destination_venue, with_restrictions=False)
+        collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
@@ -343,6 +344,7 @@ class MoveCollectiveOfferSuccessTest:
         assert db.session.query(educational_models.CollectiveBooking).all()[0].venue == destination_venue
 
 
+@pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveCollectiveOfferFailTest:
     def test_move_collective_offer_with_different_pricing_point(self):
         venue = offerers_factories.VenueFactory()
@@ -362,9 +364,7 @@ class MoveCollectiveOfferFailTest:
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         with pytest.raises(api.exceptions.NoDestinationVenue):
-            collective_offer_api.move_collective_offer_venue(
-                collective_offer, invalid_destination_venue, with_restrictions=False
-            )
+            collective_offer_api.move_collective_offer_for_regularization(collective_offer, invalid_destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue != invalid_destination_venue
@@ -381,9 +381,7 @@ class MoveCollectiveOfferFailTest:
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         with pytest.raises(api.exceptions.NoDestinationVenue):
-            collective_offer_api.move_collective_offer_venue(
-                collective_offer, invalid_destination_venue, with_restrictions=False
-            )
+            collective_offer_api.move_collective_offer_for_regularization(collective_offer, invalid_destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue != invalid_destination_venue
@@ -405,9 +403,7 @@ class MoveCollectiveOfferFailTest:
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         with pytest.raises(api.exceptions.NoDestinationVenue):
-            collective_offer_api.move_collective_offer_venue(
-                collective_offer, invalid_destination_venue, with_restrictions=False
-            )
+            collective_offer_api.move_collective_offer_for_regularization(collective_offer, invalid_destination_venue)
 
         db.session.refresh(collective_offer)
         assert collective_offer.venue != invalid_destination_venue
