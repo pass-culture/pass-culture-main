@@ -74,7 +74,8 @@ def get_generated_user() -> utils.BackofficeResponse:
 
     if user:
         birth_date = user.dateOfBirth.date() if user.dateOfBirth else None
-        ubble_form = forms.UbbleConfigurationForm(birth_date=birth_date)
+        id_document_number = f"{user.id:012}"
+        ubble_form = forms.UbbleConfigurationForm(birth_date=birth_date, id_document_number=id_document_number)
     else:
         ubble_form = forms.UbbleConfigurationForm()
 
@@ -229,7 +230,9 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
         thirdPartyId="",
         status=fraud_models.FraudCheckStatus.STARTED,
         resultContent=fraud_models.UbbleContent(
-            birth_date=form.birth_date.data, external_applicant_id=external_applicant_id
+            birth_date=form.birth_date.data,
+            external_applicant_id=external_applicant_id,
+            id_document_number=form.id_document_number.data,
         ).dict(exclude_none=True),
     )
     db.session.add(ubble_fraud_check)

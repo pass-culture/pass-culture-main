@@ -59,6 +59,7 @@ class UbbleV2EndToEndTest:
             resultContent=fraud_models.UbbleContent(
                 birth_date=eighteen_years_before_registration.date(),
                 external_applicant_id="eaplt_61313A10000000000000000000",
+                id_document_number=f"{user.id:012}",
             ).dict(exclude_none=True),
         )
 
