@@ -28,11 +28,21 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 @blueprint.cli.command("delete_unbookable_unbooked_old_offers")
 @click.argument("min_offer_id", required=False, type=int, default=0)
 @click.argument("max_offer_id", required=False, type=int, default=None)
-@click.argument("offer_chunk_size", required=False, type=int, default=16)
+@click.argument("query_batch_size", required=False, type=int, default=5_000)
+@click.argument("filter_batch_size", required=False, type=int, default=2_500)
+@click.argument("delete_batch_size", required=False, type=int, default=32)
 @log_cron_with_transaction
-def delete_unbookable_unbooked_old_offers(min_offer_id: int, max_offer_id: int | None, offer_chunk_size: int) -> None:
+def delete_unbookable_unbooked_old_offers(
+    min_offer_id: int, max_offer_id: int | None, query_batch_size: int, filter_batch_size: int, delete_batch_size: int
+) -> None:
     if FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP.is_active():
-        offers_api.delete_unbookable_unbooked_old_offers(min_offer_id, max_offer_id, offer_chunk_size)
+        offers_api.delete_unbookable_unbooked_old_offers(
+            min_id=min_offer_id,
+            max_id=max_offer_id,
+            query_batch_size=query_batch_size,
+            filter_batch_size=filter_batch_size,
+            delete_batch_size=delete_batch_size,
+        )
     else:
         logger.info(
             "Feature '%s' is not active. Skipping offer cleanup.", FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP.name
