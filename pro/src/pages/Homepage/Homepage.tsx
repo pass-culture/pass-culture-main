@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -8,9 +8,7 @@ import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from 'commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { storageAvailable } from 'commons/utils/storageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
-import { CollectiveBudgetDialog } from 'components/CollectiveBudgetInformation/CollectiveBudgetDialog'
 import { Newsletter } from 'components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -30,7 +28,6 @@ import styles from './Homepage.module.scss'
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
-  const [isCollectiveDialogOpen, setIsCollectiveDialogOpen] = useState(true)
 
   const offererNamesQuery = useOffererNamesQuery()
 
@@ -78,25 +75,6 @@ export const Homepage = (): JSX.Element => {
         <Spinner />
       </Layout>
     )
-  }
-
-  const LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY =
-    'COLLECTIVE_BUDGET_INFORMATION_DIALOG'
-  const isLocalStorageAvailable = storageAvailable('localStorage')
-
-  const shouldShowCollectiveBudgetDialog =
-    selectedOfferer?.allowedOnAdage &&
-    (!isLocalStorageAvailable ||
-      localStorage.getItem(
-        LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY
-      ) !== 'true')
-
-  const onCloseCollectiveBudgetDialog = () => {
-    localStorage.setItem(
-      LOCAL_STORAGE_HAS_SEEN_COLLECTIVE_BUDGET_INFO_KEY,
-      'true'
-    )
-    setIsCollectiveDialogOpen(false)
   }
 
   return (
@@ -147,12 +125,6 @@ export const Homepage = (): JSX.Element => {
           </div>
         </section>
       </Layout>
-      <CollectiveBudgetDialog
-        open={Boolean(
-          isCollectiveDialogOpen && shouldShowCollectiveBudgetDialog
-        )}
-        onClose={onCloseCollectiveBudgetDialog}
-      />
     </>
   )
 }
