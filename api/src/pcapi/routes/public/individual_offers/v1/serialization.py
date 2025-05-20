@@ -294,7 +294,7 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
         serialized_data["musicType"] = TiteliveMusicTypeEnum(
             constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id[:2] + "0" * 6]
         )
-    elif music_sub_type is not None:
+    elif music_sub_type:
         serialized_data["musicType"] = MusicTypeEnum(music.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
 
     # FIXME (mageoffray, 2023-12-14): some historical offers have no showSubType and only showType.
