@@ -45,30 +45,30 @@
 
   &.bookclub {
     .icon {
-      color: var(--tag-bookclub-color-icon);
+      color: var(--color-icon-bookclub);
     }
 
-    background-color: var(--tag-bookclub-color-background);
+    background-color: var(--color-background-bookclub);
   }
 
   &.headline {
     .icon {
-      color: var(--tag-headline-color-icon);
+      color: var(--color-icon-headline);
     }
 
-    background-color: var(--tag-headline-color-background);
+    background-color: var(--color-background-headline);
   }
 
   &.like {
     .icon {
-      color: var(--tag-like-color-icon);
+      color: var(--color-icon-brand-primary);
     }
 
-    background-color: var(--tag-like-color-background);
+    background-color: var(--color-background-subtle);
   }
 
   &.new {
     color: var(--color-text-inverted);
-    background-color: var(--tag-new-color-background);
+    background-color: var(--color-background-brand-primary);
   }
 }
