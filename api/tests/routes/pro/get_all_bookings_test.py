@@ -191,7 +191,6 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "stockIdentifier": used_booking.stock.id,
                     "offerName": used_booking.stock.offer.name,
                     "offerId": used_booking.stock.offer.id,
                     "offerIsEducational": False,
@@ -223,7 +222,6 @@ class Returns200Test:
             },
             {
                 "stock": {
-                    "stockIdentifier": confirmed_book_booking.stock.id,
                     "offerName": confirmed_book_booking.stock.offer.name,
                     "offerId": confirmed_book_booking.stock.offer.id,
                     "offerIsEducational": False,

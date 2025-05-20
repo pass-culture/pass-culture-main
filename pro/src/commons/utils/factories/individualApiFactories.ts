@@ -201,7 +201,6 @@ export const bookingRecapStockFactory = (
     offerId: offer.id,
     offerName: offer.name,
     offerIsEducational: false,
-    stockIdentifier: 1234,
     offerIsbn: '123456789',
     ...customBookingRecapStock,
   }

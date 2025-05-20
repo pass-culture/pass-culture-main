@@ -26,12 +26,9 @@ class BookingRecapResponseBeneficiaryModel(BaseModel):
 
 class BookingRecapResponseStockModel(BaseModel):
     event_beginning_datetime: datetime | None
-    # FIXME (mageoffray, 2023-07-03): The stock_identifier field is unused by our front but used by pims.
-    # Once our booking api is released and pims uses it we can remove it.
-    stock_identifier: int
     offer_id: int
     offer_is_educational: bool
-    # Field should be called offerEan but it is shared with
+    # FIXME: Field should be called offerEan but it is shared with
     # collective bookings. We have to adapt the pro front to change name
     offer_isbn: str | None
     offer_name: str
@@ -136,7 +133,6 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
     booking_date = convert_collective_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
     serialized_booking_recap = BookingRecapResponseModel(  # type: ignore[call-arg]
         stock={  # type: ignore[arg-type]
-            "stockIdentifier": booking.stockId,
             "offerName": booking.offerName,
             "offerId": booking.offerId,
             "eventBeginningDatetime": stock_beginning_datetime.isoformat() if stock_beginning_datetime else None,
