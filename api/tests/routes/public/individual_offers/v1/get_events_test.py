@@ -169,3 +169,19 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             assert response.status_code == 200
             assert len(response.json["events"]) == 1
             assert response.json["events"][0]["id"] == offer1.id
+
+    def should_not_fail_when_empty_string_in_extra_data(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        # Offer extraData inspired from real data, causing a bug
+        offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            extraData={
+                "musicSubType": "",
+                "musicType": "",
+                "performer": "Some dude",
+                "showSubType": "1102",
+                "showType": "1100",
+            },
+        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        assert response.status_code == 200
