@@ -3,7 +3,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+import { Tag } from 'design-system/Tag/Tag'
 
 import { getOfferTags } from '../../utils/getOfferTags'
 
@@ -23,13 +23,7 @@ export function AdageOfferListCardTags({
   return (
     <div className={styles['offer-tags']}>
       {tags.map((tag) => (
-        <Tag
-          key={tag.text}
-          variant={TagVariant.LIGHT_GREY}
-          className={styles['offer-tags-tag']}
-        >
-          <span aria-hidden="true">{tag.icon}</span> {tag.text}
-        </Tag>
+        <Tag key={tag.text} label={tag.text} />
       ))}
     </div>
   )

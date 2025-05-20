@@ -2,12 +2,12 @@ import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './PartnerPage.module.scss'
 
@@ -50,7 +50,7 @@ export function PartnerPageCollectiveSection({
     return (
       <AdageInformations
         tagText="Référencé dans ADAGE"
-        variant={TagVariant.LIGHT_GREEN}
+        variant={TagVariant.SUCCESS}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description={
           isDisplayedInHomepage
@@ -66,7 +66,7 @@ export function PartnerPageCollectiveSection({
     return (
       <AdageInformations
         tagText="Non référencé dans ADAGE"
-        variant={TagVariant.LIGHT_BLUE}
+        variant={TagVariant.DEFAULT}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Education nationale et de la Jeunesse dédiée à l’EAC."
         offererId={offererId}
@@ -105,7 +105,7 @@ export function PartnerPageCollectiveSection({
     return (
       <AdageInformations
         tagText="Non référencé dans ADAGE"
-        variant={TagVariant.LIGHT_BLUE}
+        variant={TagVariant.ERROR}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être
         référencé dans ADAGE, l’application du ministère de l’Education
@@ -123,7 +123,7 @@ export function PartnerPageCollectiveSection({
   return (
     <AdageInformations
       tagText="Référencement en cours"
-      variant={TagVariant.LIGHT_YELLOW}
+      variant={TagVariant.WARNING}
       isDisplayedInHomepage={isDisplayedInHomepage}
       description="Votre démarche de référencement est en cours de traitement par ADAGE."
       offererId={offererId}
@@ -177,9 +177,7 @@ function AdageInformations({
             État auprès des enseignants&nbsp;:
           </span>
         )}
-        <Tag className={styles['tag']} variant={variant}>
-          {tagText}
-        </Tag>
+        <Tag label={tagText} className={styles['tag']} variant={variant} />
       </div>
       {description && (
         <p className={styles['details-description']}>{description}</p>

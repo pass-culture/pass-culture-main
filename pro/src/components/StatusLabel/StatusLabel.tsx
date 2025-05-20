@@ -1,4 +1,5 @@
 import { OfferStatus } from 'apiClient/v1'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -6,8 +7,6 @@ import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDraftIcon from 'icons/stroke-draft.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 const OFFER_STATUS_PROPERTIES: Record<
   string,
@@ -18,37 +17,37 @@ const OFFER_STATUS_PROPERTIES: Record<
   }
 > = {
   [OfferStatus.EXPIRED]: {
-    variant: TagVariant.DARK_GREY,
+    variant: TagVariant.ERROR,
     icon: strokeCalendarIcon,
     label: 'expirée',
   },
   [OfferStatus.SOLD_OUT]: {
-    variant: TagVariant.RED,
+    variant: TagVariant.ERROR,
     icon: strokeWarningIcon,
     label: 'épuisée',
   },
   [OfferStatus.ACTIVE]: {
-    variant: TagVariant.GREEN,
+    variant: TagVariant.SUCCESS,
     icon: strokeCheckIcon,
     label: 'publiée',
   },
   [OfferStatus.DRAFT]: {
-    variant: TagVariant.PURPLE,
+    variant: TagVariant.DEFAULT,
     icon: strokeDraftIcon,
     label: 'brouillon',
   },
   [OfferStatus.REJECTED]: {
-    variant: TagVariant.BLACK,
+    variant: TagVariant.ERROR,
     icon: strokeCloseIcon,
     label: 'non conforme',
   },
   [OfferStatus.PENDING]: {
-    variant: TagVariant.DARK_GREY,
+    variant: TagVariant.DEFAULT,
     icon: strokeClockIcon,
     label: 'en instruction',
   },
   [OfferStatus.INACTIVE]: {
-    variant: TagVariant.DARK_GREY,
+    variant: TagVariant.DEFAULT,
     icon: fullHideIcon,
     label: 'en pause',
   },
@@ -60,9 +59,9 @@ type StatusLabelProps = {
 
 export const StatusLabel = ({ status }: StatusLabelProps) => {
   return (
-    <Tag variant={OFFER_STATUS_PROPERTIES[status].variant}>
-      <SvgIcon alt="" src={OFFER_STATUS_PROPERTIES[status].icon} />
-      {OFFER_STATUS_PROPERTIES[status].label}
-    </Tag>
+    <Tag
+      label={OFFER_STATUS_PROPERTIES[status].label}
+      variant={OFFER_STATUS_PROPERTIES[status].variant}
+    />
   )
 }

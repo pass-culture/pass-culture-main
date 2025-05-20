@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import icon from 'icons/stroke-accessibility-brain.svg'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { BaseRadio, RadioVariant } from './BaseRadio'
 
@@ -81,7 +81,7 @@ export const WithCustomLabel: StoryObj<typeof BaseRadio> = {
   args: {
     label: (
       <div>
-        <Tag variant={TagVariant.BLUE}>Nouveau</Tag>
+        <Tag label="Nouveau" variant={TagVariant.NEW} />
         <div style={{ marginTop: '8px' }}>radio label</div>
       </div>
     ),

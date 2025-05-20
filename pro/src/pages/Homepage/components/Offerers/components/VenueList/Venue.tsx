@@ -8,15 +8,14 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { VenueEvents } from 'commons/core/FirebaseEvents/constants'
 import { Card } from 'components/Card/Card'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpenIcon from 'icons/full-disclosure-open.svg'
-import strokeConnectIcon from 'icons/stroke-connect.svg'
 import { shouldShowVenueOfferStepsForVenue } from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { VenueOfferSteps } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './Venue.module.scss'
 
@@ -96,12 +95,10 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
 
           {venue.hasVenueProviders && (
             <Tag
-              variant={TagVariant.LIGHT_PURPLE}
+              label="API"
+              variant={TagVariant.DEFAULT}
               className={styles['api-tag']}
-            >
-              <SvgIcon alt="" src={strokeConnectIcon} />
-              API
-            </Tag>
+            />
           )}
         </h3>
 

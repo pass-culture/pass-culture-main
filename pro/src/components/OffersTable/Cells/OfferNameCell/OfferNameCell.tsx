@@ -11,10 +11,10 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
+import { Tag } from 'design-system/Tag/Tag'
 import fullErrorIcon from 'icons/full-error.svg'
 import styles from 'styles/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
@@ -102,14 +102,7 @@ export const OfferNameCell = ({
           </div>
         )}
         <div>
-          {offer.isShowcase && (
-            <Tag
-              variant={TagVariant.SMALL_OUTLINE}
-              className={styles['offer-template-tag']}
-            >
-              Offre vitrine
-            </Tag>
-          )}
+          {offer.isShowcase && <Tag label="Offre vitrine" />}
           <div className={styles['title-column-name']}>
             {displayLabel && (
               <span
