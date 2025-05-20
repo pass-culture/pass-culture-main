@@ -64,7 +64,7 @@ def setup_atomic() -> None:
     Must be before `setup_sentry_before_request` as it use the user and therefore call the db
     """
     if app.config.get("USE_GLOBAL_ATOMIC", False):
-        session_management._mark_session_management()
+        session_management._mark_session_as_managed()
         db.session.autoflush = False
 
 
@@ -269,7 +269,7 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
         try:
             if exc:
                 session_management.mark_transaction_as_invalid()
-            session_management._manage_session()
+            session_management._finalize_managed_session()
             db.session.autoflush = True
         except Exception as exception:
             # this may break the session's internal states but we will detroy it anyway

@@ -69,14 +69,18 @@ class atomic:
     def __enter__(self) -> "atomic":
         # In that context g is local to the thread
         # use a list to make the context manager/decorator reentrant
-        g._atomic_contexts = getattr(g, "_atomic_contexts", [])
-        g._atomic_contexts.append(
-            AtomicContext(
-                autoflush=db.session.autoflush,
-                invalid_transaction=False,
+
+        if _is_managed_session():
+            g._atomic_contexts = getattr(g, "_atomic_contexts", [])
+            g._atomic_contexts.append(
+                AtomicContext(
+                    autoflush=db.session.autoflush,
+                    invalid_transaction=False,
+                )
             )
-        )
-        db.session.begin_nested()
+            db.session.begin_nested()
+        else:
+            _mark_session_as_managed()
         db.session.autoflush = False
         return self
 
@@ -87,15 +91,22 @@ class atomic:
         traceback: TracebackType | None = None,
         /,
     ) -> typing.Literal[False]:
-        context: AtomicContext = g._atomic_contexts.pop()
+        if getattr(g, "_atomic_contexts", []):
+            context: AtomicContext = g._atomic_contexts.pop()
 
-        db.session.autoflush = context.autoflush
+            db.session.autoflush = context.autoflush
 
-        if context.invalid_transaction or exc_value is not None:
-            db.session.rollback()
+            if context.invalid_transaction or exc_value is not None:
+                db.session.rollback()
+            else:
+                db.session.commit()
+
         else:
-            db.session.commit()
-
+            db.session.autoflush = True
+            # if there is an exception
+            if exc_value is not None:
+                mark_transaction_as_invalid()
+            _finalize_managed_session()
         # do not suppress the exception
         return False
 
@@ -103,20 +114,8 @@ class atomic:
     def __call__(self, func: typing.Callable) -> typing.Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
-            if _is_managed_session():
-                # use the context manager part to make the decorator reeantrant.
-                with atomic():
-                    return func(*args, **kwargs)
-            else:
-                _mark_session_management()
-                with db.session.no_autoflush:
-                    try:
-                        return func(*args, **kwargs)
-                    except Exception as exp:
-                        mark_transaction_as_invalid()
-                        raise exp
-                    finally:
-                        _manage_session()
+            with atomic():
+                return func(*args, **kwargs)
 
         return wrapper
 
@@ -130,7 +129,7 @@ def mark_transaction_as_invalid() -> None:
         g._session_to_commit = False
 
 
-def _mark_session_management() -> None:
+def _mark_session_as_managed() -> None:
     g._session_to_commit = True
     g._managed_session = True
     g._on_commit_callbacks = []
@@ -145,7 +144,7 @@ def _is_managed_session() -> bool:
     return getattr(g, "_managed_session", False)
 
 
-def _manage_session() -> None:
+def _finalize_managed_session() -> None:
     if not _is_managed_session():
         return
     success = False

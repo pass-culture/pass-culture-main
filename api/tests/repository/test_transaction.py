@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.core.users.models import UserSession
 from pcapi.models import db
-from pcapi.repository.session_management import _manage_session
+from pcapi.repository.session_management import _finalize_managed_session
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 
@@ -61,7 +61,7 @@ class AtomicTest:
             db.session.add(user_session)
 
         view()
-        _manage_session()
+        _finalize_managed_session()
         assert db.session.query(UserSession).count() == 1
 
     @pytest.mark.usefixtures("clean_database")
@@ -86,3 +86,25 @@ class AtomicTest:
 
         view()
         assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_context_manager_in_decorator(self):
+        @atomic()
+        def view():
+            with atomic():
+                user_session = UserSession(userId=1, uuid=uuid.uuid4())
+                db.session.add(user_session)
+
+        view()
+        assert db.session.query(UserSession).count() == 1
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_decorator_in_context_manager(self):
+        @atomic()
+        def view():
+            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            db.session.add(user_session)
+
+        with atomic():
+            view()
+        assert db.session.query(UserSession).count() == 1
