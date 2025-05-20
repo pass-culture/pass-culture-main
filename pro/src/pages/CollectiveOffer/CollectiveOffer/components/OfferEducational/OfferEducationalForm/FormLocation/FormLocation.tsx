@@ -63,6 +63,7 @@ export const FormLocation = ({
       setFieldValue('location.address.label', address?.label),
       setFieldValue('location.address.isVenueAddress', true),
       setFieldValue('location.address.isManualEdition', false),
+      setFieldValue('coords', `${address?.latitude}, ${address?.longitude}`),
     ])
   }
 
