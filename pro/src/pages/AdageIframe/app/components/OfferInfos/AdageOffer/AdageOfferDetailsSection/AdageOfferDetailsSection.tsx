@@ -3,7 +3,7 @@ import {
   CollectiveOfferResponseModel,
 } from 'apiClient/adage'
 import { Markdown } from 'components/Markdown/Markdown'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+import { Tag } from 'design-system/Tag/Tag'
 
 import styles from '../AdageOffer.module.scss'
 
@@ -44,12 +44,12 @@ export function AdageOfferDetailsSection({
             <ul className={styles['offer-section-group-list']}>
               {domains.map((domain) => (
                 <li key={domain.id}>
-                  <Tag variant={TagVariant.LIGHT_GREY}>{domain.name}</Tag>
+                  <Tag label={domain.name} />
                 </li>
               ))}
             </ul>
           ) : (
-            <Tag variant={TagVariant.LIGHT_GREY}>{domains[0].name}</Tag>
+            <Tag label={domains[0].name} />
           )}
         </div>
       )}

@@ -2,10 +2,10 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { OfferFavoriteButton } from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { getOfferTags } from '../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferTags'
@@ -80,11 +80,10 @@ export const OfferCardComponent = ({
             return (
               <Tag
                 key={tag.text}
-                variant={TagVariant.LIGHT_GREY}
-                className={styles['offer-tag']}
-              >
-                <span aria-hidden="true">{tag.icon}</span> {tag.text}
-              </Tag>
+                label={tag.text}
+                icon={tag.icon}
+                variant={TagVariant.DEFAULT}
+              />
             )
           })}
         </div>

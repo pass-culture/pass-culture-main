@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import fullLinkIcon from 'icons/full-link.svg'
+import icon from 'icons/full-location.svg'
 
 import { Tag, TagVariant, TagSpecificVariant } from './Tag'
 
@@ -52,7 +52,7 @@ export const WithCustomIcon: Story = {
   args: {
     label: 'Avec une icône personnalisée',
     variant: TagVariant.DEFAULT,
-    icon: fullLinkIcon,
+    icon,
   },
 }
 
