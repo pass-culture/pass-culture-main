@@ -201,7 +201,7 @@ export const bookingRecapStockFactory = (
     offerId: offer.id,
     offerName: offer.name,
     offerIsEducational: false,
-    offerIsbn: '123456789',
+    offerEan: '123456789',
     ...customBookingRecapStock,
   }
 }

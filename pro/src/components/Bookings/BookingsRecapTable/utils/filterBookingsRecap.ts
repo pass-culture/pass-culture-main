@@ -112,7 +112,7 @@ const doesEANMatchFilter = <
 ): boolean => {
   if (ean !== EMPTY_FILTER_VALUE) {
     return Boolean(
-      booking.stock.offerIsbn && booking.stock.offerIsbn.includes(ean.trim())
+      booking.stock.offerEan && booking.stock.offerEan.includes(ean.trim())
     )
   }
   return true

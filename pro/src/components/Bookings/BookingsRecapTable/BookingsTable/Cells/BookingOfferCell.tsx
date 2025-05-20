@@ -73,10 +73,10 @@ export const BookingOfferCell = ({
         {booking.stock.offerName}
       </a>
 
-      {booking.stock.offerIsbn ||
+      {booking.stock.offerEan ||
         (eventBeginningDatetime && (
           <div className={styles['booking-offer-additional-info']}>
-            {eventDatetimeFormatted || booking.stock.offerIsbn}
+            {eventDatetimeFormatted || booking.stock.offerEan}
             <span className={styles['stocks']}>
               {shouldShowCollectiveWarning && (
                 <span>

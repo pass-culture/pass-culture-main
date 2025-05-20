@@ -195,7 +195,7 @@ class Returns200Test:
                     "offerId": used_booking.stock.offer.id,
                     "offerIsEducational": False,
                     "eventBeginningDatetime": None,
-                    "offerIsbn": "1234567891234",
+                    "offerEan": "1234567891234",
                 },
                 "beneficiary": {
                     "email": "beneficiary@example.com",
@@ -226,7 +226,7 @@ class Returns200Test:
                     "offerId": confirmed_book_booking.stock.offer.id,
                     "offerIsEducational": False,
                     "eventBeginningDatetime": None,
-                    "offerIsbn": None,
+                    "offerEan": None,
                 },
                 "beneficiary": {
                     "email": "ron@example.com",
