@@ -7,9 +7,6 @@ from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import
     send_birthday_age_17_email_to_newly_eligible_user,
 )
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
-    send_birthday_age_18_email_to_newly_eligible_user,
-)
-from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user_v3,
 )
 
@@ -40,16 +37,4 @@ class SendinblueSendNewlyEligibleUserEmailTest:
         assert (
             mails_testing.outbox[0]["template"]
             == TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER_V3.value.__dict__
-        )
-
-    def test_send_anniversary_age_18_email(self):
-        user = users_factories.UserFactory()
-
-        send_birthday_age_18_email_to_newly_eligible_user(user)
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["params"] == {}
-        assert (
-            mails_testing.outbox[0]["template"]
-            == TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER.value.__dict__
         )

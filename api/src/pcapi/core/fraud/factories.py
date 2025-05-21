@@ -160,7 +160,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     def eligibilityType(  # type: ignore[misc]
         obj: models.BeneficiaryFraudCheck,
     ) -> users_models.EligibilityType:
-        if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and obj.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
+        if obj.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:
             if FeatureToggle.WIP_FREE_ELIGIBILITY.is_active() and obj.user.age in [15, 16]:
                 return users_models.EligibilityType.FREE
             return users_models.EligibilityType.AGE17_18

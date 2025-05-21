@@ -30,7 +30,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
@@ -1009,7 +1008,7 @@ class DepositGrantFactory(BaseFactory):
 
         if "type" not in kwargs:
             date_created = kwargs.get("dateCreated", datetime.utcnow())
-            if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active() and date_created >= settings.CREDIT_V3_DECREE_DATETIME:
+            if date_created >= settings.CREDIT_V3_DECREE_DATETIME:
                 kwargs["type"] = finance_models.DepositType.GRANT_17_18
             else:
                 kwargs["type"] = (
