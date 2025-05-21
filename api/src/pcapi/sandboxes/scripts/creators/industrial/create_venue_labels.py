@@ -1,5 +1,4 @@
-from pcapi.core.offerers.models import VenueLabel
-from pcapi.repository import repository
+from pcapi.core.offerers.factories import VenueLabelFactory
 
 
 # match ids from staging for synchronization with ADAGE
@@ -45,11 +44,5 @@ def create_venue_labels(sandbox: bool = False) -> None:
 
 
 def save_new_venue_labels(venue_label_strings: list[tuple[str, int]], sandbox: bool = False) -> None:
-    venue_label_list = []
     for label_string, label_id in venue_label_strings:
-        venue_label = VenueLabel()
-        if sandbox:
-            venue_label.id = label_id
-        venue_label.label = label_string
-        venue_label_list.append(venue_label)
-    repository.save(*venue_label_list)
+        VenueLabelFactory(id=label_id, label=label_string)
