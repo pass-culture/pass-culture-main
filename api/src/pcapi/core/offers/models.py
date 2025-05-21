@@ -711,6 +711,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     dateUpdated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
+
+    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+
     _description = sa.Column("description", sa.Text, nullable=True)
     _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
     ean = sa.Column(sa.Text, nullable=True, index=True)
