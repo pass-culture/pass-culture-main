@@ -39,6 +39,16 @@
               Identifiant du cinéma : {{ action.extraData["cinema_id"] }}
             {% elif action.extraData and action.actionType.name in ["OFFERER_REJECTED", "USER_OFFERER_REJECTED"] %}
               Raison : {{ action.extraData["rejection_reason"] | format_offerer_rejection_reason }}
+            {% elif action.actionType.name == "VENUE_REGULARIZATION" %}
+              {% set origin_venue_id = action.extraData.get('origin_venue_id') %}
+              {% set destination_venue_id = action.extraData.get('destination_venue_id') %}
+              {% if origin_venue_id %}
+                Transfert des éléments du partenaire culturel {{ origin_venue_id }}.
+              {% elif destination_venue_id %}
+                Tous les éléments ont été transférés vers le partenaire culturel
+                <a href="{{ url_for('backoffice_web.venue.get', venue_id=destination_venue_id) }}"
+                   class="link-primary">{{ destination_venue_id }}</a>
+              {% endif %}
             {% endif %}
             {% if action.comment %}<p>{{ action.comment | empty_string_if_null | nl2br }}</p>{% endif %}
             {% if action.extraData %}

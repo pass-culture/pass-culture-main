@@ -231,7 +231,9 @@ def _update_destination_venue_to_permanent(destination_venue: offerers_models.Ve
     return False
 
 
-def _create_action_history(origin_venue_id: int, destination_venue_id: int) -> None:
+def _create_action_history(
+    origin_venue_id: int, destination_venue_id: int, destination_venue_updated_to_permanent: bool
+) -> None:
     db.session.add(
         history_models.ActionHistory(
             venueId=origin_venue_id,
@@ -241,9 +243,18 @@ def _create_action_history(origin_venue_id: int, destination_venue_id: int) -> N
     )
     db.session.add(
         history_models.ActionHistory(
+            venueId=origin_venue_id,
+            actionType=history_models.ActionType.VENUE_SOFT_DELETED,
+        )
+    )
+    db.session.add(
+        history_models.ActionHistory(
             venueId=destination_venue_id,
             actionType=history_models.ActionType.VENUE_REGULARIZATION,
-            extraData={"origin_venue_id": origin_venue_id},
+            extraData={
+                "origin_venue_id": origin_venue_id,
+                "modified_info": {"isPermanent": {"old_info": False, "new_info": True}},
+            },
         )
     )
 
@@ -287,7 +298,9 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
                     _move_finance_incident(origin_venue, destination_venue)
                     destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
                     _soft_delete_origin_venue(origin_venue)
-                    _create_action_history(origin_venue_id, destination_venue_id)
+                    _create_action_history(
+                        origin_venue_id, destination_venue_id, destination_venue_updated_to_permanent
+                    )
 
                     if not_dry:
                         venue_ids_to_reindex = [origin_venue_id]
