@@ -2304,11 +2304,15 @@ def delete_unbookable_unbooked_old_offers(
     }
     logger.info("delete_unbookable_unbooked_unmodified_old_offers start", extra=log_extra)
 
-    offer_ids = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id, batch_size=query_batch_size)
-    for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=filter_batch_size)):
+    count = 0
+
+    query = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id, batch_size=query_batch_size)
+    for idx, chunk in enumerate(get_chunks(query, chunk_size=filter_batch_size)):
         inner_start = time.time()
 
         delete_offers_and_all_related_objects(chunk, delete_batch_size)
+
+        count += len(chunk)
 
         extra = {
             "round": idx,
@@ -2319,5 +2323,11 @@ def delete_unbookable_unbooked_old_offers(
         }
         logger.info("delete_unbookable_unbooked_unmodified_old_offers round %d: end", idx, extra=extra)
 
+        for offer_id in chunk:
+            log_msg = "deleted unbookable unbooked offers ids"
+            technical_id = "unbookable_unbooked_offers_deleted"
+            logger.info(log_msg, technical_message_id=technical_id, extra={"offer_id": offer_id})
+
     log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
+    log_extra["deleted_offers_count"] = count
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
