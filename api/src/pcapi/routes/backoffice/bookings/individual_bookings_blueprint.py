@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import logging
 import re
 import typing
@@ -122,6 +123,12 @@ def _get_individual_bookings(
             ),
         )
     )
+
+    if form.is_free.data and len(form.is_free.data) == 1:
+        if form.is_free.data[0] == "true":
+            base_query = base_query.filter(bookings_models.Booking.amount == decimal.Decimal(0))
+        else:
+            base_query = base_query.filter(bookings_models.Booking.amount > decimal.Decimal(0))
 
     if form.deposit.data and form.deposit.data != booking_forms.DEPOSIT_DEFAULT_VALUE:
         base_query = base_query.join(finance_models.Deposit, bookings_models.Booking.deposit)

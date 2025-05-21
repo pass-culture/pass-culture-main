@@ -706,6 +706,24 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(r["ID résa"]) for r in rows} == {b.id for b in bookings if b.quantity == quantity}
 
+    @pytest.mark.parametrize(
+        "is_free, expected_results",
+        [
+            ("true", ["XXXXXX"]),
+            ("false", ["YYYYYY"]),
+        ],
+    )
+    def test_list_free_bookings(self, authenticated_client, is_free, expected_results):
+        bookings_factories.BookingFactory(token="XXXXXX", amount=0)
+        bookings_factories.BookingFactory(token="YYYYYY", amount=1)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, is_free=is_free))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == set(expected_results)
+
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"

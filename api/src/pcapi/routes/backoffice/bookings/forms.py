@@ -186,6 +186,10 @@ class GetIndividualBookingListForm(BaseBookingListForm):
             bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation
         ),
     )
+    is_free = fields.PCSelectMultipleField(
+        "Réservation gratuite",
+        choices=(("true", "Gratuite"), ("false", "Payante")),
+    )
     deposit = fields.PCSelectField(
         "État du crédit",
         choices=((DEPOSIT_DEFAULT_VALUE, "Tous"), ("active", "Actif"), ("expired", "Expiré")),
@@ -218,6 +222,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("cashflow_batches")
         self._fields.move_to_end("has_incident")
         self._fields.move_to_end("is_duo")
+        self._fields.move_to_end("is_free")
 
     def is_empty(self) -> bool:
         return (
@@ -227,6 +232,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
             and (not self.deposit.data or self.deposit.data == DEPOSIT_DEFAULT_VALUE)
             and len(self.is_duo.data) != 1
             and len(self.is_fraudulent.data) != 1
+            and len(self.is_free.data) != 1
         )
 
     @property
