@@ -182,14 +182,10 @@ def notify_newly_eligible_users() -> None:
     # Make `get_users_that_had_birthday_since` return a query
     # and join here necessary tables to compute remaining credit later.
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    if FeatureToggle.WIP_ENABLE_CREDIT_V3.is_active():
-        for user in get_users_that_had_birthday_since(yesterday, age=17):
-            transactional_mails.send_birthday_age_17_email_to_newly_eligible_user(user)
-        for user in get_users_that_had_birthday_since(yesterday, age=18):
-            transactional_mails.send_birthday_age_18_email_to_newly_eligible_user_v3(user)
-    else:
-        for user in get_users_that_had_birthday_since(yesterday, age=18):
-            transactional_mails.send_birthday_age_18_email_to_newly_eligible_user(user)
+    for user in get_users_that_had_birthday_since(yesterday, age=17):
+        transactional_mails.send_birthday_age_17_email_to_newly_eligible_user(user)
+    for user in get_users_that_had_birthday_since(yesterday, age=18):
+        transactional_mails.send_birthday_age_18_email_to_newly_eligible_user_v3(user)
 
 
 @blueprint.cli.command("check_stock_quantity_consistency")

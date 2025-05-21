@@ -21,20 +21,12 @@ def _convert_amount(amount: decimal.Decimal | None) -> int:
     return converted_amount if converted_amount is not None else 0
 
 
-def get_deposit_amounts_by_age(enable_credit_v3: bool) -> DepositAmountsByAge:
-    if enable_credit_v3:
-        return DepositAmountsByAge(
-            age_15=0,
-            age_16=0,
-            age_17=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_17_v3),
-            age_18=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v3),
-        )
-
+def get_deposit_amounts_by_age() -> DepositAmountsByAge:
     return DepositAmountsByAge(
-        age_15=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_15),
-        age_16=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_16),
-        age_17=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_17),
-        age_18=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v2),
+        age_15=0,
+        age_16=0,
+        age_17=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_17_v3),
+        age_18=_convert_amount(finance_conf.GRANTED_DEPOSIT_AMOUNT_18_v3),
     )
 
 

@@ -18,11 +18,6 @@ def send_birthday_age_18_email_to_newly_eligible_user_v3(user: users_models.User
     mails.send(recipients=[user.email], data=data)
 
 
-def send_birthday_age_18_email_to_newly_eligible_user(user: users_models.User) -> None:
-    data = models.TransactionalEmailData(template=TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER.value)
-    mails.send(recipients=[user.email], data=data)
-
-
 def send_birthday_age_17_email_to_newly_eligible_user(user: users_models.User) -> None:
     data = models.TransactionalEmailData(
         template=TransactionalEmail.BIRTHDAY_AGE_17_TO_NEWLY_ELIGIBLE_USER.value,
