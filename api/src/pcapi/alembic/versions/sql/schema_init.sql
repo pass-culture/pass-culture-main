@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.9
--- Dumped by pg_dump version 12.9
+-- Dumped from database version 15.8 (Postgres.app)
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -89,23 +89,6 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
 
 
--- FIXME (dbaty, 2024-05-29), if you are squashing migrations, you may
--- remove this statement and the next one. We don't need "pgcrypto"
--- anymore (Alembic migration e77d24667815 drops it).
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner:
---
-
-COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
-
-
 --
 -- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
 --
@@ -189,7 +172,17 @@ CREATE TYPE public.bookingcancellationreasons AS ENUM (
     'REFUSED_BY_HEADMASTER',
     'PUBLIC_API',
     'BACKOFFICE',
-    'FINANCE_INCIDENT'
+    'FINANCE_INCIDENT',
+    'FRAUD_SUSPICION',
+    'FRAUD_INAPPROPRIATE',
+    'BACKOFFICE_OFFERER_BUSINESS_CLOSED',
+    'OFFERER_CLOSED',
+    'BACKOFFICE_EVENT_CANCELLED',
+    'BACKOFFICE_OVERBOOKING',
+    'BACKOFFICE_BENEFICIARY_REQUEST',
+    'BACKOFFICE_OFFER_MODIFIED',
+    'BACKOFFICE_OFFER_WITH_WRONG_INFORMATION',
+    'OFFERER_CONNECT_AS'
 );
 
 
@@ -219,52 +212,17 @@ CREATE TYPE public.cancellation_reason AS ENUM (
     'FRAUD',
     'REFUSED_BY_INSTITUTE',
     'BACKOFFICE',
-    'FINANCE_INCIDENT'
-);
-
-
-
---
--- Name: eventtype; Type: TYPE; Schema: public; Owner: pass_culture
---
-
-CREATE TYPE public.eventtype AS ENUM (
-    'Workshop',
-    'MovieScreening',
-    'Meeting',
-    'Game',
-    'SchoolHelp',
-    'StreetPerformance',
-    'Other',
-    'BookReading',
-    'CircusAndMagic',
-    'DancePerformance',
-    'Comedy',
-    'Concert',
-    'Combo',
-    'Youth',
-    'Musical',
-    'Theater',
-    'GuidedVisit',
-    'FreeVisit'
-);
-
-
-
---
--- Name: featuretoggle; Type: TYPE; Schema: public; Owner: pass_culture
---
-
-CREATE TYPE public.featuretoggle AS ENUM (
-    'SEARCH_ALGOLIA',
-    'SYNCHRONIZE_ALGOLIA',
-    'SYNCHRONIZE_ALLOCINE',
-    'SYNCHRONIZE_TITELIVE_PRODUCTS',
-    'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
-    'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS',
-    'UPDATE_BOOKING_USED',
-    'BOOKINGS_V2',
-    'API_SIRENE_AVAILABLE'
+    'FINANCE_INCIDENT',
+    'FRAUD_SUSPICION',
+    'FRAUD_INAPPROPRIATE',
+    'BACKOFFICE_OFFERER_BUSINESS_CLOSED',
+    'OFFERER_CLOSED',
+    'BACKOFFICE_EVENT_CANCELLED',
+    'BACKOFFICE_OVERBOOKING',
+    'BACKOFFICE_BENEFICIARY_REQUEST',
+    'BACKOFFICE_OFFER_MODIFIED',
+    'BACKOFFICE_OFFER_WITH_WRONG_INFORMATION',
+    'OFFERER_CONNECT_AS'
 );
 
 
@@ -374,28 +332,6 @@ CREATE TYPE public.offer_validation_rule_operator AS ENUM (
 
 
 --
--- Name: pricerule; Type: TYPE; Schema: public; Owner: pass_culture
---
-
-CREATE TYPE public.pricerule AS ENUM (
-    'default'
-);
-
-
-
---
--- Name: status; Type: TYPE; Schema: public; Owner: pass_culture
---
-
-CREATE TYPE public.status AS ENUM (
-    'ACCEPTED',
-    'REJECTED',
-    'DRAFT'
-);
-
-
-
---
 -- Name: studentlevels; Type: TYPE; Schema: public; Owner: pass_culture
 --
 
@@ -409,8 +345,9 @@ CREATE TYPE public.studentlevels AS ENUM (
     'GENERAL0',
     'COLLEGE5',
     'COLLEGE6',
-    'ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE',
-    'ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_ELEMENTAIRE'
+    'ECOLES_MARSEILLE_MATERNELLE',
+    'ECOLES_MARSEILLE_CP_CE1_CE2',
+    'ECOLES_MARSEILLE_CM1_CM2'
 );
 
 
@@ -427,6 +364,18 @@ CREATE TYPE public.transactionstatus AS ENUM (
     'RETRY',
     'BANNED',
     'UNDER_REVIEW'
+);
+
+
+
+--
+-- Name: validationAuthorType; Type: TYPE; Schema: public; Owner: pass_culture
+--
+
+CREATE TYPE public."validationAuthorType" AS ENUM (
+    'OFFERER',
+    'BACKOFFICE',
+    'AUTO'
 );
 
 
@@ -465,7 +414,8 @@ CREATE TYPE public.validationstatus AS ENUM (
     'PENDING',
     'VALIDATED',
     'REJECTED',
-    'DELETED'
+    'DELETED',
+    'CLOSED'
 );
 
 
@@ -562,6 +512,47 @@ CREATE FUNCTION public.check_stock() RETURNS trigger
 
 
 --
+-- Name: check_venue_has_siret(); Type: FUNCTION; Schema: public; Owner: pass_culture
+--
+
+CREATE FUNCTION public.check_venue_has_siret() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      IF
+       NOT NEW."venueId" IS NULL THEN
+        IF
+         (
+          (
+           SELECT venue.siret
+           FROM venue
+            WHERE "id"=NEW."venueId"
+          ) IS NULL
+         )
+        THEN
+        RAISE EXCEPTION 'venueHasNoSiret'
+        USING HINT = 'the venue must have a siret';
+       END IF;
+      END IF;
+      RETURN NEW;
+    END;
+    $$;
+
+
+
+--
+-- Name: email_domain(text); Type: FUNCTION; Schema: public; Owner: pass_culture
+--
+
+CREATE FUNCTION public.email_domain(text) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+    AS $_$
+                SELECT substring($1 from '@(.*)$')
+            $_$;
+
+
+
+--
 -- Name: ensure_password_or_sso_exists(); Type: FUNCTION; Schema: public; Owner: pass_culture
 --
 
@@ -635,6 +626,18 @@ CREATE FUNCTION public.get_wallet_balance(user_id bigint, only_used_bookings boo
 
 
 --
+-- Name: immutable_unaccent(text); Type: FUNCTION; Schema: public; Owner: pass_culture
+--
+
+CREATE FUNCTION public.immutable_unaccent(text) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+    AS $_$
+                SELECT public.unaccent('public.unaccent', $1)
+            $_$;
+
+
+
+--
 -- Name: jsonb_change_key_name(jsonb, text, text); Type: FUNCTION; Schema: public; Owner: pass_culture
 --
 
@@ -664,6 +667,23 @@ FROM
 WHERE
   (arg1 -> key) <> (arg2 -> key) OR (arg2 -> key) IS NULL
 $$;
+
+
+
+--
+-- Name: postal_code_to_department_code(text); Type: FUNCTION; Schema: public; Owner: pass_culture
+--
+
+CREATE FUNCTION public.postal_code_to_department_code(text) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+    AS $_$
+                SELECT CASE
+                    WHEN ($1 = '97133') THEN '977'
+                    WHEN ($1 = '97150') THEN '978'
+                    WHEN (CAST(SUBSTRING($1 FROM 1 FOR 2) AS INTEGER) >= 97) THEN SUBSTRING($1 FROM 1 FOR 3)
+                    ELSE SUBSTRING($1 FROM 1 FOR 2)
+                END
+            $_$;
 
 
 
@@ -719,6 +739,76 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: accessibility_provider; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.accessibility_provider (
+    id bigint NOT NULL,
+    "venueId" bigint NOT NULL,
+    "externalAccessibilityId" text NOT NULL,
+    "externalAccessibilityData" jsonb,
+    "lastUpdateAtProvider" timestamp without time zone NOT NULL,
+    "externalAccessibilityUrl" text NOT NULL
+);
+
+
+
+--
+-- Name: accessibility_provider_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.accessibility_provider_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: accessibility_provider_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.accessibility_provider_id_seq OWNED BY public.accessibility_provider.id;
+
+
+--
+-- Name: achievement; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.achievement (
+    id bigint NOT NULL,
+    "userId" bigint NOT NULL,
+    "bookingId" bigint NOT NULL,
+    name text NOT NULL,
+    "unlockedDate" timestamp without time zone DEFAULT now() NOT NULL,
+    "seenDate" timestamp without time zone
+);
+
+
+
+--
+-- Name: achievement_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.achievement_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: achievement_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.achievement_id_seq OWNED BY public.achievement.id;
+
+
+--
 -- Name: action_history; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -735,7 +825,8 @@ CREATE TABLE public.action_history (
     "financeIncidentId" bigint,
     "bankAccountId" bigint,
     "ruleId" bigint,
-    CONSTRAINT check_action_resource CHECK (((num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId") >= 1) OR ("actionType" = 'BLACKLIST_DOMAIN_NAME'::text) OR ("actionType" = 'REMOVE_BLACKLISTED_DOMAIN_NAME'::text) OR ("actionType" = 'ROLE_PERMISSIONS_CHANGED'::text)))
+    "chronicleId" bigint,
+    CONSTRAINT check_action_resource CHECK (((num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId", "chronicleId") >= 1) OR ("actionType" = 'BLACKLIST_DOMAIN_NAME'::text) OR ("actionType" = 'REMOVE_BLACKLISTED_DOMAIN_NAME'::text) OR ("actionType" = 'ROLE_PERMISSIONS_CHANGED'::text)))
 );
 
 
@@ -834,6 +925,85 @@ ALTER SEQUENCE public.activity_id_seq OWNED BY public.activity.id;
 
 
 --
+-- Name: adage_venue_address; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.adage_venue_address (
+    id bigint NOT NULL,
+    "adageId" text,
+    "adageInscriptionDate" timestamp without time zone,
+    "venueId" bigint
+);
+
+
+
+--
+-- Name: adage_venue_address_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.adage_venue_address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: adage_venue_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.adage_venue_address_id_seq OWNED BY public.adage_venue_address.id;
+
+
+--
+-- Name: address; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.address (
+    id bigint NOT NULL,
+    "banId" text,
+    "inseeCode" text,
+    street text NOT NULL,
+    "postalCode" text NOT NULL,
+    city text NOT NULL,
+    latitude numeric(8,5) NOT NULL,
+    longitude numeric(8,5) NOT NULL,
+    "departmentCode" text NOT NULL,
+    timezone text DEFAULT 'Europe/Paris'::text NOT NULL,
+    "isManualEdition" boolean DEFAULT false NOT NULL,
+    CONSTRAINT address_city_check CHECK ((length(city) <= 50)),
+    CONSTRAINT "address_departmentCode_check" CHECK (((length("departmentCode") = 2) OR (length("departmentCode") = 3))),
+    CONSTRAINT "address_inseeCode_check" CHECK ((length("inseeCode") = 5)),
+    CONSTRAINT "address_postalCode_check" CHECK ((length("postalCode") = 5)),
+    CONSTRAINT address_timezone_check CHECK ((length(timezone) <= 50))
+);
+
+
+
+--
+-- Name: address_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.address_id_seq OWNED BY public.address.id;
+
+
+
+--
 -- Name: allocine_pivot; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -907,43 +1077,10 @@ CREATE TABLE public.allocine_venue_provider (
     id bigint NOT NULL,
     "isDuo" boolean DEFAULT true NOT NULL,
     quantity integer,
-    "internalId" text NOT NULL
+    "internalId" text NOT NULL,
+    price numeric(10,2) NOT NULL
 );
 
-
-
---
--- Name: allocine_venue_provider_price_rule; Type: TABLE; Schema: public; Owner: pass_culture
---
-
-CREATE TABLE public.allocine_venue_provider_price_rule (
-    id bigint NOT NULL,
-    "allocineVenueProviderId" bigint NOT NULL,
-    "priceRule" public.pricerule NOT NULL,
-    price numeric(10,2) NOT NULL,
-    CONSTRAINT check_price_is_not_negative CHECK ((price >= (0)::numeric))
-);
-
-
-
---
--- Name: allocine_venue_provider_price_rule_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
---
-
-CREATE SEQUENCE public.allocine_venue_provider_price_rule_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: allocine_venue_provider_price_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
---
-
-ALTER SEQUENCE public.allocine_venue_provider_price_rule_id_seq OWNED BY public.allocine_venue_provider_price_rule.id;
 
 
 --
@@ -982,13 +1119,105 @@ ALTER SEQUENCE public.api_key_id_seq OWNED BY public.api_key.id;
 
 
 --
+-- Name: artist; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.artist (
+    id text NOT NULL,
+    name text NOT NULL,
+    description text,
+    image text,
+    image_license text,
+    image_license_url text,
+    image_author text,
+    date_created timestamp without time zone DEFAULT now() NOT NULL,
+    date_modified timestamp without time zone
+);
+
+
+
+--
+-- Name: artist_alias; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.artist_alias (
+    id bigint NOT NULL,
+    artist_id text NOT NULL,
+    artist_alias_name text,
+    artist_cluster_id text,
+    artist_type text,
+    artist_wiki_data_id text,
+    offer_category_id text,
+    date_created timestamp without time zone DEFAULT now() NOT NULL,
+    date_modified timestamp without time zone
+);
+
+
+
+--
+-- Name: artist_alias_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.artist_alias_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: artist_alias_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.artist_alias_id_seq OWNED BY public.artist_alias.id;
+
+
+--
+-- Name: artist_product_link; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.artist_product_link (
+    id bigint NOT NULL,
+    artist_id text NOT NULL,
+    product_id bigint NOT NULL,
+    artist_type text,
+    date_created timestamp without time zone DEFAULT now() NOT NULL,
+    date_modified timestamp without time zone
+);
+
+
+
+--
+-- Name: artist_product_link_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.artist_product_link_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: artist_product_link_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.artist_product_link_id_seq OWNED BY public.artist_product_link.id;
+
+
+--
 -- Name: backoffice_user_profile; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
 CREATE TABLE public.backoffice_user_profile (
     id bigint NOT NULL,
     "userId" bigint NOT NULL,
-    preferences jsonb DEFAULT '{}'::jsonb NOT NULL
+    preferences jsonb DEFAULT '{}'::jsonb NOT NULL,
+    "dsInstructorId" text
 );
 
 
@@ -1027,7 +1256,8 @@ CREATE TABLE public.bank_account (
     "dsApplicationId" bigint,
     status text NOT NULL,
     "dateCreated" timestamp without time zone DEFAULT now() NOT NULL,
-    "dateLastStatusUpdate" timestamp without time zone
+    "dateLastStatusUpdate" timestamp without time zone,
+    "lastCegidSyncDate" timestamp without time zone
 );
 
 
@@ -1083,43 +1313,6 @@ CREATE SEQUENCE public.bank_account_status_history_id_seq
 --
 
 ALTER SEQUENCE public.bank_account_status_history_id_seq OWNED BY public.bank_account_status_history.id;
-
-
---
--- Name: bank_information; Type: TABLE; Schema: public; Owner: pass_culture
---
-
-CREATE TABLE public.bank_information (
-    id bigint NOT NULL,
-    "offererId" bigint,
-    "venueId" bigint,
-    iban character varying(27),
-    bic character varying(11),
-    "applicationId" integer,
-    "dateModified" timestamp without time zone,
-    status public.status NOT NULL
-);
-
-
-
---
--- Name: bank_information_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
---
-
-CREATE SEQUENCE public.bank_information_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: bank_information_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
---
-
-ALTER SEQUENCE public.bank_information_id_seq OWNED BY public.bank_information.id;
 
 
 --
@@ -1356,7 +1549,10 @@ CREATE TABLE public.booking (
     "venueId" bigint NOT NULL,
     "reimbursementDate" timestamp without time zone,
     "depositId" bigint,
-    "priceCategoryLabel" text
+    "priceCategoryLabel" text,
+    "validationAuthorType" public."validationAuthorType",
+    "cancellationUserId" bigint,
+    "usedRecreditType" text
 );
 
 
@@ -1425,8 +1621,6 @@ CREATE TABLE public.boost_cinema_details (
     id bigint NOT NULL,
     "cinemaProviderPivotId" bigint,
     "cinemaUrl" text NOT NULL,
-    username text NOT NULL,
-    password text NOT NULL,
     token text,
     "tokenExpirationDate" timestamp without time zone
 );
@@ -1463,9 +1657,7 @@ CREATE TABLE public.cashflow (
     status text NOT NULL,
     "batchId" bigint NOT NULL,
     amount integer NOT NULL,
-    "reimbursementPointId" bigint NOT NULL,
-    "bankInformationId" bigint,
-    CONSTRAINT non_zero_amount_check CHECK ((amount <> 0))
+    "bankAccountId" bigint
 );
 
 
@@ -1637,12 +1829,56 @@ ALTER SEQUENCE public.cgr_cinema_details_id_seq OWNED BY public.cgr_cinema_detai
 
 
 --
+-- Name: chronicle; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.chronicle (
+    "isActive" boolean DEFAULT true NOT NULL,
+    id bigint NOT NULL,
+    age smallint,
+    city text,
+    content text NOT NULL,
+    "dateCreated" timestamp without time zone NOT NULL,
+    ean text,
+    "eanChoiceId" text,
+    email text NOT NULL,
+    "firstName" text,
+    "userId" bigint,
+    "isIdentityDiffusible" boolean DEFAULT false NOT NULL,
+    "isSocialMediaDiffusible" boolean DEFAULT false NOT NULL,
+    __content_ts_vector__ tsvector GENERATED ALWAYS AS (to_tsvector('french'::regconfig, content)) STORED NOT NULL,
+    "externalId" text NOT NULL
+);
+
+
+
+--
+-- Name: chronicle_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.chronicle_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: chronicle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.chronicle_id_seq OWNED BY public.chronicle.id;
+
+
+--
 -- Name: cinema_provider_pivot; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
 CREATE TABLE public.cinema_provider_pivot (
     id bigint NOT NULL,
-    "venueId" bigint,
+    "venueId" bigint NOT NULL,
     "providerId" bigint NOT NULL,
     "idAtProvider" text NOT NULL
 );
@@ -1689,7 +1925,8 @@ CREATE TABLE public.collective_booking (
     "educationalYearId" character varying(30) NOT NULL,
     "confirmationDate" timestamp without time zone,
     "confirmationLimitDate" timestamp without time zone NOT NULL,
-    "educationalRedactorId" bigint NOT NULL
+    "educationalRedactorId" bigint NOT NULL,
+    "cancellationUserId" bigint
 );
 
 
@@ -1767,17 +2004,15 @@ CREATE TABLE public.collective_offer (
     "lastValidationDate" timestamp without time zone,
     validation public.validation_status DEFAULT 'APPROVED'::public.validation_status NOT NULL,
     id bigint NOT NULL,
-    "offerId" bigint,
     "isActive" boolean DEFAULT true NOT NULL,
     "venueId" bigint NOT NULL,
     name character varying(140) NOT NULL,
     description text DEFAULT ''::text NOT NULL,
     "durationMinutes" integer,
     "dateCreated" timestamp without time zone NOT NULL,
-    "subcategoryId" text,
     "dateUpdated" timestamp without time zone,
     students public.studentlevels[] DEFAULT '{}'::public.studentlevels[] NOT NULL,
-    "contactEmail" character varying(120) NOT NULL,
+    "contactEmail" character varying(120),
     "contactPhone" text,
     "offerVenue" jsonb NOT NULL,
     "lastValidationType" public.validation_type,
@@ -1793,8 +2028,15 @@ CREATE TABLE public.collective_offer (
     "providerId" bigint,
     "nationalProgramId" bigint,
     "lastValidationAuthorUserId" bigint,
-    formats text[],
-    "authorId" bigint
+    formats text[] NOT NULL,
+    "authorId" bigint,
+    "offererAddressId" bigint,
+    "dateArchived" timestamp without time zone,
+    "rejectionReason" text,
+    "locationType" text,
+    "locationComment" text,
+    CONSTRAINT collective_offer_description_constraint CHECK ((length(description) <= 1500)),
+    CONSTRAINT collective_offer_location_comment_constraint CHECK ((("locationComment" IS NULL) OR (length("locationComment") <= 200)))
 );
 
 
@@ -1808,38 +2050,6 @@ CREATE TABLE public.collective_offer_domain (
     "educationalDomainId" bigint NOT NULL
 );
 
-
-
---
--- Name: collective_offer_educational_redactor; Type: TABLE; Schema: public; Owner: pass_culture
---
-
-CREATE TABLE public.collective_offer_educational_redactor (
-    id bigint NOT NULL,
-    "educationalRedactorId" bigint NOT NULL,
-    "collectiveOfferId" bigint NOT NULL
-);
-
-
-
---
--- Name: collective_offer_educational_redactor_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
---
-
-CREATE SEQUENCE public.collective_offer_educational_redactor_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: collective_offer_educational_redactor_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
---
-
-ALTER SEQUENCE public.collective_offer_educational_redactor_id_seq OWNED BY public.collective_offer_educational_redactor.id;
 
 
 --
@@ -1876,7 +2086,7 @@ CREATE TABLE public.collective_offer_request (
     "collectiveOfferTemplateId" bigint NOT NULL,
     "educationalInstitutionId" bigint NOT NULL,
     "educationalRedactorId" bigint NOT NULL,
-    "dateCreated" date DEFAULT CURRENT_DATE
+    "dateCreated" date DEFAULT CURRENT_DATE NOT NULL
 );
 
 
@@ -1913,18 +2123,16 @@ CREATE TABLE public.collective_offer_template (
     "lastValidationDate" timestamp without time zone,
     validation public.validation_status DEFAULT 'APPROVED'::public.validation_status NOT NULL,
     id bigint NOT NULL,
-    "offerId" bigint,
     "isActive" boolean DEFAULT true NOT NULL,
     "venueId" bigint NOT NULL,
     name character varying(140) NOT NULL,
     description text DEFAULT ''::text NOT NULL,
     "durationMinutes" integer,
     "dateCreated" timestamp without time zone NOT NULL,
-    "subcategoryId" text,
     "dateUpdated" timestamp without time zone,
     students public.studentlevels[] DEFAULT '{}'::public.studentlevels[] NOT NULL,
     "priceDetail" text,
-    "contactEmail" character varying(120) NOT NULL,
+    "contactEmail" character varying(120),
     "contactPhone" text,
     "offerVenue" jsonb NOT NULL,
     "lastValidationType" public.validation_type,
@@ -1934,12 +2142,21 @@ CREATE TABLE public.collective_offer_template (
     "imageCredit" text,
     "imageHasOriginal" boolean,
     "imageId" text,
-    "providerId" bigint,
     "nationalProgramId" bigint,
     "lastValidationAuthorUserId" bigint,
     "dateRange" tsrange,
-    formats text[],
+    formats text[] NOT NULL,
     "authorId" bigint,
+    "contactUrl" text,
+    "contactForm" text,
+    "offererAddressId" bigint,
+    "dateArchived" timestamp without time zone,
+    "rejectionReason" text,
+    "locationType" text,
+    "locationComment" text,
+    CONSTRAINT collective_offer_tmpl_contact_request_form_switch_constraint CHECK ((("contactUrl" IS NULL) OR ("contactForm" IS NULL))),
+    CONSTRAINT collective_offer_tmpl_description_constraint CHECK ((length(description) <= 1500)),
+    CONSTRAINT collective_offer_tmpl_location_comment_constraint CHECK ((("locationComment" IS NULL) OR (length("locationComment") <= 200))),
     CONSTRAINT template_dates_non_empty_daterange CHECK ((("dateRange" IS NULL) OR ((NOT isempty("dateRange")) AND (lower("dateRange") IS NOT NULL) AND (upper("dateRange") IS NOT NULL) AND ((lower("dateRange"))::date >= ("dateCreated")::date))))
 );
 
@@ -2009,20 +2226,55 @@ ALTER SEQUENCE public.collective_offer_template_id_seq OWNED BY public.collectiv
 
 
 --
+-- Name: collective_playlist; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.collective_playlist (
+    id bigint NOT NULL,
+    type text NOT NULL,
+    "distanceInKm" double precision,
+    "institutionId" bigint NOT NULL,
+    "venueId" bigint,
+    "collectiveOfferTemplateId" bigint
+);
+
+
+
+--
+-- Name: collective_playlist_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.collective_playlist_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: collective_playlist_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.collective_playlist_id_seq OWNED BY public.collective_playlist.id;
+
+
+--
 -- Name: collective_stock; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
 CREATE TABLE public.collective_stock (
     id bigint NOT NULL,
-    "stockId" bigint,
     "dateCreated" timestamp without time zone DEFAULT now() NOT NULL,
     "dateModified" timestamp without time zone NOT NULL,
-    "beginningDatetime" timestamp without time zone NOT NULL,
     "collectiveOfferId" bigint NOT NULL,
     price numeric(10,2) NOT NULL,
     "bookingLimitDatetime" timestamp without time zone NOT NULL,
     "numberOfTickets" integer NOT NULL,
-    "priceDetail" text
+    "priceDetail" text,
+    "startDatetime" timestamp without time zone NOT NULL,
+    "endDatetime" timestamp without time zone NOT NULL
 );
 
 
@@ -2156,9 +2408,10 @@ CREATE TABLE public.custom_reimbursement_rule (
     rate numeric(5,4),
     "offererId" bigint,
     subcategories text[] DEFAULT '{}'::text[],
+    "venueId" bigint,
     CONSTRAINT amount_or_rate_check CHECK ((num_nonnulls(amount, rate) = 1)),
     CONSTRAINT custom_reimbursement_rule_timespan_check CHECK ((lower(timespan) IS NOT NULL)),
-    CONSTRAINT offer_or_offerer_check CHECK ((num_nonnulls("offerId", "offererId") = 1)),
+    CONSTRAINT offer_or_venue_or_offerer_check CHECK ((num_nonnulls("offerId", "venueId", "offererId") = 1)),
     CONSTRAINT rate_range_check CHECK (((rate IS NULL) OR ((rate >= (0)::numeric) AND (rate <= (1)::numeric))))
 );
 
@@ -2220,6 +2473,73 @@ CREATE SEQUENCE public.deposit_id_seq
 --
 
 ALTER SEQUENCE public.deposit_id_seq OWNED BY public.deposit.id;
+
+
+--
+-- Name: discord_user; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.discord_user (
+    id bigint NOT NULL,
+    "userId" bigint NOT NULL,
+    "discordId" text,
+    "hasAccess" boolean DEFAULT true NOT NULL,
+    "isBanned" boolean DEFAULT false NOT NULL,
+    "lastUpdated" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+
+--
+-- Name: discord_user_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.discord_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: discord_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.discord_user_id_seq OWNED BY public.discord_user.id;
+
+
+--
+-- Name: domain_to_national_program; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.domain_to_national_program (
+    id bigint NOT NULL,
+    "domainId" bigint NOT NULL,
+    "nationalProgramId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: domain_to_national_program_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.domain_to_national_program_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: domain_to_national_program_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.domain_to_national_program_id_seq OWNED BY public.domain_to_national_program.id;
 
 
 --
@@ -2334,7 +2654,10 @@ CREATE TABLE public.educational_institution (
     "phoneNumber" character varying(30) NOT NULL,
     "postalCode" character varying(10) NOT NULL,
     "institutionType" character varying(80) NOT NULL,
-    "isActive" boolean DEFAULT true NOT NULL
+    "isActive" boolean DEFAULT true NOT NULL,
+    "ruralLevel" text,
+    latitude numeric(8,5),
+    longitude numeric(8,5)
 );
 
 
@@ -2379,7 +2702,8 @@ CREATE TABLE public.educational_institution_program (
 
 CREATE TABLE public.educational_institution_program_association (
     "institutionId" bigint NOT NULL,
-    "programId" bigint NOT NULL
+    "programId" bigint NOT NULL,
+    timespan tsrange DEFAULT '["2023-09-01 00:00:00",)'::tsrange NOT NULL
 );
 
 
@@ -2505,6 +2829,76 @@ ALTER SEQUENCE public.ems_cinema_details_id_seq OWNED BY public.ems_cinema_detai
 
 
 --
+-- Name: event_opening_hours; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.event_opening_hours (
+    id bigint NOT NULL,
+    "isSoftDeleted" boolean DEFAULT false NOT NULL,
+    "offerId" bigint NOT NULL,
+    "dateCreated" timestamp without time zone NOT NULL,
+    "dateUpdated" timestamp without time zone,
+    "startDatetime" timestamp without time zone NOT NULL,
+    "endDatetime" timestamp without time zone
+);
+
+
+
+--
+-- Name: event_opening_hours_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.event_opening_hours_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: event_opening_hours_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.event_opening_hours_id_seq OWNED BY public.event_opening_hours.id;
+
+
+--
+-- Name: event_week_day_opening_hours; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.event_week_day_opening_hours (
+    id bigint NOT NULL,
+    "eventOpeningHoursId" bigint NOT NULL,
+    weekday text NOT NULL,
+    "timeSpans" numrange[],
+    CONSTRAINT max_timespan_is_2 CHECK ((cardinality("timeSpans") <= 2))
+);
+
+
+
+--
+-- Name: event_week_day_opening_hours_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.event_week_day_opening_hours_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: event_week_day_opening_hours_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.event_week_day_opening_hours_id_seq OWNED BY public.event_week_day_opening_hours.id;
+
+
+--
 -- Name: external_booking; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -2546,7 +2940,6 @@ CREATE TABLE public.favorite (
     id bigint NOT NULL,
     "userId" bigint NOT NULL,
     "offerId" bigint NOT NULL,
-    "mediationId" bigint,
     "dateCreated" timestamp without time zone
 );
 
@@ -2657,7 +3050,10 @@ CREATE TABLE public.finance_incident (
     status character varying(9) DEFAULT 'created'::character varying NOT NULL,
     details jsonb DEFAULT '{}'::jsonb NOT NULL,
     "venueId" bigint NOT NULL,
-    "forceDebitNote" boolean DEFAULT false NOT NULL
+    "forceDebitNote" boolean DEFAULT false NOT NULL,
+    "zendeskId" bigint,
+    origin text NOT NULL,
+    comment text
 );
 
 
@@ -2683,15 +3079,180 @@ ALTER SEQUENCE public.finance_incident_id_seq OWNED BY public.finance_incident.i
 
 
 --
+-- Name: fraudulent_booking_tag; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.fraudulent_booking_tag (
+    id bigint NOT NULL,
+    "dateCreated" timestamp without time zone NOT NULL,
+    "bookingId" bigint NOT NULL,
+    "authorId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: fraudulent_booking_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.fraudulent_booking_tag_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: fraudulent_booking_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.fraudulent_booking_tag_id_seq OWNED BY public.fraudulent_booking_tag.id;
+
+
+--
+-- Name: future_offer; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.future_offer (
+    id bigint NOT NULL,
+    "offerId" bigint NOT NULL,
+    "publicationDate" timestamp without time zone NOT NULL,
+    "isSoftDeleted" boolean DEFAULT false NOT NULL
+);
+
+
+
+--
+-- Name: future_offer_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.future_offer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: future_offer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.future_offer_id_seq OWNED BY public.future_offer.id;
+
+
+--
+-- Name: future_offer_reminder; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.future_offer_reminder (
+    id bigint NOT NULL,
+    "userId" bigint NOT NULL,
+    "futureOfferId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: future_offer_reminder_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.future_offer_reminder_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: future_offer_reminder_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.future_offer_reminder_id_seq OWNED BY public.future_offer_reminder.id;
+
+
+--
+-- Name: gdpr_user_anonymization; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.gdpr_user_anonymization (
+    id bigint NOT NULL,
+    "dateCreated" timestamp without time zone DEFAULT now() NOT NULL,
+    "userId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: gdpr_user_anonymization_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.gdpr_user_anonymization_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: gdpr_user_anonymization_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.gdpr_user_anonymization_id_seq OWNED BY public.gdpr_user_anonymization.id;
+
+
+--
+-- Name: gdpr_user_data_extract; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.gdpr_user_data_extract (
+    id bigint NOT NULL,
+    "dateCreated" timestamp without time zone NOT NULL,
+    "dateProcessed" timestamp without time zone,
+    "userId" bigint NOT NULL,
+    "authorUserId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: gdpr_user_data_extract_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.gdpr_user_data_extract_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: gdpr_user_data_extract_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.gdpr_user_data_extract_id_seq OWNED BY public.gdpr_user_data_extract.id;
+
+
+--
 -- Name: google_places_info; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
 CREATE TABLE public.google_places_info (
     id bigint NOT NULL,
     "venueId" bigint NOT NULL,
-    "placeId" text NOT NULL,
+    "placeId" text,
     "bannerUrl" text,
-    "bannerMeta" jsonb
+    "bannerMeta" jsonb,
+    "updateDate" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -2717,6 +3278,39 @@ ALTER SEQUENCE public.google_places_info_id_seq OWNED BY public.google_places_in
 
 
 --
+-- Name: headline_offer; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.headline_offer (
+    id bigint NOT NULL,
+    "offerId" bigint NOT NULL,
+    "venueId" bigint NOT NULL,
+    timespan tsrange NOT NULL
+);
+
+
+
+--
+-- Name: headline_offer_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.headline_offer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: headline_offer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.headline_offer_id_seq OWNED BY public.headline_offer.id;
+
+
+--
 -- Name: individual_offerer_subscription; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -2733,7 +3327,8 @@ CREATE TABLE public.individual_offerer_subscription (
     "has1yrExperience" boolean DEFAULT false NOT NULL,
     "has5yrExperience" boolean DEFAULT false NOT NULL,
     "isCertificateValid" boolean DEFAULT false NOT NULL,
-    "experienceDetails" text
+    "experienceDetails" text,
+    "dateReminderEmailSent" date
 );
 
 
@@ -2768,8 +3363,8 @@ CREATE TABLE public.invoice (
     reference text NOT NULL,
     amount integer NOT NULL,
     token text NOT NULL,
-    "reimbursementPointId" bigint NOT NULL,
-    "bankAccountId" bigint
+    "bankAccountId" bigint,
+    status text NOT NULL
 );
 
 
@@ -3025,7 +3620,8 @@ ALTER SEQUENCE public.mediation_id_seq OWNED BY public.mediation.id;
 CREATE TABLE public.national_program (
     id bigint NOT NULL,
     name text,
-    "dateCreated" timestamp without time zone NOT NULL
+    "dateCreated" timestamp without time zone NOT NULL,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -3155,9 +3751,78 @@ CREATE TABLE public.offer (
     "withdrawalType" character varying,
     "bookingContact" character varying(120),
     "lastValidationAuthorUserId" bigint,
+    "lastValidationPrice" numeric(10,2),
+    "offererAddressId" bigint,
+    ean text,
+    CONSTRAINT check_ean_validity CHECK ((ean ~ '^\d{13}$'::text)),
     CONSTRAINT check_providable_with_provider_has_idatprovider CHECK ((('lastProviderId' IS NULL) OR ('idAtProvider' IS NOT NULL)))
 );
 
+
+
+--
+-- Name: offer_chronicle; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.offer_chronicle (
+    id bigint NOT NULL,
+    "offerId" bigint NOT NULL,
+    "chronicleId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: offer_chronicle_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.offer_chronicle_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: offer_chronicle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.offer_chronicle_id_seq OWNED BY public.offer_chronicle.id;
+
+
+--
+-- Name: offer_compliance; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.offer_compliance (
+    id bigint NOT NULL,
+    "offerId" bigint NOT NULL,
+    compliance_score smallint NOT NULL,
+    compliance_reasons character varying[] NOT NULL
+);
+
+
+
+--
+-- Name: offer_compliance_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.offer_compliance_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: offer_compliance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.offer_compliance_id_seq OWNED BY public.offer_compliance.id;
 
 
 --
@@ -3210,6 +3875,38 @@ CREATE SEQUENCE public.offer_id_seq
 --
 
 ALTER SEQUENCE public.offer_id_seq OWNED BY public.offer.id;
+
+
+--
+-- Name: offer_price_limitation_rule; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.offer_price_limitation_rule (
+    id bigint NOT NULL,
+    "subcategoryId" text NOT NULL,
+    rate numeric(5,4) NOT NULL
+);
+
+
+
+--
+-- Name: offer_price_limitation_rule_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.offer_price_limitation_rule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: offer_price_limitation_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.offer_price_limitation_rule_id_seq OWNED BY public.offer_price_limitation_rule.id;
 
 
 --
@@ -3328,11 +4025,80 @@ CREATE TABLE public.offerer (
     id bigint NOT NULL,
     "dateCreated" timestamp without time zone NOT NULL,
     name character varying(140) NOT NULL,
-    siren character varying(9),
+    siren character varying(9) NOT NULL,
     "dateValidated" timestamp without time zone,
-    "validationStatus" public.validationstatus NOT NULL
+    "validationStatus" public.validationstatus NOT NULL,
+    "allowedOnAdage" boolean DEFAULT false NOT NULL,
+    street text
 );
 
+
+
+--
+-- Name: offerer_address; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.offerer_address (
+    id bigint NOT NULL,
+    label text,
+    "addressId" bigint NOT NULL,
+    "offererId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: offerer_address_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.offerer_address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: offerer_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.offerer_address_id_seq OWNED BY public.offerer_address.id;
+
+
+--
+-- Name: offerer_confidence_rule; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.offerer_confidence_rule (
+    id bigint NOT NULL,
+    "offererId" bigint,
+    "venueId" bigint,
+    "confidenceLevel" text NOT NULL,
+    CONSTRAINT offerer_confidence_rule_check CHECK ((num_nonnulls("offererId", "venueId") = 1))
+);
+
+
+
+--
+-- Name: offerer_confidence_rule_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.offerer_confidence_rule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: offerer_confidence_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.offerer_confidence_rule_id_seq OWNED BY public.offerer_confidence_rule.id;
 
 
 --
@@ -3586,6 +4352,40 @@ ALTER SEQUENCE public.offerer_tag_mapping_id_seq OWNED BY public.offerer_tag_map
 
 
 --
+-- Name: opening_hours; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.opening_hours (
+    id bigint NOT NULL,
+    "venueId" bigint NOT NULL,
+    weekday text NOT NULL,
+    timespan numrange[],
+    CONSTRAINT max_timespan_is_2 CHECK ((cardinality(timespan) <= 2))
+);
+
+
+
+--
+-- Name: opening_hours_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.opening_hours_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: opening_hours_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.opening_hours_id_seq OWNED BY public.opening_hours.id;
+
+
+--
 -- Name: orphan_dms_application; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -3774,6 +4574,7 @@ CREATE TABLE public.price_category (
     "offerId" bigint NOT NULL,
     price numeric(10,2) NOT NULL,
     "priceCategoryLabelId" bigint NOT NULL,
+    "idAtProvider" text,
     CONSTRAINT check_price_is_not_negative CHECK ((price >= (0)::numeric))
 );
 
@@ -3848,7 +4649,7 @@ CREATE TABLE public.pricing (
     "collectiveBookingId" bigint,
     "pricingPointId" bigint NOT NULL,
     "venueId" bigint NOT NULL,
-    "eventId" bigint,
+    "eventId" bigint NOT NULL,
     CONSTRAINT reimbursement_rule_constraint_check CHECK (((("standardRule" = ''::text) AND ("customRuleId" IS NOT NULL)) OR (("standardRule" <> ''::text) AND ("customRuleId" IS NULL))))
 );
 
@@ -3954,19 +4755,55 @@ CREATE TABLE public.product (
     name character varying(140) NOT NULL,
     description text,
     "durationMinutes" integer,
-    "isNational" boolean DEFAULT false NOT NULL,
     "lastProviderId" bigint,
-    "owningOffererId" integer,
-    url character varying(255),
     "fieldsUpdated" character varying(100)[] DEFAULT '{}'::character varying[] NOT NULL,
-    "isGcuCompatible" boolean DEFAULT true NOT NULL,
     "subcategoryId" text NOT NULL,
-    "isSynchronizationCompatible" boolean DEFAULT true NOT NULL,
     "jsonData" jsonb,
     last_30_days_booking integer,
+    "gcuCompatibilityType" text DEFAULT 'COMPATIBLE'::text NOT NULL,
+    ean text,
+    "chroniclesCount" bigint DEFAULT 0 NOT NULL,
+    "headlinesCount" bigint DEFAULT 0 NOT NULL,
+    "likesCount" bigint DEFAULT 0 NOT NULL,
+    CONSTRAINT check_chronicles_count_is_positive CHECK (("chroniclesCount" >= 0)),
+    CONSTRAINT check_ean_validity CHECK ((ean ~ '^\d{13}$'::text)),
+    CONSTRAINT check_headlines_count_is_positive CHECK (("headlinesCount" >= 0)),
+    CONSTRAINT check_likes_count_is_positive CHECK (("likesCount" >= 0)),
     CONSTRAINT check_providable_with_provider_has_idatproviders CHECK ((("lastProviderId" IS NULL) OR ("idAtProviders" IS NOT NULL)))
 );
 
+
+
+--
+-- Name: product_chronicle; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.product_chronicle (
+    id bigint NOT NULL,
+    "productId" bigint NOT NULL,
+    "chronicleId" bigint NOT NULL
+);
+
+
+
+--
+-- Name: product_chronicle_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.product_chronicle_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: product_chronicle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.product_chronicle_id_seq OWNED BY public.product_chronicle.id;
 
 
 --
@@ -3987,6 +4824,41 @@ CREATE SEQUENCE public.product_id_seq
 --
 
 ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
+
+
+--
+-- Name: product_mediation; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.product_mediation (
+    id bigint NOT NULL,
+    "dateModifiedAtLastProvider" timestamp without time zone,
+    "productId" bigint NOT NULL,
+    "imageType" text NOT NULL,
+    "lastProviderId" bigint,
+    uuid text NOT NULL
+);
+
+
+
+--
+-- Name: product_mediation_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.product_mediation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: product_mediation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.product_mediation_id_seq OWNED BY public.product_mediation.id;
 
 
 --
@@ -4034,8 +4906,6 @@ CREATE TABLE public.provider (
     name character varying(90) NOT NULL,
     "localClass" character varying(60),
     "enabledForPro" boolean DEFAULT false NOT NULL,
-    "apiUrl" character varying,
-    "authToken" character varying,
     "pricesInCents" boolean DEFAULT false NOT NULL,
     "enableParallelSynchronization" boolean DEFAULT false NOT NULL,
     "logoUrl" text,
@@ -4065,6 +4935,40 @@ CREATE SEQUENCE public.provider_id_seq
 --
 
 ALTER SEQUENCE public.provider_id_seq OWNED BY public.provider.id;
+
+
+--
+-- Name: reaction; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.reaction (
+    id bigint NOT NULL,
+    "reactionType" text NOT NULL,
+    "userId" bigint NOT NULL,
+    "offerId" bigint,
+    "productId" bigint
+);
+
+
+
+--
+-- Name: reaction_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.reaction_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: reaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.reaction_id_seq OWNED BY public.reaction.id;
 
 
 --
@@ -4238,6 +5142,146 @@ ALTER SEQUENCE public.single_sign_on_id_seq OWNED BY public.single_sign_on.id;
 
 
 --
+-- Name: special_event; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.special_event (
+    id bigint NOT NULL,
+    "dateCreated" timestamp without time zone DEFAULT now() NOT NULL,
+    "externalId" text NOT NULL,
+    title text NOT NULL,
+    "offererId" bigint,
+    "venueId" bigint,
+    "endImportDate" date NOT NULL,
+    "eventDate" date DEFAULT now() NOT NULL
+);
+
+
+
+--
+-- Name: special_event_answer; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.special_event_answer (
+    id bigint NOT NULL,
+    "responseId" bigint NOT NULL,
+    "questionId" bigint NOT NULL,
+    text text NOT NULL
+);
+
+
+
+--
+-- Name: special_event_answer_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.special_event_answer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: special_event_answer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.special_event_answer_id_seq OWNED BY public.special_event_answer.id;
+
+
+--
+-- Name: special_event_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.special_event_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: special_event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.special_event_id_seq OWNED BY public.special_event.id;
+
+
+--
+-- Name: special_event_question; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.special_event_question (
+    id bigint NOT NULL,
+    "eventId" bigint NOT NULL,
+    "externalId" text NOT NULL,
+    title text NOT NULL
+);
+
+
+
+--
+-- Name: special_event_question_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.special_event_question_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: special_event_question_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.special_event_question_id_seq OWNED BY public.special_event_question.id;
+
+
+--
+-- Name: special_event_response; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.special_event_response (
+    id bigint NOT NULL,
+    "eventId" bigint NOT NULL,
+    "externalId" text NOT NULL,
+    "dateSubmitted" timestamp without time zone NOT NULL,
+    "phoneNumber" text,
+    email text,
+    "userId" bigint,
+    status text NOT NULL
+);
+
+
+
+--
+-- Name: special_event_response_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.special_event_response_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: special_event_response_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.special_event_response_id_seq OWNED BY public.special_event_response.id;
+
+
+--
 -- Name: stock; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -4259,8 +5303,10 @@ CREATE TABLE public.stock (
     "rawProviderQuantity" integer,
     "priceCategoryId" bigint,
     features text[] DEFAULT '{}'::text[] NOT NULL,
+    "eventOpeningHoursId" bigint,
     CONSTRAINT check_price_is_not_negative CHECK ((price >= (0)::numeric)),
-    CONSTRAINT check_providable_with_provider_has_idatproviders CHECK ((("lastProviderId" IS NULL) OR ("idAtProviders" IS NOT NULL)))
+    CONSTRAINT check_providable_with_provider_has_idatproviders CHECK ((("lastProviderId" IS NULL) OR ("idAtProviders" IS NOT NULL))),
+    CONSTRAINT "check_stock_with_opening_hours_does_not_have_beginningDatetime" CHECK ((("eventOpeningHoursId" IS NULL) OR ("beginningDatetime" IS NULL)))
 );
 
 
@@ -4286,27 +5332,26 @@ ALTER SEQUENCE public.stock_id_seq OWNED BY public.stock.id;
 
 
 --
--- Name: token; Type: TABLE; Schema: public; Owner: pass_culture
+-- Name: titelive_gtl_mapping; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
-CREATE TABLE public.token (
+CREATE TABLE public.titelive_gtl_mapping (
     id bigint NOT NULL,
-    "userId" bigint NOT NULL,
-    value character varying NOT NULL,
-    type character varying NOT NULL,
-    "creationDate" timestamp without time zone DEFAULT now() NOT NULL,
-    "expirationDate" timestamp without time zone,
-    "isUsed" boolean DEFAULT false NOT NULL,
-    "extraData" jsonb
+    "gtlType" text NOT NULL,
+    "gtlId" text,
+    "gtlLabelLevel1" text,
+    "gtlLabelLevel2" text,
+    "gtlLabelLevel3" text,
+    "gtlLabelLevel4" text
 );
 
 
 
 --
--- Name: token_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+-- Name: titelive_gtl_mapping_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
 --
 
-CREATE SEQUENCE public.token_id_seq
+CREATE SEQUENCE public.titelive_gtl_mapping_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4316,10 +5361,10 @@ CREATE SEQUENCE public.token_id_seq
 
 
 --
--- Name: token_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+-- Name: titelive_gtl_mapping_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
 --
 
-ALTER SEQUENCE public.token_id_seq OWNED BY public.token.id;
+ALTER SEQUENCE public.titelive_gtl_mapping_id_seq OWNED BY public.titelive_gtl_mapping.id;
 
 
 --
@@ -4397,7 +5442,6 @@ ALTER SEQUENCE public.trusted_device_id_seq OWNED BY public.trusted_device.id;
 
 CREATE TABLE public."user" (
     id bigint NOT NULL,
-    "validationToken" character varying(27),
     email character varying(120) NOT NULL,
     password bytea,
     "dateCreated" timestamp without time zone NOT NULL,
@@ -4418,7 +5462,7 @@ CREATE TABLE public."user" (
     "isEmailValidated" boolean DEFAULT false,
     "isActive" boolean DEFAULT true NOT NULL,
     "hasSeenProTutorials" boolean DEFAULT false NOT NULL,
-    "notificationSubscriptions" jsonb DEFAULT '{"marketing_push": true, "marketing_email": true}'::jsonb,
+    "notificationSubscriptions" jsonb DEFAULT '{"marketing_push": true, "marketing_email": true, "subscribed_themes": []}'::jsonb,
     "phoneValidationStatus" character varying,
     "idPieceNumber" character varying,
     "externalIds" jsonb DEFAULT '{}'::jsonb,
@@ -4438,6 +5482,57 @@ CREATE TABLE public."user" (
 
 
 --
+-- Name: user_account_update_request; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.user_account_update_request (
+    id bigint NOT NULL,
+    "dsApplicationId" bigint NOT NULL,
+    status text NOT NULL,
+    "dateCreated" timestamp without time zone DEFAULT now() NOT NULL,
+    "dateLastStatusUpdate" timestamp without time zone DEFAULT now(),
+    "firstName" text,
+    "lastName" text,
+    email text NOT NULL,
+    "birthDate" date,
+    "userId" bigint,
+    "newEmail" text,
+    "newPhoneNumber" text,
+    "newFirstName" text,
+    "newLastName" text,
+    "allConditionsChecked" boolean NOT NULL,
+    "lastInstructorId" bigint,
+    "dateLastUserMessage" timestamp without time zone,
+    "dateLastInstructorMessage" timestamp without time zone,
+    "oldEmail" text,
+    "updateTypes" text[] DEFAULT '{}'::text[] NOT NULL,
+    flags text[] DEFAULT '{}'::text[] NOT NULL,
+    "dsTechnicalId" text NOT NULL
+);
+
+
+
+--
+-- Name: user_account_update_request_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.user_account_update_request_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: user_account_update_request_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.user_account_update_request_id_seq OWNED BY public.user_account_update_request.id;
+
+
+--
 -- Name: user_email_history; Type: TABLE; Schema: public; Owner: pass_culture
 --
 
@@ -4446,8 +5541,8 @@ CREATE TABLE public.user_email_history (
     "userId" bigint,
     "oldUserEmail" character varying(120) NOT NULL,
     "oldDomainEmail" character varying(120) NOT NULL,
-    "newUserEmail" character varying(120) NOT NULL,
-    "newDomainEmail" character varying(120) NOT NULL,
+    "newUserEmail" character varying(120),
+    "newDomainEmail" character varying(120),
     "creationDate" timestamp without time zone DEFAULT now() NOT NULL,
     "eventType" character varying NOT NULL
 );
@@ -4526,38 +5621,6 @@ CREATE SEQUENCE public.user_offerer_id_seq
 --
 
 ALTER SEQUENCE public.user_offerer_id_seq OWNED BY public.user_offerer.id;
-
-
---
--- Name: user_pro_flags; Type: TABLE; Schema: public; Owner: pass_culture
---
-
-CREATE TABLE public.user_pro_flags (
-    id bigint NOT NULL,
-    firebase jsonb DEFAULT '{}'::jsonb,
-    "userId" bigint NOT NULL
-);
-
-
-
---
--- Name: user_pro_flags_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
---
-
-CREATE SEQUENCE public.user_pro_flags_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: user_pro_flags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
---
-
-ALTER SEQUENCE public.user_pro_flags_id_seq OWNED BY public.user_pro_flags.id;
 
 
 --
@@ -4731,12 +5794,16 @@ CREATE TABLE public.venue (
     "collectiveAccessInformation" text,
     "collectivePhone" text,
     "collectiveEmail" text,
-    "collectiveSubCategoryId" text,
     "adageInscriptionDate" timestamp without time zone,
     timezone character varying(50) DEFAULT 'Europe/Paris'::character varying NOT NULL,
     "banId" text,
+    "isVisibleInApp" boolean DEFAULT true NOT NULL,
+    street text,
+    "offererAddressId" bigint,
+    "isOpenToPublic" boolean NOT NULL,
+    "isSoftDeleted" boolean DEFAULT false NOT NULL,
     CONSTRAINT "check_has_siret_xor_comment_xor_isVirtual" CHECK ((((siret IS NULL) AND (comment IS NULL) AND ("isVirtual" IS TRUE)) OR ((siret IS NULL) AND (comment IS NOT NULL) AND ("isVirtual" IS FALSE)) OR ((siret IS NOT NULL) AND ("isVirtual" IS FALSE)))),
-    CONSTRAINT check_is_virtual_xor_has_address CHECK (((("isVirtual" IS TRUE) AND ((address IS NULL) AND ("postalCode" IS NULL) AND (city IS NULL) AND ("departementCode" IS NULL))) OR (("isVirtual" IS FALSE) AND (siret IS NOT NULL) AND (("postalCode" IS NOT NULL) AND (city IS NOT NULL) AND ("departementCode" IS NOT NULL))) OR (("isVirtual" IS FALSE) AND ((siret IS NULL) AND (comment IS NOT NULL)) AND ((address IS NOT NULL) AND ("postalCode" IS NOT NULL) AND (city IS NOT NULL) AND ("departementCode" IS NOT NULL)))))
+    CONSTRAINT check_physical_venue_has_offerer_address CHECK (((("isVirtual" IS FALSE) AND ("offererAddressId" IS NOT NULL)) OR ("isVirtual" IS TRUE)))
 );
 
 
@@ -4948,9 +6015,47 @@ CREATE TABLE public.venue_provider (
     "providerId" bigint NOT NULL,
     "venueIdAtOfferProvider" character varying(70),
     "lastSyncDate" timestamp without time zone,
-    "isDuoOffers" boolean
+    "isDuoOffers" boolean,
+    "dateCreated" timestamp without time zone DEFAULT now() NOT NULL
 );
 
+
+
+--
+-- Name: venue_provider_external_urls; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE public.venue_provider_external_urls (
+    "isActive" boolean DEFAULT true NOT NULL,
+    id bigint NOT NULL,
+    "venueProviderId" bigint NOT NULL,
+    "bookingExternalUrl" text,
+    "cancelExternalUrl" text,
+    "notificationExternalUrl" text,
+    CONSTRAINT check_at_least_one_of_the_external_url_is_set CHECK ((("bookingExternalUrl" IS NOT NULL) OR ("notificationExternalUrl" IS NOT NULL))),
+    CONSTRAINT check_ticketing_external_urls_both_set_or_null CHECK (((("bookingExternalUrl" IS NOT NULL) AND ("cancelExternalUrl" IS NOT NULL)) OR (("bookingExternalUrl" IS NULL) AND ("cancelExternalUrl" IS NULL))))
+);
+
+
+
+--
+-- Name: venue_provider_external_urls_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE public.venue_provider_external_urls_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- Name: venue_provider_external_urls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE public.venue_provider_external_urls_id_seq OWNED BY public.venue_provider_external_urls.id;
 
 
 --
@@ -5001,36 +6106,17 @@ ALTER TABLE public.venue_registration ALTER COLUMN id ADD GENERATED BY DEFAULT A
 
 
 --
--- Name: venue_reimbursement_point_link; Type: TABLE; Schema: public; Owner: pass_culture
+-- Name: accessibility_provider id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
-CREATE TABLE public.venue_reimbursement_point_link (
-    id bigint NOT NULL,
-    "venueId" bigint NOT NULL,
-    "reimbursementPointId" bigint NOT NULL,
-    timespan tsrange NOT NULL
-);
-
+ALTER TABLE ONLY public.accessibility_provider ALTER COLUMN id SET DEFAULT nextval('public.accessibility_provider_id_seq'::regclass);
 
 
 --
--- Name: venue_reimbursement_point_link_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+-- Name: achievement id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
-CREATE SEQUENCE public.venue_reimbursement_point_link_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
---
--- Name: venue_reimbursement_point_link_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
---
-
-ALTER SEQUENCE public.venue_reimbursement_point_link_id_seq OWNED BY public.venue_reimbursement_point_link.id;
+ALTER TABLE ONLY public.achievement ALTER COLUMN id SET DEFAULT nextval('public.achievement_id_seq'::regclass);
 
 
 --
@@ -5055,6 +6141,20 @@ ALTER TABLE ONLY public.activity ALTER COLUMN id SET DEFAULT nextval('public.act
 
 
 --
+-- Name: adage_venue_address id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.adage_venue_address ALTER COLUMN id SET DEFAULT nextval('public.adage_venue_address_id_seq'::regclass);
+
+
+--
+-- Name: address id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.address ALTER COLUMN id SET DEFAULT nextval('public.address_id_seq'::regclass);
+
+
+--
 -- Name: allocine_pivot id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5069,17 +6169,24 @@ ALTER TABLE ONLY public.allocine_theater ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- Name: allocine_venue_provider_price_rule id; Type: DEFAULT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.allocine_venue_provider_price_rule ALTER COLUMN id SET DEFAULT nextval('public.allocine_venue_provider_price_rule_id_seq'::regclass);
-
-
---
 -- Name: api_key id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.api_key ALTER COLUMN id SET DEFAULT nextval('public.api_key_id_seq'::regclass);
+
+
+--
+-- Name: artist_alias id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_alias ALTER COLUMN id SET DEFAULT nextval('public.artist_alias_id_seq'::regclass);
+
+
+--
+-- Name: artist_product_link id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_product_link ALTER COLUMN id SET DEFAULT nextval('public.artist_product_link_id_seq'::regclass);
 
 
 --
@@ -5101,13 +6208,6 @@ ALTER TABLE ONLY public.bank_account ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.bank_account_status_history ALTER COLUMN id SET DEFAULT nextval('public.bank_account_status_history_id_seq'::regclass);
-
-
---
--- Name: bank_information id; Type: DEFAULT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.bank_information ALTER COLUMN id SET DEFAULT nextval('public.bank_information_id_seq'::regclass);
 
 
 --
@@ -5209,6 +6309,13 @@ ALTER TABLE ONLY public.cgr_cinema_details ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
+-- Name: chronicle id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.chronicle ALTER COLUMN id SET DEFAULT nextval('public.chronicle_id_seq'::regclass);
+
+
+--
 -- Name: cinema_provider_pivot id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5237,13 +6344,6 @@ ALTER TABLE ONLY public.collective_offer ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- Name: collective_offer_educational_redactor id; Type: DEFAULT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.collective_offer_educational_redactor ALTER COLUMN id SET DEFAULT nextval('public.collective_offer_educational_redactor_id_seq'::regclass);
-
-
---
 -- Name: collective_offer_request id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5262,6 +6362,13 @@ ALTER TABLE ONLY public.collective_offer_template ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY public.collective_offer_template_educational_redactor ALTER COLUMN id SET DEFAULT nextval('public.collective_offer_template_educational_redactor_id_seq'::regclass);
+
+
+--
+-- Name: collective_playlist id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_playlist ALTER COLUMN id SET DEFAULT nextval('public.collective_playlist_id_seq'::regclass);
 
 
 --
@@ -5304,6 +6411,20 @@ ALTER TABLE ONLY public.custom_reimbursement_rule ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY public.deposit ALTER COLUMN id SET DEFAULT nextval('public.deposit_id_seq'::regclass);
+
+
+--
+-- Name: discord_user id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.discord_user ALTER COLUMN id SET DEFAULT nextval('public.discord_user_id_seq'::regclass);
+
+
+--
+-- Name: domain_to_national_program id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.domain_to_national_program ALTER COLUMN id SET DEFAULT nextval('public.domain_to_national_program_id_seq'::regclass);
 
 
 --
@@ -5363,6 +6484,20 @@ ALTER TABLE ONLY public.ems_cinema_details ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
+-- Name: event_opening_hours id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_opening_hours ALTER COLUMN id SET DEFAULT nextval('public.event_opening_hours_id_seq'::regclass);
+
+
+--
+-- Name: event_week_day_opening_hours id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_week_day_opening_hours ALTER COLUMN id SET DEFAULT nextval('public.event_week_day_opening_hours_id_seq'::regclass);
+
+
+--
 -- Name: external_booking id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5398,10 +6533,52 @@ ALTER TABLE ONLY public.finance_incident ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
+-- Name: fraudulent_booking_tag id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.fraudulent_booking_tag ALTER COLUMN id SET DEFAULT nextval('public.fraudulent_booking_tag_id_seq'::regclass);
+
+
+--
+-- Name: future_offer id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer ALTER COLUMN id SET DEFAULT nextval('public.future_offer_id_seq'::regclass);
+
+
+--
+-- Name: future_offer_reminder id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer_reminder ALTER COLUMN id SET DEFAULT nextval('public.future_offer_reminder_id_seq'::regclass);
+
+
+--
+-- Name: gdpr_user_anonymization id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_anonymization ALTER COLUMN id SET DEFAULT nextval('public.gdpr_user_anonymization_id_seq'::regclass);
+
+
+--
+-- Name: gdpr_user_data_extract id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_data_extract ALTER COLUMN id SET DEFAULT nextval('public.gdpr_user_data_extract_id_seq'::regclass);
+
+
+--
 -- Name: google_places_info id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.google_places_info ALTER COLUMN id SET DEFAULT nextval('public.google_places_info_id_seq'::regclass);
+
+
+--
+-- Name: headline_offer id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.headline_offer ALTER COLUMN id SET DEFAULT nextval('public.headline_offer_id_seq'::regclass);
 
 
 --
@@ -5489,10 +6666,31 @@ ALTER TABLE ONLY public.offer ALTER COLUMN id SET DEFAULT nextval('public.offer_
 
 
 --
+-- Name: offer_chronicle id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_chronicle ALTER COLUMN id SET DEFAULT nextval('public.offer_chronicle_id_seq'::regclass);
+
+
+--
+-- Name: offer_compliance id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_compliance ALTER COLUMN id SET DEFAULT nextval('public.offer_compliance_id_seq'::regclass);
+
+
+--
 -- Name: offer_criterion id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.offer_criterion ALTER COLUMN id SET DEFAULT nextval('public.offer_criterion_id_seq'::regclass);
+
+
+--
+-- Name: offer_price_limitation_rule id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_price_limitation_rule ALTER COLUMN id SET DEFAULT nextval('public.offer_price_limitation_rule_id_seq'::regclass);
 
 
 --
@@ -5521,6 +6719,20 @@ ALTER TABLE ONLY public.offer_validation_sub_rule ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY public.offerer ALTER COLUMN id SET DEFAULT nextval('public.offerer_id_seq'::regclass);
+
+
+--
+-- Name: offerer_address id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_address ALTER COLUMN id SET DEFAULT nextval('public.offerer_address_id_seq'::regclass);
+
+
+--
+-- Name: offerer_confidence_rule id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_confidence_rule ALTER COLUMN id SET DEFAULT nextval('public.offerer_confidence_rule_id_seq'::regclass);
 
 
 --
@@ -5570,6 +6782,13 @@ ALTER TABLE ONLY public.offerer_tag_category_mapping ALTER COLUMN id SET DEFAULT
 --
 
 ALTER TABLE ONLY public.offerer_tag_mapping ALTER COLUMN id SET DEFAULT nextval('public.offerer_tag_mapping_id_seq'::regclass);
+
+
+--
+-- Name: opening_hours id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.opening_hours ALTER COLUMN id SET DEFAULT nextval('public.opening_hours_id_seq'::regclass);
 
 
 --
@@ -5650,6 +6869,20 @@ ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.prod
 
 
 --
+-- Name: product_chronicle id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_chronicle ALTER COLUMN id SET DEFAULT nextval('public.product_chronicle_id_seq'::regclass);
+
+
+--
+-- Name: product_mediation id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_mediation ALTER COLUMN id SET DEFAULT nextval('public.product_mediation_id_seq'::regclass);
+
+
+--
 -- Name: product_whitelist id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5661,6 +6894,13 @@ ALTER TABLE ONLY public.product_whitelist ALTER COLUMN id SET DEFAULT nextval('p
 --
 
 ALTER TABLE ONLY public.provider ALTER COLUMN id SET DEFAULT nextval('public.provider_id_seq'::regclass);
+
+
+--
+-- Name: reaction id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.reaction ALTER COLUMN id SET DEFAULT nextval('public.reaction_id_seq'::regclass);
 
 
 --
@@ -5692,6 +6932,34 @@ ALTER TABLE ONLY public.single_sign_on ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: special_event id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event ALTER COLUMN id SET DEFAULT nextval('public.special_event_id_seq'::regclass);
+
+
+--
+-- Name: special_event_answer id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_answer ALTER COLUMN id SET DEFAULT nextval('public.special_event_answer_id_seq'::regclass);
+
+
+--
+-- Name: special_event_question id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_question ALTER COLUMN id SET DEFAULT nextval('public.special_event_question_id_seq'::regclass);
+
+
+--
+-- Name: special_event_response id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_response ALTER COLUMN id SET DEFAULT nextval('public.special_event_response_id_seq'::regclass);
+
+
+--
 -- Name: stock id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5699,10 +6967,10 @@ ALTER TABLE ONLY public.stock ALTER COLUMN id SET DEFAULT nextval('public.stock_
 
 
 --
--- Name: token id; Type: DEFAULT; Schema: public; Owner: pass_culture
+-- Name: titelive_gtl_mapping id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
-ALTER TABLE ONLY public.token ALTER COLUMN id SET DEFAULT nextval('public.token_id_seq'::regclass);
+ALTER TABLE ONLY public.titelive_gtl_mapping ALTER COLUMN id SET DEFAULT nextval('public.titelive_gtl_mapping_id_seq'::regclass);
 
 
 --
@@ -5727,6 +6995,13 @@ ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_
 
 
 --
+-- Name: user_account_update_request id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.user_account_update_request ALTER COLUMN id SET DEFAULT nextval('public.user_account_update_request_id_seq'::regclass);
+
+
+--
 -- Name: user_email_history id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
@@ -5738,13 +7013,6 @@ ALTER TABLE ONLY public.user_email_history ALTER COLUMN id SET DEFAULT nextval('
 --
 
 ALTER TABLE ONLY public.user_offerer ALTER COLUMN id SET DEFAULT nextval('public.user_offerer_id_seq'::regclass);
-
-
---
--- Name: user_pro_flags id; Type: DEFAULT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.user_pro_flags ALTER COLUMN id SET DEFAULT nextval('public.user_pro_flags_id_seq'::regclass);
 
 
 --
@@ -5825,10 +7093,22 @@ ALTER TABLE ONLY public.venue_provider ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
--- Name: venue_reimbursement_point_link id; Type: DEFAULT; Schema: public; Owner: pass_culture
+-- Name: venue_provider_external_urls id; Type: DEFAULT; Schema: public; Owner: pass_culture
 --
 
-ALTER TABLE ONLY public.venue_reimbursement_point_link ALTER COLUMN id SET DEFAULT nextval('public.venue_reimbursement_point_link_id_seq'::regclass);
+ALTER TABLE ONLY public.venue_provider_external_urls ALTER COLUMN id SET DEFAULT nextval('public.venue_provider_external_urls_id_seq'::regclass);
+
+
+--
+-- Data for Name: accessibility_provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: achievement; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
 
 
 --
@@ -5848,6 +7128,16 @@ ALTER TABLE ONLY public.venue_reimbursement_point_link ALTER COLUMN id SET DEFAU
 --
 
 
+
+--
+-- Data for Name: adage_venue_address; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
 
 
 
@@ -5870,13 +7160,25 @@ ALTER TABLE ONLY public.venue_reimbursement_point_link ALTER COLUMN id SET DEFAU
 
 
 --
--- Data for Name: allocine_venue_provider_price_rule; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-
-
---
 -- Data for Name: api_key; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: artist; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: artist_alias; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: artist_product_link; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -5895,12 +7197,6 @@ ALTER TABLE ONLY public.venue_reimbursement_point_link ALTER COLUMN id SET DEFAU
 
 --
 -- Data for Name: bank_account_status_history; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-
-
---
--- Data for Name: bank_information; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -6589,6 +7885,12 @@ INSERT INTO public.book_macro_section VALUES (593, 'Sociologie', 'ethnologie et 
 
 
 --
+-- Data for Name: chronicle; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: cinema_provider_pivot; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
@@ -6619,12 +7921,6 @@ INSERT INTO public.book_macro_section VALUES (593, 'Sociologie', 'ethnologie et 
 
 
 --
--- Data for Name: collective_offer_educational_redactor; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-
-
---
 -- Data for Name: collective_offer_request; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
@@ -6644,6 +7940,12 @@ INSERT INTO public.book_macro_section VALUES (593, 'Sociologie', 'ethnologie et 
 
 --
 -- Data for Name: collective_offer_template_educational_redactor; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: collective_playlist; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -6689,6 +7991,18 @@ INSERT INTO public.criterion_category_mapping VALUES (3, 3, 3);
 
 --
 -- Data for Name: deposit; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: discord_user; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: domain_to_national_program; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -6749,6 +8063,18 @@ INSERT INTO public.educational_institution_program VALUES (1, 'marseille_en_gran
 
 
 --
+-- Data for Name: event_opening_hours; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: event_week_day_opening_hours; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: external_booking; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
@@ -6782,7 +8108,6 @@ INSERT INTO public.feature VALUES (26, 'ENABLE_PRO_ACCOUNT_CREATION', 'Permettre
 INSERT INTO public.feature VALUES (28, 'ENABLE_PRO_BOOKINGS_V2', 'Activer l''affichage de la page booking avec la nouvelle architecture.', false);
 INSERT INTO public.feature VALUES (29, 'UPDATE_BOOKING_USED', 'Permettre la validation automatique des contremarques 48h après la fin de lévènement', true);
 INSERT INTO public.feature VALUES (30, 'ENABLE_UBBLE_SUBSCRIPTION_LIMITATION', 'Active la limitation en fonction de l''âge lors de pic d''inscription', false);
-INSERT INTO public.feature VALUES (34, 'INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS', 'Inclure les anciens modèles de données pour le téléchargement des remboursements ', true);
 INSERT INTO public.feature VALUES (35, 'DISABLE_ENTERPRISE_API', 'Désactiver les appels à l''API entreprise', false);
 INSERT INTO public.feature VALUES (38, 'SYNCHRONIZE_TITELIVE_PRODUCTS', 'Permettre limport journalier du référentiel des livres', true);
 INSERT INTO public.feature VALUES (40, 'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'Permettre limport journalier des couvertures de livres', true);
@@ -6798,45 +8123,25 @@ INSERT INTO public.feature VALUES (66, 'ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOK
 INSERT INTO public.feature VALUES (68, 'ENABLE_EDUCONNECT_AUTHENTICATION', 'Active l''authentification via educonnect sur l''app native', true);
 INSERT INTO public.feature VALUES (69, 'ENABLE_EMS_INTEGRATION', 'Active la synchronisation de stocks et la réservation via EMS', false);
 INSERT INTO public.feature VALUES (70, 'ENABLE_CGR_INTEGRATION', 'Active la synchonisation de stocks et la réservation via CGR', false);
-INSERT INTO public.feature VALUES (71, 'ENABLE_CHARLIE_BOOKINGS_API', 'Active la réservation via l''API Charlie', false);
 INSERT INTO public.feature VALUES (75, 'WIP_ENABLE_TRUSTED_DEVICE', 'Active la fonctionnalité d''appareil de confiance', false);
-INSERT INTO public.feature VALUES (76, 'WIP_ENABLE_DIFFUSE_HELP', 'Activer l''affichage de l''aide diffuse adage', false);
 INSERT INTO public.feature VALUES (77, 'WIP_ENABLE_MOCK_UBBLE', 'Utiliser le mock Ubble à la place du vrai Ubble', false);
 INSERT INTO public.feature VALUES (78, 'PRICE_FINANCE_EVENTS', 'Active la valorisation des événements de finance', false);
 INSERT INTO public.feature VALUES (80, 'DISABLE_BOOST_EXTERNAL_BOOKINGS', 'Désactiver les réservations externes Boost', false);
 INSERT INTO public.feature VALUES (81, 'DISABLE_EMS_EXTERNAL_BOOKINGS', 'Désactiver les réservations externes EMS', false);
-INSERT INTO public.feature VALUES (83, 'WIP_ENABLE_OFFER_CREATION_API_V1', 'Active la création d''offres via l''API v1', true);
 INSERT INTO public.feature VALUES (84, 'ALGOLIA_BOOKINGS_NUMBER_COMPUTATION', 'Active le calcul du nombre des réservations lors de l''indexation des offres sur Algolia', true);
 INSERT INTO public.feature VALUES (86, 'WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY', 'Changer le template d''email de confirmation de réservation', false);
-INSERT INTO public.feature VALUES (87, 'WIP_ENABLE_SATISFACTION_SURVEY', 'Activer l''affichage du questionnaire de satisfaction adage', false);
-INSERT INTO public.feature VALUES (89, 'WIP_ENABLE_SEARCH_HISTORY_ADAGE', 'Activer la possibilité de voir l''historique des recherches sur adage', false);
-INSERT INTO public.feature VALUES (90, 'WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API', 'Activer la création événements avec tickets dans l''API publique', false);
-INSERT INTO public.feature VALUES (91, 'WIP_ENABLE_BOOST_SHOWTIMES_FILTER', 'Activer le filtre pour les requêtes showtimes Boost', false);
 INSERT INTO public.feature VALUES (92, 'DISABLE_CGR_EXTERNAL_BOOKINGS', 'Désactiver les réservations externes CGR', false);
 INSERT INTO public.feature VALUES (93, 'API_ADRESSE_AVAILABLE', 'Active les fonctionnalitées liées à l''API Adresse', true);
 INSERT INTO public.feature VALUES (94, 'WIP_ENABLE_SUSPICIOUS_EMAIL_SEND', 'Active l''envoie d''email lors de la détection d''une connexion suspicieuse', false);
-INSERT INTO public.feature VALUES (97, 'WIP_MANDATORY_BOOKING_CONTACT', 'Rend obligatoire offer.bookingContact pour les offres retirables', true);
 INSERT INTO public.feature VALUES (99, 'ENABLE_BEAMER', 'Active Beamer, le système de notifs du portail pro', false);
 INSERT INTO public.feature VALUES (102, 'SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS', 'Permettre l''import journalier du référentiel de la musique à travers l''API Titelive', false);
-INSERT INTO public.feature VALUES (104, 'WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING', 'Active les réservations externe boost avec préfix', false);
 INSERT INTO public.feature VALUES (105, 'DISABLE_CDS_EXTERNAL_BOOKINGS', 'Désactiver les réservations externes CDS', false);
-INSERT INTO public.feature VALUES (106, 'WIP_CATEGORY_SELECTION', 'Activer la nouvelle sélection de catégories', false);
-INSERT INTO public.feature VALUES (107, 'WIP_HOME_STATS', 'Active la possibilité de voir les stats de consultation sur la page d''accueil', false);
-INSERT INTO public.feature VALUES (108, 'WIP_HOME_STATS_V2', 'Active la V2 des stats de publication d''offres sur la page d''accueil', false);
 INSERT INTO public.feature VALUES (109, 'ENABLE_CRON_TO_UPDATE_OFFERER_STATS', 'Active la mise à jour des statistiques des offrers avec un cron', false);
-INSERT INTO public.feature VALUES (110, 'WIP_ENABLE_COMPLIANCE_CALL', 'Activer les appels à l''API Compliance pour donner un score aux offres', false);
 INSERT INTO public.feature VALUES (111, 'LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC', 'Stocker dans Google Drive les cinémas EMS activables', false);
-INSERT INTO public.feature VALUES (112, 'WIP_ENABLE_DOUBLE_MODEL_WRITING', 'Activer la double écriture des coordonnées bancaires', true);
 INSERT INTO public.feature VALUES (113, 'WIP_ENABLE_MARSEILLE', 'Activer Marseille en grand', false);
-INSERT INTO public.feature VALUES (114, 'WIP_GOOGLE_MAPS_VENUE_IMAGES', 'Activer l''affichage des images des lieux importées depuis Google Maps', false);
-INSERT INTO public.feature VALUES (115, 'WIP_BEHIND_L7_LOAD_BALANCER', 'À activer/désactiver en même temps que le load balancer L7', false);
-INSERT INTO public.feature VALUES (116, 'WIP_ENABLE_DISCOVERY', 'Activer la page de découverte dans adage', false);
 INSERT INTO public.feature VALUES (117, 'WIP_ENABLE_GOOGLE_SSO', 'Activer la connexion SSO pour les jeunes', false);
 INSERT INTO public.feature VALUES (118, 'WIP_ENABLE_FINANCE_INCIDENT', 'Active les incidents de finance', true);
 INSERT INTO public.feature VALUES (119, 'ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC', 'Activer le passage automatique des synchronisations Allociné à EMS', false);
-INSERT INTO public.feature VALUES (120, 'WIP_ENABLE_RATE_LIMITING', 'Active le rate limiting', true);
-INSERT INTO public.feature VALUES (121, 'WIP_PARTNER_PAGE', 'Activer la nouvelle version des pages "Partenaire"', false);
-INSERT INTO public.feature VALUES (122, 'WIP_ENABLE_FORMAT', 'Activer le remplacement des catégories/sous-catégories par les formats', false);
 
 
 --
@@ -6852,7 +8157,43 @@ INSERT INTO public.feature VALUES (122, 'WIP_ENABLE_FORMAT', 'Activer le remplac
 
 
 --
+-- Data for Name: fraudulent_booking_tag; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: future_offer; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: future_offer_reminder; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: gdpr_user_anonymization; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: gdpr_user_data_extract; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: google_places_info; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: headline_offer; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -6936,7 +8277,25 @@ INSERT INTO public.feature VALUES (122, 'WIP_ENABLE_FORMAT', 'Activer le remplac
 
 
 --
+-- Data for Name: offer_chronicle; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: offer_compliance; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: offer_criterion; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: offer_price_limitation_rule; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -6966,6 +8325,18 @@ INSERT INTO public.feature VALUES (122, 'WIP_ENABLE_FORMAT', 'Activer le remplac
 
 
 --
+-- Data for Name: offerer_address; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: offerer_confidence_rule; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: offerer_invitation; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
@@ -6989,6 +8360,7 @@ INSERT INTO public.feature VALUES (122, 'WIP_ENABLE_FORMAT', 'Activer le remplac
 
 INSERT INTO public.offerer_tag VALUES (1, 'top-acteur', 'Top Acteur', 'Acteur prioritaire dans les objectifs d''acquisition');
 INSERT INTO public.offerer_tag VALUES (2, 'siren-caduc', 'SIREN caduc', 'Structure inactive d''après l''INSEE');
+INSERT INTO public.offerer_tag VALUES (3, 'non-diffusible', 'Non-diffusible', 'Structure non-diffusible par l''INSEE');
 
 
 --
@@ -7005,6 +8377,12 @@ INSERT INTO public.offerer_tag VALUES (2, 'siren-caduc', 'SIREN caduc', 'Structu
 
 --
 -- Data for Name: offerer_tag_mapping; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: opening_hours; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -7067,7 +8445,10 @@ INSERT INTO public.permission VALUES (28, 'FEATURE_FLIPPING', NULL);
 INSERT INTO public.permission VALUES (29, 'MANAGE_PRO_ENTITY', NULL);
 INSERT INTO public.permission VALUES (30, 'CREATE_REIMBURSEMENT_RULES', NULL);
 INSERT INTO public.permission VALUES (31, 'READ_TAGS', NULL);
-INSERT INTO public.permission VALUES (32, 'GENERATE_INVOICES', NULL);
+INSERT INTO public.permission VALUES (33, 'BENEFICIARY_MANUAL_REVIEW', NULL);
+INSERT INTO public.permission VALUES (34, 'READ_TECH_PARTNERS', NULL);
+INSERT INTO public.permission VALUES (35, 'READ_SPECIAL_EVENTS', NULL);
+INSERT INTO public.permission VALUES (36, 'CREATE_INCIDENTS', NULL);
 
 
 --
@@ -7107,6 +8488,18 @@ INSERT INTO public.permission VALUES (32, 'GENERATE_INVOICES', NULL);
 
 
 --
+-- Data for Name: product_chronicle; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: product_mediation; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: product_whitelist; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
@@ -7116,16 +8509,23 @@ INSERT INTO public.permission VALUES (32, 'GENERATE_INVOICES', NULL);
 -- Data for Name: provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-INSERT INTO public.provider VALUES (false, 1, 'TiteLive (Epagine / Place des libraires.com)', 'TiteLiveThings', false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (false, 2, 'TiteLive (Epagine / Place des libraires.com) Descriptions', 'TiteLiveThingDescriptions', false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (false, 3, 'TiteLive (Epagine / Place des libraires.com) Thumbs', 'TiteLiveThingThumbs', false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (false, 4, 'Allociné', 'AllocineStocks', false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (false, 5, 'FNAC', 'FnacStocks', false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (true, 6, 'Ciné Office', 'CDSStocks', true, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (true, 7, 'Boost', 'BoostStocks', true, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (false, 8, 'Pass Culture API Stocks', 'PCAPIStocks', false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (true, 9, 'EMS', 'EMSStocks', true, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO public.provider VALUES (true, 12, 'TiteLive API Epagine', NULL, false, NULL, NULL, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (false, 1, 'TiteLive (Epagine / Place des libraires.com)', 'TiteLiveThings', false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (false, 2, 'TiteLive (Epagine / Place des libraires.com) Descriptions', 'TiteLiveThingDescriptions', false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (false, 3, 'TiteLive (Epagine / Place des libraires.com) Thumbs', 'TiteLiveThingThumbs', false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (false, 4, 'Allociné', 'AllocineStocks', false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (false, 5, 'FNAC', 'FnacStocks', false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (true, 6, 'Ciné Office', 'CDSStocks', true, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (true, 7, 'Boost', 'BoostStocks', true, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (false, 8, 'Pass Culture API Stocks', 'PCAPIStocks', false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (true, 9, 'EMS', 'EMSStocks', true, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (true, 12, 'TiteLive API Epagine', NULL, false, false, false, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO public.provider VALUES (true, 13, 'Allocine Products', NULL, false, false, false, NULL, NULL, NULL, NULL, NULL);
+
+
+--
+-- Data for Name: reaction; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
 
 
 --
@@ -7143,6 +8543,9 @@ INSERT INTO public.reference_scheme VALUES (2, 'invoice.reference', 'F', 2023, 1
 INSERT INTO public.reference_scheme VALUES (3, 'invoice.reference', 'F', 2024, 1, 7);
 INSERT INTO public.reference_scheme VALUES (4, 'invoice.reference', 'F', 2025, 1, 7);
 INSERT INTO public.reference_scheme VALUES (5, 'invoice.reference', 'F', 2026, 1, 7);
+INSERT INTO public.reference_scheme VALUES (6, 'debit_note.reference', 'A', 2024, 1, 7);
+INSERT INTO public.reference_scheme VALUES (7, 'debit_note.reference', 'A', 2025, 1, 7);
+INSERT INTO public.reference_scheme VALUES (8, 'debit_note.reference', 'A', 2026, 1, 7);
 
 
 --
@@ -7179,6 +8582,16 @@ INSERT INTO public.role VALUES (17, 'charge_developpement');
 --
 
 INSERT INTO public.role_permission VALUES (1, NULL, 1);
+INSERT INTO public.role_permission VALUES (1, NULL, 2);
+INSERT INTO public.role_permission VALUES (3, 33, 3);
+INSERT INTO public.role_permission VALUES (17, 34, 4);
+INSERT INTO public.role_permission VALUES (6, 34, 5);
+INSERT INTO public.role_permission VALUES (6, 35, 6);
+INSERT INTO public.role_permission VALUES (4, 36, 7);
+INSERT INTO public.role_permission VALUES (2, 36, 8);
+INSERT INTO public.role_permission VALUES (15, 36, 9);
+INSERT INTO public.role_permission VALUES (10, 36, 10);
+INSERT INTO public.role_permission VALUES (3, 36, 11);
 
 
 --
@@ -7194,13 +8607,37 @@ INSERT INTO public.role_permission VALUES (1, NULL, 1);
 
 
 --
+-- Data for Name: special_event; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: special_event_answer; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: special_event_question; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
+-- Data for Name: special_event_response; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: stock; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
 
 --
--- Data for Name: token; Type: TABLE DATA; Schema: public; Owner: pass_culture
+-- Data for Name: titelive_gtl_mapping; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -7224,6 +8661,12 @@ INSERT INTO public.role_permission VALUES (1, NULL, 1);
 
 
 --
+-- Data for Name: user_account_update_request; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: user_email_history; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
@@ -7231,12 +8674,6 @@ INSERT INTO public.role_permission VALUES (1, NULL, 1);
 
 --
 -- Data for Name: user_offerer; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-
-
---
--- Data for Name: user_pro_flags; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -7315,13 +8752,13 @@ INSERT INTO public.venue_label VALUES (1, 'Centre national de la marionnette');
 
 
 --
+-- Data for Name: venue_provider_external_urls; Type: TABLE DATA; Schema: public; Owner: pass_culture
+--
+
+
+
+--
 -- Data for Name: venue_registration; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-
-
---
--- Data for Name: venue_reimbursement_point_link; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
 
@@ -7363,6 +8800,20 @@ INSERT INTO public.venue_label VALUES (1, 'Centre national de la marionnette');
 
 
 --
+-- Name: accessibility_provider_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.accessibility_provider_id_seq', 1, false);
+
+
+--
+-- Name: achievement_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.achievement_id_seq', 1, false);
+
+
+--
 -- Name: action_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -7384,6 +8835,20 @@ SELECT pg_catalog.setval('public.activity_id_seq', 1, false);
 
 
 --
+-- Name: adage_venue_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.adage_venue_address_id_seq', 1, false);
+
+
+--
+-- Name: address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.address_id_seq', 1, false);
+
+
+--
 -- Name: allocine_pivot_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -7398,17 +8863,24 @@ SELECT pg_catalog.setval('public.allocine_theater_id_seq', 1, false);
 
 
 --
--- Name: allocine_venue_provider_price_rule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.allocine_venue_provider_price_rule_id_seq', 1, false);
-
-
---
 -- Name: api_key_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
 SELECT pg_catalog.setval('public.api_key_id_seq', 1, false);
+
+
+--
+-- Name: artist_alias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.artist_alias_id_seq', 1, false);
+
+
+--
+-- Name: artist_product_link_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.artist_product_link_id_seq', 1, false);
 
 
 --
@@ -7422,7 +8894,7 @@ SELECT pg_catalog.setval('public.backoffice_user_profile_id_seq', 1, false);
 -- Name: bank_account_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.bank_account_id_seq', 100000, false);
+SELECT pg_catalog.setval('public.bank_account_id_seq', 200000, false);
 
 
 --
@@ -7430,13 +8902,6 @@ SELECT pg_catalog.setval('public.bank_account_id_seq', 100000, false);
 --
 
 SELECT pg_catalog.setval('public.bank_account_status_history_id_seq', 1, false);
-
-
---
--- Name: bank_information_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.bank_information_id_seq', 1, false);
 
 
 --
@@ -7538,6 +9003,13 @@ SELECT pg_catalog.setval('public.cgr_cinema_details_id_seq', 1, false);
 
 
 --
+-- Name: chronicle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.chronicle_id_seq', 1, false);
+
+
+--
 -- Name: cinema_provider_pivot_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -7556,13 +9028,6 @@ SELECT pg_catalog.setval('public.collective_booking_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.collective_dms_application_id_seq', 1, false);
-
-
---
--- Name: collective_offer_educational_redactor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.collective_offer_educational_redactor_id_seq', 1, false);
 
 
 --
@@ -7591,6 +9056,13 @@ SELECT pg_catalog.setval('public.collective_offer_template_educational_redactor_
 --
 
 SELECT pg_catalog.setval('public.collective_offer_template_id_seq', 1, false);
+
+
+--
+-- Name: collective_playlist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.collective_playlist_id_seq', 1, false);
 
 
 --
@@ -7633,6 +9105,20 @@ SELECT pg_catalog.setval('public.custom_reimbursement_rule_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.deposit_id_seq', 1, false);
+
+
+--
+-- Name: discord_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.discord_user_id_seq', 1, false);
+
+
+--
+-- Name: domain_to_national_program_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.domain_to_national_program_id_seq', 1, false);
 
 
 --
@@ -7692,6 +9178,20 @@ SELECT pg_catalog.setval('public.ems_cinema_details_id_seq', 1, false);
 
 
 --
+-- Name: event_opening_hours_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.event_opening_hours_id_seq', 1, false);
+
+
+--
+-- Name: event_week_day_opening_hours_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.event_week_day_opening_hours_id_seq', 1, false);
+
+
+--
 -- Name: external_booking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -7727,10 +9227,52 @@ SELECT pg_catalog.setval('public.finance_incident_id_seq', 1, false);
 
 
 --
+-- Name: fraudulent_booking_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.fraudulent_booking_tag_id_seq', 1, false);
+
+
+--
+-- Name: future_offer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.future_offer_id_seq', 1, false);
+
+
+--
+-- Name: future_offer_reminder_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.future_offer_reminder_id_seq', 1, false);
+
+
+--
+-- Name: gdpr_user_anonymization_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.gdpr_user_anonymization_id_seq', 1, false);
+
+
+--
+-- Name: gdpr_user_data_extract_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.gdpr_user_data_extract_id_seq', 1, false);
+
+
+--
 -- Name: google_places_info_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
 SELECT pg_catalog.setval('public.google_places_info_id_seq', 1, false);
+
+
+--
+-- Name: headline_offer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.headline_offer_id_seq', 1, false);
 
 
 --
@@ -7811,6 +9353,20 @@ SELECT pg_catalog.setval('public.national_program_offer_template_link_history_id
 
 
 --
+-- Name: offer_chronicle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.offer_chronicle_id_seq', 1, false);
+
+
+--
+-- Name: offer_compliance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.offer_compliance_id_seq', 1, false);
+
+
+--
 -- Name: offer_criterion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -7822,6 +9378,13 @@ SELECT pg_catalog.setval('public.offer_criterion_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.offer_id_seq', 1, false);
+
+
+--
+-- Name: offer_price_limitation_rule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.offer_price_limitation_rule_id_seq', 1, false);
 
 
 --
@@ -7843,6 +9406,20 @@ SELECT pg_catalog.setval('public.offer_validation_rule_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.offer_validation_sub_rule_id_seq', 1, false);
+
+
+--
+-- Name: offerer_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.offerer_address_id_seq', 1, false);
+
+
+--
+-- Name: offerer_confidence_rule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.offerer_confidence_rule_id_seq', 1, false);
 
 
 --
@@ -7891,7 +9468,7 @@ SELECT pg_catalog.setval('public.offerer_tag_category_mapping_id_seq', 1, false)
 -- Name: offerer_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.offerer_tag_id_seq', 2, true);
+SELECT pg_catalog.setval('public.offerer_tag_id_seq', 3, true);
 
 
 --
@@ -7899,6 +9476,13 @@ SELECT pg_catalog.setval('public.offerer_tag_id_seq', 2, true);
 --
 
 SELECT pg_catalog.setval('public.offerer_tag_mapping_id_seq', 1, false);
+
+
+--
+-- Name: opening_hours_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.opening_hours_id_seq', 1, false);
 
 
 --
@@ -7933,7 +9517,7 @@ SELECT pg_catalog.setval('public.payment_status_id_seq', 1, false);
 -- Name: permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.permission_id_seq', 32, true);
+SELECT pg_catalog.setval('public.permission_id_seq', 36, true);
 
 
 --
@@ -7972,10 +9556,24 @@ SELECT pg_catalog.setval('public.pricing_log_id_seq', 1, false);
 
 
 --
+-- Name: product_chronicle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.product_chronicle_id_seq', 1, false);
+
+
+--
 -- Name: product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
 SELECT pg_catalog.setval('public.product_id_seq', 1, false);
+
+
+--
+-- Name: product_mediation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.product_mediation_id_seq', 1, false);
 
 
 --
@@ -7989,7 +9587,14 @@ SELECT pg_catalog.setval('public.product_whitelist_id_seq', 1, false);
 -- Name: provider_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.provider_id_seq', 12, true);
+SELECT pg_catalog.setval('public.provider_id_seq', 13, true);
+
+
+--
+-- Name: reaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.reaction_id_seq', 1, false);
 
 
 --
@@ -8003,7 +9608,7 @@ SELECT pg_catalog.setval('public.recredit_id_seq', 1, false);
 -- Name: reference_scheme_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.reference_scheme_id_seq', 5, true);
+SELECT pg_catalog.setval('public.reference_scheme_id_seq', 8, true);
 
 
 --
@@ -8017,7 +9622,7 @@ SELECT pg_catalog.setval('public.role_id_seq', 17, true);
 -- Name: role_permission_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.role_permission_seq', 1, true);
+SELECT pg_catalog.setval('public.role_permission_seq', 11, true);
 
 
 --
@@ -8028,6 +9633,34 @@ SELECT pg_catalog.setval('public.single_sign_on_id_seq', 1, false);
 
 
 --
+-- Name: special_event_answer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.special_event_answer_id_seq', 1, false);
+
+
+--
+-- Name: special_event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.special_event_id_seq', 1, false);
+
+
+--
+-- Name: special_event_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.special_event_question_id_seq', 1, false);
+
+
+--
+-- Name: special_event_response_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.special_event_response_id_seq', 1, false);
+
+
+--
 -- Name: stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -8035,10 +9668,10 @@ SELECT pg_catalog.setval('public.stock_id_seq', 1, false);
 
 
 --
--- Name: token_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+-- Name: titelive_gtl_mapping_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.token_id_seq', 1, false);
+SELECT pg_catalog.setval('public.titelive_gtl_mapping_id_seq', 1, false);
 
 
 --
@@ -8053,6 +9686,13 @@ SELECT pg_catalog.setval('public.transaction_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.trusted_device_id_seq', 1, false);
+
+
+--
+-- Name: user_account_update_request_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.user_account_update_request_id_seq', 1, false);
 
 
 --
@@ -8074,13 +9714,6 @@ SELECT pg_catalog.setval('public.user_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.user_offerer_id_seq', 1, false);
-
-
---
--- Name: user_pro_flags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.user_pro_flags_id_seq', 1, false);
 
 
 --
@@ -8154,6 +9787,13 @@ SELECT pg_catalog.setval('public.venue_pricing_point_link_id_seq', 1, false);
 
 
 --
+-- Name: venue_provider_external_urls_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+--
+
+SELECT pg_catalog.setval('public.venue_provider_external_urls_id_seq', 1, false);
+
+
+--
 -- Name: venue_provider_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -8168,10 +9808,26 @@ SELECT pg_catalog.setval('public.venue_registration_id_seq', 1, false);
 
 
 --
--- Name: venue_reimbursement_point_link_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
+-- Name: topology_id_seq; Type: SEQUENCE SET; Schema: topology; Owner: pass_culture
 --
 
-SELECT pg_catalog.setval('public.venue_reimbursement_point_link_id_seq', 1, false);
+SELECT pg_catalog.setval('topology.topology_id_seq', 1, false);
+
+
+--
+-- Name: accessibility_provider accessibility_provider_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.accessibility_provider
+    ADD CONSTRAINT accessibility_provider_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: achievement achievement_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.achievement
+    ADD CONSTRAINT achievement_pkey PRIMARY KEY (id);
 
 
 --
@@ -8188,6 +9844,30 @@ ALTER TABLE ONLY public.action_history
 
 ALTER TABLE ONLY public.activation_code
     ADD CONSTRAINT activation_code_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: adage_venue_address adage_venue_address_adageId_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.adage_venue_address
+    ADD CONSTRAINT "adage_venue_address_adageId_key" UNIQUE ("adageId");
+
+
+--
+-- Name: adage_venue_address adage_venue_address_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.adage_venue_address
+    ADD CONSTRAINT adage_venue_address_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: address address_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.address
+    ADD CONSTRAINT address_pkey PRIMARY KEY (id);
 
 
 --
@@ -8247,14 +9927,6 @@ ALTER TABLE ONLY public.allocine_venue_provider
 
 
 --
--- Name: allocine_venue_provider_price_rule allocine_venue_provider_price_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.allocine_venue_provider_price_rule
-    ADD CONSTRAINT allocine_venue_provider_price_rule_pkey PRIMARY KEY (id);
-
-
---
 -- Name: api_key api_key_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -8268,6 +9940,30 @@ ALTER TABLE ONLY public.api_key
 
 ALTER TABLE ONLY public.api_key
     ADD CONSTRAINT api_key_prefix_key UNIQUE (prefix);
+
+
+--
+-- Name: artist_alias artist_alias_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_alias
+    ADD CONSTRAINT artist_alias_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: artist artist_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist
+    ADD CONSTRAINT artist_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: artist_product_link artist_product_link_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_product_link
+    ADD CONSTRAINT artist_product_link_pkey PRIMARY KEY (id);
 
 
 --
@@ -8300,14 +9996,6 @@ ALTER TABLE ONLY public.bank_account_status_history
 
 ALTER TABLE ONLY public.bank_account_status_history
     ADD CONSTRAINT bank_account_status_history_pkey PRIMARY KEY (id);
-
-
---
--- Name: bank_information bank_information_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.bank_information
-    ADD CONSTRAINT bank_information_pkey PRIMARY KEY (id);
 
 
 --
@@ -8364,14 +10052,6 @@ ALTER TABLE ONLY public.blacklisted_domain_name
 
 ALTER TABLE ONLY public.book_macro_section
     ADD CONSTRAINT book_macro_section_pkey PRIMARY KEY (id);
-
-
---
--- Name: book_macro_section book_macro_section_section_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.book_macro_section
-    ADD CONSTRAINT book_macro_section_section_key UNIQUE (section);
 
 
 --
@@ -8495,6 +10175,14 @@ ALTER TABLE ONLY public.cgr_cinema_details
 
 
 --
+-- Name: chronicle chronicle_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.chronicle
+    ADD CONSTRAINT chronicle_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cinema_provider_pivot cinema_provider_pivot_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -8532,14 +10220,6 @@ ALTER TABLE ONLY public.collective_dms_application
 
 ALTER TABLE ONLY public.collective_offer_domain
     ADD CONSTRAINT collective_offer_domain_pkey PRIMARY KEY ("collectiveOfferId", "educationalDomainId");
-
-
---
--- Name: collective_offer_educational_redactor collective_offer_educational_redactor_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.collective_offer_educational_redactor
-    ADD CONSTRAINT collective_offer_educational_redactor_pkey PRIMARY KEY (id);
 
 
 --
@@ -8588,6 +10268,14 @@ ALTER TABLE ONLY public.collective_offer_template
 
 ALTER TABLE ONLY public.collective_offer_template
     ADD CONSTRAINT collective_offer_template_unique_daterange UNIQUE ("dateRange", id);
+
+
+--
+-- Name: collective_playlist collective_playlist_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_playlist
+    ADD CONSTRAINT collective_playlist_pkey PRIMARY KEY (id);
 
 
 --
@@ -8652,6 +10340,30 @@ ALTER TABLE ONLY public.custom_reimbursement_rule
 
 ALTER TABLE ONLY public.deposit
     ADD CONSTRAINT deposit_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: discord_user discord_user_discordId_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.discord_user
+    ADD CONSTRAINT "discord_user_discordId_key" UNIQUE ("discordId");
+
+
+--
+-- Name: discord_user discord_user_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.discord_user
+    ADD CONSTRAINT discord_user_pkey PRIMARY KEY (id, "userId");
+
+
+--
+-- Name: domain_to_national_program domain_to_national_program_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.domain_to_national_program
+    ADD CONSTRAINT domain_to_national_program_pkey PRIMARY KEY (id);
 
 
 --
@@ -8759,6 +10471,38 @@ ALTER TABLE ONLY public.product
 
 
 --
+-- Name: event_opening_hours event_opening_hours_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_opening_hours
+    ADD CONSTRAINT event_opening_hours_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_week_day_opening_hours event_week_day_opening_hours_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_week_day_opening_hours
+    ADD CONSTRAINT event_week_day_opening_hours_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: headline_offer exclude_offer_timespan; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.headline_offer
+    ADD CONSTRAINT exclude_offer_timespan EXCLUDE USING gist ("offerId" WITH =, timespan WITH &&);
+
+
+--
+-- Name: headline_offer exclude_venue_timespan; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.headline_offer
+    ADD CONSTRAINT exclude_venue_timespan EXCLUDE USING gist ("venueId" WITH =, timespan WITH &&);
+
+
+--
 -- Name: external_booking external_booking_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -8799,6 +10543,46 @@ ALTER TABLE ONLY public.finance_incident
 
 
 --
+-- Name: fraudulent_booking_tag fraudulent_booking_tag_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.fraudulent_booking_tag
+    ADD CONSTRAINT fraudulent_booking_tag_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: future_offer future_offer_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer
+    ADD CONSTRAINT future_offer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: future_offer_reminder future_offer_reminder_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer_reminder
+    ADD CONSTRAINT future_offer_reminder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: gdpr_user_anonymization gdpr_user_anonymization_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_anonymization
+    ADD CONSTRAINT gdpr_user_anonymization_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: gdpr_user_data_extract gdpr_user_data_extract_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_data_extract
+    ADD CONSTRAINT gdpr_user_data_extract_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: google_places_info google_places_info_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -8807,11 +10591,11 @@ ALTER TABLE ONLY public.google_places_info
 
 
 --
--- Name: google_places_info google_places_info_placeId_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+-- Name: headline_offer headline_offer_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
-ALTER TABLE ONLY public.google_places_info
-    ADD CONSTRAINT "google_places_info_placeId_key" UNIQUE ("placeId");
+ALTER TABLE ONLY public.headline_offer
+    ADD CONSTRAINT headline_offer_pkey PRIMARY KEY (id);
 
 
 --
@@ -8876,6 +10660,14 @@ ALTER TABLE ONLY public.iris_france
 
 ALTER TABLE ONLY public.iris_france
     ADD CONSTRAINT iris_france_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: chronicle ix_chronicle_externalId; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.chronicle
+    ADD CONSTRAINT "ix_chronicle_externalId" UNIQUE ("externalId");
 
 
 --
@@ -8959,6 +10751,22 @@ ALTER TABLE ONLY public.national_program
 
 
 --
+-- Name: offer_chronicle offer_chronicle_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_chronicle
+    ADD CONSTRAINT offer_chronicle_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: offer_compliance offer_compliance_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_compliance
+    ADD CONSTRAINT offer_compliance_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: offer_criterion offer_criterion_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -8972,6 +10780,22 @@ ALTER TABLE ONLY public.offer_criterion
 
 ALTER TABLE ONLY public.offer
     ADD CONSTRAINT offer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: offer_price_limitation_rule offer_price_limitation_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_price_limitation_rule
+    ADD CONSTRAINT offer_price_limitation_rule_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: offer_price_limitation_rule offer_price_limitation_rule_subcategoryId_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_price_limitation_rule
+    ADD CONSTRAINT "offer_price_limitation_rule_subcategoryId_key" UNIQUE ("subcategoryId");
 
 
 --
@@ -8996,6 +10820,22 @@ ALTER TABLE ONLY public.offer_validation_rule
 
 ALTER TABLE ONLY public.offer_validation_sub_rule
     ADD CONSTRAINT offer_validation_sub_rule_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: offerer_address offerer_address_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_address
+    ADD CONSTRAINT offerer_address_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: offerer_confidence_rule offerer_confidence_rule_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_confidence_rule
+    ADD CONSTRAINT offerer_confidence_rule_pkey PRIMARY KEY (id);
 
 
 --
@@ -9084,6 +10924,14 @@ ALTER TABLE ONLY public.offerer_tag
 
 ALTER TABLE ONLY public.offerer_tag
     ADD CONSTRAINT offerer_tag_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: opening_hours opening_hours_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.opening_hours
+    ADD CONSTRAINT opening_hours_pkey PRIMARY KEY (id);
 
 
 --
@@ -9191,6 +11039,30 @@ ALTER TABLE ONLY public.pricing
 
 
 --
+-- Name: product_chronicle product_chronicle_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_chronicle
+    ADD CONSTRAINT product_chronicle_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: product_mediation product_mediation_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_mediation
+    ADD CONSTRAINT product_mediation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: product_mediation product_mediation_uuid_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_mediation
+    ADD CONSTRAINT product_mediation_uuid_key UNIQUE (uuid);
+
+
+--
 -- Name: product product_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -9220,6 +11092,14 @@ ALTER TABLE ONLY public.provider
 
 ALTER TABLE ONLY public.provider
     ADD CONSTRAINT provider_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reaction reaction_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.reaction
+    ADD CONSTRAINT reaction_pkey PRIMARY KEY (id);
 
 
 --
@@ -9287,11 +11167,35 @@ ALTER TABLE ONLY public.single_sign_on
 
 
 --
--- Name: stock stock_idAtProviders_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+-- Name: special_event_answer special_event_answer_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
-ALTER TABLE ONLY public.stock
-    ADD CONSTRAINT "stock_idAtProviders_key" UNIQUE ("idAtProviders");
+ALTER TABLE ONLY public.special_event_answer
+    ADD CONSTRAINT special_event_answer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: special_event special_event_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event
+    ADD CONSTRAINT special_event_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: special_event_question special_event_question_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_question
+    ADD CONSTRAINT special_event_question_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: special_event_response special_event_response_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_response
+    ADD CONSTRAINT special_event_response_pkey PRIMARY KEY (id);
 
 
 --
@@ -9303,11 +11207,11 @@ ALTER TABLE ONLY public.stock
 
 
 --
--- Name: token token_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+-- Name: titelive_gtl_mapping titelive_gtl_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
-ALTER TABLE ONLY public.token
-    ADD CONSTRAINT token_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.titelive_gtl_mapping
+    ADD CONSTRAINT titelive_gtl_mapping_pkey PRIMARY KEY (id);
 
 
 --
@@ -9327,14 +11231,6 @@ ALTER TABLE ONLY public.trusted_device
 
 
 --
--- Name: allocine_venue_provider_price_rule unique_allocine_venue_provider_price_rule; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.allocine_venue_provider_price_rule
-    ADD CONSTRAINT unique_allocine_venue_provider_price_rule UNIQUE ("allocineVenueProviderId", "priceRule");
-
-
---
 -- Name: activation_code unique_code_in_stock; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -9348,6 +11244,14 @@ ALTER TABLE ONLY public.activation_code
 
 ALTER TABLE ONLY public.criterion_category_mapping
     ADD CONSTRAINT unique_criterion_category UNIQUE ("criterionId", "categoryId");
+
+
+--
+-- Name: domain_to_national_program unique_domain_to_national_program; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.domain_to_national_program
+    ADD CONSTRAINT unique_domain_to_national_program UNIQUE ("domainId", "nationalProgramId");
 
 
 --
@@ -9372,6 +11276,14 @@ ALTER TABLE ONLY public.educational_domain_venue
 
 ALTER TABLE ONLY public.favorite
     ADD CONSTRAINT unique_favorite UNIQUE ("userId", "offerId");
+
+
+--
+-- Name: offer unique_idAtProvider_venueId; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer
+    ADD CONSTRAINT "unique_idAtProvider_venueId" UNIQUE ("venueId", "idAtProvider");
 
 
 --
@@ -9407,11 +11319,27 @@ ALTER TABLE ONLY public.reference_scheme
 
 
 --
+-- Name: offer_chronicle unique_offer_chronicle_constraint; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_chronicle
+    ADD CONSTRAINT unique_offer_chronicle_constraint UNIQUE ("offerId", "chronicleId");
+
+
+--
 -- Name: offer_criterion unique_offer_criterion; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.offer_criterion
     ADD CONSTRAINT unique_offer_criterion UNIQUE ("offerId", "criterionId");
+
+
+--
+-- Name: price_category unique_offer_id_id_at_provider; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.price_category
+    ADD CONSTRAINT unique_offer_id_id_at_provider UNIQUE ("offerId", "idAtProvider");
 
 
 --
@@ -9471,6 +11399,14 @@ ALTER TABLE ONLY public.reference_scheme
 
 
 --
+-- Name: product_chronicle unique_product_chronicle_constraint; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_chronicle
+    ADD CONSTRAINT unique_product_chronicle_constraint UNIQUE ("productId", "chronicleId");
+
+
+--
 -- Name: cinema_provider_pivot unique_provider_id_at_provider; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -9479,19 +11415,19 @@ ALTER TABLE ONLY public.cinema_provider_pivot
 
 
 --
--- Name: collective_offer_educational_redactor unique_redactorId_offer; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.collective_offer_educational_redactor
-    ADD CONSTRAINT "unique_redactorId_offer" UNIQUE ("educationalRedactorId", "collectiveOfferId");
-
-
---
 -- Name: collective_offer_template_educational_redactor unique_redactorId_template; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.collective_offer_template_educational_redactor
     ADD CONSTRAINT "unique_redactorId_template" UNIQUE ("educationalRedactorId", "collectiveOfferTemplateId");
+
+
+--
+-- Name: future_offer_reminder unique_reminder_per_user_per_future_offer; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer_reminder
+    ADD CONSTRAINT unique_reminder_per_user_per_future_offer UNIQUE ("userId", "futureOfferId");
 
 
 --
@@ -9559,6 +11495,30 @@ ALTER TABLE ONLY public.venue_provider
 
 
 --
+-- Name: event_week_day_opening_hours unique_weekday_eventOpeningHoursDetailsId; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_week_day_opening_hours
+    ADD CONSTRAINT "unique_weekday_eventOpeningHoursDetailsId" UNIQUE (weekday, "eventOpeningHoursId");
+
+
+--
+-- Name: user_account_update_request user_account_update_request_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.user_account_update_request
+    ADD CONSTRAINT user_account_update_request_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: achievement user_achievement_unique; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.achievement
+    ADD CONSTRAINT user_achievement_unique UNIQUE ("userId", name);
+
+
+--
 -- Name: user_email_history user_email_history_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -9607,22 +11567,6 @@ ALTER TABLE ONLY public."user"
 
 
 --
--- Name: user_pro_flags user_pro_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.user_pro_flags
-    ADD CONSTRAINT user_pro_flags_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_pro_flags user_pro_flags_userId_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.user_pro_flags
-    ADD CONSTRAINT "user_pro_flags_userId_key" UNIQUE ("userId");
-
-
---
 -- Name: user_session user_session_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -9636,14 +11580,6 @@ ALTER TABLE ONLY public.user_session
 
 ALTER TABLE ONLY public.user_session
     ADD CONSTRAINT user_session_uuid_key UNIQUE (uuid);
-
-
---
--- Name: user user_validationToken_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public."user"
-    ADD CONSTRAINT "user_validationToken_key" UNIQUE ("validationToken");
 
 
 --
@@ -9751,6 +11687,22 @@ ALTER TABLE ONLY public.venue_pricing_point_link
 
 
 --
+-- Name: venue_provider_external_urls venue_provider_external_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.venue_provider_external_urls
+    ADD CONSTRAINT venue_provider_external_urls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: venue_provider_external_urls venue_provider_external_urls_venueProviderId_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.venue_provider_external_urls
+    ADD CONSTRAINT "venue_provider_external_urls_venueProviderId_key" UNIQUE ("venueProviderId");
+
+
+--
 -- Name: venue_provider venue_provider_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -9767,27 +11719,25 @@ ALTER TABLE ONLY public.venue_registration
 
 
 --
--- Name: venue_reimbursement_point_link venue_reimbursement_point_link_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.venue_reimbursement_point_link
-    ADD CONSTRAINT venue_reimbursement_point_link_pkey PRIMARY KEY (id);
-
-
---
--- Name: venue_reimbursement_point_link venue_reimbursement_point_link_venueId_timespan_excl; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.venue_reimbursement_point_link
-    ADD CONSTRAINT "venue_reimbursement_point_link_venueId_timespan_excl" EXCLUDE USING gist ("venueId" WITH =, timespan WITH &&);
-
-
---
 -- Name: venue venue_siret_key; Type: CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.venue
     ADD CONSTRAINT venue_siret_key UNIQUE (siret);
+
+
+--
+-- Name: book_macro_section_section_idx; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX book_macro_section_section_idx ON public.book_macro_section USING btree (lower(section));
+
+
+--
+-- Name: gtl_type_idx; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX gtl_type_idx ON public.titelive_gtl_mapping USING hash ("gtlType");
 
 
 --
@@ -9840,13 +11790,6 @@ CREATE INDEX idx_offer_trgm_name ON public.offer USING gin (name public.gin_trgm
 
 
 --
--- Name: idx_offerer_trgm_name; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX idx_offerer_trgm_name ON public.offerer USING gin (name public.gin_trgm_ops);
-
-
---
 -- Name: idx_uniq_booking_finance_incident_id; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -9882,31 +11825,45 @@ CREATE INDEX "idx_venue_bookingEmail" ON public.venue USING btree ("bookingEmail
 
 
 --
--- Name: idx_venue_trgm_name; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_accessibility_provider_venueId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX idx_venue_trgm_name ON public.venue USING gin (name public.gin_trgm_ops);
+CREATE UNIQUE INDEX "ix_accessibility_provider_venueId" ON public.accessibility_provider USING btree ("venueId");
 
 
 --
--- Name: idx_venue_trgm_public_name; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_achievement_userId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX idx_venue_trgm_public_name ON public.venue USING gin ("publicName" public.gin_trgm_ops);
+CREATE INDEX "ix_achievement_userId" ON public.achievement USING btree ("userId");
+
+
+--
+-- Name: ix_action_history_actionType; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_action_history_actionType" ON public.action_history USING hash ("actionType");
 
 
 --
 -- Name: ix_action_history_bankAccountId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_action_history_bankAccountId" ON public.action_history USING btree ("bankAccountId");
+CREATE INDEX "ix_action_history_bankAccountId" ON public.action_history USING btree ("bankAccountId") WHERE ("bankAccountId" IS NOT NULL);
+
+
+--
+-- Name: ix_action_history_chronicleId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_action_history_chronicleId" ON public.action_history USING btree ("chronicleId") WHERE ("chronicleId" IS NOT NULL);
 
 
 --
 -- Name: ix_action_history_financeIncidentId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_action_history_financeIncidentId" ON public.action_history USING btree ("financeIncidentId");
+CREATE INDEX "ix_action_history_financeIncidentId" ON public.action_history USING btree ("financeIncidentId") WHERE ("financeIncidentId" IS NOT NULL);
 
 
 --
@@ -9920,7 +11877,7 @@ CREATE INDEX "ix_action_history_offererId" ON public.action_history USING btree 
 -- Name: ix_action_history_ruleId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_action_history_ruleId" ON public.action_history USING btree ("ruleId");
+CREATE INDEX "ix_action_history_ruleId" ON public.action_history USING btree ("ruleId") WHERE ("ruleId" IS NOT NULL);
 
 
 --
@@ -9934,7 +11891,7 @@ CREATE INDEX "ix_action_history_userId" ON public.action_history USING btree ("u
 -- Name: ix_action_history_venueId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_action_history_venueId" ON public.action_history USING btree ("venueId");
+CREATE INDEX "ix_action_history_venueId" ON public.action_history USING btree ("venueId") WHERE ("venueId" IS NOT NULL);
 
 
 --
@@ -9959,10 +11916,17 @@ CREATE INDEX "ix_activity_transactionId" ON public.activity USING btree (transac
 
 
 --
--- Name: ix_allocine_venue_provider_price_rule_allocineVenueProviderId; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_adage_venue_address_venueId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_allocine_venue_provider_price_rule_allocineVenueProviderId" ON public.allocine_venue_provider_price_rule USING btree ("allocineVenueProviderId");
+CREATE INDEX "ix_adage_venue_address_venueId" ON public.adage_venue_address USING btree ("venueId");
+
+
+--
+-- Name: ix_address_departmentCode; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_address_departmentCode" ON public.address USING btree ("departmentCode");
 
 
 --
@@ -9977,6 +11941,41 @@ CREATE INDEX "ix_api_key_offererId" ON public.api_key USING btree ("offererId");
 --
 
 CREATE INDEX "ix_api_key_providerId" ON public.api_key USING btree ("providerId");
+
+
+--
+-- Name: ix_artist_alias_artist_id; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_artist_alias_artist_id ON public.artist_alias USING btree (artist_id);
+
+
+--
+-- Name: ix_artist_name; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_artist_name ON public.artist USING btree (name);
+
+
+--
+-- Name: ix_artist_product_link_artist_id; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_artist_product_link_artist_id ON public.artist_product_link USING btree (artist_id);
+
+
+--
+-- Name: ix_artist_product_link_product_id; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_artist_product_link_product_id ON public.artist_product_link USING btree (product_id);
+
+
+--
+-- Name: ix_backoffice_user_profile_dsInstructorId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_backoffice_user_profile_dsInstructorId" ON public.backoffice_user_profile USING btree ("dsInstructorId");
 
 
 --
@@ -9998,27 +11997,6 @@ CREATE INDEX "ix_bank_account_offererId" ON public.bank_account USING btree ("of
 --
 
 CREATE INDEX "ix_bank_account_status_history_bankAccountId" ON public.bank_account_status_history USING btree ("bankAccountId");
-
-
---
--- Name: ix_bank_information_applicationId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE UNIQUE INDEX "ix_bank_information_applicationId" ON public.bank_information USING btree ("applicationId");
-
-
---
--- Name: ix_bank_information_offererId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_bank_information_offererId" ON public.bank_information USING btree ("offererId") WHERE ("offererId" IS NOT NULL);
-
-
---
--- Name: ix_bank_information_venueId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE UNIQUE INDEX "ix_bank_information_venueId" ON public.bank_information USING btree ("venueId");
 
 
 --
@@ -10068,6 +12046,20 @@ CREATE INDEX "ix_beneficiary_import_status_beneficiaryImportId" ON public.benefi
 --
 
 CREATE INDEX "ix_beneficiary_import_thirdPartyId" ON public.beneficiary_import USING btree ("thirdPartyId");
+
+
+--
+-- Name: ix_booking_cancellationUserId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_booking_cancellationUserId" ON public.booking USING btree ("cancellationUserId") WHERE ("cancellationUserId" IS NOT NULL);
+
+
+--
+-- Name: ix_booking_cancellation_reason; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_booking_cancellation_reason ON public.booking USING btree ("cancellationReason") WHERE ("cancellationReason" IS NOT NULL);
 
 
 --
@@ -10127,13 +12119,6 @@ CREATE INDEX "ix_booking_offererId" ON public.booking USING btree ("offererId");
 
 
 --
--- Name: ix_booking_reimbursementDate; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_booking_reimbursementDate" ON public.booking USING btree ("reimbursementDate");
-
-
---
 -- Name: ix_booking_status; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10162,10 +12147,10 @@ CREATE INDEX "ix_booking_venueId" ON public.booking USING btree ("venueId");
 
 
 --
--- Name: ix_cashflow_bankInformationId; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_cashflow_bankAccountId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_cashflow_bankInformationId" ON public.cashflow USING btree ("bankInformationId");
+CREATE INDEX "ix_cashflow_bankAccountId" ON public.cashflow USING btree ("bankAccountId");
 
 
 --
@@ -10197,17 +12182,31 @@ CREATE INDEX "ix_cashflow_pricing_pricingId" ON public.cashflow_pricing USING bt
 
 
 --
--- Name: ix_cashflow_reimbursementPointId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_cashflow_reimbursementPointId" ON public.cashflow USING btree ("reimbursementPointId");
-
-
---
 -- Name: ix_cashflow_status; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX ix_cashflow_status ON public.cashflow USING btree (status);
+
+
+--
+-- Name: ix_chronicle_content___ts_vector__; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_chronicle_content___ts_vector__ ON public.chronicle USING gin (__content_ts_vector__);
+
+
+--
+-- Name: ix_chronicle_ean; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_chronicle_ean ON public.chronicle USING btree (ean);
+
+
+--
+-- Name: ix_chronicle_userId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_chronicle_userId" ON public.chronicle USING btree ("userId");
 
 
 --
@@ -10274,6 +12273,13 @@ CREATE INDEX ix_collective_dms_application_application ON public.collective_dms_
 
 
 --
+-- Name: ix_collective_dms_application_siren; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_collective_dms_application_siren ON public.collective_dms_application USING btree (substr((siret)::text, 1, 9));
+
+
+--
 -- Name: ix_collective_dms_application_siret; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10302,17 +12308,17 @@ CREATE INDEX "ix_collective_offer_institutionId" ON public.collective_offer USIN
 
 
 --
--- Name: ix_collective_offer_lastValidationDate; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_collective_offer_lastValidationDate" ON public.collective_offer USING btree ("lastValidationDate");
-
-
---
 -- Name: ix_collective_offer_nationalProgramId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_collective_offer_nationalProgramId" ON public.collective_offer USING btree ("nationalProgramId");
+
+
+--
+-- Name: ix_collective_offer_offererAddressId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_collective_offer_offererAddressId" ON public.collective_offer USING btree ("offererAddressId");
 
 
 --
@@ -10365,13 +12371,6 @@ CREATE INDEX "ix_collective_offer_template_domain_educationalDomainId" ON public
 
 
 --
--- Name: ix_collective_offer_template_lastValidationDate; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_collective_offer_template_lastValidationDate" ON public.collective_offer_template USING btree ("lastValidationDate");
-
-
---
 -- Name: ix_collective_offer_template_nationalProgramId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10379,10 +12378,10 @@ CREATE INDEX "ix_collective_offer_template_nationalProgramId" ON public.collecti
 
 
 --
--- Name: ix_collective_offer_template_providerId; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_collective_offer_template_offererAddressId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_collective_offer_template_providerId" ON public.collective_offer_template USING btree ("providerId");
+CREATE INDEX "ix_collective_offer_template_offererAddressId" ON public.collective_offer_template USING btree ("offererAddressId");
 
 
 --
@@ -10414,10 +12413,31 @@ CREATE INDEX "ix_collective_offer_venueId" ON public.collective_offer USING btre
 
 
 --
--- Name: ix_collective_stock_beginningDatetime; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_collective_playlist_collectiveOfferTemplateId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_collective_stock_beginningDatetime" ON public.collective_stock USING btree ("beginningDatetime");
+CREATE INDEX "ix_collective_playlist_collectiveOfferTemplateId" ON public.collective_playlist USING btree ("collectiveOfferTemplateId");
+
+
+--
+-- Name: ix_collective_playlist_institutionId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_collective_playlist_institutionId" ON public.collective_playlist USING btree ("institutionId");
+
+
+--
+-- Name: ix_collective_playlist_type_institutionId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_collective_playlist_type_institutionId" ON public.collective_playlist USING btree (type, "institutionId");
+
+
+--
+-- Name: ix_collective_playlist_venueId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_collective_playlist_venueId" ON public.collective_playlist USING btree ("venueId");
 
 
 --
@@ -10425,6 +12445,20 @@ CREATE INDEX "ix_collective_stock_beginningDatetime" ON public.collective_stock 
 --
 
 CREATE UNIQUE INDEX "ix_collective_stock_collectiveOfferId" ON public.collective_stock USING btree ("collectiveOfferId");
+
+
+--
+-- Name: ix_collective_stock_price; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_collective_stock_price ON public.collective_stock USING btree (price);
+
+
+--
+-- Name: ix_collective_stock_startDatetime_endDatetime; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_collective_stock_startDatetime_endDatetime" ON public.collective_stock USING btree ("startDatetime", "endDatetime");
 
 
 --
@@ -10449,6 +12483,20 @@ CREATE INDEX "ix_deposit_userId" ON public.deposit USING btree ("userId");
 
 
 --
+-- Name: ix_domain_to_national_program_domainId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_domain_to_national_program_domainId" ON public.domain_to_national_program USING btree ("domainId");
+
+
+--
+-- Name: ix_domain_to_national_program_nationalProgramId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_domain_to_national_program_nationalProgramId" ON public.domain_to_national_program USING btree ("nationalProgramId");
+
+
+--
 -- Name: ix_educational_deposit_educationalInstitutionId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10470,6 +12518,13 @@ CREATE INDEX "ix_educational_domain_venue_educationalDomainId" ON public.educati
 
 
 --
+-- Name: ix_educational_institution_department_code; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_educational_institution_department_code ON public.educational_institution USING btree (public.postal_code_to_department_code(("postalCode")::text));
+
+
+--
 -- Name: ix_educational_institution_institutionId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10480,7 +12535,7 @@ CREATE UNIQUE INDEX "ix_educational_institution_institutionId" ON public.educati
 -- Name: ix_educational_institution_program_association_institutionId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_educational_institution_program_association_institutionId" ON public.educational_institution_program_association USING btree ("institutionId");
+CREATE UNIQUE INDEX "ix_educational_institution_program_association_institutionId" ON public.educational_institution_program_association USING btree ("institutionId");
 
 
 --
@@ -10491,6 +12546,13 @@ CREATE INDEX "ix_educational_institution_program_association_programId" ON publi
 
 
 --
+-- Name: ix_educational_institution_type_name_city; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_educational_institution_type_name_city ON public.educational_institution USING gin ((((((("institutionType")::text || ' '::text) || name) || ' '::text) || city)) public.gin_trgm_ops);
+
+
+--
 -- Name: ix_educational_redactor_email; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10498,17 +12560,24 @@ CREATE UNIQUE INDEX ix_educational_redactor_email ON public.educational_redactor
 
 
 --
+-- Name: ix_event_opening_hours_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_event_opening_hours_offerId" ON public.event_opening_hours USING btree ("offerId");
+
+
+--
+-- Name: ix_event_week_day_opening_hours_eventOpeningHoursId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_event_week_day_opening_hours_eventOpeningHoursId" ON public.event_week_day_opening_hours USING btree ("eventOpeningHoursId");
+
+
+--
 -- Name: ix_external_booking_bookingId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_external_booking_bookingId" ON public.external_booking USING btree ("bookingId");
-
-
---
--- Name: ix_favorite_mediationId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_favorite_mediationId" ON public.favorite USING btree ("mediationId");
 
 
 --
@@ -10568,10 +12637,66 @@ CREATE INDEX "ix_finance_event_venueId" ON public.finance_event USING btree ("ve
 
 
 --
+-- Name: ix_finance_incident_origin; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_finance_incident_origin ON public.finance_incident USING btree (origin);
+
+
+--
+-- Name: ix_finance_incident_zendeskId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_finance_incident_zendeskId" ON public.finance_incident USING btree ("zendeskId");
+
+
+--
+-- Name: ix_fraudulent_booking_tag_authorId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_fraudulent_booking_tag_authorId" ON public.fraudulent_booking_tag USING btree ("authorId");
+
+
+--
+-- Name: ix_fraudulent_booking_tag_bookingId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_fraudulent_booking_tag_bookingId" ON public.fraudulent_booking_tag USING btree ("bookingId");
+
+
+--
+-- Name: ix_future_offer_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_future_offer_offerId" ON public.future_offer USING btree ("offerId");
+
+
+--
+-- Name: ix_future_offer_publicationDate; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_future_offer_publicationDate" ON public.future_offer USING btree ("publicationDate");
+
+
+--
 -- Name: ix_google_places_info_venueId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE UNIQUE INDEX "ix_google_places_info_venueId" ON public.google_places_info USING btree ("venueId");
+
+
+--
+-- Name: ix_headline_offer_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_headline_offer_offerId" ON public.headline_offer USING btree ("offerId");
+
+
+--
+-- Name: ix_headline_offer_venueId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_headline_offer_venueId" ON public.headline_offer USING btree ("venueId");
 
 
 --
@@ -10603,13 +12728,6 @@ CREATE INDEX "ix_invoice_line_invoiceId" ON public.invoice_line USING btree ("in
 
 
 --
--- Name: ix_invoice_reimbursementPointId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_invoice_reimbursementPointId" ON public.invoice USING btree ("reimbursementPointId");
-
-
---
 -- Name: ix_login_device_history_deviceId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10631,6 +12749,34 @@ CREATE INDEX "ix_mediation_offerId" ON public.mediation USING btree ("offerId");
 
 
 --
+-- Name: ix_offer_chronicle_chronicleId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_offer_chronicle_chronicleId" ON public.offer_chronicle USING btree ("chronicleId");
+
+
+--
+-- Name: ix_offer_chronicle_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_offer_chronicle_offerId" ON public.offer_chronicle USING btree ("offerId");
+
+
+--
+-- Name: ix_offer_compliance_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_offer_compliance_offerId" ON public.offer_compliance USING btree ("offerId");
+
+
+--
+-- Name: ix_offer_criterion_criterionId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_offer_criterion_criterionId" ON public.offer_criterion USING btree ("criterionId");
+
+
+--
 -- Name: ix_offer_criterion_offerId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
@@ -10638,10 +12784,24 @@ CREATE INDEX "ix_offer_criterion_offerId" ON public.offer_criterion USING btree 
 
 
 --
--- Name: ix_offer_lastValidationDate; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_offer_ean; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_offer_lastValidationDate" ON public.offer USING btree ("lastValidationDate");
+CREATE INDEX ix_offer_ean ON public.offer USING btree (ean);
+
+
+--
+-- Name: ix_offer_lastProviderId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_offer_lastProviderId" ON public.offer USING btree ("lastProviderId") WHERE ("lastProviderId" IS NOT NULL);
+
+
+--
+-- Name: ix_offer_offererAddressId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_offer_offererAddressId" ON public.offer USING btree ("offererAddressId") WHERE ("offererAddressId" IS NOT NULL);
 
 
 --
@@ -10701,10 +12861,31 @@ CREATE INDEX "ix_offer_venueId" ON public.offer USING btree ("venueId");
 
 
 --
--- Name: ix_offerer_city; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_offerer_address_addressId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX ix_offerer_city ON public.offerer USING gin (city public.gin_trgm_ops);
+CREATE INDEX "ix_offerer_address_addressId" ON public.offerer_address USING btree ("addressId");
+
+
+--
+-- Name: ix_offerer_address_offererId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_offerer_address_offererId" ON public.offerer_address USING btree ("offererId");
+
+
+--
+-- Name: ix_offerer_confidence_rule_offererId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_offerer_confidence_rule_offererId" ON public.offerer_confidence_rule USING btree ("offererId");
+
+
+--
+-- Name: ix_offerer_confidence_rule_venueId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_offerer_confidence_rule_venueId" ON public.offerer_confidence_rule USING btree ("venueId");
 
 
 --
@@ -10775,6 +12956,27 @@ CREATE INDEX "ix_offerer_tag_mapping_offererId" ON public.offerer_tag_mapping US
 --
 
 CREATE INDEX "ix_offerer_tag_mapping_tagId" ON public.offerer_tag_mapping USING btree ("tagId");
+
+
+--
+-- Name: ix_offerer_trgm_unaccent_city; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_offerer_trgm_unaccent_city ON public.offerer USING gin (public.immutable_unaccent((city)::text) public.gin_trgm_ops);
+
+
+--
+-- Name: ix_offerer_trgm_unaccent_name; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_offerer_trgm_unaccent_name ON public.offerer USING gin (public.immutable_unaccent((name)::text) public.gin_trgm_ops);
+
+
+--
+-- Name: ix_opening_hours_venueId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_opening_hours_venueId" ON public.opening_hours USING btree ("venueId");
 
 
 --
@@ -10897,10 +13099,38 @@ CREATE INDEX "ix_pricing_venueId" ON public.pricing USING btree ("venueId");
 
 
 --
+-- Name: ix_product_chronicle_chronicleId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_product_chronicle_chronicleId" ON public.product_chronicle USING btree ("chronicleId");
+
+
+--
+-- Name: ix_product_chronicle_productId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_product_chronicle_productId" ON public.product_chronicle USING btree ("productId");
+
+
+--
+-- Name: ix_product_mediation_productId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_product_mediation_productId" ON public.product_mediation USING btree ("productId");
+
+
+--
 -- Name: ix_product_subcategoryId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_product_subcategoryId" ON public.product USING btree ("subcategoryId");
+
+
+--
+-- Name: ix_product_visa; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX ix_product_visa ON public.product USING btree ((("jsonData" ->> 'visa'::text))) WHERE (("jsonData" ->> 'visa'::text) IS NOT NULL);
 
 
 --
@@ -10918,10 +13148,101 @@ CREATE INDEX ix_provider_name ON public.provider USING btree (name);
 
 
 --
+-- Name: ix_reaction_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_reaction_offerId" ON public.reaction USING btree ("offerId");
+
+
+--
+-- Name: ix_reaction_productId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_reaction_productId" ON public.reaction USING btree ("productId");
+
+
+--
+-- Name: ix_reaction_userId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_reaction_userId" ON public.reaction USING btree ("userId");
+
+
+--
 -- Name: ix_single_sign_on_userId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_single_sign_on_userId" ON public.single_sign_on USING btree ("userId");
+
+
+--
+-- Name: ix_special_event_answer_questionId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_special_event_answer_questionId" ON public.special_event_answer USING btree ("questionId");
+
+
+--
+-- Name: ix_special_event_answer_responseId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_special_event_answer_responseId" ON public.special_event_answer USING btree ("responseId");
+
+
+--
+-- Name: ix_special_event_endImportDate; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_special_event_endImportDate" ON public.special_event USING btree ("endImportDate");
+
+
+--
+-- Name: ix_special_event_eventDate; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_special_event_eventDate" ON public.special_event USING btree ("eventDate");
+
+
+--
+-- Name: ix_special_event_externalId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_special_event_externalId" ON public.special_event USING btree ("externalId");
+
+
+--
+-- Name: ix_special_event_question_eventId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_special_event_question_eventId" ON public.special_event_question USING btree ("eventId");
+
+
+--
+-- Name: ix_special_event_question_externalId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_special_event_question_externalId" ON public.special_event_question USING btree ("externalId");
+
+
+--
+-- Name: ix_special_event_response_eventid_status; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_special_event_response_eventid_status ON public.special_event_response USING btree ("eventId", status);
+
+
+--
+-- Name: ix_special_event_response_externalId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX "ix_special_event_response_externalId" ON public.special_event_response USING btree ("externalId");
+
+
+--
+-- Name: ix_special_event_response_userId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_special_event_response_userId" ON public.special_event_response USING btree ("userId");
 
 
 --
@@ -10939,10 +13260,24 @@ CREATE INDEX "ix_stock_bookingLimitDatetime_partial" ON public.stock USING btree
 
 
 --
+-- Name: ix_stock_idAtProviders; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_stock_idAtProviders" ON public.stock USING btree ("idAtProviders");
+
+
+--
 -- Name: ix_stock_offerId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_stock_offerId" ON public.stock USING btree ("offerId");
+
+
+--
+-- Name: ix_stock_price; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_stock_price ON public.stock USING btree (price);
 
 
 --
@@ -10953,17 +13288,10 @@ CREATE INDEX "ix_stock_priceCategoryId" ON public.stock USING btree ("priceCateg
 
 
 --
--- Name: ix_token_userId; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_titelive_gtl_mapping_gtlId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_token_userId" ON public.token USING btree ("userId");
-
-
---
--- Name: ix_token_value; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE UNIQUE INDEX ix_token_value ON public.token USING btree (value);
+CREATE INDEX "ix_titelive_gtl_mapping_gtlId" ON public.titelive_gtl_mapping USING btree ("gtlId");
 
 
 --
@@ -10981,31 +13309,52 @@ CREATE INDEX "ix_trusted_device_userId" ON public.trusted_device USING btree ("u
 
 
 --
--- Name: ix_user_email_history_newDomainEmail; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_unique_complete_address_with_nulls_not_distinct; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_user_email_history_newDomainEmail" ON public.user_email_history USING btree ("newDomainEmail");
-
-
---
--- Name: ix_user_email_history_newUserEmail; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_user_email_history_newUserEmail" ON public.user_email_history USING btree ("newUserEmail");
+CREATE UNIQUE INDEX ix_unique_complete_address_with_nulls_not_distinct ON public.address USING btree ("banId", "inseeCode", street, "postalCode", city, latitude, longitude) NULLS NOT DISTINCT;
 
 
 --
--- Name: ix_user_email_history_oldDomainEmail; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_unique_offerer_address_per_label; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_user_email_history_oldDomainEmail" ON public.user_email_history USING btree ("oldDomainEmail");
+CREATE UNIQUE INDEX ix_unique_offerer_address_per_label ON public.offerer_address USING btree ("offererId", "addressId", label);
 
 
 --
--- Name: ix_user_email_history_oldUserEmail; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_user_account_update_request_dsApplicationId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_user_email_history_oldUserEmail" ON public.user_email_history USING btree ("oldUserEmail");
+CREATE UNIQUE INDEX "ix_user_account_update_request_dsApplicationId" ON public.user_account_update_request USING btree ("dsApplicationId");
+
+
+--
+-- Name: ix_user_account_update_request_lastInstructorId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_user_account_update_request_lastInstructorId" ON public.user_account_update_request USING btree ("lastInstructorId");
+
+
+--
+-- Name: ix_user_account_update_request_userId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_user_account_update_request_userId" ON public.user_account_update_request USING btree ("userId");
+
+
+--
+-- Name: ix_user_email_domain_and_id; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_user_email_domain_and_id ON public."user" USING btree (public.email_domain((email)::text), id);
+
+
+--
+-- Name: ix_user_email_history_oldEmail; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_user_email_history_oldEmail" ON public.user_email_history USING btree ((((("oldUserEmail")::text || '@'::text) || ("oldDomainEmail")::text)));
 
 
 --
@@ -11013,13 +13362,6 @@ CREATE INDEX "ix_user_email_history_oldUserEmail" ON public.user_email_history U
 --
 
 CREATE INDEX "ix_user_email_history_userId" ON public.user_email_history USING btree ("userId");
-
-
---
--- Name: ix_user_irisFranceId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_user_irisFranceId" ON public."user" USING btree ("irisFranceId");
 
 
 --
@@ -11044,10 +13386,24 @@ CREATE INDEX "ix_user_phoneNumber" ON public."user" USING btree ("phoneNumber");
 
 
 --
+-- Name: ix_user_trgm_unaccent_full_name; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX ix_user_trgm_unaccent_full_name ON public."user" USING gin (public.immutable_unaccent(((("firstName")::text || ' '::text) || ("lastName")::text)) public.gin_trgm_ops);
+
+
+--
 -- Name: ix_user_validatedBirthDate; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_user_validatedBirthDate" ON public."user" USING btree ("validatedBirthDate");
+
+
+--
+-- Name: ix_validation_rule_offer_link_offerId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_validation_rule_offer_link_offerId" ON public.validation_rule_offer_link USING btree ("offerId");
 
 
 --
@@ -11086,10 +13442,24 @@ CREATE INDEX "ix_venue_criterion_venueId" ON public.venue_criterion USING btree 
 
 
 --
+-- Name: ix_venue_departementCode; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_venue_departementCode" ON public.venue USING btree ("departementCode");
+
+
+--
 -- Name: ix_venue_managingOffererId; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
 CREATE INDEX "ix_venue_managingOffererId" ON public.venue USING btree ("managingOffererId");
+
+
+--
+-- Name: ix_venue_offererAddressId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_venue_offererAddressId" ON public.venue USING btree ("offererAddressId");
 
 
 --
@@ -11121,24 +13491,24 @@ CREATE UNIQUE INDEX "ix_venue_registration_venueId" ON public.venue_registration
 
 
 --
--- Name: ix_venue_reimbursement_point_link_reimbursementPointId; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_venue_trgm_unaccent_name; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX "ix_venue_reimbursement_point_link_reimbursementPointId" ON public.venue_reimbursement_point_link USING btree ("reimbursementPointId");
-
-
---
--- Name: ix_venue_reimbursement_point_link_venueId; Type: INDEX; Schema: public; Owner: pass_culture
---
-
-CREATE INDEX "ix_venue_reimbursement_point_link_venueId" ON public.venue_reimbursement_point_link USING btree ("venueId");
+CREATE INDEX ix_venue_trgm_unaccent_name ON public.venue USING gin (public.immutable_unaccent((name)::text) public.gin_trgm_ops);
 
 
 --
--- Name: offer_ean_idx; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: ix_venue_trgm_unaccent_public_name; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX offer_ean_idx ON public.offer USING btree ((("jsonData" ->> 'ean'::text)));
+CREATE INDEX ix_venue_trgm_unaccent_public_name ON public.venue USING gin (public.immutable_unaccent(("publicName")::text) public.gin_trgm_ops);
+
+
+--
+-- Name: offer_authorId_idx; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "offer_authorId_idx" ON public.offer USING btree ("authorId");
 
 
 --
@@ -11163,24 +13533,45 @@ CREATE UNIQUE INDEX "product_allocineId_idx" ON public.product USING btree ((("j
 
 
 --
--- Name: product_ean_idx; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: reaction_offer_product_user_unique_constraint; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE INDEX product_ean_idx ON public.product USING btree ((("jsonData" ->> 'ean'::text)));
+CREATE UNIQUE INDEX reaction_offer_product_user_unique_constraint ON public.reaction USING btree ("userId", "offerId", "productId");
 
 
 --
--- Name: venueId_idAtProvider_index; Type: INDEX; Schema: public; Owner: pass_culture
+-- Name: unique_ix_offer_id_id_at_providers; Type: INDEX; Schema: public; Owner: pass_culture
 --
 
-CREATE UNIQUE INDEX "venueId_idAtProvider_index" ON public.offer USING btree ("venueId", "idAtProvider");
+CREATE UNIQUE INDEX unique_ix_offer_id_id_at_providers ON public.stock USING btree ("offerId", "idAtProviders");
+
+
+--
+-- Name: unique_ix_product_ean; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX unique_ix_product_ean ON public.product USING btree (ean);
+
+
+--
+-- Name: unique_venue_provider_index_null_venue_id_at_provider; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE UNIQUE INDEX unique_venue_provider_index_null_venue_id_at_provider ON public.venue_provider USING btree ("venueId", "providerId") WHERE ("venueIdAtOfferProvider" IS NULL);
 
 
 --
 -- Name: booking booking_update; Type: TRIGGER; Schema: public; Owner: pass_culture
 --
 
-CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE OF quantity, amount, status, "userId" ON public.booking NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION public.check_booking();
+CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE OF quantity, amount, status, "userId" ON public.booking NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW WHEN ((new.status <> 'REIMBURSED'::public.booking_status)) EXECUTE FUNCTION public.check_booking();
+
+
+--
+-- Name: custom_reimbursement_rule check_venue_has_siret; Type: TRIGGER; Schema: public; Owner: pass_culture
+--
+
+CREATE TRIGGER check_venue_has_siret AFTER INSERT OR UPDATE ON public.custom_reimbursement_rule FOR EACH ROW EXECUTE FUNCTION public.check_venue_has_siret();
 
 
 --
@@ -11212,6 +13603,30 @@ CREATE TRIGGER stock_update_modification_date BEFORE UPDATE ON public.stock FOR 
 
 
 --
+-- Name: accessibility_provider accessibility_provider_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.accessibility_provider
+    ADD CONSTRAINT "accessibility_provider_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id) ON DELETE CASCADE;
+
+
+--
+-- Name: achievement achievement_bookingId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.achievement
+    ADD CONSTRAINT "achievement_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES public.booking(id);
+
+
+--
+-- Name: achievement achievement_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.achievement
+    ADD CONSTRAINT "achievement_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
+
+
+--
 -- Name: action_history action_history_authorUserId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -11225,6 +13640,14 @@ ALTER TABLE ONLY public.action_history
 
 ALTER TABLE ONLY public.action_history
     ADD CONSTRAINT "action_history_bankAccountId_fkey" FOREIGN KEY ("bankAccountId") REFERENCES public.bank_account(id) ON DELETE CASCADE;
+
+
+--
+-- Name: action_history action_history_chronicle_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.action_history
+    ADD CONSTRAINT action_history_chronicle_fkey FOREIGN KEY ("chronicleId") REFERENCES public.chronicle(id) ON DELETE CASCADE;
 
 
 --
@@ -11284,6 +13707,14 @@ ALTER TABLE ONLY public.activation_code
 
 
 --
+-- Name: adage_venue_address adage_venue_address_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.adage_venue_address
+    ADD CONSTRAINT "adage_venue_address_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id) ON DELETE CASCADE;
+
+
+--
 -- Name: allocine_pivot allocine_pivot_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -11300,14 +13731,6 @@ ALTER TABLE ONLY public.allocine_venue_provider
 
 
 --
--- Name: allocine_venue_provider_price_rule allocine_venue_provider_price_rule_allocineVenueProviderId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.allocine_venue_provider_price_rule
-    ADD CONSTRAINT "allocine_venue_provider_price_rule_allocineVenueProviderId_fkey" FOREIGN KEY ("allocineVenueProviderId") REFERENCES public.allocine_venue_provider(id);
-
-
---
 -- Name: api_key api_key_offererId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -11321,6 +13744,30 @@ ALTER TABLE ONLY public.api_key
 
 ALTER TABLE ONLY public.api_key
     ADD CONSTRAINT "api_key_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES public.provider(id) ON DELETE CASCADE;
+
+
+--
+-- Name: artist_alias artist_alias_artist_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_alias
+    ADD CONSTRAINT artist_alias_artist_id_fkey FOREIGN KEY (artist_id) REFERENCES public.artist(id) ON DELETE CASCADE;
+
+
+--
+-- Name: artist_product_link artist_product_link_artist_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_product_link
+    ADD CONSTRAINT artist_product_link_artist_id_fkey FOREIGN KEY (artist_id) REFERENCES public.artist(id) ON DELETE CASCADE;
+
+
+--
+-- Name: artist_product_link artist_product_link_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.artist_product_link
+    ADD CONSTRAINT artist_product_link_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(id) ON DELETE CASCADE;
 
 
 --
@@ -11345,22 +13792,6 @@ ALTER TABLE ONLY public.bank_account
 
 ALTER TABLE ONLY public.bank_account_status_history
     ADD CONSTRAINT "bank_account_status_history_bankAccountId_fkey" FOREIGN KEY ("bankAccountId") REFERENCES public.bank_account(id) ON DELETE CASCADE;
-
-
---
--- Name: bank_information bank_information_offererId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.bank_information
-    ADD CONSTRAINT "bank_information_offererId_fkey" FOREIGN KEY ("offererId") REFERENCES public.offerer(id);
-
-
---
--- Name: bank_information bank_information_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.bank_information
-    ADD CONSTRAINT "bank_information_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
 
 
 --
@@ -11409,6 +13840,14 @@ ALTER TABLE ONLY public.beneficiary_import_status
 
 ALTER TABLE ONLY public.beneficiary_import_status
     ADD CONSTRAINT "beneficiary_import_status_beneficiaryImportId_fkey" FOREIGN KEY ("beneficiaryImportId") REFERENCES public.beneficiary_import(id);
+
+
+--
+-- Name: booking booking_cancellation_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_cancellation_user_fk FOREIGN KEY ("cancellationUserId") REFERENCES public."user"(id);
 
 
 --
@@ -11492,11 +13931,11 @@ ALTER TABLE ONLY public.boost_cinema_details
 
 
 --
--- Name: cashflow cashflow_bankInformationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+-- Name: cashflow cashflow_bankAccountId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.cashflow
-    ADD CONSTRAINT "cashflow_bankInformationId_fkey" FOREIGN KEY ("bankInformationId") REFERENCES public.bank_information(id);
+    ADD CONSTRAINT "cashflow_bankAccountId_fkey" FOREIGN KEY ("bankAccountId") REFERENCES public.bank_account(id);
 
 
 --
@@ -11532,14 +13971,6 @@ ALTER TABLE ONLY public.cashflow_pricing
 
 
 --
--- Name: cashflow cashflow_reimbursementPointId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.cashflow
-    ADD CONSTRAINT "cashflow_reimbursementPointId_fkey" FOREIGN KEY ("reimbursementPointId") REFERENCES public.venue(id);
-
-
---
 -- Name: cds_cinema_details cds_cinema_details_cinemaProviderPivotId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -11553,6 +13984,14 @@ ALTER TABLE ONLY public.cds_cinema_details
 
 ALTER TABLE ONLY public.cgr_cinema_details
     ADD CONSTRAINT "cgr_cinema_details_cinemaProviderPivotId_fkey" FOREIGN KEY ("cinemaProviderPivotId") REFERENCES public.cinema_provider_pivot(id);
+
+
+--
+-- Name: chronicle chronicle_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.chronicle
+    ADD CONSTRAINT "chronicle_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE SET NULL;
 
 
 --
@@ -11580,19 +14019,19 @@ ALTER TABLE ONLY public.collective_offer
 
 
 --
--- Name: collective_offer_template collectiveOfferTemplate_provider_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.collective_offer_template
-    ADD CONSTRAINT "collectiveOfferTemplate_provider_fkey" FOREIGN KEY ("providerId") REFERENCES public.provider(id);
-
-
---
 -- Name: collective_offer collectiveOffer_provider_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.collective_offer
     ADD CONSTRAINT "collectiveOffer_provider_fkey" FOREIGN KEY ("providerId") REFERENCES public.provider(id);
+
+
+--
+-- Name: collective_booking collective_booking_cancellation_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_booking
+    ADD CONSTRAINT collective_booking_cancellation_user_fk FOREIGN KEY ("cancellationUserId") REFERENCES public."user"(id);
 
 
 --
@@ -11676,27 +14115,19 @@ ALTER TABLE ONLY public.collective_offer
 
 
 --
--- Name: collective_offer_educational_redactor collective_offer_educational_redacto_educationalRedactorId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.collective_offer_educational_redactor
-    ADD CONSTRAINT "collective_offer_educational_redacto_educationalRedactorId_fkey" FOREIGN KEY ("educationalRedactorId") REFERENCES public.educational_redactor(id);
-
-
---
--- Name: collective_offer_educational_redactor collective_offer_educational_redactor_collectiveOfferId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.collective_offer_educational_redactor
-    ADD CONSTRAINT "collective_offer_educational_redactor_collectiveOfferId_fkey" FOREIGN KEY ("collectiveOfferId") REFERENCES public.collective_offer(id);
-
-
---
 -- Name: collective_offer collective_offer_nationalProgramId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.collective_offer
     ADD CONSTRAINT "collective_offer_nationalProgramId_fkey" FOREIGN KEY ("nationalProgramId") REFERENCES public.national_program(id);
+
+
+--
+-- Name: collective_offer collective_offer_offererAddressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_offer
+    ADD CONSTRAINT "collective_offer_offererAddressId_fkey" FOREIGN KEY ("offererAddressId") REFERENCES public.offerer_address(id);
 
 
 --
@@ -11772,6 +14203,14 @@ ALTER TABLE ONLY public.collective_offer_template
 
 
 --
+-- Name: collective_offer_template collective_offer_template_offererAddressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_offer_template
+    ADD CONSTRAINT "collective_offer_template_offererAddressId_fkey" FOREIGN KEY ("offererAddressId") REFERENCES public.offerer_address(id);
+
+
+--
 -- Name: collective_offer_template collective_offer_template_validation_author_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -11801,6 +14240,30 @@ ALTER TABLE ONLY public.collective_offer
 
 ALTER TABLE ONLY public.collective_offer
     ADD CONSTRAINT "collective_offer_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
+
+
+--
+-- Name: collective_playlist collective_playlist_collectiveOfferTemplateId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_playlist
+    ADD CONSTRAINT "collective_playlist_collectiveOfferTemplateId_fkey" FOREIGN KEY ("collectiveOfferTemplateId") REFERENCES public.collective_offer_template(id);
+
+
+--
+-- Name: collective_playlist collective_playlist_institutionId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_playlist
+    ADD CONSTRAINT "collective_playlist_institutionId_fkey" FOREIGN KEY ("institutionId") REFERENCES public.educational_institution(id);
+
+
+--
+-- Name: collective_playlist collective_playlist_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.collective_playlist
+    ADD CONSTRAINT "collective_playlist_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
 
 
 --
@@ -11844,11 +14307,43 @@ ALTER TABLE ONLY public.custom_reimbursement_rule
 
 
 --
+-- Name: custom_reimbursement_rule custom_reimbursement_rule_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.custom_reimbursement_rule
+    ADD CONSTRAINT "custom_reimbursement_rule_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
+
+
+--
 -- Name: deposit deposit_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.deposit
     ADD CONSTRAINT "deposit_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
+
+
+--
+-- Name: discord_user discord_user_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.discord_user
+    ADD CONSTRAINT "discord_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: domain_to_national_program domain_to_national_program_domainId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.domain_to_national_program
+    ADD CONSTRAINT "domain_to_national_program_domainId_fkey" FOREIGN KEY ("domainId") REFERENCES public.educational_domain(id) ON DELETE CASCADE;
+
+
+--
+-- Name: domain_to_national_program domain_to_national_program_nationalProgramId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.domain_to_national_program
+    ADD CONSTRAINT "domain_to_national_program_nationalProgramId_fkey" FOREIGN KEY ("nationalProgramId") REFERENCES public.national_program(id) ON DELETE CASCADE;
 
 
 --
@@ -11916,19 +14411,27 @@ ALTER TABLE ONLY public.product
 
 
 --
+-- Name: event_opening_hours event_opening_hours_offerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_opening_hours
+    ADD CONSTRAINT "event_opening_hours_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES public.offer(id);
+
+
+--
+-- Name: event_week_day_opening_hours event_week_day_opening_hours_eventOpeningHoursId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.event_week_day_opening_hours
+    ADD CONSTRAINT "event_week_day_opening_hours_eventOpeningHoursId_fkey" FOREIGN KEY ("eventOpeningHoursId") REFERENCES public.event_opening_hours(id) ON DELETE CASCADE;
+
+
+--
 -- Name: external_booking external_booking_bookingId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.external_booking
     ADD CONSTRAINT "external_booking_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES public.booking(id);
-
-
---
--- Name: favorite favorite_mediationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.favorite
-    ADD CONSTRAINT "favorite_mediationId_fkey" FOREIGN KEY ("mediationId") REFERENCES public.mediation(id);
 
 
 --
@@ -11996,11 +14499,91 @@ ALTER TABLE ONLY public.finance_incident
 
 
 --
+-- Name: fraudulent_booking_tag fraudulent_booking_tag_author_fk; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.fraudulent_booking_tag
+    ADD CONSTRAINT fraudulent_booking_tag_author_fk FOREIGN KEY ("authorId") REFERENCES public."user"(id);
+
+
+--
+-- Name: fraudulent_booking_tag fraudulent_booking_tag_booking_fk; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.fraudulent_booking_tag
+    ADD CONSTRAINT fraudulent_booking_tag_booking_fk FOREIGN KEY ("bookingId") REFERENCES public.booking(id);
+
+
+--
+-- Name: future_offer future_offer_offerId; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer
+    ADD CONSTRAINT "future_offer_offerId" FOREIGN KEY ("offerId") REFERENCES public.offer(id) ON DELETE CASCADE NOT VALID;
+
+
+--
+-- Name: future_offer_reminder future_offer_reminder_futureOfferId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer_reminder
+    ADD CONSTRAINT "future_offer_reminder_futureOfferId_fkey" FOREIGN KEY ("futureOfferId") REFERENCES public.future_offer(id) ON DELETE CASCADE;
+
+
+--
+-- Name: future_offer_reminder future_offer_reminder_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.future_offer_reminder
+    ADD CONSTRAINT "future_offer_reminder_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: gdpr_user_anonymization gdpr_user_anonymization_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_anonymization
+    ADD CONSTRAINT "gdpr_user_anonymization_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
+
+
+--
+-- Name: gdpr_user_data_extract gdpr_user_data_extract_authorUserId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_data_extract
+    ADD CONSTRAINT "gdpr_user_data_extract_authorUserId_fkey" FOREIGN KEY ("authorUserId") REFERENCES public."user"(id);
+
+
+--
+-- Name: gdpr_user_data_extract gdpr_user_data_extract_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.gdpr_user_data_extract
+    ADD CONSTRAINT "gdpr_user_data_extract_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
+
+
+--
 -- Name: google_places_info google_places_info_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.google_places_info
     ADD CONSTRAINT "google_places_info_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id) ON DELETE CASCADE;
+
+
+--
+-- Name: headline_offer headline_offer_offerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.headline_offer
+    ADD CONSTRAINT "headline_offer_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES public.offer(id) ON DELETE CASCADE;
+
+
+--
+-- Name: headline_offer headline_offer_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.headline_offer
+    ADD CONSTRAINT "headline_offer_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
 
 
 --
@@ -12041,14 +14624,6 @@ ALTER TABLE ONLY public.invoice_cashflow
 
 ALTER TABLE ONLY public.invoice_line
     ADD CONSTRAINT "invoice_line_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES public.invoice(id);
-
-
---
--- Name: invoice invoice_reimbursementPointId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.invoice
-    ADD CONSTRAINT "invoice_reimbursementPointId_fkey" FOREIGN KEY ("reimbursementPointId") REFERENCES public.venue(id);
 
 
 --
@@ -12140,6 +14715,30 @@ ALTER TABLE ONLY public.offer
 
 
 --
+-- Name: offer_chronicle offer_chronicle_chronicleId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_chronicle
+    ADD CONSTRAINT "offer_chronicle_chronicleId_fkey" FOREIGN KEY ("chronicleId") REFERENCES public.chronicle(id) ON DELETE CASCADE;
+
+
+--
+-- Name: offer_chronicle offer_chronicle_offerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_chronicle
+    ADD CONSTRAINT "offer_chronicle_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES public.offer(id) ON DELETE CASCADE;
+
+
+--
+-- Name: offer_compliance offer_compliance_offerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer_compliance
+    ADD CONSTRAINT "offer_compliance_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES public.offer(id) ON DELETE CASCADE;
+
+
+--
 -- Name: offer_criterion offer_criterion_criterionId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -12161,6 +14760,14 @@ ALTER TABLE ONLY public.offer_criterion
 
 ALTER TABLE ONLY public.offer
     ADD CONSTRAINT "offer_lastProviderId_fkey" FOREIGN KEY ("lastProviderId") REFERENCES public.provider(id);
+
+
+--
+-- Name: offer offer_offererAddressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offer
+    ADD CONSTRAINT "offer_offererAddressId_fkey" FOREIGN KEY ("offererAddressId") REFERENCES public.offerer_address(id);
 
 
 --
@@ -12209,6 +14816,38 @@ ALTER TABLE ONLY public.offer_validation_sub_rule
 
 ALTER TABLE ONLY public.offer
     ADD CONSTRAINT "offer_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
+
+
+--
+-- Name: offerer_address offerer_address_addressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_address
+    ADD CONSTRAINT "offerer_address_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES public.address(id);
+
+
+--
+-- Name: offerer_address offerer_address_offererId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_address
+    ADD CONSTRAINT "offerer_address_offererId_fkey" FOREIGN KEY ("offererId") REFERENCES public.offerer(id) ON DELETE CASCADE;
+
+
+--
+-- Name: offerer_confidence_rule offerer_confidence_rule_offererId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_confidence_rule
+    ADD CONSTRAINT "offerer_confidence_rule_offererId_fkey" FOREIGN KEY ("offererId") REFERENCES public.offerer(id) ON DELETE CASCADE;
+
+
+--
+-- Name: offerer_confidence_rule offerer_confidence_rule_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.offerer_confidence_rule
+    ADD CONSTRAINT "offerer_confidence_rule_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id) ON DELETE CASCADE;
 
 
 --
@@ -12281,6 +14920,14 @@ ALTER TABLE ONLY public.offerer_tag_mapping
 
 ALTER TABLE ONLY public.offerer_tag_mapping
     ADD CONSTRAINT "offerer_tag_mapping_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES public.offerer_tag(id) ON DELETE CASCADE;
+
+
+--
+-- Name: opening_hours opening_hours_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.opening_hours
+    ADD CONSTRAINT "opening_hours_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id) ON DELETE CASCADE;
 
 
 --
@@ -12412,11 +15059,35 @@ ALTER TABLE ONLY public.pricing
 
 
 --
--- Name: product product_owning_offerer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+-- Name: product_chronicle product_chronicle_chronicleId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
-ALTER TABLE ONLY public.product
-    ADD CONSTRAINT product_owning_offerer_id_fkey FOREIGN KEY ("owningOffererId") REFERENCES public.offerer(id);
+ALTER TABLE ONLY public.product_chronicle
+    ADD CONSTRAINT "product_chronicle_chronicleId_fkey" FOREIGN KEY ("chronicleId") REFERENCES public.chronicle(id) ON DELETE CASCADE;
+
+
+--
+-- Name: product_chronicle product_chronicle_productId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_chronicle
+    ADD CONSTRAINT "product_chronicle_productId_fkey" FOREIGN KEY ("productId") REFERENCES public.product(id) ON DELETE CASCADE;
+
+
+--
+-- Name: product_mediation product_mediation_lastProviderId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_mediation
+    ADD CONSTRAINT "product_mediation_lastProviderId_fkey" FOREIGN KEY ("lastProviderId") REFERENCES public.provider(id);
+
+
+--
+-- Name: product_mediation product_mediation_productId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.product_mediation
+    ADD CONSTRAINT "product_mediation_productId_fkey" FOREIGN KEY ("productId") REFERENCES public.product(id) ON DELETE CASCADE;
 
 
 --
@@ -12425,6 +15096,30 @@ ALTER TABLE ONLY public.product
 
 ALTER TABLE ONLY public.product_whitelist
     ADD CONSTRAINT "product_whitelist_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES public."user"(id);
+
+
+--
+-- Name: reaction reaction_offerId_foreign_key; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.reaction
+    ADD CONSTRAINT "reaction_offerId_foreign_key" FOREIGN KEY ("offerId") REFERENCES public.offer(id) ON DELETE CASCADE;
+
+
+--
+-- Name: reaction reaction_productId_foreign_key; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.reaction
+    ADD CONSTRAINT "reaction_productId_foreign_key" FOREIGN KEY ("productId") REFERENCES public.product(id) ON DELETE CASCADE;
+
+
+--
+-- Name: reaction reaction_userId_foreign_key; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.reaction
+    ADD CONSTRAINT "reaction_userId_foreign_key" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
 
 
 --
@@ -12476,6 +15171,70 @@ ALTER TABLE ONLY public.single_sign_on
 
 
 --
+-- Name: special_event_answer special_event_answer_questionId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_answer
+    ADD CONSTRAINT "special_event_answer_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES public.special_event_question(id);
+
+
+--
+-- Name: special_event_answer special_event_answer_responseId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_answer
+    ADD CONSTRAINT "special_event_answer_responseId_fkey" FOREIGN KEY ("responseId") REFERENCES public.special_event_response(id);
+
+
+--
+-- Name: special_event special_event_offererId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event
+    ADD CONSTRAINT "special_event_offererId_fkey" FOREIGN KEY ("offererId") REFERENCES public.offerer(id) ON DELETE SET NULL;
+
+
+--
+-- Name: special_event_question special_event_question_eventId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_question
+    ADD CONSTRAINT "special_event_question_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public.special_event(id);
+
+
+--
+-- Name: special_event_response special_event_response_eventId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_response
+    ADD CONSTRAINT "special_event_response_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public.special_event(id);
+
+
+--
+-- Name: special_event_response special_event_response_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event_response
+    ADD CONSTRAINT "special_event_response_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
+
+
+--
+-- Name: special_event special_event_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.special_event
+    ADD CONSTRAINT "special_event_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id) ON DELETE SET NULL;
+
+
+--
+-- Name: stock stock_eventOpeningHoursId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.stock
+    ADD CONSTRAINT "stock_eventOpeningHoursId_fkey" FOREIGN KEY ("eventOpeningHoursId") REFERENCES public.event_opening_hours(id);
+
+
+--
 -- Name: stock stock_lastProviderId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -12500,19 +15259,27 @@ ALTER TABLE ONLY public.stock
 
 
 --
--- Name: token token_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.token
-    ADD CONSTRAINT "token_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
-
-
---
 -- Name: trusted_device trusted_device_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
 ALTER TABLE ONLY public.trusted_device
     ADD CONSTRAINT "trusted_device_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_account_update_request user_account_update_request_lastInstructorId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.user_account_update_request
+    ADD CONSTRAINT "user_account_update_request_lastInstructorId_fkey" FOREIGN KEY ("lastInstructorId") REFERENCES public."user"(id);
+
+
+--
+-- Name: user_account_update_request user_account_update_request_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.user_account_update_request
+    ADD CONSTRAINT "user_account_update_request_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
 
 
 --
@@ -12545,14 +15312,6 @@ ALTER TABLE ONLY public.user_offerer
 
 ALTER TABLE ONLY public.user_offerer
     ADD CONSTRAINT "user_offerer_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
-
-
---
--- Name: user_pro_flags user_pro_flags_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.user_pro_flags
-    ADD CONSTRAINT "user_pro_flags_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
 
 
 --
@@ -12660,6 +15419,14 @@ ALTER TABLE ONLY public.venue
 
 
 --
+-- Name: venue venue_offererAddressId; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.venue
+    ADD CONSTRAINT "venue_offererAddressId" FOREIGN KEY ("offererAddressId") REFERENCES public.offerer_address(id);
+
+
+--
 -- Name: venue_pricing_point_link venue_pricing_point_link_pricingPointId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -12673,6 +15440,14 @@ ALTER TABLE ONLY public.venue_pricing_point_link
 
 ALTER TABLE ONLY public.venue_pricing_point_link
     ADD CONSTRAINT "venue_pricing_point_link_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
+
+
+--
+-- Name: venue_provider_external_urls venue_provider_external_urls_venueProviderId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY public.venue_provider_external_urls
+    ADD CONSTRAINT "venue_provider_external_urls_venueProviderId_fkey" FOREIGN KEY ("venueProviderId") REFERENCES public.venue_provider(id) ON DELETE CASCADE;
 
 
 --
@@ -12700,22 +15475,6 @@ ALTER TABLE ONLY public.venue_registration
 
 
 --
--- Name: venue_reimbursement_point_link venue_reimbursement_point_link_reimbursementPointId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.venue_reimbursement_point_link
-    ADD CONSTRAINT "venue_reimbursement_point_link_reimbursementPointId_fkey" FOREIGN KEY ("reimbursementPointId") REFERENCES public.venue(id);
-
-
---
--- Name: venue_reimbursement_point_link venue_reimbursement_point_link_venueId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.venue_reimbursement_point_link
-    ADD CONSTRAINT "venue_reimbursement_point_link_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES public.venue(id);
-
-
---
 -- Name: venue venue_venueLabelId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
 --
 
@@ -12727,4 +15486,4 @@ ALTER TABLE ONLY public.venue
 -- PostgreSQL database dump complete
 --
 
-reset search_path
+reset search_path;
