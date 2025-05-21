@@ -435,6 +435,7 @@ Cela consiste à regrouper toutes ces migrations dans le fichier d'initialisatio
   - supprimer toute référence à la table `alembic_version`: alembic va s'occuper de créer cette table
   - supprimer les `ALTER TEXT SEARCH CONFIGURATION public.french_unaccent`: cette configuration est effectuée dans `install_database_extensions`, qu'on pourra supprimer dans une amélioration future
     - supprimer toutes les lignes contenant `OWNER TO pass_culture`
+  - Ajouter `reset search_path;` en fin de `schema_init.sql`
 - Supprimer tous les fichiers de migration jusqu'au fichiers `pre` et `post` qui été exécutés en derniers en production.
   - On peut les déterminer en se plaçant sur la branche production, dans `alembic_version_conflict_detection.txt`
 - Conserver aussi `xxx_init_db.py`
