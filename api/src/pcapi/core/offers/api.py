@@ -797,10 +797,6 @@ def edit_stock(
         modifications["quantity"] = quantity
         validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
-        # No need to keep an empty stock
-        if quantity == 0:
-            delete_stock(stock)
-
     if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
         modifications["bookingLimitDatetime"] = booking_limit_datetime
         validation.check_activation_codes_expiration_datetime_on_stock_edition(
