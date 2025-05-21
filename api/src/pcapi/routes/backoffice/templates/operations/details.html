@@ -239,9 +239,35 @@
   <div>
     {% call description_detail_vertical("Date de l'opération") %}
       {{ special_event.eventDate |format_date }}
+      {% if has_permission("MANAGE_OFFERS") %}
+        <button type="button"
+                class="btn p-0"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                data-bs-title="Modifier la date de l'évènement">
+          <span data-bs-toggle="modal"
+                data-bs-target="#update-event-date-modal">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+        </button>
+        {{ build_lazy_modal(url_for("backoffice_web.operations.update_date_event", special_event_id=special_event.id) , "update-event-date-modal") }}
+      {% endif %}
     {% endcall %}
     {% call description_detail_vertical("Date de clôture des candidatures") %}
       {{ special_event.endImportDate |format_date }}
+      {% if has_permission("MANAGE_OFFERS") %}
+        <button type="button"
+                class="btn p-0"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                data-bs-title="Modifier la date de l'évènement">
+          <span data-bs-toggle="modal"
+                data-bs-target="#update-end-import-date-modal">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+        </button>
+        {{ build_lazy_modal(url_for("backoffice_web.operations.update_end_import_date", special_event_id=special_event.id) , "update-end-import-date-modal") }}
+      {% endif %}
     {% endcall %}
     {% call description_detail_vertical("Partenaire culturel") %}
       {% if special_event.venueId %}

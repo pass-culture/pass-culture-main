@@ -249,8 +249,8 @@ class GetEventDetailsTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert "Énigme des enchanteurs" in html_parser.extract(response.data, tag="h2")
         assert event.externalId.encode() in response.data
-        assert descriptions["Date d'import"] == format_date(event.dateCreated, "%d/%m/%Y")
-        assert descriptions["Date de l'opération"] == format_date(event.eventDate, "%d/%m/%Y")
+        assert format_date(event.dateCreated, "%d/%m/%Y") in descriptions["Date d'import"]
+        assert format_date(event.eventDate, "%d/%m/%Y") in descriptions["Date de l'opération"]
         assert str(len(event.responses)) == descriptions["Nombre de candidats total"]
         assert descriptions["Nombre de nouvelles candidatures"] == "1"
         assert descriptions["Nombre de candidatures en attente"] == "0"
@@ -543,3 +543,63 @@ class BatchValidateResponsesStatusTest(PostEndpointHelper):
         )
         assert db_response[0].status == response_status
         assert db_response[1].status == response_status
+
+
+class UpdateDateEventTest(PostEndpointHelper):
+    endpoint = "backoffice_web.operations.update_date_event"
+    endpoint_kwargs = {"special_event_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+
+    def test_set_event_date(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory()
+        date = datetime.date.today()
+        assert event.eventDate != date
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            special_event_id=event.id,
+            form={"date": date.isoformat()},
+        )
+
+        assert response.status_code == 303
+
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEvent.eventDate,
+            )
+            .filter(
+                operations_models.SpecialEvent.id == event.id,
+            )
+            .one()
+        )
+        assert db_response.eventDate == date
+
+
+class UpdateEndImportDateTest(PostEndpointHelper):
+    endpoint = "backoffice_web.operations.update_end_import_date"
+    endpoint_kwargs = {"special_event_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+
+    def test_set_end_import_date(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory()
+        date = datetime.date.today()
+        assert event.endImportDate != date
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            special_event_id=event.id,
+            form={"date": date.isoformat()},
+        )
+
+        assert response.status_code == 303
+
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEvent.endImportDate,
+            )
+            .filter(
+                operations_models.SpecialEvent.id == event.id,
+            )
+            .one()
+        )
+        assert db_response.endImportDate == date
