@@ -42,7 +42,6 @@ You have **three options** for the location:
 """
 
 OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION = """
-[DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.
 - `offererVenue` means a db-known venue (`venueId` field is then mandatory).
 - `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).
 - `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).

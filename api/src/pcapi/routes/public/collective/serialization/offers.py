@@ -314,7 +314,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     # offerVenue will be replaced with location, for now we send both
-    offerVenue: OfferVenueModel
+    offerVenue: OfferVenueModel = fields.COLLECTIVE_OFFER_VENUE
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageUrl: str | None = fields.IMAGE_URL
@@ -400,7 +400,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = fields.MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT
     motor_disability_compliant: bool = fields.MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT
     visual_disability_compliant: bool = fields.VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT
-    offer_venue: OfferVenueModel | None
+    offer_venue: OfferVenueModel | None = fields.COLLECTIVE_OFFER_VENUE
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     is_active: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
     image_file: str | None = fields.IMAGE_FILE
@@ -522,7 +522,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     contactPhone: str | None = fields.COLLECTIVE_OFFER_CONTACT_PHONE
     domains: list[int] | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS
     students: list[str] | None = fields.COLLECTIVE_OFFER_STUDENT_LEVELS
-    offerVenue: OfferVenueModel | None
+    offerVenue: OfferVenueModel | None = fields.COLLECTIVE_OFFER_VENUE
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     interventionArea: list[str] | None = fields.COLLECTIVE_OFFER_INTERVENTION_AREA
     durationMinutes: int | None = fields.DURATION_MINUTES

@@ -4495,7 +4495,13 @@
                         "type": "string"
                     },
                     "offerVenue": {
-                        "$ref": "#/components/schemas/OfferVenueModel"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferVenueModel"
+                            }
+                        ],
+                        "description": "[\u26a0\ufe0f DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.",
+                        "title": "Offervenue"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -5578,7 +5584,7 @@
                                 "$ref": "#/components/schemas/OfferAddressType"
                             }
                         ],
-                        "description": "\n[DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.\n- `offererVenue` means a db-known venue (`venueId` field is then mandatory).\n- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).\n- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).\n",
+                        "description": "\n- `offererVenue` means a db-known venue (`venueId` field is then mandatory).\n- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).\n- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).\n",
                         "example": "offererVenue"
                     },
                     "otherAddress": {
@@ -6096,13 +6102,14 @@
                         "type": "integer"
                     },
                     "offerVenue": {
-                        "anyOf": [
+                        "allOf": [
                             {
                                 "$ref": "#/components/schemas/OfferVenueModel"
                             }
                         ],
+                        "description": "[\u26a0\ufe0f DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.",
                         "nullable": true,
-                        "title": "OfferVenueModel"
+                        "title": "Offervenue"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -6356,13 +6363,14 @@
                         "type": "integer"
                     },
                     "offerVenue": {
-                        "anyOf": [
+                        "allOf": [
                             {
                                 "$ref": "#/components/schemas/OfferVenueModel"
                             }
                         ],
+                        "description": "[\u26a0\ufe0f DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.",
                         "nullable": true,
-                        "title": "OfferVenueModel"
+                        "title": "Offervenue"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",

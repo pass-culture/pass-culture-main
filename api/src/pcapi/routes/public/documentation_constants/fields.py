@@ -387,6 +387,7 @@ class _FIELDS:
         description="Can the offerer create collective offers?",
         example=True,
     )
+    COLLECTIVE_OFFER_VENUE = Field(description="[⚠️ DEPRECATED] Use the 'location' attribute instead of 'offerVenue'.")
     OFFER_VENUE_ADDRESS_TYPE = Field(
         description=descriptions.OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION,
         example="offererVenue",
