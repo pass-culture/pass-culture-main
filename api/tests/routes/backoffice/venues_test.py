@@ -2537,6 +2537,74 @@ class GetVenueHistoryTest(GetEndpointHelper):
         )
         assert rows[2]["Auteur"] == pro_fraud_admin.full_name
 
+    def test_venue_history_for_regularisation(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        destination_venue = offerers_factories.VenueFactory()
+
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id,
+            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            extraData={"destination_venue_id": destination_venue.id},
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            venueId=venue.id, actionType=history_models.ActionType.VENUE_SOFT_DELETED, comment=None
+        )
+        history_factories.ActionHistoryFactory(
+            venueId=destination_venue.id,
+            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            extraData={
+                "origin_venue_id": venue.id,
+                "modified_info": {"isPermanent": {"new_info": True}},
+            },
+            comment=None,
+        )
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["Type"] == "Suppression réversible"
+        assert rows[0]["Commentaire"] == ""
+
+        assert rows[1]["Type"] == "Régularisation des partenaires culturels"
+        assert (
+            rows[1]["Commentaire"]
+            == f"Tous les éléments ont été transférés vers le partenaire culturel {destination_venue.id}"
+        )
+
+        url = url_for(self.endpoint, venue_id=destination_venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+
+        assert rows[0]["Type"] == "Régularisation des partenaires culturels"
+        assert (
+            rows[0]["Commentaire"]
+            == f"Transfert des éléments du partenaire culturel {venue.id}. Informations modifiées : Permanent : ajout de : Oui"
+        )
+
     def test_venue_history_without_fraud_permission(self, client, read_only_bo_user):
         venue = offerers_factories.VenueFactory()
         history_factories.ActionHistoryFactory(actionType=history_models.ActionType.COMMENT, venue=venue)
