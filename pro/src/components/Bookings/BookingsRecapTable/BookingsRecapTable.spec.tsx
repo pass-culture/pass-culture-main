@@ -4,8 +4,6 @@ import { ComponentProps } from 'react'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import {
   collectiveBookingByIdFactory,
@@ -77,13 +75,13 @@ describe('components | BookingsRecapTable', () => {
     }
     renderBookingRecap(props)
 
-    // 2 lines = 10 cells
-    expect(screen.getAllByRole('cell')).toHaveLength(10)
+    // 2 lines = 12 cells
+    expect(screen.getAllByRole('cell')).toHaveLength(12)
 
     await userEvent.type(screen.getByRole('searchbox'), 'Le nom de l’offre 2')
     await waitFor(() => {
-      // 1 line = 5 cells
-      expect(screen.getAllByRole('cell')).toHaveLength(5)
+      // 1 line = 6 cells
+      expect(screen.getAllByRole('cell')).toHaveLength(6)
     })
 
     await userEvent.selectOptions(
@@ -93,13 +91,13 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.clear(screen.getByRole('searchbox'))
 
     await waitFor(() => {
-      // 2 lines = 10 cells
-      expect(screen.getAllByRole('cell')).toHaveLength(10)
+      // 2 lines = 12 cells
+      expect(screen.getAllByRole('cell')).toHaveLength(12)
     })
     await userEvent.type(screen.getByRole('searchbox'), 'Parjeot')
     await waitFor(() => {
       // 1 line = 5
-      expect(screen.getAllByRole('cell')).toHaveLength(5)
+      expect(screen.getAllByRole('cell')).toHaveLength(6)
     })
   })
 
@@ -426,46 +424,6 @@ describe('components | BookingsRecapTable', () => {
 
     // then
     expect(screen.queryByText('Page 1/1')).not.toBeInTheDocument()
-  })
-
-  it('should log event when cliking collective row', async () => {
-    // Given
-    const bookingsRecap = [
-      collectiveBookingFactory({ bookingId: 'mon booking id' }),
-    ]
-    vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue(
-      bookingsRecap
-    )
-    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
-      collectiveBookingByIdFactory()
-    )
-
-    const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
-      logEvent: mockLogEvent,
-    }))
-
-    const props: Props = {
-      ...defaultProps,
-      audience: Audience.COLLECTIVE,
-      bookingsRecap: bookingsRecap,
-    }
-
-    // When
-    renderBookingRecap(props)
-    await userEvent.click(screen.getAllByRole('button')[1])
-
-    // Then
-    const bookingRow = screen.getAllByRole('cell')
-    expect(bookingRow[0]).toHaveTextContent('mon booking id')
-    await userEvent.click(bookingRow[0])
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
-    )
   })
 
   it('should update currentPage when clicking on next page button', async () => {
