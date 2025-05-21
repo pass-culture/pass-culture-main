@@ -8,7 +8,7 @@
 }
 
 .colored-disc {
-  border-radius: rem.torem(9px);
+  border-radius: var(--border-radius-full);
   height: rem.torem(14px);
   margin-right: rem.torem(16px);
   width: rem.torem(14px);

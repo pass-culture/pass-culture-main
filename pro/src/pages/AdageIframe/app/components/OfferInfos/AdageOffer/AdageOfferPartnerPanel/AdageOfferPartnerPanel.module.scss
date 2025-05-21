@@ -4,7 +4,7 @@
 
 .partner-panel {
   width: 100%;
-  border-radius: rem.torem(16px);
+  border-radius: var(--border-radius-xxl);
   box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 var(--color-large-shadow);
   padding: rem.torem(24px);
 
@@ -27,7 +27,7 @@
     &-image {
       min-width: rem.torem(99px);
       height: rem.torem(66px);
-      border-radius: rem.torem(4px);
+      border-radius: var(--border-radius-s);
     }
 
     &-image {

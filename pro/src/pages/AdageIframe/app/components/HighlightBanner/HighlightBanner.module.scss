@@ -5,7 +5,7 @@
 
 .highlight-banner {
   margin-top: rem.torem(16px);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
   background-color: var(--color-background-info);
   padding: rem.torem(24px);
   position: relative;
@@ -64,7 +64,7 @@
     right: 16px;
     background-color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     width: rem.torem(24px);
     height: rem.torem(24px);
     color: var(--color-icon-brand-primary);
