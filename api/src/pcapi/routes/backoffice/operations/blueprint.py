@@ -25,6 +25,7 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.utils.clean_accents import clean_accents
 
 from . import forms as operations_forms
@@ -62,7 +63,8 @@ def list_events() -> utils.BackofficeResponse:
 
         query = query.filter(query_filter)
 
-    paginated_rows = query.order_by(operations_models.SpecialEvent.dateCreated.desc()).paginate(
+    paginated_rows = paginate(
+        query=query.order_by(operations_models.SpecialEvent.dateCreated.desc()),
         page=int(form.page.data),
         per_page=int(form.limit.data),
     )
@@ -214,29 +216,26 @@ def _get_special_event_responses(
         response_rows_query,
         response_form.eligibility.data,
     )
-    response_rows = (
-        response_rows_query.options(
-            sa_orm.contains_eager(operations_models.SpecialEventResponse.user)
-            .load_only(
-                users_models.User.id,
-                users_models.User.firstName,
-                users_models.User.lastName,
-                users_models.User.roles,
-            )
-            .contains_eager(users_models.User.deposits)
-            .load_only(
-                finance_models.Deposit.expirationDate,
-                finance_models.Deposit.type,
-                finance_models.Deposit.version,
-            ),
+    response_rows = response_rows_query.options(
+        sa_orm.contains_eager(operations_models.SpecialEventResponse.user)
+        .load_only(
+            users_models.User.id,
+            users_models.User.firstName,
+            users_models.User.lastName,
+            users_models.User.roles,
         )
-        .order_by(operations_models.SpecialEventResponse.dateSubmitted.desc())
-        .paginate(
-            page=int(response_form.page.data),
-            per_page=int(response_form.limit.data),
-        )
+        .contains_eager(users_models.User.deposits)
+        .load_only(
+            finance_models.Deposit.expirationDate,
+            finance_models.Deposit.type,
+            finance_models.Deposit.version,
+        ),
+    ).order_by(operations_models.SpecialEventResponse.dateSubmitted.desc())
+    return paginate(
+        query=response_rows,
+        page=int(response_form.page.data),
+        per_page=int(response_form.limit.data),
     )
-    return response_rows
 
 
 @operations_blueprint.route("/<int:special_event_id>", methods=["GET"])

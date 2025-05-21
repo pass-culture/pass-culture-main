@@ -121,7 +121,8 @@ def search_pro() -> utils.BackofficeResponse:
     result_type = form.pro_type.data
     context = get_context(result_type)
     rows = context.fetch_rows_func(form.q.data, form.departments.data)
-    paginated_rows = rows.paginate(
+    paginated_rows = search_utils.paginate(
+        query=rows,
         page=form.page.data,
         per_page=form.per_page.data,
     )

@@ -80,7 +80,8 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         getattr(getattr(offerers_models.Offerer, form.sort.data), form.order.data)()
     )
 
-    paginated_offerers = sorted_offerers.paginate(
+    paginated_offerers = search_utils.paginate(
+        query=sorted_offerers,
         page=int(form.data["page"]),
         per_page=int(form.data["limit"]),
     )
@@ -518,7 +519,8 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         getattr(getattr(offerers_models.UserOfferer, form.sort.data), form.order.data)()
     )
 
-    paginated_users_offerers = sorted_users_offerers.paginate(
+    paginated_users_offerers = search_utils.paginate(
+        query=sorted_users_offerers,
         page=int(form.data["page"]),
         per_page=int(form.data["limit"]),
     )

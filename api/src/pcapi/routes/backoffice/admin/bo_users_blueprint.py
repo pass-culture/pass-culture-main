@@ -24,6 +24,7 @@ from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.accounts import serialization
+from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
@@ -64,7 +65,8 @@ def search_bo_users() -> utils.BackofficeResponse:
         sa_orm.joinedload(users_models.User.deposits),
     )
 
-    paginated_rows = users.paginate(
+    paginated_rows = paginate(
+        query=users,
         page=form.page.data,
         per_page=form.per_page.data,
     )
