@@ -2,7 +2,7 @@ import cn from 'classnames'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
 import { formatPrice } from 'commons/utils/formatPrice'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag } from 'design-system/Tag/Tag'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
@@ -38,21 +38,12 @@ export const IndividualBookingStatusCell = ({
       <button
         type="button"
         {...tooltipProps}
-        className={cn(
-          styles['booking-status-label'],
-          bookingDisplayInfo?.statusClassName
-        )}
+        className={styles['booking-status-label']}
       >
-        {bookingDisplayInfo && (
-          <SvgIcon
-            src={bookingDisplayInfo.icon}
-            alt=""
-            className={styles['booking-status-icon']}
-            width="300"
-          />
-        )}
-
-        <span>{statusName}</span>
+        <Tag
+          label={statusName as string}
+          variant={bookingDisplayInfo?.variant}
+        />
         {!isTooltipHidden && (
           <div className={styles['bs-tooltip']}>
             <div className={styles['bs-offer-title']}>{offerName}</div>
