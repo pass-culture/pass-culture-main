@@ -4,9 +4,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralizeString } from 'commons/utils/pluralize'
 import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
@@ -28,7 +26,6 @@ export const CollectiveTableRow = ({
   defaultOpenedBookingId,
 }: CollectiveTableRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const { logEvent } = useAnalytics()
 
   const detailsRef = useRef<HTMLTableRowElement | null>(null)
 
@@ -38,11 +35,6 @@ export const CollectiveTableRow = ({
       : null,
     ([, bookingIdParam]) => api.getCollectiveBookingById(bookingIdParam)
   )
-
-  const onRowClick = () => {
-    logEvent(CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS)
-    setIsExpanded((previousState) => !previousState)
-  }
 
   // We expand row if bookingId match the one in the context
   useEffect(() => {
@@ -66,11 +58,7 @@ export const CollectiveTableRow = ({
 
   return (
     <>
-      <tr
-        className={styles['table-row']}
-        onClick={onRowClick}
-        data-testid="offer-item-row"
-      >
+      <tr className={styles['table-row']} data-testid="offer-item-row">
         <td
           className={cn(styles['table-cell'], styles['column-booking-id'])}
           data-label="Réservation"
@@ -138,21 +126,29 @@ export const CollectiveTableRow = ({
 
         <td className={cn(styles['table-cell'])} data-label="Détails">
           <DetailsButtonCell
+            controlledId={`booking-details-${booking.bookingId}`}
             isExpanded={isExpanded}
             className={styles['cell-item-wrapper']}
+            onClick={() => {
+              setIsExpanded((prev) => !prev)
+            }}
           />
         </td>
       </tr>
 
       {isExpanded ? (
-        <tr className={styles['details-container']} ref={detailsRef}>
+        <tr
+          id={`booking-details-${booking.bookingId}`}
+          className={styles['details-row']}
+          ref={detailsRef}
+        >
           {bookingDetailsQuery.isLoading || !bookingDetailsQuery.data ? (
             <td className={styles['loader']} colSpan={6}>
               <Spinner />
             </td>
           ) : (
             <td
-              className={styles['details-content']}
+              className={styles['details-cell']}
               id={booking.bookingId}
               colSpan={6}
             >

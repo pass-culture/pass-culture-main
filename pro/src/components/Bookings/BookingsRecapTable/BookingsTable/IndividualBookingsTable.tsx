@@ -14,18 +14,13 @@ import {
   sortByOfferName,
 } from 'components/Bookings/BookingsRecapTable/utils/sortingFunctions'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
-import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 
 import styles from './BookingsTable.module.scss'
-import { BeneficiaryCell } from './Cells/BeneficiaryCell'
-import { BookingDateCell } from './Cells/BookingDateCell'
-import { BookingOfferCell } from './Cells/BookingOfferCell'
-import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
+import { IndividualTableRow } from './IndividualTableRow'
 
 enum IndividualBookingsSortingColumn {
   OFFER_NAME = 'OFFER_NAME',
@@ -201,83 +196,7 @@ export const IndividualBookingsTable = ({
 
           <tbody className={styles['table-body']}>
             {currentPageItems.map((booking, index) => (
-              <tr className={styles['table-row']} key={index}>
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-offer-name']
-                  )}
-                  data-label="Nom de l’offre"
-                >
-                  <div
-                    className={cn(
-                      styles['cell-item-wrapper'],
-                      styles['offer-details-wrapper']
-                    )}
-                  >
-                    <BookingOfferCell booking={booking} />
-
-                    {booking.bookingIsDuo && (
-                      <SvgIcon
-                        src={strokeDuoIcon}
-                        alt="Réservation DUO"
-                        className={styles['bookings-duo-icon']}
-                      />
-                    )}
-                  </div>
-                </td>
-
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-beneficiary']
-                  )}
-                  data-label="Bénéficiaire"
-                >
-                  <BeneficiaryCell
-                    beneficiaryInfos={booking.beneficiary}
-                    className={styles['cell-item-wrapper']}
-                  />
-                </td>
-
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-booking-date']
-                  )}
-                  data-label="Réservation"
-                >
-                  <BookingDateCell
-                    bookingDateTimeIsoString={booking.bookingDate}
-                    className={styles['cell-item-wrapper']}
-                  />
-                </td>
-
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-booking-token']
-                  )}
-                  data-label="Contremarque"
-                >
-                  <span className={styles['cell-item-wrapper']}>
-                    {booking.bookingToken || '-'}
-                  </span>
-                </td>
-
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-booking-status']
-                  )}
-                  data-label="Statut"
-                >
-                  <IndividualBookingStatusCell
-                    booking={booking}
-                    className={styles['cell-item-wrapper']}
-                  />
-                </td>
-              </tr>
+              <IndividualTableRow key={index} booking={booking} index={index} />
             ))}
           </tbody>
         </table>
