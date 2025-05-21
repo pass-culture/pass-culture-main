@@ -85,66 +85,60 @@ Cypress.Commands.add(
   }
 )
 
-/**
- *  Helper function to convert hex colors to rgb
- *  Workaround to format log
- * @param {string} hex - hex color
- * @returns {string}
- * @see https://github.com/cypress-io/cypress/issues/2134
- * @see https://github.com/cypress-io/cypress/issues/2134#issuecomment-1692593562
- *
- * @example
- * // returns "255 255 255"
- * hex2rgb("#ffffff")
- */
-function hex2rgb(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-
-  return `${r} ${g} ${b}`
-}
-
-const yellow = '#fbbf24' // Yellow
-export function createCustomLog() {
+export function createCustomLogStyles(name: string, hexColor: string) {
+  const topDocumentHead = window.top?.document.head
+  if (
+    !topDocumentHead ||
+    topDocumentHead.querySelector(
+      `style[data-cy-custom-command-styles="custom-log-styles-${name}"]`
+    )
+  ) {
+    return
+  }
   const logStyle = document.createElement('style')
 
+  logStyle.setAttribute(
+    'data-cy-custom-command-styles',
+    `custom-log-styles-${name}`
+  )
+
   logStyle.textContent = `
-        .command.command-name-ptf-STEP span.command-method {
-            margin-right: 0.5rem;
-            min-width: 10px;
-            border-radius: 0.125rem;
-            border-width: 1px;
-            padding-left: 0.375rem;
-            padding-right: 0.375rem;
-            padding-top: 0.125rem;
-            padding-bottom: 0.125rem;
-            text-transform: uppercase;
+  .command.command-name-${name} {
+    .command-method {
+      margin-right: 0.5rem;
+      border-radius: 0.125rem;
+      border: 1px solid ${hexColor};
+      padding: 0.125rem 0.375rem;
+      text-transform: uppercase;
+      background-color: ${hexColor}30;
+    }
 
-            border-color: rgb(${hex2rgb(yellow)} / 1);
-            background-color: rgb(${hex2rgb(yellow)} / 0.2);
-            color: rgb(${hex2rgb(yellow)} / 1) !important;
-        }
+    .command-message,
+    .command-method {
+      color: ${hexColor} !important;
+    }
+  }`
 
-        .command.command-name-ptf-STEP span.command-message{
-            color: rgb(${hex2rgb(yellow)} / 1);
-            font-weight: normal;
-        }
-
-        .command.command-name-ptf-STEP span.command-message strong,
-        .command.command-name-ptf-STEP span.command-message em { 
-            color: rgb(${hex2rgb(yellow)} / 1);
-        }
-    ` // @ts-expect-error: Object is possibly 'null'.
-  Cypress.$(window.top.document.head).append(logStyle)
+  Cypress.$(topDocumentHead).append(logStyle)
 }
 
 Cypress.Commands.add('stepLog', ({ message }) => {
-  createCustomLog()
+  createCustomLogStyles('STEP', '#fbbf24') //  Yellow
   Cypress.log({
-    name: `ptf-STEP`,
-    displayName: `STEP`,
+    name: `STEP`,
     message,
+  })
+})
+
+Cypress.Commands.add('a11yLog', (violations) => {
+  createCustomLogStyles('A11Y', '#ffa079') //  Orange
+
+  violations.map((violation) => {
+    Cypress.log({
+      name: `A11Y`,
+      message: violation.description,
+      consoleProps: () => violation,
+    })
   })
 })
 
@@ -172,6 +166,7 @@ Cypress.Commands.add(
           message: JSON.stringify(response),
         })
         // We try to wait before doing the call again
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(4000)
         cy.sandboxCall(method, url, onRequest, false)
       }

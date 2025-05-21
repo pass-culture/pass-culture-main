@@ -66,7 +66,7 @@ function doLogin(
   login: string,
   setDefaultCookieOrejime: boolean = true,
   retry: boolean = true
-): Cypress.Chainable<any> {
+): Cypress.Chainable {
   const password = 'user@AZERTY123'
   cy.stepLog({ message: `I am logged in with account ${login}` })
   cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
@@ -86,8 +86,9 @@ function doLogin(
   cy.get('#password').type(password)
   cy.get('button[type=submit]').click()
 
-  return cy.wait('@signinUser').then(({ request, response }) => {
+  return cy.wait('@signinUser').then(({ response }) => {
     if (response?.statusCode !== 200 && retry) {
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       return cy.wait(5000).then(() => {
         return doLogin(login, setDefaultCookieOrejime, false)
       })

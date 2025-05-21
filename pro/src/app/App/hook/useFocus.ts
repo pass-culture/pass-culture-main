@@ -12,7 +12,7 @@ export const useFocus = (): void => {
     if (backToNav) {
       backToNav.focus()
     } else {
-      document.getElementById('unaccessible-top-page')?.focus()
+      document.getElementById('got-to-main-content')?.focus()
     }
   }, [location.pathname])
 }

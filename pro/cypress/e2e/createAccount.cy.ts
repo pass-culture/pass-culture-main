@@ -3,6 +3,8 @@ import { logInAndGoToPage } from '../support/helpers.ts'
 describe('Account creation', () => {
   beforeEach(() => {
     cy.visit('/inscription')
+    cy.injectAxe({ axeCorePath: './node_modules/axe-core/axe.min.js' })
+
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/clear_email_list',
@@ -23,6 +25,7 @@ describe('Account creation', () => {
     cy.findByLabelText('Mot de passe *').type('user@AZERTY123')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
 
+    cy.checkA11y(undefined, undefined, cy.a11yLog)
     cy.stepLog({ message: 'I submit' })
     cy.intercept({ method: 'POST', url: '/users/signup' }).as('signupUser')
     cy.findByText('Créer mon compte').click()

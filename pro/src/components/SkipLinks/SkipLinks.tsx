@@ -30,6 +30,7 @@ export const SkipLinks = ({
             icon={fullNextIcon}
             className={styles['skip-list-button']}
             variant={ButtonVariant.QUATERNARY}
+            id="got-to-main-content"
           >
             Aller au contenu
           </ButtonLink>
