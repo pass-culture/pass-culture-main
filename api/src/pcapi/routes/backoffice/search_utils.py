@@ -1,17 +1,29 @@
+import dataclasses
 import datetime
 import re
 import typing
 
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.users import models as users_models
 from pcapi.models.pc_object import BaseQuery
+from pcapi.models.pc_object import PcObject
 from pcapi.routes.backoffice.forms import search as search_forms
 
 
 class UrlForPartial(typing.Protocol):
     def __call__(self, page: int) -> str: ...
+
+
+@dataclasses.dataclass
+class PaginatedQuery:
+    items: list[PcObject]
+    page: int
+    pages: int
+    per_page: int
+    total: int
 
 
 PAGINATION_STEPS = 7
@@ -32,6 +44,29 @@ def pagination_links(partial_func: UrlForPartial, current_page: int, pages_total
         start_page = max(start_page - distance, 1)
 
     return [(page, partial_func(page=page)) for page in range(start_page, end_page + 1)]
+
+
+def paginate(query: BaseQuery, page: int = 1, per_page: int = 20) -> PaginatedQuery:
+    if page < 1:
+        raise NotFound()
+
+    offset = (page - 1) * per_page
+    total = query.count()
+
+    if offset:
+        query = query.offset(offset)
+
+    items = query.limit(per_page).all()
+
+    if total and not items:
+        raise NotFound()
+    return PaginatedQuery(
+        items=items,
+        page=page,
+        pages=(total // per_page + (1 if (total % per_page) else 0)),
+        per_page=per_page,
+        total=total,
+    )
 
 
 def split_terms(search_query: str) -> list[str]:

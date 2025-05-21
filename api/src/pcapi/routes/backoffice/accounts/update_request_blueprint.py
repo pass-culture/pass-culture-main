@@ -39,6 +39,7 @@ from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
@@ -220,7 +221,11 @@ def list_account_update_requests() -> utils.BackofficeResponse:
     query = _get_filtered_account_update_requests(form)
     query = query.order_by(users_models.UserAccountUpdateRequest.dateLastStatusUpdate.desc())
 
-    paginated_rows = query.paginate(page=int(form.page.data), per_page=int(form.limit.data))
+    paginated_rows = paginate(
+        query=query,
+        page=int(form.page.data),
+        per_page=int(form.limit.data),
+    )
     next_page = partial(url_for, ".list_account_update_requests", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(next_page, int(form.page.data), paginated_rows.pages)
     form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)

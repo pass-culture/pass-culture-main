@@ -22,6 +22,7 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms.empty import EmptyForm
+from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.utils import permission_required
 from pcapi.utils import string as string_utils
 
@@ -101,7 +102,8 @@ def list_chronicles() -> utils.BackofficeResponse:
 
     query = query.order_by(chronicles_models.Chronicle.id.desc())
 
-    paginated_chronicles = query.paginate(
+    paginated_chronicles = paginate(
+        query=query,
         page=int(form.page.data),
         per_page=int(form.limit.data),
     )

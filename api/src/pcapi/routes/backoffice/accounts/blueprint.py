@@ -59,6 +59,7 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
@@ -187,7 +188,11 @@ def search_public_accounts() -> utils.BackofficeResponse:
     users_query = search_utils.apply_filter_on_beneficiary_status(users_query, form.filter.data)
     users_query = _load_suspension_info(users_query)
     users_query = _load_current_deposit_data(users_query, join_needed=False)
-    paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
+    paginated_rows = paginate(
+        query=users_query,
+        page=form.page.data,
+        per_page=form.per_page.data,
+    )
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
     # (so it would select count twice: in users.count() and in users.paginate)
@@ -195,7 +200,11 @@ def search_public_accounts() -> utils.BackofficeResponse:
         users_query = users_api.search_public_account_in_history_email(form.q.data)
         users_query = _load_suspension_info(users_query)
         users_query = _load_current_deposit_data(users_query)
-        paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
+        paginated_rows = paginate(
+            users_query,
+            page=form.page.data,
+            per_page=form.per_page.data,
+        )
 
     if paginated_rows.total == 1:
         return redirect(

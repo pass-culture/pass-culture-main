@@ -17,6 +17,7 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.utils.clean_accents import clean_accents
 
 from . import forms as criteria_forms
@@ -58,7 +59,8 @@ def list_tags() -> utils.BackofficeResponse:
             )
         code = 200
 
-    paginated_tags = query.order_by(criteria_models.Criterion.name).paginate(
+    paginated_tags = paginate(
+        query=query.order_by(criteria_models.Criterion.name),
         page=int(form.page.data),
         per_page=int(form.per_page.data),
     )
