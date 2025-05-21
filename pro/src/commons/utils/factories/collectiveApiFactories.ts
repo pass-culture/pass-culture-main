@@ -59,7 +59,6 @@ export const collectiveOfferFactory = (
       },
     ],
     isEditable: true,
-    isEditableByPcPro: true,
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,

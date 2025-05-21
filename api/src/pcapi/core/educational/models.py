@@ -728,10 +728,6 @@ class CollectiveOffer(
         ]
 
     @property
-    def isEditableByPcPro(self) -> bool:
-        return self.isEditable and not self.isPublicApi
-
-    @property
     def isVisibilityEditable(self) -> bool:
         is_editable = self.isEditable
         if self.collectiveStock:
@@ -1311,10 +1307,6 @@ class CollectiveOfferTemplate(
             offer_mixin.CollectiveOfferStatus.PENDING,
             offer_mixin.CollectiveOfferStatus.REJECTED,
         ]
-
-    @property
-    def isEditableByPcPro(self) -> bool:
-        return self.isEditable
 
     @hybrid_property
     def hasEndDatePassed(self) -> bool:
