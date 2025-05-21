@@ -19,7 +19,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
@@ -259,11 +258,12 @@ export const FormOfferType = ({
           </FormLayout.Row>
         )}
         <FormLayout.Row>
-          <TimePicker
-            classNameInput={styles['duration-input']}
+          <TextInput
             isOptional
+            classNameInput={styles['duration-input']}
             label="Indiquez la durée de l’évènement"
             name="duration"
+            description="Format : HH:MM"
             disabled={disableForm}
           />
         </FormLayout.Row>
