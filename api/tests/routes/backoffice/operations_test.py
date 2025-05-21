@@ -251,7 +251,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert event.externalId.encode() in response.data
         assert descriptions["Date d'import"] == format_date(event.dateCreated, "%d/%m/%Y")
         assert descriptions["Date de l'opération"] == format_date(event.eventDate, "%d/%m/%Y")
-        assert str(len(event.responses)) == descriptions["Candidats total"]
+        assert str(len(event.responses)) == descriptions["Nombre de candidats total"]
         assert descriptions["Nouvelles candidatures"] == "1"
         assert descriptions["Candidatures en attente"] == "0"
         assert descriptions["Candidatures à contacter"] == "1"
