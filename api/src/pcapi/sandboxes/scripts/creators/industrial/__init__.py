@@ -13,7 +13,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_gdpr_user_extracts impor
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import create_industrial_admin_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import create_fraudulent_bookings
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import create_industrial_bookings
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings_for_statistics import (
     create_industrial_bookings_for_statistics,
@@ -202,8 +201,6 @@ def save_industrial_sandbox() -> None:
 
     # should be the last function called to create invoices
     build_many_extra_invoices()
-
-    create_fraudulent_bookings()
 
     # run this last as we fill out missing user offerers
     create_user_offerers()
