@@ -21,9 +21,6 @@ describe('Navigation', () => {
   it('I should see the top of the page when changing page', () => {
     logInAndGoToPage(login, '/accueil')
 
-    cy.stepLog({ message: 'I close the collective budget information modal' })
-    cy.findAllByText('Fermer').click()
-
     cy.wait('@getVenue')
 
     cy.stepLog({ message: 'I scroll to my venue' })

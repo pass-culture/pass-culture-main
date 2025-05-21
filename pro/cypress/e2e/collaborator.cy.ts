@@ -27,9 +27,6 @@ describe('Collaborator list feature', () => {
   it('I can add a new collaborator and he receives an email invitation', () => {
     logInAndGoToPage(login, '/accueil')
 
-    cy.stepLog({ message: 'I close the collective budget information modal' })
-    cy.findAllByText('Fermer').click()
-
     cy.stepLog({ message: 'open collaborator page' })
     cy.findAllByText('Collaborateurs').click()
 

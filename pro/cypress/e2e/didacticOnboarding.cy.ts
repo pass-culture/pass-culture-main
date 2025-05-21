@@ -77,11 +77,6 @@ describe('Didactic Onboarding feature', () => {
         cy.wait('@getEligibility')
         cy.url().should('contain', '/accueil')
         homePageLoaded()
-
-        cy.stepLog({
-          message: 'I close the collective budget information modal',
-        })
-        cy.findAllByText('Fermer').click()
       }
     )
   })
