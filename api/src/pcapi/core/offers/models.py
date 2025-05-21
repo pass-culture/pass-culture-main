@@ -777,6 +777,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("offer_visa_idx", _extraData["visa"].astext)
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
     sa.Index("ix_offer_lastProviderId", lastProviderId, postgresql_where=lastProviderId.is_not(None))
+    sa.Index("ix_offer_publicationDatetime", publicationDatetime, postgresql_where=publicationDatetime.is_not(None))
+    sa.Index(
+        "ix_offer_bookingAllowedDatetime", bookingAllowedDatetime, postgresql_where=bookingAllowedDatetime.is_not(None)
+    )
 
     sa.Index("ix_offer_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
