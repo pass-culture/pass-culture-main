@@ -813,24 +813,30 @@ def edit_collective_offer_public(
         # Also update offerVenue to keep backward compatibility
         new_values["offerVenue"] = offer_venue_dict
 
+    # check domains and national program
+    domains_to_check = offer.domains
+    edit_domains = "domains" in new_values
+    if edit_domains:
+        domain_ids = new_values.pop("domains")
+        new_values["domains"] = get_educational_domains_from_ids(domain_ids)
+        domains_to_check = new_values["domains"]
+
+    program_id_to_check = offer.nationalProgramId
+    edit_national_program = "nationalProgramId" in new_values
+    if edit_national_program:
+        program_id_to_check = new_values["nationalProgramId"]
+
+    if (
+        edit_domains or edit_national_program
+    ) and feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
+        validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)
+
     # This variable is meant for Adage mailing
     updated_fields = []
     for key, value in new_values.items():
         updated_fields.append(key)
 
-        if key == "domains":
-            domains = educational_repository.get_educational_domains_from_ids(value)
-            if len(domains) != len(value):
-                raise exceptions.EducationalDomainsNotFound()
-
-            if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-                validation.validate_national_program(
-                    national_program_id=new_values.get("nationalProgramId"),
-                    domains=domains,
-                    check_program_is_active=False,  # do not check if program is active so that existing offers with inactive program can still be patched
-                )
-            offer.domains = domains
-        elif key in ("educationalInstitutionId", "educationalInstitution"):
+        if key in ("educationalInstitutionId", "educationalInstitution"):
             if value is None:
                 continue
 

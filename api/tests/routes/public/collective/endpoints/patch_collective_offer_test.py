@@ -643,43 +643,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    def test_patch_offer_invalid_domains(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        domain = educational_factories.EducationalDomainFactory()
-        offer = educational_factories.PublishedCollectiveOfferFactory(
-            venue=venue, provider=venue_provider.provider, domains=[domain]
-        )
-
-        payload = {"domains": [0]}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{offer.id}", json=payload
-            )
-
-        assert response.status_code == 404
-        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
-        assert offer.domains[0].id == domain.id
-
-    def test_patch_offer_empty_domains(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-
-        payload = {"domains": []}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{offer.id}", json=payload
-            )
-
-        assert response.status_code == 400
-        assert response.json == {"domains": ["domains must have at least one value"]}
-
     def test_patch_offer_bad_institution(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -700,43 +663,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.json == {"educationalInstitutionId": ["Établissement scolaire non trouvé."]}
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.institutionId == educational_institution.id
-
-    def test_unknown_national_program(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-
-        offer = educational_factories.PublishedCollectiveOfferFactory(
-            venue=venue, provider=venue_provider.provider, nationalProgramId=None
-        )
-
-        payload = {"nationalProgramId": 0}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{offer.id}", json=payload
-            )
-
-        assert response.status_code == 400
-        assert response.json == {"nationalProgramId": ["Dispositif inconnu"]}
-        assert offer.nationalProgramId is None
-
-    def test_national_program_null(self, client):
-        key, venue_provider = self.setup_active_venue_provider()
-        client_with_token = client.with_explicit_token(key)
-        offer = educational_factories.CollectiveOfferFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            nationalProgram=educational_factories.NationalProgramFactory(),
-        )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-        assert offer.nationalProgramId is not None
-
-        payload = {"nationalProgramId": None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client_with_token.patch(f"/v2/collective/offers/{offer.id}", json=payload)
-
-        assert response.status_code == 200
-        assert offer.nationalProgramId is None
 
     def test_should_update_expired_booking(self, client):
         now = datetime.utcnow()
@@ -1854,3 +1780,221 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"global": "Cette action n'est pas autorisée car le statut de l'offre est ARCHIVED"}
+
+
+@pytest.mark.usefixtures("db_session")
+class DomainsAndNationalProgramTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/v2/collective/offers/{offer_id}"
+    endpoint_method = "patch"
+    default_path_params = {"offer_id": 1}
+
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
+        pass
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+        pass
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+        pass
+
+    def test_update_domains_unknown(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_domain = educational_factories.EducationalDomainFactory()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider, domains=[current_domain]
+        )
+
+        payload = {"domains": [0]}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_update_domains_empty(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_domain = educational_factories.EducationalDomainFactory()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider, domains=[current_domain]
+        )
+
+        payload = {"domains": []}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"domains": ["domains must have at least one value"]}
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_update_program_unknown(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider, nationalProgram=current_program
+        )
+
+        payload = {"nationalProgramId": 0}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif inconnu"]}
+        assert offer.nationalProgramId == current_program.id
+
+    def test_update_program_null(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=educational_factories.NationalProgramFactory(),
+        )
+
+        payload = {"nationalProgramId": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 200
+        assert offer.nationalProgramId is None
+
+    def test_update_program(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        new_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider, domains=[current_domain]
+        )
+
+        payload = {"nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 200
+        assert offer.nationalProgramId == new_program.id
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_update_domains(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=current_program,
+            domains=[current_domain],
+        )
+
+        payload = {"domains": [new_domain.id]}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 200
+        assert offer.nationalProgramId == current_program.id
+        assert [domain.id for domain in offer.domains] == [new_domain.id]
+
+    def test_update_domains_and_program(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_program = educational_factories.NationalProgramFactory()
+        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=current_program,
+            domains=[current_domain],
+        )
+
+        payload = {"domains": [new_domain.id], "nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 200
+        assert offer.nationalProgramId == new_program.id
+        assert [domain.id for domain in offer.domains] == [new_domain.id]
+
+    def test_update_program_inactive(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        new_program = educational_factories.NationalProgramFactory(isActive=False)
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program, new_program])
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=current_program,
+            domains=[current_domain],
+        )
+
+        payload = {"nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national inactif."]}
+        assert offer.nationalProgramId == current_program.id
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_update_program_invalid(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=current_program,
+            domains=[current_domain],
+        )
+
+        payload = {"nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national non valide."]}
+        assert offer.nationalProgramId == current_program.id
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_update_domains_invalid(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_domain = educational_factories.EducationalDomainFactory()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=current_program,
+            domains=[current_domain],
+        )
+
+        payload = {"domains": [new_domain.id]}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national non valide."]}
+        assert offer.nationalProgramId == current_program.id
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+
+    def test_update_domains_and_program_invalid(self, client):
+        key, venue_provider = self.setup_active_venue_provider()
+        current_program = educational_factories.NationalProgramFactory()
+        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_program = educational_factories.NationalProgramFactory()
+        new_domain = educational_factories.EducationalDomainFactory()
+        offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            nationalProgram=current_program,
+            domains=[current_domain],
+        )
+
+        payload = {"domains": [new_domain.id], "nationalProgramId": new_program.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_explicit_token(key).patch(f"/v2/collective/offers/{offer.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"nationalProgramId": ["Dispositif national non valide."]}
+        assert [domain.id for domain in offer.domains] == [current_domain.id]
+        assert offer.nationalProgramId == current_program.id

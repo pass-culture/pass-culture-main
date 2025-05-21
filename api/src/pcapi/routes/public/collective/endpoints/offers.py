@@ -226,12 +226,12 @@ def post_collective_offer_public(
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
     except educational_exceptions.InactiveNationalProgram:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
+
+    # dates errors
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise api_errors.ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
         )
-
-    # dates errors
     except educational_exceptions.StartEducationalYearMissing:
         raise api_errors.ApiErrors(
             errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400
@@ -480,12 +480,12 @@ def patch_collective_offer_public(
         raise api_errors.ApiErrors(
             errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400
         )
+
+    # dates errors
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise api_errors.ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
         )
-
-    # dates errors
     except educational_exceptions.StartEducationalYearMissing:
         raise api_errors.ApiErrors(
             errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400
