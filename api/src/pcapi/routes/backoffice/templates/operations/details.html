@@ -19,6 +19,7 @@
 {% endmacro %}
 {% set can_manage_event = has_permission("MANAGE_SPECIAL_EVENTS") %}
 {% set rows_count = rows.total %}
+{% set compact_display = True %}
 {% set pagination = True %}
 {% set search_block = build_filters_form_ng(response_form, dst_response) %}
 {% set before_table = self.before_table() %}
@@ -40,7 +41,7 @@
 {% endblock %}
 {% block before_table %}
   <div>
-    <h2>Candidatures</h2>
+    <h3>Candidatures</h3>
     <hr />
   </div>
 {% endblock before_table %}
@@ -259,19 +260,19 @@
     {% call description_detail_vertical("Nombre de candidats total") %}
       {{ stats.total }}
     {% endcall %}
-    {% call description_detail_vertical("Nombre de nouvelles candidatures") %}
+    {% call description_detail_vertical("Nouvelles candidatures") %}
       {{ stats.new }}
     {% endcall %}
-    {% call description_detail_vertical("Nombre de candidatures en attente") %}
+    {% call description_detail_vertical("Candidatures en attente") %}
       {{ stats.waiting }}
     {% endcall %}
-    {% call description_detail_vertical("Nombre de candidatures à contacter") %}
+    {% call description_detail_vertical("Candidatures à contacter") %}
       {{ stats.to_contact }}
     {% endcall %}
-    {% call description_detail_vertical("Nombre de candidatures confirmées") %}
+    {% call description_detail_vertical("Candidatures confirmées") %}
       {{ stats.validated }}
     {% endcall %}
-    {% call description_detail_vertical("Nombre de candidatures de backup") %}
+    {% call description_detail_vertical("Candidatures de backup") %}
       {{ stats.backup }}
     {% endcall %}
     <hr />
