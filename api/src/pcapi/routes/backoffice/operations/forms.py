@@ -135,3 +135,10 @@ class UpdateResponseStatusForm(utils.PCForm):
         ),
         coerce=models.SpecialEventResponseStatus,
     )
+
+
+class UpdateEventDate(utils.PCForm):
+    date = fields.PCDateField(
+        "Date",
+        validators=(wtforms.validators.DataRequired("La date est obligatoire"),),
+    )

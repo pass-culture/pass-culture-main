@@ -352,12 +352,7 @@ def set_response_status(special_event_id: int, response_id: int) -> utils.Backof
 )
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def get_batch_update_responses_status_form(special_event_id: int, response_status: str) -> utils.BackofficeResponse:
-    event = (
-        db.session.query(operations_models.SpecialEvent.id)
-        .filter_by(id=special_event_id)
-        .with_entities(operations_models.SpecialEvent.id)
-        .one_or_none()
-    )
+    event = db.session.query(operations_models.SpecialEvent.id).filter_by(id=special_event_id).one_or_none()
     if not event:
         raise NotFound()
 
@@ -389,7 +384,6 @@ def batch_validate_responses_status(special_event_id: int, response_status: str)
     event = (
         db.session.query(operations_models.SpecialEvent.id)
         .filter(operations_models.SpecialEvent.id == special_event_id)
-        .with_entities(operations_models.SpecialEvent.id)
         .one_or_none()
     )
 
@@ -413,6 +407,108 @@ def batch_validate_responses_status(special_event_id: int, response_status: str)
     )
 
     flash(f'Les candidatures ont été passées à "{format_special_event_response_status_str(new_status)}".', "success")
+    return redirect(
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
+        303,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/update-event-date", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_update_date_event(special_event_id: int) -> utils.BackofficeResponse:
+    event = db.session.query(operations_models.SpecialEvent.eventDate).filter_by(id=special_event_id).one_or_none()
+    if not event:
+        raise NotFound()
+
+    form = operations_forms.UpdateEventDate()
+    form.date.data = event.eventDate
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(
+            "backoffice_web.operations.update_date_event",
+            special_event_id=special_event_id,
+        ),
+        div_id="update-event-date-modal",
+        title="Modifier la date de l'évènement",
+        button_text="Valider",
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/update-event-date", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def update_date_event(special_event_id: int) -> utils.BackofficeResponse:
+    event = (
+        db.session.query(operations_models.SpecialEvent.id)
+        .filter(operations_models.SpecialEvent.id == special_event_id)
+        .one_or_none()
+    )
+    if not event:
+        raise NotFound()
+
+    form = operations_forms.UpdateEventDate()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    db.session.query(operations_models.SpecialEvent).filter(
+        operations_models.SpecialEvent.id == special_event_id
+    ).update({"eventDate": form.date.data}, synchronize_session=False)
+
+    flash("La date de l'évènement a été mise à jour", "success")
+    return redirect(
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
+        303,
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/update-end-import-date", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_update_end_import_date_event(special_event_id: int) -> utils.BackofficeResponse:
+    event = db.session.query(operations_models.SpecialEvent.endImportDate).filter_by(id=special_event_id).one_or_none()
+    if not event:
+        raise NotFound()
+
+    form = operations_forms.UpdateEventDate()
+    form.date.data = event.endImportDate
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(
+            "backoffice_web.operations.update_end_import_date",
+            special_event_id=special_event_id,
+        ),
+        div_id="update-end-import-date-modal",
+        title="Modifier la date de clôture des candidatures",
+        button_text="Valider",
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/update-end-import-date", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def update_end_import_date(special_event_id: int) -> utils.BackofficeResponse:
+    event = (
+        db.session.query(operations_models.SpecialEvent.id)
+        .filter(operations_models.SpecialEvent.id == special_event_id)
+        .one_or_none()
+    )
+    if not event:
+        raise NotFound()
+
+    form = operations_forms.UpdateEventDate()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    db.session.query(operations_models.SpecialEvent).filter(
+        operations_models.SpecialEvent.id == special_event_id
+    ).update({"endImportDate": form.date.data}, synchronize_session=False)
+
+    flash("La date de fin d'import des candidatures a été mise à jour", "success")
     return redirect(
         request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
         303,
