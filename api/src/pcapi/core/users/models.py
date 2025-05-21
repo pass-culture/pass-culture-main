@@ -1114,6 +1114,12 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
             and not (set(self.flags) & {UserAccountUpdateFlag.WAITING_FOR_CORRECTION})
         )
 
+    @property
+    def can_be_refused(self) -> bool:
+        return bool(
+            self.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going)
+        )
+
 
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)

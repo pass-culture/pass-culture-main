@@ -77,6 +77,13 @@
                          data-bs-target="#ask-for-correction-{{ update_request.dsApplicationId }}">Photo illisible</a>
                     </li>
                   {% endif %}
+                  {% if update_request.can_be_refused %}
+                    <li class="dropdown-item p-0">
+                      <a class="btn btn-sm d-block w-100 text-start px-3"
+                         data-bs-toggle="modal"
+                         data-bs-target="#identity-theft-{{ update_request.dsApplicationId }}">Usurpation d'identité</a>
+                    </li>
+                  {% endif %}
                 </ul>
               </div>
             </div>
@@ -85,6 +92,7 @@
             {% endif %}
             {% if update_request.can_be_corrected %}
               {{ build_lazy_modal(url_for("backoffice_web.account_update.get_ask_for_correction_form", ds_application_id=update_request.dsApplicationId) , "ask-for-correction-" + update_request.dsApplicationId|string, "lazy", "xl") }}
+              {{ build_lazy_modal(url_for("backoffice_web.account_update.get_identity_theft_form", ds_application_id=update_request.dsApplicationId) , "identity-theft-" + update_request.dsApplicationId|string, "lazy", "xl") }}
             {% endif %}
           {% endif %}
         </td>

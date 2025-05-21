@@ -87,6 +87,7 @@ class TransactionalEmail(Enum):
     PERSONAL_DATA_UPDATED_FROM_BACKOFFICE = models.Template(id_prod=1393, id_not_prod=169, use_priority_queue=True)
     UPDATE_REQUEST_MARKED_WITHOUT_CONTINUATION = models.Template(id_prod=1442, id_not_prod=174)
     UPDATE_REQUEST_ASK_FOR_CORRECTION = models.Template(id_prod=1441, id_not_prod=175)
+    UPDATE_REQUEST_IDENTITY_THEFT = models.Template(id_prod=1569, id_not_prod=200)
     UPDATE_REQUEST_NO_USER_FOUND = models.Template(id_prod=1443, id_not_prod=198)
 
     # UBBLE KO REMINDER
