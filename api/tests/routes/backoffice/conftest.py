@@ -157,6 +157,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.CONNECT_AS_PRO,
         perm_models.Permissions.VALIDATE_OFFERER,
+        perm_models.Permissions.READ_OFFERS,
     ],
     "product_management": [
         perm_models.Permissions.FEATURE_FLIPPING,
@@ -300,6 +301,14 @@ def support_pro_n2_fixture(roles_with_permissions: None) -> users_models.User:
 def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.AdminFactory()
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
+    db.session.flush()
+    return user
+
+
+@pytest.fixture(scope="function", name="homologation_admin")
+def homologation_admin_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.AdminFactory()
+    backoffice_api.upsert_roles(user, {perm_models.Roles.HOMOLOGATION})
     db.session.flush()
     return user
 
