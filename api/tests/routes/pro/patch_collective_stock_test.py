@@ -11,12 +11,12 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
+from pcapi.serialization.educational.adage.shared import EducationalBookingEdition
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

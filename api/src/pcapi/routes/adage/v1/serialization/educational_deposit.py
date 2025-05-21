@@ -1,6 +1,6 @@
 import typing
 
-from pcapi.core.educational.schemas import AdageBaseResponseModel
+from pcapi.serialization.educational.adage.shared import AdageBaseResponseModel
 
 
 if typing.TYPE_CHECKING:

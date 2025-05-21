@@ -8,7 +8,6 @@ from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as booking_api
-from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
@@ -25,6 +24,7 @@ from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.educational.adage.shared import RedactorInformation
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required

@@ -8,13 +8,13 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
-from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.adage.v1.serialization import prebooking
+from pcapi.serialization.educational.adage.shared import EducationalBookingEdition
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

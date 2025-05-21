@@ -15,12 +15,10 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
-from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -30,13 +28,14 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import collective_bookings_serialize
+from pcapi.serialization.educational.adage import shared as adage_serialize
 
 
 logger = logging.getLogger(__name__)
 
 
 def book_collective_offer(
-    redactor_informations: RedactorInformation, stock_id: int
+    redactor_informations: adage_serialize.RedactorInformation, stock_id: int
 ) -> educational_models.CollectiveBooking:
     redactor = educational_repository.find_or_create_redactor(redactor_informations)
 
@@ -87,7 +86,7 @@ def book_collective_offer(
     return booking
 
 
-def _notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> None:
+def _notify_prebooking(data: adage_serialize.EducationalBookingResponse) -> None:
     try:
         adage_client.notify_prebooking(data=data)
     except AdageException as adage_error:
@@ -482,7 +481,7 @@ def update_collective_bookings_for_new_institution(
     db.session.flush()
 
 
-def notify_redactor_that_booking_has_been_cancelled(booking: educational_schemas.EducationalBookingResponse) -> None:
+def notify_redactor_that_booking_has_been_cancelled(booking: adage_serialize.EducationalBookingResponse) -> None:
     try:
         adage_client.notify_booking_cancellation_by_offerer(data=booking)
     except exceptions.AdageException as adage_error:

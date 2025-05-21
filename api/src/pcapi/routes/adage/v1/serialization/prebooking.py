@@ -8,17 +8,16 @@ from pydantic.v1.fields import Field
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import schemas as educational_schemas
-from pcapi.core.educational.adage_backends import serialize as adage_serialize
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.educational.adage import shared as adage_serialize
 
 
-class MergeInstitutionPrebookingsQueryModel(educational_schemas.AdageBaseResponseModel):
+class MergeInstitutionPrebookingsQueryModel(adage_serialize.AdageBaseResponseModel):
     source_uai: str
     destination_uai: str
     bookings_ids: list[int]
@@ -31,14 +30,14 @@ class GetEducationalBookingsRequest(BaseModel):
         title = "Prebookings query filters"
 
 
-class EducationalBookingsResponse(educational_schemas.AdageBaseResponseModel):
-    prebookings: list[educational_schemas.EducationalBookingResponse]
+class EducationalBookingsResponse(adage_serialize.AdageBaseResponseModel):
+    prebookings: list[adage_serialize.EducationalBookingResponse]
 
     class Config:
         title = "List of prebookings"
 
 
-class EducationalBookingPerYearResponse(educational_schemas.AdageBaseResponseModel):
+class EducationalBookingPerYearResponse(adage_serialize.AdageBaseResponseModel):
     id: int
     UAICode: str
     status: EducationalBookingStatus | CollectiveBookingStatus
@@ -89,7 +88,7 @@ def get_collective_bookings_per_year_response(
     return EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
 
-class EducationalBookingsPerYearResponse(educational_schemas.AdageBaseResponseModel):
+class EducationalBookingsPerYearResponse(adage_serialize.AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
 
 
@@ -100,7 +99,7 @@ class GetAllBookingsPerYearQueryModel(BaseModel):
 
 def serialize_collective_bookings(
     educational_bookings: list[CollectiveBooking],
-) -> list[educational_schemas.EducationalBookingResponse]:
+) -> list[adage_serialize.EducationalBookingResponse]:
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:
         serialized_educational_bookings.append(serialize_collective_booking(educational_booking))
@@ -110,12 +109,12 @@ def serialize_collective_bookings(
 
 def serialize_collective_booking(
     collective_booking: CollectiveBooking,
-) -> educational_schemas.EducationalBookingResponse:
+) -> adage_serialize.EducationalBookingResponse:
     stock = collective_booking.collectiveStock
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
-    return educational_schemas.EducationalBookingResponse(
+    return adage_serialize.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=adage_serialize.get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
@@ -181,8 +180,8 @@ def get_collective_booking_status(
     return collective_booking.status.value
 
 
-def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> educational_schemas.Contact:
-    return educational_schemas.Contact(
+def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> adage_serialize.Contact:
+    return adage_serialize.Contact(
         email=offer.contactEmail,
         phone=offer.contactPhone,
     )
@@ -204,12 +203,12 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
 
 def serialize_reimbursement_notification(
     collective_booking: CollectiveBooking, reason: str, value: decimal.Decimal, details: str
-) -> educational_schemas.AdageReimbursementNotification:
+) -> adage_serialize.AdageReimbursementNotification:
     stock = collective_booking.collectiveStock
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
-    return educational_schemas.AdageReimbursementNotification(
+    return adage_serialize.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=adage_serialize.get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,

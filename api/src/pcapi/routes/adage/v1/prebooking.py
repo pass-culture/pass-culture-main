@@ -3,21 +3,22 @@ import logging
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.institution import create_missing_educational_institution_from_adage
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
-from pcapi.routes.adage.v1.serialization import constants
 from pcapi.routes.adage.v1.serialization import prebooking as prebooking_serialization
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.educational.adage import shared as adage_serialize
 
 from . import blueprint
 
 
 logger = logging.getLogger(__name__)
+
+EDUCATIONAL_BOOKING_NOT_FOUND = "EDUCATIONAL_BOOKING_NOT_FOUND"
 
 
 @blueprint.adage_v1.route(educational_institution_path + "/prebookings", methods=["GET"])
@@ -44,12 +45,12 @@ def get_educational_bookings(
 @atomic()
 @spectree_serialize(
     api=blueprint.api,
-    response_model=educational_schemas.EducationalBookingResponse,
+    response_model=adage_serialize.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings",),
 )
 @adage_api_key_required
-def confirm_prebooking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
+def confirm_prebooking(educational_booking_id: int) -> adage_serialize.EducationalBookingResponse:
     try:
         educational_booking = educational_api_booking.confirm_collective_booking(educational_booking_id)
     except exceptions.InsufficientFund:
@@ -63,7 +64,7 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
     except bookings_exceptions.ConfirmationLimitDateHasPassed:
         raise ApiErrors({"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}, status_code=422)
     except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
+        raise ApiErrors({"code": EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalDepositNotFound:
         raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
 
@@ -74,12 +75,12 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
 @atomic()
 @spectree_serialize(
     api=blueprint.api,
-    response_model=educational_schemas.EducationalBookingResponse,
+    response_model=adage_serialize.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings", "change bookings"),
 )
 @adage_api_key_required
-def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.EducationalBookingResponse:
+def refuse_pre_booking(educational_booking_id: int) -> adage_serialize.EducationalBookingResponse:
     """Refuse a prebooking confirmation
 
     Can only work if prebooking is confirmed or pending,
@@ -87,7 +88,7 @@ def refuse_pre_booking(educational_booking_id: int) -> educational_schemas.Educa
     try:
         educational_booking = educational_api_booking.refuse_collective_booking(educational_booking_id)
     except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
+        raise ApiErrors({"code": EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalBookingNotRefusable:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
     except exceptions.CollectiveBookingAlreadyCancelled:

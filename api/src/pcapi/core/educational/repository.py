@@ -13,7 +13,6 @@ from sqlalchemy.sql.expression import extract
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -26,6 +25,10 @@ from pcapi.models import offer_mixin
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.utils.clean_accents import clean_accents
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.serialization.educational.adage.shared import RedactorInformation
 
 
 COLLECTIVE_BOOKING_STATUS_LABELS = {
@@ -308,7 +311,7 @@ def find_redactor_by_email(redactor_email: str) -> educational_models.Educationa
     )
 
 
-def find_or_create_redactor(information: RedactorInformation) -> educational_models.EducationalRedactor:
+def find_or_create_redactor(information: "RedactorInformation") -> educational_models.EducationalRedactor:
     redactor = find_redactor_by_email(information.email)
     if redactor:
         return redactor

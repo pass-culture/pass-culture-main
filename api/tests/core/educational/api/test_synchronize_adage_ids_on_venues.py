@@ -11,10 +11,10 @@ from pydantic.v1 import parse_obj_as
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.educational.api import adage as educational_api_adage
-from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
+from pcapi.serialization.educational.adage.shared import AdageCulturalPartners
 
 
 BASE_DATA = {

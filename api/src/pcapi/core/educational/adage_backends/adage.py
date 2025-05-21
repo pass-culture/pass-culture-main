@@ -9,9 +9,8 @@ from pydantic.v1 import parse_obj_as
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
-from pcapi.core.educational import schemas as educational_schemas
-from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.serialization.educational.adage import shared as adage_serialize
 from pcapi.utils import requests
 
 
@@ -97,13 +96,13 @@ class AdageHttpClient(AdageClient):
 
         return api_response
 
-    def notify_prebooking(self, data: educational_schemas.EducationalBookingResponse) -> None:
+    def notify_prebooking(self, data: adage_serialize.EducationalBookingResponse) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation", data=data.json())
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise self._get_api_adage_exception(api_response, "Error posting new prebooking to Adage API")
 
-    def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingEdition) -> None:
+    def notify_offer_or_stock_edition(self, data: adage_serialize.EducationalBookingEdition) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation-edit", data=data.json())
 
         if api_response.status_code != 201:
@@ -121,7 +120,7 @@ class AdageHttpClient(AdageClient):
 
         return parse_obj_as(list[AdageVenue], api_response.json())
 
-    def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
+    def notify_booking_cancellation_by_offerer(self, data: adage_serialize.EducationalBookingResponse) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation-annule", data=data.json())
 
         if api_response.status_code != 201:
@@ -145,7 +144,7 @@ class AdageHttpClient(AdageClient):
 
         return api_response.json()
 
-    def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
+    def notify_institution_association(self, data: adage_serialize.AdageCollectiveOffer) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-assoc", data=data.json())
 
         if api_response.status_code != 201:
@@ -160,7 +159,7 @@ class AdageHttpClient(AdageClient):
             if not is_adage_institution_without_email(api_response):
                 raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-    def get_cultural_partner(self, siret: str) -> educational_schemas.AdageCulturalPartner:
+    def get_cultural_partner(self, siret: str) -> adage_serialize.AdageCulturalPartner:
         api_response = self._make_get_request(url=f"{self.base_url}/v1/etablissement-culturel/{siret}")
 
         if api_response.status_code == 404:
@@ -173,9 +172,9 @@ class AdageHttpClient(AdageClient):
         if len(response_content) == 0:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
 
-        return parse_obj_as(educational_schemas.AdageCulturalPartner, response_content[0])
+        return parse_obj_as(adage_serialize.AdageCulturalPartner, response_content[0])
 
-    def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[adage_serialize.AdageEducationalInstitution]:
         template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
         page = 1
         institutions = []
@@ -196,7 +195,7 @@ class AdageHttpClient(AdageClient):
             institutions.extend(response_json)
             page += 1
 
-        return parse_obj_as(list[serialize.AdageEducationalInstitution], institutions)
+        return parse_obj_as(list[adage_serialize.AdageEducationalInstitution], institutions)
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
         api_response = self._make_get_request(url=f"{self.base_url}/v1/redacteurs-projets/{uai}")
@@ -223,13 +222,13 @@ class AdageHttpClient(AdageClient):
 
         return redactors
 
-    def notify_reimburse_collective_booking(self, data: educational_schemas.AdageReimbursementNotification) -> None:
+    def notify_reimburse_collective_booking(self, data: adage_serialize.AdageReimbursementNotification) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/reservation-remboursement", data=data.json())
 
         if api_response.status_code != 201:
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-    def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
+    def notify_redactor_when_collective_request_is_made(self, data: adage_serialize.AdageCollectiveRequest) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-vitrine", data=data.json())
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
