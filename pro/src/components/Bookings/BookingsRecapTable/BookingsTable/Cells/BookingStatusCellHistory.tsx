@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { format } from 'date-fns-tz'
 
 import {
@@ -19,12 +18,14 @@ const computeDateForStatus = (
 ) => (item.date ? format(toDateStrippedOfTimezone(item.date), dateFormat) : '-')
 
 export interface BookingStatusCellHistoryProps {
+  index: number
   bookingStatusHistory:
     | BookingRecapResponseBookingStatusHistoryModel[]
     | BookingStatusHistoryResponseModel[]
 }
 
 export const BookingStatusCellHistory = ({
+  index,
   bookingStatusHistory,
 }: BookingStatusCellHistoryProps) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map((item) => {
@@ -36,31 +37,11 @@ export const BookingStatusCellHistory = ({
       return null
     }
 
-    if (bookingStatusHistory.length === 1) {
-      return (
-        <div key={displayInfoFromStatus.status}>
-          <span
-            className={cn(
-              styles['colored-disc'],
-              styles[displayInfoFromStatus.historyClassName]
-            )}
-          />
-          {`${displayInfoFromStatus.label} : ${computeDateForStatus(
-            item,
-            displayInfoFromStatus.dateFormat
-          )}`}
-        </div>
-      )
-    }
-
     return (
-      <li key={displayInfoFromStatus.status}>
-        <span
-          className={cn(
-            styles['colored-disc'],
-            styles[displayInfoFromStatus.historyClassName]
-          )}
-        />
+      <li
+        key={displayInfoFromStatus.status}
+        className={styles['booking-status-history-list-element']}
+      >
         {`${displayInfoFromStatus.label} : ${computeDateForStatus(
           item,
           displayInfoFromStatus.dateFormat
@@ -70,12 +51,19 @@ export const BookingStatusCellHistory = ({
   })
 
   return (
-    <div className={styles['booking-status-history']}>
-      {bookingStatusHistory.length > 1 ? (
-        <ul>{bookingsStatusHistoryItems}</ul>
-      ) : (
-        bookingsStatusHistoryItems
-      )}
-    </div>
+    <>
+      <div
+        id={`booking-status-history-title-${index}`}
+        className={styles['booking-status-history-title']}
+      >
+        Historique
+      </div>
+      <ul
+        aria-labelledby={`booking-status-history-title-${index}`}
+        className={styles['booking-status-history-list']}
+      >
+        {bookingsStatusHistoryItems}
+      </ul>
+    </>
   )
 }

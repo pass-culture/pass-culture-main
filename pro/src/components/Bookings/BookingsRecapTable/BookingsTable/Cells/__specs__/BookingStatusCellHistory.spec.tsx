@@ -7,8 +7,17 @@ import {
   BookingStatusCellHistoryProps,
 } from '../BookingStatusCellHistory'
 
-const renderBookingStatusCellHistory = (props: BookingStatusCellHistoryProps) =>
-  render(<BookingStatusCellHistory {...props} />)
+const renderBookingStatusCellHistory = (
+  props: Partial<BookingStatusCellHistoryProps> = {}
+) => {
+  const finalProps: BookingStatusCellHistoryProps = {
+    index: 0,
+    bookingStatusHistory: [],
+    ...props,
+  }
+
+  return render(<BookingStatusCellHistory {...finalProps} />)
+}
 
 describe('bookings status history cell', () => {
   it('should display the corresponding status and date when the offer is booked', () => {

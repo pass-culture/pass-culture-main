@@ -19,7 +19,11 @@ describe('DetailsButtonCell', () => {
       logEvent: mockLogEvent,
     }))
 
-    renderDetailsButtonCell({ isExpanded: false })
+    renderDetailsButtonCell({
+      isExpanded: false,
+      controlledId: 'testId',
+      onClick: vi.fn(),
+    })
 
     const detailsButton = screen.getByRole('button', { name: 'Détails' })
     await userEvent.click(detailsButton)

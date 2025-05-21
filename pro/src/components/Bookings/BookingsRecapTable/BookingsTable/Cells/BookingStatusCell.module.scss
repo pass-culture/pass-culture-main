@@ -7,10 +7,7 @@
   position: relative;
   border: none;
   border-radius: rem.torem(4px);
-
-  &:hover {
-    cursor: pointer;
-  }
+  width: fit-content;
 
   &:focus-visible {
     @include outline.focus-outline;
@@ -23,57 +20,4 @@
   color: var(--color-white);
   padding-right: rem.torem(4px);
   vertical-align: middle;
-}
-
-.bs-tooltip {
-  @include fonts.body-accent-xs;
-
-  line-height: rem.torem(19px);
-  text-align: left;
-  white-space: initial;
-  background-color: var(--color-background-default);
-  border-radius: rem.torem(4px);
-  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 var(--color-large-shadow);
-  color: var(--color-text-default);
-  display: block;
-  padding: rem.torem(16px) rem.torem(24px) rem.torem(16px) rem.torem(24px);
-  position: absolute;
-  top: rem.torem(30px);
-  width: rem.torem(340px);
-  right: 0;
-  z-index: 1;
-
-  @media (max-width: size.$tablet) {
-    translate: -50%;
-    right: unset;
-  }
-}
-
-.bs-offer-title {
-  @include fonts.body-accent;
-
-  display: block;
-}
-
-.bs-offer-amount {
-  @include fonts.body-accent-xs;
-
-  display: block;
-  margin-top: rem.torem(7px);
-}
-
-.bs-history-title {
-  @include fonts.body;
-
-  margin-top: rem.torem(16px);
-}
-
-.bs-history-label {
-  @include fonts.body;
-
-  margin-top: rem.torem(12px);
-}
-
-.bs-history-datetime {
-  margin: rem.torem(6px);
 }
