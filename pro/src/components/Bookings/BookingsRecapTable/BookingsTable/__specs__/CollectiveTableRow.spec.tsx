@@ -53,22 +53,6 @@ describe('CollectiveTableRow', () => {
     )
   })
 
-  it('should not render booking details if row is not expanded', () => {
-    const props: CollectiveTableRowProps = {
-      booking: collectiveBookingFactory({
-        stock: collectiveBookingCollectiveStockFactory(),
-        bookingStatus: 'booked',
-      }),
-      defaultOpenedBookingId: '',
-    }
-
-    renderCollectiveTableRow(props)
-
-    expect(
-      screen.queryByText('Métier Alexandre Bérard')
-    ).not.toBeInTheDocument()
-  })
-
   it('should render loader while fetching data', async () => {
     const props: CollectiveTableRowProps = {
       booking: collectiveBookingFactory({
@@ -90,6 +74,22 @@ describe('CollectiveTableRow', () => {
     await userEvent.click(screen.getByText(/Détails/))
 
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
+  })
+
+  it('should not render booking details if row is not expanded', () => {
+    const props: CollectiveTableRowProps = {
+      booking: collectiveBookingFactory({
+        stock: collectiveBookingCollectiveStockFactory(),
+        bookingStatus: 'booked',
+      }),
+      defaultOpenedBookingId: '',
+    }
+
+    renderCollectiveTableRow(props)
+
+    expect(
+      screen.queryByText('Métier Alexandre Bérard')
+    ).not.toBeInTheDocument()
   })
 
   it('should display booking details if row is expanded', async () => {

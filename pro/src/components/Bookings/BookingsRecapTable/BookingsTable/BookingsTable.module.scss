@@ -151,15 +151,22 @@
     }
   }
 
-  .details-content {
-    padding: rem.torem(24px) rem.torem(16px) 0 rem.torem(16px);
+  .details-cell {
+    padding-bottom: rem.torem(16px);
   }
 }
 
-// <td>
-.details-content {
-  padding: 0;
+.details-cell {
+  padding: 0 0 rem.torem(24px) rem.torem(8px);
   overflow: hidden;
+}
+
+.details-title {
+  @include fonts.body-accent;
+}
+
+.details-content {
+  @include fonts.body-xs;
 }
 
 .loader {

@@ -72,6 +72,13 @@ export const CollectiveActionButtons = ({
     }
   }
 
+  const hasDisplayedActioButtons =
+    isCancellable || bookingRecap.bookingStatus === BOOKING_STATUS.PENDING
+
+  if (!hasDisplayedActioButtons) {
+    return null
+  }
+
   return (
     <>
       <div className={styles['action-buttons']}>
