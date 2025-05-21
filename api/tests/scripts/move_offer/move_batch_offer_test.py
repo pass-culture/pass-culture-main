@@ -1,10 +1,11 @@
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.models import db
-from pcapi.scripts.move_offer.move_batch_offer import _move_collective_offers
+from pcapi.scripts.move_offer.move_batch_offer import _move_all_venue_offers
 from pcapi.scripts.move_offer.move_batch_offer import _move_price_category_label
 
 
@@ -41,19 +42,52 @@ def test_move_price_category_label_respect_unicity_constraint():
 
 
 @pytest.mark.features(VENUE_REGULARIZATION=True)
-def test_move_collective_offers():
-    collective_offer = educational_factories.CollectiveOfferFactory()
-    collective_offer2 = educational_factories.CollectiveOfferFactory(venue=collective_offer.venue)
-    collective_offer3 = educational_factories.CollectiveOfferFactory(venue=collective_offer.venue)
+def test_move_batch_offer():
+    origin_venue = offerers_factories.VenueFactory(siret=None, comment="coucou")
 
-    destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+    collective_offer = educational_factories.CollectiveOfferFactory(venue=origin_venue)
+    collective_offer2 = educational_factories.CollectiveOfferFactory(venue=origin_venue)
+    collective_offer3 = educational_factories.CollectiveOfferFactory(venue=origin_venue)
 
-    _move_collective_offers(collective_offer.venue, destination_venue)
-    db.session.commit()
+    offer = offers_factories.OfferFactory(venue=origin_venue)
+    offer2 = offers_factories.OfferFactory(venue=origin_venue)
+    offer3 = offers_factories.OfferFactory(venue=origin_venue)
+
+    destination_venue = offerers_factories.VenueFactory(managingOfferer=origin_venue.managingOfferer)
+
+    _move_all_venue_offers(not_dry=True, origin=origin_venue.id, destination=destination_venue.id)
 
     db.session.refresh(collective_offer)
     db.session.refresh(collective_offer2)
     db.session.refresh(collective_offer3)
     assert collective_offer.venue == destination_venue
-    assert collective_offer3.venue == destination_venue
     assert collective_offer2.venue == destination_venue
+    assert collective_offer3.venue == destination_venue
+
+    db.session.refresh(offer)
+    db.session.refresh(offer2)
+    db.session.refresh(offer3)
+    assert offer.venue == destination_venue
+    assert offer2.venue == destination_venue
+    assert offer3.venue == destination_venue
+
+    assert db.session.query(history_models.ActionHistory).count() == 3
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue.id)[0]
+        .actionType
+        == history_models.ActionType.VENUE_REGULARIZATION
+    )
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue.id)[1]
+        .actionType
+        == history_models.ActionType.VENUE_SOFT_DELETED
+    )
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == destination_venue.id)
+        .one()
+        .actionType
+        == history_models.ActionType.VENUE_REGULARIZATION
+    )
