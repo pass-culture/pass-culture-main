@@ -38,7 +38,7 @@ type AddressDataOptions = {
 }
 const DEFAULTS_OPTIONS: AddressDataOptions = {
   limit: 5,
-  onlyTypes: ['housenumber'], // Defaults will always list addresses with a number (e.g. "17 Rue de Paris …")
+  onlyTypes: ['housenumber', 'street'], // Defaults will always list streets + addresses with a number (e.g. "17 Rue de Paris …")
 }
 
 export const getDataFromAddressParts = async (

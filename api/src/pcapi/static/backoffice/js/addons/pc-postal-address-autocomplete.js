@@ -344,26 +344,28 @@ class PcPostalAddressAutocomplete extends PcAddOn {
   #setFeatures = ($autoComplete, features) => {
     const $dropdown = this.#getDropdown($autoComplete)
     $dropdown.innerHTML = '';
-    features.forEach(({ geometry, properties }) => {
-      const { label, city, postcode: postalCode, name: street, id: banId, citycode: inseeCode } = properties
-      const [longitude, latitude] = geometry.coordinates
-      const li = document.createElement('li')
-      const a = document.createElement('a')
-      a.classList.add('dropdown-item')
-      a.setAttribute('role', 'button')
-      a.dataset.street = street
-      a.dataset.banId = banId
-      a.dataset.inseeCode = inseeCode
-      a.dataset.postalCode = postalCode
-      a.dataset.name = name
-      a.dataset.city = city
-      a.dataset.latitude = latitude
-      a.dataset.longitude = longitude
-      a.dataset.isManualAddress = ""
-      a.onclick = this._onSelectFeature
-      a.append(label)
-      li.append(a)
-      $dropdown.append(li)
+    features
+      .filter(({ properties }) => ['housenumber', 'street'].includes(properties.type)) // Filter API results to exclude municipalities and localities results
+      .forEach(({ geometry, properties }) => {
+        const { label, city, postcode: postalCode, name: street, id: banId, citycode: inseeCode } = properties
+        const [longitude, latitude] = geometry.coordinates
+        const li = document.createElement('li')
+        const a = document.createElement('a')
+        a.classList.add('dropdown-item')
+        a.setAttribute('role', 'button')
+        a.dataset.street = street
+        a.dataset.banId = banId
+        a.dataset.inseeCode = inseeCode
+        a.dataset.postalCode = postalCode
+        a.dataset.name = name
+        a.dataset.city = city
+        a.dataset.latitude = latitude
+        a.dataset.longitude = longitude
+        a.dataset.isManualAddress = ""
+        a.onclick = this._onSelectFeature
+        a.append(label)
+        li.append(a)
+        $dropdown.append(li)
     })
     if (features.length) {
       $dropdown.classList.add('show')
