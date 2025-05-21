@@ -58,6 +58,12 @@ Assure-toi d’être dans un endroit bien éclairé, et que ton visage ainsi que
 
 Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour prendre une photo conforme, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411991953681--Jeunes-Comment-faire-pour-me-prendre-en-photo-avec-ma-pi%C3%A8ce-d-identit%C3%A9"""
 
+IDENTITY_THEFT_MESSAGE = """Si tu suspectes une usurpation d’identité, il est important de déposer une plainte officielle auprès des autorités compétentes, une simple main courante ne suffit pas.
+ 
+Pour rappel, l’inscription au pass Culture nécessite la présentation d’une pièce d’identité. Si un compte a été créé à ton insu, cela signifie que quelqu’un a pu accéder à tes informations et utiliser ton crédit.
+
+Une fois la plainte déposée, tu peux nous la transmettre à l’adresse suivante : service.fraude@passculture.app"""
+
 
 def sync_instructor_ids(procedure_number: int) -> None:
     logger.info("[DS] Sync instructor ids from DS procedure %s", procedure_number)
@@ -403,6 +409,15 @@ def update_state(
             instructeur_techid=instructor_id,
             motivation=motivation,
             disable_notification=disable_notification,
+        )
+    elif new_state == dms_models.GraphQLApplicationStates.refused:
+        assert motivation  # helps mypy
+        node = ds_client.make_refused(
+            application_techid=user_request.dsTechnicalId,
+            instructeur_techid=instructor_id,
+            motivation=motivation,
+            disable_notification=disable_notification,
+            from_draft=user_request.is_draft,
         )
     else:
         raise NotImplementedError()

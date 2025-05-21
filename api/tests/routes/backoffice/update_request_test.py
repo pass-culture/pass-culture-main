@@ -1166,8 +1166,7 @@ class GetAskForCorrectionFormTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
             assert response.status_code == 200
 
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
-    def test_not_instructor(self, mock_make_accepted, client):
+    def test_not_instructor(self, client):
         not_instructor = users_factories.AdminFactory()
         update_request = users_factories.UserAccountUpdateRequestFactory(
             status=dms_models.GraphQLApplicationStates.on_going
@@ -1176,8 +1175,6 @@ class GetAskForCorrectionFormTest(GetEndpointHelper):
         client = client.with_bo_session_auth(not_instructor)
         response = client.get(url_for(self.endpoint, ds_application_id=update_request.dsApplicationId))
         assert response.status_code == 403
-
-        mock_make_accepted.assert_not_called()
 
     def test_not_found(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, ds_application_id=1))
@@ -1255,7 +1252,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
-    def test_not_instructor(self, mock_make_accepted, client):
+    def test_not_instructor(self, mock_send_user_message, client):
         not_instructor = users_factories.AdminFactory()
         update_request = users_factories.UserAccountUpdateRequestFactory(
             status=dms_models.GraphQLApplicationStates.on_going
@@ -1265,7 +1262,102 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(client, ds_application_id=update_request.dsApplicationId)
         assert response.status_code == 403
 
-        mock_make_accepted.assert_not_called()
+        mock_send_user_message.assert_not_called()
+
+    def test_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
+        assert response.status_code == 404
+
+
+class GetIdentityTheftFormTest(GetAskForCorrectionFormTest):
+    endpoint = "backoffice_web.account_update.get_identity_theft_form"
+
+
+class IdentityTheftTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_update.identity_theft"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_refused")
+    def test_identity_theft(self, mock_make_refused, legit_user, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(dsApplicationId=24346321)
+
+        mock_make_refused.return_value = {
+            "id": update_request.dsApplicationId,
+            "number": 24346321,
+            "state": "refuse",
+            "dateDerniereModification": "2025-05-21T16:53:08+02:00",
+            "dateDepot": "2025-05-21T16:23:45+02:00",
+            "datePassageEnConstruction": "2025-05-21T16:23:45+02:00",
+            "datePassageEnInstruction": "2025-05-21T16:51:42+02:00",
+            "dateTraitement": "2025-05-21T16:53:08+02:00",
+            "dateDerniereCorrectionEnAttente": None,
+            "dateDerniereModificationChamps": "2025-05-21T16:23:41+02:00",
+        }
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+        )
+
+        assert response.status_code == 303
+        mock_make_refused.assert_called_once()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.refused
+        assert update_request.dateLastStatusUpdate == datetime.datetime(2025, 5, 21, 14, 53, 8)
+        assert update_request.lastInstructor == legit_user
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.UPDATE_REQUEST_IDENTITY_THEFT.value
+        )
+        assert mails_testing.outbox[0]["params"] == {"DS_APPLICATION_NUMBER": update_request.dsApplicationId}
+        assert mails_testing.outbox[0]["To"] == update_request.email
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_refused")
+    def test_application_not_found(self, mock_make_refused, legit_user, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(user__email="original@example.com")
+
+        mock_make_refused.side_effect = dms_exceptions.DmsGraphQLApiError(
+            [
+                {
+                    "message": "DossierEnvoyerMessagePayload not found",
+                    "locations": [{"line": 2, "column": 3}],
+                    "path": ["dossierEnvoyerMessage"],
+                    "extensions": {"code": "not_found"},
+                }
+            ]
+        )
+
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 303
+        mock_make_refused.assert_called_once()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+        assert update_request.lastInstructor != legit_user
+        assert update_request.user.email == "original@example.com"
+        assert len(update_request.user.action_history) == 0
+        assert len(update_request.user.email_history) == 0
+        assert len(mails_testing.outbox) == 0
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le dossier {update_request.dsApplicationId} ne peut pas être rejeté : dossier non trouvé"
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_refused")
+    def test_not_instructor(self, mock_make_refused, client):
+        not_instructor = users_factories.AdminFactory()
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.on_going
+        )
+
+        client = client.with_bo_session_auth(not_instructor)
+        response = self.post_to_endpoint(client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 403
+
+        mock_make_refused.assert_not_called()
 
     def test_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, ds_application_id=1)

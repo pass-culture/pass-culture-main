@@ -25,6 +25,9 @@ from pcapi.core.mails.transactional.users.personal_data_updated import send_bene
 from pcapi.core.mails.transactional.users.update_request_ask_for_correction import (
     send_beneficiary_update_request_ask_for_correction,
 )
+from pcapi.core.mails.transactional.users.update_request_identity_theft import (
+    send_beneficiary_update_request_identity_theft,
+)
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
@@ -510,6 +513,73 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
             Markup(
                 "Le dossier <b>{ds_application_id}</b> ne peut pas recevoir de demande de correction : {message}"
             ).format(
+                ds_application_id=ds_application_id,
+                message="dossier non trouvé" if err.is_not_found else err.message,
+            ),
+            "warning",
+        )
+    except sa.exc.IntegrityError as exc:
+        mark_transaction_as_invalid()
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
+        return _refresh_list()
+
+    return _refresh_list()
+
+
+@account_update_blueprint.route("<int:ds_application_id>/identity-theft", methods=["GET"])
+def get_identity_theft_form(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request = (
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(".identity_theft", ds_application_id=ds_application_id),
+        div_id=f"identity-theft-{ds_application_id}",
+        title="Usurpation d'identité",
+        information="Ce message sera envoyé au jeune: <br>" + users_ds.IDENTITY_THEFT_MESSAGE,
+        button_text="Rejeter pour usurpation d'identité",
+    )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/identity-theft", methods=["POST"])
+def identity_theft(ds_application_id: int) -> utils.BackofficeResponse:
+    if not current_user.backoffice_profile.dsInstructorId:
+        raise Forbidden()
+
+    update_request: users_models.UserAccountUpdateRequest = (
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    send_beneficiary_update_request_identity_theft(update_request)
+
+    try:
+        users_ds.update_state(
+            update_request,
+            new_state=dms_models.GraphQLApplicationStates.refused,
+            instructor=current_user,
+            motivation=users_ds.IDENTITY_THEFT_MESSAGE,
+        )
+    except dms_exceptions.DmsGraphQLApiError as err:
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Le dossier <b>{ds_application_id}</b> ne peut pas être rejeté : {message}").format(
                 ds_application_id=ds_application_id,
                 message="dossier non trouvé" if err.is_not_found else err.message,
             ),
