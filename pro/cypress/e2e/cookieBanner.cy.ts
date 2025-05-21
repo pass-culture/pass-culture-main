@@ -161,9 +161,6 @@ describe('Cookie management with login', () => {
       }
     )
 
-    cy.stepLog({ message: 'I close the collective budget information modal' })
-    cy.findAllByText('Fermer').click()
-
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findAllByText('Gestion des cookies').first().click()
 
