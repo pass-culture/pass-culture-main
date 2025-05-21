@@ -54,9 +54,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
     create_industrial_offerer_with_custom_reimbursement_rule,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
+from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import create_venue_labels
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
 if typing.TYPE_CHECKING:
