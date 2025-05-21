@@ -227,7 +227,7 @@ def create_specific_invoice() -> None:
     logger.info("Created specific Invoice")
 
 
-def build_many_extra_invoices(count: int = 32) -> None:
+def build_many_extra_invoices(count: int = 2) -> None:
     """Build a bank account, a venue and many invoices.
 
     Those invoices will be created in the past in order to be
