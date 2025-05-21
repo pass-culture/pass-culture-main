@@ -31,8 +31,8 @@
     <th scope="col"
         class="text-center">Stock restant</th>
   {% endif %}
+  {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("VALIDATE_OFFERER") %}<th scope="col">Règles de conformité</th>{% endif %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
-    <th scope="col">Règles de conformité</th>
     <th scope="col">Score data</th>
     <th scope="col">Tarif</th>
   {% endif %}
@@ -148,10 +148,12 @@
         <td class="text-nowrap text-center">{{ row.booked_quantity }}</td>
         <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
       {% endif %}
-      {% if has_permission("PRO_FRAUD_ACTIONS") %}
+      {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("VALIDATE_OFFERER") %}
         <td>
           {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
         </td>
+      {% endif %}
+      {% if has_permission("PRO_FRAUD_ACTIONS") %}
         <td>
           {% set compliance_score = offer.compliance.compliance_score if offer.compliance else "" %}
           {{ compliance_score }}

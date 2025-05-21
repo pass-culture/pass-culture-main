@@ -134,11 +134,12 @@ class ListOffersTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     @pytest.mark.parametrize(
-        "admin_user,stock_data_expected,tag_data_expected,fraud_data_expected",
+        "admin_user,stock_data_expected,tag_data_expected,fraud_rules_expected,fraud_data_expected",
         [
-            ("read_only_bo_user", True, False, False),
-            ("pro_fraud_admin", False, False, True),
-            ("support_pro_n2_admin", True, True, False),
+            ("read_only_bo_user", True, False, False, False),
+            ("pro_fraud_admin", False, False, True, True),
+            ("support_pro_n2_admin", True, True, False, False),
+            ("homologation_admin", True, False, True, False),
         ],
     )
     def test_list_offers_by_id(
@@ -147,10 +148,12 @@ class ListOffersTest(GetEndpointHelper):
         read_only_bo_user,
         pro_fraud_admin,
         support_pro_n2_admin,
+        homologation_admin,
         offers,
         admin_user,
         stock_data_expected,
         tag_data_expected,
+        fraud_rules_expected,
         fraud_data_expected,
     ):
         user = locals()[admin_user]
@@ -191,12 +194,15 @@ class ListOffersTest(GetEndpointHelper):
             assert "Tag" not in rows[0]
             assert "Pond." not in rows[0]
 
-        if fraud_data_expected:
+        if fraud_rules_expected:
             assert rows[0]["Règles de conformité"] == ""
+        else:
+            assert "Règles de conformité" not in rows[0]
+
+        if fraud_data_expected:
             assert rows[0]["Score data"] == ""
             assert rows[0]["Tarif"] == "10,10 € - 15,00 €"
         else:
-            assert "Règles de conformité" not in rows[0]
             assert "Score data" not in rows[0]
             assert "Tarif" not in rows[0]
 
