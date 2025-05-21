@@ -283,25 +283,6 @@ class CollectiveOfferIsEditableTest:
         assert offer.isEditable == expected
 
 
-class CollectiveOfferIsEditableByProTest:
-    @pytest.mark.parametrize(
-        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
-    )
-    def test_offer_for_status(self, state, expected) -> None:
-        offer = factories.CollectiveOfferFactory(validation=state)
-        factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        assert offer.isEditableByPcPro == expected
-
-    @pytest.mark.parametrize("state", OfferValidationStatus)
-    def test_offer_from_public_api_for_status(self, state) -> None:
-        provider = providers_factories.PublicApiProviderFactory()
-        offer = factories.CollectiveOfferFactory(validation=state, providerId=provider.id)
-        factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        assert offer.isEditableByPcPro == False
-
-
 class CollectiveOfferIsArchiveTest:
     @pytest.mark.parametrize("state", OfferValidationStatus)
     def test_date_archive_for_status(self, state) -> None:
@@ -343,14 +324,6 @@ class CollectiveOfferIsArchiveTest:
 
 
 class CollectiveOfferTemplateIsEditableTest:
-    @pytest.mark.parametrize(
-        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
-    )
-    def test_offer_is_editable_by_pc_pro_for_status(self, state, expected) -> None:
-        offer = factories.CollectiveOfferTemplateFactory(validation=state)
-
-        assert offer.isEditableByPcPro == expected
-
     @pytest.mark.parametrize(
         "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
     )

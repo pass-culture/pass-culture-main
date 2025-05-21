@@ -132,7 +132,6 @@ class CollectiveOfferResponseModel(BaseModel):
     id: int
     isActive: bool
     isEditable: bool
-    isEditableByPcPro: bool
     isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
@@ -191,7 +190,6 @@ def _serialize_offer_paginated(
         id=offer.id,
         isActive=offer.isActive,
         isEditable=offer.isEditable,
-        isEditableByPcPro=offer.isEditableByPcPro,
         isEducational=True,
         name=offer.name,
         stocks=serialized_stocks,  # type: ignore[arg-type]

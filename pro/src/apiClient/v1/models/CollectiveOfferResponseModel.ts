@@ -27,7 +27,6 @@ export type CollectiveOfferResponseModel = {
   interventionArea: Array<string>;
   isActive: boolean;
   isEditable: boolean;
-  isEditableByPcPro: boolean;
   isEducational: boolean;
   isPublicApi: boolean;
   isShowcase: boolean;
