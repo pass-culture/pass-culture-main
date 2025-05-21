@@ -33,7 +33,7 @@
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
   "dependencies": {
-    "@algolia/autocomplete-plugin-query-suggestions": "^1.19.1",
+    "@algolia/autocomplete-plugin-query-suggestions": "^1.19.2",
     "@algolia/autocomplete-plugin-recent-searches": "^1.19.1",
     "@firebase/analytics": "^0.10.16",
     "@firebase/app": "^0.12.3",
