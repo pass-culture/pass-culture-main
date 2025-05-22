@@ -30,17 +30,17 @@ export const AddressManual = ({
     await formik.setFieldTouched('coords', true, true)
 
     const newCoords = event.target.value
-    let latitude = '',
-      longitude = ''
+    let latitude = 0,
+      longitude = 0
 
     const coordsType = getCoordsType(newCoords)
 
     if (coordsType === 'DD') {
-      ;[latitude, longitude] = newCoords.split(',').map((c) => c.trim())
+      ;[latitude, longitude] = newCoords.split(',').map((c) => c.trim()).map(Number)
     } else if (coordsType === 'DMS') {
       ;[latitude, longitude] = newCoords
         .split(' ')
-        .map((c) => String(parseDms(c)))
+        .map((c) => parseDms(c))
     }
 
     await formik.setFieldValue('latitude', latitude)
