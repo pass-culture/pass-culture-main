@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -57,6 +57,8 @@ export const Offerers = (): JSX.Element => {
   const restrictVenueAttachmentToCollectivity = useActiveFeature(
     'WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY'
   )
+
+  const joinSpaceButtonRef = useRef<HTMLButtonElement>(null)
 
   /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
@@ -194,6 +196,7 @@ export const Offerers = (): JSX.Element => {
           <Button
             variant={ButtonVariant.SECONDARY}
             onClick={doLinkUserToOfferer}
+            ref={joinSpaceButtonRef}
           >
             Rejoindre cet espace
           </Button>
@@ -238,6 +241,7 @@ export const Offerers = (): JSX.Element => {
         cancelText="Annuler"
         extraClassNames={styles['dialog-content']}
         open={showLinkDialog}
+        refToFocusOnClose={joinSpaceButtonRef}
       >
         <div className={styles['dialog-info']}>
           Votre demande sera prise en compte et analysée par nos équipes.
