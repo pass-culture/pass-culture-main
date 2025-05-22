@@ -1,4 +1,3 @@
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { DS_BANK_ACCOUNT_PROCEDURE_ID } from 'commons/utils/config'
@@ -14,12 +13,14 @@ interface ReimbursmentPointDialogProps {
   closeDialog: () => void
   offererId?: number
   isDialogOpen: boolean
+  dialogTriggerRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const AddBankInformationsDialog = ({
   closeDialog,
   offererId,
   isDialogOpen,
+  dialogTriggerRef,
 }: ReimbursmentPointDialogProps) => {
   const { logEvent } = useAnalytics()
   return (
@@ -29,6 +30,7 @@ export const AddBankInformationsDialog = ({
       icon={strokeLinkIcon}
       onCancel={closeDialog}
       open={isDialogOpen}
+      refToFocusOnClose={dialogTriggerRef}
     >
       <ButtonLink
         to={DS_BANK_ACCOUNT_PROCEDURE_ID}
