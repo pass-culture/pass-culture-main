@@ -711,6 +711,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     dateUpdated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
+
+    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+
     _description = sa.Column("description", sa.Text, nullable=True)
     _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
     ean = sa.Column(sa.Text, nullable=True, index=True)
@@ -771,6 +776,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("offer_visa_idx", _extraData["visa"].astext)
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
     sa.Index("ix_offer_lastProviderId", lastProviderId, postgresql_where=lastProviderId.is_not(None))
+    sa.Index("ix_offer_publicationDatetime", publicationDatetime, postgresql_where=publicationDatetime.is_not(None))
+    sa.Index(
+        "ix_offer_bookingAllowedDatetime", bookingAllowedDatetime, postgresql_where=bookingAllowedDatetime.is_not(None)
+    )
 
     sa.Index("ix_offer_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
