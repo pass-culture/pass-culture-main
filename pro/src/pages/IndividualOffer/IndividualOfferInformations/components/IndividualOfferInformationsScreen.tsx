@@ -1,5 +1,5 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
@@ -61,6 +61,8 @@ export const IndividualOfferInformationsScreen = ({
   const { mutate } = useSWRConfig()
   const { subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
+
+  const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
 
   const [isUpdatesWarningDialogOpen, setIsUpdatesWarningDialogOpen] =
     useState(false)
@@ -260,6 +262,7 @@ export const IndividualOfferInformationsScreen = ({
             Boolean(publishedOfferWithSameEAN)
           }
           dirtyForm={formik.dirty}
+          saveEditionChangesButtonRef={saveEditionChangesButtonRef}
         />
       </Form>
 
@@ -274,6 +277,7 @@ export const IndividualOfferInformationsScreen = ({
         }}
         open={isUpdatesWarningDialogOpen}
         title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
+        refToFocusOnClose={saveEditionChangesButtonRef}
       >
         <div className={styles['update-oa-wrapper']}>
           <div>
