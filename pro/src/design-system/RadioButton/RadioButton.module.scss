@@ -8,7 +8,14 @@
   // Variant Default
   // ---------------
 
+  // Sizing to "hug" (content width) by default
   display: inline-flex;
+
+  &.sizing-fill {
+    display: flex;
+  }
+
+  flex-direction: column;
 
   .radio-button-label {
     display: inline-flex;
@@ -17,14 +24,6 @@
     gap: rem.torem(12px);
     cursor: pointer;
     color: var(--color-text-default);
-
-    &:hover {
-      color: var(--color-text-brand-primary-hover);
-    }
-
-    &:active {
-      color: var(--color-text-subtle);
-    }
   }
 
   .radio-button-input {
@@ -80,6 +79,18 @@
     }
   }
 
+  &:hover {
+    .radio-button-label {
+      color: var(--color-text-brand-primary-hover);
+    }
+  }
+
+  &:active {
+    .radio-button-label {
+      color: var(--color-text-subtle);
+    }
+  }
+
   &.is-disabled {
     .radio-button-label {
       @include fonts.body;
@@ -100,5 +111,142 @@
     outline: rem.torem(1px) solid var(--color-outline-default);
     outline-offset: rem.torem(2px);
     border-radius: rem.torem(6px);
+  }
+
+  // ---------------
+  // Variant Detailed
+  // ---------------
+
+  &.variant-detailed {
+    border: rem.torem(1px) solid black;
+    padding: rem.torem(16px);
+    border-color: var(--color-border-default);
+    border-radius: rem.torem(6px);
+
+    .description {
+      @include fonts.body-xs;
+
+      color: var(--color-text-default);
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      background-color: var(--color-background-brand-primary-selected);
+      border-color: var(--color-border-brand-primary);
+    }
+
+    &:hover {
+      border-color: var(--color-border-brand-primary-hover);
+
+      .description {
+        color: var(--color-text-brand-primary-hover);
+      }
+
+      .radio-button-input {
+        border-color: var(--color-border-brand-primary-hover);
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        background-color: var(--color-background-brand-primary-hover);
+        border-color: var(--color-border-brand-primary);
+
+        .radio-button-label {
+          color: var(--color-text-inverted);
+        }
+
+        .description {
+          color: var(--color-text-inverted);
+        }
+
+        .radio-button-input {
+          box-shadow: inset 0 0 0 rem.torem(3px) var(--color-text-inverted);
+          border-color: var(--color-border-inverted);
+          background-color: var(--color-background-inverted);
+        }
+      }
+    }
+
+    &:active {
+      opacity: 0.6;
+      background-color: var(--color-background-default);
+      border-color: var(--color-border-subtle);
+
+      .radio-button-label {
+        color: var(--color-text-inverted);
+      }
+
+      .description {
+        color: var(--color-text-inverted);
+      }
+
+      .radio-button-input {
+        border-color: var(--color-border-default);
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        background-color: var(--color-background-brand-primary);
+        border-color: var(--color-border-brand-primary);
+
+        .radio-button-label {
+          color: var(--color-text-default);
+        }
+
+        .description {
+          color: var(--color-text-default);
+        }
+      }
+    }
+
+    // --------------
+    // Right elements
+    // --------------
+
+    // .right-text {
+    // }
+
+    .right-icon {
+      display: flex;
+      align-items: center;
+
+      &-svg {
+        width: rem.torem(32px);
+        height: rem.torem(32px);
+      }
+    }
+
+    .right-image {
+      display: flex;
+      align-items: center;
+
+      &-img-small {
+        width: rem.torem(40px);
+        height: rem.torem(40px);
+      }
+
+      &-img-medium {
+        width: rem.torem(80px);
+        height: rem.torem(80px);
+      }
+
+      &-img-large {
+        width: rem.torem(120px);
+        height: rem.torem(120px);
+      }
+    }
+  }
+
+  // -------------------
+  // Children on checked
+  // -------------------
+
+  &.has-children {
+    // Automatically sizing to "fill" (full width) if has children
+    display: flex;
+  }
+
+  .children-on-checked {
+    margin-top: rem.torem(10px);
   }
 }
