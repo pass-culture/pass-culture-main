@@ -39,6 +39,11 @@ declare namespace Cypress {
      * cy.stepLog({message: 'I want to create an offer'})
      */
     stepLog(params: { message: string }): Chainable
+    a11yLog(
+      violations: {
+        description: string
+      }[]
+    ): Chainable
 
     sandboxCall(
       method: 'GET' | 'POST',
