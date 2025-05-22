@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.core import object_storage
+from pcapi.core.offers import validation as offers_validation
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
@@ -17,6 +18,7 @@ def create_thumb(
     keep_ratio: bool = False,
     object_id: str | None = None,
 ) -> None:
+    offers_validation.check_image(image_as_bytes, min_height=None, min_width=None)
     if keep_ratio:
         image_as_bytes = process_original_image(image_as_bytes)
     else:
