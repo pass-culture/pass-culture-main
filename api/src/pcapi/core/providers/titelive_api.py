@@ -14,7 +14,7 @@ from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.api as offers_api
-from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -246,7 +246,12 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
                             object_id=image_id,
                         )
                 db.session.commit()
-            except (requests.ExternalAPIException, PIL.UnidentifiedImageError, OSError) as e:
+            except (
+                requests.ExternalAPIException,
+                PIL.UnidentifiedImageError,
+                OSError,
+                offers_exceptions.ImageValidationError,
+            ) as e:
                 db.session.rollback()
                 logger.error(
                     "Error while downloading Titelive image",
@@ -301,7 +306,7 @@ def activate_newly_eligible_product_and_offers(product: offers_models.Product) -
     if is_product_newly_eligible:
         try:
             offers_api.approves_provider_product_and_rejected_offers(ean)
-        except NotUpdateProductOrOffers as exception:
+        except offers_exceptions.NotUpdateProductOrOffers as exception:
             logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
 
