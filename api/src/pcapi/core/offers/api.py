@@ -47,7 +47,6 @@ from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
-from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
