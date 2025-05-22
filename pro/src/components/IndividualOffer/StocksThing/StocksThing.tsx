@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -22,7 +22,6 @@ import { getToday, getYearMonthDay, isDateValid } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
-import { StockFormRowAction } from 'components/IndividualOffer/StocksThing/StockThingFormActions/types'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullCodeIcon from 'icons/full-code.svg'
@@ -38,6 +37,7 @@ import {
 import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import { useNotifyFormError } from '../hooks/useNotifyFormError'
@@ -47,7 +47,6 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'
-import { StockThingFormActions } from './StockThingFormActions/StockThingFormActions'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
@@ -68,6 +67,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     useIndividualOfferContext()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
+
+  const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
   const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
@@ -236,7 +237,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     return result
   }
 
-  const actions: StockFormRowAction[] = [
+  const actions: {
+    callback: () => void
+    label: string
+    icon: string
+    disabled?: boolean
+  }[] = [
     {
       callback: async () => {
         if (
@@ -349,6 +355,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         today={today}
         minExpirationDate={minExpirationDate}
         isDialogOpen={isActivationCodeFormVisible}
+        activationCodeButtonRef={activationCodeButtonRef}
       />
 
       <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
@@ -450,8 +457,22 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   />
                 </>
               )}
-              {!publishedOfferWithSameEAN && actions.length > 0 && (
-                <StockThingFormActions actions={actions} />
+              {!publishedOfferWithSameEAN && (
+                <div className={styles['button-actions']}>
+                  {actions.map((action, i) => (
+                    <ListIconButton
+                      key={`action-${i}`}
+                      icon={action.icon}
+                      onClick={action.callback}
+                      tooltipContent={action.label}
+                      ref={
+                        action.label === "Ajouter des codes d'activation"
+                          ? activationCodeButtonRef
+                          : undefined
+                      }
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
