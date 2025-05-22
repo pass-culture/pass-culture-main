@@ -229,6 +229,7 @@ export const Layout = ({
                 />
               )}
               <main id="content">
+                <div id="orejimeElement" />
                 {layout === 'funnel' || layout === 'onboarding' ? (
                   <>
                     {mainHeadingWrapper}
