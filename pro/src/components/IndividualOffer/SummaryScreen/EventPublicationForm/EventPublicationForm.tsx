@@ -1,12 +1,12 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Divider } from 'ui-kit/Divider/Divider'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
-import { Select } from 'ui-kit/form/Select/Select'
 import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { RadioButton } from 'ui-kit/formV2/RadioButton/RadioButton'
+import { Select } from 'ui-kit/formV2/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './EventPublicationForm.module.scss'
@@ -55,8 +55,12 @@ const getPublicationHoursOptions = (): SelectOption[] => {
 }
 
 export const EventPublicationForm = () => {
-  const today = new Date()
-  const { values } = useFormikContext<EventPublicationFormValues>()
+  const {
+    formState: { errors },
+    register,
+    watch,
+    setValue,
+  } = useFormContext<EventPublicationFormValues>()
 
   return (
     <>
@@ -64,7 +68,7 @@ export const EventPublicationForm = () => {
         <FormLayout.Section title="Date de publication">
           <FormLayout.Row
             sideComponent={
-              values.publicationMode === 'later' ? (
+              watch('publicationMode') === 'later' ? (
                 <InfoBox>
                   Votre offre doit être validée, ce qui peut prendre jusqu’à
                   72h. Après validation elle sera automatiquement publiée à la
@@ -76,33 +80,38 @@ export const EventPublicationForm = () => {
             <div className={styles['radio-group']}>
               <RadioButton
                 label="Tout de suite"
-                name="publicationMode"
+                {...register('publicationMode')}
                 value="now"
                 variant={RadioVariant.BOX}
+                onChange={() => setValue('publicationMode', 'now')}
               />
-
               <RadioButton
                 label="À une date et heure précise"
-                name="publicationMode"
+                {...register('publicationMode')}
                 value="later"
                 variant={RadioVariant.BOX}
+                onChange={() => setValue('publicationMode', 'later')}
               />
             </div>
           </FormLayout.Row>
 
-          {values.publicationMode === 'later' && (
+          {watch('publicationMode') === 'later' && (
             <FormLayout.Row inline>
               <DatePicker
                 label="Date de publication"
-                name="publicationDate"
-                minDate={today}
+                {...register('publicationDate')}
+                required
+                minDate={new Date()}
+                error={errors.publicationDate?.message}
               />
 
               <Select
                 label="Heure de publication"
-                name="publicationTime"
+                {...register('publicationTime')}
                 options={getPublicationHoursOptions()}
+                required
                 defaultOption={{ label: 'HH:MM', value: '' }}
+                error={errors.publicationTime?.message}
               />
             </FormLayout.Row>
           )}
