@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { createRef } from 'react'
 
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from 'commons/utils/factories/individualApiFactories'
@@ -22,6 +23,7 @@ describe('VenueProviderCard', () => {
       offererId: offererId,
       venue: defaultGetVenue,
       venueProvider: defaultVenueProvider,
+      selectSoftwareButtonRef: createRef(),
     }
   })
 

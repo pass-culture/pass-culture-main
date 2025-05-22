@@ -23,16 +23,17 @@ import { VenueProviderForm } from './VenueProviderForm'
 export interface AddVenueProviderButtonProps {
   venue: GetVenueResponseModel
   linkedProviders: ProviderResponse[]
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
 }
 
 export const AddVenueProviderButton = ({
   venue,
   linkedProviders,
+  selectSoftwareButtonRef,
 }: AddVenueProviderButtonProps) => {
   const { mutate } = useSWRConfig()
 
   const providerSelectRef = useRef<HTMLSelectElement>(null)
-  const selectSoftwareButtonRef = useRef<HTMLButtonElement>(null)
 
   const providersQuery = useSWR(
     [GET_PROVIDERS_QUERY_KEY, venue.id],

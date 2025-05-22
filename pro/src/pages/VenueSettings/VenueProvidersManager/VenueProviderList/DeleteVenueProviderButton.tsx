@@ -14,11 +14,13 @@ import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
   venue: GetVenueResponseModel
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
 }
 
 export const DeleteVenueProviderButton = ({
   venueProviderId,
   venue,
+  selectSoftwareButtonRef,
 }: DeleteVenueProviderButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -38,25 +40,26 @@ export const DeleteVenueProviderButton = ({
     } finally {
       setIsModalOpen(false)
       setIsLoading(false)
+
+      selectSoftwareButtonRef.current?.focus()
     }
   }
 
   return (
-    <>
-      <Button
-        onClick={() => setIsModalOpen(true)}
-        variant={ButtonVariant.TERNARY}
-        icon={fullTrashIcon}
-      >
-        Supprimer
-      </Button>
-
-      <DeleteVenueProviderDialog
-        onConfirm={tryToDeleteVenueProvider}
-        onCancel={() => setIsModalOpen(false)}
-        isLoading={isLoading}
-        isDialogOpen={isModalOpen}
-      />
-    </>
+    <DeleteVenueProviderDialog
+      onConfirm={tryToDeleteVenueProvider}
+      onCancel={() => setIsModalOpen(false)}
+      isLoading={isLoading}
+      isDialogOpen={isModalOpen}
+      trigger={
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          variant={ButtonVariant.TERNARY}
+          icon={fullTrashIcon}
+        >
+          Supprimer
+        </Button>
+      }
+    />
   )
 }
