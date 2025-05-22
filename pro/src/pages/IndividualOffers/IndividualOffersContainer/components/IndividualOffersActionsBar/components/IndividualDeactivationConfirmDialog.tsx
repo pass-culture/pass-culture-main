@@ -12,6 +12,7 @@ export interface DeactivationConfirmDialogProps {
   onCancel: (status: boolean) => void
   onConfirm: () => void
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
 }
 
 export const IndividualDeactivationConfirmDialog = ({
@@ -20,6 +21,7 @@ export const IndividualDeactivationConfirmDialog = ({
   nbSelectedOffers,
   onConfirm,
   isDialogOpen,
+  refToFocusOnClose,
 }: DeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -55,6 +57,7 @@ export const IndividualDeactivationConfirmDialog = ({
           : `êtes-vous sûr de vouloir toutes les ${deactivateWording}${NBSP}?`
       }
       open={isDialogOpen}
+      refToFocusOnClose={refToFocusOnClose}
     >
       {nbSelectedOffers === 1
         ? `Dans ce cas, elle ne sera plus visible sur l’application pass Culture.`
