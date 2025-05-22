@@ -7,7 +7,6 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import validation as bookings_validation
-from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
@@ -32,8 +31,6 @@ def _get_base_booking_query() -> sa_orm.Query:
         db.session.query(booking_models.Booking)
         .join(offerers_models.Venue)
         .join(offerers_models.Venue.managingOfferer)
-        .outerjoin(offerers_models.Venue.offererAddress)
-        .outerjoin(offerers_models.OffererAddress.address)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
@@ -44,17 +41,11 @@ def _get_base_booking_query() -> sa_orm.Query:
             .load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
-                offerers_models.Venue.street,
-                offerers_models.Venue.departementCode,
             )
             .options(
                 sa_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(
                     offerers_models.Offerer.validationStatus
                 ),
-                sa_orm.contains_eager(offerers_models.Venue.offererAddress)
-                .load_only(offerers_models.OffererAddress.id)
-                .contains_eager(offerers_models.OffererAddress.address)
-                .load_only(geography_models.Address.street, geography_models.Address.departmentCode),
             )
         )
         .options(
@@ -70,6 +61,8 @@ def _get_base_booking_query() -> sa_orm.Query:
                 offers_models.Offer._extraData,
                 offers_models.Offer.subcategoryId,
             )
+            .joinedload(offers_models.Offer.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
         )
     )
 
@@ -129,7 +122,6 @@ def get_bookings_by_offer(
 
     Return all the bookings for a given offer. Results are paginated (by default, there are `50` bookings per page)
     """
-
     offer = (
         db.session.query(offers_models.Offer)
         .filter(offers_models.Offer.id == query.offer_id)

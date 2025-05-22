@@ -50,7 +50,7 @@ describe('BookingDetails', () => {
         {...{
           booking: {
             ...defaultGetBookingResponse,
-            venueDepartmentCode: undefined,
+            offerDepartmentCode: undefined,
           },
         }}
       />

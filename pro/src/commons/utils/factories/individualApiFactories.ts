@@ -384,7 +384,7 @@ export const defaultGetBookingResponse: GetBookingResponse = {
   phoneNumber: '0100000000',
   publicOfferId: 'test_public_offer_id',
   theater: { theater_any: 'theater_any' },
-  venueAddress: null,
+  offerAddress: "5 rue des legos",
   venueName: 'mon lieu',
   datetime: '2001-02-01T20:00:00Z',
   ean13: 'test ean113',
@@ -394,7 +394,7 @@ export const defaultGetBookingResponse: GetBookingResponse = {
   userName: 'USER',
   firstName: 'john',
   lastName: 'doe',
-  venueDepartmentCode: '75',
+  offerDepartmentCode: '75',
   priceCategoryLabel: 'price label',
 }
 

@@ -3901,6 +3901,16 @@
                         "title": "Id",
                         "type": "integer"
                     },
+                    "offerAddress": {
+                        "nullable": true,
+                        "title": "Offeraddress",
+                        "type": "string"
+                    },
+                    "offerDepartmentCode": {
+                        "nullable": true,
+                        "title": "Offerdepartmentcode",
+                        "type": "string"
+                    },
                     "offerEan": {
                         "nullable": true,
                         "title": "Offerean",
@@ -3966,16 +3976,6 @@
                     "userPostalCode": {
                         "nullable": true,
                         "title": "Userpostalcode",
-                        "type": "string"
-                    },
-                    "venueAddress": {
-                        "nullable": true,
-                        "title": "Venueaddress",
-                        "type": "string"
-                    },
-                    "venueDepartementCode": {
-                        "nullable": true,
-                        "title": "Venuedepartementcode",
                         "type": "string"
                     },
                     "venueId": {
