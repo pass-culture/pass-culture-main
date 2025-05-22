@@ -27,6 +27,7 @@ interface LinkVenuesDialogProps {
   managedVenues: Array<ManagedVenues>
   closeDialog: (update?: boolean) => void
   updateBankAccountVenuePricingPoint: (venueId: number) => void
+  editBankAccountDialogTriggerRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const LinkVenuesDialog = ({
@@ -35,6 +36,7 @@ export const LinkVenuesDialog = ({
   managedVenues,
   closeDialog,
   updateBankAccountVenuePricingPoint,
+  editBankAccountDialogTriggerRef,
 }: LinkVenuesDialogProps) => {
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
     useState<boolean>(false)
@@ -109,6 +111,7 @@ export const LinkVenuesDialog = ({
       <DialogBuilder
         defaultOpen
         variant="drawer"
+        refToFocusOnClose={editBankAccountDialogTriggerRef}
         onOpenChange={(open) => {
           if (!open) {
             closeDialog()
@@ -164,12 +167,11 @@ export const LinkVenuesDialog = ({
                     }
                   />
                   <span className={styles['dialog-select-all-count']}>
-                    `{selectedVenuesIds.length}{' '}
+                    {selectedVenuesIds.length}{' '}
                     {pluralizeString(
                       'structure sélectionnée',
                       selectedVenuesIds.length
                     )}
-                    `
                   </span>
                 </div>
 

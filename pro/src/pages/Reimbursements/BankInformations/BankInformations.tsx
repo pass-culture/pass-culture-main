@@ -36,6 +36,7 @@ export const BankInformations = (): JSX.Element => {
     useState(false)
 
   const addBankAccountButtonRef = useRef<HTMLButtonElement>(null)
+  const editBankAccountDialogTriggerRef = useRef<HTMLButtonElement>(null)
 
   const {
     selectedOfferer = null,
@@ -137,6 +138,7 @@ export const BankInformations = (): JSX.Element => {
                       .length > 0) ??
                   false
                 }
+                updateButtonRef={editBankAccountDialogTriggerRef}
               />
             ))}
           </div>
@@ -175,6 +177,7 @@ export const BankInformations = (): JSX.Element => {
           offererId={selectedOfferer.id}
           selectedBankAccount={selectedBankAccount}
           managedVenues={bankAccountVenues ?? []}
+          editBankAccountDialogTriggerRef={editBankAccountDialogTriggerRef}
           updateBankAccountVenuePricingPoint={
             updateBankAccountVenuePricingPoint
           }
