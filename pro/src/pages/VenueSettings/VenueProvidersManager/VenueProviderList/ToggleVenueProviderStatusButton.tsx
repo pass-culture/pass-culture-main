@@ -49,32 +49,33 @@ export const ToggleVenueProviderStatusButton = ({
 
   return (
     <>
-      {venueProvider.isActive ? (
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          variant={ButtonVariant.TERNARY}
-          icon={fullPauseIcon}
-          iconAlt="Mettre en pause la synchronisation"
-        >
-          Mettre en pause
-        </Button>
-      ) : (
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          variant={ButtonVariant.TERNARY}
-          icon={fullPlayIcon}
-          iconAlt="Réactiver la synchronisation"
-        >
-          Réactiver
-        </Button>
-      )}
-
       <ToggleVenueProviderStatusDialog
         onCancel={() => setIsModalOpen(false)}
         onConfirm={updateVenueProviderStatus}
         isLoading={isLoading}
         isActive={venueProvider.isActive}
         isDialogOpen={isModalOpen}
+        trigger={
+          venueProvider.isActive ? (
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              variant={ButtonVariant.TERNARY}
+              icon={fullPauseIcon}
+              iconAlt="Mettre en pause la synchronisation"
+            >
+              Mettre en pause
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              variant={ButtonVariant.TERNARY}
+              icon={fullPlayIcon}
+              iconAlt="Réactiver la synchronisation"
+            >
+              Réactiver
+            </Button>
+          )
+        }
       />
     </>
   )

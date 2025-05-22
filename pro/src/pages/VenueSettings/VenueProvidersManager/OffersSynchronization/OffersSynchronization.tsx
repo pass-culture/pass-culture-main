@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { AddVenueProviderButton } from 'pages/VenueSettings/VenueProvidersManager/AddVenueProviderButton'
@@ -13,6 +15,8 @@ export const OffersSynchronization = ({
   venue,
   venueProviders,
 }: OffersSynchronizationProps) => {
+  const selectSoftwareButtonRef = useRef<HTMLButtonElement>(null)
+
   return (
     <FormLayout>
       <FormLayout.Section
@@ -27,6 +31,7 @@ export const OffersSynchronization = ({
               venue={venue}
               venueDepartmentCode={venue.departementCode}
               offererId={venue.managingOfferer.id}
+              selectSoftwareButtonRef={selectSoftwareButtonRef}
             />
           ))}
         </FormLayout.Row>
@@ -34,6 +39,7 @@ export const OffersSynchronization = ({
           <AddVenueProviderButton
             venue={venue}
             linkedProviders={venueProviders.map(({ provider }) => provider)}
+            selectSoftwareButtonRef={selectSoftwareButtonRef}
           />
         </FormLayout.Row>
       </FormLayout.Section>
