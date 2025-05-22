@@ -46,7 +46,6 @@ from pcapi.core import search
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external import compliance
