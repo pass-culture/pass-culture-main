@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -107,6 +107,8 @@ export const CollectiveActionsCells = ({
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
+
+  const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isNewOffersAndBookingsActive,
@@ -348,6 +350,7 @@ export const CollectiveActionsCells = ({
             title="Voir les actions"
             triggerIcon={fullThreeDotsIcon}
             triggerTooltip
+            dropdownTriggerRef={dropdownTriggerRef}
           >
             {shouldDisplayBookingLink && offer.booking && (
               <>
@@ -478,18 +481,21 @@ export const CollectiveActionsCells = ({
           onCancel={() => setIsModalOpen(false)}
           onConfirm={onDialogConfirm}
           isDialogOpen={isModalOpen && shouldDisplayModal}
+          refToFocusOnClose={dropdownTriggerRef}
         />
         <CancelCollectiveBookingModal
           onDismiss={() => setIsCancelledBookingModalOpen(false)}
           onValidate={cancelBooking}
           isFromOffer
           isDialogOpen={isCancelledBookingModalOpen}
+          refToFocusOnClose={dropdownTriggerRef}
         />
         <ArchiveConfirmationModal
           onDismiss={() => setIsArchivedModalOpen(false)}
           onValidate={archiveOffer}
           offer={offer}
           isDialogOpen={isArchivedModalOpen}
+          refToFocusOnClose={dropdownTriggerRef}
         />
       </div>
     </td>

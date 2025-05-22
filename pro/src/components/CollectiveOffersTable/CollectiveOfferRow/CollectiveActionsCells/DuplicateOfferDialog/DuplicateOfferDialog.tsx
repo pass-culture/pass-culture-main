@@ -9,10 +9,12 @@ export const DuplicateOfferDialog = ({
   onCancel,
   onConfirm,
   isDialogOpen,
+  refToFocusOnClose,
 }: {
   onCancel: () => void
   onConfirm: (shouldNotDisplayModalAgain: boolean) => void
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
 }) => {
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
 
@@ -25,6 +27,7 @@ export const DuplicateOfferDialog = ({
       cancelText="Annuler"
       hideIcon
       open={isDialogOpen}
+      refToFocusOnClose={refToFocusOnClose}
     >
       <p className={styles['duplicate-offer-dialog-text']}>
         Les informations que vous avez renseignées dans l’offre vitrine seront

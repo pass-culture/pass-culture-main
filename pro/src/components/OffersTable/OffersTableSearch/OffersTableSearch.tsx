@@ -29,6 +29,7 @@ export type OffersTableSearchProps = {
   }
   onResetFilters: () => void
   children: React.ReactNode
+  searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const OffersTableSearch = ({
@@ -39,6 +40,7 @@ export const OffersTableSearch = ({
   nameInputProps,
   onResetFilters,
   children,
+  searchButtonRef,
 }: OffersTableSearchProps) => {
   const { onFiltersToggle } = useStoredFilterConfig(type)
   const isStoreAndToggleFiltersEnabled = useActiveFeature(
@@ -112,7 +114,7 @@ export const OffersTableSearch = ({
       </div>
       <div className={styles['offers-table-search-separator-wrapper']}>
         <div className={styles['offers-table-search-separator-element']} />
-        <Button type="submit" disabled={isDisabled}>
+        <Button type="submit" disabled={isDisabled} ref={searchButtonRef}>
           Rechercher
         </Button>
         <div className={styles['offers-table-search-separator-element']} />
