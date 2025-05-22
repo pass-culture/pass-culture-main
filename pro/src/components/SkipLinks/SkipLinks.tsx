@@ -21,7 +21,6 @@ export const SkipLinks = ({
           className={styles['visually-hidden']}
         />
       )}
-      <div id="orejimeElement" />
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
         <div className={styles['skip-list']}>
           <ButtonLink
