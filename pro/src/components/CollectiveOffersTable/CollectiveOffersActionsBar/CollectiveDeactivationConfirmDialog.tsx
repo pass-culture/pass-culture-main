@@ -12,6 +12,7 @@ export interface CollectiveDeactivationConfirmDialogProps {
   onCancel: (status: boolean) => void
   onConfirm: () => void
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
 }
 
 export const CollectiveDeactivationConfirmDialog = ({
@@ -20,6 +21,7 @@ export const CollectiveDeactivationConfirmDialog = ({
   nbSelectedOffers,
   onConfirm,
   isDialogOpen,
+  refToFocusOnClose,
 }: CollectiveDeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -56,6 +58,7 @@ export const CollectiveDeactivationConfirmDialog = ({
           : `êtes-vous sûr de vouloir toutes les ${deactivateWording}${NBSP}?`
       }
       open={isDialogOpen}
+      refToFocusOnClose={refToFocusOnClose}
     >
       {nbSelectedOffers === 1
         ? `Dans ce cas, elle ne sera plus visible par les enseignants sur ADAGE.`

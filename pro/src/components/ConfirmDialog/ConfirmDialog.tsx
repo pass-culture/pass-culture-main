@@ -34,6 +34,7 @@ export const ConfirmDialog = ({
   leftButtonAction = onCancel,
   trigger,
   open,
+  refToFocusOnClose,
 }: ConfirmDialogProps): JSX.Element => {
   const cancelButton = (
     <Button
@@ -67,6 +68,7 @@ export const ConfirmDialog = ({
       trigger={trigger}
       extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}
       open={open}
+      refToFocusOnClose={refToFocusOnClose}
     >
       <div className={styles['confirm-dialog-actions']}>
         {trigger ? (

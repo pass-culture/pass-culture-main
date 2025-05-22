@@ -20,6 +20,7 @@ interface OfferEducationalModalProps {
   hasMultipleOffers?: boolean
   selectedOffers?: CollectiveOfferResponseModel[]
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | HTMLAnchorElement>
 }
 
 export const ArchiveConfirmationModal = ({
@@ -29,6 +30,7 @@ export const ArchiveConfirmationModal = ({
   selectedOffers = [],
   offer,
   isDialogOpen,
+  refToFocusOnClose,
 }: OfferEducationalModalProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
@@ -69,6 +71,7 @@ export const ArchiveConfirmationModal = ({
           : 'Êtes-vous sûr de vouloir archiver cette offre ?'
       }
       open={isDialogOpen}
+      refToFocusOnClose={refToFocusOnClose}
     >
       <p>
         Une offre archivée ne peut pas être désarchivée, cette action est

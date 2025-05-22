@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -60,8 +60,12 @@ export const CollectiveOffersScreen = ({
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
+
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -72,7 +76,7 @@ export const CollectiveOffersScreen = ({
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
     defaultFilters: defaultCollectiveFilters,
-    ignore: ['nameOrIsbn']
+    ignore: ['nameOrIsbn'],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
@@ -162,6 +166,7 @@ export const CollectiveOffersScreen = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}
+        searchButtonRef={searchButtonRef}
       />
       {userHasNoOffers ? (
         <NoData page="offers" />
@@ -211,6 +216,7 @@ export const CollectiveOffersScreen = ({
                 areAllOffersSelected={areAllOffersSelected}
                 clearSelectedOfferIds={clearSelectedOfferIds}
                 selectedOffers={selectedOffers}
+                searchButtonRef={searchButtonRef}
               />
             )}
           </div>

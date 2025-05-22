@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
@@ -73,6 +73,9 @@ export const CollectiveEditionOfferNavigation = ({
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
 
   const id = computeURLCollectiveOfferId(offerId, Boolean(isTemplate))
+
+  const archiveButtonRef = useRef<HTMLButtonElement>(null)
+  const adagePreviewButtonRef = useRef<HTMLAnchorElement>(null)
 
   const archiveOffer = async () => {
     if (!offerId) {
@@ -157,6 +160,7 @@ export const CollectiveEditionOfferNavigation = ({
           <ButtonLink
             to={`/offre/${id}/collectif${isTemplate ? '/vitrine' : ''}/apercu`}
             icon={fullShowIcon}
+            ref={adagePreviewButtonRef}
           >
             Aperçu dans ADAGE
           </ButtonLink>
@@ -167,6 +171,7 @@ export const CollectiveEditionOfferNavigation = ({
             onClick={() => setIsArchiveModalOpen(true)}
             icon={fullArchiveIcon}
             variant={ButtonVariant.TERNARY}
+            ref={archiveButtonRef}
           >
             Archiver
           </Button>
@@ -239,6 +244,9 @@ export const CollectiveEditionOfferNavigation = ({
         onValidate={archiveOffer}
         offer={offer}
         isDialogOpen={isArchiveModalOpen}
+        refToFocusOnClose={
+          archiveButtonRef.current ? archiveButtonRef : adagePreviewButtonRef
+        }
       />
     </>
   )

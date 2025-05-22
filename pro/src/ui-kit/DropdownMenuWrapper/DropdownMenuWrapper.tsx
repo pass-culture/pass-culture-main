@@ -35,6 +35,10 @@ type DropdownMenuWrapperProps = {
    * Custom CSS class for additional styling of the menu content.
    */
   contentClassName?: string
+  /**
+   * Ref of the button triggering the openign of the dropdown
+   */
+  dropdownTriggerRef?: React.RefObject<HTMLButtonElement>
 }
 
 /**
@@ -64,6 +68,7 @@ export function DropdownMenuWrapper({
   children,
   triggerClassName,
   contentClassName,
+  dropdownTriggerRef,
 }: DropdownMenuWrapperProps): JSX.Element {
   const icon = triggerIcon || fullOtherIcon
 
@@ -73,6 +78,7 @@ export function DropdownMenuWrapper({
         className={cn(styles['menu-button'], triggerClassName)}
         data-testid="dropdown-menu-trigger"
         {...(triggerTooltip ? { asChild: true } : {})}
+        ref={dropdownTriggerRef}
       >
         {triggerTooltip ? (
           <ListIconButton icon={icon} tooltipContent={<>{title}</>} />

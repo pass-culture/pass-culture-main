@@ -9,6 +9,7 @@ interface OfferEducationalModalProps {
   onValidate(): void
   isFromOffer?: boolean
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
 }
 
 export const CancelCollectiveBookingModal = ({
@@ -16,6 +17,7 @@ export const CancelCollectiveBookingModal = ({
   onValidate,
   isFromOffer = false,
   isDialogOpen,
+  refToFocusOnClose,
 }: OfferEducationalModalProps): JSX.Element => {
   const modalTitle = isFromOffer
     ? 'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ? '
@@ -30,6 +32,7 @@ export const CancelCollectiveBookingModal = ({
       icon={isFromOffer ? strokeWrongIcon : strokeTrashIcon}
       title={modalTitle}
       open={isDialogOpen}
+      refToFocusOnClose={refToFocusOnClose}
     >
       {isFromOffer ? (
         <p className={styles['modal-text']}>Cette action est irréversible. </p>
