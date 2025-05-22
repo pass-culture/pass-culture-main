@@ -1,4 +1,5 @@
 import copy
+from pcapi.validation.routes.users_authentifications import current_api_key
 import datetime
 import logging
 
@@ -233,7 +234,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                     address_id=address.id,
                     label=body.location.address_label,
                 )
-            product = offers_api.create_product(venue=venue, body=body, offerer_address=offerer_address)
+            product = offers_api.create_product(venue=venue, body=body, offerer_address=offerer_address, api_key=current_api_key)
 
             if body.image:
                 utils.save_image(body.image, product)
