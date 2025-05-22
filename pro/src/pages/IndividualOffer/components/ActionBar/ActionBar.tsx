@@ -23,6 +23,7 @@ export interface ActionBarProps {
   isDisabled?: boolean
   step: OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
+  saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const ActionBar = ({
@@ -31,6 +32,7 @@ export const ActionBar = ({
   isDisabled = false,
   step,
   dirtyForm,
+  saveEditionChangesButtonRef,
 }: ActionBarProps) => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -78,7 +80,12 @@ export const ActionBar = ({
           Annuler et quitter
         </Button>
 
-        <Button type="submit" onClick={onClickNext} disabled={isDisabled}>
+        <Button
+          type="submit"
+          onClick={onClickNext}
+          disabled={isDisabled}
+          ref={saveEditionChangesButtonRef}
+        >
           Enregistrer les modifications
         </Button>
       </>
