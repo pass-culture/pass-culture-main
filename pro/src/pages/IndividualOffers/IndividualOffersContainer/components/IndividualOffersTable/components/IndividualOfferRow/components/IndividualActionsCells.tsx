@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
@@ -66,6 +66,8 @@ export const IndividualActionsCells = ({
       ? (storedFilters as Partial<SearchFiltersParams>)
       : {}),
   }
+
+  const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
 
   const { mutate } = useSWRConfig()
   const [isConfirmDialogDeleteDraftOpen, setIsConfirmDialogDeleteDraftOpen] =
@@ -140,6 +142,7 @@ export const IndividualActionsCells = ({
             title="Voir les actions"
             triggerIcon={fullThreeDotsIcon}
             triggerTooltip
+            dropdownTriggerRef={dropdownTriggerRef}
           >
             <>
               <EditOfferCell editionOfferLink={editionOfferLink} />
@@ -178,6 +181,7 @@ export const IndividualActionsCells = ({
         onConfirm={onConfirmDeleteDraftOffer}
         title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
         open={isConfirmDialogDeleteDraftOpen}
+        refToFocusOnClose={dropdownTriggerRef}
       />
       <ConfirmDialog
         icon={strokeStarIcon}
@@ -189,6 +193,7 @@ export const IndividualActionsCells = ({
           'Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre.'
         }
         open={isConfirmDialogReplaceHeadlineOfferOpen}
+        refToFocusOnClose={dropdownTriggerRef}
       />
       <HeadlineOfferImageDialogs
         offer={offer}
