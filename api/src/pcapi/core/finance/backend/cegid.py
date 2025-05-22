@@ -48,7 +48,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
     def __init__(self) -> None:
         self.base_url = settings.CEGID_URL
-        self._interface = "entity/INTERFACES/23.200.001"
+        self._interface = "entity/eCommerce/23.200.001"
 
     def _authenticate(self) -> str:
         username = settings.CEGID_USERNAME
