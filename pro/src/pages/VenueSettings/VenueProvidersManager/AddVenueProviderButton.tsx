@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -30,6 +30,9 @@ export const AddVenueProviderButton = ({
   linkedProviders,
 }: AddVenueProviderButtonProps) => {
   const { mutate } = useSWRConfig()
+
+  const providerSelectRef = useRef<HTMLSelectElement>(null)
+  const selectSoftwareButtonRef = useRef<HTMLButtonElement>(null)
 
   const providersQuery = useSWR(
     [GET_PROVIDERS_QUERY_KEY, venue.id],
@@ -103,6 +106,7 @@ export const AddVenueProviderButton = ({
   }
 
   const afterSubmit = async () => {
+    selectSoftwareButtonRef.current?.focus()
     cancelProviderSelection()
     await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
   }
@@ -112,6 +116,7 @@ export const AddVenueProviderButton = ({
       onClick={setCreationMode}
       variant={ButtonVariant.SECONDARY}
       icon={fullMoreIcon}
+      ref={selectSoftwareButtonRef}
     >
       Sélectionner un logiciel
     </Button>
@@ -127,6 +132,7 @@ export const AddVenueProviderButton = ({
           options={providersOptions}
           value={String(selectedProviderId)}
           data-testid="provider-select"
+          ref={providerSelectRef}
         />
       </FieldLayout>
 
@@ -135,6 +141,7 @@ export const AddVenueProviderButton = ({
           afterSubmit={afterSubmit}
           provider={selectedProvider}
           venue={venue}
+          providerSelectRef={providerSelectRef}
         />
       )}
     </>
