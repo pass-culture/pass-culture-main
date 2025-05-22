@@ -13,23 +13,20 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.offers import utils as offers_utils
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
-from pcapi.models import api_errors
-from pcapi.models import db
-from pcapi.routes.public import blueprints
-from pcapi.routes.public import spectree_schemas
+from pcapi.models import api_errors, db
+from pcapi.routes.public import blueprints, spectree_schemas
 from pcapi.routes.public import utils as public_utils
-from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.documentation_constants import http_responses, tags
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.custom_keys import get_field
-from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import (
+    current_api_key, provider_api_key_required)
 
-from . import serialization
-from . import utils
+from . import serialization, utils
 
 
 def _deserialize_has_ticket(
@@ -57,32 +54,46 @@ def _deserialize_has_ticket(
             | http_responses.HTTP_400_BAD_REQUEST
             | http_responses.HTTP_404_VENUE_NOT_FOUND
             | {
-                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been created successfully"),
+                "HTTP_200": (
+                    serialization.EventOfferResponse,
+                    "The event offer has been created successfully",
+                ),
             }
         )
     ),
 )
-def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
+def post_event_offer(
+    body: serialization.EventOfferCreation,
+) -> serialization.EventOfferResponse:
     """
     Create Event Offer
     """
-    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue_provider = authorization.get_venue_provider_or_raise_404(
+        body.location.venue_id
+    )
     venue = utils.get_venue_with_offerer_address(body.location.venue_id)
 
-    if body.has_ticket and not (venue_provider.provider.hasTicketingService or venue_provider.hasTicketingService):
+    if body.has_ticket and not (
+        venue_provider.provider.hasTicketingService
+        or venue_provider.hasTicketingService
+    ):
         raise api_errors.ApiErrors(
             {
                 "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."
             }
         )
 
-    withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
+    withdrawal_type = _deserialize_has_ticket(
+        body.has_ticket, body.category_related_fields.subcategory_id
+    )
     try:
         with repository.transaction():
             offerer_address = venue.offererAddress  # default offerer_address
 
             if body.location.type == "address":
-                address = public_utils.get_address_or_raise_404(body.location.address_id)
+                address = public_utils.get_address_or_raise_404(
+                    body.location.address_id
+                )
                 offerer_address = offerers_api.get_or_create_offerer_address(
                     offerer_id=venue.managingOffererId,
                     address_id=address.id,
@@ -101,10 +112,16 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 description=body.description,
                 durationMinutes=body.event_duration,
                 externalTicketOfficeUrl=body.external_ticket_office_url,
-                extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
+                extraData=serialization.deserialize_extra_data(
+                    body.category_related_fields, venue_id=venue.id
+                ),
                 idAtProvider=body.id_at_provider,
                 isDuo=body.enable_double_bookings,
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                url=(
+                    body.location.url
+                    if isinstance(body.location, serialization.DigitalLocation)
+                    else None
+                ),
                 withdrawalDetails=body.withdrawal_details,
                 withdrawalType=withdrawal_type,
             )  # type: ignore[call-arg]
@@ -131,7 +148,9 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             if body.image:
                 utils.save_image(body.image, created_offer)
 
-            offers_api.publish_offer(created_offer, publication_date=body.publication_date)
+            offers_api.publish_offer(
+                created_offer, publication_date=body.publication_date
+            )
 
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
@@ -147,7 +166,12 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned")}
+            {
+                "HTTP_200": (
+                    serialization.EventOfferResponse,
+                    "The event offer has been returned",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_404_EVENT_NOT_FOUND
@@ -161,12 +185,16 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     Return event offer by id.
     """
     offer: offers_models.Offer | None = (
-        utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
+        offers_utils.retrieve_offer_relations_query(
+            utils.retrieve_offer_query(event_id)
+        )
         .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event offer could not be found"]}, status_code=404
+        )
 
     return serialization.EventOfferResponse.build_event_offer(offer)
 
@@ -179,7 +207,12 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     response_model=serialization.EventOffersResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned")}
+            {
+                "HTTP_200": (
+                    serialization.EventOffersResponse,
+                    "The event offers have been returned",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_403_UNAUTHORIZED
@@ -187,7 +220,9 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
         )
     ),
 )
-def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
+def get_events(
+    query: serialization.GetOffersQueryParams,
+) -> serialization.EventOffersResponse:
     """
     Get Event Offers
 
@@ -198,14 +233,21 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     if query.venue_id:
         authorization.get_venue_provider_or_raise_404(query.venue_id)
 
-    total_offers_query = utils.get_filtered_offers_linked_to_provider(query, is_event=True)
+    total_offers_query = offers_utils.get_filtered_offers_linked_to_provider(
+        query, is_event=True
+    )
 
     return serialization.EventOffersResponse(
-        events=[serialization.EventOfferResponse.build_event_offer(offer) for offer in total_offers_query],
+        events=[
+            serialization.EventOfferResponse.build_event_offer(offer)
+            for offer in total_offers_query
+        ],
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["PATCH"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>", methods=["PATCH"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -213,7 +255,12 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned")}
+            {
+                "HTTP_200": (
+                    serialization.EventOfferResponse,
+                    "The event offer has been returned",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -221,20 +268,26 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
         )
     ),
 )
-def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
+def edit_event(
+    event_id: int, body: serialization.EventOfferEdition
+) -> serialization.EventOfferResponse:
     """
     Update Event Offer
 
     Will update only the non-blank fields. If you some fields to keep their current values, leave them `undefined`.
     """
     offer: offers_models.Offer | None = (
-        utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
+        offers_utils.retrieve_offer_relations_query(
+            utils.retrieve_offer_query(event_id)
+        )
         .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
 
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event offer could not be found"]}, status_code=404
+        )
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
@@ -246,14 +299,24 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             extra_data = copy.deepcopy(offer.extraData)
             is_active = get_field(offer, updates, "isActive")
             offer_body = offers_schemas.UpdateOffer(
-                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
-                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
-                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
-                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+                audioDisabilityCompliant=get_field(
+                    offer, dc, "audioDisabilityCompliant"
+                ),
+                mentalDisabilityCompliant=get_field(
+                    offer, dc, "mentalDisabilityCompliant"
+                ),
+                motorDisabilityCompliant=get_field(
+                    offer, dc, "motorDisabilityCompliant"
+                ),
+                visualDisabilityCompliant=get_field(
+                    offer, dc, "visualDisabilityCompliant"
+                ),
                 bookingContact=get_field(offer, updates, "bookingContact"),
                 bookingEmail=get_field(offer, updates, "bookingEmail"),
                 description=get_field(offer, updates, "description"),
-                durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
+                durationMinutes=get_field(
+                    offer, updates, "eventDuration", col="durationMinutes"
+                ),
                 ean=get_field(offer, updates, "ean"),
                 extraData=(
                     serialization.deserialize_extra_data(
@@ -265,11 +328,19 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 isActive=is_active if is_active is not None else offer.isActive,
                 idAtProvider=get_field(offer, updates, "idAtProvider"),
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+                withdrawalDetails=get_field(
+                    offer, updates, "itemCollectionDetails", col="withdrawalDetails"
+                ),
                 name=get_field(offer, updates, "name"),
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                url=(
+                    body.location.url
+                    if isinstance(body.location, serialization.DigitalLocation)
+                    else None
+                ),
             )  # type: ignore[call-arg]
-            offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
+            offer = offers_api.update_offer(
+                offer, offer_body, venue=venue, offerer_address=offerer_address
+            )
             if body.image:
                 utils.save_image(body.image, offer)
     except offers_exceptions.OfferException as error:
@@ -278,7 +349,9 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     return serialization.EventOfferResponse.build_event_offer(offer)
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -286,7 +359,12 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     response_model=serialization.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully")}
+            {
+                "HTTP_200": (
+                    serialization.PriceCategoriesResponse,
+                    "The price category has been created successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -302,15 +380,26 @@ def post_event_price_categories(
 
     Batch create price categories for given event.
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+    offer = (
+        utils.retrieve_offer_query(event_id)
+        .filter(offers_models.Offer.isEvent)
+        .one_or_none()
+    )
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event could not be found"]}, status_code=404
+        )
 
     # We convert the price to euros because the price has different types in different apis
-    new_labels_and_prices = {(p.label, finance_utils.cents_to_full_unit(p.price)) for p in body.price_categories}
+    new_labels_and_prices = {
+        (p.label, finance_utils.cents_to_full_unit(p.price))
+        for p in body.price_categories
+    }
     check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
 
-    existing_price_categories_count = offers_repository.get_offer_price_categories(offer.id).count()
+    existing_price_categories_count = offers_repository.get_offer_price_categories(
+        offer.id
+    ).count()
 
     if (
         existing_price_categories_count + len(body.price_categories)
@@ -340,10 +429,14 @@ def post_event_price_categories(
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
-    return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
+    return serialization.PriceCategoriesResponse.build_price_categories(
+        created_price_categories
+    )
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["GET"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/price_categories", methods=["GET"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -351,7 +444,12 @@ def post_event_price_categories(
     response_model=serialization.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully")}
+            {
+                "HTTP_200": (
+                    serialization.PriceCategoriesResponse,
+                    "The price category has been created successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -367,21 +465,30 @@ def get_event_price_categories(
 
     Get existing price categories for given event
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+    offer = (
+        utils.retrieve_offer_query(event_id)
+        .filter(offers_models.Offer.isEvent)
+        .one_or_none()
+    )
 
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event could not be found"]}, status_code=404
+        )
 
     price_categories = offers_repository.get_offer_price_categories(
         offer.id,
         id_at_provider_list=query.ids_at_provider,  # type: ignore[arg-type]
     ).all()
 
-    return serialization.PriceCategoriesResponse.build_price_categories(price_categories)
+    return serialization.PriceCategoriesResponse.build_price_categories(
+        price_categories
+    )
 
 
 @blueprints.public_api.route(
-    "/public/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
+    "/public/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>",
+    methods=["PATCH"],
 )
 @provider_api_key_required
 @spectree_serialize(
@@ -390,7 +497,12 @@ def get_event_price_categories(
     response_model=serialization.PriceCategoryResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PriceCategoryResponse, "The price category has been modified successfully")}
+            {
+                "HTTP_200": (
+                    serialization.PriceCategoryResponse,
+                    "The price category has been modified successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -411,11 +523,17 @@ def patch_event_price_category(
     """
     event_offer = utils.get_event_with_details(event_id)
     if not event_offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event could not be found"]}, status_code=404
+        )
 
-    price_category_to_edit = utils.get_price_category_from_event(event_offer, price_category_id)
+    price_category_to_edit = utils.get_price_category_from_event(
+        event_offer, price_category_id
+    )
     if not price_category_to_edit:
-        raise api_errors.ApiErrors({"price_category_id": ["No price category could be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"price_category_id": ["No price category could be found"]}, status_code=404
+        )
 
     update_body = body.dict(exclude_unset=True)
     try:
@@ -440,7 +558,9 @@ def patch_event_price_category(
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["POST"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/dates", methods=["POST"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -448,7 +568,12 @@ def patch_event_price_category(
     response_model=serialization.PostDatesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PostDatesResponse, "The event dates have been created successfully")}
+            {
+                "HTTP_200": (
+                    serialization.PostDatesResponse,
+                    "The event dates have been created successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -456,7 +581,9 @@ def patch_event_price_category(
         )
     ),
 )
-def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) -> serialization.PostDatesResponse:
+def post_event_stocks(
+    event_id: int, body: serialization.EventStocksCreation
+) -> serialization.PostDatesResponse:
     """
     Add Stocks to an Event
 
@@ -472,12 +599,17 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         .one_or_none()
     )
     if not offer:
-        raise api_errors.ResourceNotFoundError({"event_id": ["The event could not be found"]})
+        raise api_errors.ResourceNotFoundError(
+            {"event_id": ["The event could not be found"]}
+        )
 
     new_dates: list[offers_models.Stock] = []
     existing_stocks_count = offers_repository.get_offer_existing_stocks_count(offer.id)
 
-    if len(body.dates) + existing_stocks_count > offers_models.Offer.MAX_STOCKS_PER_OFFER:
+    if (
+        len(body.dates) + existing_stocks_count
+        > offers_models.Offer.MAX_STOCKS_PER_OFFER
+    ):
         raise api_errors.ApiErrors(
             {
                 "dates": [
@@ -493,10 +625,21 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
             # For now, keep it that way to avoid a breaking change in terms
             # of API response.
             # quantity can be an integer or... the string "unlimited".
-            valid_dates = [item for item in body.dates if isinstance(item.quantity, str) or item.quantity > 0]
+            valid_dates = [
+                item
+                for item in body.dates
+                if isinstance(item.quantity, str) or item.quantity > 0
+            ]
 
             for date in valid_dates:
-                price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
+                price_category = next(
+                    (
+                        c
+                        for c in offer.priceCategories
+                        if c.id == date.price_category_id
+                    ),
+                    None,
+                )
                 if not price_category:
                     raise api_errors.ResourceNotFoundError(
                         {"price_category_id": ["The price category could not be found"]}
@@ -519,11 +662,15 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         raise api_errors.ApiErrors(error.errors)
 
     return serialization.PostDatesResponse(
-        dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
+        dates=[
+            serialization.DateResponse.build_date(new_date) for new_date in new_dates
+        ]
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["GET"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/dates", methods=["GET"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -531,7 +678,12 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
     response_model=serialization.GetDatesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.GetDatesResponse, "The event dates have been returned")}
+            {
+                "HTTP_200": (
+                    serialization.GetDatesResponse,
+                    "The event dates have been returned",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -539,15 +691,23 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         )
     ),
 )
-def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryParams) -> serialization.GetDatesResponse:
+def get_event_stocks(
+    event_id: int, query: serialization.GetEventStocksQueryParams
+) -> serialization.GetDatesResponse:
     """
     Get Event Stocks
 
     Return all stocks for given event. Results are paginated (by default there are `50` date per page).
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+    offer = (
+        utils.retrieve_offer_query(event_id)
+        .filter(offers_models.Offer.isEvent)
+        .one_or_none()
+    )
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event could not be found"]}, status_code=404
+        )
 
     stock_id_query = (
         db.session.query(offers_models.Stock)
@@ -560,7 +720,9 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
     )
 
     if query.ids_at_provider is not None:
-        stock_id_query = stock_id_query.filter(offers_models.Stock.idAtProviders.in_(query.ids_at_provider))
+        stock_id_query = stock_id_query.filter(
+            offers_models.Stock.idAtProviders.in_(query.ids_at_provider)
+        )
 
     total_stock_ids = [stock_id for (stock_id,) in stock_id_query.all()]
 
@@ -581,7 +743,9 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
     )
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -611,17 +775,30 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
         .one_or_none()
     )
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
-    stock_to_delete = next((stock for stock in offer.stocks if stock.id == stock_id and not stock.isSoftDeleted), None)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event could not be found"]}, status_code=404
+        )
+    stock_to_delete = next(
+        (
+            stock
+            for stock in offer.stocks
+            if stock.id == stock_id and not stock.isSoftDeleted
+        ),
+        None,
+    )
     if not stock_to_delete:
-        raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"stock_id": ["No stock could be found"]}, status_code=404
+        )
     try:
         offers_api.delete_stock(stock_to_delete)
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
 
-@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"]
+)
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -630,7 +807,12 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
     on_empty_status=204,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.DateResponse, "The event date has been modified successfully")}
+            {
+                "HTTP_200": (
+                    serialization.DateResponse,
+                    "The event date has been modified successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -649,38 +831,65 @@ def patch_event_stock(
     Update the price category and the beginning time of an event stock.
     """
     offer: offers_models.Offer | None = (
-        utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
+        offers_utils.retrieve_offer_relations_query(
+            utils.retrieve_offer_query(event_id)
+        )
         .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
     if not offer:
-        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"event_id": ["The event could not be found"]}, status_code=404
+        )
 
-    stock_to_edit = next((stock for stock in offer.stocks if stock.id == stock_id and not stock.isSoftDeleted), None)
+    stock_to_edit = next(
+        (
+            stock
+            for stock in offer.stocks
+            if stock.id == stock_id and not stock.isSoftDeleted
+        ),
+        None,
+    )
     if not stock_to_edit:
-        raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"stock_id": ["No stock could be found"]}, status_code=404
+        )
 
     update_body = body.dict(exclude_unset=True)
     try:
         with repository.transaction():
             price_category_id = update_body.get("price_category_id", None)
             price_category = (
-                next((c for c in offer.priceCategories if c.id == price_category_id), None)
+                next(
+                    (c for c in offer.priceCategories if c.id == price_category_id),
+                    None,
+                )
                 if price_category_id is not None
                 else offers_api.UNCHANGED
             )
             if not price_category:
                 raise api_errors.ApiErrors(
-                    {"price_category_id": ["The price category could not be found"]}, status_code=404
+                    {"price_category_id": ["The price category could not be found"]},
+                    status_code=404,
                 )
 
-            quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
+            quantity = serialization.deserialize_quantity(
+                update_body.get("quantity", offers_api.UNCHANGED)
+            )
             edited_stock, is_beginning_updated = offers_api.edit_stock(
                 stock_to_edit,
-                quantity=quantity + stock_to_edit.dnBookedQuantity if isinstance(quantity, int) else quantity,
+                quantity=(
+                    quantity + stock_to_edit.dnBookedQuantity
+                    if isinstance(quantity, int)
+                    else quantity
+                ),
                 price_category=price_category,
-                booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
-                beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
+                booking_limit_datetime=update_body.get(
+                    "booking_limit_datetime", offers_api.UNCHANGED
+                ),
+                beginning_datetime=update_body.get(
+                    "beginning_datetime", offers_api.UNCHANGED
+                ),
                 id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
             )
@@ -688,13 +897,21 @@ def patch_event_stock(
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
     except booking_exceptions.BookingIsAlreadyCancelled:
-        raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
+        raise api_errors.ResourceGoneError(
+            {"booking": ["Cette réservation a été annulée"]}
+        )
     except booking_exceptions.BookingIsAlreadyRefunded:
-        raise api_errors.ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})
+        raise api_errors.ResourceGoneError(
+            {"payment": ["Le remboursement est en cours de traitement"]}
+        )
     except booking_exceptions.BookingHasActivationCode:
-        raise api_errors.ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
+        raise api_errors.ForbiddenError(
+            {"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]}
+        )
     except booking_exceptions.BookingIsNotUsed:
-        raise api_errors.ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
+        raise api_errors.ResourceGoneError(
+            {"booking": ["Cette contremarque n'a pas encore été validée"]}
+        )
     # `edited_stock` could be None if nothing was changed.
     stock = edited_stock or stock_to_edit
     if not stock or stock.isSoftDeleted:
@@ -709,7 +926,12 @@ def patch_event_stock(
     response_model=serialization.GetEventCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories have been returned")}
+            {
+                "HTTP_200": (
+                    serialization.GetEventCategoriesResponse,
+                    "The event categories have been returned",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )

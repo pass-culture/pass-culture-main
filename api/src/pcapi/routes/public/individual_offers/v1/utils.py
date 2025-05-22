@@ -8,14 +8,12 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
-from pcapi.models import api_errors
-from pcapi.models import db
+from pcapi.models import api_errors, db
 from pcapi.routes.public import utils as public_utils
 from pcapi.utils import image_conversion
 from pcapi.validation.routes.users_authentifications import current_api_key
 
-from . import constants
-from . import serialization
+from . import constants, serialization
 
 
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
@@ -24,30 +22,6 @@ def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
         .filter(offerers_models.Venue.id == venue_id)
         .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
         .one()
-    )
-
-
-def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
-    return (
-        query.options(sa_orm.selectinload(offers_models.Offer.stocks))
-        .options(sa_orm.selectinload(offers_models.Offer.mediations))
-        .options(
-            sa_orm.joinedload(offers_models.Offer.product)
-            .load_only(
-                offers_models.Product.id,
-                offers_models.Product.thumbCount,
-                offers_models.Product.description,
-                offers_models.Product.durationMinutes,
-                offers_models.Product.extraData,
-            )
-            .selectinload(offers_models.Product.productMediations)
-        )
-        .options(
-            sa_orm.selectinload(offers_models.Offer.priceCategories).joinedload(
-                offers_models.PriceCategory.priceCategoryLabel
-            )
-        )
-        .options(sa_orm.joinedload(offers_models.Offer.futureOffer))
     )
 
 
@@ -65,20 +39,27 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
         .exists()
     ).scalar()
     if not is_venue_tied_to_api_key:
-        raise api_errors.ApiErrors({"venue_id": ["The venue could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors(
+            {"venue_id": ["The venue could not be found"]}, status_code=404
+        )
 
 
 def check_offer_subcategory(
-    body: serialization.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory_id: str
+    body: serialization.ProductOfferEdition | serialization.EventOfferEdition,
+    offer_subcategory_id: str,
 ) -> None:
     if body.category_related_fields is not None and (
         body.category_related_fields.subcategory_id != offer_subcategory_id
     ):
-        raise api_errors.ApiErrors({"categoryRelatedFields.category": ["The category cannot be changed"]})
+        raise api_errors.ApiErrors(
+            {"categoryRelatedFields.category": ["The category cannot be changed"]}
+        )
 
 
 def retrieve_offer_query(offer_id: int) -> sa_orm.Query:
-    return _retrieve_offer_tied_to_user_query().filter(offers_models.Offer.id == offer_id)
+    return _retrieve_offer_tied_to_user_query().filter(
+        offers_models.Offer.id == offer_id
+    )
 
 
 def _retrieve_offer_tied_to_user_query() -> sa_orm.Query:
@@ -93,49 +74,13 @@ def _retrieve_offer_tied_to_user_query() -> sa_orm.Query:
     )
 
 
-def get_filtered_offers_linked_to_provider(
-    query_filters: serialization.GetOffersQueryParams,
-    is_event: bool,
-) -> sa_orm.Query:
-    offers_query = (
-        db.session.query(offers_models.Offer)
-        .outerjoin(offers_models.Offer.futureOffer)
-        .join(offerers_models.Venue)
-        .join(providers_models.VenueProvider)
-        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
-        .filter(offers_models.Offer.isEvent == is_event)
-        .filter(offers_models.Offer.id >= query_filters.firstIndex)
-        .order_by(offers_models.Offer.id)
-        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
-        .options(
-            sa_orm.joinedload(offers_models.Offer.venue).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.offererAddressId
-            )
-        )
-    )
-
-    if query_filters.venue_id:
-        offers_query = offers_query.filter(offers_models.Offer.venueId == query_filters.venue_id)
-
-    if query_filters.ids_at_provider:
-        offers_query = offers_query.filter(offers_models.Offer.idAtProvider.in_(query_filters.ids_at_provider))
-
-    if query_filters.address_id:
-        offers_query = offers_query.join(
-            offerers_models.OffererAddress,
-            offerers_models.OffererAddress.id == offers_models.Offer.offererAddressId,
-        ).filter(offerers_models.OffererAddress.addressId == query_filters.address_id)
-
-    offers_query = retrieve_offer_relations_query(offers_query).limit(query_filters.limit)
-
-    return offers_query
-
-
 def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) -> None:
     try:
         image_as_bytes = public_utils.get_bytes_from_base64_string(image_body.file)
     except public_utils.InvalidBase64Exception:
-        raise api_errors.ApiErrors(errors={"imageFile": ["The value must be a valid base64 string."]})
+        raise api_errors.ApiErrors(
+            errors={"imageFile": ["The value must be a valid base64 string."]}
+        )
     try:
         offers_api.create_mediation(
             user=None,
@@ -164,7 +109,9 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
         raise api_errors.ApiErrors(errors={"imageFile": message})
     except image_conversion.ImageRatioError as error:
         raise api_errors.ApiErrors(
-            errors={"imageFile": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"}
+            errors={
+                "imageFile": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"
+            }
         )
 
 
@@ -172,7 +119,9 @@ def get_event_with_details(event_id: int) -> offers_models.Offer | None:
     return (
         retrieve_offer_query(event_id)
         .filter(offers_models.Offer.isEvent)
-        .outerjoin(offers_models.Offer.stocks.and_(sa.not_(offers_models.Stock.isEventExpired)))
+        .outerjoin(
+            offers_models.Offer.stocks.and_(sa.not_(offers_models.Stock.isEventExpired))
+        )
         .options(sa_orm.contains_eager(offers_models.Offer.stocks))
         .options(
             sa_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
@@ -194,8 +143,12 @@ def get_price_category_from_event(
 
 def load_venue_and_provider_query(query: sa_orm.Query) -> sa_orm.Query:
     return query.options(
-        sa_orm.joinedload(offers_models.Offer.lastProvider).joinedload(providers_models.Provider.offererProvider),
-        sa_orm.joinedload(offers_models.Offer.venue).load_only(offerers_models.Venue.isVirtual),
+        sa_orm.joinedload(offers_models.Offer.lastProvider).joinedload(
+            providers_models.Provider.offererProvider
+        ),
+        sa_orm.joinedload(offers_models.Offer.venue).load_only(
+            offerers_models.Venue.isVirtual
+        ),
     )
 
 

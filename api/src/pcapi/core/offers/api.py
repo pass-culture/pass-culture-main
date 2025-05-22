@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import decimal
+from pcapi.core.offers import utils as offers_utils
 from pcapi.core.offerers.models import ApiKey
 import enum
 import functools
@@ -2367,7 +2368,7 @@ def get_existing_offers(
     )
 
     return (
-        individual_offers_v1_utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
+        offers_utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
         .join(subquery, offers_models.Offer.id == subquery.c.max_id)
         .all()
     )
