@@ -1,7 +1,7 @@
 import dataclasses
-from pcapi.validation.routes.users_authentifications import current_api_key
 import datetime
 import decimal
+from pcapi.core.offerers.models import ApiKey
 import enum
 import functools
 import logging
@@ -2375,6 +2375,7 @@ def create_product(
     venue: offerers_models.Venue,
     body: individual_offers_v1_serialization.ProductOfferCreation,
     offerer_address: offerers_models.OffererAddress | None,
+    api_key: ApiKey,
 ) -> offers_models.Offer:
     try:
         offer_body = offers_schemas.CreateOffer(
@@ -2408,7 +2409,7 @@ def create_product(
         created_product = create_offer(
             offer_body,
             venue=venue,
-            provider=current_api_key.provider,
+            provider=api_key.provider,
             offerer_address=offerer_address,
         )
 
