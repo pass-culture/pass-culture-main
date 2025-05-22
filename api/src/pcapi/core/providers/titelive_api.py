@@ -9,6 +9,7 @@ import PIL
 import pydantic.v1 as pydantic
 
 import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -246,7 +247,12 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
                             object_id=image_id,
                         )
                 db.session.commit()
-            except (requests.ExternalAPIException, PIL.UnidentifiedImageError, OSError) as e:
+            except (
+                requests.ExternalAPIException,
+                PIL.UnidentifiedImageError,
+                OSError,
+                offers_exceptions.ImageValidationError,
+            ) as e:
                 db.session.rollback()
                 logger.error(
                     "Error while downloading Titelive image",
