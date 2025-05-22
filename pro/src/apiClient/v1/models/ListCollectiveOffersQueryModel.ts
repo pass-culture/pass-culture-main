@@ -13,7 +13,7 @@ export type ListCollectiveOffersQueryModel = {
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
-  status?: (Array<CollectiveOfferDisplayedStatus> | CollectiveOfferDisplayedStatus) | null;
+  status?: Array<CollectiveOfferDisplayedStatus> | null;
   venueId?: number | null;
 };
 
