@@ -51,6 +51,12 @@ export const Offerers = (): JSX.Element => {
   const isLocalAuthority = MAYBE_LOCAL_AUTHORITY_APE_CODE.includes(
     offerer?.apeCode ?? ''
   )
+  const restrictVenueCreationToCollectivity = useActiveFeature(
+    'WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'
+  )
+  const restrictVenueAttachmentToCollectivity = useActiveFeature(
+    'WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY'
+  )
 
   /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
@@ -184,12 +190,17 @@ export const Offerers = (): JSX.Element => {
             </Button>
           )}
         </div>
-        <Button variant={ButtonVariant.SECONDARY} onClick={doLinkUserToOfferer}>
-          Rejoindre cet espace
-        </Button>
+        {(!restrictVenueAttachmentToCollectivity || isLocalAuthority) && (
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            onClick={doLinkUserToOfferer}
+          >
+            Rejoindre cet espace
+          </Button>
+        )}
       </div>
 
-      {isLocalAuthority && (
+      {(!restrictVenueCreationToCollectivity || isLocalAuthority) && (
         <>
           <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
             Vous souhaitez ajouter une nouvelle structure à cet espace ?
