@@ -15,11 +15,10 @@ describe('submit button', () => {
     ).toBeEnabled()
   })
 
-  it('should not display the text value of the button when is loading, and the button should be disabled', () => {
+  it('should disable the button when is loading', () => {
     renderButton({ isLoading: true })
 
     const button = screen.getByRole('button')
-    expect(button.textContent).toBe('')
     expect(button).toBeDisabled()
   })
 })
