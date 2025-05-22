@@ -1,5 +1,5 @@
 import { format } from 'date-fns-tz'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -28,6 +28,7 @@ export interface PrebookingButtonProps {
   institutionOfferCount?: number
   setOfferPrebooked?: (value: boolean) => void
   shouldDisablePrebookButton: boolean
+  refToFocusOnOfferPrebooked?: React.RefObject<HTMLElement>
 }
 
 export const PrebookingButton = ({
@@ -44,11 +45,14 @@ export const PrebookingButton = ({
   institutionOfferCount,
   setOfferPrebooked,
   shouldDisablePrebookButton,
+  refToFocusOnOfferPrebooked,
 }: PrebookingButtonProps): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notification = useNotification()
+
+  const prebookButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA && !isPreview) {
@@ -64,6 +68,12 @@ export const PrebookingButton = ({
 
   const closeModal = () => {
     setIsModalOpen(false)
+
+    setTimeout(() => {
+      if (!prebookButtonRef.current) {
+        refToFocusOnOfferPrebooked?.current?.focus()
+      }
+    })
   }
 
   const preBookCurrentStock = useCallback(async () => {
@@ -121,6 +131,7 @@ export const PrebookingButton = ({
               className={styles['prebooking-button']}
               onClick={() => handleBookingModalButtonClick(stock.id)}
               disabled={shouldDisablePrebookButton}
+              ref={prebookButtonRef}
             >
               {children ?? 'Préréserver l’offre'}
             </Button>
@@ -142,6 +153,7 @@ export const PrebookingButton = ({
         preBookCurrentStock={preBookCurrentStock}
         isPreview={isPreview}
         isDialogOpen={isModalOpen}
+        refToFocusOnClose={prebookButtonRef}
       />
     </>
   ) : null
