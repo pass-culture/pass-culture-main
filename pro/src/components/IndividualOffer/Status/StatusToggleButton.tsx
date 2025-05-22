@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -22,6 +22,9 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
   const notification = useNotification()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
+
+  const toggleButtonRef = useRef<HTMLButtonElement>(null)
+
   const isPublicationDateInFuture =
     isDateValid(offer.publicationDate) &&
     new Date(offer.publicationDate) > new Date()
@@ -78,6 +81,7 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         onCancel={() => setIsPublicationConfirmationModalOpen(false)}
         onConfirm={toggleOfferActiveStatus}
         open={isPublicationConfirmationModalOpen}
+        refToFocusOnClose={toggleButtonRef}
       />
 
       <Button
@@ -89,6 +93,7 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         icon={
           offer.status === OfferStatus.INACTIVE ? strokeCheckIcon : fullHideIcon
         }
+        ref={toggleButtonRef}
       >
         {offer.status === OfferStatus.INACTIVE ? 'Publier' : 'Mettre en pause'}
       </Button>
