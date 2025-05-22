@@ -250,3 +250,21 @@ class EventOpeningHoursException(Exception):
         self.field = field if field else self.default_field
         self.msg = msg if msg else self.default_msg
         super().__init__(*args, **kwargs)
+
+class CreateProductError(Exception):
+    msg = "can't create this offer"
+
+
+class CreateProductDBError(CreateProductError):
+    msg = "internal error, can't create this offer"
+
+class ExistingVenueWithIdAtProviderError(CreateProductDBError):
+    msg = "`idAtProvider` already exists for this venue, can't create this offer"
+
+class CreateStockError(CreateProductError):
+    pass
+
+class CreateStockDBError(CreateStockError):
+    pass
+
+

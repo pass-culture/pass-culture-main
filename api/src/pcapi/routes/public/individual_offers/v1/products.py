@@ -17,9 +17,11 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
@@ -174,77 +176,6 @@ def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypes
     )
 
 
-class CreateProductError(Exception):
-    msg = "can't create this offer"
-
-
-class CreateProductDBError(CreateProductError):
-    msg = "internal error, can't create this offer"
-
-
-class ExistingVenueWithIdAtProviderError(CreateProductDBError):
-    msg = "`idAtProvider` already exists for this venue, can't create this offer"
-
-
-class CreateStockError(CreateProductError):
-    pass
-
-
-class CreateStockDBError(CreateStockError):
-    pass
-
-
-def _create_product(
-    venue: offerers_models.Venue,
-    body: serialization.ProductOfferCreation,
-    offerer_address: offerers_models.OffererAddress | None,
-) -> offers_models.Offer:
-    try:
-        offer_body = offers_schemas.CreateOffer(
-            name=body.name,
-            subcategoryId=body.category_related_fields.subcategory_id,
-            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
-            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
-            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
-            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
-            bookingContact=body.booking_contact,
-            bookingEmail=body.booking_email,
-            description=body.description,
-            externalTicketOfficeUrl=body.external_ticket_office_url,
-            ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
-            extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
-            idAtProvider=body.id_at_provider,
-            isDuo=body.enable_double_bookings,
-            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-            withdrawalDetails=body.withdrawal_details,
-        )  # type: ignore[call-arg]
-        created_product = offers_api.create_offer(
-            offer_body,
-            venue=venue,
-            provider=current_api_key.provider,
-            offerer_address=offerer_address,
-        )
-
-        # To create stocks or publishing the offer we need to flush
-        # the session to get the offer id
-        db.session.flush()
-    except sa_exc.IntegrityError as error:
-        # a unique constraint violation can only mean that the venueId/idAtProvider
-        # already exists
-        is_offer_table = error.orig.diag.table_name == offers_models.Offer.__tablename__
-        is_unique_constraint_violation = error.orig.pgcode == UNIQUE_VIOLATION
-        unique_id_at_provider_venue_id_is_violated = is_offer_table and is_unique_constraint_violation
-
-        if unique_id_at_provider_venue_id_is_violated:
-            raise ExistingVenueWithIdAtProviderError() from error
-        # Other error are unlikely, but we still need to manage them.
-        raise CreateProductDBError() from error
-    except sa_exc.SQLAlchemyError as error:
-        raise CreateProductDBError() from error
-
-    return created_product
-
-
 def _create_stock(product: offers_models.Offer, body: serialization.ProductOfferCreation) -> None:
     if not body.stock:
         return
@@ -261,9 +192,9 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
             creating_provider=current_api_key.provider,
         )
     except sa_exc.SQLAlchemyError as error:
-        raise CreateStockDBError() from error
+        raise offers_exceptions.CreateStockDBError() from error
     except Exception as error:
-        raise CreateStockError() from error
+        raise offers_exceptions.CreateStockError() from error
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["POST"])
@@ -302,7 +233,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                     address_id=address.id,
                     label=body.location.address_label,
                 )
-            product = _create_product(venue=venue, body=body, offerer_address=offerer_address)
+            product = offers_api.create_product(venue=venue, body=body, offerer_address=offerer_address)
 
             if body.image:
                 utils.save_image(body.image, product)
@@ -310,9 +241,9 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
             _create_stock(product=product, body=body)
             offers_api.update_offer_fraud_information(product, user=None)
             offers_api.publish_offer(product)
-    except ExistingVenueWithIdAtProviderError as error:
+    except offers_exceptions.ExistingVenueWithIdAtProviderError as error:
         raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
-    except CreateProductError as error:
+    except offers_exceptions.CreateProductError as error:
         # This is very unlikely. Therefore, the error should be logged in
         # order to check that there is no bug on our side.
         logger.error("Unlikely create product error encountered", extra={"error": error, "body": body})
@@ -368,207 +299,12 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    _create_or_update_ean_offers.delay(
+    offers_tasks.create_or_update_ean_offers.delay(
         serialized_products_stocks=serialized_products_stocks,
         venue_id=venue.id,
         provider_id=current_api_key.provider.id,
         address_id=address_id,
         address_label=address_label,
-    )
-
-
-@job(worker.low_queue)
-def _create_or_update_ean_offers(
-    *,
-    serialized_products_stocks: dict,
-    venue_id: int,
-    provider_id: int,
-    address_id: int | None = None,
-    address_label: str | None = None,
-) -> None:
-    provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one()
-    venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one()
-
-    ean_to_create_or_update = set(serialized_products_stocks.keys())
-
-    offers_to_update = _get_existing_offers(ean_to_create_or_update, venue)
-    offer_to_update_by_ean = {}
-    ean_list_to_update = set()
-    for offer in offers_to_update:
-        offer_ean = offer.ean
-        ean_list_to_update.add(offer_ean)
-        offer_to_update_by_ean[offer_ean] = offer
-
-    ean_list_to_create = ean_to_create_or_update - ean_list_to_update
-    offers_to_index = []
-    with repository.transaction():
-        offerer_address = venue.offererAddress  # default offerer_address
-
-        if address_id:
-            offerer_address = offerers_api.get_or_create_offerer_address(
-                offerer_id=venue.managingOffererId,
-                address_id=address_id,
-                label=address_label,
-            )
-
-        if ean_list_to_create:
-            created_offers = []
-            existing_products = _get_existing_products(ean_list_to_create)
-            product_by_ean = {product.ean: product for product in existing_products}
-            not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
-            if not_found_eans:
-                logger.warning(
-                    "Some provided eans were not found",
-                    extra={"eans": ",".join(not_found_eans), "venue": venue_id},
-                    technical_message_id="ean.not_found",
-                )
-            for product in existing_products:
-                try:
-                    ean = product.ean
-                    stock_data = serialized_products_stocks[ean]
-                    created_offer = _create_offer_from_product(
-                        venue,
-                        product_by_ean[ean],
-                        provider,
-                        offererAddress=offerer_address,
-                    )
-                    created_offers.append(created_offer)
-
-                except offers_exceptions.OfferException as exc:
-                    logger.info(
-                        "Error while creating offer by ean",
-                        extra={
-                            "ean": ean,
-                            "venue_id": venue_id,
-                            "provider_id": provider_id,
-                            "exc": exc.__class__.__name__,
-                        },
-                    )
-
-            db.session.bulk_save_objects(created_offers)
-
-            reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
-            for offer in reloaded_offers:
-                try:
-                    ean = offer.ean
-                    stock_data = serialized_products_stocks[ean]
-
-                    # No need to create empty stock
-                    if stock_data["quantity"] == 0:
-                        continue
-
-                    # FIXME (mageoffray, 2023-05-26): stock saving optimisation
-                    # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
-                    # It will be done before the release of this API
-                    offers_api.create_stock(
-                        offer=offer,
-                        price=finance_utils.cents_to_full_unit(stock_data["price"]),
-                        quantity=serialization.deserialize_quantity(stock_data["quantity"]),
-                        booking_limit_datetime=stock_data["booking_limit_datetime"],
-                        creating_provider=provider,
-                    )
-                except offers_exceptions.OfferException as exc:
-                    logger.info(
-                        "Error while creating offer by ean",
-                        extra={
-                            "ean": ean,
-                            "venue_id": venue_id,
-                            "provider_id": provider_id,
-                            "exc": exc.__class__.__name__,
-                        },
-                    )
-
-        for offer in offers_to_update:
-            try:
-                offer.lastProvider = provider
-                offer.isActive = True
-                offer.offererAddress = offerer_address
-
-                ean = offer.ean
-                stock_data = serialized_products_stocks[ean]
-                # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
-                # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
-                # It will be done before the release of this API
-
-                # TODO(jbaudet-pass): remove call to .replace(): it should not
-                # be needed.
-                # Why? Because input checks remove the timezone information as
-                # it is not expected after... but StockEdition needs a
-                # timezone-aware datetime object.
-                # -> datetimes are not always handleded the same way.
-                # -> it can be messy.
-                booking_limit = stock_data["booking_limit_datetime"]
-                booking_limit = booking_limit.replace(tzinfo=datetime.timezone.utc) if booking_limit else None
-
-                _upsert_product_stock(
-                    offer_to_update_by_ean[ean],
-                    serialization.StockEdition(
-                        **{
-                            "price": stock_data["price"],
-                            "quantity": stock_data["quantity"],
-                            "booking_limit_datetime": booking_limit,
-                        }
-                    ),
-                    provider,
-                )
-                offers_to_index.append(offer_to_update_by_ean[ean].id)
-            except offers_exceptions.OfferException as exc:
-                logger.info(
-                    "Error while creating offer by ean",
-                    extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
-                )
-
-    search.async_index_offer_ids(
-        offers_to_index,
-        reason=search.IndexationReason.OFFER_UPDATE,
-        log_extra={"venue_id": venue_id, "source": "offers_public_api"},
-    )
-
-
-ALLOWED_PRODUCT_SUBCATEGORIES = [
-    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
-    subcategories.LIVRE_PAPIER.id,
-]
-
-
-def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
-    return (
-        db.session.query(offers_models.Product)
-        .filter(
-            offers_models.Product.ean.in_(ean_to_create),
-            offers_models.Product.can_be_synchronized == True,
-            offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
-            # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
-            offers_models.Product.lastProviderId.is_not(None),
-            offers_models.Product.idAtProviders.is_not(None),
-        )
-        .all()
-    )
-
-
-def _get_existing_offers(
-    ean_to_create_or_update: set[str],
-    venue: offerers_models.Venue,
-) -> list[offers_models.Offer]:
-    subquery = (
-        db.session.query(
-            sa.func.max(offers_models.Offer.id).label("max_id"),
-        )
-        .filter(offers_models.Offer.isEvent == False)
-        .filter(offers_models.Offer.venue == venue)
-        .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
-        .group_by(
-            offers_models.Offer.ean,
-            offers_models.Offer.venueId,
-        )
-        .subquery()
-    )
-
-    return (
-        utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
-        .join(subquery, offers_models.Offer.id == subquery.c.max_id)
-        .all()
     )
 
 
@@ -583,45 +319,6 @@ def _serialize_products_from_body(
             "booking_limit_datetime": product.stock.booking_limit_datetime,
         }
     return stock_details
-
-
-def _create_offer_from_product(
-    venue: offerers_models.Venue,
-    product: offers_models.Product,
-    provider: providers_models.Provider,
-    offererAddress: offerers_models.OffererAddress,
-) -> offers_models.Offer:
-    ean = product.ean
-
-    offer = offers_api.build_new_offer_from_product(
-        venue,
-        product,
-        id_at_provider=ean,
-        provider_id=provider.id,
-        offerer_address_id=offererAddress.id,
-    )
-
-    offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
-    offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
-    offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
-    offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
-
-    offer.isActive = True
-    offer.lastValidationDate = datetime.datetime.utcnow()
-    offer.lastValidationType = OfferValidationType.AUTO
-    offer.lastValidationAuthorUserId = None
-
-    logger.info(
-        "models.Offer has been created",
-        extra={
-            "offer_id": offer.id,
-            "venue_id": venue.id,
-            "product_id": offer.productId,
-        },
-        technical_message_id="offer.created",
-    )
-
-    return offer
 
 
 @blueprints.public_api.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
@@ -749,7 +446,7 @@ def check_eans_availability(
         product_ean = product.ean
         eans_to_check.remove(product_ean)
 
-        if product.subcategoryId not in ALLOWED_PRODUCT_SUBCATEGORIES:
+        if product.subcategoryId not in offers_constants.ALLOWED_PRODUCT_SUBCATEGORIES:
             rejected_eans_because_subcategory_is_not_allowed.append(product_ean)
         elif not product.can_be_synchronized:
             rejected_eans_for_cgu_violation.append(product_ean)
@@ -811,19 +508,6 @@ def get_products(
     )
 
 
-def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
-    allowed_product_subcategory_ids = [category.id for category in serialization.ALLOWED_PRODUCT_SUBCATEGORIES]
-    if offer.subcategoryId not in allowed_product_subcategory_ids:
-        raise api_errors.ApiErrors(
-            {
-                "product.subcategory": [
-                    "Only "
-                    + ", ".join((subcategory.id for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES))
-                    + " products can be edited"
-                ]
-            }
-        )
-
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["PATCH"])
 @provider_api_key_required
@@ -858,7 +542,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     if not offer:
         raise api_errors.ApiErrors({"offerId": ["The product offer could not be found"]}, status_code=404)
 
-    _check_offer_can_be_edited(offer)
+    offers_api.check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
@@ -893,7 +577,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
             if body.image:
                 utils.save_image(body.image, updated_offer)
             if "stock" in updates:
-                _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+                offers_api.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
     except offers_exceptions.OfferException as e:
         raise api_errors.ApiErrors(e.errors)
 
@@ -904,53 +588,6 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     # everything and use data from the db.
     offer = query.one_or_none()
     return serialization.ProductOfferResponse.build_product_offer(offer)
-
-
-def _upsert_product_stock(
-    offer: offers_models.Offer,
-    stock_body: serialization.StockEdition | None,
-    provider: providers_models.Provider,
-) -> None:
-    existing_stock = next((stock for stock in offer.activeStocks), None)
-    if not stock_body:
-        if existing_stock:
-            offers_api.delete_stock(existing_stock)
-        return
-
-    # no need to create an empty stock
-    if not existing_stock and stock_body.quantity == 0:
-        return
-
-    if not existing_stock:
-        if stock_body.price is None:
-            raise api_errors.ApiErrors({"stock.price": ["Required"]})
-        offers_api.create_stock(
-            offer=offer,
-            price=finance_utils.cents_to_full_unit(stock_body.price),
-            quantity=serialization.deserialize_quantity(stock_body.quantity),
-            booking_limit_datetime=stock_body.booking_limit_datetime,
-            creating_provider=provider,
-        )
-        return
-
-    stock_update_body = stock_body.dict(exclude_unset=True)
-    price = stock_update_body.get("price", offers_api.UNCHANGED)
-
-    quantity = serialization.deserialize_quantity(stock_update_body.get("quantity", offers_api.UNCHANGED))
-    new_quantity = quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity
-
-    # do not keep empty stocks
-    if new_quantity == 0:
-        offers_api.delete_stock(existing_stock)
-        return
-
-    offers_api.edit_stock(
-        existing_stock,
-        quantity=new_quantity,
-        price=finance_utils.cents_to_full_unit(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
-        booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
-        editing_provider=provider,
-    )
 
 
 @blueprints.public_api.route("/public/offers/v1/products/categories", methods=["GET"])
