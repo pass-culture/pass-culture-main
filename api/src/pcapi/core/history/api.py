@@ -1,12 +1,12 @@
 import decimal
 import enum
-import math
 import typing
 
 from sqlalchemy.ext.mutable import MutableDict
 
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -104,8 +104,8 @@ class ObjectUpdateSnapshot:
             and old_value is not None
             and new_value is not None
         ):
-            # Avoid diff: "Latitude : 46.66979 => 46.669789" because of different precision in APIn and db storage
-            return not math.isclose(float(old_value), float(new_value), rel_tol=0.00001)
+            # Avoid diff: "Latitude : 46.66979 => 46.669789" because of different precision in APIs and db storage
+            return geography_utils.format_coordinate(old_value) != geography_utils.format_coordinate(new_value)
 
         return old_value != new_value
 

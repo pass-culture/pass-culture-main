@@ -147,7 +147,7 @@ class AddressBodyModel(BaseModel):
         except InvalidOperation:
             raise ValueError("Format incorrect")
         if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-            raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
+            raise ValueError(f"La latitude doit être comprise entre -{MAX_LATITUDE} et +{MAX_LATITUDE}")
         return raw_latitude
 
     @validator("longitude", pre=True)
@@ -158,7 +158,7 @@ class AddressBodyModel(BaseModel):
         except InvalidOperation:
             raise ValueError("Format incorrect")
         if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-            raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
+            raise ValueError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
         return raw_longitude
 
 

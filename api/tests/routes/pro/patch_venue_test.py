@@ -1166,6 +1166,38 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
 
+    def test_raises_if_coordinates_are_not_numbers(self, client) -> None:
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue(
+            {"latitude": "not a number", "longitude": "not a number either"},
+            venue,
+        )
+
+        response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert "La latitude doit être un nombre" in response.json["latitude"]
+        assert "La longitude doit être un nombre" in response.json["longitude"]
+
+    def test_raises_if_coordinates_are_out_of_bonds(self, client) -> None:
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue(
+            {"latitude": 200, "longitude": -200},
+            venue,
+        )
+
+        response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert "La latitude doit être comprise entre -90 et +90" in response.json["latitude"]
+        assert "La longitude doit être comprise entre -180 et +180" in response.json["longitude"]
+
 
 @pytest.mark.parametrize(
     "enforce_siret_check,disable_siret_check,expected_result",

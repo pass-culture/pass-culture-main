@@ -58,6 +58,7 @@ from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.geography import models as geography_models
+from pcapi.core.geography import utils as geography_utils
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -2985,8 +2986,8 @@ LocationData = typing.TypedDict(
 def get_or_create_address(location_data: LocationData, is_manual_edition: bool = False) -> geography_models.Address:
     insee_code = location_data.get("insee_code")
     postal_code = location_data["postal_code"]
-    latitude = decimal.Decimal(location_data["latitude"]).quantize(decimal.Decimal("1.00000"))
-    longitude = decimal.Decimal(location_data["longitude"]).quantize(decimal.Decimal("1.00000"))
+    latitude = geography_utils.format_coordinate(location_data["latitude"])
+    longitude = geography_utils.format_coordinate(location_data["longitude"])
     street = location_data["street"]
     city = location_data["city"]
     ban_id = None if is_manual_edition else location_data.get("ban_id")
