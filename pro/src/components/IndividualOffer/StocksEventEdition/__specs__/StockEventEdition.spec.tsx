@@ -6,7 +6,6 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { Routes, Route } from 'react-router'
 
-
 import { api } from 'apiClient/api'
 import {
   ApiError,
@@ -282,10 +281,8 @@ describe('screens:StocksEventEdition', () => {
       { ...apiStocks[0], isEventDeletable: false },
     ])
 
-    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
-    expect(api.deleteStock).not.toHaveBeenCalled()
-    expect(screen.getByLabelText('Tarif *')).toHaveValue(otherPriceCategoryId)
+    const deleteButton = screen.queryByRole('button', { name: 'Supprimer' })
+    expect(deleteButton).not.toBeInTheDocument()
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {
