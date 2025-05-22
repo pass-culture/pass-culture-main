@@ -26,6 +26,7 @@ interface IndividualOffersSearchFiltersProps {
   resetFilters: () => void
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
+  searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 const individualFilterStatus = [
@@ -48,6 +49,7 @@ export const IndividualOffersSearchFilters = ({
   disableAllFilters,
   offererAddresses,
   categories,
+  searchButtonRef,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
@@ -118,6 +120,7 @@ export const IndividualOffersSearchFilters = ({
         value: selectedFilters.nameOrIsbn,
       }}
       onResetFilters={resetFilters}
+      searchButtonRef={searchButtonRef}
     >
       <FormLayout.Row inline>
         <FieldLayout label="Statut" name="status" isOptional>
