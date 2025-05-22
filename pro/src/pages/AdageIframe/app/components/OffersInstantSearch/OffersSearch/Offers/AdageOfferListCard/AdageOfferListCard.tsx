@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import {
@@ -47,6 +47,8 @@ export function AdageOfferListCard({
   const location = useLocation()
   const navigate = useNavigate()
   const currentPathname = location.pathname.split('/')[2]
+
+  const cardLinkRef = useRef<HTMLAnchorElement>(null)
 
   const [offerPrebooked, setOfferPrebooked] = useState(false)
 
@@ -96,6 +98,7 @@ export function AdageOfferListCard({
             institutionOfferCount={institutionOfferCount}
             shouldDisablePrebookButton={!adageUser.canPrebook}
             hideLimitDate={!adageUser.canPrebook}
+            refToFocusOnOfferPrebooked={cardLinkRef}
           />
         </div>
       )}
@@ -137,6 +140,7 @@ export function AdageOfferListCard({
               target="_parent"
               state={{ offer }}
               className={styles['offer-card-link']}
+              ref={cardLinkRef}
             >
               <h2 className={styles['offer-title']}>{offer.name}</h2>
             </Link>

@@ -6,6 +6,7 @@ interface PrebookingModalProps {
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
   isDialogOpen: boolean
+  refToFocusOnClose?: React.RefObject<HTMLElement>
 }
 
 export const PrebookingModal = ({
@@ -13,6 +14,7 @@ export const PrebookingModal = ({
   preBookCurrentStock,
   isPreview = false,
   isDialogOpen,
+  refToFocusOnClose,
 }: PrebookingModalProps): JSX.Element => {
   return (
     <ConfirmDialog
@@ -24,6 +26,7 @@ export const PrebookingModal = ({
       cancelText="Fermer"
       confirmButtonDisabled={isPreview}
       open={isDialogOpen}
+      refToFocusOnClose={refToFocusOnClose}
     >
       <p>
         Si oui, une fois votre préréservation confirmée :
