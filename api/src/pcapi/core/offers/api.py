@@ -1,8 +1,6 @@
 import dataclasses
 import datetime
 import decimal
-from pcapi.core.offers import utils as offers_utils
-from pcapi.core.offerers.models import ApiKey
 import enum
 import functools
 import logging
@@ -22,7 +20,6 @@ from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
 
 import pcapi.core.bookings.api as bookings_api
-from pcapi.models import api_errors
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -32,9 +29,9 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
-import pcapi.core.offers.validation as offers_validation
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.exceptions as offers_exceptions
+import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
@@ -46,7 +43,6 @@ from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
-from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
@@ -59,17 +55,20 @@ from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIException
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.finance import api as finance_api
-from pcapi.core.finance import utils as finance_utils
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import utils as offers_utils
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
+from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -83,6 +82,7 @@ from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
+from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
