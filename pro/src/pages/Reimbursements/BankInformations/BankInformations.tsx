@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
@@ -34,6 +34,9 @@ export const BankInformations = (): JSX.Element => {
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
+
+  const addBankAccountButtonRef = useRef<HTMLButtonElement>(null)
+
   const {
     selectedOfferer = null,
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -155,6 +158,7 @@ export const BankInformations = (): JSX.Element => {
             offererId: selectedOfferer?.id,
           })
         }}
+        ref={addBankAccountButtonRef}
       >
         Ajouter un compte bancaire
       </Button>
@@ -164,6 +168,7 @@ export const BankInformations = (): JSX.Element => {
         }}
         offererId={selectedOfferer?.id}
         isDialogOpen={showAddBankInformationsDialog}
+        dialogTriggerRef={addBankAccountButtonRef}
       />
       {selectedBankAccount !== null && selectedOfferer !== null && (
         <LinkVenuesDialog
