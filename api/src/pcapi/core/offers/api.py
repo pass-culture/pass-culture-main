@@ -2347,6 +2347,7 @@ def delete_unbookable_unbooked_old_offers(
     log_extra["deleted_offers_count"] = count
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
 
+
 def get_existing_offers(
     ean_to_create_or_update: set[str],
     venue: offerers_models.Venue,
@@ -2371,6 +2372,7 @@ def get_existing_offers(
         .all()
     )
 
+
 def create_product(
     venue: offerers_models.Venue,
     body: individual_offers_v1_serialization.ProductOfferCreation,
@@ -2389,11 +2391,7 @@ def create_product(
             bookingEmail=body.booking_email,
             description=body.description,
             externalTicketOfficeUrl=body.external_ticket_office_url,
-            ean=(
-                body.category_related_fields.ean
-                if hasattr(body.category_related_fields, "ean")
-                else None
-            ),
+            ean=(body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None),
             extraData=individual_offers_v1_serialization.deserialize_extra_data(
                 body.category_related_fields, venue_id=venue.id
             ),
@@ -2421,9 +2419,7 @@ def create_product(
         # already exists
         is_offer_table = error.orig.diag.table_name == offers_models.Offer.__tablename__
         is_unique_constraint_violation = error.orig.pgcode == UNIQUE_VIOLATION
-        unique_id_at_provider_venue_id_is_violated = (
-            is_offer_table and is_unique_constraint_violation
-        )
+        unique_id_at_provider_venue_id_is_violated = is_offer_table and is_unique_constraint_violation
 
         if unique_id_at_provider_venue_id_is_violated:
             raise offers_exceptions.ExistingVenueWithIdAtProviderError() from error
@@ -2433,6 +2429,7 @@ def create_product(
         raise offers_exceptions.CreateProductDBError() from error
 
     return created_product
+
 
 def get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
     return (
@@ -2447,6 +2444,7 @@ def get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product
         )
         .all()
     )
+
 
 def create_offer_from_product(
     venue: offerers_models.Venue,
@@ -2485,6 +2483,7 @@ def create_offer_from_product(
     )
 
     return offer
+
 
 def check_offer_can_be_edited(offer: offers_models.Offer) -> None:
     allowed_product_subcategory_ids = [
@@ -2537,14 +2536,8 @@ def upsert_product_stock(
     stock_update_body = stock_body.dict(exclude_unset=True)
     price = stock_update_body.get("price", UNCHANGED)
 
-    quantity = individual_offers_v1_serialization.deserialize_quantity(
-        stock_update_body.get("quantity", UNCHANGED)
-    )
-    new_quantity = (
-        quantity + existing_stock.dnBookedQuantity
-        if isinstance(quantity, int)
-        else quantity
-    )
+    quantity = individual_offers_v1_serialization.deserialize_quantity(stock_update_body.get("quantity", UNCHANGED))
+    new_quantity = quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity
 
     # do not keep empty stocks
     if new_quantity == 0:
@@ -2554,15 +2547,7 @@ def upsert_product_stock(
     edit_stock(
         existing_stock,
         quantity=new_quantity,
-        price=(
-            finance_utils.cents_to_full_unit(price)
-            if price != UNCHANGED
-            else UNCHANGED
-        ),
-        booking_limit_datetime=stock_update_body.get(
-            "booking_limit_datetime", UNCHANGED
-        ),
+        price=(finance_utils.cents_to_full_unit(price) if price != UNCHANGED else UNCHANGED),
+        booking_limit_datetime=stock_update_body.get("booking_limit_datetime", UNCHANGED),
         editing_provider=provider,
     )
-
-

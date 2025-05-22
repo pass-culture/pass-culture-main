@@ -5,5 +5,3 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
     subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     subcategories.LIVRE_PAPIER.id,
 ]
-
-

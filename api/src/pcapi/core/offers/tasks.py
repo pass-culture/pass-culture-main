@@ -34,13 +34,11 @@ def create_or_update_ean_offers(
     address_id: int | None = None,
     address_label: str | None = None,
 ) -> None:
-    provider = (
-        db.session.query(providers_models.Provider).filter_by(id=provider_id).one()
-    )
+    provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one()
     venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one()
 
     ean_to_create_or_update = set(serialized_products_stocks.keys())
-    
+
     offers_to_update = offers_api.get_existing_offers(ean_to_create_or_update, venue)
     offer_to_update_by_ean = {}
     ean_list_to_update = set()
@@ -65,9 +63,7 @@ def create_or_update_ean_offers(
             created_offers = []
             existing_products = offers_api.get_existing_products(ean_list_to_create)
             product_by_ean = {product.ean: product for product in existing_products}
-            not_found_eans = [
-                ean for ean in ean_list_to_create if ean not in product_by_ean.keys()
-            ]
+            not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
             if not_found_eans:
                 logger.warning(
                     "Some provided eans were not found",
@@ -115,9 +111,7 @@ def create_or_update_ean_offers(
                     offers_api.create_stock(
                         offer=offer,
                         price=finance_utils.cents_to_full_unit(stock_data["price"]),
-                        quantity=individual_offers_serialization.deserialize_quantity(
-                            stock_data["quantity"]
-                        ),
+                        quantity=individual_offers_serialization.deserialize_quantity(stock_data["quantity"]),
                         booking_limit_datetime=stock_data["booking_limit_datetime"],
                         creating_provider=provider,
                     )
@@ -152,11 +146,7 @@ def create_or_update_ean_offers(
                 # -> datetimes are not always handleded the same way.
                 # -> it can be messy.
                 booking_limit = stock_data["booking_limit_datetime"]
-                booking_limit = (
-                    booking_limit.replace(tzinfo=datetime.timezone.utc)
-                    if booking_limit
-                    else None
-                )
+                booking_limit = booking_limit.replace(tzinfo=datetime.timezone.utc) if booking_limit else None
 
                 offers_api.upsert_product_stock(
                     offer_to_update_by_ean[ean],

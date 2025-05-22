@@ -234,7 +234,9 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                     address_id=address.id,
                     label=body.location.address_label,
                 )
-            product = offers_api.create_product(venue=venue, body=body, offerer_address=offerer_address, api_key=current_api_key)
+            product = offers_api.create_product(
+                venue=venue, body=body, offerer_address=offerer_address, api_key=current_api_key
+            )
 
             if body.image:
                 utils.save_image(body.image, product)
@@ -507,7 +509,6 @@ def get_products(
     return serialization.ProductOffersResponse(
         products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in total_offers_query],
     )
-
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["PATCH"])
