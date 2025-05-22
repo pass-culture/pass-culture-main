@@ -1,7 +1,7 @@
 import datetime
-import sqlalchemy as sa
 import logging
 
+import sqlalchemy as sa
 
 from pcapi import repository
 from pcapi.celery_tasks.tasks import celery_async_task
@@ -21,6 +21,7 @@ from pcapi.routes.public.individual_offers.v1 import serialization as individual
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_utils
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
+
 
 logger = logging.getLogger(__name__)
 

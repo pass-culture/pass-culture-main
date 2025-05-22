@@ -11,7 +11,8 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 from pcapi import repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music, show
+from pcapi.core.categories.genres import music
+from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -24,24 +25,30 @@ from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.offers import utils as offers_utils
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.constants import (TITELIVE_MUSIC_GENRES_BY_GTL_ID,
-                                            TITELIVE_MUSIC_TYPES)
-from pcapi.models import api_errors, db
+from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
+from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
+from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public import blueprints, spectree_schemas
+from pcapi.routes.public import blueprints
+from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils as public_utils
-from pcapi.routes.public.documentation_constants import http_responses, tags
+from pcapi.routes.public.documentation_constants import http_responses
+from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
 from pcapi.utils.custom_keys import get_field
-from pcapi.validation.routes.users_authentifications import (
-    current_api_key, provider_api_key_required)
+from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.validation.routes.users_authentifications import provider_api_key_required
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
-from . import constants, serialization, utils
+from . import constants
+from . import serialization
+from . import utils
+
 
 logger = logging.getLogger(__name__)
 
@@ -174,9 +181,7 @@ def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesRespons
         )
     ),
 )
-def get_event_titelive_music_types() -> (
-    serialization.GetTiteliveEventMusicTypesResponse
-):
+def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypesResponse:
     """
     Get Events Music Types
 
@@ -194,9 +199,7 @@ def get_event_titelive_music_types() -> (
     )
 
 
-def _create_stock(
-    product: offers_models.Offer, body: serialization.ProductOfferCreation
-) -> None:
+def _create_stock(product: offers_models.Offer, body: serialization.ProductOfferCreation) -> None:
     if not body.stock:
         return
 
@@ -246,9 +249,7 @@ def post_product_offer(
 
     Create a product in authorized categories.
     """
-    venue_provider = authorization.get_venue_provider_or_raise_404(
-        body.location.venue_id
-    )
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
 
     try:
@@ -256,9 +257,7 @@ def post_product_offer(
             offerer_address = venue.offererAddress  # default offerer_address
 
             if body.location.type == "address":
-                address = public_utils.get_address_or_raise_404(
-                    body.location.address_id
-                )
+                address = public_utils.get_address_or_raise_404(body.location.address_id)
                 offerer_address = offerers_api.get_or_create_offerer_address(
                     offerer_id=venue.managingOffererId,
                     address_id=address.id,
@@ -324,17 +323,13 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
     **WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected.
     To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)
     """
-    venue_provider = authorization.get_venue_provider_or_raise_404(
-        body.location.venue_id
-    )
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
     address_id = None
     address_label = None
 
     if venue.isVirtual:
-        raise api_errors.ApiErrors(
-            {"location": ["Cannot create product offer for virtual venues"]}
-        )
+        raise api_errors.ApiErrors({"location": ["Cannot create product offer for virtual venues"]})
 
     if body.location.type == "address":
         address = public_utils.get_address_or_raise_404(body.location.address_id)
@@ -364,9 +359,7 @@ def _serialize_products_from_body(
     return stock_details
 
 
-@blueprints.public_api.route(
-    "/public/offers/v1/products/<int:product_id>", methods=["GET"]
-)
+@blueprints.public_api.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -388,16 +381,12 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     Return a product offer by id.
     """
     offer: offers_models.Offer | None = (
-        offers_utils.retrieve_offer_relations_query(
-            utils.retrieve_offer_query(product_id)
-        )
+        offers_utils.retrieve_offer_relations_query(utils.retrieve_offer_query(product_id))
         .filter(sa.not_(offers_models.Offer.isEvent))
         .one_or_none()
     )
     if not offer:
-        raise api_errors.ApiErrors(
-            {"product_id": ["The product offer could not be found"]}, status_code=404
-        )
+        raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
@@ -440,16 +429,11 @@ def get_product_by_ean(
         return serialization.ProductOffersByEanResponse(products=[])
 
     return serialization.ProductOffersByEanResponse(
-        products=[
-            serialization.ProductOfferResponse.build_product_offer(offer)
-            for offer in offers
-        ]
+        products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers]
     )
 
 
-@blueprints.public_api.route(
-    "/public/offers/v1/products/ean/check_availability", methods=["GET"]
-)
+@blueprints.public_api.route("/public/offers/v1/products/ean/check_availability", methods=["GET"])
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -516,9 +500,7 @@ def check_eans_availability(
         available=available_eans,
         # rejected
         not_compliant_with_cgu=rejected_eans_for_cgu_violation,
-        not_found=list(
-            eans_to_check
-        ),  # remaining EANs are the ones that were not found
+        not_found=list(eans_to_check),  # remaining EANs are the ones that were not found
         subcategory_not_allowed=rejected_eans_because_subcategory_is_not_allowed,
     )
 
@@ -562,15 +544,10 @@ def get_products(
     if query.venue_id:
         authorization.get_venue_provider_or_raise_404(query.venue_id)
 
-    total_offers_query = offerers_api.utils.get_filtered_offers_linked_to_provider(
-        query, is_event=False
-    )
+    total_offers_query = offerers_api.utils.get_filtered_offers_linked_to_provider(query, is_event=False)
 
     return serialization.ProductOffersResponse(
-        products=[
-            serialization.ProductOfferResponse.build_product_offer(offer)
-            for offer in total_offers_query
-        ],
+        products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in total_offers_query],
     )
 
 
@@ -612,9 +589,7 @@ def edit_product(
     offer = query.one_or_none()
 
     if not offer:
-        raise api_errors.ApiErrors(
-            {"offerId": ["The product offer could not be found"]}, status_code=404
-        )
+        raise api_errors.ApiErrors({"offerId": ["The product offer could not be found"]}, status_code=404)
 
     offers_api.check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
@@ -628,18 +603,10 @@ def edit_product(
             extra_data = copy.deepcopy(offer.extraData)
             offer_body = offers_schemas.UpdateOffer(
                 name=get_field(offer, updates, "name"),
-                audioDisabilityCompliant=get_field(
-                    offer, dc, "audioDisabilityCompliant"
-                ),
-                mentalDisabilityCompliant=get_field(
-                    offer, dc, "mentalDisabilityCompliant"
-                ),
-                motorDisabilityCompliant=get_field(
-                    offer, dc, "motorDisabilityCompliant"
-                ),
-                visualDisabilityCompliant=get_field(
-                    offer, dc, "visualDisabilityCompliant"
-                ),
+                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
                 bookingContact=get_field(offer, updates, "bookingContact"),
                 bookingEmail=get_field(offer, updates, "bookingEmail"),
                 description=get_field(offer, updates, "description"),
@@ -655,19 +622,13 @@ def edit_product(
                 isActive=get_field(offer, updates, "isActive"),
                 idAtProvider=get_field(offer, updates, "idAtProvider"),
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-                withdrawalDetails=get_field(
-                    offer, updates, "itemCollectionDetails", col="withdrawalDetails"
-                ),
+                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
             )  # type: ignore[call-arg]
-            updated_offer = offers_api.update_offer(
-                offer, offer_body, venue=venue, offerer_address=offerer_address
-            )
+            updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
             if body.image:
                 utils.save_image(body.image, updated_offer)
             if "stock" in updates:
-                offers_api.upsert_product_stock(
-                    updated_offer, body.stock, current_api_key.provider
-                )
+                offers_api.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
     except offers_exceptions.OfferException as e:
         raise api_errors.ApiErrors(e.errors)
 
@@ -711,9 +672,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
         serialization.ProductCategoryResponse.build_category(subcategory)
         for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES
     ]
-    return serialization.GetProductCategoriesResponse(
-        __root__=product_categories_response
-    )
+    return serialization.GetProductCategoriesResponse(__root__=product_categories_response)
 
 
 @blueprints.public_api.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])
@@ -723,10 +682,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
     tags=[tags.IMAGE],
     on_success_status=204,
     resp=SpectreeResponse(
-        **(
-            {"HTTP_204": (None, "Image updated successfully")}
-            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
-        ),
+        **({"HTTP_204": (None, "Image updated successfully")} | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS),
     ),
 )
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
@@ -735,22 +691,14 @@ def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
 
     Upload an image for given offer.
     """
-    offer = offers_utils.retrieve_offer_relations_query(
-        utils.retrieve_offer_query(offer_id)
-    ).one_or_none()
+    offer = offers_utils.retrieve_offer_relations_query(utils.retrieve_offer_query(offer_id)).one_or_none()
     if not offer:
-        raise api_errors.ApiErrors(
-            {"offerId": ["The offer could not be found"]}, status_code=404
-        )
+        raise api_errors.ApiErrors({"offerId": ["The offer could not be found"]}, status_code=404)
     try:
         image_as_bytes = request.files["file"].read()
     except Exception as err:
-        logger.exception(
-            "Error while reading image file", extra={"offer_id": offer_id, "err": err}
-        )
-        raise api_errors.ApiErrors(
-            {"file": ["The image is not valid."]}, status_code=400
-        )
+        logger.exception("Error while reading image file", extra={"offer_id": offer_id, "err": err})
+        raise api_errors.ApiErrors({"file": ["The image is not valid."]}, status_code=400)
     try:
         with repository.transaction():
             offers_api.create_mediation(
@@ -775,7 +723,5 @@ def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
         raise api_errors.ApiErrors(errors={"file": message})
     except image_conversion.ImageRatioError as error:
         raise api_errors.ApiErrors(
-            errors={
-                "file": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"
-            }
+            errors={"file": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"}
         )

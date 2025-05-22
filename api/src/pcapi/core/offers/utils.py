@@ -101,14 +101,10 @@ def get_filtered_offers_linked_to_provider(
     )
 
     if query_filters.venue_id:
-        offers_query = offers_query.filter(
-            offers_models.Offer.venueId == query_filters.venue_id
-        )
+        offers_query = offers_query.filter(offers_models.Offer.venueId == query_filters.venue_id)
 
     if query_filters.ids_at_provider:
-        offers_query = offers_query.filter(
-            offers_models.Offer.idAtProvider.in_(query_filters.ids_at_provider)
-        )
+        offers_query = offers_query.filter(offers_models.Offer.idAtProvider.in_(query_filters.ids_at_provider))
 
     if query_filters.address_id:
         offers_query = offers_query.join(
@@ -116,8 +112,6 @@ def get_filtered_offers_linked_to_provider(
             offerers_models.OffererAddress.id == offers_models.Offer.offererAddressId,
         ).filter(offerers_models.OffererAddress.addressId == query_filters.address_id)
 
-    offers_query = retrieve_offer_relations_query(offers_query).limit(
-        query_filters.limit
-    )
+    offers_query = retrieve_offer_relations_query(offers_query).limit(query_filters.limit)
 
     return offers_query
