@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -56,6 +56,8 @@ export const LinkVenuesDialog = ({
   const allVenuesSelected = availableManagedVenuesIds.every(
     (venueId) => selectedVenuesIds.indexOf(venueId) >= 0
   )
+
+  const saveButtonRef = useRef<HTMLButtonElement>(null)
 
   function onCancel() {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
@@ -197,7 +199,11 @@ export const LinkVenuesDialog = ({
                     Annuler
                   </Button>
 
-                  <Button type="submit" isLoading={formik.isSubmitting}>
+                  <Button
+                    type="submit"
+                    isLoading={formik.isSubmitting}
+                    ref={saveButtonRef}
+                  >
                     Enregistrer
                   </Button>
                 </div>
@@ -221,6 +227,7 @@ export const LinkVenuesDialog = ({
         confirmText="Quitter sans enregistrer"
         cancelText="Annuler"
         open={showDiscardChangesDialog}
+        refToFocusOnClose={saveButtonRef}
       />
       <ConfirmDialog
         extraClassNames={cn(styles['discard-dialog'], {
@@ -237,6 +244,7 @@ export const LinkVenuesDialog = ({
         confirmText="Confirmer"
         cancelText="Retour"
         open={showUnlinkVenuesDialog}
+        refToFocusOnClose={saveButtonRef}
       />
     </>
   )
