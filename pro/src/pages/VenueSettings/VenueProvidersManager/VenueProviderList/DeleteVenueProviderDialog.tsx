@@ -1,4 +1,3 @@
-
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 
 import style from './DeleteVenueProviderDialog.module.scss'
@@ -8,6 +7,7 @@ interface DeleteVenueProviderDialogProps {
   onCancel: () => void
   isLoading: boolean
   isDialogOpen: boolean
+  trigger: React.ReactNode
 }
 
 export const DeleteVenueProviderDialog = ({
@@ -15,6 +15,7 @@ export const DeleteVenueProviderDialog = ({
   onCancel,
   isLoading,
   isDialogOpen,
+  trigger,
 }: DeleteVenueProviderDialogProps): JSX.Element => {
   return (
     <ConfirmDialog
@@ -25,8 +26,9 @@ export const DeleteVenueProviderDialog = ({
       title="Voulez-vous supprimer la synchronisation de vos offres ?"
       confirmText="Supprimer la synchronisation"
       cancelText="Annuler"
-      hideIcon={true}
+      hideIcon
       open={isDialogOpen}
+      trigger={trigger}
     >
       <div className={style['explanation']}>
         En supprimant la synchronisation de vos offres :

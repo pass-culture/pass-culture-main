@@ -16,6 +16,7 @@ export interface VenueProviderCardProps {
   venue: GetVenueResponseModel
   venueDepartmentCode?: string | null
   offererId: number
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
 }
 
 export const VenueProviderCard = ({
@@ -23,6 +24,7 @@ export const VenueProviderCard = ({
   venue,
   venueDepartmentCode,
   offererId,
+  selectSoftwareButtonRef,
 }: VenueProviderCardProps): JSX.Element => {
   const { lastSyncDate, provider, venueIdAtOfferProvider, dateCreated } =
     venueProvider
@@ -104,6 +106,7 @@ export const VenueProviderCard = ({
           <DeleteVenueProviderButton
             venueProviderId={venueProvider.id}
             venue={venue}
+            selectSoftwareButtonRef={selectSoftwareButtonRef}
           />
         </div>
       </div>
