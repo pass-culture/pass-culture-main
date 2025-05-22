@@ -33,11 +33,11 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     price_category_label: str | None
     offer_name: str
     offer_ean: str | None
+    offer_address: str | None
+    offer_department_code: str | None
 
     venue_id: int
     venue_name: str
-    venue_address: str | None
-    venue_departement_code: str | None
 
     user_email: str
     user_phone_number: str | None
@@ -49,11 +49,6 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     @classmethod
     def build_booking(cls, booking: booking_models.Booking) -> "GetBookingResponse":
         birth_date = booking.user.birth_date.isoformat() if booking.user.birth_date else None
-        street = None
-        departmentCode = None
-        if booking.venue.offererAddress:
-            street = booking.venue.offererAddress.address.street
-            departmentCode = booking.venue.offererAddress.address.departmentCode
         return cls(
             id=booking.id,
             creation_date=date_utils.format_into_utc_date(booking.dateCreated),
@@ -70,11 +65,16 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             offer_id=booking.stock.offer.id,
             stock_id=booking.stock.id,
             offer_name=booking.stock.offer.name,
+            # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
+            offer_address=booking.stock.offer.offererAddress.address.street
+            if booking.stock.offer.offererAddress
+            else None,
+            offer_department_code=booking.stock.offer.offererAddress.address.departmentCode
+            if booking.stock.offer.offererAddress
+            else None,
             offer_ean=booking.stock.offer.ean,
             venue_id=booking.venue.id,
             venue_name=booking.venue.name,
-            venue_address=street,
-            venue_departement_code=departmentCode,
             user_email=booking.email,
             user_birth_date=birth_date,
             user_first_name=booking.user.firstName,

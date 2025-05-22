@@ -17,6 +17,8 @@ export type GetBookingResponse = {
   formula?: BookingFormula | null;
   isUsed: boolean;
   lastName?: string | null;
+  offerAddress?: string | null;
+  offerDepartmentCode?: string | null;
   offerId: number;
   offerName: string;
   offerType: BookingOfferType;
@@ -30,8 +32,6 @@ export type GetBookingResponse = {
    */
   theater: Record<string, any>;
   userName: string;
-  venueAddress?: string | null;
-  venueDepartmentCode?: string | null;
   venueName: string;
 };
 
