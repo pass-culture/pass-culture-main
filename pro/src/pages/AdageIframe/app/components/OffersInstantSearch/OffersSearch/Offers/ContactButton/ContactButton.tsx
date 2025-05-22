@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -39,6 +39,8 @@ export const ContactButton = ({
 }: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const dialogTriggerRef = useRef<HTMLButtonElement>(null)
+
   const handleButtonClick = () => {
     setIsModalOpen(true)
 
@@ -60,7 +62,11 @@ export const ContactButton = ({
   return (
     <>
       <div className={`prebooking-button-container ${className}`}>
-        <Button className="prebooking-button" onClick={handleButtonClick}>
+        <Button
+          className="prebooking-button"
+          onClick={handleButtonClick}
+          ref={dialogTriggerRef}
+        >
           {children ?? 'Contacter'}
         </Button>
       </div>
@@ -75,6 +81,7 @@ export const ContactButton = ({
         contactForm={contactForm ?? ''}
         isPreview={isPreview}
         isDialogOpen={isModalOpen}
+        dialogTriggerRef={dialogTriggerRef}
       />
     </>
   )

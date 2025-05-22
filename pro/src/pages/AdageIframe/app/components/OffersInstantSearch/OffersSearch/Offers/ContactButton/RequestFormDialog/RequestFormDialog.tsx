@@ -27,6 +27,7 @@ export interface RequestFormDialogProps {
   contactUrl: string
   isPreview: boolean
   isDialogOpen: boolean
+  dialogTriggerRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const RequestFormDialog = ({
@@ -40,6 +41,7 @@ export const RequestFormDialog = ({
   contactUrl,
   isPreview,
   isDialogOpen,
+  dialogTriggerRef,
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
 
@@ -274,13 +276,11 @@ export const RequestFormDialog = ({
     <Dialog
       extraClassNames={styles['dialog-container']}
       onCancel={closeRequestFormDialog}
-      title=""
+      title="Vous souhaitez contacter ce partenaire ?"
       hideIcon
       open={isDialogOpen}
+      refToFocusOnClose={dialogTriggerRef}
     >
-      <span className={styles['form-title']}>
-        Vous souhaitez contacter ce partenaire ?
-      </span>
       {getDescriptionElement()}
     </Dialog>
   )
