@@ -21,6 +21,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
+from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -989,6 +990,10 @@ class UpdateVenueTest(PostEndpointHelper):
             "acceslibre_url": None,
         }
 
+        # coordinates values are Decimals rounded to five digits in database
+        expected_latitude = geography_utils.format_coordinate(data["latitude"])
+        expected_longitude = geography_utils.format_coordinate(data["longitude"])
+
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
@@ -1011,8 +1016,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
-        assert venue.latitude == address.latitude == Decimal("48.86931")
-        assert venue.longitude == address.longitude == Decimal("2.32546")
+        assert venue.latitude == address.latitude == expected_latitude
+        assert venue.longitude == address.longitude == expected_longitude
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE
         assert address.inseeCode == "75101"
         assert address.isManualEdition is False
@@ -1031,13 +1036,11 @@ class UpdateVenueTest(PostEndpointHelper):
         update_snapshot = update_action.extraData["modified_info"]
         assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == str(round(float(data["latitude"]), 5))
-        assert update_snapshot["longitude"]["new_info"] == str(round(float(data["longitude"]), 5))
+        assert update_snapshot["latitude"]["new_info"] == str(expected_latitude)
+        assert update_snapshot["longitude"]["new_info"] == str(expected_longitude)
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
-        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(round(float(data["latitude"]), 5))
-        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(
-            round(float(data["longitude"]), 5)
-        )
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
         assert update_snapshot["old_oa_label"]["new_info"] == "Venue Name"
 
         # Check the acces libre update action
@@ -1248,6 +1251,11 @@ class UpdateVenueTest(PostEndpointHelper):
             "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
             "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
         }
+
+        # coordinates values are Decimals rounded to five digits in database
+        expected_latitude = geography_utils.format_coordinate(data["latitude"])
+        expected_longitude = geography_utils.format_coordinate(data["longitude"])
+
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
@@ -1267,11 +1275,11 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
         assert update_snapshot["offererAddress.address.street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == "48.86931"
-        assert update_snapshot["longitude"]["new_info"] == "2.32546"  # rounding due to Decimal column in db
+        assert update_snapshot["latitude"]["new_info"] == str(expected_latitude)
+        assert update_snapshot["longitude"]["new_info"] == str(expected_longitude)
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
-        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == "48.86931"
-        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.32546"
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
         assert "offererAddress.address.city" not in update_snapshot  # not changed
 
     @pytest.mark.parametrize(

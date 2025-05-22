@@ -1,6 +1,7 @@
 import enum
 import typing
 from datetime import datetime
+from decimal import Decimal
 from io import BytesIO
 
 import pydantic.v1 as pydantic_v1
@@ -11,6 +12,9 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
+from pcapi.core.geography import utils as geography_utils
+from pcapi.core.geography.constants import MAX_LATITUDE
+from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -286,8 +290,8 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     street: offerers_schemas.VenueAddress | None
     banId: offerers_schemas.VenueBanId | None
     siret: offerers_schemas.VenueSiret | None
-    latitude: float | str | None
-    longitude: float | str | None
+    latitude: Decimal | None
+    longitude: Decimal | None
     bookingEmail: offerers_schemas.VenueBookingEmail | None
     postalCode: offerers_schemas.VenuePostalCode | None
     inseeCode: str | None
@@ -303,6 +307,33 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     contact: offerers_schemas.VenueContactModel | None
     openingHours: list[base.OpeningHoursModel] | None
     isOpenToPublic: bool | None
+
+    # TODO: move and rationalize Venue validation after serialization refactoring
+    @validator("latitude", pre=True)
+    @classmethod
+    def check_and_format_latitude(cls, raw_latitude: typing.Any) -> Decimal | None:
+        if raw_latitude is None:
+            return raw_latitude
+        try:
+            latitude = geography_utils.format_coordinate(raw_latitude)
+        except ValueError:
+            raise ValueError("La latitude doit être un nombre")
+        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
+            raise ValueError(f"La latitude doit être comprise entre -{MAX_LATITUDE} et +{MAX_LATITUDE}")
+        return latitude
+
+    @validator("longitude", pre=True)
+    @classmethod
+    def check_and_format_longitude(cls, raw_longitude: typing.Any) -> Decimal | None:
+        if raw_longitude is None:
+            return raw_longitude
+        try:
+            longitude = geography_utils.format_coordinate(raw_longitude)
+        except ValueError:
+            raise ValueError("La longitude doit être un nombre")
+        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
+            raise ValueError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
+        return longitude
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

@@ -7,6 +7,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy import orm as sa_orm
 
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
+from pcapi.core.geography.utils import format_coordinate
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -51,9 +52,7 @@ class Address(PcObject, Base, Model):
             # Rounding to five digits to keep consistency with the columns definitions
             # We don’t want to consider coordinates has changed if actually the rounded value is the same
             # that the one we already have
-            if isinstance(value, str):
-                value = Decimal(value)
-            value = round(value, 5)
+            value = format_coordinate(value)
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         if isinstance(getattr(self, field), Decimal):

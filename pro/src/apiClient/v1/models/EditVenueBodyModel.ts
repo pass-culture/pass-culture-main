@@ -17,8 +17,8 @@ export type EditVenueBodyModel = {
   isAccessibilityAppliedOnAllOffers?: boolean | null;
   isManualEdition?: boolean | null;
   isOpenToPublic?: boolean | null;
-  latitude?: (number | string) | null;
-  longitude?: (number | string) | null;
+  latitude?: number | null;
+  longitude?: number | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
