@@ -34,6 +34,7 @@ interface CollectiveOffersSearchFiltersProps {
   disableAllFilters: boolean
   resetFilters: () => void
   venues: SelectOption[]
+  searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 const collectiveFilterStatus = [
@@ -45,7 +46,10 @@ const collectiveFilterStatus = [
     label: 'Non conforme',
     value: CollectiveOfferDisplayedStatus.REJECTED,
   },
-  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.PUBLISHED },
+  {
+    label: 'Publiée sur ADAGE',
+    value: CollectiveOfferDisplayedStatus.PUBLISHED,
+  },
   {
     label: 'En pause',
     value: CollectiveOfferDisplayedStatus.HIDDEN,
@@ -86,6 +90,7 @@ export const CollectiveOffersSearchFilters = ({
   offerer,
   disableAllFilters,
   venues,
+  searchButtonRef,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -197,6 +202,7 @@ export const CollectiveOffersSearchFilters = ({
         value: selectedFilters.nameOrIsbn,
       }}
       onResetFilters={onResetFilters}
+      searchButtonRef={searchButtonRef}
     >
       <FormLayout.Row inline>
         <FormikProvider value={formik}>
