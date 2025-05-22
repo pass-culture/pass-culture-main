@@ -17,10 +17,6 @@
     width: 100%;
   }
 
-  &-title {
-    @include fonts.title3;
-  }
-
   &-description {
     @include fonts.body;
 
