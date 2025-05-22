@@ -35,7 +35,11 @@ def _get_venue_rows(origin: int | None, destination: int | None) -> typing.Itera
     if origin and destination:
         yield from [{ORIGIN_VENUE_ID_HEADER: origin, DESTINATION_VENUE_ID_HEADER: destination}]
     else:
-        namespace_dir = os.path.dirname(os.path.abspath(__file__))
+        namespace_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "flask",
+            os.path.dirname(__file__).split("/")[-1],
+        )
         with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
             csv_rows = csv.DictReader(csv_file, delimiter=",")
             yield from csv_rows
