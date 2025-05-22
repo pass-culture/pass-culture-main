@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
@@ -38,6 +38,7 @@ export type IndividualOffersActionsBarProps = {
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
+  searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -131,6 +132,7 @@ export const IndividualOffersActionsBar = ({
   canDelete,
   canPublish,
   canDeactivate,
+  searchButtonRef,
 }: IndividualOffersActionsBarProps): JSX.Element => {
   const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
@@ -146,6 +148,9 @@ export const IndividualOffersActionsBar = ({
 
   const { mutate } = useSWRConfig()
   const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
+
+  const deleteButtonRef = useRef<HTMLButtonElement>(null)
+  const dactivateButtonRef = useRef<HTMLButtonElement>(null)
 
   const notify = useNotification()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
@@ -191,6 +196,10 @@ export const IndividualOffersActionsBar = ({
   const handleDeactivateOffers = async () => {
     await handleUpdateOffersStatus(false)
     setIsDeactivationDialogOpen(false)
+
+    setTimeout(() => {
+      searchButtonRef?.current?.focus()
+    })
   }
 
   const handleDelete = async () => {
@@ -209,6 +218,10 @@ export const IndividualOffersActionsBar = ({
       notify.error(computeDeletionErrorMessage(selectedOffers.length))
     }
     setIsDeleteDialogOpen(false)
+
+    setTimeout(() => {
+      searchButtonRef?.current?.focus()
+    })
   }
 
   const handleOpenDeleteDialog = () => {
@@ -230,6 +243,7 @@ export const IndividualOffersActionsBar = ({
         onConfirm={handleDeactivateOffers}
         onCancel={() => setIsDeactivationDialogOpen(false)}
         isDialogOpen={isDeactivationDialogOpen}
+        refToFocusOnClose={dactivateButtonRef}
       />
 
       <DeleteConfirmDialog
@@ -240,6 +254,7 @@ export const IndividualOffersActionsBar = ({
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteDialogOpen(false)}
         isDialogOpen={isDeleteDialogOpen}
+        refToFocusOnClose={deleteButtonRef}
       />
 
       <ActionsBarSticky>
@@ -255,6 +270,7 @@ export const IndividualOffersActionsBar = ({
               onClick={() => setIsDeactivationDialogOpen(true)}
               icon={fullHideIcon}
               variant={ButtonVariant.SECONDARY}
+              ref={dactivateButtonRef}
             >
               Mettre en pause
             </Button>
@@ -264,6 +280,7 @@ export const IndividualOffersActionsBar = ({
               onClick={handleOpenDeleteDialog}
               icon={fullTrashIcon}
               variant={ButtonVariant.SECONDARY}
+              ref={deleteButtonRef}
             >
               Supprimer
             </Button>

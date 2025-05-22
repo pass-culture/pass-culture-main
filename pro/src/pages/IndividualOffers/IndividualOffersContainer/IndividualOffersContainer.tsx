@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
@@ -53,6 +53,8 @@ export const IndividualOffersContainer = ({
   const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
   )
+
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -142,6 +144,7 @@ export const IndividualOffersContainer = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         offererAddresses={offererAddresses}
+        searchButtonRef={searchButtonRef}
       />
       {userHasNoOffers ? (
         <NoData page="offers" />
@@ -178,6 +181,7 @@ export const IndividualOffersContainer = ({
                 canDelete={canDelete}
                 canDeactivate={canDeactivate}
                 canPublish={canPublish}
+                searchButtonRef={searchButtonRef}
               />
             )}
           </div>
