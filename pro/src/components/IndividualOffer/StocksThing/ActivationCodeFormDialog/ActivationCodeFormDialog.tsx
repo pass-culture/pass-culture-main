@@ -17,6 +17,7 @@ interface ActivationCodeFormProps {
   today: Date
   minExpirationDate: Date | null
   isDialogOpen: boolean
+  activationCodeButtonRef: React.RefObject<HTMLButtonElement>
 }
 
 export const ActivationCodeFormDialog = ({
@@ -25,6 +26,7 @@ export const ActivationCodeFormDialog = ({
   today,
   minExpirationDate,
   isDialogOpen,
+  activationCodeButtonRef,
 }: ActivationCodeFormProps) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [unsavedActivationCodes, setUnsavedActivationCodes] =
@@ -81,6 +83,7 @@ export const ActivationCodeFormDialog = ({
       icon={strokeCodeIcon}
       extraClassNames={styles['activation-codes-upload']}
       open={isDialogOpen}
+      refToFocusOnClose={activationCodeButtonRef}
     >
       {hasNoActivationCodes && (
         <AddActivationCodeForm

@@ -22,6 +22,17 @@
   color: var(--color-text-subtle);
 }
 
+.button-actions {
+  display: flex;
+  gap: rem.torem(16px);
+  flex-direction: column;
+  margin-bottom: rem.torem(16px);
+}
+
+.button-action {
+  justify-content: start;
+}
+
 @media (min-width: size.$tablet) {
   .row {
     flex-direction: row;
@@ -43,5 +54,10 @@
 
   .field-layout-footer {
     min-height: rem.torem(32px);
+  }
+
+  .button-actions {
+    flex-direction: row;
+    margin-top: rem.torem(40px);
   }
 }
