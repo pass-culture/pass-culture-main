@@ -299,7 +299,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     thumb_path_component = "venues"
 
     criteria: sa_orm.Mapped[list["criteria_models.Criterion"]] = sa_orm.relationship(
-        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary=VenueCriterion.__table__
+        "Criterion", backref=sa_orm.backref("venue_criteria", lazy="dynamic"), secondary=VenueCriterion.__table__
     )
 
     dmsToken: str = sa.Column(sa.Text, nullable=False, unique=True)
