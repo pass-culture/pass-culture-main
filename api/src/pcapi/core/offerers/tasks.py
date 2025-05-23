@@ -75,6 +75,21 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
             logger.info("Could not fetch info from Sirene API", extra={"siren": payload.siren, "exc": exc})
             return
 
+    offerer = (
+        db.session.query(offerers_models.Offerer)
+        .filter_by(siren=payload.siren)
+        .options(
+            sa_orm.joinedload(offerers_models.Offerer.tags).load_only(
+                offerers_models.OffererTag.id, offerers_models.OffererTag.name
+            )
+        )
+        .one_or_none()
+    )
+    if not offerer:
+        # This should not happen, unless has been deleted or its SIREN updated between cron task and this task,
+        # or between the day it was set in redis and today.
+        return
+
     if siren_info.active:
         if siren_info.closure_date:
             # When siren_info.closure_date is set in the future (still active), schedule a new check on closure date
@@ -83,20 +98,24 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                 extra={"siren": siren_info.siren, "closure_date": siren_info.closure_date},
             )
             add_scheduled_siren_to_check(siren_info.siren, siren_info.closure_date)
+
+        for tag in offerer.tags:
+            if tag.name == CLOSED_OFFERER_TAG_NAME:
+                db.session.query(offerers_models.OffererTagMapping).filter_by(
+                    offererId=offerer.id, tagId=tag.id
+                ).delete(synchronize_session=False)
+                history_api.add_action(
+                    history_models.ActionType.INFO_MODIFIED,
+                    author=None,
+                    offerer=offerer,
+                    comment="L'entité juridique est détectée comme active via l'API Sirene (INSEE)",
+                    modified_info={"tags": {"old_info": tag.label}},
+                )
+                break
+
         if not payload.fill_in_codir_report:
             # Nothing to do
             return
-
-    offerer = (
-        db.session.query(offerers_models.Offerer)
-        .filter_by(siren=payload.siren)
-        .options(sa_orm.joinedload(offerers_models.Offerer.tags).load_only(offerers_models.OffererTag.name))
-        .one_or_none()
-    )
-    if not offerer:
-        # This should not happen, unless has been deleted or its SIREN updated between cron task and this task,
-        # or between the day it was set in redis and today.
-        return
 
     if not siren_info.active:
         logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
