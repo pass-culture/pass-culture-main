@@ -11,7 +11,6 @@ from pcapi.core.offers.models import Product
 from pcapi.core.users.models import User
 from pcapi.models import Base
 from pcapi.models import Model
-from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import db as db_utils
@@ -81,9 +80,9 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True, index=True)
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="chronicles")
 
-    __content_ts_vector__ = db.Column(
+    __content_ts_vector__ = sa.Column(
         db_utils.TSVector(),
-        db.Computed("to_tsvector('french', content)", persisted=True),
+        sa.Computed("to_tsvector('french', content)", persisted=True),
         nullable=False,
         name="__content_ts_vector__",
     )

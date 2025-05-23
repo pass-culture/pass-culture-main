@@ -704,7 +704,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         "OfferCompliance", back_populates="offer", uselist=False
     )
     criteria: sa_orm.Mapped[list["Criterion"]] = sa_orm.relationship(
-        "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
+        "Criterion", backref=sa_orm.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
     )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
