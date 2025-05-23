@@ -62,6 +62,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users imp
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import (
     create_industrial_pro_users_api_keys,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_products import create_industrial_products
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
     create_industrial_search_indexed_objects,
 )
@@ -207,3 +208,5 @@ def save_industrial_sandbox() -> None:
 
     # run this last as we fill out missing user offerers
     create_user_offerers()
+
+    create_industrial_products()
