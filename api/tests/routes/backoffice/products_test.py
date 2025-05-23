@@ -1,0 +1,494 @@
+import html
+import json
+import re
+from unittest.mock import patch
+
+import pytest
+from flask import url_for
+
+from pcapi.core.categories import subcategories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
+from pcapi.core.testing import assert_num_queries
+from pcapi.models.offer_mixin import OfferStatus
+from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
+from pcapi.utils import requests
+
+from tests.connectors.titelive import fixtures
+
+from .helpers import button as button_helpers
+from .helpers import html_parser
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
+
+
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+    pytest.mark.backoffice,
+]
+
+
+class GetProductDetailsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_details"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # session + user + product + unlinked offers + whitelist product
+    expected_num_queries = 5
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_get_detail_product(self, mock_get_by_ean13, authenticated_client):
+        article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
+        mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+
+        allocine_provider = providers_factories.AllocineProviderFactory.create(isActive=True)
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+            lastProvider=allocine_provider,
+        )
+
+        offers_factories.OfferFactory.create(product=product, ean="1234567891234")
+
+        # offre non liées au produit
+        offers_factories.OfferFactory.create(ean="1234567891234")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert str(product.id) == descriptions["Product ID"]
+
+        assert descriptions["Catégorie"] == "Livre"
+        assert descriptions["Sous-catégorie"] == "Livre papier"
+        assert descriptions["Type de musique"] == "Alternatif"
+        assert descriptions["Nombre d'offres associées"] == "1"
+        assert descriptions["Approuvées actives"] == "1"
+        assert descriptions["Approuvées inactives"] == "0"
+        assert descriptions["En attente"] == "0"
+        assert descriptions["Rejetées"] == "0"
+        assert descriptions["Offres non liées"] == "1"
+        assert descriptions["Auteur"] == "Author"
+        assert descriptions["EAN"] == "1234567891234"
+        assert descriptions["Éditeur"] == "Editor"
+        assert descriptions["Description"] == "Une offre pour tester"
+
+        soup = html_parser.get_soup(response.data)
+        card_titles = html_parser.extract_cards_titles(response.data)
+        card_text = html_parser.extract_cards_text(response.data)
+        card_ean = soup.find(id="titelive-data")
+
+        assert card_ean
+        assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
+        assert soup.select(
+            f'div.pc-ean-result img[src="{fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]["imagesUrl"]["recto"]}"]'
+        )
+        assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
+        assert "EAN-13 : " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
+        assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+
+        assert (
+            "Prix HT : "
+            + str(article["prixpays"]["fr"]["value"])
+            + " "
+            + html.unescape(article["prixpays"]["fr"]["devise"])
+            in card_text[0]
+        )
+        assert "Taux TVA : " + article["taux_tva"] + " %" in card_text[0]
+        assert "Code CLIL : " + article["code_clil"] in card_text[0]
+        assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
+        assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
+        assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
+        assert "Inéligible pass Culture :" not in card_text[0]
+        assert "EAN whitelisté : Non" in card_text[0]
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Offres liées" in buttons
+        assert "Offres non liées" in buttons
+
+        badges = html_parser.extract_badges(response.data)
+        assert "• Compatible" in badges
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_get_detail_product_without_ean(self, mock_get_by_ean13, authenticated_client):
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries - 2):  # remove query unlinked offers and whitelist product
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        card_ean = soup.find(id="titelive-data")
+        assert not card_ean
+
+        mock_get_by_ean13.assert_not_called()
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_get_detail_product_check_offer_format(self, mock_get_by_ean13, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+
+        offer = offers_factories.OfferFactory.create(
+            product=product, venue=offerers_factories.VenueFactory.create(name="Venue 1"), ean="1234567891234"
+        )
+        offers_factories.StockFactory.create(offer=offer, price=10)
+
+        # offre non liées au produit
+        unlinked_offer = offers_factories.OfferFactory.create(
+            venue=offerers_factories.VenueFactory.create(name="Venue 2"), ean="1234567891234"
+        )
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        scripts = soup.find_all("script")
+        for script in scripts:
+            if "offers = " in str(script):
+                offers_json = re.search(r"const (unlinked_offers|offers) = (\[\{.*?\}\]);", str(script))
+                if offers_json:
+                    offers = json.loads(offers_json.group(2))
+                    if offers_json.group(1) == "offers":
+                        assert offers[0]["id"] == offer.id
+                        assert offers[0]["name"] == offer.name
+                        assert offers[0]["venue_name"] == offer.venue.name
+                        assert offers[0]["status"] == "Publiée"
+                    elif offers_json.group(1) == "unlinked_offers":
+                        assert offers[0]["id"] == unlinked_offer.id
+                        assert offers[0]["name"] == unlinked_offer.name
+                        assert offers[0]["venue_name"] == unlinked_offer.venue.name
+                        assert offers[0]["status"] == "Épuisée"
+
+
+class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Synchronisation Titelive"
+
+    @property
+    def path(self):
+        product = offers_factories.ProductFactory.create()
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+    def test_button_when_can_add_one(self, authenticated_client):
+        with patch(
+            "pcapi.routes.backoffice.products.blueprint.get_by_ean13", return_value=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+        ):
+            super().test_button_when_can_add_one(authenticated_client)
+
+    def test_no_button(self, client, roles_with_permissions):
+        with patch(
+            "pcapi.routes.backoffice.products.blueprint.get_by_ean13", return_value=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+        ):
+            super().test_no_button(client, roles_with_permissions)
+
+
+class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_synchronize_with_titelive_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + user + product
+    expected_num_queries = 3
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_confirm_product_synchronization_with_titelive_form(self, mock_get_by_ean13, authenticated_client):
+        article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
+        mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+
+        product = offers_factories.ProductFactory.create()
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        card_titles = html_parser.extract_cards_titles(response.data)
+        card_text = html_parser.extract_cards_text(response.data)
+        card_ean = soup.select("div.pc-ean-result")
+
+        assert card_ean
+        assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
+        assert soup.select(
+            f'div.pc-ean-result img[src="{fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]["imagesUrl"]["recto"]}"]'
+        )
+        assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
+        assert "EAN-13 : " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
+        assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+
+        assert (
+            "Prix HT : "
+            + str(article["prixpays"]["fr"]["value"])
+            + " "
+            + html.unescape(article["prixpays"]["fr"]["devise"])
+            in card_text[0]
+        )
+        assert "Taux TVA : " + article["taux_tva"] + " %" in card_text[0]
+        assert "Code CLIL : " + article["code_clil"] in card_text[0]
+        assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
+        assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
+        assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
+        assert "Inéligible pass Culture :" not in card_text[0]
+        assert "EAN whitelisté : Non" in card_text[0]
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Mettre le produit à jour avec ces informations" in buttons
+
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_confirm_product_synchronization_fails_to_retrieve_titelive_data_form(
+        self, mock_get_by_ean13, authenticated_client
+    ):
+        mock_get_by_ean13.side_effect = requests.ExternalAPIException(is_retryable=True)
+
+        product = offers_factories.ProductFactory.create()
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 for ROLLBACK
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert (
+            "Une erreur s'est produite lors de la recupération des informations Titelive: ExternalAPIException"
+            in html_parser.extract_alert(response.data)
+        )
+
+
+class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.synchronize_product_with_titelive"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    @patch("pcapi.connectors.titelive.get_by_ean13")
+    def test_whitelist_product(self, mock_get_by_ean13, authenticated_client):
+        mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
+        article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
+        oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
+
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(ean=ean, idAtProviders=ean, extraData={})
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id)
+        assert response.status_code == 303
+
+        assert product.name == oeuvre["titre"]
+        assert product.description == article["resume"]
+        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert product.thumbCount == int(article.get("image", 0))
+        assert product.extraData == {
+            "rayon": "Littérature française Récits, Aventures, Voyages",
+            "author": "Jean-Christophe Rufin",
+            "csr_id": "0105",
+            "gtl_id": "01050000",
+            "editeur": "FOLIO",
+            "code_clil": "3665",
+            "collection": "Folio",
+            "prix_livre": 8.3,
+            "schoolbook": False,
+            "comic_series": "Non précisée",
+            "distributeur": "SODIS",
+            "date_parution": "2014-10-02 00:00:00",
+            "num_in_collection": "5833",
+        }
+
+
+class WhitelistProductButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Whitelist"
+
+    @property
+    def path(self):
+        product = offers_factories.ProductFactory.create(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        )
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+
+class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_whitelist_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + user + product
+    expected_num_queries = 3
+
+    def test_confirm_product_whitelist_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(name="One Piece")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Whitelister le produit {product.name}" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Whitelister le produit" in buttons
+
+
+class PostProductWhitelistTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.whitelist_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_whitelist_product(self, authenticated_client):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(
+            ean=ean,
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        )
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert "Le produit a été marqué compatible avec les CGU" in html_parser.extract_alerts(response.data)
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.COMPATIBLE
+
+
+class BlacklistProductButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Blacklist"
+
+    @property
+    def path(self):
+        product = offers_factories.ProductFactory.create(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        )
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+
+class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.product.get_product_blacklist_form"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + user + product
+    expected_num_queries = 3
+
+    def test_confirm_product_blacklist_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(name="One Piece")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Blacklister le produit {product.name}" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Blacklister le produit" in buttons
+
+
+class PostProductBlacklistTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.blacklist_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_blacklist_product(self, authenticated_client):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(
+            ean=ean, idAtProviders=ean, gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        )
+        offer = offers_factories.OfferFactory.create(product=product)
+        offers_factories.StockFactory.create(offer=offer, price=10)
+
+        unlinked_offer = offers_factories.OfferFactory.create(ean=ean)
+        offers_factories.StockFactory.create(offer=unlinked_offer, price=10)
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert (
+            "Le produit a été marqué incompatible avec les CGU et les offres ont été désactivées"
+            in html_parser.extract_alerts(response.data)
+        )
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert offer.status == OfferStatus.REJECTED
+        assert unlinked_offer.status == OfferStatus.REJECTED
+
+
+class LinkUnlinkedOfferToProductButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Associer les offres au produit"
+
+    @property
+    def path(self):
+        ean = "1234567899999"
+        product = offers_factories.ProductFactory.create(ean=ean)
+        offers_factories.OfferFactory.create(ean=ean)
+        return url_for("backoffice_web.product.get_product_details", product_id=product.id)
+
+
+class GetProductLinkOfferFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.confirm_link_offers_forms"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_confirm_product_link_offers_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+
+        unlinked_offers = [offers_factories.OfferFactory.create(ean="1234567891234") for _ in range(10)]
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"object_ids": ",".join([str(offer.id) for offer in unlinked_offers])},
+        )
+        assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Voulez-vous associer 10 offres au produit ?" in response_text
+        assert "Vous allez associer 10 offres. Voulez vous continuer ?" in response_text
+
+        buttons = html_parser.extract(response.data, "button")
+        assert "Annuler" in buttons
+        assert "Confirmer l'association" in buttons
+
+
+class LinkUnlinkedOfferToProductTest(PostEndpointHelper):
+    endpoint = "backoffice_web.product.batch_link_offers_to_product"
+    endpoint_kwargs = {"product_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_confirm_product_link_offers_form(self, authenticated_client):
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+        unlinked_offers = [offers_factories.OfferFactory.create(ean="1234567891234") for _ in range(10)]
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"object_ids": ",".join([str(offer.id) for offer in unlinked_offers])},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+        assert "Les offres ont été associées au produit avec succès" in html_parser.extract_alerts(response.data)
+        assert len(product.offers) == len(unlinked_offers)
+        assert product.offers == unlinked_offers
+        assert len({offer.name for offer in unlinked_offers}) == 1
+        assert product.name == unlinked_offers[0].name
+        assert len({offer.description for offer in unlinked_offers}) == 1
+        assert product.description == unlinked_offers[0].description
