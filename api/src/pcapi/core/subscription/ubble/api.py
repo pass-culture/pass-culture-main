@@ -134,8 +134,7 @@ def start_ubble_workflow(
 
     ubble_fraud_check = _get_last_ubble_fraud_check(user)
     if ubble_fraud_check is not None and _should_reattempt_identity_verification(ubble_fraud_check):
-        content = _reattempt_identity_verification(ubble_fraud_check, first_name, last_name, redirect_url, webhook_url)
-        _update_identity_fraud_check(ubble_fraud_check, content)
+        _reattempt_identity_verification(ubble_fraud_check, first_name, last_name, redirect_url, webhook_url)
         batch_notification.track_identity_check_started_event(ubble_fraud_check.user.id, ubble_fraud_check.type)
     else:
         content = ubble.create_and_start_identity_verification(first_name, last_name, redirect_url, webhook_url)
@@ -174,7 +173,7 @@ def _reattempt_identity_verification(
     last_name: str,
     redirect_url: str,
     webhook_url: str,
-) -> fraud_models.UbbleContent:
+) -> None:
     ubble_content = ubble_fraud_check.source_data()
     assert isinstance(ubble_content, fraud_models.UbbleContent)
 
@@ -190,10 +189,18 @@ def _reattempt_identity_verification(
         )
         identification_id = ubble_content.identification_id
 
-    identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
-    ubble_content.identification_url = identification_url
+    try:
+        identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
+    except requests_utils.ExternalAPIException as e:
+        root_exception: requests_utils.exceptions.HTTPError = e.__cause__
+        has_state_conflict = root_exception.response.status_code == 409
+        if has_state_conflict:
+            update_ubble_workflow(ubble_fraud_check)
 
-    return ubble_content
+        raise
+    else:
+        ubble_content.identification_url = identification_url
+        _update_identity_fraud_check(ubble_fraud_check, ubble_content)
 
 
 def _create_ubble_identification(
