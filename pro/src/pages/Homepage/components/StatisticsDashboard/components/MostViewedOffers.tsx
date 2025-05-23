@@ -2,7 +2,7 @@ import cn from 'classnames'
 
 import { TopOffersResponseData } from 'apiClient/v1'
 import { pluralizeString } from 'commons/utils/pluralize'
-import { HeadlineOfferTag } from 'components/HeadlineOfferTag/HeadlineOfferTag'
+import { Tag, TagSpecificVariant } from 'design-system/Tag/Tag'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
 import styles from './MostViewedOffers.module.scss'
@@ -42,7 +42,9 @@ export const MostViewedOffers = ({
             />
             <div className={styles['top-offer-details']}>
               {topOffer.isHeadlineOffer && (
-                <HeadlineOfferTag
+                <Tag
+                  label="Offre à la une"
+                  variant={TagSpecificVariant.HEADLINE}
                   className={styles['top-offer-headline-tag']}
                 />
               )}

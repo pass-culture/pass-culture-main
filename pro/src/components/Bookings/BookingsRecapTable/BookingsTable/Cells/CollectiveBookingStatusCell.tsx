@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag } from 'design-system/Tag/Tag'
 
 import { getCollectiveBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
 
@@ -25,18 +25,11 @@ export function CollectiveBookingStatusCell({
 
   return (
     <div className={cn(className)}>
-      <div
-        className={cn(
-          styles['booking-status-label'],
-          bookingDisplayInfo.statusClassName
-        )}
-      >
-        <SvgIcon
-          src={bookingDisplayInfo.icon}
-          alt=""
-          className={styles['booking-status-icon']}
+      <div className={styles['booking-status-label']}>
+        <Tag
+          label={bookingDisplayInfo.status.toLowerCase()}
+          variant={bookingDisplayInfo.variant}
         />
-        <span>{bookingDisplayInfo.status.toLowerCase()}</span>
       </div>
     </div>
   )

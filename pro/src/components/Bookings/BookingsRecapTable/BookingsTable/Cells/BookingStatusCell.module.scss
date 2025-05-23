@@ -4,16 +4,13 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .booking-status-label {
-  @include fonts.body-accent-xs;
-
-  border-radius: rem.torem(5px);
-  padding: rem.torem(5px) rem.torem(7px);
-  white-space: nowrap;
-  line-height: rem.torem(19px);
   position: relative;
-  width: fit-content;
   border: none;
-  text-align: left;
+  border-radius: rem.torem(4px);
+
+  &:hover {
+    cursor: pointer;
+  }
 
   &:focus-visible {
     @include outline.focus-outline;
@@ -29,6 +26,10 @@
 }
 
 .bs-tooltip {
+  @include fonts.body-accent-xs;
+
+  line-height: rem.torem(19px);
+  text-align: left;
   white-space: initial;
   background-color: var(--color-background-default);
   border-radius: rem.torem(4px);

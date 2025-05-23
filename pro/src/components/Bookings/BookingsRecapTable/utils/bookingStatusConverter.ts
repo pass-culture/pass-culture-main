@@ -1,13 +1,6 @@
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import strokeCheckIcon from 'icons/stroke-check.svg'
-import strokeClockIcon from 'icons/stroke-clock.svg'
-import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
-import strokeWrongIcon from 'icons/stroke-wrong.svg'
-
-import styles from './BookingStatus.module.scss'
+import { TagVariant } from 'design-system/Tag/Tag'
 
 export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
@@ -15,45 +8,40 @@ export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     status: 'Validée',
     label: 'Réservation validée',
     historyClassName: 'bs-history-validated',
-    statusClassName: styles['booking-status-validated'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    icon: strokeDoubleCheckIcon,
+    variant: TagVariant.SUCCESS,
   },
   {
     id: BOOKING_STATUS.CANCELLED,
     status: 'Annulée',
     label: 'Réservation annulée',
     historyClassName: 'bs-history-cancelled',
-    statusClassName: styles['booking-status-cancelled'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    icon: strokeWrongIcon,
+    variant: TagVariant.ERROR,
   },
   {
     id: BOOKING_STATUS.BOOKED,
     status: 'Réservée',
     label: 'Réservée',
     historyClassName: 'bs-history-booked',
-    statusClassName: styles['booking-status-booked'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    icon: strokeClockIcon,
+    variant: TagVariant.SUCCESS,
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
     status: 'Remboursée',
     label: 'Remboursée',
     historyClassName: 'bs-history-reimbursed',
-    statusClassName: styles['booking-status-reimbursed'],
     dateFormat: FORMAT_DD_MM_YYYY,
-    icon: strokeEuroIcon,
+    variant: TagVariant.SUCCESS,
   },
   {
     id: BOOKING_STATUS.CONFIRMED,
     status: 'Confirmée',
     label: 'Réservation confirmée',
     historyClassName: 'bs-history-confirmed',
-    statusClassName: styles['booking-status-confirmed'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    icon: strokeCheckIcon,
+    variant: TagVariant.SUCCESS,
   },
 ]
 
@@ -61,38 +49,32 @@ export const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.VALIDATED,
     status: 'Terminée',
-    statusClassName: styles['booking-status-validated'],
-    icon: strokeDoubleCheckIcon,
+    variant: TagVariant.SUCCESS,
   },
   {
     id: BOOKING_STATUS.CANCELLED,
     status: 'Annulée',
-    statusClassName: styles['booking-status-cancelled'],
-    icon: strokeWrongIcon,
+    variant: TagVariant.ERROR,
   },
   {
     id: BOOKING_STATUS.BOOKED,
     status: 'Réservée',
-    statusClassName: styles['booking-status-booked'],
-    icon: strokeClockIcon,
+    variant: TagVariant.SUCCESS,
   },
   {
     id: BOOKING_STATUS.PENDING,
     status: 'Préréservée',
-    statusClassName: styles['booking-status-pending'],
-    icon: strokeHourglassIcon,
+    variant: TagVariant.WARNING,
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
     status: 'Remboursée',
-    statusClassName: styles['booking-status-reimbursed'],
-    icon: strokeEuroIcon,
+    variant: TagVariant.SUCCESS,
   },
   {
     id: BOOKING_STATUS.CONFIRMED,
     status: 'Confirmée',
-    statusClassName: styles['booking-status-confirmed'],
-    icon: strokeCheckIcon,
+    variant: TagVariant.SUCCESS,
   },
 ]
 

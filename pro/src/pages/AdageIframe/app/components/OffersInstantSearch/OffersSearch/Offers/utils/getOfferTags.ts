@@ -8,6 +8,11 @@ import {
   getHumanizeRelativeDistance,
   humanizeDistance,
 } from 'commons/utils/getDistance'
+import fullLocationIcon from 'icons/full-location.svg'
+import fullProfileIcon from 'icons/full-profil.svg'
+import fullWaitIcon from 'icons/full-wait.svg'
+import strokeBagIcon from 'icons/stroke-bag.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import {
   getFormattedDatesForBookableOffer,
   getFormattedDatesForTemplateOffer,
@@ -15,7 +20,7 @@ import {
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 
 type OfferTag = {
-  icon: string
+  icon?: string
   text: string
 }
 
@@ -54,20 +59,23 @@ export function getOfferTags(
   const tags: OfferTag[] = []
   switch (offer.offerVenue.addressType) {
     case OfferAddressType.SCHOOL: {
-      tags.push({ icon: '📚', text: 'Dans l’établissement scolaire' })
+      tags.push({
+        icon: fullLocationIcon,
+        text: 'Dans l’établissement scolaire',
+      })
       if (distanceToOfferer && showAllTags) {
         tags.push({
-          icon: '👩‍🎨',
+          icon: fullLocationIcon,
           text: `Partenaire situé à ${distanceToOfferer}`,
         })
       }
       break
     }
     case OfferAddressType.OFFERER_VENUE: {
-      tags.push({ icon: '🎒', text: 'Sortie' })
+      tags.push({ icon: fullLocationIcon, text: 'Sortie' })
       if (offer.offerVenue.distance || offer.offerVenue.distance === 0) {
         tags.push({
-          icon: '📍',
+          icon: fullLocationIcon,
           text: `À ${humanizeDistance(offer.offerVenue.distance * 1000)}`,
         })
       }
@@ -75,13 +83,13 @@ export function getOfferTags(
     }
     case OfferAddressType.OTHER: {
       tags.push(
-        { icon: '🎒', text: 'Sortie' },
-        { icon: '📍', text: 'Lieu à définir' }
+        { icon: fullLocationIcon, text: 'Sortie' },
+        { icon: fullLocationIcon, text: 'Lieu à définir' }
       )
 
       if (distanceToOfferer && showAllTags) {
         tags.push({
-          icon: '👩‍🎨',
+          icon: fullLocationIcon,
           text: `Partenaire situé à ${distanceToOfferer}`,
         })
       }
@@ -96,27 +104,32 @@ export function getOfferTags(
 
   if (isTemplate) {
     tags.push({
-      icon: '🕐',
+      icon: fullWaitIcon,
       text: `${getFormattedDatesForTemplateOffer(offer, 'Disponible toute l’année')}`,
     })
   } else if (offer.stock.startDatetime) {
     tags.push({
-      icon: '🕐',
+      icon: fullWaitIcon,
       text: `${getFormattedDatesForBookableOffer(offer)}`,
     })
   }
 
   if (offer.students.length > 0) {
     tags.push({
-      icon: '🧑‍🏫',
+      icon: strokeBagIcon,
       text: `${offer.students.length > 1 ? 'Multiniveaux' : offer.students[0]}`,
     })
   }
 
   if (!isTemplate) {
-    tags.push({ icon: '💰', text: `${getFormattedPrice(offer.stock.price)}` })
-
-    tags.push({ icon: '🧑‍🎓', text: `${offer.stock.numberOfTickets} élèves` })
+    tags.push({
+      icon: strokeEuroIcon,
+      text: `${getFormattedPrice(offer.stock.price)}`,
+    })
+    tags.push({
+      icon: fullProfileIcon,
+      text: `${offer.stock.numberOfTickets} élèves`,
+    })
   }
 
   return tags

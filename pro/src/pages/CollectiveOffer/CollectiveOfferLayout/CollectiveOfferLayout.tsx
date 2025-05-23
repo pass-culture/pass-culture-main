@@ -12,9 +12,9 @@ import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from 'components/HelpLink/HelpLink'
+import { Tag } from 'design-system/Tag/Tag'
 import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { useOfferEducationalFormData } from '../CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
 
@@ -50,7 +50,9 @@ export const CollectiveOfferLayout = ({
     offer
   )
 
-  const { data: selectedOfferer } = useOfferer(offerEducationalFormData.offerer?.id)
+  const { data: selectedOfferer } = useOfferer(
+    offerEducationalFormData.offerer?.id
+  )
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
@@ -73,19 +75,14 @@ export const CollectiveOfferLayout = ({
   return (
     <Layout
       layout={'sticky-actions'}
-      mainHeading={(
+      mainHeading={
         <div className={styles['eac-layout-heading-wrapper']}>
           {isTemplate && (
-            <Tag
-              variant={TagVariant.SMALL_OUTLINE}
-              className={styles['eac-layout-tag']}
-            >
-              Offre vitrine
-            </Tag>
+            <Tag label="Offre vitrine" className={styles['eac-layout-tag']} />
           )}
           {title}
         </div>
-      )}
+      }
       mainSubHeading={subTitle}
     >
       {isCreation && (

@@ -1,0 +1,74 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.tag {
+  @include fonts.body-xs;
+
+  display: flex;
+  padding: rem.torem(2px) rem.torem(4px);
+  align-items: center;
+  gap: rem.torem(4px);
+  border-radius: rem.torem(4px);
+  width: fit-content;
+
+  &.default {
+    .icon {
+      color: var(--color-icon-default);
+    }
+
+    background-color: var(--color-background-subtle);
+  }
+
+  &.success {
+    .icon {
+      color: var(--color-icon-success);
+    }
+
+    background-color: var(--color-background-success);
+  }
+
+  &.warning {
+    .icon {
+      color: var(--color-icon-warning);
+    }
+
+    background-color: var(--color-background-warning);
+  }
+
+  &.error {
+    .icon {
+      color: var(--color-icon-error);
+    }
+
+    background-color: var(--color-background-error);
+  }
+
+  &.bookclub {
+    .icon {
+      color: var(--color-icon-bookclub);
+    }
+
+    background-color: var(--color-background-bookclub);
+  }
+
+  &.headline {
+    .icon {
+      color: var(--color-icon-headline);
+    }
+
+    background-color: var(--color-background-headline);
+  }
+
+  &.like {
+    .icon {
+      color: var(--color-icon-brand-primary);
+    }
+
+    background-color: var(--color-background-subtle);
+  }
+
+  &.new {
+    color: var(--color-text-inverted);
+    background-color: var(--color-background-brand-primary);
+  }
+}

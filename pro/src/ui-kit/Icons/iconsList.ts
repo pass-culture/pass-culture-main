@@ -3,6 +3,7 @@ import fullArchiveIcon from 'icons/full-archive.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
+import fullBookIcon from 'icons/full-book.svg'
 import fullBoostedIcon from 'icons/full-boosted.svg'
 import fullBurgerIcon from 'icons/full-burger.svg'
 import fullCheckIcon from 'icons/full-check.svg'
@@ -26,6 +27,7 @@ import fullLeftIcon from 'icons/full-left.svg'
 import fullLessIcon from 'icons/full-less.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullListIcon from 'icons/full-list.svg'
+import fullLocationIcon from 'icons/full-location.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -60,6 +62,7 @@ import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import strokeAddCalendarIcon from 'icons/stroke-add-calendar.svg'
 import strokeArticleIcon from 'icons/stroke-article.svg'
+import strokeBagIcon from 'icons/stroke-bag.svg'
 import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
@@ -149,6 +152,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullShowIcon },
   { src: fullHideIcon },
   { src: fullBackIcon },
+  { src: fullBookIcon },
   { src: fullNextIcon },
   { src: fullWaitIcon },
   { src: fullRefreshIcon },
@@ -159,6 +163,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullKeyIcon },
   { src: fullPlusIcon },
   { src: fullSortIcon },
+  { src: fullLocationIcon },
   { src: fullLogoutIcon },
   { src: fullCodeIcon },
   { src: fullDownIcon },
@@ -252,6 +257,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeBookingHold },
   { src: stroke404Icon },
   { src: strokeCollaboratorIcon },
+  { src: strokeBagIcon },
   { src: strokeBarcodeIcon },
   { src: strokePageNotFoundIcon },
   { src: strokeVisualArtIcon },
