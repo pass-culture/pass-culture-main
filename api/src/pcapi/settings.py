@@ -77,6 +77,7 @@ DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE
 # Pull requests and local envs only have one user.
 DATABASE_HAS_SPECIFIC_ROLES = bool(int(os.environ.get("DATABASE_HAS_SPECIFIC_ROLES", "1")))
 SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
+USE_FLASK_SQLALCHEMY = bool(int(os.environ.get("USE_FLASK_SQLALCHEMY", 0)))
 
 # FLASK
 PROFILE_REQUESTS = bool(int(os.environ.get("PROFILE_REQUESTS", "0")))

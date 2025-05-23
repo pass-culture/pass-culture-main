@@ -173,7 +173,12 @@ app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID  # for authlib
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET  # for authlib
 
 install_models()
-db.init_app(app)
+
+if settings.USE_FLASK_SQLALCHEMY:
+    db.init_app(app)  # flask_sqlalchemy init
+else:
+    pass
+
 sa_orm.configure_mappers()
 login_manager.init_app(app)
 install_commands(app)
