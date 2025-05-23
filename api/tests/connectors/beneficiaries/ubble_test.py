@@ -14,8 +14,7 @@ from tests.core.subscription.test_factories import UbbleIdentificationResponseFa
 from tests.test_utils import json_default
 
 
-class StartIdentificationV2Test:
-    @pytest.mark.features(WIP_UBBLE_V2=True)
+class StartIdentificationTest:
     def test_start_identification(self, requests_mock, caplog):
         requests_mock.post(
             f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
@@ -66,7 +65,6 @@ class StartIdentificationV2Test:
         assert record.extra["request_type"] == "create-and-start-idv", record.extra
         assert record.message == "Valid response from Ubble"
 
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification_connection_error(self, requests_mock, caplog):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 
@@ -87,7 +85,6 @@ class StartIdentificationV2Test:
         assert record.extra["error_type"] == "network"
         assert record.message == "Ubble create-and-start-idv: Network error"
 
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_start_identification_http_error_status(self, requests_mock, caplog):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
 
@@ -107,73 +104,6 @@ class StartIdentificationV2Test:
         assert record.extra["request_type"] == "create-and-start-idv"
         assert record.extra["error_type"] == "http"
         assert record.message == "Ubble create-and-start-idv: Unexpected error: 401"
-
-
-class StartIdentificationV1Test:
-    def test_start_identification(self, ubble_mock, caplog):
-        with caplog.at_level(logging.INFO):
-            response = ubble.start_identification(
-                user_id=123,
-                first_name="prenom",
-                last_name="nom",
-                webhook_url="http://webhook/url/",
-                redirect_url="http://redirect/url",
-            )
-
-        assert isinstance(response, fraud_models.UbbleContent)
-        assert ubble_mock.call_count == 1
-
-        attributes = ubble_mock.last_request.json()["data"]["attributes"]
-        assert attributes["identification-form"]["external-user-id"] == 123
-        assert attributes["identification-form"]["phone-number"] is None
-
-        assert attributes["reference-data"]["first-name"] == "prenom"
-        assert attributes["reference-data"]["last-name"] == "nom"
-        assert attributes["webhook"] == "http://webhook/url/"
-        assert attributes["redirect_url"] == "http://redirect/url"
-
-        assert len(caplog.records) >= 1
-        record = caplog.records[1]
-        assert record.extra["status_code"] == 201
-        assert record.extra["identification_id"] == str(response.identification_id)
-        assert record.extra["request_type"] == "start-identification"
-        assert record.message == "Valid response from Ubble"
-
-    def test_start_identification_connection_error(self, ubble_mock_connection_error, caplog):
-        with pytest.raises(requests.ExternalAPIException):
-            with caplog.at_level(logging.ERROR):
-                ubble.start_identification(
-                    user_id=123,
-                    first_name="prenom",
-                    last_name="nom",
-                    webhook_url="http://webhook/url/",
-                    redirect_url="http://redirect/url",
-                )
-
-        assert ubble_mock_connection_error.call_count == 1
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
-        assert record.extra["request_type"] == "start-identification"
-        assert record.extra["error_type"] == "network"
-        assert record.message == "Ubble start-identification: Network error"
-
-    def test_start_identification_http_error_status(self, ubble_mock_http_error_status, caplog):
-        with pytest.raises(requests.ExternalAPIException):
-            ubble.start_identification(
-                user_id=123,
-                first_name="prenom",
-                last_name="nom",
-                webhook_url="http://webhook/url/",
-                redirect_url="http://redirect/url",
-            )
-
-        assert ubble_mock_http_error_status.call_count == 1
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
-        assert record.extra["status_code"] == 401
-        assert record.extra["request_type"] == "start-identification"
-        assert record.extra["error_type"] == "http"
-        assert record.message == "Ubble start-identification: Unexpected error: 401, "
 
 
 class ShouldUseMockTest:

@@ -235,63 +235,6 @@ def client_fixture(app: Flask):
     return TestClient(app.test_client())
 
 
-@pytest.fixture(name="ubble_mock")
-def ubble_mock(requests_mock, settings):
-    """
-    Mocks all Ubble requests calls to ease test
-    Returns a configured requests mock matcher
-    """
-    # unsure ?
-    from tests.connectors.beneficiaries import ubble_fixtures
-
-    settings.UBBLE_API_URL = "https://api.example.com/"
-    settings.UBBLE_CLIENT_ID = "client_id"
-    settings.UBBLE_CLIENT_SECRET = "client_secret"
-
-    request_matcher = requests_mock.register_uri(
-        "POST",
-        "https://api.example.com/identifications/",
-        json=ubble_fixtures.UBBLE_IDENTIFICATION_RESPONSE,
-        status_code=201,
-    )
-    yield request_matcher
-
-
-@pytest.fixture(name="ubble_mock_connection_error")
-def ubble_mock_connection_error(requests_mock, settings):
-    """
-    Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
-    """
-
-    settings.UBBLE_API_URL = "https://api.example.com/"
-    settings.UBBLE_CLIENT_ID = "client_id"
-    settings.UBBLE_CLIENT_SECRET = "client_secret"
-
-    request_matcher = requests_mock.register_uri(
-        "POST",
-        "https://api.example.com/identifications/",
-        exc=requests.exceptions.ConnectionError,
-    )
-    yield request_matcher
-
-
-@pytest.fixture(name="ubble_mock_http_error_status")
-def ubble_mock_http_error_status(requests_mock, settings):
-    """
-    Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
-    """
-    settings.UBBLE_API_URL = "https://api.example.com/"
-    settings.UBBLE_CLIENT_ID = "client_id"
-    settings.UBBLE_CLIENT_SECRET = "client_secret"
-
-    request_matcher = requests_mock.register_uri(
-        "POST",
-        "https://api.example.com/identifications/",
-        status_code=401,
-    )
-    yield request_matcher
-
-
 @pytest.fixture
 def ubble_mocker(settings) -> typing.Callable:
     @contextlib.contextmanager

@@ -25,7 +25,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 
@@ -128,14 +127,6 @@ def is_v2_identification(identification_id: str | None) -> bool:
 
 
 def start_ubble_workflow(
-    user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
-) -> HttpUrl | None:
-    if FeatureToggle.WIP_UBBLE_V2.is_active():
-        return _start_or_reattempt_ubble_v2_workflow(user, first_name, last_name, redirect_url, webhook_url)
-    return _start_ubble_v1_workflow(user, first_name, last_name, redirect_url, webhook_url)
-
-
-def _start_or_reattempt_ubble_v2_workflow(
     user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
 ) -> HttpUrl | None:
     if webhook_url is None:
@@ -243,24 +234,6 @@ def _update_identity_fraud_check(
         fraud_check.resultContent = content.dict(exclude_none=True)
 
     pcapi_repository.repository.save(fraud_check)
-
-
-def _start_ubble_v1_workflow(
-    user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
-) -> HttpUrl | None:
-    if webhook_url is None:
-        webhook_url = flask.url_for("Public API.ubble_webhook_update_application_status", _external=True)
-
-    content = ubble.start_identification(user.id, first_name, last_name, redirect_url, webhook_url)
-    subscription_api.initialize_identity_fraud_check(
-        eligibility_type=user.eligibility,
-        fraud_check_type=fraud_models.FraudCheckType.UBBLE,
-        identity_content=content,
-        third_party_id=str(content.identification_id),
-        user=user,
-    )
-
-    return content.identification_url
 
 
 def get_most_relevant_ubble_error(

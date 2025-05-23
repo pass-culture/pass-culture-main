@@ -5,7 +5,6 @@ import re
 import time
 from unittest.mock import patch
 
-import flask
 import pytest
 import requests_mock
 import time_machine
@@ -35,7 +34,6 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleV2EndToEndTest:
-    @pytest.mark.features(WIP_UBBLE_V2=True)
     def test_beneficiary_activation_with_ubble_mocked_response(self, client, ubble_client):
         seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(
@@ -217,7 +215,6 @@ class UbbleDummyWebhookTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_UBBLE_V2=False)
 class UbbleEndToEndTest:
     def _get_ubble_webhook_signature(self, payload):
         timestamp = str(int(time.time()))
@@ -246,45 +243,14 @@ class UbbleEndToEndTest:
         ubble_client = TestClient(app.test_client())
         client.with_token(user.email)
 
-        # Step 1:The user initializes a subscription with ubble
-        next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
-
-        with requests_mock.Mocker() as requests_mocker:
-            requests_mocker.post(
-                f"{settings.UBBLE_API_URL}/identifications/", json=fixtures.START_IDENTIFICATION_RESPONSE
-            )
-
-            response = client.post(
-                "/native/v1/ubble_identification",
-                json={"redirectUrl": "https://passculture.app/verification-identite/fin"},
-            )
-            assert response.status_code == 200, response.json
-
-            assert requests_mocker.last_request.json() == {
-                "data": {
-                    "attributes": {
-                        "identification-form": {"external-user-id": user.id, "phone-number": None},
-                        "redirect_url": "https://passculture.app/verification-identite/fin",
-                        "reference-data": {"first-name": "Raoul", "last-name": "de Toulouz"},
-                        "webhook": flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
-                    },
-                    "type": "identifications",
-                }
-            }
-
-        fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.UBBLE)
-            .one()
+        # Step 1: The user initializes a subscription with ubble
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            thirdPartyId=fixtures.IDENTIFICATION_ID,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.UbbleContentFactory(status=UbbleIdentificationStatus.UNINITIATED),
         )
-
-        assert fraud_check.thirdPartyId == fixtures.IDENTIFICATION_ID
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
-        assert fraud_check.source_data().status == UbbleIdentificationStatus.UNINITIATED
-
-        assert response.status_code == 200
-        assert response.json == {"identificationUrl": f"https://id.ubble.ai/{fixtures.IDENTIFICATION_ID}"}
 
         # Step 2: Ubble calls the webhook to inform that the identification has been initiated by user
         webhook_request_payload = {
@@ -310,6 +276,12 @@ class UbbleEndToEndTest:
             )
 
         assert response.status_code == 200
+
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.UBBLE)
+            .one()
+        )
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.source_data().status == UbbleIdentificationStatus.INITIATED
 
