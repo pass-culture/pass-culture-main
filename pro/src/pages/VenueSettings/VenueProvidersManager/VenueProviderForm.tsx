@@ -20,6 +20,7 @@ interface VenueProviderFormProps {
   provider: ProviderResponse
   venue: GetVenueResponseModel
   providerSelectRef?: React.RefObject<HTMLSelectElement>
+  selectSoftwareButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const VenueProviderForm = ({
@@ -27,6 +28,7 @@ export const VenueProviderForm = ({
   provider,
   venue,
   providerSelectRef,
+  selectSoftwareButtonRef,
 }: VenueProviderFormProps) => {
   const notify = useNotification()
   const createVenueProvider = async (
@@ -42,6 +44,8 @@ export const VenueProviderForm = ({
       notify.error(getHumanReadableApiError(error))
       await afterSubmit()
       return false
+    } finally {
+      selectSoftwareButtonRef?.current?.focus()
     }
   }
 
