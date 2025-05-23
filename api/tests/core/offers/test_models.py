@@ -252,7 +252,9 @@ class OfferStatusTest:
         assert expired_offer.status == offer_mixin.OfferStatus.EXPIRED
 
     def test_expression_expired(self):
-        expired_stock = factories.StockFactory(bookingLimitDatetime=datetime.datetime.utcnow())
+        expired_stock = factories.StockFactory(
+            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
+        )
         expired_offer = expired_stock.offer
         approved_offer = factories.OfferFactory()
 

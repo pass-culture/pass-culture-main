@@ -289,8 +289,7 @@ class DiscordSigninTest:
         )
         assert response.status_code == 303
 
-        created_discord_link = db.session.query(DiscordUser).filter_by(userId=non_beneficiary.id).first()
-        assert not created_discord_link.hasAccess
+        assert db.session.query(DiscordUser).filter_by(userId=non_beneficiary.id).count() == 0
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
@@ -306,8 +305,7 @@ class DiscordSigninTest:
         )
         assert response.status_code == 303
 
-        created_discord_link = db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).first()
-        assert not created_discord_link.hasAccess
+        assert db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).count() == 0
 
     @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
     def test_discord_signin_disabled(self, client):

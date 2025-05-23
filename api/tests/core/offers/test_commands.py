@@ -2,7 +2,6 @@ import datetime
 import logging
 
 import pytest
-import sqlalchemy
 
 import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.offers.factories as offers_factories
@@ -29,12 +28,11 @@ class OfferCommandsTest:
     def test_command_deletes_unbookable_unbooked_old_offers(self, app):
         a_year_ago = datetime.date.today() - timedelta(days=366)
         offer = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago)
+        offer_id = offer.id
 
         run_command(app, "delete_unbookable_unbooked_old_offers")
 
-        with pytest.raises(sqlalchemy.exc.InvalidRequestError, match="not persistent within this Session"):
-            # Trying to refresh the offer should fail because it is deleted from the database
-            db.session.refresh(offer)
+        assert db.session.query(offers_models.Offer).filter_by(id=offer_id).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
     def test_command_check_product_counts_consistency(self, app, caplog):
@@ -44,6 +42,8 @@ class OfferCommandsTest:
 
         product_1.chroniclesCount = 0
         product_2.chroniclesCount = 0
+        db.session.commit()
+
         with caplog.at_level(logging.ERROR):
             run_command(app, "check_product_counts_consistency")
 
