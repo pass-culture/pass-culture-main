@@ -32,6 +32,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
 from pcapi.models import db
+from pcapi.models import offer_mixin
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.filters import format_date
 from pcapi.routes.backoffice.filters import format_date_time
@@ -2883,6 +2884,72 @@ class ValidateOffererTest(ActivateOffererHelper):
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == f"L'entité juridique {user_offerer.offerer.name} est déjà validée"
         )
+
+    def test_offers_set_as_pending_when_review_all_offers_checked(self, authenticated_client):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerer = user_offerer.offerer
+        approved_offer = offers_factories.OfferFactory(
+            venue__managingOfferer=offerer,
+            validation=offer_mixin.OfferValidationStatus.APPROVED,
+            lastValidationType=offer_mixin.OfferValidationType.AUTO,
+            lastValidationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            lastValidationPrice=10.10,
+        )
+        draft_offer = offers_factories.DraftOfferFactory(
+            venue__managingOfferer=offerer,
+        )
+        pending_offer = offers_factories.OfferFactory(
+            venue__managingOfferer=offerer, validation=offer_mixin.OfferValidationStatus.PENDING
+        )
+        rejected_offer = offers_factories.OfferFactory(
+            venue__managingOfferer=offerer, validation=offer_mixin.OfferValidationStatus.REJECTED
+        )
+        other_offer = offers_factories.OfferFactory(
+            validation=offer_mixin.OfferValidationStatus.APPROVED,
+            lastValidationType=offer_mixin.OfferValidationType.AUTO,
+            lastValidationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            lastValidationPrice=10.10,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"comment": "Test", "review_all_offers": "on"},
+        )
+
+        assert response.status_code == 303
+
+        assert approved_offer.validation == offer_mixin.OfferValidationStatus.PENDING
+        assert approved_offer.lastValidationType is None
+        assert approved_offer.lastValidationDate is None
+        assert approved_offer.lastValidationPrice is None
+
+        assert draft_offer.validation == offer_mixin.OfferValidationStatus.DRAFT
+        assert pending_offer.validation == offer_mixin.OfferValidationStatus.PENDING
+        assert rejected_offer.validation == offer_mixin.OfferValidationStatus.REJECTED
+        assert other_offer.validation == offer_mixin.OfferValidationStatus.APPROVED
+
+    def test_offers_do_not_set_as_pending_when_review_all_offers_not_checked(self, authenticated_client):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerer = user_offerer.offerer
+        approved_offer = offers_factories.OfferFactory(
+            venue__managingOfferer=offerer,
+            validation=offer_mixin.OfferValidationStatus.APPROVED,
+            lastValidationType=offer_mixin.OfferValidationType.AUTO,
+            lastValidationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            lastValidationPrice=10.10,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"comment": "Test", "review_all_offers": ""},
+        )
+
+        assert response.status_code == 303
+
+        assert approved_offer.validation == offer_mixin.OfferValidationStatus.APPROVED
+        assert approved_offer.lastValidationType == offer_mixin.OfferValidationType.AUTO
 
 
 class GetRejectOffererFormTest(GetEndpointHelper):
