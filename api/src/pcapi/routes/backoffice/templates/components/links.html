@@ -106,11 +106,13 @@
   {% if rid7 %}
     <a href="https://data.gouv.nc/explore/dataset/entreprises-actives-au-ridet/table/?q={{ rid7 }}"
        target="_blank"
+       rel="noreferrer noopener"
        title="Rechercher dans l'open data de la Nouvelle Calédonie"
        class="link-primary">{{ rid7 }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% else %}
     <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/{{ offerer.siren }}"
        target="_blank"
+       rel="noreferrer noopener"
        title="Visualiser dans l'Annuaire des Entreprises"
        class="link-primary">{{ offerer.siren }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% endif %}
@@ -121,6 +123,7 @@
   {% elif venue.siret %}
     <a href="https://annuaire-entreprises.data.gouv.fr/etablissement/{{ venue.siret }}"
        target="_blank"
+       rel="noreferrer noopener"
        title="Visualiser dans l'Annuaire des Entreprises"
        class="link-primary">{{ venue.siret }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% endif %}
@@ -128,6 +131,7 @@
 {% macro build_search_company_external_link(terms) %}
   <a href="https://annuaire-entreprises.data.gouv.fr/rechercher?terme={{ terms }}"
      target="_blank"
+     rel="noreferrer noopener"
      title="Rechercher dans l'Annuaire des Entreprises"
      class="link-primary">{{ terms }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
@@ -135,6 +139,7 @@
   {% set ban_path = address.banId or '#18/' + address.latitude|string + '/' + address.longitude|string %}
   <a href="https://adresse.data.gouv.fr/base-adresse-nationale/{{ ban_path }}"
      target="_blank"
+     rel="noreferrer noopener"
      data-bs-toggle="tooltip"
      data-bs-placement="top"
      data-bs-title="Accéder à data.gouv"
@@ -149,23 +154,27 @@
   <a href="{{ link }}"
      class="link-primary"
      target="_blank"
+     rel="noreferrer noopener"
      title="Ouvrir le dossier DS">{{ prefix }}{{ ds_dossier_id }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_dms_adage_application_external_link(collective_dms_application) %}
   <a href="https://www.demarches-simplifiees.fr/procedures/{{ collective_dms_application.procedure }}/dossiers/{{ collective_dms_application.application }}"
      target="_blank"
+     rel="noreferrer noopener"
      title="Visualiser le dossier Démarches Simplifiées ADAGE"
      class="link-primary">{{ collective_dms_application.application }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_safe_redirect_link(url) %}
   <a href="{{ url_for('backoffice_web.safe_redirect', url=url) }}"
      target="_blank"
+     rel="noreferrer noopener"
      title="Ouvrir le site web externe"
      class="link-primary">{{ url }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_zendesk_ticket_external_link(zendesk_id) %}
   <a href=" https://passculture.zendesk.com/agent/tickets/{{ zendesk_id }}"
      target="_blank"
+     rel="noreferrer noopener"
      title="Visualiser le ticket Zendesk de la demande"
      class="link-primary">{{ zendesk_id }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
