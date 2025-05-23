@@ -87,6 +87,10 @@ def build_backoffice_app():
         app.test_client_class = FlaskLoginClient
         app.config["TESTING"] = True
 
+        @app.teardown_request
+        def clean_g_between_requests(exc: BaseException | None = None) -> None:
+            g.pop("_login_user", default=None)
+
         @app.route("/signin/<int:user_id>", methods=["POST"])
         @csrf.exempt
         def signin(user_id: int):
@@ -120,6 +124,10 @@ def build_main_app():
     # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
     # But in some tests, there are more recursions than the default accepted number (1000)
     sys.setrecursionlimit(3000)
+
+    @app.teardown_request
+    def clean_g_between_requests(exc: BaseException | None = None) -> None:
+        g.pop("_login_user", default=None)
 
     app.config.from_mapping(
         CELERY=dict(
