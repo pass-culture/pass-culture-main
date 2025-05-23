@@ -35,23 +35,17 @@ def log_and_handle_ubble_response(
                 return ubble_content
             except requests.exceptions.HTTPError as e:
                 response = e.response
-                if response.status_code == 429 or response.status_code >= 500:
-                    logger.error(
-                        f"Ubble {request_type}: External error: %s",
-                        response.status_code,
-                        extra={
-                            "alert": "Ubble error",
-                            "error_type": "http",
-                            "status_code": response.status_code,
-                            "request_type": request_type,
-                            "response_text": response.text,
-                            "url": response.url,
-                        },
-                    )
-                    raise requests.ExternalAPIException(is_retryable=True) from e
-
+                if response.status_code == 409:
+                    error_message = f"Ubble {request_type}: Conflict with Ubble state: %s"
+                    can_retry = False
+                elif response.status_code == 429 or response.status_code >= 500:
+                    error_message = f"Ubble {request_type}: External error: %s"
+                    can_retry = True
+                else:
+                    error_message = f"Ubble {request_type}: Unexpected error: %s"
+                    can_retry = False
                 logger.error(
-                    f"Ubble {request_type}: Unexpected error: %s",
+                    error_message,
                     response.status_code,
                     extra={
                         "alert": "Ubble error",
@@ -62,7 +56,7 @@ def log_and_handle_ubble_response(
                         "url": response.url,
                     },
                 )
-                raise requests.ExternalAPIException(is_retryable=False) from e
+                raise requests.ExternalAPIException(is_retryable=can_retry) from e
             except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
                 logger.error(
                     "Ubble %s: Network error",
