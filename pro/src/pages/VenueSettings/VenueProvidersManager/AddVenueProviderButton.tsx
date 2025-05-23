@@ -143,6 +143,7 @@ export const AddVenueProviderButton = ({
           provider={selectedProvider}
           venue={venue}
           providerSelectRef={providerSelectRef}
+          selectSoftwareButtonRef={selectSoftwareButtonRef}
         />
       )}
     </>

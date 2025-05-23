@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -33,6 +33,8 @@ export const StocksProviderForm = ({
   const { logEvent } = useAnalytics()
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
+
+  const startSynchroButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleOpenConfirmDialog = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -90,6 +92,7 @@ export const StocksProviderForm = ({
         <Button
           variant={ButtonVariant.PRIMARY}
           onClick={handleOpenConfirmDialog}
+          ref={startSynchroButtonRef}
         >
           Lancer la synchronisation
         </Button>
@@ -102,6 +105,7 @@ export const StocksProviderForm = ({
         title="Demander la synchronisation par API avec un logiciel tiers ?"
         icon={strokeConnectIcon}
         open={isConfirmDialogOpened}
+        refToFocusOnClose={startSynchroButtonRef}
       >
         <p>
           En sélectionnant un logiciel, vous l’autorisez à créer des offres
