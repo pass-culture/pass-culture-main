@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import { FormikProvider, useFormik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Route, Routes } from 'react-router'
 
 import {
@@ -34,23 +34,22 @@ const DetailsSubFormWrappedWithFormik = ({
   isProductBased = false,
   isOfferCD = false,
 }: DetailsSubFormTestProps) => {
-  const formik = useFormik({
-    initialValues: {
+  const form = useForm({
+    defaultValues: {
       ...DEFAULT_DETAILS_FORM_VALUES,
       subcategoryConditionalFields: ARTISTIC_INFORMATION_FIELDS,
     },
-    onSubmit: vi.fn(),
   })
 
   return (
-    <FormikProvider value={formik}>
+    <FormProvider {...form}>
       <DetailsSubForm
         isEanSearchDisplayed={isEanSearchDisplayed}
         isProductBased={isProductBased}
         isOfferCD={isOfferCD}
         readOnlyFields={[]}
       />
-    </FormikProvider>
+    </FormProvider>
   )
 }
 
