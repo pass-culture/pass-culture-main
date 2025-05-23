@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
@@ -33,6 +33,7 @@ export type CollectiveOffersActionsBarProps = {
   clearSelectedOfferIds: () => void
   selectedOffers: CollectiveOfferResponseModel[]
   areTemplateOffers: boolean
+  searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -94,6 +95,7 @@ export function CollectiveOffersActionsBar({
   clearSelectedOfferIds,
   areAllOffersSelected,
   areTemplateOffers,
+  searchButtonRef,
 }: CollectiveOffersActionsBarProps) {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
@@ -107,6 +109,9 @@ export function CollectiveOffersActionsBar({
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
+
+  const archiveButtonRef = useRef<HTMLButtonElement>(null)
+  const deActivateButtonRef = useRef<HTMLButtonElement>(null)
 
   const { mutate } = useSWRConfig()
 
@@ -315,21 +320,29 @@ export function CollectiveOffersActionsBar({
       <CollectiveDeactivationConfirmDialog
         areAllOffersSelected={areAllOffersSelected}
         nbSelectedOffers={selectedOffers.length}
-        onConfirm={() =>
-          updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
-        }
+        onConfirm={async () => {
+          await updateOfferStatus(CollectiveOfferDisplayedStatus.HIDDEN)
+          setTimeout(() => {
+            searchButtonRef?.current?.focus()
+          })
+        }}
         onCancel={() => setIsDeactivationDialogOpen(false)}
         isDialogOpen={isDeactivationDialogOpen}
+        refToFocusOnClose={deActivateButtonRef}
       />
 
       <ArchiveConfirmationModal
         onDismiss={() => setIsArchiveDialogOpen(false)}
-        onValidate={() =>
-          updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
-        }
+        onValidate={async () => {
+          await updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
+          setTimeout(() => {
+            searchButtonRef?.current?.focus()
+          })
+        }}
         hasMultipleOffers={selectedOffers.length > 1}
         selectedOffers={selectedOffers}
         isDialogOpen={isArchiveDialogOpen}
+        refToFocusOnClose={archiveButtonRef}
       />
 
       <ActionsBarSticky>
@@ -347,6 +360,7 @@ export function CollectiveOffersActionsBar({
             onClick={openArchiveOffersDialog}
             icon={strokeThingIcon}
             variant={ButtonVariant.SECONDARY}
+            ref={archiveButtonRef}
           >
             Archiver
           </Button>
@@ -354,6 +368,7 @@ export function CollectiveOffersActionsBar({
             onClick={openHideOffersDialog}
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
+            ref={deActivateButtonRef}
           >
             Mettre en pause
           </Button>

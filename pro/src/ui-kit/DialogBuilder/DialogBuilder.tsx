@@ -124,13 +124,12 @@ export function DialogBuilder({
                 e.preventDefault()
               }
             }}
-            onCloseAutoFocus={(ev: any) => {
-              ev.preventDefault()
-
+            onCloseAutoFocus={(ev: Event) => {
               if (!refToFocusOnClose) {
                 return
               }
 
+              ev.preventDefault()
               refToFocusOnClose.current?.focus()
             }}
           >

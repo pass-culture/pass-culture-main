@@ -19,12 +19,16 @@ interface VenueProviderFormProps {
   afterSubmit: () => Promise<void>
   provider: ProviderResponse
   venue: GetVenueResponseModel
+  providerSelectRef?: React.RefObject<HTMLSelectElement>
+  selectSoftwareButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const VenueProviderForm = ({
   afterSubmit,
   provider,
   venue,
+  providerSelectRef,
+  selectSoftwareButtonRef,
 }: VenueProviderFormProps) => {
   const notify = useNotification()
   const createVenueProvider = async (
@@ -40,6 +44,8 @@ export const VenueProviderForm = ({
       notify.error(getHumanReadableApiError(error))
       await afterSubmit()
       return false
+    } finally {
+      selectSoftwareButtonRef?.current?.focus()
     }
   }
 
@@ -50,7 +56,8 @@ export const VenueProviderForm = ({
     <DialogBuilder
       variant="drawer"
       title="Modifier les paramètres de vos offres"
-      defaultOpen={shouldDisplayCinemaDrawer}
+      defaultOpen
+      refToFocusOnClose={providerSelectRef}
     >
       <GenericCinemaProviderForm
         isCreatedEntity

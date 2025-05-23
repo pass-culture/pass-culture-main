@@ -25,6 +25,7 @@ interface ReimbursementBankAccountProps {
   onUpdateButtonClick?: (id: number) => void
   offererId?: number
   hasWarning?: boolean
+  updateButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const ReimbursementBankAccount = ({
@@ -33,6 +34,7 @@ export const ReimbursementBankAccount = ({
   offererId,
   managedVenues,
   hasWarning = false,
+  updateButtonRef,
 }: ReimbursementBankAccountProps): JSX.Element => {
   const hasLinkedVenues = bankAccount.linkedVenues.length > 0
   const { logEvent } = useAnalytics()
@@ -164,6 +166,7 @@ export const ReimbursementBankAccount = ({
                         }
                       )
                     }}
+                    ref={updateButtonRef}
                   >
                     Modifier
                   </Button>
@@ -181,6 +184,7 @@ export const ReimbursementBankAccount = ({
                     )
                     onUpdateButtonClick?.(bankAccount.id)
                   }}
+                  ref={updateButtonRef}
                 >
                   Rattacher une structure
                 </Button>

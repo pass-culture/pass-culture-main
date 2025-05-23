@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -27,6 +27,7 @@ interface LinkVenuesDialogProps {
   managedVenues: Array<ManagedVenues>
   closeDialog: (update?: boolean) => void
   updateBankAccountVenuePricingPoint: (venueId: number) => void
+  editBankAccountDialogTriggerRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const LinkVenuesDialog = ({
@@ -35,6 +36,7 @@ export const LinkVenuesDialog = ({
   managedVenues,
   closeDialog,
   updateBankAccountVenuePricingPoint,
+  editBankAccountDialogTriggerRef,
 }: LinkVenuesDialogProps) => {
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
     useState<boolean>(false)
@@ -54,6 +56,8 @@ export const LinkVenuesDialog = ({
   const allVenuesSelected = availableManagedVenuesIds.every(
     (venueId) => selectedVenuesIds.indexOf(venueId) >= 0
   )
+
+  const saveButtonRef = useRef<HTMLButtonElement>(null)
 
   function onCancel() {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
@@ -109,6 +113,7 @@ export const LinkVenuesDialog = ({
       <DialogBuilder
         defaultOpen
         variant="drawer"
+        refToFocusOnClose={editBankAccountDialogTriggerRef}
         onOpenChange={(open) => {
           if (!open) {
             closeDialog()
@@ -164,12 +169,11 @@ export const LinkVenuesDialog = ({
                     }
                   />
                   <span className={styles['dialog-select-all-count']}>
-                    `{selectedVenuesIds.length}{' '}
+                    {selectedVenuesIds.length}{' '}
                     {pluralizeString(
                       'structure sélectionnée',
                       selectedVenuesIds.length
                     )}
-                    `
                   </span>
                 </div>
 
@@ -195,7 +199,11 @@ export const LinkVenuesDialog = ({
                     Annuler
                   </Button>
 
-                  <Button type="submit" isLoading={formik.isSubmitting}>
+                  <Button
+                    type="submit"
+                    isLoading={formik.isSubmitting}
+                    ref={saveButtonRef}
+                  >
                     Enregistrer
                   </Button>
                 </div>
@@ -219,6 +227,7 @@ export const LinkVenuesDialog = ({
         confirmText="Quitter sans enregistrer"
         cancelText="Annuler"
         open={showDiscardChangesDialog}
+        refToFocusOnClose={saveButtonRef}
       />
       <ConfirmDialog
         extraClassNames={cn(styles['discard-dialog'], {
@@ -235,6 +244,7 @@ export const LinkVenuesDialog = ({
         confirmText="Confirmer"
         cancelText="Retour"
         open={showUnlinkVenuesDialog}
+        refToFocusOnClose={saveButtonRef}
       />
     </>
   )

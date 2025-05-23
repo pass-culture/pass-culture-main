@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from 'react'
+import React, { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { apiContremarque } from 'apiClient/api'
@@ -30,6 +30,8 @@ export const Desk = (): JSX.Element => {
   })
 
   const statusId = useId()
+
+  const tokenInputRef = useRef<HTMLInputElement | null>(null)
 
   const hookForm = useForm({
     defaultValues: {
@@ -129,9 +131,11 @@ export const Desk = (): JSX.Element => {
           variant: MESSAGE_VARIANT.ERROR,
         })
       }
+    } finally {
+      tokenInputRef.current?.focus()
     }
   }
-
+  const tokenRegister = register('token')
   return (
     <HeadlineOfferContextProvider>
       <Layout mainHeading="Guichet">
@@ -143,7 +147,7 @@ export const Desk = (): JSX.Element => {
           <div className={styles['desk-form']}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <TextInput
-                {...register('token')}
+                {...tokenRegister}
                 label="Contremarque"
                 name="token"
                 onChange={handleOnChangeToken}
@@ -151,6 +155,10 @@ export const Desk = (): JSX.Element => {
                 className={styles['desk-form-input']}
                 aria-describedby={`${statusId}`}
                 autoComplete="off"
+                ref={(input) => {
+                  tokenRegister.ref(input)
+                  tokenInputRef.current = input
+                }}
               />
 
               {booking && <BookingDetails booking={booking} />}

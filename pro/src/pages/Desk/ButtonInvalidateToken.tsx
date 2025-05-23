@@ -26,7 +26,6 @@ export const ButtonInvalidateToken = ({
 
   return (
     <>
-      <Button onClick={openDialog}>Invalider la contremarque</Button>
       <ConfirmDialog
         cancelText="Annuler"
         confirmText="Continuer"
@@ -34,6 +33,9 @@ export const ButtonInvalidateToken = ({
         onConfirm={handleOnConfirm}
         title="Voulez-vous vraiment invalider cette contremarque ?"
         open={isDialogOpen}
+        trigger={
+          <Button onClick={openDialog}>Invalider la contremarque</Button>
+        }
       >
         <p>
           Cette contremarque a déjà été validée. Si vous l’invalidez, la

@@ -1,4 +1,3 @@
-
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 
 import style from './ToggleVenueProviderStatusDialog.module.scss'
@@ -9,6 +8,7 @@ interface ToggleVenueProviderStatusDialogProps {
   isLoading: boolean
   isActive: boolean
   isDialogOpen: boolean
+  trigger: React.ReactNode
 }
 
 export const ToggleVenueProviderStatusDialog = ({
@@ -17,6 +17,7 @@ export const ToggleVenueProviderStatusDialog = ({
   isLoading,
   isActive,
   isDialogOpen,
+  trigger,
 }: ToggleVenueProviderStatusDialogProps) => {
   return (
     <ConfirmDialog
@@ -37,6 +38,7 @@ export const ToggleVenueProviderStatusDialog = ({
       cancelText="Annuler"
       hideIcon
       open={isDialogOpen}
+      trigger={trigger}
     >
       {isActive ? (
         <div className={style['explanation']}>
