@@ -4,7 +4,6 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
-from pcapi.core.educational.api import national_program as np_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -429,7 +428,10 @@ def patch_collective_offer_public(
         image_file = new_values.pop("imageFile")
 
     national_program_id: int | None = new_values.get("nationalProgramId")
-    if national_program_id is not None and np_api.get_national_program(national_program_id) is None:
+    if (
+        national_program_id is not None
+        and educational_repository.get_national_program_or_none(national_program_id) is None
+    ):
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif inconnu"]}, status_code=400)
 
     # real edition

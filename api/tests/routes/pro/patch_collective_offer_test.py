@@ -114,6 +114,7 @@ class Returns200Test:
             updatedFields=sorted(
                 [
                     "name",
+                    "nationalProgramId",
                     "students",
                     "contactEmail",
                     "bookingEmails",
