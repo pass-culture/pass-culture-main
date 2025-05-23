@@ -43,16 +43,13 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    statuses = query.status
-    assert (statuses is None) or isinstance(statuses, list)  # ensured by query_params_as_list
-
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
-        statuses=statuses,
+        statuses=query.status,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,

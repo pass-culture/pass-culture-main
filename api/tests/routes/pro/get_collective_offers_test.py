@@ -19,8 +19,7 @@ class Returns200Test:
     # 2. user
     # 3. collective_offer
     # 4. collective_offer_template
-    # 5. national_program
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_one_simple_collective_offer(self, client):
         user = users_factories.UserFactory()
@@ -35,7 +34,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # + national_program
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -119,7 +118,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth(email=user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -143,7 +142,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers?status=EXPIRED")
             assert response.status_code == 200
 
@@ -166,7 +165,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -180,7 +179,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -219,7 +218,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -255,7 +254,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email=user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -289,7 +288,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # + national_program
             response = client.with_session_auth(user.email).get("/collective/offers")
             assert response.status_code == 200
 
@@ -315,7 +314,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
@@ -345,7 +344,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
             assert response.status_code == 200
 
@@ -389,9 +388,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(user.email)
-
-        expected_num_queries = self.expected_num_queries - 1  # - national_program
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response_booked = client.get("/collective/offers?status=BOOKED")
 
         response_prebooked = client.get("/collective/offers?status=PREBOOKED")
@@ -449,9 +446,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(user.email)
-
-        expected_num_queries = self.expected_num_queries - 1  # - national_program
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers?status=BOOKED&status=PREBOOKED")
 
             assert response.status_code == 200
@@ -622,6 +617,58 @@ class Returns200Test:
             archived_offer.id,
         ]
 
+    @pytest.mark.parametrize(
+        "status",
+        set(educational_models.CollectiveOfferDisplayedStatus)
+        - {educational_models.CollectiveOfferDisplayedStatus.HIDDEN},
+    )
+    def test_each_status_filter(self, client, status):
+        offer = educational_factories.create_collective_offer_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # add an offer with another status that will not be present in the result
+        other_status = next((s for s in educational_models.CollectiveOfferDisplayedStatus if s != status))
+        educational_factories.create_collective_offer_by_status(status=other_status, venue=offer.venue)
+
+        client = client.with_session_auth(email="user@example.com")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/collective/offers?status={status.value}")
+
+        [response_offer] = response.json
+        assert response_offer["id"] == offer.id
+
+    def test_status_filter_hidden(self, client):
+        offer = educational_factories.create_collective_offer_by_status(
+            status=educational_models.CollectiveOfferDisplayedStatus.HIDDEN
+        )
+        offer_template = educational_factories.create_collective_offer_template_by_status(
+            status=educational_models.CollectiveOfferDisplayedStatus.HIDDEN, venue=offer.venue
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth(email="user@example.com")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers?status=HIDDEN")
+
+        [response_offer] = response.json
+        assert response_offer["id"] == offer_template.id
+
+    @pytest.mark.parametrize("status", educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
+    def test_each_status_filter_template(self, client, status):
+        offer = educational_factories.create_collective_offer_template_by_status(status)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # add an offer with another status that will not be present in the result
+        other_status = next((s for s in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES if s != status))
+        educational_factories.create_collective_offer_template_by_status(other_status, venue=offer.venue)
+
+        client = client.with_session_auth(email="user@example.com")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/collective/offers?status={status.value}")
+
+        [response_offer] = response.json
+        assert response_offer["id"] == offer.id
+
 
 @pytest.mark.usefixtures("db_session")
 class Return400Test:
@@ -636,8 +683,7 @@ class Return400Test:
             assert response.status_code == 400
 
         assert response.json == {
-            "status": [
-                "value is not a valid list",
+            "status.0": [
                 "value is not a valid enumeration member; permitted: 'PUBLISHED', "
                 "'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', 'BOOKED', 'HIDDEN', "
                 "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED', "

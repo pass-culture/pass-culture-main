@@ -11,7 +11,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.testing import assert_num_queries
 
 
@@ -24,21 +23,6 @@ class Returns200Test:
     # collective_offer
     # google_places_info
     num_queries = 6
-
-    def test_filtering(self, client):
-        offer = educational_factories.PendingCollectiveBookingFactory().collectiveStock.collectiveOffer
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        client = client.with_session_auth(email="user@example.com")
-
-        dst = url_for("Private API.get_collective_offers", status=CollectiveOfferDisplayedStatus.PREBOOKED.value)
-
-        with assert_num_queries(4):  #  session + user + collective_offer + collective_offer_template
-            response = client.get(dst)
-            assert response.status_code == 200
-
-        assert len(response.json) == 1
-        assert response.json[0]["id"] == offer.id
 
     def test_basics(self, client):
         template = educational_factories.CollectiveOfferTemplateFactory()

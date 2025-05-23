@@ -72,11 +72,7 @@ class CollectiveOfferType(enum.Enum):
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    status: (
-        list[educational_models.CollectiveOfferDisplayedStatus]
-        | educational_models.CollectiveOfferDisplayedStatus
-        | None
-    )
+    status: list[educational_models.CollectiveOfferDisplayedStatus] | None
     venue_id: int | None
     creation_mode: str | None
     period_beginning_date: date | None
@@ -84,10 +80,17 @@ class ListCollectiveOffersQueryModel(BaseModel):
     collective_offer_type: CollectiveOfferType | None
     format: EacFormat | None
 
+    @validator("status", pre=True)
+    def parse_status(cls, status: typing.Any | None) -> list[typing.Any] | None:
+        # this is needed to handle the case of only one status in query filters
+        if status is None or isinstance(status, list):
+            return status
+
+        return [status]
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-        arbitrary_types_allowed = True
 
 
 class CollectiveOffersStockResponseModel(BaseModel):
