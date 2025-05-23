@@ -51,21 +51,16 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
     """,
     required=True,
 )
-@click.option(
-    "--force",
-    help="If True users will be anonymized even if they have an address without an IRIS",
-    is_flag=True,
-)
 @cron_decorators.log_cron_with_transaction
-def anonymize_inactive_users(category: str, force: bool) -> None:
+def anonymize_inactive_users(category: str) -> None:
     if category in ("beneficiary", "all"):
         print("Anonymize beneficiary users after 5 years")
-        users_api.anonymize_beneficiary_users(force=force)
+        users_api.anonymize_beneficiary_users()
         users_api.anonymize_user_deposits()
         chronicles_api.anonymize_unlinked_chronicles()
     if category in ("neither", "all"):
         print("Anonymizing users that are neither beneficiaries nor pro 3 years after their last connection")
-        users_api.anonymize_non_pro_non_beneficiary_users(force=force)
+        users_api.anonymize_non_pro_non_beneficiary_users()
     if category in ("pro", "all"):
         print("Anonymizing pro users X years after their last connection")
         users_api.anonymize_pro_users()
