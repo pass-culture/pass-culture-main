@@ -73,7 +73,7 @@ export const FiltersTags = ({
       return null
     }
     return createTag(
-      `Localisation des partenaires : > à ${values.geolocRadius} km`,
+      `Localisation des partenaires : < à ${values.geolocRadius} km`,
       () => {
         void setFieldValue('geolocRadius', 50)
         setLocalisationFilterState(LocalisationFilterStates.NONE)
