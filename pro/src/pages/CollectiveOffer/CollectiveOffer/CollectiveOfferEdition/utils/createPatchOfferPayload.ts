@@ -119,7 +119,7 @@ const offerLocationSerializer = (
       ...payload,
       location: {
         locationType: CollectiveLocationType.TO_BE_DEFINED,
-        locationComment: offer.location.locationComment,
+        locationComment: offer.location.locationComment || null,
       },
     }
   }
@@ -132,22 +132,9 @@ const offerLocationSerializer = (
   }
 }
 
-const locationFields: (keyof OfferEducationalFormValues)[] = [
-  'location',
-  'city',
-  'street',
-  'latitude',
-  'longitude',
-  'postalCode',
-  'banId',
-  'coords',
-]
-
 const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   ...baseSerializer,
-  ...Object.fromEntries(
-    locationFields.map((field) => [field, offerLocationSerializer])
-  ),
+  location: offerLocationSerializer,
 }
 
 const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyModel> =
@@ -184,7 +171,10 @@ export const createPatchOfferPayload = (
       !key.startsWith('search-') &&
       !keysToOmmit.includes(key)
     ) {
-      changedValues = serializer[key]?.(changedValues, offer) ?? {}
+      changedValues = {
+        ...changedValues,
+        ...serializer[key]?.(changedValues, offer) ?? {},
+      }
     }
   })
   return changedValues
@@ -222,7 +212,10 @@ export const createPatchOfferTemplatePayload = (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-')
     ) {
-      changedValues = templateSerializer[key]?.(changedValues, offer) ?? {}
+      changedValues = {
+        ...changedValues,
+        ...(templateSerializer[key]?.(changedValues, offer) ?? {}),
+      }
     }
   })
 
