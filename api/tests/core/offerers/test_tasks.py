@@ -314,6 +314,27 @@ class CheckOffererTest:
         )
 
     @patch("time.sleep")
+    def test_untag_revalidated_offerer_still_tagged(self, mock_sleep, client, siren_caduc_tag):
+        offerer = offerers_factories.OffererFactory(tags=[siren_caduc_tag])
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
+            json={"siren": offerer.siren, "close_or_tag_when_inactive": True, "fill_in_codir_report": True},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId is None
+        assert action.offererId == offerer.id
+        assert action.comment == "L'entité juridique est détectée comme active via l'API Sirene (INSEE)"
+        assert action.extraData == {"modified_info": {"tags": {"old_info": siren_caduc_tag.label}}}
+
+    @patch("time.sleep")
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_reject_inactive_offerer_waiting_for_validation(
