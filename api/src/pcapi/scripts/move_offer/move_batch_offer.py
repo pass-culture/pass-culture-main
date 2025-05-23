@@ -111,7 +111,8 @@ def _check_venues_validity(
 
 def _move_individual_offers(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
     offer_ids = []
-    for offer in origin_venue.offers:
+    offer_list = list(origin_venue.offers)
+    for offer in offer_list:
         offer_api.move_offer(offer, destination_venue)
         offer_ids.append(offer.id)
     logger.info(
