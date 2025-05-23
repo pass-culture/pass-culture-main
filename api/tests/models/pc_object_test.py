@@ -14,11 +14,13 @@ from pcapi.models.pc_object import PcObject
 
 
 class TimeInterval(PcObject, Base, Model):
+    __tablename__ = "time_interval"
     start = sa.Column(sa.DateTime)
     end = sa.Column(sa.DateTime)
 
 
 class TestPcObject(PcObject, Base, Model):
+    __tablename__ = "test_pc_object"
     date_attribute = sa.Column(sa.DateTime, nullable=True)
     entityId = sa.Column(sa.BigInteger, nullable=True)
     float_attribute = sa.Column(sa.Float, nullable=True)

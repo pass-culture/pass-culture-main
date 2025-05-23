@@ -8,6 +8,7 @@ import sys
 import time
 import typing
 import urllib.parse
+from dataclasses import dataclass
 from pathlib import Path
 from pprint import pprint
 from unittest.mock import MagicMock
@@ -53,6 +54,14 @@ from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
 
 
+@dataclass
+class SessionStructre:
+    engine: None
+    connection: None
+    transaction: None
+    nested: None
+
+
 def run_migrations():
     from pcapi import settings as pcapi_settings
 
@@ -70,6 +79,7 @@ def pytest_configure(config):
 def build_backoffice_app():
     from flask_login import FlaskLoginClient
 
+    from pcapi import settings
     from pcapi.backoffice_app import app
     from pcapi.backoffice_app import csrf
     from pcapi.flask_app import remove_db_session
@@ -77,9 +87,12 @@ def build_backoffice_app():
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
-    # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
-    # But in some tests, there are more recursions than the default accepted number (1000)
-    sys.setrecursionlimit(3000)
+
+    if settings.USE_FLASK_SQLALCHEMY:
+        # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
+        # But in some tests, there are more recursions than the default accepted number (1000)
+        # not needed with our pytest-flask-sqlalchemy
+        sys.setrecursionlimit(3000)
 
     with app.app_context():
         from pcapi.utils import login_manager
@@ -111,15 +124,18 @@ def build_backoffice_app():
 
 
 def build_main_app():
+    from pcapi import settings
     from pcapi.app import app
     from pcapi.flask_app import remove_db_session
 
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
-    # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
-    # But in some tests, there are more recursions than the default accepted number (1000)
-    sys.setrecursionlimit(3000)
+    if settings.USE_FLASK_SQLALCHEMY:
+        # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
+        # But in some tests, there are more recursions than the default accepted number (1000)
+        # not needed withour pytest-flask-sqlalchemy
+        sys.setrecursionlimit(3000)
 
     app.config.from_mapping(
         CELERY=dict(
@@ -691,6 +707,12 @@ def _transaction(request, _db):
     """
     Create a transactional context for tests to run in.
     """
+
+    from pcapi import settings
+
+    if not settings.USE_FLASK_SQLALCHEMY:
+        return
+
     # Start a transaction
     connection = _db.engine.connect()
     transaction = connection.begin()
@@ -752,6 +774,11 @@ def _engine(request, _transaction, mocker):
     """
     Mock out direct access to the semi-global Engine object.
     """
+    from pcapi import settings
+
+    if not settings.USE_FLASK_SQLALCHEMY:
+        return
+
     connection, _, session = _transaction
 
     # Make sure that any attempts to call `connect()` simply return a
@@ -827,16 +854,49 @@ def db_session(_engine, _transaction, mocker, request):
     """
 
     # No need for the fixture, `clean_database` will do the job
+    from pcapi import settings
+
+    nested = False
+
     if "clean_database" in request.fixturenames:
-        return None
+        yield None
+    elif settings.USE_FLASK_SQLALCHEMY:
+        _, _, _session = _transaction
 
-    _, _, _session = _transaction
+        # Whenever the code tries to access a Flask session, use the Session object
+        # instead
+        mocker.patch("pcapi.models.db.session", new=_session)
 
-    # Whenever the code tries to access a Flask session, use the Session object
-    # instead
-    mocker.patch("pcapi.models.db.session", new=_session)
+        yield _session
+    else:
+        # from: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+        # TODO RPA: after migration to sqlalchemy 2.0 migrate to https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+        engine = db.engine
+        connection = engine.connect()
+        transaction = connection.begin()
+        db.session = db.session_maker(bind=connection)
+        nested = connection.begin_nested()
+        session_data = SessionStructre(
+            engine=engine,
+            connection=connection,
+            transaction=transaction,
+            nested=nested,
+        )
 
-    return _session
+        @sa.event.listens_for(db.session, "after_transaction_end")
+        def end_savepoint(session, transaction):
+            if not session_data.nested.is_active:
+                session_data.nested = connection.begin_nested()
+
+        yield db.session
+        try:
+            db.session.close()
+        except Exception:
+            # some tests do not open a session
+            pass
+        session_data.transaction.rollback()
+        session_data.connection.close()
+        db.remove_session()
 
 
 #################################################################################################################

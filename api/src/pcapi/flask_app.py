@@ -173,7 +173,9 @@ app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID  # for authlib
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET  # for authlib
 
 install_models()
+
 db.init_app(app)
+
 sa_orm.configure_mappers()
 login_manager.init_app(app)
 install_commands(app)
@@ -250,7 +252,11 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
 @app.teardown_request
 def remove_db_session(exc: BaseException | None = None) -> None:
     try:
-        db.session.remove()
+        if settings.USE_FLASK_SQLALCHEMY:
+            db.session.remove()
+        else:
+            db.remove_session()
+            db.clean_engines()
     except Exception as exception:
         logger.error(
             "An error happened while removing the transaction",
@@ -265,10 +271,11 @@ def remove_db_session(exc: BaseException | None = None) -> None:
 def teardown_atomic(exc: BaseException | None = None) -> None:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
         try:
-            if exc:
-                session_management.mark_transaction_as_invalid()
-            session_management._finalize_managed_session()
-            db.session.autoflush = True
+            if settings.USE_FLASK_SQLALCHEMY or db.has_open_session():
+                if exc:
+                    session_management.mark_transaction_as_invalid()
+                session_management._finalize_managed_session()
+                db.session.autoflush = True
         except Exception as exception:
             logger.error(
                 "An error happened while managing the transaction",

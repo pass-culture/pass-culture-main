@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -151,7 +152,11 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
             collective_offer_template=offer,
         )
 
+        ban_id = venue.offererAddress.address.banId
+        offer_address_id = venue.offererAddressId
         iframe_client = _get_iframe_client(client, uai=institution.institutionId)
+        db.session.expunge_all()
+
         response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
@@ -160,9 +165,9 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == offer_address_id
         assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["address"]["banId"] == ban_id
 
 
 class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError):

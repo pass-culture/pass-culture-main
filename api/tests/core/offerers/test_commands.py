@@ -8,12 +8,13 @@ import time_machine
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import tasks as offerers_tasks
+from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 
 from tests.test_utils import run_command
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("clean_database")
 
 
 class CheckActiveOfferersTest:
@@ -51,6 +52,8 @@ class CheckClosedOfferersTest:
         offerers_factories.OffererFactory(siren="333333334", isActive=False)
         offerers_factories.RejectedOffererFactory(siren="555555556")
         offerers_factories.NewOffererFactory(siren="666666664")
+        db.session.flush()
+        db.session.commit()
 
         run_command(app, "check_closed_offerers")
 

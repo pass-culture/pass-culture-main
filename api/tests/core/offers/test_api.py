@@ -963,7 +963,10 @@ class DeleteStockTest:
             booking=booking4,
             status=finance_models.PricingStatus.PROCESSED,
         )
-
+        booking_id_1 = booking1.id
+        booking_id_2 = booking2.id
+        booking_id_3 = booking3.id
+        booking_id_4 = booking4.id
         api.delete_stock(stock)
 
         # cancellation can trigger more than one request to Batch
@@ -971,16 +974,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = db.session.get(bookings_models.Booking, booking1.id)
+        booking1 = db.session.get(bookings_models.Booking, booking_id_1)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.get(bookings_models.Booking, booking2.id)
+        booking2 = db.session.get(bookings_models.Booking, booking_id_2)
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.get(bookings_models.Booking, booking3.id)
+        booking3 = db.session.get(bookings_models.Booking, booking_id_3)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.get(bookings_models.Booking, booking4.id)
+        booking4 = db.session.get(bookings_models.Booking, booking_id_4)
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -1025,6 +1028,11 @@ class DeleteStockTest:
             status=finance_models.PricingStatus.PROCESSED,
         )
 
+        booking_id_1 = booking1.id
+        booking_id_2 = booking2.id
+        booking_id_3 = booking3.id
+        booking_id_4 = booking4.id
+
         api.delete_stock(stock)
 
         # cancellation can trigger more than one request to Batch
@@ -1032,16 +1040,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = db.session.get(bookings_models.Booking, booking1.id)
+        booking1 = db.session.get(bookings_models.Booking, booking_id_1)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.get(bookings_models.Booking, booking2.id)
+        booking2 = db.session.get(bookings_models.Booking, booking_id_2)
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.get(bookings_models.Booking, booking3.id)
+        booking3 = db.session.get(bookings_models.Booking, booking_id_3)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.get(bookings_models.Booking, booking4.id)
+        booking4 = db.session.get(bookings_models.Booking, booking_id_4)
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -5584,6 +5592,7 @@ class DeleteUnbookableUnusedOldOffersTest:
         recent_offer = factories.OfferFactory()
 
         api.delete_unbookable_unbooked_old_offers()
+        db.session.flush()
         assert_offers_have_been_completely_cleaned([offer_id])
 
         assert db.session.get(models.Offer, old_bookable_offer.id) is not None
