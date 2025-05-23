@@ -145,6 +145,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         num_queries += 1  # check if offerer has at least one venue with an adage id
         num_queries += 1  # fetch venue's managing offerer's siren
         num_queries += 1  # fetch educational domain
+        num_queries += 1  # fetch national program
         num_queries += 1  # fetch educational institution
         num_queries += 1  # fetch educational year
         num_queries += 1  # fetch venue for location

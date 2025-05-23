@@ -125,7 +125,9 @@ const getCommonOfferPayload = (
     ...getLocationPayload(),
     domains: offer.domains.map((domainIdString) => Number(domainIdString)),
     interventionArea: getInterventionArea(),
-    nationalProgramId: Number(offer.nationalProgramId),
+    nationalProgramId: offer.nationalProgramId
+      ? Number(offer.nationalProgramId)
+      : null,
     formats: offer.formats,
   }
 }
