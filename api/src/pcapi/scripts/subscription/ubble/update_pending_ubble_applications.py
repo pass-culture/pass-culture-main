@@ -26,7 +26,9 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
         db.session.query(fraud_models.BeneficiaryFraudCheck)
         .filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.PENDING,
+            fraud_models.BeneficiaryFraudCheck.status.in_(
+                [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
+            ),
             fraud_models.BeneficiaryFraudCheck.dateCreated < TWELVE_HOURS_AGO,
         )
         .options(
