@@ -488,14 +488,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
 
     try:
         with repository.transaction():
-            # TODO(jbaudet): move this condition into pydantic model and return
-            # a 4xx error code if any quantity is not strictly positive.
-            # For now, keep it that way to avoid a breaking change in terms
-            # of API response.
-            # quantity can be an integer or... the string "unlimited".
-            valid_dates = [item for item in body.dates if isinstance(item.quantity, str) or item.quantity > 0]
-
-            for date in valid_dates:
+            for date in body.dates:
                 price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
                 if not price_category:
                     raise api_errors.ResourceNotFoundError(
@@ -627,7 +620,6 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
     response_model=serialization.DateResponse,
-    on_empty_status=204,
     resp=SpectreeResponse(
         **(
             {"HTTP_200": (serialization.DateResponse, "The event date has been modified successfully")}
@@ -642,7 +634,7 @@ def patch_event_stock(
     event_id: int,
     stock_id: int,
     body: serialization.EventStockEdition,
-) -> serialization.DateResponse | None:
+) -> serialization.DateResponse:
     """
     Update Event Stock
 
@@ -696,10 +688,7 @@ def patch_event_stock(
     except booking_exceptions.BookingIsNotUsed:
         raise api_errors.ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
     # `edited_stock` could be None if nothing was changed.
-    stock = edited_stock or stock_to_edit
-    if not stock or stock.isSoftDeleted:
-        return None
-    return serialization.DateResponse.build_date(stock)
+    return serialization.DateResponse.build_date(edited_stock or stock_to_edit)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/categories", methods=["GET"])
