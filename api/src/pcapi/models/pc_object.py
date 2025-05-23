@@ -18,8 +18,11 @@ OBLIGATORY_FIELD_ERROR_CODE = "23502"
 
 
 class BaseQuery(sa_orm.Query):
+    def get(self, obj_id: int) -> typing.Any:
+        return self.filter_by(id=obj_id).one_or_none()
+
     def get_or_404(self, obj_id: int) -> typing.Any:
-        obj = self.filter_by(id=obj_id).one_or_none()
+        obj = self.get(obj_id)
         if not obj:
             raise NotFound()
         return obj
