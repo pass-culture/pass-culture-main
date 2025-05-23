@@ -65,6 +65,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.pc_object import BaseQuery
@@ -1294,6 +1295,26 @@ def validate_offerer(
             offerer=offerer, confidence_level=offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
         )
 
+        # Offers created before validation should be reviewed
+        db.session.query(offers_models.Offer).filter(
+            offerers_models.Venue.managingOffererId == offerer.id,
+            offers_models.Offer.venueId.in_(
+                db.session.query(offerers_models.Venue)
+                .filter_by(managingOffererId=offerer.id)
+                .with_entities(offerers_models.Venue.id)
+            ),
+            offers_models.Offer.lastValidationType == offer_mixin.OfferValidationType.AUTO,
+            offers_models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        ).update(
+            {
+                "validation": offer_mixin.OfferValidationStatus.PENDING,
+                "lastValidationType": None,
+                "lastValidationDate": None,
+                "lastValidationPrice": None,
+            },
+            synchronize_session=False,
+        )
+
     history_api.add_action(
         history_models.ActionType.OFFERER_VALIDATED,
         author=author_user,
@@ -2021,15 +2042,15 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
                 sa.or_(
                     sa.and_(
                         offer_class.isActive,
-                        offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+                        offer_class.validation == offer_mixin.OfferValidationStatus.APPROVED.value,
                     ),
                     sa.and_(
                         sa.not_(offer_class.isActive),
                         offer_class.validation.in_(
                             [
-                                offers_models.OfferValidationStatus.APPROVED.value,
-                                offers_models.OfferValidationStatus.PENDING.value,
-                                offers_models.OfferValidationStatus.DRAFT.value,
+                                offer_mixin.OfferValidationStatus.APPROVED.value,
+                                offer_mixin.OfferValidationStatus.PENDING.value,
+                                offer_mixin.OfferValidationStatus.DRAFT.value,
                             ]
                         ),
                     ),
@@ -2117,16 +2138,16 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
                     sa.and_(
                         offer_class.isActive,
                         offer_class.venueId == venue_id,
-                        offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+                        offer_class.validation == offer_mixin.OfferValidationStatus.APPROVED.value,
                     ),
                     sa.and_(
                         sa.not_(offer_class.isActive),
                         offer_class.venueId == venue_id,
                         offer_class.validation.in_(
                             [
-                                offers_models.OfferValidationStatus.APPROVED.value,
-                                offers_models.OfferValidationStatus.PENDING.value,
-                                offers_models.OfferValidationStatus.DRAFT.value,
+                                offer_mixin.OfferValidationStatus.APPROVED.value,
+                                offer_mixin.OfferValidationStatus.PENDING.value,
+                                offer_mixin.OfferValidationStatus.DRAFT.value,
                             ]
                         ),
                     ),
