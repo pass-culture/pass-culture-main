@@ -68,7 +68,10 @@ class Returns200Test:
 
         assert response.status_code == 200
         content = response.json
-        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        offer: offers_models.Offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        assert offer.finalizationDatetime
+        assert offer.finalizationDatetime == offer.bookingAllowedDatetime
+        assert offer.finalizationDatetime == offer.publicationDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
         assert offer.publicationDate is None
@@ -104,20 +107,21 @@ class Returns200Test:
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={
-                    "id": offer_id,
-                    "publicationDate": publication_date.isoformat(),
-                },
+                json={"id": offer_id, "publicationDate": publication_date.isoformat()},
             )
 
-        assert response.status_code == 200
-        content = response.json
-        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
-        assert offer.validation == OfferValidationStatus.APPROVED
-        assert offer.lastValidationPrice is None
-        assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
+        expected_publication_date = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
             microsecond=0, tzinfo=None
         )
+        assert response.status_code == 200
+        content = response.json
+        offer: offers_models.Offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.lastValidationPrice is None
+        assert offer.finalizationDatetime
+        assert offer.bookingAllowedDatetime == expected_publication_date
+        assert offer.publicationDatetime == expected_publication_date
+        assert offer.publicationDate == expected_publication_date
         assert offer.futureOffer.isWaitingForPublication
         assert content["isActive"] is False
         assert content["isNonFreeOffer"] is True
@@ -148,10 +152,7 @@ class Returns200Test:
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={
-                    "id": offer_id,
-                    "publicationDate": publication_date.isoformat(),
-                },
+                json={"id": offer_id, "publicationDate": publication_date.isoformat()},
             )
 
         assert response.status_code == 200
@@ -159,6 +160,8 @@ class Returns200Test:
         assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
             microsecond=0, tzinfo=None
         )
+        assert offer.finalizationDatetime
+        first_finalization_datetime = offer.finalizationDatetime
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
         assert db.session.query(offers_models.FutureOffer).count() == 1
@@ -168,6 +171,9 @@ class Returns200Test:
         assert response.status_code == 200
         content = response.json
         offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        assert offer.finalizationDatetime == first_finalization_datetime
+        assert offer.finalizationDatetime <= offer.bookingAllowedDatetime
+        assert offer.finalizationDatetime <= offer.publicationDatetime
         assert offer.publicationDate is None
         assert content["isActive"] is True
         mock_async_index_offer_ids.assert_called_once()

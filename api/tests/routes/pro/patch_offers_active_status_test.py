@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from unittest.mock import call
 from unittest.mock import patch
 
@@ -31,13 +32,25 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert db.session.query(Offer).get(offer1.id).isActive
-        assert db.session.query(Offer).get(offer2.id).isActive
+        offer_1 = db.session.query(Offer).get(offer1.id)
+        offer_2 = db.session.query(Offer).get(offer2.id)
+        assert offer_1.isActive
+        assert offer1.publicationDatetime
+        assert offer1.publicationDatetime == offer1.bookingAllowedDatetime
+        assert offer_2.isActive
+        assert offer_2.publicationDatetime
+        assert offer_2.publicationDatetime == offer_2.bookingAllowedDatetime
 
     def when_deactivating_existing_offers(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
-        offer = offers_factories.OfferFactory(venue=venue)
+        finalization_datetime = datetime.now(timezone.utc)
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            finalizationDatetime=finalization_datetime,
+            publicationDatetime=finalization_datetime,
+            bookingAllowedDatetime=finalization_datetime,
+        )
         synchronized_offer = offers_factories.OfferFactory(
             lastProvider=providers_factories.ProviderFactory(), venue=venue
         )
@@ -51,7 +64,11 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not db.session.query(Offer).get(offer.id).isActive
+        first_offer = db.session.query(Offer).get(offer.id)
+        assert first_offer.finalizationDatetime == finalization_datetime.replace(tzinfo=None)
+        assert not first_offer.isActive
+        assert not first_offer.publicationDatetime
+        assert not first_offer.bookingAllowedDatetime
         assert not db.session.query(Offer).get(synchronized_offer.id).isActive
 
     def test_only_approved_offers_patch(self, client):
@@ -71,8 +88,11 @@ class Returns204Test:
 
         assert response.status_code == 204
         assert approved_offer.isActive
+        assert approved_offer.publicationDatetime
         assert not pending_offer.isActive
+        assert not pending_offer.publicationDatetime
         assert not rejected_offer.isActive
+        assert not rejected_offer.publicationDatetime
 
     def when_activating_synchronized_offer(self, client):
         # Given
