@@ -1,0 +1,17 @@
+{% extends "layouts/pro.html" %}
+{% from "components/search/base.html" import build_base_search with context %}
+{% block page %}
+  <div class="py-4 px-5">
+    <div class="d-flex justify-content-between mx-3">
+      <h1>Base de donnée produit</h1>
+    </div>
+    <div class="container-fluid">
+      {% if search_form %}{{ build_result_page_form(search_form, search_dst, col_width=10) }}{% endif %}
+      {% block product_main_content %}
+        {% call build_base_search() %}
+          Retrouve un produit par EAN, Visa, Allocine ID
+        {% endcall %}
+      {% endblock product_main_content %}
+    </div>
+  </div>
+{% endblock page %}
