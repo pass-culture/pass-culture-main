@@ -79,7 +79,6 @@ from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
-from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
 from pcapi.utils import siren as siren_utils
@@ -1921,13 +1920,6 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
         return bank_accounts_query.filter(False)
 
     filters = []
-
-    try:
-        dehumanized_id = human_ids.dehumanize(search_query)
-    except human_ids.NonDehumanizableId:
-        pass
-    else:
-        filters.append(finance_models.BankAccount.id == dehumanized_id)
 
     if string_utils.is_numeric(search_query):
         filters.append(finance_models.BankAccount.id == int(search_query))
