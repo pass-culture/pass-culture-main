@@ -804,24 +804,25 @@ export const StocksEventEdition = ({
                               />
                             </td>
 
-                            <td
-                              className={cn(styles['stock-actions'])}
-                              data-label="Supprimer"
-                            >
-                              <Button
-                                variant={ButtonVariant.TERNARY}
-                                disabled={!stock.isDeletable || isDisabled}
-                                onClick={async () => {
-                                  if (stock.bookingsQuantity > 0) {
-                                    setStockToDeleteWithConfirmation(stock)
-                                  } else {
-                                    await onDeleteStock(stock)
-                                  }
-                                }}
-                                icon={fullTrashIcon}
-                                tooltipContent={<>Supprimer</>}
-                              />
-                            </td>
+                            {stock.isDeletable && !isDisabled && (
+                              <td
+                                className={cn(styles['stock-actions'])}
+                                data-label="Supprimer"
+                              >
+                                <Button
+                                  variant={ButtonVariant.TERNARY}
+                                  onClick={async () => {
+                                    if (stock.bookingsQuantity > 0) {
+                                      setStockToDeleteWithConfirmation(stock)
+                                    } else {
+                                      await onDeleteStock(stock)
+                                    }
+                                  }}
+                                  icon={fullTrashIcon}
+                                  tooltipContent={<>Supprimer</>}
+                                />
+                              </td>
+                            )}
                           </tr>
                         )
                       })}
