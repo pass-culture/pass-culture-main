@@ -143,7 +143,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 def _anonymize_user(user: users_models.User, author: users_models.User) -> None:
-    user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
+    user_anonymized = users_api.anonymize_user(user, author=current_user)
     if user_anonymized:
         db.session.flush()
         flash("Les informations de l'utilisateur ont été anonymisées", "success")

@@ -1434,11 +1434,7 @@ def is_suspended_for_less_than_five_years(user: models.User) -> bool:
     return False
 
 
-def anonymize_user(user: models.User, *, author: models.User | None = None, force: bool = False) -> bool:
-    """
-    Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
-    we cannot find an iris for it.
-    """
+def anonymize_user(user: models.User, *, author: models.User | None = None) -> bool:
     if has_unprocessed_extract(user):
         return False
 
@@ -1446,12 +1442,8 @@ def anonymize_user(user: models.User, *, author: models.User | None = None, forc
     if user.address:
         try:
             iris = get_iris_from_address(address=user.address, postcode=user.postalCode)
-        except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException) as exc:
-            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
-            return False
-
-        if not iris and not force:
-            return False
+        except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException):
+            pass
 
     try:
         push_api.delete_user_attributes(user_id=user.id, can_be_asynchronously_retried=True)
@@ -1566,7 +1558,7 @@ def _remove_external_user(user: models.User) -> bool:
     return True
 
 
-def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
+def anonymize_non_pro_non_beneficiary_users() -> None:
     """
     Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro
     role) and which have not connected for at least 3 years and if they have been suspended it was
@@ -1594,7 +1586,7 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
         )
     )
     for user in users:
-        anonymize_user(user, force=force)
+        anonymize_user(user)
     db.session.commit()
 
 
@@ -1642,7 +1634,7 @@ def has_user_pending_anonymization(user_id: int) -> bool:
     ).scalar()
 
 
-def anonymize_beneficiary_users(*, force: bool = False) -> None:
+def anonymize_beneficiary_users() -> None:
     """
     Anonymize user accounts that have been beneficiaries which have not connected for at least 3
     years, and whose deposit has been expired for at least 5 years and if they have been suspended
@@ -1685,7 +1677,7 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
         )
     )
     for user in itertools.chain(beneficiaries, beneficiaries_tagged_to_anonymize):
-        anonymize_user(user, force=force)
+        anonymize_user(user)
     db.session.commit()
 
 

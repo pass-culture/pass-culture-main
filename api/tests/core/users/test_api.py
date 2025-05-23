@@ -2164,7 +2164,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         iris = db.session.query(geography_models.IrisFrance).first()
 
         with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
-            users_api.anonymize_non_pro_non_beneficiary_users(force=False)
+            users_api.anonymize_non_pro_non_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
         db.session.refresh(user_too_new)
@@ -2190,7 +2190,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         # only one profile should have been anonymized
         for beneficiary_fraud_check in user_to_anonymize.beneficiaryFraudChecks:
-            assert beneficiary_fraud_check.resultContent == None
+            assert beneficiary_fraud_check.resultContent is None
             assert beneficiary_fraud_check.reason == "Anonymized"
             assert beneficiary_fraud_check.dateCreated.day == 1
             assert beneficiary_fraud_check.dateCreated.month == 1
@@ -2206,15 +2206,15 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.password == b"Anonymized"
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
         assert user_to_anonymize.lastName == f"Anonymous_{user_to_anonymize.id}"
-        assert user_to_anonymize.married_name == None
-        assert user_to_anonymize.postalCode == None
-        assert user_to_anonymize.phoneNumber == None
+        assert user_to_anonymize.married_name is None
+        assert user_to_anonymize.postalCode is None
+        assert user_to_anonymize.phoneNumber is None
         assert user_to_anonymize.dateOfBirth.day == 1
         assert user_to_anonymize.dateOfBirth.month == 1
-        assert user_to_anonymize.address == None
-        assert user_to_anonymize.city == None
+        assert user_to_anonymize.address is None
+        assert user_to_anonymize.city is None
         assert user_to_anonymize.externalIds == []
-        assert user_to_anonymize.idPieceNumber == None
+        assert user_to_anonymize.idPieceNumber is None
         assert user_to_anonymize.login_device_history == []
         assert user_to_anonymize.user_email_history == []
         assert user_to_anonymize.irisFrance == iris
@@ -2225,7 +2225,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.trusted_devices == []
         assert len(user_to_anonymize.action_history) == 1
         assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
-        assert user_to_anonymize.action_history[0].authorUserId == None
+        assert user_to_anonymize.action_history[0].authorUserId is None
 
     def test_anonymize_non_pro_non_beneficiary_user_force_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
@@ -2233,7 +2233,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
         )
 
-        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        users_api.anonymize_non_pro_non_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2254,7 +2254,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             actionType=history_models.ActionType.OFFERER_VALIDATED,
         )
 
-        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        users_api.anonymize_non_pro_non_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2266,31 +2266,6 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             == 2
         )
 
-    def test_anonymize_non_pro_non_beneficiary_user_iris_not_found(self) -> None:
-        user_to_anonymize = users_factories.UserFactory(
-            firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-        )
-
-        users_api.anonymize_non_pro_non_beneficiary_users(force=False)
-
-        db.session.refresh(user_to_anonymize)
-
-        assert len(sendinblue_testing.sendinblue_requests) == 0
-        assert user_to_anonymize.firstName == "user_to_anonymize"
-
-    def test_anonymize_non_pro_non_beneficiary_user_no_addr_api(self) -> None:
-        user_to_anonymize = users_factories.UserFactory(
-            firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-        )
-
-        users_api.anonymize_non_pro_non_beneficiary_users(force=False)
-        db.session.refresh(user_to_anonymize)
-
-        assert len(sendinblue_testing.sendinblue_requests) == 0
-        assert user_to_anonymize.firstName == "user_to_anonymize"
-
     def test_anonymize_non_pro_non_beneficiary_user_keep_email_in_brevo_if_used_for_venue(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
@@ -2298,7 +2273,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         )
         offerers_factories.VenueFactory(bookingEmail=user_to_anonymize.email)
 
-        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        users_api.anonymize_non_pro_non_beneficiary_users()
         db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
@@ -2335,7 +2310,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        users_api.anonymize_non_pro_non_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2355,7 +2330,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        users_api.anonymize_non_pro_non_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2375,7 +2350,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        users_api.anonymize_non_pro_non_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2554,7 +2529,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             pass
 
         with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
-            users_api.anonymize_beneficiary_users(force=False)
+            users_api.anonymize_beneficiary_users()
 
         db.session.refresh(user_beneficiary_to_anonymize)
         db.session.refresh(user_underage_beneficiary_to_anonymize)
@@ -2595,7 +2570,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             user_with_expired_gdpr_extract_to_anonymize,
         ]:
             for beneficiary_fraud_check in user_to_anonymize.beneficiaryFraudChecks:
-                assert beneficiary_fraud_check.resultContent == None
+                assert beneficiary_fraud_check.resultContent is None
                 assert beneficiary_fraud_check.reason == "Anonymized"
                 assert beneficiary_fraud_check.dateCreated.day == 1
                 assert beneficiary_fraud_check.dateCreated.month == 1
@@ -2619,15 +2594,15 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             assert user_to_anonymize.password == b"Anonymized"
             assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
             assert user_to_anonymize.lastName == f"Anonymous_{user_to_anonymize.id}"
-            assert user_to_anonymize.married_name == None
-            assert user_to_anonymize.postalCode == None
-            assert user_to_anonymize.phoneNumber == None
+            assert user_to_anonymize.married_name is None
+            assert user_to_anonymize.postalCode is None
+            assert user_to_anonymize.phoneNumber is None
             assert user_to_anonymize.dateOfBirth.day == 1
             assert user_to_anonymize.dateOfBirth.month == 1
-            assert user_to_anonymize.address == None
-            assert user_to_anonymize.city == None
+            assert user_to_anonymize.address is None
+            assert user_to_anonymize.city is None
             assert user_to_anonymize.externalIds == []
-            assert user_to_anonymize.idPieceNumber == None
+            assert user_to_anonymize.idPieceNumber is None
             assert user_to_anonymize.login_device_history == []
             assert user_to_anonymize.user_email_history == []
             assert user_to_anonymize.irisFrance == iris
@@ -2638,7 +2613,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             assert user_to_anonymize.trusted_devices == []
             assert len(user_to_anonymize.action_history) == 1
             assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
-            assert user_to_anonymize.action_history[0].authorUserId == None
+            assert user_to_anonymize.action_history[0].authorUserId is None
 
     def test_clean_chronicle_on_anonymize_beneficiary_user(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2652,10 +2627,10 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             email="radomemail@example.com",
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
         db.session.refresh(chronicle)
 
-        assert chronicle.userId == None
+        assert chronicle.userId is None
         assert chronicle.email == "anonymized_email@anonymized.passculture"
 
     def test_anonymize_beneficiary_user_force_iris_not_found(self) -> None:
@@ -2666,7 +2641,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2674,21 +2649,6 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert len(batch_testing.requests) == 1
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
-
-    def test_anonymize_beneficiary_user_iris_not_found(self) -> None:
-        user_to_anonymize = users_factories.BeneficiaryFactory(
-            firstName="user_to_anonymize",
-            age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
-        )
-
-        users_api.anonymize_beneficiary_users(force=False)
-
-        db.session.refresh(user_to_anonymize)
-
-        assert len(sendinblue_testing.sendinblue_requests) == 0
-        assert user_to_anonymize.firstName == "user_to_anonymize"
 
     def test_anonymize_beneficiary_user_with_unprocessed_gdpr_extract(self) -> None:
         user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2703,27 +2663,13 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         iris = db.session.query(geography_models.IrisFrance).first()
 
         with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
-            users_api.anonymize_beneficiary_users(force=False)
+            users_api.anonymize_beneficiary_users()
 
         db.session.refresh(user_beneficiary_to_anonymize)
 
         assert len(sendinblue_testing.sendinblue_requests) == 0
         assert user_beneficiary_to_anonymize.firstName == "user_beneficiary_to_anonymize"
         assert db.session.query(users_models.GdprUserDataExtract).count() == 1
-
-    def test_anonymize_beneficiary_user_no_addr_api(self) -> None:
-        user_to_anonymize = users_factories.BeneficiaryFactory(
-            firstName="user_to_anonymize",
-            age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
-        )
-
-        users_api.anonymize_beneficiary_users(force=False)
-        db.session.refresh(user_to_anonymize)
-
-        assert len(sendinblue_testing.sendinblue_requests) == 0
-        assert user_to_anonymize.firstName == "user_to_anonymize"
 
     def test_anonymize_user_tagged_when_he_is_21(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2733,7 +2679,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         when_user_is_21 = datetime.datetime.utcnow() + relativedelta(years=3)
         with time_machine.travel(when_user_is_21):
-            users_api.anonymize_beneficiary_users(force=True)
+            users_api.anonymize_beneficiary_users()
             db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
@@ -2748,7 +2694,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         when_user_is_21 = datetime.datetime.utcnow() + relativedelta(years=3)
         with time_machine.travel(when_user_is_21 - relativedelta(days=1)):
-            users_api.anonymize_beneficiary_users(force=True)
+            users_api.anonymize_beneficiary_users()
             db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
@@ -2784,7 +2730,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
         db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
@@ -2803,7 +2749,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
         db.session.refresh(user_to_anonymize)
 
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
@@ -2841,7 +2787,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2863,7 +2809,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
@@ -2897,7 +2843,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             user=user_to_anonymize,
         )
 
-        users_api.anonymize_beneficiary_users(force=True)
+        users_api.anonymize_beneficiary_users()
 
         db.session.refresh(user_to_anonymize)
 
