@@ -1,0 +1,27 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.icon {
+  width: rem.torem(32px);
+  height: rem.torem(32px);
+}
+
+.image > .img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.image.S {
+  width: 40px;
+  height: 40px;
+}
+
+.image.M {
+  width: 80px;
+  height: 80px;
+}
+
+.image.L {
+  width: 120px;
+  height: 120px;
+}
