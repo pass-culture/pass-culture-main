@@ -4,7 +4,7 @@ import styles from './Markdown.module.scss'
 
 const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
 const ITALIC_REGEXP = /_(.*?)_/gim
-const URL_REGEXP = /((https?:\/\/)|(www\.))[^\s/$.?#].[^\s]*/gim
+const URL_REGEXP = /((https?:\/\/)|(www\.))[^\s/$.?#"].[^\s]*/gim
 const EMAIL_REGEXP =
   /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gim
 
@@ -40,10 +40,10 @@ export const Markdown = ({
   maxLength?: number
   croppedTextEnding?: string
 }) => {
-  const html = DOMPurify.sanitize(markdownToHtml(markdownText), {
-    ALLOWED_TAGS: ['strong', 'em', 'a'],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
-  })
+  const html = markdownToHtml(DOMPurify.sanitize(markdownText, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+  }))
 
   return (
     <span

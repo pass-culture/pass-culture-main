@@ -34,14 +34,29 @@ describe('Markdown', () => {
   it('should render urls with <a> tag', () => {
     const component = renderMarkdown('https://example.com')
     expect(component.container.innerHTML).toContain(
-      '<span class="markdown" data-testid="markdown-content"><a target="_blank" rel="noreferrer" href="https://example.com" class="markdown-link">https://example.com</a></span>'
+      '<span class="markdown" data-testid="markdown-content"><a class="markdown-link" href="https://example.com" rel="noreferrer" target="_blank">https://example.com</a></span>'
     )
   })
 
   it('should render urls without http prefix with <a> tag', () => {
     const component = renderMarkdown('www.example.com')
     expect(component.container.innerHTML).toContain(
-      '<span class="markdown" data-testid="markdown-content"><a target="_blank" rel="noreferrer" href="https://www.example.com" class="markdown-link">www.example.com</a></span>'
+      '<span class="markdown" data-testid="markdown-content"><a class="markdown-link" href="https://www.example.com" rel="noreferrer" target="_blank">www.example.com</a></span>'
+    )
+  })
+
+  it('should remove html tags added by end users', () => {
+    const emComponent = renderMarkdown('<strong>texte en gras</strong>')
+    expect(emComponent.container.innerHTML).toContain(
+      '<span class="markdown" data-testid="markdown-content">texte en gras</span>'
+    )
+    const aComponent = renderMarkdown('texte avec <a href="https://www.example.com">un lien</a>')
+    expect(aComponent.container.innerHTML).toContain(
+      '<span class="markdown" data-testid="markdown-content">texte avec un lien</span>'
+    )
+    const injectScriptComponent = renderMarkdown('https://"><script>hello("coucou")</script><a ')
+    expect(injectScriptComponent.container.innerHTML).toContain(
+      '<span class="markdown" data-testid="markdown-content">https://"&gt;</span>'
     )
   })
 
