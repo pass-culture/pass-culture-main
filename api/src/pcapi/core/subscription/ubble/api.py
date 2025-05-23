@@ -190,7 +190,16 @@ def _reattempt_identity_verification(
         )
         identification_id = ubble_content.identification_id
 
-    identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
+    try:
+        identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
+    except requests_utils.ExternalAPIException as e:
+        ubble_response_status_code = e.args[0].get("status_code") if e.args else None
+        has_state_conflict = ubble_response_status_code == 409
+        if has_state_conflict:
+            update_ubble_workflow(ubble_fraud_check)
+
+        raise
+
     ubble_content.identification_url = identification_url
 
     return ubble_content

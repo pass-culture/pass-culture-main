@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import patch
 
 import pytest
+import requests_mock
 import time_machine
 from dateutil.relativedelta import relativedelta
 
@@ -636,6 +637,44 @@ class IdentificationSessionTest:
         ][0]
         assert check
         assert response.json["identificationUrl"] == expected_url
+
+    def test_conflict_error_tries_to_resync(self, client):
+        user = users_factories.ProfileCompletedUserFactory(age=18)
+        ubble_identification_id = "idv_qwerty1234"
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            thirdPartyId=ubble_identification_id,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.UbbleContentFactory(
+                applicant_id="aplt_01je97fqhmtk2jmn6gcgyram3s",
+                identification_id=ubble_identification_id,
+                status=ubble_serializers.UbbleIdentificationStatus.PENDING,
+            ),
+        )
+        with requests_mock.Mocker() as requests_mocker:
+            # There is a state conflict between Ubble's user and ours
+            requests_mocker.post(
+                f"{settings.UBBLE_API_URL}/v2/identity-verifications/{ubble_identification_id}/attempts",
+                status_code=409,
+            )
+            # We should try to resync
+            requests_mocker.get(
+                f"{settings.UBBLE_API_URL}/v2/identity-verifications/{ubble_identification_id}",
+                json=build_ubble_identification_v2_response(
+                    age_at_registration=18, created_on=datetime.datetime.utcnow()
+                ),
+            )
+
+            response = client.with_token(user.email).post(
+                "/native/v1/ubble_identification", json={"redirectUrl": "https://redirect.example.com"}
+            )
+
+        assert response.status_code == 500, response.json
+        assert response.json["code"] == "IDCHECK_SERVICE_ERROR", response.json
+
+        db.session.refresh(fraud_check)
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK, fraud_check.reasonCodes
 
 
 class HonorStatementTest:
