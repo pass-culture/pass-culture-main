@@ -1,8 +1,10 @@
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.models import db
+from pcapi.scripts.move_offer.move_batch_offer import _move_collective_offers
 from pcapi.scripts.move_offer.move_batch_offer import _move_price_category_label
 
 
@@ -36,3 +38,22 @@ def test_move_price_category_label_respect_unicity_constraint():
     db.session.refresh(price_category_B)
     assert price_category_A.priceCategoryLabel == price_category_label_A_origin
     assert price_category_B.priceCategoryLabel == price_category_label_B_destination
+
+
+@pytest.mark.features(VENUE_REGULARIZATION=True)
+def test_move_collective_offers():
+    collective_offer = educational_factories.CollectiveOfferFactory()
+    collective_offer2 = educational_factories.CollectiveOfferFactory(venue=collective_offer.venue)
+    collective_offer3 = educational_factories.CollectiveOfferFactory(venue=collective_offer.venue)
+
+    destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+
+    _move_collective_offers(collective_offer.venue, destination_venue)
+    db.session.commit()
+
+    db.session.refresh(collective_offer)
+    db.session.refresh(collective_offer2)
+    db.session.refresh(collective_offer3)
+    assert collective_offer.venue == destination_venue
+    assert collective_offer3.venue == destination_venue
+    assert collective_offer2.venue == destination_venue

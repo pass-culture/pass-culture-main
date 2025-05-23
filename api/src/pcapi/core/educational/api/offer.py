@@ -1338,8 +1338,6 @@ def move_collective_offer_for_regularization(
     collective_bookings_to_update.update({"venueId": destination_venue.id}, synchronize_session=False)
     db.session.add_all(collective_bookings_to_update)
 
-    db.session.flush()
-
 
 def move_collective_offer_venue(
     collective_offer: educational_models.CollectiveOffer,
