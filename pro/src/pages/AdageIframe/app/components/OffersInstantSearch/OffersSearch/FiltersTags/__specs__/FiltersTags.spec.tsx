@@ -108,7 +108,7 @@ describe('FiltersTag', () => {
     )
 
     expect(
-      screen.getByText('Localisation des partenaires : > à 10 km')
+      screen.getByText('Localisation des partenaires : < à 10 km')
     ).toBeInTheDocument()
   })
   it('should remove geolocation tag on click', async () => {
@@ -120,10 +120,10 @@ describe('FiltersTag', () => {
       LocalisationFilterStates.GEOLOCATION
     )
     await userEvent.click(
-      screen.getByText('Localisation des partenaires : > à 10 km')
+      screen.getByText('Localisation des partenaires : < à 10 km')
     )
     expect(
-      screen.queryByText('Localisation des partenaires : > à 10 km')
+      screen.queryByText('Localisation des partenaires : < à 10 km')
     ).not.toBeInTheDocument()
     expect(mockSetLocalisationFilterState).toHaveBeenCalledWith(
       LocalisationFilterStates.NONE
