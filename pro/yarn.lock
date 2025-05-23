@@ -1638,6 +1638,11 @@
     redux-thunk "^3.1.0"
     reselect "^5.1.0"
 
+"@rolldown/pluginutils@1.0.0-beta.9":
+  version "1.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.9.tgz#68ef9fff5a9791a642cea0dc4380ce6cb487a84a"
+  integrity sha512-e9MeMtVWo186sgvFFJOPGy7/d2j2mZhLJIdVW0C/xDluuOvymEATqz6zKsP0ZmXGzQtqlyjz5sC1sYQUoJG98w==
+
 "@rollup/pluginutils@^4.2.0":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-4.2.1.tgz#e6c6c3aba0744edce3fb2074922d3776c0af2a6d"
@@ -2350,14 +2355,15 @@
     "@typescript-eslint/types" "8.32.1"
     eslint-visitor-keys "^4.2.0"
 
-"@vitejs/plugin-react@^4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-4.4.1.tgz#d7d1e9c9616d7536b0953637edfee7c6cbe2fe0f"
-  integrity sha512-IpEm5ZmeXAP/osiBXVVP5KjFMzbWOonMs0NaQQl+xYnUAcq4oHUBsF2+p4MgKWG4YMmFYJU8A6sxRPuowllm6w==
+"@vitejs/plugin-react@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-4.5.0.tgz#ef2bad6be3031af2b2105b7ab2754f710e890a32"
+  integrity sha512-JuLWaEqypaJmOJPLWwO335Ig6jSgC1FTONCWAxnqcQthLTK/Yc9aH6hr9z/87xciejbQcnP3GnA1FWUSWeXaeg==
   dependencies:
     "@babel/core" "^7.26.10"
     "@babel/plugin-transform-react-jsx-self" "^7.25.9"
     "@babel/plugin-transform-react-jsx-source" "^7.25.9"
+    "@rolldown/pluginutils" "1.0.0-beta.9"
     "@types/babel__core" "^7.20.5"
     react-refresh "^0.17.0"
 
