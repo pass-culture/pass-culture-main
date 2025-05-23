@@ -19,7 +19,6 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
-from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.schemas import EducationalBookingEdition
@@ -324,7 +323,10 @@ def create_collective_offer_template(
     offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel, user: User
 ) -> educational_models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
+
+    # check domains and national program
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
+    validation.validate_national_program(national_program_id=offer_data.nationalProgramId, domains=educational_domains)
 
     # TODO: move this to validation and see if that can be merged with check_contact_request
     if not any((offer_data.contact_email, offer_data.contact_phone, offer_data.contact_url, offer_data.contact_form)):
@@ -339,6 +341,7 @@ def create_collective_offer_template(
         name=offer_data.name,
         description=offer_data.description,
         domains=educational_domains,  # type: ignore[arg-type]
+        nationalProgramId=offer_data.nationalProgramId,
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
@@ -371,12 +374,6 @@ def create_collective_offer_template(
     db.session.add(collective_offer_template)
     db.session.flush()
 
-    if offer_data.nationalProgramId:
-        validation.validate_national_program(
-            national_program_id=offer_data.nationalProgramId, domains=educational_domains
-        )
-        national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
-
     logger.info(
         "Collective offer template has been created", extra={"collectiveOfferTemplate": collective_offer_template.id}
     )
@@ -389,13 +386,25 @@ def create_collective_offer(
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOffer:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
-    educational_domains = get_educational_domains_from_ids(offer_data.domains)
 
     if offer_data.template_id is not None:
         template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
         validation.check_collective_offer_template_action_is_allowed(
             template, educational_models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
         )
+
+    # check domains and national program
+    educational_domains = get_educational_domains_from_ids(offer_data.domains)
+    national_program_id = offer_data.nationalProgramId
+    try:
+        validation.validate_national_program(national_program_id=national_program_id, domains=educational_domains)
+    except (exceptions.InactiveNationalProgram, exceptions.IllegalNationalProgram):
+        if offer_data.template_id is not None:
+            # original offer template may have invalid national_program, in this case we set program to None
+            national_program_id = None
+        else:
+            # if we are not creating from an offer template, we do not allow an invalid program
+            raise
 
     offerer_address, intervention_area, offer_venue = get_location_values(offer_data=offer_data, user=user, venue=venue)
 
@@ -405,6 +414,7 @@ def create_collective_offer(
         name=offer_data.name,
         description=offer_data.description,
         domains=educational_domains,  # type: ignore[arg-type]
+        nationalProgramId=national_program_id,
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
@@ -431,21 +441,6 @@ def create_collective_offer(
 
     db.session.add(collective_offer)
     db.session.flush()
-
-    national_program_id = offer_data.nationalProgramId
-    if national_program_id is not None:
-        try:
-            validation.validate_national_program(national_program_id=national_program_id, domains=educational_domains)
-        except (exceptions.InactiveNationalProgram, exceptions.IllegalNationalProgram):
-            if offer_data.template_id is not None:
-                # original offer template may have invalid national_program, in this case we set program to None
-                national_program_id = None
-            else:
-                # if we are not creating from an offer template, we do not allow an invalid program
-                raise
-
-        if national_program_id is not None:
-            national_program_api.link_or_unlink_offer_to_program(national_program_id, collective_offer)
 
     logger.info(
         "Collective offer has been created",
@@ -1527,9 +1522,7 @@ def _update_collective_offer(
     program_id_to_check = offer.nationalProgramId
     edit_national_program = "nationalProgramId" in new_values
     if edit_national_program:
-        national_program_id = new_values.pop("nationalProgramId")
-        national_program_api.link_or_unlink_offer_to_program(national_program_id, offer)
-        program_id_to_check = national_program_id
+        program_id_to_check = new_values["nationalProgramId"]
 
     if edit_domains or edit_national_program:
         validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)

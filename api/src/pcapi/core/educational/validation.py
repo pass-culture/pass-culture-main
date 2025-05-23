@@ -6,7 +6,6 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
-from pcapi.core.educational.api import national_program as national_program_api
 from pcapi.models import api_errors
 from pcapi.models import db
 
@@ -189,13 +188,13 @@ def validate_national_program(
     domains: list[models.EducationalDomain] | None,
     check_program_is_active: bool = True,
 ) -> None:
-    if not national_program_id:
+    if national_program_id is None:
         return
 
     if not domains:
         raise exceptions.MissingDomains()
 
-    national_program = national_program_api.get_national_program(national_program_id)
+    national_program = repository.get_national_program_or_none(national_program_id)
 
     if not national_program:
         raise exceptions.NationalProgramNotFound()
