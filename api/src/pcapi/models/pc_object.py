@@ -6,10 +6,7 @@ from pprint import pprint
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
-from flask_sqlalchemy import BaseQuery as FlaskSQLAlchemyBaseQuery
 from werkzeug.exceptions import NotFound
-
-from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -20,16 +17,11 @@ NOT_FOUND_KEY_ERROR_CODE = "23503"
 OBLIGATORY_FIELD_ERROR_CODE = "23502"
 
 
-class BaseQuery(FlaskSQLAlchemyBaseQuery):
+class BaseQuery(sa_orm.Query):
     def get_or_404(self, obj_id: int) -> typing.Any:
         obj = self.filter_by(id=obj_id).one_or_none()
         if not obj:
             raise NotFound()
-        return obj
-
-    def get(self, pk: int) -> typing.Any:
-        mapper = self._raw_columns[0]._annotations["parententity"]
-        obj = db.session.get(mapper, pk)
         return obj
 
     def first_or_404(self) -> typing.Any:
@@ -46,7 +38,7 @@ class DeletedRecordException(Exception):
 class PcObject:
     query_class = BaseQuery
 
-    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore[assignment]
 
     def __init__(self, **kwargs: typing.Any) -> None:
         from_dict = kwargs.pop("from_dict", None)
