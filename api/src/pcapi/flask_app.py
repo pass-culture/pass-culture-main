@@ -335,6 +335,7 @@ if settings.SOFTDELETE_ENABLED:
         global_rewriter = softdelete_rewriter.SoftDeleteQueryRewriter(
             deleted_field_name="isSoftDeleted",
             disable_soft_delete_option_name="include_deleted",
+            enabled_tables=[softdelete_rewriter.EnabledTable("venue", None)],
         )
         adapted = global_rewriter.rewrite_statement(state.statement)
 

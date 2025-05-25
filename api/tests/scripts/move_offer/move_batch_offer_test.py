@@ -59,6 +59,8 @@ def test_move_batch_offer(_extract_invalid_venues_to_csv_patch):
 
     destination_venue = offerers_factories.VenueFactory(managingOfferer=origin_venue.managingOfferer)
 
+    origin_venue_id = origin_venue.id
+
     _move_all_venue_offers(not_dry=True, origin=origin_venue.id, destination=destination_venue.id)
 
     db.session.refresh(collective_offer)
@@ -78,13 +80,13 @@ def test_move_batch_offer(_extract_invalid_venues_to_csv_patch):
     assert db.session.query(history_models.ActionHistory).count() == 3
     assert (
         db.session.query(history_models.ActionHistory)
-        .filter(history_models.ActionHistory.venueId == origin_venue.id)[0]
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[0]
         .actionType
         == history_models.ActionType.VENUE_REGULARIZATION
     )
     assert (
         db.session.query(history_models.ActionHistory)
-        .filter(history_models.ActionHistory.venueId == origin_venue.id)[1]
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[1]
         .actionType
         == history_models.ActionType.VENUE_SOFT_DELETED
     )
