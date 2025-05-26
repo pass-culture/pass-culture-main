@@ -236,26 +236,28 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     return result
   }
 
-  const actions: StockFormRowAction[] = [
-    {
-      callback: async () => {
-        if (
-          // tested but coverage don't see it.
-          /* istanbul ignore next */
-          mode === OFFER_WIZARD_MODE.EDITION &&
-          formik.values.stockId !== undefined &&
-          parseInt(formik.values.bookingsQuantity) > 0
-        ) {
-          setIsDeleteConfirmVisible(true)
-        } else {
-          await onConfirmDeleteStock()
-        }
-      },
-      label: 'Supprimer le stock',
-      disabled: false,
-      icon: fullTrashIcon,
-    },
-  ]
+  const actions: StockFormRowAction[] = isDisabled
+    ? []
+    : [
+        {
+          callback: async () => {
+            if (
+              // tested but coverage don't see it.
+              /* istanbul ignore next */
+              mode === OFFER_WIZARD_MODE.EDITION &&
+              formik.values.stockId !== undefined &&
+              parseInt(formik.values.bookingsQuantity) > 0
+            ) {
+              setIsDeleteConfirmVisible(true)
+            } else {
+              await onConfirmDeleteStock()
+            }
+          },
+          label: 'Supprimer le stock',
+          disabled: false,
+          icon: fullTrashIcon,
+        },
+      ]
 
   let description: string | JSX.Element
   let links
@@ -296,8 +298,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       icon: fullCodeIcon,
     })
   }
-
-  actions[0].disabled = isDisabled
 
   if (offer.isDigital) {
     links = [
