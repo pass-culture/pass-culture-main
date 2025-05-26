@@ -43,9 +43,10 @@ def offer_fixture():
 def expected_serialized_offer(offer, redactor, offer_venue=None):
     national_program = offer.nationalProgram
     is_favorite = offer.id in {offer.id for offer in redactor.favoriteCollectiveOfferTemplates}
+    address = offer.venue.offererAddress.address
     coordinates = {
-        "longitude": float(offer.venue.longitude),
-        "latitude": float(offer.venue.latitude),
+        "longitude": float(address.longitude),
+        "latitude": float(address.latitude),
     }
 
     return {
@@ -56,16 +57,16 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "name": offer.name,
         "venue": {
             "adageId": offer.venue.adageId,
-            "address": offer.venue.street,
-            "city": offer.venue.city,
+            "address": address.street,
+            "city": address.city,
             "coordinates": coordinates,
             "distance": None,
             "id": offer.venue.id,
             "imgUrl": offer.venue.bannerUrl,
             "managingOfferer": {"name": offer.venue.managingOfferer.name},
             "name": offer.venue.name,
-            "postalCode": offer.venue.postalCode,
-            "departmentCode": offer.venue.departementCode,
+            "postalCode": address.postalCode,
+            "departmentCode": address.departmentCode,
             "publicName": offer.venue.publicName,
         },
         "interventionArea": offer.interventionArea,

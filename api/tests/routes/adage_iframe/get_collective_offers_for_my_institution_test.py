@@ -55,7 +55,7 @@ class CollectiveOfferTest:
         stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
         stocks[2].collectiveOffer.isActive = False
 
-        # cancelled booking should not appear in the result when the feature toggle is enabled
+        # cancelled booking should not appear in the result
         stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
@@ -75,12 +75,44 @@ class CollectiveOfferTest:
         assert response.status_code == 200
         response_data = sorted(response.json["collectiveOffers"], key=lambda offer: offer["id"])
         assert len(response_data) == 2, response_data
+
         assert response_data[0]["id"] == stocks[0].collectiveOffer.id
         assert response_data[0]["educationalInstitution"]["id"] == institution.id
         assert response_data[0]["stock"]["id"] == stocks[0].id
+        venue = stocks[0].collectiveOffer.venue
+        assert response_data[0]["venue"] == {
+            "adageId": None,
+            "address": "1 boulevard Poissonnière",
+            "city": "Paris",
+            "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+            "distance": None,
+            "id": venue.id,
+            "imgUrl": None,
+            "managingOfferer": {"name": venue.managingOfferer.name},
+            "name": venue.name,
+            "postalCode": "75002",
+            "departmentCode": "75",
+            "publicName": venue.publicName,
+        }
+
         assert response_data[1]["id"] == stocks[1].collectiveOffer.id
         assert response_data[1]["educationalInstitution"]["id"] == institution.id
         assert response_data[1]["stock"]["id"] == stocks[1].id
+        venue = stocks[1].collectiveOffer.venue
+        assert response_data[1]["venue"] == {
+            "adageId": None,
+            "address": "1 boulevard Poissonnière",
+            "city": "Paris",
+            "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+            "distance": None,
+            "id": venue.id,
+            "imgUrl": None,
+            "managingOfferer": {"name": venue.managingOfferer.name},
+            "name": venue.name,
+            "postalCode": "75002",
+            "departmentCode": "75",
+            "publicName": venue.publicName,
+        }
 
     def test_location_address_venue(self, eac_client):
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)

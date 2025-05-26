@@ -60,7 +60,7 @@ class GetFavoriteOfferTest:
                         "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
                         "name": collective_offer_template.venue.name,
                         "postalCode": "75002",
-                        "departmentCode": collective_offer_template.venue.departementCode,
+                        "departmentCode": "75",
                         "publicName": collective_offer_template.venue.publicName,
                     },
                     "students": ["Lycée - Seconde"],

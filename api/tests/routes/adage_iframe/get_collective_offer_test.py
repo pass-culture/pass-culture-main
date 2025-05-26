@@ -89,7 +89,7 @@ class CollectiveOfferTest:
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "name": offer.venue.name,
                 "postalCode": "75002",
-                "departmentCode": offer.venue.departementCode,
+                "departmentCode": "75",
                 "publicName": offer.venue.publicName,
             },
             "audioDisabilityCompliant": False,
