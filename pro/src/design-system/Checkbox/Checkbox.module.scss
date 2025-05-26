@@ -1,0 +1,252 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_outline.scss" as outline;
+
+.checkbox {
+  color: var(--color-text-default);
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+
+  &.fill {
+    width: 100%;
+  }
+
+  &-label {
+    @include fonts.body;
+
+    display: flex;
+    align-items: center;
+    gap: rem.torem(12px);
+    cursor: pointer;
+  }
+
+  &-input {
+    appearance: none;
+    border: rem.torem(2px) solid var(--color-border-default);
+    border-radius: rem.torem(4px);
+    flex: 0 0 auto;
+    outline: none;
+    padding: 0;
+    position: relative;
+    vertical-align: middle;
+    height: rem.torem(20px);
+    width: rem.torem(20px);
+    cursor: pointer;
+  }
+
+  &:focus-within {
+    @include outline.focus-outline(rem.torem(4px));
+
+    border-radius: rem.torem(4px);
+  }
+
+  @supports selector(:has(*)) {
+    &:focus-within {
+      outline: none;
+      border-radius: unset;
+    }
+
+    &:has(.checkbox-input:focus-visible) {
+      @include outline.focus-outline(rem.torem(4px));
+
+      border-radius: rem.torem(4px);
+    }
+  }
+}
+
+//  CHECKED
+.checkbox.checked,
+.checkbox.indeterminate {
+  & > .checkbox-label {
+    @include fonts.body-accent;
+  }
+
+  & > .checkbox-label .checkbox-input {
+    background-color: var(--color-background-brand-primary);
+    border-color: var(--color-border-brand-primary);
+
+    &::after {
+      //  CSS variables do not work when used within a background-image SVG.
+      //  Thus the need to have the background be the check color
+      //  Also, the svg "fill" and "stroke" properties of the checks must be white because its a mask
+      background-color: var(--color-icon-inverted);
+      mask: url("./assets/checkbox-check.svg");
+      mask-position: center;
+      mask-repeat: no-repeat;
+      content: "";
+      height: 100%;
+      position: absolute;
+      width: 100%;
+    }
+
+    &:indeterminate {
+      &::after {
+        mask: url("./assets/checkbox-partial.svg");
+        mask-position: center;
+        mask-repeat: no-repeat;
+      }
+    }
+  }
+}
+
+//  HOVER
+.checkbox:hover {
+  & > .checkbox-label {
+    color: var(--color-text-brand-primary-hover);
+  }
+
+  & > .checkbox-label .checkbox-input {
+    border-color: var(--color-border-brand-primary-hover);
+  }
+
+  &.checked,
+  &.indeterminate {
+    & > .checkbox-label .checkbox-input {
+      background-color: var(--color-background-brand-primary-hover);
+    }
+  }
+}
+
+//  PRESSED
+.checkbox-label:active {
+  opacity: 0.6;
+}
+
+//  HAS ERROR
+.checkbox.has-error {
+  & > .checkbox-label {
+    color: var(--color-text-default);
+  }
+
+  & > .checkbox-label .checkbox-input {
+    border-color: var(--color-border-error);
+  }
+
+  &.checked,
+  &.indeterminate {
+    & > .checkbox-label .checkbox-input {
+      background-color: var(--color-background-error);
+
+      &::after {
+        background-color: var(--color-icon-error);
+      }
+    }
+  }
+}
+
+//  DISABLED
+.checkbox.disabled {
+  & > .checkbox-label {
+    opacity: 1;
+    cursor: default;
+    color: var(--color-text-disabled);
+  }
+
+  & > .checkbox-label .checkbox-input {
+    cursor: default;
+    border-color: var(--color-border-disabled);
+  }
+
+  &.checked,
+  &.indeterminate {
+    & > .checkbox-label .checkbox-input {
+      background-color: var(--color-background-disabled);
+
+      &::after {
+        background-color: var(--color-icon-disabled);
+      }
+    }
+  }
+}
+
+//  DETAILED DEFAULT
+.checkbox.detailed {
+  border: 1px solid var(--color-border-default);
+  border-radius: rem.torem(8px);
+
+  .checkbox-label {
+    padding: rem.torem(16px);
+
+    &-row {
+      display: flex;
+      align-items: center;
+      gap: rem.torem(12px);
+      flex-grow: 1;
+
+      &-left {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  .checkbox-description {
+    @include fonts.body-xs;
+
+    margin-top: rem.torem(4px);
+  }
+
+  .checkbox-asset.icon {
+    color: var(--color-icon-brand-primary);
+  }
+
+  .checkbox-asset {
+    white-space: nowrap;
+  }
+
+  .checkbox-collapsed-content {
+    padding: 0 rem.torem(16px) rem.torem(16px);
+  }
+}
+
+//  DETAILED CHECKED
+.checkbox.detailed.checked,
+.checkbox.detailed.indeterminate {
+  background-color: var(--color-background-brand-primary-selected);
+  border-color: var(--color-border-brand-primary);
+
+  & > .checkbox-label .checkbox-asset.text {
+    @include fonts.body;
+  }
+}
+
+//  DETAILED HOVER
+.checkbox.detailed:hover {
+  border-color: var(--color-border-brand-primary-hover);
+
+  & > .checkbox-label .checkbox-asset.icon {
+    color: var(--color-icon-brand-primary-hover);
+  }
+}
+
+//  DETAILED HAS ERROR
+.checkbox.detailed.has-error {
+  border-color: var(--color-border-error);
+
+  & > .checkbox-label .checkbox-asset.icon {
+    color: var(--color-icon-error);
+  }
+}
+
+.checkbox.detailed.has-error.checked:not(.disabled, .has-collapsed-content) {
+  background-color: transparent;
+}
+
+//  DETAILED WITH COLLAPSED CONTENT
+.checkbox.detailed.has-collapsed-content {
+  background-color: unset;
+}
+
+//  DETAILED DISABLED
+.checkbox.detailed.disabled {
+  border-color: var(--color-border-disabled);
+  background-color: var(--color-background-disabled);
+
+  & > .checkbox-label .checkbox-asset.icon {
+    color: var(--color-icon-disabled);
+  }
+
+  & > .checkbox-label .checkbox-asset.image {
+    opacity: 0.6;
+  }
+}
