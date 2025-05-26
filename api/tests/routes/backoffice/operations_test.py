@@ -136,6 +136,31 @@ class CreateEventTest(PostEndpointHelper):
         assert db.session.query(operations_models.SpecialEventResponse).count() == 1
         assert db.session.query(operations_models.SpecialEventAnswer).count() == 3
 
+    def test_create_event_without_venue(self, authenticated_client):
+        # Data come from TestingBackend
+        typeform_id = "1a2b3c4d5"
+        event_date = datetime.date.today() + datetime.timedelta(days=7)
+        end_import_date = datetime.date.today() + datetime.timedelta(days=6)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "typeform_id": typeform_id,
+                "event_date": event_date.isoformat(),
+                "end_import_date": end_import_date.isoformat(),
+                "venue": "",
+            },
+            expected_num_queries=self.expected_num_queries_with_job,
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        special_event = db.session.query(operations_models.SpecialEvent).one()
+        assert special_event.eventDate == event_date
+        assert special_event.endImportDate == end_import_date
+        assert special_event.externalId == typeform_id
+        assert special_event.venueId is None
+
     def test_create_event_already_exists(self, authenticated_client, special_events):
         # Data come from TestingBackend
         event_date = datetime.date.today() + datetime.timedelta(days=7)
