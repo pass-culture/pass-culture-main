@@ -176,6 +176,7 @@ class FeatureToggle(enum.Enum):
 
 
 class Feature(PcObject, Base, Model, DeactivableMixin):
+    __tablename__ = "feature"
     name: str = Column(Text, unique=True, nullable=False)
     description: str = Column(String(300), nullable=False)
 

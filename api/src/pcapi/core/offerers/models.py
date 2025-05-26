@@ -810,6 +810,7 @@ class GooglePlacesInfo(PcObject, Base, Model):
 
 
 class AccessibilityProvider(PcObject, Base, Model):
+    __tablename__ = "accessibility_provider"
     venueId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
@@ -901,6 +902,7 @@ class VenuePricingPointLink(Base, Model):
     period during which this link is active.
     """
 
+    __tablename__ = "venue_pricing_point_link"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship(
@@ -932,6 +934,7 @@ class VenueBankAccountLink(PcObject, Base, Model):
     However, we want to keep tracks of the history, hence that table.
     """
 
+    __tablename__ = "venue_bank_account_link"
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="bankAccountLinks"
@@ -1002,6 +1005,7 @@ class Offerer(
     ValidationStatusMixin,
     DeactivableMixin,
 ):
+    __tablename__ = "offerer"
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     name: str = sa.Column(sa.String(140), nullable=False)
@@ -1133,7 +1137,7 @@ class Offerer(
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
-    __table_name__ = "user_offerer"
+    __tablename__ = "user_offerer"
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), primary_key=True)
     user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], back_populates="UserOfferers"
@@ -1156,6 +1160,7 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
 
 
 class ApiKey(PcObject, Base, Model):
+    __tablename__ = "api_key"
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId], backref="apiKeys")
     providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id", ondelete="CASCADE"), index=True)

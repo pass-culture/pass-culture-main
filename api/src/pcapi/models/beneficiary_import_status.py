@@ -35,6 +35,8 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
     When this data is either transferred to the new model or deleted, we can remove this model.
     """
 
+    __tablename__ = "beneficiary_import_status"
+
     def __repr__(self) -> str:
         author = self.author.full_name if self.author else "import automatisé"
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")

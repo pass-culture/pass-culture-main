@@ -158,6 +158,7 @@ class GcuCompatibilityType(enum.Enum):
 
 
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
+    __tablename__ = "product"
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
@@ -1480,6 +1481,7 @@ class BookMacroSection(PcObject, Base, Model):
 
 
 class PriceCategoryLabel(PcObject, Base, Model):
+    __tablename__ = "price_category_label"
     label: str = sa.Column(sa.Text(), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship(
         "PriceCategory", back_populates="priceCategoryLabel"
@@ -1497,6 +1499,7 @@ class PriceCategoryLabel(PcObject, Base, Model):
 
 
 class PriceCategory(PcObject, Base, Model):
+    __tablename__ = "price_category"
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="priceCategories")
     price: decimal.Decimal = sa.Column(

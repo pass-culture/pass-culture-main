@@ -662,6 +662,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
 class OrphanDmsApplication(PcObject, Base, Model):
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
+    __tablename__ = "orphan_dms_application"
     application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     dateCreated = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow
@@ -714,6 +715,7 @@ class BlacklistedDomainName(PcObject, Base, Model):
     logged inside the action_history table.
     """
 
+    __tablename__ = "blacklisted_domain_name"
     domain: str = sa.Column(sa.Text, nullable=False, unique=True)
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
@@ -725,6 +727,7 @@ class ProductWhitelist(PcObject, Base, Model):
     Contains the whitelisted EAN
     """
 
+    __tablename__ = "product_whitelist"
     title: str = sa.Column(sa.Text, nullable=False)
     ean: str = sa.Column(sa.String(length=13), nullable=False, unique=True, index=True)
     dateCreated: datetime.datetime = sa.Column(

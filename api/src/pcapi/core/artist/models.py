@@ -37,6 +37,7 @@ class ArtistProductLink(PcObject, Base, Model):
 
 
 class Artist(PcObject, Base, Model):
+    __tablename__ = "artist"
     id = sa.Column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
     name = sa.Column(sa.Text, nullable=False, index=True)
     description = sa.Column(sa.Text)
@@ -60,6 +61,7 @@ class ArtistAlias(PcObject, Base, Model):
     in order to be able to compare the data from different sources
     """
 
+    __tablename__ = "artist_alias"
     artist_id = sa.Column(sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True)
     artist_alias_name = sa.Column(sa.Text)
     artist_cluster_id = sa.Column(sa.Text)

@@ -20,6 +20,7 @@ class CriterionCategoryMapping(PcObject, Base, Model):
 
 
 class Criterion(PcObject, Base, Model):
+    __tablename__ = "criterion"
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=True)
     startDateTime = sa.Column(sa.DateTime, nullable=True)
@@ -34,6 +35,7 @@ class Criterion(PcObject, Base, Model):
 
 
 class VenueCriterion(PcObject, Base, Model):
+    __tablename__ = "venue_criterion"
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
     criterionId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True
@@ -49,7 +51,7 @@ class VenueCriterion(PcObject, Base, Model):
 
 
 class OfferCriterion(PcObject, Base, Model):
-    __table_name__ = "offer_criterion"
+    __tablename__ = "offer_criterion"
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
     criterionId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
