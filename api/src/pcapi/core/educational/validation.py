@@ -7,6 +7,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational.api import national_program as national_program_api
+from pcapi.core.offers import models as offers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 
@@ -206,3 +207,23 @@ def validate_national_program(
     valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
     if national_program_id not in valid_national_program_ids:
         raise exceptions.IllegalNationalProgram()
+
+
+def check_validation_status(offer: models.CollectiveOffer | models.CollectiveOfferTemplate) -> None:
+    if offer.validation in (offers_models.OfferValidationStatus.REJECTED, offers_models.OfferValidationStatus.PENDING):
+        raise exceptions.EducationalException(
+            {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+        )
+
+
+def check_contact_request(offer: models.CollectiveOfferTemplate, in_data: dict) -> None:
+    set_email = in_data.get("contactEmail", offer.contactEmail)
+    set_phone = in_data.get("contactPhone", offer.contactPhone)
+    set_url = in_data.get("contactUrl", offer.contactUrl)
+    set_form = in_data.get("contactForm", offer.contactForm)
+
+    if not any((set_email, set_phone, set_url, set_form)):
+        raise exceptions.AllNullContactRequestDataError()
+
+    if set_url and set_form:
+        raise exceptions.UrlandFormBothSetError()

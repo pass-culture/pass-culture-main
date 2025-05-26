@@ -192,21 +192,6 @@ class BookingsHaveOtherPricingPoint(MoveOfferBaseException):
         )
 
 
-class CollectiveOfferContactRequestError(Exception):
-    msg = ""
-    fields = "all"
-
-
-class AllNullContactRequestDataError(CollectiveOfferContactRequestError):
-    msg = "All contact information are null"
-    fields = "all"
-
-
-class UrlandFormBothSetError(CollectiveOfferContactRequestError):
-    msg = "Url and form can not both be used"
-    fields = "url,form"
-
-
 class InactiveOfferCanNotBeHeadline(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "This offer is inactive and can not be set to the headline")

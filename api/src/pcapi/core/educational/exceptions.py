@@ -249,3 +249,18 @@ class IllegalNationalProgram(Exception):
 
 class InactiveNationalProgram(Exception):
     pass
+
+
+class CollectiveOfferContactRequestError(Exception):
+    msg = ""
+    fields = "all"
+
+
+class AllNullContactRequestDataError(CollectiveOfferContactRequestError):
+    msg = "All contact information are null"
+    fields = "all"
+
+
+class UrlandFormBothSetError(CollectiveOfferContactRequestError):
+    msg = "Url and form can not both be used"
+    fields = "url,form"

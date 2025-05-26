@@ -328,9 +328,9 @@ def create_collective_offer_template(
 
     # TODO: move this to validation and see if that can be merged with check_contact_request
     if not any((offer_data.contact_email, offer_data.contact_phone, offer_data.contact_url, offer_data.contact_form)):
-        raise offers_exceptions.AllNullContactRequestDataError()
+        raise exceptions.AllNullContactRequestDataError()
     if offer_data.contact_url and offer_data.contact_form:
-        raise offers_exceptions.UrlandFormBothSetError()
+        raise exceptions.UrlandFormBothSetError()
 
     offerer_address, intervention_area, offer_venue = get_location_values(offer_data=offer_data, user=user, venue=venue)
 
@@ -1513,8 +1513,9 @@ def _update_collective_offer(
     location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
     user: users_models.User,
 ) -> list[str]:
-    offer_validation.check_validation_status(offer)
-    offer_validation.check_contact_request(offer, new_values)
+    validation.check_validation_status(offer)
+    if isinstance(offer, educational_models.CollectiveOfferTemplate):
+        validation.check_contact_request(offer, new_values)
 
     # check domains and national program
     domains_to_check = offer.domains
