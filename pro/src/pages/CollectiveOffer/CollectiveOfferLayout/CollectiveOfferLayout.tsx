@@ -77,9 +77,7 @@ export const CollectiveOfferLayout = ({
       layout={'sticky-actions'}
       mainHeading={
         <div className={styles['eac-layout-heading-wrapper']}>
-          {isTemplate && (
-            <Tag label="Offre vitrine" className={styles['eac-layout-tag']} />
-          )}
+          {isTemplate && <Tag label="Offre vitrine" />}
           {title}
         </div>
       }

@@ -13,7 +13,7 @@ import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
-import { Tag, TagSpecificVariant } from 'design-system/Tag/Tag'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from 'pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
@@ -109,10 +109,7 @@ export const IndividualOfferLayout = ({
           <p className={styles['offer-title']}>
             {offer.name}
             {offer.isHeadlineOffer && (
-              <Tag
-                label="Offre à la une"
-                variant={TagSpecificVariant.HEADLINE}
-              />
+              <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
             )}
           </p>
         )}

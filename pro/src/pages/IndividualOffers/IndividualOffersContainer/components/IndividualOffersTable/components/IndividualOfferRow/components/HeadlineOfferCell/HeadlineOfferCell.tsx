@@ -49,11 +49,9 @@ export function HeadlineOfferCell({
             ? 'Ne plus mettre à la une'
             : 'Mettre à la une'}
         </Button>
-        <Tag
-          label="Nouveau"
-          variant={TagVariant.NEW}
-          className={styles['new-tag']}
-        />
+        <div className={styles['new-tag']}>
+          <Tag label="Nouveau" variant={TagVariant.NEW} />
+        </div>
       </span>
     </DropdownItem>
   )

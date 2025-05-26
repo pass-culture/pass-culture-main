@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Tag, TagSpecificVariant, TagVariant } from './Tag'
+import { Tag, TagVariant } from './Tag'
 
 describe('Tag', () => {
   it('should always render a label', () => {
@@ -28,13 +28,14 @@ describe('Tag', () => {
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
-  it.each([
-    TagSpecificVariant.BOOKCLUB,
-    TagSpecificVariant.HEADLINE,
-    TagSpecificVariant.LIKE,
-  ])('should always render an icon for specific variant: %s', (variant) => {
-    const { container } = render(<Tag label="Département" variant={variant} />)
+  it.each([TagVariant.BOOKCLUB, TagVariant.HEADLINE, TagVariant.LIKE])(
+    'should always render an icon for specific variant: %s',
+    (variant) => {
+      const { container } = render(
+        <Tag label="Département" variant={variant} />
+      )
 
-    expect(container.querySelector('svg')).toBeInTheDocument()
-  })
+      expect(container.querySelector('svg')).toBeInTheDocument()
+    }
+  )
 })

@@ -177,7 +177,9 @@ function AdageInformations({
             État auprès des enseignants&nbsp;:
           </span>
         )}
-        <Tag label={tagText} className={styles['tag']} variant={variant} />
+        <div className={styles['tag']}>
+          <Tag label={tagText} variant={variant} />
+        </div>
       </div>
       {description && (
         <p className={styles['details-description']}>{description}</p>
