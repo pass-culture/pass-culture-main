@@ -51,6 +51,7 @@ class DepositType(enum.Enum):
 
 
 class Deposit(PcObject, Base, Model):
+    __tablename__ = "deposit"
     amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
@@ -134,6 +135,7 @@ class RecreditType(enum.Enum):
 
 
 class Recredit(PcObject, Base, Model):
+    __tablename__ = "recredit"
     depositId: int = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
     deposit: sa_orm.Mapped[Deposit] = sa_orm.relationship(
@@ -234,6 +236,7 @@ class BankAccountApplicationStatus(enum.Enum):
 
 
 class BankAccount(PcObject, Base, Model, DeactivableMixin):
+    __tablename__ = "bank_account"
     label: str = sa.Column(sa.String(100), nullable=False)
     offererId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
@@ -269,6 +272,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
 
 
 class BankAccountStatusHistory(PcObject, Base, Model):
+    __tablename__ = "bank_account_status_history"
     bankAccountId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -289,6 +293,7 @@ class BankAccountStatusHistory(PcObject, Base, Model):
 
 
 class FinanceEvent(PcObject, Base, Model):
+    __tablename__ = "finance_event"
     creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     # In most cases, `valueDate` is `Booking.dateUsed` but it's useful
     # to denormalize it here: many queries use this column and we thus
@@ -383,11 +388,13 @@ class CashflowPricing(Base, Model):
     thus be linked to two cashflows.
     """
 
+    __tablename__ = "cashflow_pricing"
     cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
     pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, primary_key=True)
 
 
 class Pricing(PcObject, Base, Model):
+    __tablename__ = "pricing"
     status: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
@@ -478,6 +485,7 @@ class Pricing(PcObject, Base, Model):
 
 
 class PricingLine(PcObject, Base, Model):
+    __tablename__ = "pricing_line"
     pricingId = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=True)
     pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
 
@@ -492,6 +500,7 @@ class PricingLog(PcObject, Base, Model):
     changes.
     """
 
+    __tablename__ = "pricing_log"
     pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=False)
     pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
 
@@ -573,6 +582,8 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Base, Model):
     An offer may be linked to more than one reimbursement rules, but
     only one rule can be valid at a time.
     """
+
+    __tablename__ = "custom_reimbursement_rule"
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=True)
 
@@ -700,6 +711,7 @@ sa.event.listen(CustomReimbursementRule.__table__, "after_create", sa.DDL(Custom
 class InvoiceCashflow(Base, Model):
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
+    __tablename__ = "invoice_cashflow"
     invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, primary_key=True)
     cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
 
@@ -719,6 +731,7 @@ class Cashflow(PcObject, Base, Model):
     Cashflows with zero amount are there to enable generating invoices lines with 100% offerer contribution
     """
 
+    __tablename__ = "cashflow"
     creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     status: CashflowStatus = sa.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
@@ -754,6 +767,7 @@ class CashflowLog(PcObject, Base, Model):
     changes.
     """
 
+    __tablename__ = "cashflow_log"
     cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, nullable=False)
     cashflow: sa_orm.Mapped[Cashflow] = sa_orm.relationship(
         "Cashflow", foreign_keys=[cashflowId], back_populates="logs"
@@ -771,12 +785,14 @@ class CashflowBatch(PcObject, Base, Model):
     same time (in a single file).
     """
 
+    __tablename__ = "cashflow_batch"
     creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     cutoff: datetime.datetime = sa.Column(sa.DateTime, nullable=False, unique=True)
     label: str = sa.Column(sa.Text, nullable=False, unique=True)
 
 
 class InvoiceLine(PcObject, Base, Model):
+    __tablename__ = "invoice_line"
     invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, nullable=False)
     invoice: sa_orm.Mapped["Invoice"] = sa_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
     label: str = sa.Column(sa.Text, nullable=False)
@@ -823,6 +839,7 @@ class Invoice(PcObject, Base, Model):
     of their related pricings.
     """
 
+    __tablename__ = "invoice"
     date: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     reference: str = sa.Column(sa.Text, nullable=False, unique=True)
     bankAccountId = sa.Column(sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=True)
@@ -855,6 +872,7 @@ class Invoice(PcObject, Base, Model):
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
 class Payment(PcObject, Base, Model):
+    __tablename__ = "payment"
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="payments"
@@ -929,6 +947,7 @@ class TransactionStatus(enum.Enum):
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
 class PaymentStatus(PcObject, Base, Model):
+    __tablename__ = "payment_status"
     paymentId: int = sa.Column(sa.BigInteger, sa.ForeignKey("payment.id"), index=True, nullable=False)
     payment: sa_orm.Mapped[Payment] = sa_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
     date: datetime.datetime = sa.Column(
@@ -941,6 +960,7 @@ class PaymentStatus(PcObject, Base, Model):
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
 class PaymentMessage(PcObject, Base, Model):
+    __tablename__ = "payment_message"
     name: str = sa.Column(sa.String(50), unique=True, nullable=False)
     checksum: bytes = sa.Column(sa.LargeBinary(32), unique=True, nullable=False)
 
@@ -968,6 +988,7 @@ class FinanceIncidentRequestOrigin(enum.Enum):
 
 
 class FinanceIncident(PcObject, Base, Model):
+    __tablename__ = "finance_incident"
     kind: IncidentType = sa.Column(
         sa.Enum(IncidentType, native_enum=False, create_contraint=False),
         nullable=False,
@@ -1091,6 +1112,7 @@ class FinanceIncident(PcObject, Base, Model):
 
 
 class BookingFinanceIncident(PcObject, Base, Model):
+    __tablename__ = "booking_finance_incident"
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking | None"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="incidents"

@@ -139,6 +139,7 @@ class RolePermission(PcObject, Base, Model):
     many-to-many relationship
     """
 
+    __tablename__ = "role_permission"
     roleId: int = sa.Column(sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"))
     permissionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"))
     __table_args__ = (sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),)

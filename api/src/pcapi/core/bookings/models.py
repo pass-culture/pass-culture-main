@@ -99,6 +99,7 @@ class BookingRecreditType(enum.Enum):
 
 
 class ExternalBooking(PcObject, Base, Model):
+    __tablename__ = "external_booking"
     bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False)
 
     booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
@@ -589,6 +590,7 @@ sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_ca
 
 
 class FraudulentBookingTag(PcObject, Base, Model):
+    __tablename__ = "fraudulent_booking_tag"
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
     bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False, unique=True)

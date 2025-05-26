@@ -33,6 +33,7 @@ class BeneficiaryImport(PcObject, Base, Model):
     When this data is either transferred to the new model or deleted, we can remove this model.
     """
 
+    __tablename__ = "beneficiary_import"
     applicationId = sa.Column(sa.BigInteger, nullable=True)
 
     beneficiaryId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)

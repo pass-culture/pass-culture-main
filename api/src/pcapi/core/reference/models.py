@@ -44,6 +44,7 @@ class ReferenceScheme(Base, Model):
     was used twice.
     """
 
+    __tablename__ = "reference_scheme"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
     # known names and prefixes are:
     #   - invoice.reference: F

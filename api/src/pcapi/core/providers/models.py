@@ -23,6 +23,7 @@ if typing.TYPE_CHECKING:
 
 
 class Provider(PcObject, Base, Model, DeactivableMixin):
+    __tablename__ = "provider"
     name: str = sa.Column(sa.String(90), index=True, nullable=False)
 
     localClass = sa.Column(sa.String(60), nullable=True, unique=True)
@@ -76,6 +77,7 @@ class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
     Stores external Urls specific for a Venue. It will be set by providers via API.
     """
 
+    __tablename__ = "venue_provider_external_urls"
     venueProviderId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue_provider.id", ondelete="CASCADE"), nullable=False, unique=True
     )
@@ -104,6 +106,7 @@ class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
 class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     """Stores specific sync settings for a Venue, and whether it is active"""
 
+    __tablename__ = "venue_provider"
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False)
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
@@ -188,6 +191,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
 class CinemaProviderPivot(PcObject, Base, Model):
     """Stores whether a Venue has requested to be synced with a Provider"""
 
+    __tablename__ = "cinema_provider_pivot"
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship(
@@ -219,6 +223,7 @@ class CinemaProviderPivot(PcObject, Base, Model):
 class CDSCinemaDetails(PcObject, Base, Model):
     """Stores info on the specific login details of a cinema synced with CDS"""
 
+    __tablename__ = "cds_cinema_details"
     cinemaProviderPivotId = sa.Column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
@@ -254,6 +259,7 @@ class VenueProviderCreationPayload:
 
 
 class AllocinePivot(PcObject, Base, Model):
+    __tablename__ = "allocine_pivot"
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(Venue, foreign_keys=[venueId], backref="allocinePivot")
@@ -264,6 +270,7 @@ class AllocinePivot(PcObject, Base, Model):
 
 
 class AllocineTheater(PcObject, Base, Model):
+    __tablename__ = "allocine_theater"
     siret = sa.Column(sa.String(14), nullable=True, unique=True)
 
     theaterId: str = sa.Column(sa.String(20), nullable=False, unique=True)
@@ -282,6 +289,7 @@ class LocalProviderEventType(enum.Enum):
 
 
 class LocalProviderEvent(PcObject, Base, Model):
+    __tablename__ = "local_provider_event"
     providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
     provider: sa_orm.Mapped["Provider"] = sa_orm.relationship("Provider", foreign_keys=[providerId])
     date: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -292,6 +300,7 @@ class LocalProviderEvent(PcObject, Base, Model):
 class BoostCinemaDetails(PcObject, Base, Model):
     """Stores info on the specific login details of a cinema synced with Boost"""
 
+    __tablename__ = "boost_cinema_details"
     cinemaProviderPivotId = sa.Column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
@@ -306,6 +315,7 @@ class BoostCinemaDetails(PcObject, Base, Model):
 class CGRCinemaDetails(PcObject, Base, Model):
     """Stores info on the specific login details of a cinema synced with CGR"""
 
+    __tablename__ = "cgr_cinema_details"
     cinemaProviderPivotId = sa.Column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
@@ -320,6 +330,7 @@ class CGRCinemaDetails(PcObject, Base, Model):
 class EMSCinemaDetails(PcObject, Base, Model):
     """Stores info on the specific login details of a cinema synced with EMS"""
 
+    __tablename__ = "ems_cinema_details"
     cinemaProviderPivotId = sa.Column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )

@@ -1987,6 +1987,7 @@ class DomainToNationalProgram(PcObject, models.Base, models.Model):
     programs but not twice the same.
     """
 
+    __tablename__ = "domain_to_national_program"
     domainId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -2081,6 +2082,7 @@ sa.event.listen(
 
 
 class CollectiveOfferRequest(PcObject, models.Base, models.Model):
+    __tablename__ = "collective_offer_request"
     _phoneNumber: str | None = sa.Column(sa.String(30), nullable=True, name="phoneNumber")
 
     requestedDate: datetime.date | None = sa.Column(sa.Date, nullable=True)
@@ -2137,6 +2139,7 @@ class NationalProgram(PcObject, models.Base, models.Model):
     collective offers (templates) within a coherent frame.
     """
 
+    __tablename__ = "national_program"
     name: str = sa.Column(sa.Text, unique=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
@@ -2156,6 +2159,7 @@ class NationalProgramOfferLinkHistory(PcObject, models.Base, models.Model):
     program or not.
     """
 
+    __tablename__ = "national_program_offer_link_history"
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
@@ -2172,6 +2176,7 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, models.Base, models.Mode
     program or not.
     """
 
+    __tablename__ = "national_program_offer_template_link_history"
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
@@ -2189,6 +2194,7 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
     EducationalInstitutionProgram (many-to-many)
     """
 
+    __tablename__ = "educational_institution_program_association"
     institutionId: int = sa.Column(
         sa.BigInteger,
         sa.ForeignKey("educational_institution.id", ondelete="CASCADE"),
@@ -2223,6 +2229,7 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
 
 
 class EducationalInstitutionProgram(PcObject, models.Base, models.Model):
+    __tablename__ = "educational_institution_program"
     # technical name
     name: str = sa.Column(sa.Text, nullable=False, unique=True)
     # public (printable) name - if something different from name is needed
@@ -2231,6 +2238,7 @@ class EducationalInstitutionProgram(PcObject, models.Base, models.Model):
 
 
 class CollectivePlaylist(PcObject, models.Base, models.Model):
+    __tablename__ = "collective_playlist"
     type: str = sa.Column(db_utils.MagicEnum(PlaylistType), nullable=False)
     distanceInKm: float = sa.Column(sa.Float, nullable=True)
 
@@ -2255,6 +2263,7 @@ class CollectivePlaylist(PcObject, models.Base, models.Model):
 
 
 class AdageVenueAddress(PcObject, models.Base, models.Model):
+    __tablename__ = "adage_venue_address"
     adageId: str | None = sa.Column(sa.Text, nullable=True, unique=True)
     adageInscriptionDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     venueId: int | None = sa.Column(

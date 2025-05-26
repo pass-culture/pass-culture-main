@@ -1122,6 +1122,7 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
 
 
 class UserSession(PcObject, Base, Model):
+    __tablename__ = "user_session"
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
 

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProductChronicle(PcObject, Base, Model):
-    __table_name__ = "product_chronicle"
+    __tablename__ = "product_chronicle"
     productId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -38,7 +38,7 @@ class ProductChronicle(PcObject, Base, Model):
 
 
 class OfferChronicle(PcObject, Base, Model):
-    __table_name__ = "offer_chronicle"
+    __tablename__ = "offer_chronicle"
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
     chronicleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), index=True, nullable=False
