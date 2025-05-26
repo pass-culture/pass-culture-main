@@ -366,9 +366,10 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
         client.with_token(user.email)
-        n_queries = 1  # get user
-        n_queries += 1  # get all feature flages
+        n_queries = 1  # get user session
+        n_queries += 1  # get user
         n_queries += 1  # get bookings
+        n_queries += 1  # get all feature flages
 
         with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")

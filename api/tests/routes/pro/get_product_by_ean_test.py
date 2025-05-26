@@ -133,6 +133,7 @@ class Returns422Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # select offer
         num_queries += 1  # rollback
+        num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get_product_by_ean/{ean}/{offerer_id}")
 
@@ -150,6 +151,7 @@ class Returns422Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select product join load mediations
         num_queries += 1  # select offerer join load venue
+        num_queries += 1  # rollback
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get_product_by_ean/UNKNOWN/{offerer_id}")
@@ -180,6 +182,7 @@ class Returns422Test:
         num_queries += 1  # select offerer join load venue
         num_queries += 1  # select offer
         num_queries += 1  # rollback
+        num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get_product_by_ean/{ean}/{offerer_id}")
 
@@ -204,6 +207,7 @@ class Returns422Test:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select product join load mediations
         num_queries += 1  # select offerer join load venue
+        num_queries += 1  # rollback
         num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get_product_by_ean/{ean}/0")

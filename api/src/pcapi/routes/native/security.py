@@ -3,10 +3,10 @@ import typing
 from functools import wraps
 
 import sentry_sdk
-from flask import g
 from flask import request
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
+from flask_login import login_user
 
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
@@ -62,7 +62,7 @@ def setup_context(must_be_active: bool = True) -> User:
     user = typing.cast(User, user)
 
     # push the user to the current context - similar to flask-login
-    g.user = user
+    login_user(user)
 
     # the user is set in sentry in before_request, way before we do the
     # token auth so it needs to be also set here.

@@ -13,7 +13,9 @@ from pcapi.core import testing
 class Returns403Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select offer
+    num_queries += 1  # select venue
     num_queries += 1  # check user has rights on venue
+    num_queries += 1  # rollback
     num_queries += 1  # rollback
 
     def test_access_by_beneficiary(self, client):
@@ -41,6 +43,7 @@ class Returns403Test:
 class Returns200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select offer
+    num_queries += 1  # select venue
     num_queries += 1  # check user has rights on venue
     num_queries += 1  # checks active stocks exists
     num_queries += 1  # select count(*) from active stocks

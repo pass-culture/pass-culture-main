@@ -49,7 +49,7 @@ class Returns200Test:
         client = client.with_session_auth(pro.email)
         booking_token = booking.token
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(f"/bookings/token/{booking_token}")
+            response = client.get(f"/v2/bookings/token/{booking_token}")
             assert response.status_code == 200
 
         assert response.headers["Content-type"] == "application/json"

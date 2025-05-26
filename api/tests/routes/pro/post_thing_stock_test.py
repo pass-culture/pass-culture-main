@@ -66,7 +66,7 @@ class Returns201Test:
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks", json=stock_data)
-        print(response.json)
+
         created_stock: offers_models.Stock = db.session.query(offers_models.Stock).first()
         assert response.status_code == 201
         assert response.json["id"] == created_stock.id

@@ -6,6 +6,8 @@ import flask
 import sentry_sdk
 from flask import g
 from flask import request
+from flask_login import current_user
+from flask_login import login_user
 from werkzeug.local import LocalProxy
 
 from pcapi import settings
@@ -127,6 +129,6 @@ def basic_authentication() -> User | None:
         "User logged in with authorization header",
         extra={"route": str(request.url_rule), "username": auth.username, "avoid_current_user": True},
     )
-    # push the user to the current context - similar to flask-login
-    g.user = user
+    # push the user to the current context
+    login_user(user)
     return user

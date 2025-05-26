@@ -392,7 +392,6 @@ class PublishChronicleTest(PostEndpointHelper):
     # session
     # current user
     # get chronicle
-    expected_num_queries_base = 3
     # update chronicle
     # reload chronicle
     expected_num_queries = 5
@@ -465,7 +464,6 @@ class UnpublishChronicleTest(PostEndpointHelper):
     # session
     # current user
     # get chronicle
-    expected_num_queries_base = 3
     # update chronicle
     # reload chronicle
     expected_num_queries = 5
@@ -755,7 +753,7 @@ class DetachProductTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries + 1,  # rollback on error
             chronicle_id=chronicle.id,
             product_id=product.id,
             client=authenticated_client,

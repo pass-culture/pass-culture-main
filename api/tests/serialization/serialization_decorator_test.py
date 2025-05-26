@@ -203,15 +203,12 @@ class SerializationDecoratorTest:
     def test_post_with_content_type_with_invalid_body_throw_error(self, client, caplog):
         response = client.post(
             "/test-blueprint/test-with-pydantic-model-for-body",
-            headers={"Content-Type": "application/json"},
             raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
         )
         assert response.status_code == 400
 
     def test_http_form_validation(self, client):
-        response = client.post(
-            "/test-blueprint/form-validation", form=None, headers={"Content-Type": "application/x-www-form-urlencoded"}
-        )
+        response = client.post("/test-blueprint/form-validation", content_type="application/x-www-form-urlencoded")
 
         assert response.status_code == 400
         assert response.json == {
@@ -219,14 +216,18 @@ class SerializationDecoratorTest:
         }
 
     def test_post_without_content_type_throws_400(self, client):
-        response = client.post("/test-blueprint/body-validation", headers={})
+        response = client.post(
+            "/test-blueprint/body-validation",
+            headers={},
+            content_type=None,
+        )
         assert response.status_code == 400
         assert response.get_data() == b'Please send a "Content-Type: application/json" HTTP header'
 
     def test_post_without_content_with_incorrect_content_type_throws_400(self, client):
         response = client.post(
             "/test-blueprint/body-validation-with-http-responses",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            content_type="application/x-www-form-urlencoded",
             json={},
         )
         assert response.status_code == 400
