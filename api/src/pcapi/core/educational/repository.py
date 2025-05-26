@@ -1400,6 +1400,9 @@ def get_collective_offer_templates_for_playlist_query(
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             ),
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
@@ -1445,6 +1448,9 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
                     offerers_models.Offerer.isActive,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.domains),
             *_get_collective_offer_address_joinedload_with_expression(),
@@ -1461,15 +1467,16 @@ def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
         )
         .options(
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram),
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.validationStatus,
-                offerers_models.Offerer.isActive,
-            ),
-            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
-                offerers_models.Venue.googlePlacesInfo
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                    offerers_models.Offerer.name,
+                    offerers_models.Offerer.validationStatus,
+                    offerers_models.Offerer.isActive,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             ),
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
@@ -1716,6 +1723,9 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             ),
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
@@ -1813,6 +1823,9 @@ def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.
             sa_orm.joinedload(educational_models.CollectiveOffer.venue).options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer),
                 sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.institution),
             sa_orm.joinedload(educational_models.CollectiveOffer.teacher),

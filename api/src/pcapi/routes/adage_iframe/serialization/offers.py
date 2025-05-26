@@ -70,10 +70,37 @@ class OfferVenueResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
-        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
-        venue.address = venue.street
-        result = super().from_orm(venue)
-        return result
+        if venue.offererAddress is not None:
+            source_address = venue.offererAddress.address
+            address = source_address.street
+            city = source_address.city
+            postal_code = source_address.postalCode
+            department_code = source_address.departmentCode
+            coordinates = common_models.Coordinates(
+                latitude=source_address.latitude, longitude=source_address.longitude
+            )
+        else:
+            # TODO(OA): remove this when the virtual venues are migrated
+            address = None
+            city = None
+            postal_code = None
+            department_code = None
+            coordinates = common_models.Coordinates(latitude=None, longitude=None)
+
+        return cls(
+            id=venue.id,
+            address=address,
+            city=city,
+            name=venue.name,
+            postalCode=postal_code,
+            departmentCode=department_code,
+            publicName=venue.publicName,
+            coordinates=coordinates,
+            managingOfferer=venue.managingOfferer,
+            adageId=venue.adageId,
+            distance=None,
+            imgUrl=venue.bannerUrl,
+        )
 
 
 class CollectiveOfferOfferVenue(BaseModel):
