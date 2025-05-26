@@ -174,7 +174,7 @@ class UpsertDepositTest:
         with pytest.raises(exceptions.UserCannotBeRecredited):
             api.upsert_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
-        assert models.Deposit.query.filter(models.Deposit.userId == beneficiary.id).count() == 1
+        assert db.session.query(models.Deposit).filter(models.Deposit.userId == beneficiary.id).count() == 1
 
     def test_upsert_deposit_age_18_expires_underage_deposit(self):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)

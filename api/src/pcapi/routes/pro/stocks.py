@@ -52,7 +52,7 @@ def _find_offer_matching_event_stocks(
         )
         for stock in stocks_payload
     ]
-    return offers_models.Stock.query.filter(sa.or_(*combinaisons_to_check)).all()
+    return db.session.query(offers_models.Stock).filter(sa.or_(*combinaisons_to_check)).all()
 
 
 def _get_existing_stocks_by_id(
@@ -91,7 +91,7 @@ def _filter_out_stock_duplicates(
 )
 @atomic()
 def create_thing_stock(body: stock_serialize.ThingStockCreateBodyModel) -> stock_serialize.StockIdResponseModel:
-    offer: offers_models.Offer = offers_models.Offer.query.get_or_404(body.offer_id)
+    offer: offers_models.Offer = db.session.query(offers_models.Offer).get_or_404(body.offer_id)
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     input_data = body.dict()
     input_data.pop("offer_id")
@@ -111,7 +111,7 @@ def update_thing_stock(
     stock_id: int,
     body: stock_serialize.ThingStockUpdateBodyModel,
 ) -> stock_serialize.StockIdResponseModel:
-    stock: offers_models.Stock = offers_models.Stock.query.get_or_404(stock_id)
+    stock: offers_models.Stock = db.session.query(offers_models.Stock).get_or_404(stock_id)
     check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)
     offers_api.edit_stock(stock, **body.dict())
     return stock_serialize.StockIdResponseModel.from_orm(stock)
@@ -128,9 +128,11 @@ def update_thing_stock(
 def bulk_create_event_stocks(
     body: stock_serialize.EventStocksBulkCreateBodyModel,
 ) -> stock_serialize.StocksResponseModel:
-    offer: offers_models.Offer = offers_models.Offer.query.options(
-        sa_orm.joinedload(offers_models.Offer.priceCategories)
-    ).get_or_404(body.offer_id)
+    offer: offers_models.Offer = (
+        db.session.query(offers_models.Offer)
+        .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
+        .get_or_404(body.offer_id)
+    )
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     # Step 1 : Filter out existing stocks
@@ -174,9 +176,11 @@ def bulk_create_event_stocks(
 def bulk_update_event_stocks(
     body: stock_serialize.EventStocksBulkUpdateBodyModel,
 ) -> stock_serialize.StocksResponseModel:
-    offer: offers_models.Offer = offers_models.Offer.query.options(
-        sa_orm.joinedload(offers_models.Offer.priceCategories)
-    ).get_or_404(body.offer_id)
+    offer: offers_models.Offer = (
+        db.session.query(offers_models.Offer)
+        .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
+        .get_or_404(body.offer_id)
+    )
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     # Step 1 : Filter out duplicated stocks

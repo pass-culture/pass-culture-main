@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core import search
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -46,8 +47,8 @@ class Returns200Test:
         if input_json.get("bookingLimitDatetime"):
             assert format_into_utc_date(stock.bookingLimitDatetime) == input_json.get("bookingLimitDatetime")
         assert stock.quantity == input_json.get("quantity")
-        assert offers_models.PriceCategory.query.count() == 0
-        assert offers_models.PriceCategoryLabel.query.count() == 0
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_called_once_with(
             [stock.offer.id],

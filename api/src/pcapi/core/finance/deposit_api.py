@@ -79,7 +79,8 @@ def recredit_users() -> None:
     user_ids = [
         result
         for (result,) in (
-            users_models.User.query.filter(users_models.User.has_underage_beneficiary_role)
+            db.session.query(users_models.User)
+            .filter(users_models.User.has_underage_beneficiary_role)
             .filter(users_models.User.validatedBirthDate > lower_date)
             .filter(users_models.User.validatedBirthDate <= upper_date)
             .with_entities(users_models.User.id)
@@ -98,7 +99,8 @@ def recredit_users_by_id(user_ids: list[int]) -> None:
 
     with transaction():
         users = (
-            users_models.User.query.filter(users_models.User.id.in_(user_ids))
+            db.session.query(users_models.User)
+            .filter(users_models.User.id.in_(user_ids))
             .options(sa_orm.selectinload(users_models.User.deposits).selectinload(models.Deposit.recredits))
             .populate_existing()
             .with_for_update()
@@ -510,7 +512,7 @@ def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recr
     """
     This function assumes that the user.deposits and the deposit.recredits relationships are already loaded.
 
-    Example: User.query.options(selectinload(User.deposits).selectinload(Deposit.recredits))
+    Example: db.session.query(User).options(selectinload(User.deposits).selectinload(Deposit.recredits))
     """
     if not user.deposit:
         return None

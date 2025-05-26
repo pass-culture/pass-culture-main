@@ -60,7 +60,7 @@ Toutes les `relationship` ont besoin de `Mapped` avec sqlalchemy 2.0.
   class Offer:
     id: sa_orm.Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)
 
-  Offer.query.filter(Offer.id.in_(my_list))
+  db.session.query(Offer).filter(Offer.id.in_(my_list))
   ```
 
 ### Références

@@ -8,8 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core import search
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import Stock
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -29,12 +28,12 @@ class Returns201Test:
     )
     def test_create_one_thing_stock(self, mocked_async_index_offer_ids, input_json: dict, client):
         email = "user@example.com"
-        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email=email, offerer=offer.venue.managingOfferer)
         input_json["offerId"] = offer.id
 
         response = client.with_session_auth(email).post("/stocks", json=input_json)
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(offers_models.Stock).first()
         assert response.status_code == 201
         assert response.json["id"] == created_stock.id
 
@@ -44,9 +43,9 @@ class Returns201Test:
             assert format_into_utc_date(created_stock.bookingLimitDatetime) == input_json.get("bookingLimitDatetime")
         assert created_stock.quantity == input_json.get("quantity")
         assert offer.isActive is False
-        assert offers_models.PriceCategory.query.count() == 0
-        assert offers_models.PriceCategoryLabel.query.count() == 0
-        assert offer.validation == OfferValidationStatus.DRAFT
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
+        assert offer.validation == offers_models.OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_called_once_with([offer.id], reason=search.IndexationReason.STOCK_CREATION)
 
@@ -68,7 +67,7 @@ class Returns201Test:
 
         response = client.with_session_auth("user@example.com").post("/stocks", json=stock_data)
         print(response.json)
-        created_stock: Stock = Stock.query.first()
+        created_stock: offers_models.Stock = db.session.query(offers_models.Stock).first()
         assert response.status_code == 201
         assert response.json["id"] == created_stock.id
 
@@ -113,7 +112,7 @@ class Returns400Test:
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def test_should_raise(self, client):
-        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com")
         response = client.with_session_auth("user@example.com").post("/stocks", json={"offerId": offer.id, "price": 12})
 
