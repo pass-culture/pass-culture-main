@@ -4,7 +4,6 @@ from unittest import mock
 
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -14,8 +13,6 @@ from pcapi.utils import human_ids
 import tests
 from tests.routes.public.helpers import ProductEndpointHelper
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
-
-from . import utils
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
@@ -56,11 +53,11 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert response.status_code == 404
 
     def test_post_image_with_credit_test(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/{offer.id}/image", form=self._get_valid_form()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(offer_id=offer.id), form=self._get_valid_form()
         )
 
         assert response.status_code == 204
@@ -71,40 +68,37 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
     def test_returns_400_if_no_image(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
-        data = {"credit": "John Do"}
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/{offer.id}/image", form=data
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(offer_id=offer.id), form={"credit": "John Do"}
         )
 
         assert response.status_code == 400
         assert response.json == {"file": ["A file must be provided in the request"]}
 
     def test_returns_400_if_bad_ratio_image(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         thumb = (IMAGES_DIR / "mouette_square.jpg").read_bytes()
-        data = {"file": (BytesIO(thumb), "image.jpg"), "credit": "John Do"}
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/{offer.id}/image", form=data
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(offer_id=offer.id),
+            form={"file": (BytesIO(thumb), "image.jpg"), "credit": "John Do"},
         )
 
         assert response.status_code == 400
         assert response.json == {"file": "Bad image ratio: expected 0.66, found 1.0"}
 
     def test_returns_400_wrong_content_type(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
-        data = {
-            "file": (BytesIO(thumb), "image.jpg"),
-        }
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/{offer.id}/image", form=data
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(offer_id=offer.id),
+            form={"file": (BytesIO(thumb), "image.jpg")},
         )
 
         assert response.status_code == 400
@@ -113,15 +107,14 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
     @mock.patch("pcapi.core.offers.validation.check_image")
     def test_returns_400_image_too_small(self, mock_check_image, client):
         mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
-        thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
-        data = {
-            "file": (BytesIO(thumb), "image.jpg"),
-        }
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/{offer.id}/image", form=data
+        thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(offer_id=offer.id),
+            form={"file": (BytesIO(thumb), "image.jpg")},
         )
 
         assert response.status_code == 400
@@ -130,15 +123,13 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
     @mock.patch("pcapi.core.offers.validation.check_image")
     def test_returns_400_content_too_large(self, mock_check_image, client):
         mock_check_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        data = {
-            "file": (BytesIO(thumb), "image.jpg"),
-        }
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/{offer.id}/image", form=data
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(offer_id=offer.id),
+            form={"file": (BytesIO(thumb), "image.jpg")},
         )
 
         assert response.status_code == 400
