@@ -3,29 +3,48 @@
 
 .notification {
   align-items: center;
-  border-radius: rem.torem(80px);
   bottom: 0;
+  left: 0;
   display: flex;
-  left: 50%;
   padding: rem.torem(8px) rem.torem(24px);
   position: fixed;
   text-align: center;
-  transform: translateX(-50%);
   visibility: hidden;
   white-space: pre-line;
   z-index: 1000;
   color: var(--color-text-default);
+  width: 100%;
 
   &.show {
     animation-duration: 0.8s;
     animation-name: animatetop;
-    transform: translateX(-50%) translateY(rem.torem(-30px));
     transition: all 400ms ease-out;
     visibility: visible;
+  }
 
-    &.with-sticky-action-bar {
-      transform: translateX(-50%)
-        translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
+  &.hide {
+    opacity: 0;
+    transform: translateX(0) translateY(100%);
+    transition: all 400ms ease-in;
+  }
+
+  @media screen and (min-width: size.$tablet) {
+    border-radius: rem.torem(80px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+
+    &.show {
+      transform: translateX(-50%) translateY(rem.torem(-30px));
+
+      &.with-sticky-action-bar {
+        transform: translateX(-50%)
+          translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
+      }
+    }
+
+    &.hide {
+      transform: translateX(-50%) translateY(100%);
     }
   }
 
@@ -33,14 +52,12 @@
     &.show {
       animation: none;
       opacity: 1;
-      transform: translateX(-50%) translateY(rem.torem(-30px));
       transition: none;
       visibility: visible;
+    }
 
-      &.with-sticky-action-bar {
-        transform: translateX(-50%)
-          translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
-      }
+    &.hide {
+      transition: none;
     }
   }
 
@@ -53,20 +70,6 @@
     to {
       bottom: 0;
       opacity: 1;
-    }
-  }
-
-  &.hide {
-    opacity: 0;
-    transform: translateX(-50%) translateY(100%);
-    transition: all 400ms ease-in;
-  }
-
-  @media screen and (prefers-reduced-motion: reduce) {
-    &.hide {
-      opacity: 0;
-      transform: translateX(-50%) translateY(100%);
-      transition: none;
     }
   }
 
