@@ -2337,7 +2337,7 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue2,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal("0.5")),
     )
     factories.PricingFactory(
         amount=-400,  # rate = 50 %
@@ -2348,7 +2348,7 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue2,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal("0.5")),
     )
 
     # Now the user gets a GRANT_17_18, and his used bookings are transfered to the new deposit
@@ -2369,7 +2369,7 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__venue=venue2,
         booking__usedRecreditType=None,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal("0.5")),
     )
 
     # Pricings on different bank account but same venue
@@ -4337,9 +4337,9 @@ class EditReimbursementRuleTest:
 
 class ValidateFinanceIncidentTest:
     def test_educational_institution_is_recredited(self):
-        deposit = educational_factories.EducationalDepositFactory(amount=Decimal(1000.00), isFinal=True)
+        deposit = educational_factories.EducationalDepositFactory(amount=Decimal("1000.00"), isFinal=True)
         booking = educational_factories.ReimbursedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(500.00),
+            collectiveStock__price=Decimal("500.00"),
             educationalInstitution=deposit.educationalInstitution,
             educationalYearId=deposit.educationalYearId,
         )
@@ -4351,7 +4351,7 @@ class ValidateFinanceIncidentTest:
         # before recredit
         with pytest.raises(educational_exceptions.InsufficientFund):
             check_institution_fund(
-                booking.educationalInstitution.id, booking.educationalYearId, Decimal(7800.00), deposit
+                booking.educationalInstitution.id, booking.educationalYearId, Decimal("7800.00"), deposit
             )
 
         author = users_factories.UserFactory()
@@ -4362,4 +4362,4 @@ class ValidateFinanceIncidentTest:
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
         # after recredit, it does not raise InsufficientFund
-        check_institution_fund(booking.educationalInstitution.id, booking.educationalYearId, Decimal(700.00), deposit)
+        check_institution_fund(booking.educationalInstitution.id, booking.educationalYearId, Decimal("700.00"), deposit)

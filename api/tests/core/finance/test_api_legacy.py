@@ -954,7 +954,7 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue2,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal("0.5")),
     )
     factories.PricingFactory(
         amount=-400,  # rate = 50 %
@@ -965,7 +965,7 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue2,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal("0.5")),
     )
 
     # Now the user gets a GRANT_17_18, and his used bookings are transfered to the new deposit
@@ -986,7 +986,7 @@ def test_generate_payments_file(clean_temp_files):
         booking__stock__offer__venue=venue2,
         booking__usedRecreditType=None,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal("0.5")),
     )
 
     # Pricings on different bank account but same venue

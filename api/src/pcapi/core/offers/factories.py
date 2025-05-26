@@ -554,7 +554,7 @@ class OfferPriceLimitationRuleFactory(BaseFactory):
         model = models.OfferPriceLimitationRule
 
     subcategoryId = subcategories.ACHAT_INSTRUMENT.id
-    rate = decimal.Decimal(0.3)
+    rate = decimal.Decimal("0.3")
 
 
 class OfferComplianceFactory(BaseFactory):

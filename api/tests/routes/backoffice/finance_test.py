@@ -1981,7 +1981,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         booking = bookings_factories.CancelledBookingFactory(
             quantity=1,
             amount=11,
-            user__deposit__amount=decimal.Decimal(2.0),
+            user__deposit__amount=decimal.Decimal("2.0"),
         )
 
         object_ids = str(booking.id)
@@ -2075,7 +2075,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "total_amount": booking.amount * decimal.Decimal(1.21),
+                "total_amount": booking.amount * decimal.Decimal("1.21"),
                 "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
                 "comment": "Commentaire facultatif",
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,

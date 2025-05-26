@@ -1394,7 +1394,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         date_used = datetime.datetime.utcnow() - datetime.timedelta(hours=72)
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=date_used,
             venue=venue,
@@ -1422,7 +1422,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     def test_processed_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.PROCESSED,
-            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__price=Decimal("100.00"),
             collectiveBooking__collectiveStock__numberOfTickets=25,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
@@ -1446,7 +1446,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     def test_invoiced_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.INVOICED,
-            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__price=Decimal("100.00"),
             collectiveBooking__collectiveStock__numberOfTickets=25,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
@@ -1480,7 +1480,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         # when
         pricing = finance_factories.CollectivePricingFactory(
             status=pricing_status,
-            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__price=Decimal("100.00"),
             collectiveBooking__collectiveStock__numberOfTickets=25,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
@@ -1503,7 +1503,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
         event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=event_date,
         )
@@ -1537,7 +1537,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     def test_price_higher_than_previously(self, legit_user, authenticated_client, booking_status):
         now = datetime.datetime.utcnow()
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=now,
             status=booking_status,
@@ -1578,7 +1578,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     def test_number_of_tickets_higher_than_previously(self, legit_user, authenticated_client, booking_status):
         now = datetime.datetime.utcnow()
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
+            collectiveStock__price=Decimal("100.00"),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=now,
             status=booking_status,
