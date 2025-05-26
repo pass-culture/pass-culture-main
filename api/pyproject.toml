@@ -220,6 +220,7 @@ extend-select = [
   # "PLR0917",  # too-many-positional-arguments -> preview mode only
   "S704",   # unsafe-markup-use
   "TID251", # banned-api (requests)
+  "RUF100"
 ]
 
 ignore = [
