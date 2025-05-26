@@ -35,7 +35,6 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -763,7 +762,7 @@ def edit_collective_offer_public(
         )
 
     if start_datetime or booking_limit_datetime:
-        offer_validation.check_booking_limit_datetime(
+        validation.check_booking_limit_datetime(
             stock=offer.collectiveStock,
             beginning=after_update_start_datetime,
             booking_limit_datetime=after_update_booking_limit_datetime,

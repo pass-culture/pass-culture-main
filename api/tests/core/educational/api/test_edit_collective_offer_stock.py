@@ -11,7 +11,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.routes.serialization import collective_stock_serialize
 
@@ -314,7 +313,7 @@ class ReturnErrorTest:
         )
 
         # When
-        with pytest.raises(offers_exceptions.BookingLimitDatetimeTooLate):
+        with pytest.raises(exceptions.EducationalException):
             educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )
@@ -340,7 +339,7 @@ class ReturnErrorTest:
         )
 
         # When
-        with pytest.raises(offers_exceptions.BookingLimitDatetimeTooLate):
+        with pytest.raises(exceptions.EducationalException):
             educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )

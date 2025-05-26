@@ -147,7 +147,7 @@ def edit_collective_stock(
         )
 
     if is_editing_dates and not should_bypass_check_booking_limit_datetime:
-        offer_validation.check_booking_limit_datetime(stock, check_start, check_booking_limit_datetime)
+        validation.check_booking_limit_datetime(stock, check_start, check_booking_limit_datetime)
 
     # due to check_booking_limit_datetime the only reason start < booking_limit_dt is when they are on the same day
     # in the venue timezone

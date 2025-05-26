@@ -559,7 +559,7 @@ def check_offer_subcategory_is_valid(offer_subcategory_id: str | None) -> None:
 
 
 def check_booking_limit_datetime(
-    stock: educational_models.CollectiveStock | models.Stock | None,
+    stock: models.Stock | None,
     beginning: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
 ) -> list[datetime.datetime]:
@@ -567,13 +567,11 @@ def check_booking_limit_datetime(
         return []
 
     if stock:
-        if isinstance(stock, educational_models.CollectiveStock):
-            offer = stock.collectiveOffer
-        else:
-            offer = stock.offer
+        offer = stock.offer
 
         reference_tz = offer.venue.timezone
-        if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock):
+
+        if offer.offererAddress:
             reference_tz = offer.offererAddress.address.timezone
         elif offer.venue.offererAddress:
             reference_tz = offer.venue.offererAddress.address.timezone
@@ -828,11 +826,6 @@ def check_for_duplicated_price_categories(
         raise api_errors.ApiErrors(
             {"priceCategories": [f"The price category {existing_price_category.label} already exists"]}
         )
-
-
-class OfferValidationError(Exception):
-    field = "all"
-    msg = "Invalid"
 
 
 def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:

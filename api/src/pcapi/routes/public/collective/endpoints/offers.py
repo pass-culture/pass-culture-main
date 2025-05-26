@@ -241,9 +241,6 @@ def post_collective_offer_public(
             errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400
         )
 
-    except offers_validation.OfferValidationError as err:
-        raise api_errors.ApiErrors(errors={err.field: err.msg}, status_code=400)
-
     if image_as_bytes and body.image_credit is not None:
         educational_api_offer.attach_image(
             obj=offer, image=image_as_bytes, crop_params=DO_NOT_CROP, credit=body.image_credit
@@ -443,27 +440,25 @@ def patch_collective_offer_public(
 
     # venue errors
     except educational_exceptions.CulturalPartnerNotFoundException:
-        raise api_errors.ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
+        raise api_errors.ForbiddenError({"global": ["Non éligible pour les offres collectives."]})
     except offerers_exceptions.VenueNotFoundException:
-        raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"venueId": ["Ce lieu n'a pas été trouvé."]})
 
     # institution errors
     except educational_exceptions.EducationalInstitutionIsNotActive:
-        raise api_errors.ApiErrors(errors={"global": ["cet institution est expiré."]}, status_code=403)
+        raise api_errors.ForbiddenError({"global": ["cet institution est expiré."]})
     except educational_exceptions.EducationalInstitutionUnknown:
-        raise api_errors.ApiErrors(
-            errors={"educationalInstitutionId": ["Établissement scolaire non trouvé."]}, status_code=404
-        )
+        raise api_errors.ResourceNotFoundError({"educationalInstitutionId": ["Établissement scolaire non trouvé."]})
 
     # domains / national_program errors
     except educational_exceptions.EducationalDomainsNotFound:
-        raise api_errors.ApiErrors(errors={"domains": ["Domaine scolaire non trouvé."]}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"domains": ["Domaine scolaire non trouvé."]})
     except educational_exceptions.NationalProgramNotFound:
-        raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non trouvé."]}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"nationalProgramId": ["Dispositif national non trouvé."]})
     except educational_exceptions.IllegalNationalProgram:
-        raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
+        raise api_errors.ApiErrors({"nationalProgramId": ["Dispositif national non valide."]})
     except educational_exceptions.InactiveNationalProgram:
-        raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
+        raise api_errors.ApiErrors({"nationalProgramId": ["Dispositif national inactif."]})
 
     # edition errors
     except (
@@ -473,42 +468,22 @@ def patch_collective_offer_public(
         raise api_errors.ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
     except educational_exceptions.CollectiveOfferForbiddenFields as e:
         raise api_errors.ApiErrors(
-            errors={"global": [f"Seuls les champs {', '.join(e.allowed_fields)} peuvent être modifiés."]},
-            status_code=400,
+            {"global": [f"Seuls les champs {', '.join(e.allowed_fields)} peuvent être modifiés."]}
         )
     except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
-        raise api_errors.ApiErrors(
-            errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400
-        )
+        raise api_errors.ApiErrors({"price": ["Le prix ne peut pas etre supérieur au prix existant"]})
 
     # dates errors
     except educational_exceptions.StartAndEndEducationalYearDifferent:
-        raise api_errors.ApiErrors(
-            errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
-        )
+        raise api_errors.ApiErrors({"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]})
     except educational_exceptions.StartEducationalYearMissing:
-        raise api_errors.ApiErrors(
-            errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400
-        )
+        raise api_errors.ApiErrors({"startDatetime": ["Année scolaire manquante pour la date de début."]})
     except educational_exceptions.EndEducationalYearMissing:
-        raise api_errors.ApiErrors(
-            errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400
-        )
-    except offers_exceptions.BookingLimitDatetimeTooLate:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]
-            },
-            status_code=400,
-        )
+        raise api_errors.ApiErrors({"endDatetime": ["Année scolaire manquante pour la date de fin."]})
     except educational_exceptions.EndDatetimeBeforeStartDatetime:
-        raise api_errors.ApiErrors(
-            errors={"global": ["La date de fin de l'évènement ne peut précéder la date de début."]},
-            status_code=400,
-        )
-
-    except offers_validation.OfferValidationError as err:
-        raise api_errors.ApiErrors(errors={err.field: err.msg}, status_code=400)
+        raise api_errors.ApiErrors({"global": ["La date de fin de l'évènement ne peut précéder la date de début."]})
+    except educational_exceptions.EducationalException as err:
+        raise api_errors.ApiErrors(errors=err.errors)
 
     if image_as_bytes and offer.imageCredit is not None:
         educational_api_offer.attach_image(
