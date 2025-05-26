@@ -4995,3 +4995,274 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
             html_parser.extract_alert(response.data)
             == "La fonctionnalité n'est disponible que pour un compte bénéficiaire ou grand public"
         )
+
+
+class ListAccountTagsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.account_tag.list_account_tags"
+    needed_permission = perm_models.Permissions.READ_TAGS
+
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch categories and tags (2 queries)
+    expected_num_queries = 4
+
+    def test_list_account_tags(self, authenticated_client):
+        category = users_factories.UserTagCategoryFactory(label="tagjeune")
+        user_tag = users_factories.UserTagFactory(
+            name="tag1",
+            label="Tag 1",
+            description="Jeune Tag 1",
+            categories=[category],
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="tags-tab-pane")
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(user_tag.id)
+        assert rows[0]["Nom"] == user_tag.name
+        assert rows[0]["Libellé"] == user_tag.label
+        assert rows[0]["Description"] == user_tag.description
+        assert rows[0]["Catégories"] == category.label
+
+    def test_list_account_tag_categories(self, authenticated_client):
+        category1 = users_factories.UserTagCategoryFactory(name="tagcat1", label="Tag catégorie 1")
+        category2 = users_factories.UserTagCategoryFactory(name="tagcat2", label="Tag catégorie 2")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="categories-tab-pane")
+        assert len(rows) == 2
+        assert {str(category1.id), str(category2.id)} == {e["ID"] for e in rows}
+        row1 = [e for e in rows if e["ID"] == str(category1.id)][0]
+        row2 = [e for e in rows if e["ID"] == str(category2.id)][0]
+        assert row1["Nom"] == "tagcat1"
+        assert row1["Libellé"] == "Tag catégorie 1"
+        assert row2["Nom"] == "tagcat2"
+        assert row2["Libellé"] == "Tag catégorie 2"
+
+
+class CreateTagButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+    button_label = "Créer un tag"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.account_tag.list_account_tags")
+
+
+class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2
+    button_label = "Créer une catégorie"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.account_tag.list_account_tags")
+
+
+class UpdateAccountTagTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_tag.update_account_tag"
+    endpoint_kwargs = {"user_tag_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    def test_update_account_tag(self, authenticated_client):
+        tag_not_to_edit = users_factories.UserTagFactory(name="zzzzzzzz-end-of-the-list")
+        category_to_keep = users_factories.UserTagCategoryFactory(label="AAA")
+        category_to_remove = users_factories.UserTagCategoryFactory(label="BBB")
+        category_to_add = users_factories.UserTagCategoryFactory(label="ZZZ")
+        tag_to_edit = users_factories.UserTagFactory(
+            name="tag-you-are-it",
+            label="C'est toi le loup",
+            description="Le jeu du loup c'est le 'tag' en anglais hihi",
+            categories=[category_to_keep, category_to_remove],
+        )
+
+        new_name = "very-serious-tag"
+        new_label = "Tag très sérieux"
+        new_description = "Pas le temps de jouer"
+        new_categories = [category_to_keep.id, category_to_add.id]
+
+        base_form = {
+            "name": new_name,
+            "label": new_label,
+            "description": new_description,
+            "categories": new_categories,
+        }
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_tag_id=tag_to_edit.id,
+            form=base_form,
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert html_parser.count_table_rows(response.data) == 2
+        assert {e["ID"] for e in rows} == {str(tag_to_edit.id), str(tag_not_to_edit.id)}
+        row1 = [e for e in rows if e["ID"] == str(tag_to_edit.id)][0]
+        assert row1["Nom"] == new_name
+        assert row1["Libellé"] == new_label
+        assert row1["Description"] == new_description
+        assert set(row1["Catégories"].split()) == {
+            category_to_keep.label,
+            category_to_add.label,
+        }
+
+        row2 = [e for e in rows if e["ID"] == str(tag_not_to_edit.id)][0]
+        assert row2["Nom"] == tag_not_to_edit.name
+
+    def test_update_with_wrong_data(self, authenticated_client):
+        tag_to_edit = users_factories.UserTagFactory(
+            name="tag-alog",
+            label="Le tagalog c'est du philippin",
+        )
+        base_form = {
+            "name": "",
+            "label": "Le tagalog c'est du philippin",
+        }
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_tag_id=tag_to_edit.id,
+            form=base_form,
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
+        assert tag_to_edit.name != ""
+
+    def test_update_with_already_existing_tag(self, authenticated_client):
+        users_factories.UserTagFactory(name="i-was-here-first")
+        tag_to_edit = users_factories.UserTagFactory(name="a-silly-name")
+        base_form = {
+            "name": "i-was-here-first",
+            "label": "",
+            "description": "",
+            "categories": [],
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_tag_id=tag_to_edit.id,
+            form=base_form,
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == "Ce nom de tag existe déjà"
+        assert tag_to_edit.name == "a-silly-name"
+
+
+class CreateAccountTagTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_tag.create_account_tag"
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    def test_create_account_tag(self, authenticated_client):
+        category = users_factories.UserTagCategoryFactory(label="La catégorie des sucreries")
+
+        name = "tag-ada"
+        label = "Fraise Tag-ada"
+        description = "Un tag délicieux mais dangereux"
+        categories = [category.id]
+
+        base_form = {
+            "name": name,
+            "label": label,
+            "description": description,
+            "categories": categories,
+        }
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.account_tag.list_account_tags", _external=True)
+
+        created_tag = db.session.query(users_models.UserTag).one()
+        assert created_tag.name == name
+        assert created_tag.label == label
+        assert created_tag.description == description
+        assert created_tag.categories == [category]
+
+    def test_create_with_wrong_data(self, authenticated_client):
+        base_form = {
+            "name": "",
+            "label": "Mon nom est Personne",
+        }
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
+        assert response.status_code == 303
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
+        assert db.session.query(users_models.UserTag).count() == 0
+
+    def test_create_with_already_existing_tag(self, authenticated_client):
+        users_factories.UserTagFactory(name="i-was-here-first")
+        base_form = {
+            "name": "i-was-here-first",
+        }
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
+        assert response.status_code == 303
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Ce tag existe déjà"
+        assert db.session.query(users_models.UserTag).count() == 1
+
+
+class DeleteAccountTagTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_tag.delete_account_tag"
+    endpoint_kwargs = {"user_tag_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2
+
+    def test_delete_offerer_tag(self, authenticated_client):
+        tags = users_factories.UserTagFactory.create_batch(3)
+        user = users_factories.UserFactory(tags=tags[1:])
+
+        response = self.post_to_endpoint(authenticated_client, user_tag_id=tags[1].id)
+
+        assert response.status_code == 303
+        assert set(db.session.query(users_models.UserTag).all()) == {tags[0], tags[2]}
+        assert db.session.query(users_models.User).get(user.id).tags == [tags[2]]
+
+    def test_delete_non_existing_tag(self, authenticated_client):
+        tag = users_factories.UserTagFactory()
+
+        response = self.post_to_endpoint(authenticated_client, user_tag_id=tag.id + 1)
+
+        assert response.status_code == 404
+        assert db.session.query(users_models.UserTag).count() == 1
+
+
+class CreateAccountTagCategoryTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_tag.create_account_tag_category"
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2
+
+    def test_create_account_tag_category(self, authenticated_client):
+        form_data = {
+            "name": "nouvelle-categorie",
+            "label": "Nouvelle catégorie",
+        }
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.account_tag.list_account_tags",
+            active_tab="categories",
+            _external=True,
+        )
+
+        created_category = db.session.query(users_models.UserTagCategory).one()
+        assert created_category.name == form_data["name"]
+        assert created_category.label == form_data["label"]
+
+    def test_create_with_already_existing_category(self, authenticated_client):
+        category = users_factories.UserTagCategoryFactory(name="homologation", label="Homologation")
+
+        form_data = {"name": category.name, "label": "Duplicate category"}
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data) == "Cette catégorie existe déjà"
+        )
+
+        assert db.session.query(users_models.UserTagCategory).count() == 1
