@@ -67,49 +67,12 @@ if settings.USE_FLASK_SQLALCHEMY:
 
         class Model(flask_sqlalchemy.Model):
             pass
-
     else:
         Model = db.Model
 
 else:
-    import re
-    import threading
+    from pcapi.models.session_manager import DbClass
 
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import declarative_base
-    from sqlalchemy.schema import _get_table_key
+    db = DbClass(engine_options=_engine_options)
 
-    thread_local = threading.local()
-
-    class DBClass:
-        """Compatibility class that mimic the one from flask_sqlalchemy"""
-
-        engine_key = "thread_engine"
-        session_key = "thread_session"
-
-        def __init__(self, engine_options: dict):
-            self.Model = declarative_base()
-            self.engine_options = dict(engine_options)
-
-            # TODO rpa 23/05/2025 remove pool_size from the configuration and hard set it to 1
-            self.engine_options["pool_size"] = 1
-
-        @property
-        def session(self) -> sa.orm.session.Session:
-            session = getattr(thread_local, self.session_key, None)
-            if session is None:
-                session = None
-                setattr(thread_local, self.session_key, session)
-            return session
-
-        @property
-        def engine(self):
-            engine = getattr(thread_local, self.engine_key, None)
-            if engine is None:
-                engine = create_engine(settings.DATABASE_URL, **self.engine_options)
-                setattr(thread_local, self.engine_key, engine)
-            return engine
-
-    db = DBClass(engine_options=_engine_options)
-
-Model = db.Model
+    Model = db.Model
