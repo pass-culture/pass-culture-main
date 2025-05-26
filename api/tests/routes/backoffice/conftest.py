@@ -38,6 +38,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.MANAGE_TAGS_N2,
+        perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
@@ -137,6 +138,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
     ],
     "programmation_market": [
+        perm_models.Permissions.MANAGE_ACCOUNT_TAGS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
@@ -212,6 +214,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_TAGS_N2,
+        perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,

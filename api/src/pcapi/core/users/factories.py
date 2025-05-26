@@ -1218,3 +1218,22 @@ class GdprUserAnonymizationFactory(BaseFactory):
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
+
+
+class UserTagFactory(BaseFactory):
+    class Meta:
+        model = models.UserTag
+
+    name = factory.Sequence("UserTag_{}".format)
+
+
+class UserTagCategoryFactory(BaseFactory):
+    class Meta:
+        model = models.UserTagCategory
+
+    name = factory.Sequence("user-tag-category-{}".format)
+
+
+class UserTagCategoryMappingFactory(BaseFactory):
+    class Meta:
+        model = models.UserTagCategoryMapping
