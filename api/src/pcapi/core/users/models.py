@@ -153,6 +153,15 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
+class UserTagMapping(PcObject, Base, Model):
+    __tablename__ = "user_tag_mapping"
+
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    tagId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user_tag.id", ondelete="CASCADE"), index=True, nullable=False)
+
+    __table_args__ = (sa.UniqueConstraint("userId", "tagId", name="unique_user_tag"),)
+
+
 class User(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "user"
 
@@ -221,6 +230,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     gdprUserDataExtracts: sa_orm.Mapped[list["GdprUserDataExtract"]] = sa_orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
+    tags: sa_orm.Mapped[list["UserTag"]] = sa_orm.relationship("UserTag", secondary=UserTagMapping.__table__)
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
@@ -1209,3 +1219,49 @@ class GdprUserAnonymization(PcObject, Base, Model):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     user: sa_orm.Mapped[sa_orm.Mapped[User]] = sa_orm.relationship(User, foreign_keys=[userId])
+
+
+class UserTagCategoryMapping(PcObject, Base, Model):
+    __tablename__ = "user_tag_category_mapping"
+
+    tagId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user_tag.id", ondelete="CASCADE"), index=True, nullable=False)
+    categoryId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("user_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (sa.UniqueConstraint("tagId", "categoryId", name="unique_user_tag_category"),)
+
+
+class UserTag(PcObject, Base, Model):
+    """
+    Tags on users (accounts) are only used in backoffice, set to help for filtering and analytics in metabase.
+    There is currently no display or impact in mobile and web apps.
+    """
+
+    __tablename__ = "user_tag"
+
+    name: str = sa.Column(sa.Text, nullable=False, unique=True)
+    label: str = sa.Column(sa.Text)
+    description: str = sa.Column(sa.Text)
+
+    categories: sa_orm.Mapped[list["UserTagCategory"]] = sa_orm.relationship(
+        "UserTagCategory", secondary=UserTagCategoryMapping.__table__
+    )
+
+    def __str__(self) -> str:
+        return self.label or self.name
+
+
+class UserTagCategory(PcObject, Base, Model):
+    """
+    Tag categories can be considered as "tags on tags", which aims at filtering tags depending on the project:
+    The same UserTag can be used in one or several project.
+    """
+
+    __tablename__ = "user_tag_category"
+
+    name: str = sa.Column(sa.Text, nullable=False, unique=True)
+    label: str = sa.Column(sa.Text)
+
+    def __str__(self) -> str:
+        return self.label or self.name

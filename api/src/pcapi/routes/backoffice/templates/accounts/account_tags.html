@@ -1,0 +1,177 @@
+{% extends "layouts/connected.html" %}
+{% import "components/badges.html" as badges with context %}
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
+{% import "components/presentation/details/tabs.html" as tabs %}
+{% set edit_account_tag_modal_label_id = random_hash() %}
+{% set delete_account_tag_modal_label_id = random_hash() %}
+{% set tags_table = namespace(hide_search_block=True, rows_count=rows|length, name="tags_table", header="", body="") %}
+{% set tags_table.header %}
+  <th scope="col"></th>
+  <th scope="col">ID</th>
+  <th scope="col">Nom</th>
+  <th scope="col">Libellé</th>
+  <th scope="col" class="col-5">Description</th>
+  <th scope="col">Catégories</th>
+{% endset %}
+{% set tags_table.body %}
+  {% for user_tag in rows %}
+    <tr>
+      <td>
+        {% if update_tag_forms or delete_tag_form %}
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              {% if update_tag_forms %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target=".pc-edit-account-tag-modal-{{ user_tag.id }}">Modifier le tag</a>
+                </li>
+              {% endif %}
+              {% if delete_tag_form %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target=".pc-delete-account-tag-modal-{{ user_tag.id }}">Supprimer le tag</a>
+                </li>
+              {% endif %}
+            </ul>
+            {% if update_tag_forms %}
+              <div class="modal modal-lg fade pc-edit-account-tag-modal-{{ user_tag.id }}"
+                   tabindex="-1"
+                   aria-labelledby="{{ edit_account_tag_modal_label_id }}"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ url_for('backoffice_web.account_tag.update_account_tag', user_tag_id=user_tag.id) }}"
+                          name="{{ url_for('backoffice_web.account_tag.update_account_tag', user_tag_id=user_tag.id) | action_to_name }}"
+                          method="post"
+                          data-turbo="false">
+                      <div class="modal-header"
+                           id="{{ edit_account_tag_modal_label_id }}">
+                        <h5 class="modal-title">Modifier le tag {{ user_tag.name }}</h5>
+                      </div>
+                      <div class="modal-body row">{{ build_form_fields_group(update_tag_forms[user_tag.id]) }}</div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary-subtle-bg"
+                                data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit"
+                                class="btn btn-primary">Enregistrer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            {% if delete_tag_form %}
+              <div class="modal modal-lg fade pc-delete-account-tag-modal-{{ user_tag.id }}"
+                   tabindex="-1"
+                   aria-labelledby="{{ delete_account_tag_modal_label_id }}"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ url_for('backoffice_web.account_tag.delete_account_tag', user_tag_id=user_tag.id) }}"
+                          name="{{ url_for('backoffice_web.account_tag.delete_account_tag', user_tag_id=user_tag.id) | action_to_name }}"
+                          method="post"
+                          data-turbo="false">
+                      <div class="modal-header"
+                           id="{{ delete_account_tag_modal_label_id }}">
+                        <h5 class="modal-title">Supprimer le tag {{ user_tag.name }}</h5>
+                      </div>
+                      <div class="modal-body row">
+                        <p>
+                          Le tag <strong>{{ user_tag.label or user_tag.name }}</strong> sera définitivement supprimé
+                          de la base de données et retiré de tous les comptes jeune auxquels il est associé. Veuillez confirmer ce choix.
+                        </p>
+                        {{ build_form_fields_group(delete_tag_form) }}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary-subtle-bg"
+                                data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit"
+                                class="btn btn-primary">Confirmer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </td>
+      <td>{{ user_tag.id }}</td>
+      <td>{{ user_tag.name }}</td>
+      <td>{{ user_tag.label | empty_string_if_null }}</td>
+      <td>{{ user_tag.description | empty_string_if_null }}</td>
+      <td>
+        {% call badges.badges_container() %}
+          {# djlint:off #}{% for category in user_tag.categories %}{{ (category.label or category.name) | format_badge("secondary") }} {% endfor %}{# djlint:on #}
+        {% endcall %}
+      </td>
+    </tr>
+  {% endfor %}
+{% endset %}
+{% set categories_table = namespace(hide_search_block=True, rows_count=category_rows|length, name="categories_table", header="", body="") %}
+{% set categories_table.header %}
+  <th scope="col">ID</th>
+  <th scope="col">Nom</th>
+  <th scope="col">Libellé</th>
+{% endset %}
+{% set categories_table.body %}
+  {% for category in category_rows %}
+    <tr>
+      <td>{{ category.id }}</td>
+      <td>{{ category.name }}</td>
+      <td>{{ category.label | empty_string_if_null }}</td>
+    </tr>
+  {% endfor %}
+{% endset %}
+{% block page %}
+  <div class="d-flex container-fluid h-100 p-0 overflow-y-auto">
+    <div class="col-12 px-5 py-3">
+      <!-- MAIN TITLE -->
+      <h2>
+        {% block title %}
+          Tags des jeunes
+        {% endblock title %}
+      </h2>
+      <!--TABS -->
+      <div>
+        {% call tabs.build_details_tabs_wrapper() %}
+          {{ tabs.build_details_tab("tags", "Tags", active_tab == 'tags') }}
+          {{ tabs.build_details_tab("categories", "Catégories", active_tab == 'categories') }}
+        {% endcall %}
+        {% call tabs.build_details_tabs_content_wrapper() %}
+          {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
+            {% if create_tag_form %}
+              {{ build_modal_form("create-account-tag", url_for("backoffice_web.account_tag.create_account_tag") , create_tag_form, "Créer un tag", "Créer un tag", "Enregistrer") }}
+            {% endif %}
+            <div>
+              {% with table_header=tags_table.header, table_name=tags_table.name, table_body=tags_table.body, rows_count=tags_table.rows_count, hide_search_block=tags_table.hide_search_block %}
+                {% include "components/presentation/list.html" %}
+              {% endwith %}
+            </div>
+          {% endcall %}
+          {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
+            {% if create_category_form %}
+              {{ build_modal_form("create-account-tag-category", url_for("backoffice_web.account_tag.create_account_tag_category") , create_category_form, "Créer une catégorie", "Créer une catégorie", "Enregistrer") }}
+            {% endif %}
+            <div>
+              {% with table_header=categories_table.header, table_name=categories_table.name, table_body=categories_table.body, rows_count=categories_table.rows_count, hide_search_block=categories_table.hide_search_block %}
+                {% include "components/presentation/list.html" %}
+              {% endwith %}
+            </div>
+          {% endcall %}
+        {% endcall %}
+      </div>
+    </div>
+  </div>
+{% endblock page %}
