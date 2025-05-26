@@ -461,7 +461,20 @@ def patch_offer(
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
 
-    offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+        offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+        db.session.flush()
+        offer = offers_repository.get_offer_by_id(
+            offer_id,
+            load_options=[
+                "stock",
+                "venue",
+                "offerer_address",
+                "product",
+                "bookings_count",
+                "is_non_free_offer",
+                "event_opening_hours",
+            ],
+        )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

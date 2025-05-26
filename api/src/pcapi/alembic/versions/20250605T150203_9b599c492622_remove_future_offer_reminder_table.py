@@ -14,7 +14,7 @@ depends_on: list[str] | None = None
 
 def future_offer_exists() -> bool:
     connection = op.get_bind()
-    res = connection.execute("SELECT to_regclass('future_offer')").all()[0][0]
+    res = connection.execute(sa.text("SELECT to_regclass('future_offer')")).all()[0][0]
     return res is not None
 
 
