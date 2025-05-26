@@ -16,6 +16,7 @@ from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -263,7 +264,7 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        updated_booking = bookings_models.Booking.query.get(booking.id)
+        updated_booking = db.session.query(bookings_models.Booking).get(booking.id)
         assert updated_booking.status is not bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
@@ -304,7 +305,7 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        updated_booking = bookings_models.Booking.query.get(booking.id)
+        updated_booking = db.session.query(bookings_models.Booking).get(booking.id)
         assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 
