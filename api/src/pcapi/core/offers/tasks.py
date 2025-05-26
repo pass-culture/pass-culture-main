@@ -1,24 +1,16 @@
 import datetime
 import logging
 
-import sqlalchemy as sa
-
 from pcapi import repository
-from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
-from pcapi.core.offers import constants as offers_constants
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_serialization
-from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_utils
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 

@@ -5,9 +5,14 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
+from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_serialization
+from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 def offer_app_link(offer: CollectiveOffer | Offer) -> str:
@@ -80,7 +85,7 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
 
 
 def get_filtered_offers_linked_to_provider(
-    query_filters: serialization.GetOffersQueryParams,
+    query_filters: individual_offers_serialization.GetOffersQueryParams,
     is_event: bool,
 ) -> sa_orm.Query:
     offers_query = (
