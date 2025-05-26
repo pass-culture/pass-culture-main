@@ -29,6 +29,8 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
+import pcapi.core.offers.constants as offers_constants
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
@@ -44,7 +46,6 @@ from pcapi.core import search
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external import compliance
@@ -54,15 +55,19 @@ from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIExc
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import schemas as offerers_schemas
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import utils as offers_utils
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
+from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -76,6 +81,7 @@ from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
+from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
@@ -2339,3 +2345,208 @@ def delete_unbookable_unbooked_old_offers(
     log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
     log_extra["deleted_offers_count"] = count
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
+
+
+def get_existing_offers(
+    ean_to_create_or_update: set[str],
+    venue: offerers_models.Venue,
+) -> list[offers_models.Offer]:
+    subquery = (
+        db.session.query(
+            sa.func.max(offers_models.Offer.id).label("max_id"),
+        )
+        .filter(offers_models.Offer.isEvent == False)
+        .filter(offers_models.Offer.venue == venue)
+        .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
+        .group_by(
+            offers_models.Offer.ean,
+            offers_models.Offer.venueId,
+        )
+        .subquery()
+    )
+
+    return (
+        offers_utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
+        .join(subquery, offers_models.Offer.id == subquery.c.max_id)
+        .all()
+    )
+
+
+def create_product(
+    venue: offerers_models.Venue,
+    body: individual_offers_v1_serialization.ProductOfferCreation,
+    offerer_address: offerers_models.OffererAddress | None,
+    api_key: ApiKey,
+) -> offers_models.Offer:
+    try:
+        offer_body = offers_schemas.CreateOffer(
+            name=body.name,
+            subcategoryId=body.category_related_fields.subcategory_id,
+            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+            bookingContact=body.booking_contact,
+            bookingEmail=body.booking_email,
+            description=body.description,
+            externalTicketOfficeUrl=body.external_ticket_office_url,
+            ean=(body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None),
+            extraData=individual_offers_v1_serialization.deserialize_extra_data(
+                body.category_related_fields, venue_id=venue.id
+            ),
+            idAtProvider=body.id_at_provider,
+            isDuo=body.enable_double_bookings,
+            url=(
+                body.location.url
+                if isinstance(body.location, individual_offers_v1_serialization.DigitalLocation)
+                else None
+            ),
+            withdrawalDetails=body.withdrawal_details,
+        )  # type: ignore[call-arg]
+        created_product = create_offer(
+            offer_body,
+            venue=venue,
+            provider=api_key.provider,
+            offerer_address=offerer_address,
+        )
+
+        # To create stocks or publishing the offer we need to flush
+        # the session to get the offer id
+        db.session.flush()
+    except sa_exc.IntegrityError as error:
+        # a unique constraint violation can only mean that the venueId/idAtProvider
+        # already exists
+        is_offer_table = error.orig.diag.table_name == offers_models.Offer.__tablename__
+        is_unique_constraint_violation = error.orig.pgcode == UNIQUE_VIOLATION
+        unique_id_at_provider_venue_id_is_violated = is_offer_table and is_unique_constraint_violation
+
+        if unique_id_at_provider_venue_id_is_violated:
+            raise offers_exceptions.ExistingVenueWithIdAtProviderError() from error
+        # Other error are unlikely, but we still need to manage them.
+        raise offers_exceptions.CreateProductDBError() from error
+    except sa_exc.SQLAlchemyError as error:
+        raise offers_exceptions.CreateProductDBError() from error
+
+    return created_product
+
+
+def get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
+    return (
+        db.session.query(offers_models.Product)
+        .filter(
+            offers_models.Product.ean.in_(ean_to_create),
+            offers_models.Product.can_be_synchronized == True,
+            offers_models.Product.subcategoryId.in_(offers_constants.ALLOWED_PRODUCT_SUBCATEGORIES),
+            # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
+            offers_models.Product.lastProviderId.is_not(None),
+            offers_models.Product.idAtProviders.is_not(None),
+        )
+        .all()
+    )
+
+
+def create_offer_from_product(
+    venue: offerers_models.Venue,
+    product: offers_models.Product,
+    provider: providers_models.Provider,
+    offererAddress: offerers_models.OffererAddress,
+) -> offers_models.Offer:
+    ean = product.ean
+
+    offer = build_new_offer_from_product(
+        venue,
+        product,
+        id_at_provider=ean,
+        provider_id=provider.id,
+        offerer_address_id=offererAddress.id,
+    )
+
+    offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
+    offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
+    offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
+    offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
+
+    offer.isActive = True
+    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationAuthorUserId = None
+
+    logger.info(
+        "models.Offer has been created",
+        extra={
+            "offer_id": offer.id,
+            "venue_id": venue.id,
+            "product_id": offer.productId,
+        },
+        technical_message_id="offer.created",
+    )
+
+    return offer
+
+
+def check_offer_can_be_edited(offer: offers_models.Offer) -> None:
+    allowed_product_subcategory_ids = [
+        category.id for category in individual_offers_v1_serialization.ALLOWED_PRODUCT_SUBCATEGORIES
+    ]
+    if offer.subcategoryId not in allowed_product_subcategory_ids:
+        raise api_errors.ApiErrors(
+            {
+                "product.subcategory": [
+                    "Only "
+                    + ", ".join(
+                        (
+                            subcategory.id
+                            for subcategory in individual_offers_v1_serialization.ALLOWED_PRODUCT_SUBCATEGORIES
+                        )
+                    )
+                    + " products can be edited"
+                ]
+            }
+        )
+
+
+def upsert_product_stock(
+    offer: offers_models.Offer,
+    stock_body: individual_offers_v1_serialization.StockEdition | None,
+    provider: providers_models.Provider,
+) -> None:
+    existing_stock = next((stock for stock in offer.activeStocks), None)
+    if not stock_body:
+        if existing_stock:
+            delete_stock(existing_stock)
+        return
+
+    # no need to create an empty stock
+    if not existing_stock and stock_body.quantity == 0:
+        return
+
+    if not existing_stock:
+        if stock_body.price is None:
+            raise api_errors.ApiErrors({"stock.price": ["Required"]})
+        create_stock(
+            offer=offer,
+            price=finance_utils.cents_to_full_unit(stock_body.price),
+            quantity=individual_offers_v1_serialization.deserialize_quantity(stock_body.quantity),
+            booking_limit_datetime=stock_body.booking_limit_datetime,
+            creating_provider=provider,
+        )
+        return
+
+    stock_update_body = stock_body.dict(exclude_unset=True)
+    price = stock_update_body.get("price", UNCHANGED)
+
+    quantity = individual_offers_v1_serialization.deserialize_quantity(stock_update_body.get("quantity", UNCHANGED))
+    new_quantity = quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity
+
+    # do not keep empty stocks
+    if new_quantity == 0:
+        delete_stock(existing_stock)
+        return
+
+    edit_stock(
+        existing_stock,
+        quantity=new_quantity,
+        price=(finance_utils.cents_to_full_unit(price) if price != UNCHANGED else UNCHANGED),
+        booking_limit_datetime=stock_update_body.get("booking_limit_datetime", UNCHANGED),
+        editing_provider=provider,
+    )
