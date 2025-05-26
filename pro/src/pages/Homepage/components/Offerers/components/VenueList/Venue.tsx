@@ -94,11 +94,9 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
           )}
 
           {venue.hasVenueProviders && (
-            <Tag
-              label="API"
-              variant={TagVariant.DEFAULT}
-              className={styles['api-tag']}
-            />
+            <div className={styles['api-tag']}>
+              <Tag label="API" variant={TagVariant.DEFAULT} />
+            </div>
           )}
         </h3>
 

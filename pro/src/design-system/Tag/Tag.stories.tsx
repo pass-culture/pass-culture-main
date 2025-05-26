@@ -2,12 +2,11 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import icon from 'icons/full-location.svg'
 
-import { Tag, TagVariant, TagSpecificVariant } from './Tag'
+import { Tag, TagVariant } from './Tag'
 
 const meta: Meta<typeof Tag> = {
   title: 'design-system/Tag',
   component: Tag,
-  tags: ['autodocs'],
 }
 
 export default meta
@@ -59,20 +58,20 @@ export const WithCustomIcon: Story = {
 export const Bookclub: Story = {
   args: {
     label: 'Reco du Book Club',
-    variant: TagSpecificVariant.BOOKCLUB,
+    variant: TagVariant.BOOKCLUB,
   },
 }
 
 export const Headline: Story = {
   args: {
     label: 'Reco par les lieux',
-    variant: TagSpecificVariant.HEADLINE,
+    variant: TagVariant.HEADLINE,
   },
 }
 
 export const Like: Story = {
   args: {
     label: 'x jaime',
-    variant: TagSpecificVariant.LIKE,
+    variant: TagVariant.LIKE,
   },
 }

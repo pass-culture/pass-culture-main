@@ -3,10 +3,6 @@
 @use "styles/mixins/_size.scss" as size;
 
 .eac-layout {
-  &-tag {
-    margin-bottom: rem.torem(4px);
-  }
-
   &-heading-wrapper {
     display: flex;
     flex-direction: column;
