@@ -15,13 +15,13 @@ class DeleteSiretTest:
     def test_basics(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         dependent_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
-        initial_statuses = set(models.PricingStatus) - {models.PricingStatus.PENDING}
+        initial_statuses = set(models.PricingStatus)
         for status in initial_statuses:
             finance_event = factories.FinanceEventFactory(venue=venue)
             factories.PricingFactory(
                 booking=finance_event.booking, pricingPoint=venue, status=status, event=finance_event
             )
-        assert db.session.query(models.Pricing).count() == 5
+        assert db.session.query(models.Pricing.id).count() == 4
         old_siret = venue.siret
 
         siret_api.remove_siret(venue, comment="no SIRET because reasons")
@@ -30,7 +30,7 @@ class DeleteSiretTest:
         assert venue.comment == "no SIRET because reasons"
         assert venue.current_pricing_point_id is None
         assert dependent_venue.current_pricing_point_id is None
-        assert db.session.query(models.Pricing).count() == 4
+        assert db.session.query(models.Pricing.id).count() == 3
         left_statuses = {status for (status,) in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
         assert left_statuses == initial_statuses - {models.PricingStatus.VALIDATED}
 
@@ -46,7 +46,7 @@ class DeleteSiretTest:
     def test_with_new_pricing_point(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         dependent_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
-        initial_statuses = set(models.PricingStatus) - {models.PricingStatus.PENDING}
+        initial_statuses = set(models.PricingStatus)
         finance_events = {}
         for status in initial_statuses:
             finance_event = factories.FinanceEventFactory(venue=venue, status=models.FinanceEventStatus.PENDING)
@@ -55,7 +55,8 @@ class DeleteSiretTest:
             factories.PricingFactory(
                 booking=finance_event.booking, pricingPoint=venue, status=status, event=finance_event
             )
-        assert db.session.query(models.Pricing).count() == 5
+
+        assert db.session.query(models.Pricing.id).count() == 4
         new_pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         old_siret = venue.siret
 
@@ -67,7 +68,7 @@ class DeleteSiretTest:
         assert venue.comment == "no SIRET because reasons"
         assert venue.current_pricing_point_id == new_pricing_point.id
         assert dependent_venue.current_pricing_point_id is None
-        assert db.session.query(models.Pricing).count() == 4
+        assert db.session.query(models.Pricing.id).count() == 3
         left_statuses = {status for (status,) in db.session.query(models.Pricing).with_entities(models.Pricing.status)}
         assert left_statuses == initial_statuses - {models.PricingStatus.VALIDATED}
 
@@ -109,15 +110,6 @@ class DeleteSiretTest:
             override_revenue_check=True,  # <-- override check
         )
         assert venue.siret is None
-
-    @pytest.mark.usefixtures("clean_database")
-    def test_refuse_if_pricing_point_has_pending_pricings(self):
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        factories.PricingFactory(booking__stock__offer__venue=venue, status=models.PricingStatus.PENDING)
-
-        with pytest.raises(siret_api.CheckError) as err:
-            siret_api.remove_siret(venue, comment="xxx")
-        assert str(err.value) == "Ce partenaire culturel a des valorisations en attente"
 
     @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_new_pricing_point_does_not_exist(self):

@@ -180,16 +180,13 @@ class FinanceEventMotive(enum.Enum):
 
 
 class PricingStatus(enum.Enum):
-    PENDING = "pending"  # blocked, will not be taken in account in next cashflow
     CANCELLED = "cancelled"
     VALIDATED = "validated"  # will be taken in account in next cashflow
-    REJECTED = "rejected"
     PROCESSED = "processed"  # has an associated cashflow
     INVOICED = "invoiced"  # has an associated invoice (whose cashflows are "accepted")
 
 
-CANCELLABLE_PRICING_STATUSES = {PricingStatus.PENDING, PricingStatus.VALIDATED, PricingStatus.REJECTED}
-DELETABLE_PRICING_STATUSES = CANCELLABLE_PRICING_STATUSES | {PricingStatus.CANCELLED}
+DELETABLE_PRICING_STATUSES = {PricingStatus.VALIDATED, PricingStatus.CANCELLED}
 
 
 class PricingLineCategory(enum.Enum):
