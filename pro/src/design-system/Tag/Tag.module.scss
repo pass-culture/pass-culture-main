@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .tag {
-  @include fonts.body-xs;
+  @include fonts.body-accent-xs;
 
   display: flex;
   padding: rem.torem(2px) rem.torem(4px);
