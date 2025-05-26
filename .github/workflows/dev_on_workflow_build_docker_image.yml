@@ -50,8 +50,6 @@ jobs:
 
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
 
       - name: "Compute docker image name:tag"
         id: compute-image-name
@@ -63,6 +61,9 @@ jobs:
           context: api
           target: ${{ inputs.image }}
           tags: ${{ steps.compute-image-name.outputs.image_name }}
+          cache-from: type=gha,scope=${{ inputs.image }}:buildcache
+          cache-to: type=gha,mode=max,scope=${{ inputs.image }}:buildcache
+          outputs: type=docker
 
       - name: "Store artifact"
         run: |

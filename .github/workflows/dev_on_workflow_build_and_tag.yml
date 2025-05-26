@@ -81,8 +81,6 @@ jobs:
           git add version.txt
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: "google-github-actions/auth@v2"
@@ -108,6 +106,7 @@ jobs:
           push: true
           target: pcapi
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_number }},europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_prefix }}-${{ inputs.tag_number }}
+          outputs: type=docker
       - name: Sign image with a kms key
         run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi@${{ steps.docker-push-action.outputs.digest }}
       - name: "Build and push pcapi-console image"
@@ -118,6 +117,7 @@ jobs:
           push: true
           target: pcapi-console
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag_number }},europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag_prefix }}-${{ inputs.tag_number }}
+          outputs: type=docker
       - name: Sign image with a kms key
         run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console@${{ steps.docker-push-action-console.outputs.digest }}
       - name: "Tag Release"
