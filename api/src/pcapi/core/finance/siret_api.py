@@ -162,17 +162,6 @@ def move_siret(
         )
 
 
-def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
-    return db.session.query(
-        db.session.query(models.Pricing)
-        .filter_by(
-            pricingPoint=pricing_point,
-            status=models.PricingStatus.PENDING,
-        )
-        .exists()
-    ).scalar()
-
-
 def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:
     queries = (
         # Delete all ongoing pricings (and related pricing lines),
@@ -238,14 +227,6 @@ def check_can_remove_siret(
 
     if not comment:
         raise CheckError("Le commentaire est obligatoire")
-
-    # Deleting the SIRET implies deleting non-final pricings (see
-    # `remove_siret()`). If the venue has pending pricings, it means
-    # we want to block them from being reimbursed. If those pricings
-    # were deleted, they would be recreated under the "validated"
-    # status and they would not be blocked anymore.
-    if has_pending_pricings(venue):
-        raise CheckError("Ce partenaire culturel a des valorisations en attente")
 
     if not override_revenue_check:
         revenue = get_yearly_revenue(venue.id)
@@ -369,9 +350,6 @@ def check_can_remove_pricing_point(
     if not venue.current_pricing_point:
         raise CheckError("Ce partenaire culturel n'a pas de point de valorisation actif")
 
-    # Same conditions as in `check_can_remove_siret`
-    if has_pending_pricings(venue):
-        raise CheckError("Ce partenaire culturel a des valorisations en attente")
     if not override_revenue_check:
         revenue = get_yearly_revenue(venue.id)
         if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:

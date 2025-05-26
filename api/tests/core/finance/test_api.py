@@ -1677,10 +1677,6 @@ class GenerateCashflowsTest:
             collectiveBooking__collectiveStock__startDatetime=now + datetime.timedelta(days=1),
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         )
-        pricing_pending = factories.PricingFactory(
-            status=models.PricingStatus.PENDING,
-            booking__stock__offer__venue=venue1,
-        )
         cutoff = datetime.datetime.utcnow()
         pricing_after_cutoff = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
@@ -1716,8 +1712,6 @@ class GenerateCashflowsTest:
         assert not pricing_future_event.logs
         assert not collective_pricing_future_event.cashflows
         assert not collective_pricing_future_event.logs
-        assert not pricing_pending.cashflows
-        assert not pricing_pending.logs
         assert not pricing_after_cutoff.cashflows
         assert not pricing_after_cutoff.logs
 

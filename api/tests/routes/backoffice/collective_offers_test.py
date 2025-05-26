@@ -1472,8 +1472,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         [
             finance_models.PricingStatus.CANCELLED,
             finance_models.PricingStatus.VALIDATED,
-            finance_models.PricingStatus.PENDING,
-            finance_models.PricingStatus.REJECTED,
         ],
     )
     def test_unprocessed_pricing(self, legit_user, authenticated_client, pricing_status):

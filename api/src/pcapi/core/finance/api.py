@@ -535,12 +535,7 @@ def _get_current_revenue(event: models.FinanceEvent) -> int:
             # this event.
             models.Pricing.bookingId != event.bookingId,
             models.Pricing.valueDate.between(*revenue_period),
-            models.Pricing.status.notin_(
-                (
-                    models.PricingStatus.CANCELLED,
-                    models.PricingStatus.REJECTED,
-                )
-            ),
+            models.Pricing.status != models.PricingStatus.CANCELLED,
         )
         .with_entities(sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
@@ -709,7 +704,7 @@ def _cancel_event_pricing(
         if not pricing:
             return None
 
-        if pricing.status not in models.CANCELLABLE_PRICING_STATUSES:
+        if pricing.status != models.PricingStatus.VALIDATED:
             # That should never happen, because we should never try to
             # cancel an event after it has been reimbursed.
             raise exceptions.NonCancellablePricingError()
