@@ -223,6 +223,7 @@ extend-select = [
   "RUF100", # unused-noqa
   "RUF015", # use next(iter) instead of list[0]
   "RUF032", # Decimal with float (and not str)
+  "RUF013", # Avoid implicit optional (`f(x: int = None)`)
 ]
 
 ignore = [

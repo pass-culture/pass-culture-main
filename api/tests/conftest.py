@@ -465,7 +465,7 @@ class TestClient:
         }
         return self
 
-    def delete(self, route: str, headers: dict = None):
+    def delete(self, route: str, headers: dict | None = None):
         headers = headers or {}
         result = self.client.delete(route, headers={**self.auth_header, **headers})
         self._print_spec("DELETE", route, None, result)
@@ -478,7 +478,7 @@ class TestClient:
         self._print_spec(kwargs["method"], route, None, result)
         return result
 
-    def options(self, route: str, headers: dict = None):
+    def options(self, route: str, headers: dict | None = None):
         headers = headers or {}
         result = self.client.options(route, headers={**self.auth_header, **headers})
         self._print_spec("OPTIONS", route, None, result)
@@ -511,11 +511,11 @@ class TestClient:
     def post(
         self,
         route: str,
-        json: dict = None,
-        raw_json: str = None,
-        form: dict = None,
-        files: dict = None,
-        headers: dict = None,
+        json: dict | None = None,
+        raw_json: str | None = None,
+        form: dict | None = None,
+        files: dict | None = None,
+        headers: dict | None = None,
         follow_redirects: bool = False,
     ):
         headers = headers or {}
@@ -545,9 +545,9 @@ class TestClient:
     def patch(
         self,
         route: str,
-        json: dict = None,
-        form: dict = None,
-        headers: dict = None,
+        json: dict | None = None,
+        form: dict | None = None,
+        headers: dict | None = None,
         follow_redirects: bool = False,
     ):
         headers = headers or {}
@@ -573,8 +573,8 @@ class TestClient:
     def put(
         self,
         route: str,
-        json: dict = None,
-        headers: dict = None,
+        json: dict | None = None,
+        headers: dict | None = None,
         follow_redirects: bool = False,
     ):
         headers = headers or {}
@@ -611,11 +611,11 @@ class UbbleTestClient(TestClient):
     def post(
         self,
         route: str,
-        json: dict = None,
-        raw_json: str = None,
-        form: dict = None,
-        files: dict = None,
-        headers: dict = None,
+        json: dict | None = None,
+        raw_json: str | None = None,
+        form: dict | None = None,
+        files: dict | None = None,
+        headers: dict | None = None,
         follow_redirects: bool = False,
     ):
         assert json, "only posts using json are supported"
