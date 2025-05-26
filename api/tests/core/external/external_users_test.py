@@ -121,7 +121,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     )
     offer = OfferFactory(
         product=ProductFactory(
-            id=list(TRACKED_PRODUCT_IDS.keys())[0],
+            id=next(iter(TRACKED_PRODUCT_IDS.keys())),
             subcategoryId=subcategories.SEANCE_CINE.id,
             extraData={"genres": ["THRILLER"]},
         ),
@@ -270,7 +270,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
     user = BeneficiaryFactory()
     initial_amount = user.deposit.amount
     offer1 = OfferFactory(
-        product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0], subcategoryId=subcategories.SEANCE_CINE.id)
+        product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys())), subcategoryId=subcategories.SEANCE_CINE.id)
     )
     offer2 = EventOfferFactory(venue=offer1.venue, isDuo=True)
     offer3 = OfferFactory()
@@ -343,7 +343,7 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     if credit_spent:
-        offer = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+        offer = OfferFactory(product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys()))))
         BookingFactory(user=user, amount=finance_conf.GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer)
 
     # Before 18 years old
@@ -464,7 +464,7 @@ def test_get_user_attributes_not_beneficiary():
 
 def test_get_bookings_categories_and_subcategories():
     user = BeneficiaryGrant18Factory()
-    offer = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+    offer = OfferFactory(product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys()))))
 
     assert get_bookings_categories_and_subcategories(get_user_bookings(user)) == BookingsAttributes(
         booking_categories=[],
@@ -485,7 +485,7 @@ def test_get_bookings_categories_and_subcategories():
 
 def test_get_bookings_categories_and_subcategories_most_booked():
     user = BeneficiaryGrant18Factory()
-    offer1 = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+    offer1 = OfferFactory(product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys()))))
     BookingFactory(user=user, stock__offer=offer1)
     BookingFactory(user=user, stock__offer=offer1)
     CancelledBookingFactory(user=user)
@@ -504,7 +504,7 @@ def test_get_bookings_categories_and_subcategories_most_booked():
 
 def test_get_bookings_categories_and_subcategories_most_booked_on_price():
     user = BeneficiaryGrant18Factory()
-    offer1 = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+    offer1 = OfferFactory(product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys()))))
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     CancelledBookingFactory(user=user)
@@ -524,7 +524,7 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_price():
 
 def test_get_bookings_categories_and_subcategories_most_booked_on_count():
     user = BeneficiaryGrant18Factory()
-    offer1 = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+    offer1 = OfferFactory(product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys()))))
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     CancelledBookingFactory(user=user)
@@ -547,7 +547,7 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_count():
 
 def test_get_bookings_categories_and_subcategories_music_first():
     user = BeneficiaryGrant18Factory()
-    offer1 = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+    offer1 = OfferFactory(product=ProductFactory(id=next(iter(TRACKED_PRODUCT_IDS.keys()))))
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     CancelledBookingFactory(user=user)

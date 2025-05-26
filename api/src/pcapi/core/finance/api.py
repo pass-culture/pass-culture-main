@@ -2897,8 +2897,8 @@ def merge_cashflow_batches(
             # Update "right" cashflow amount if there is one (or any
             # cashflow otherwise), delete other cashflows.
             try:
-                cashflow_to_keep = [cf for cf in cashflows if cf.batchId == target_batch.id][0]
-            except IndexError:
+                cashflow_to_keep = next(cf for cf in cashflows if cf.batchId == target_batch.id)
+            except StopIteration:
                 cashflow_to_keep = cashflows[0]
             cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
             sum_to_add = (

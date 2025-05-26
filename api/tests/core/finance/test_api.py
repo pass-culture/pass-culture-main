@@ -322,12 +322,12 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        pricing_line_offerer_revenue = [
+        pricing_line_offerer_revenue = next(
             line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        pricing_line_offerer_contribution = [
+        )
+        pricing_line_offerer_contribution = next(
             line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
         assert pricing_line_offerer_revenue.amount == -60_40
         assert pricing_line_offerer_contribution.amount == 0
 
@@ -420,13 +420,13 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        reversal_pricing_line_offerer_revenue = [
+        reversal_pricing_line_offerer_revenue = next(
             line for line in reversal_pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
+        )
         assert reversal_pricing_line_offerer_revenue.amount == 60_40
-        reversal_pricing_line_offerer_contribution = [
+        reversal_pricing_line_offerer_contribution = next(
             line for line in reversal_pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
         assert reversal_pricing_line_offerer_contribution.amount == 0
         assert reversal_pricing_line_offerer_revenue.amount == 60_40
 
@@ -484,12 +484,12 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        pricing_line_offerer_revenue = [
+        pricing_line_offerer_revenue = next(
             line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        pricing_line_offerer_contribution = [
+        )
+        pricing_line_offerer_contribution = next(
             line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
         assert pricing_line_offerer_revenue.amount == -65_00
         assert pricing_line_offerer_contribution.amount == 0
 
@@ -554,11 +554,11 @@ class PriceEventTest:
             models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
             models.FinanceEventMotive.INCIDENT_NEW_PRICE,
         }
-        finance_event_reversal = [
+        finance_event_reversal = next(
             finance_event
             for finance_event in finance_events
             if finance_event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
-        ][0]
+        )
 
         ############################
         # Simulate Invoice payment #
@@ -575,11 +575,11 @@ class PriceEventTest:
         assert finance_event_reversal.pricingPointId == venue.id
         assert finance_event_reversal.venueId == venue.id
 
-        finance_event_new_price = [
+        finance_event_new_price = next(
             finance_event
             for finance_event in finance_events
             if finance_event.motive == models.FinanceEventMotive.INCIDENT_NEW_PRICE
-        ][0]
+        )
         assert finance_event_new_price.status == models.FinanceEventStatus.READY
         assert finance_event_new_price.bookingId is None
         assert finance_event_new_price.collectiveBookingId is None
@@ -601,13 +601,13 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        reversal_pricing_line_offerer_revenue = [
+        reversal_pricing_line_offerer_revenue = next(
             line for line in reversal_pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
+        )
         assert reversal_pricing_line_offerer_revenue.amount == 65_00
-        reversal_pricing_line_offerer_contribution = [
+        reversal_pricing_line_offerer_contribution = next(
             line for line in reversal_pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
         assert reversal_pricing_line_offerer_contribution.amount == 0
         assert reversal_pricing_line_offerer_revenue.amount == 65_00
 
@@ -624,12 +624,12 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        new_price_pricing_line_offerer_revenue = [
+        new_price_pricing_line_offerer_revenue = next(
             line for line in new_price_pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        new_price_pricing_line_offerer_contribution = [
+        )
+        new_price_pricing_line_offerer_contribution = next(
             line for line in new_price_pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
         assert new_price_pricing_line_offerer_revenue.amount == -35_00
         assert new_price_pricing_line_offerer_contribution.amount == 0
 
@@ -685,9 +685,9 @@ class PriceEventTest:
         booking_finance_incidents = commercial_gesture.booking_finance_incidents
         assert len(booking_finance_incidents) == 3
         assert {b.bookingId for b in booking_finance_incidents} == {booking1.id, booking2.id, booking3.id}
-        booking_finance_incident1 = [b for b in booking_finance_incidents if b.bookingId == booking1.id][0]
-        booking_finance_incident2 = [b for b in booking_finance_incidents if b.bookingId == booking2.id][0]
-        booking_finance_incident3 = [b for b in booking_finance_incidents if b.bookingId == booking3.id][0]
+        booking_finance_incident1 = next(b for b in booking_finance_incidents if b.bookingId == booking1.id)
+        booking_finance_incident2 = next(b for b in booking_finance_incidents if b.bookingId == booking2.id)
+        booking_finance_incident3 = next(b for b in booking_finance_incidents if b.bookingId == booking3.id)
         assert booking_finance_incident1.newTotalAmount == 12_85
         assert booking_finance_incident2.newTotalAmount == 9_63
         assert booking_finance_incident3.newTotalAmount == 3_22
@@ -740,12 +740,12 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        pricing_line_offerer_revenue = [
+        pricing_line_offerer_revenue = next(
             line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        pricing_line_offerer_contribution = [
+        )
+        pricing_line_offerer_contribution = next(
             line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
 
         assert pricing_line_offerer_revenue.amount == -285_00
         assert pricing_line_offerer_contribution.amount == 0
@@ -782,12 +782,12 @@ class PriceEventTest:
             models.PricingLineCategory.OFFERER_REVENUE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        pricing_line_offerer_revenue = [
+        pricing_line_offerer_revenue = next(
             line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        pricing_line_offerer_contribution = [
+        )
+        pricing_line_offerer_contribution = next(
             line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
 
         assert pricing_line_offerer_revenue.amount == -10_10
         assert pricing_line_offerer_contribution.amount == 0
@@ -933,16 +933,16 @@ class PriceEventTest:
             models.PricingLineCategory.COMMERCIAL_GESTURE,
             models.PricingLineCategory.OFFERER_CONTRIBUTION,
         }
-        commercial_gesture_pricing_line_offerer_revenue = [
+        commercial_gesture_pricing_line_offerer_revenue = next(
             line
             for line in commercial_gesture_pricing.lines
             if line.category == models.PricingLineCategory.COMMERCIAL_GESTURE
-        ][0]
-        commercial_gesture_pricing_line_offerer_contribution = [
+        )
+        commercial_gesture_pricing_line_offerer_contribution = next(
             line
             for line in commercial_gesture_pricing.lines
             if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
+        )
         assert commercial_gesture_pricing_line_offerer_revenue.amount == -10_10
         assert commercial_gesture_pricing_line_offerer_contribution.amount == 0
 
@@ -1048,8 +1048,8 @@ class PriceEventTest:
 
         assert len(price_event.lines) == 2
         assert {line.amount for line in price_event.lines} == {1400, -1400}
-        line1 = [line for line in price_event.lines if line.amount == 1400][0]
-        line2 = [line for line in price_event.lines if line.amount == -1400][0]
+        line1 = next(line for line in price_event.lines if line.amount == 1400)
+        line2 = next(line for line in price_event.lines if line.amount == -1400)
         assert line1.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert line2.category == models.PricingLineCategory.OFFERER_REVENUE
 
@@ -2695,9 +2695,9 @@ def test_invoices_csv_commercial_gesture():
         "offerer revenue",
         "commercial gesture",
     }
-    row_offerer_contribution = [r for r in rows if r["Type de ticket de facturation"] == "offerer contribution"][0]
-    row_offerer_revenue = [r for r in rows if r["Type de ticket de facturation"] == "offerer revenue"][0]
-    row_commercial_gesture = [r for r in rows if r["Type de ticket de facturation"] == "commercial gesture"][0]
+    row_offerer_contribution = next(r for r in rows if r["Type de ticket de facturation"] == "offerer contribution")
+    row_offerer_revenue = next(r for r in rows if r["Type de ticket de facturation"] == "offerer revenue")
+    row_commercial_gesture = next(r for r in rows if r["Type de ticket de facturation"] == "commercial gesture")
     assert row_offerer_contribution["Somme des tickets de facturation"] == Decimal("0")
     assert row_offerer_revenue["Somme des tickets de facturation"] == Decimal("-29830.0")
     assert row_commercial_gesture["Somme des tickets de facturation"] == Decimal("-1010.0")
@@ -2792,13 +2792,13 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert len(invoice.lines) == 2
     assert {line.label for line in invoice.lines} == {"Réservations", "Gestes commerciaux"}
 
-    bookings_line = [line for line in invoice.lines if line.label == "Réservations"][0]
+    bookings_line = next(line for line in invoice.lines if line.label == "Réservations")
     assert bookings_line.contributionAmount == 0
     assert bookings_line.group == {"label": "Barème général", "position": 1}
     assert bookings_line.rate == Decimal("1.0")
     assert bookings_line.reimbursedAmount == -298_30
 
-    commercial_gestures_line = [line for line in invoice.lines if line.label == "Gestes commerciaux"][0]
+    commercial_gestures_line = next(line for line in invoice.lines if line.label == "Gestes commerciaux")
     assert commercial_gestures_line.contributionAmount == 0
     assert commercial_gestures_line.group == {"label": "Barème général", "position": 1}
     assert commercial_gestures_line.rate == Decimal("1.0")
@@ -2820,10 +2820,10 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     main_table_soup.find("tr", class_="coloredSection").decompose()
     main_table_rows = html_parser.extract_table_rows(str(main_table_soup).encode("utf-8"))
     assert {"Réservations", "Gestes commerciaux", "SOUS-TOTAL", "TOTAL"} == {r["Typologie"] for r in main_table_rows}
-    bookings_row = [r for r in main_table_rows if r["Typologie"] == "Réservations"][0]
-    commercial_gestures_row = [r for r in main_table_rows if r["Typologie"] == "Gestes commerciaux"][0]
-    subtotal_row = [r for r in main_table_rows if r["Typologie"] == "SOUS-TOTAL"][0]
-    total_row = [r for r in main_table_rows if r["Typologie"] == "TOTAL"][0]
+    bookings_row = next(r for r in main_table_rows if r["Typologie"] == "Réservations")
+    commercial_gestures_row = next(r for r in main_table_rows if r["Typologie"] == "Gestes commerciaux")
+    subtotal_row = next(r for r in main_table_rows if r["Typologie"] == "SOUS-TOTAL")
+    total_row = next(r for r in main_table_rows if r["Typologie"] == "TOTAL")
 
     assert bookings_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
     assert bookings_row["Montant des réservations validées (TTC)"] == "298,30 €"
@@ -3531,12 +3531,12 @@ class GenerateInvoicesTest:
                 models.PricingLineCategory.OFFERER_REVENUE,
                 models.PricingLineCategory.OFFERER_CONTRIBUTION,
             }
-            pricing_line_offerer_revenue = [
+            pricing_line_offerer_revenue = next(
                 line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-            ][0]
-            pricing_line_offerer_contribution = [
+            )
+            pricing_line_offerer_contribution = next(
                 line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-            ][0]
+            )
             assert pricing_line_offerer_revenue.amount == 0
             assert pricing_line_offerer_contribution.amount == 0
 
@@ -3802,8 +3802,8 @@ class GenerateInvoiceTest:
 
         assert len(invoice.lines) == 2
         assert {line.reimbursedAmount for line in invoice.lines} == {0, -600}
-        line1 = [line for line in invoice.lines if line.reimbursedAmount == 0][0]
-        line2 = [line for line in invoice.lines if line.reimbursedAmount == -600][0]
+        line1 = next(line for line in invoice.lines if line.reimbursedAmount == 0)
+        line2 = next(line for line in invoice.lines if line.reimbursedAmount == -600)
 
         assert line1.group == {"label": "Barème non remboursé", "position": 3}
         assert line1.contributionAmount == 1000

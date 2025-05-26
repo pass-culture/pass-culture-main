@@ -264,11 +264,11 @@ class BaseBackendTest:
         invoice_lines = backend.get_invoice_lines(invoice)
         assert len(invoice_lines) == 2
         assert {"OCINDGRANT_18", "ORINDGRANT_18"} == {e["product_id"] for e in invoice_lines}
-        offerer_revenue_line = [e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18"][0]
+        offerer_revenue_line = next(e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18")
         assert offerer_revenue_line["amount"] == -200
         assert offerer_revenue_line["title"] == "Réservations"
 
-        offerer_contribution_line = [e for e in invoice_lines if e["product_id"] == "OCINDGRANT_18"][0]
+        offerer_contribution_line = next(e for e in invoice_lines if e["product_id"] == "OCINDGRANT_18")
         assert offerer_contribution_line["amount"] == -200
         assert offerer_contribution_line["title"] == "Réservations"
 
@@ -750,7 +750,7 @@ class CegidFinanceBackendTest:
         assert len(details) == 2
         assert {v["Description"]["value"] for v in details} == {"Réservations", "Gestes commerciaux"}
 
-        details1 = [e for e in details if e["Description"]["value"] == "Réservations"][0]
+        details1 = next(e for e in details if e["Description"]["value"] == "Réservations")
         assert details1["Amount"] == {"value": "1199.60"}
         assert details1["Branch"] == {"value": "PASSCULT"}
         assert details1["InventoryID"] == {"value": "ORIND18P0000"}
@@ -760,7 +760,7 @@ class CegidFinanceBackendTest:
         assert details1["UnitCost"] == {"value": "1199.60"}
         assert details1["UOM"] == {"value": "UNITE"}
 
-        details2 = [e for e in details if e["Description"]["value"] == "Gestes commerciaux"][0]
+        details2 = next(e for e in details if e["Description"]["value"] == "Gestes commerciaux")
         assert details2["Amount"] == {"value": "23.20"}
         assert details2["Branch"] == {"value": "PASSCULT"}
         assert details2["InventoryID"] == {"value": "CGIND18P0000"}
@@ -948,7 +948,7 @@ class CegidFinanceBackendTest:
         details = request_json["Details"]
         assert len(details) == 1
 
-        details_line = [e for e in details if e["Description"]["value"] == "Réservations"][0]
+        details_line = next(e for e in details if e["Description"]["value"] == "Réservations")
         assert details_line["Amount"] == {"value": "99.60"}
         assert details_line["Branch"] == {"value": "PASSCULT"}
         assert details_line["InventoryID"] == {"value": "ORIND18P0000"}

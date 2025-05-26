@@ -216,12 +216,12 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert len(mails_testing.outbox) == 2
         assert {e["To"] for e in mails_testing.outbox} == {user1.email, user2.email}
-        mail1 = [e for e in mails_testing.outbox if e["To"] == user1.email][0]
+        mail1 = next(e for e in mails_testing.outbox if e["To"] == user1.email)
         assert (
             mail1["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC.value.__dict__
         )
-        mail2 = [e for e in mails_testing.outbox if e["To"] == user2.email][0]
+        mail2 = next(e for e in mails_testing.outbox if e["To"] == user2.email)
         assert (
             mail2["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__

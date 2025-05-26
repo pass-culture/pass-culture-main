@@ -808,7 +808,7 @@ class GetObjectThumbTest:
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-        allocine_stocks_provider.movie = list(allocine_stocks_provider.movies_showtimes)[0].movie
+        allocine_stocks_provider.movie = next(iter(allocine_stocks_provider.movies_showtimes)).movie
 
         # When
         poster_thumb = allocine_stocks_provider.get_object_thumb()

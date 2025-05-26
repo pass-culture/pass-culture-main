@@ -1253,9 +1253,9 @@ class UbbleWebhookTest:
             == subscription_models.SubscriptionItemStatus.PENDING
         )
         content = fraud_models.UbbleContent(**fraud_check.resultContent)
-        document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
-            0
-        ].attributes
+        document = next(
+            filter(lambda included: included.type == "documents", ubble_identification_response.included)
+        ).attributes
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
@@ -1296,9 +1296,9 @@ class UbbleWebhookTest:
         assert mails_testing.outbox[0]["To"] == fraud_check.user.email
 
         content = fraud_models.UbbleContent(**fraud_check.resultContent)
-        document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
-            0
-        ].attributes
+        document = next(
+            filter(lambda included: included.type == "documents", ubble_identification_response.included)
+        ).attributes
         assert content.score == ubble_serializers.UbbleScore.VALID.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
@@ -1344,12 +1344,12 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
 
         content = fraud_models.UbbleContent(**fraud_check.resultContent)
-        document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
-            0
-        ].attributes
-        document_check = list(
+        document = next(
+            filter(lambda included: included.type == "documents", ubble_identification_response.included)
+        ).attributes
+        document_check = next(
             filter(lambda included: included.type == "document-checks", ubble_identification_response.included)
-        )[0].attributes
+        ).attributes
         assert content.score == ubble_serializers.UbbleScore.INVALID.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
@@ -1389,12 +1389,12 @@ class UbbleWebhookTest:
         self._assert_email_sent(fraud_check.user, 304)
 
         content = fraud_models.UbbleContent(**fraud_check.resultContent)
-        document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
-            0
-        ].attributes
-        document_check = list(
+        document = next(
+            filter(lambda included: included.type == "documents", ubble_identification_response.included)
+        ).attributes
+        document_check = next(
             filter(lambda included: included.type == "document-checks", ubble_identification_response.included)
-        )[0].attributes
+        ).attributes
         assert content.score == ubble_serializers.UbbleScore.UNDECIDABLE.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment

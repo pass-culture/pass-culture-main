@@ -310,7 +310,7 @@ class LogsTest:
             )
 
         assert response.status_code == 204
-        record = [record for record in caplog.records if record.message == "RequestPopinDismiss"][0]
+        record = next(record for record in caplog.records if record.message == "RequestPopinDismiss")
         assert record.extra == {
             "analyticsSource": "adage",
             "from": "for_my_institution",
@@ -343,7 +343,7 @@ class LogsTest:
             )
 
         assert response.status_code == 204
-        record = [record for record in caplog.records if record.message == "TrackingFilter"][0]
+        record = next(record for record in caplog.records if record.message == "TrackingFilter")
         assert record.extra == {
             "analyticsSource": "adage",
             "from": "for_my_institution",
@@ -408,7 +408,7 @@ class LogsTest:
 
         assert response.status_code == 204
         assert caplog.records[0].message == "logAutocompleteSuggestionClicked"
-        record = [record for record in caplog.records if record.message == "logAutocompleteSuggestionClicked"][0]
+        record = next(record for record in caplog.records if record.message == "logAutocompleteSuggestionClicked")
         assert record.extra == {
             "analyticsSource": "adage",
             "from": "for_my_institution",

@@ -93,7 +93,7 @@ class InseeBackend(BaseBackend):
                 return periode
         # In case all "periodes" are in the future (or the single period: "dateCreationUniteLegale" in the future):
         # Note that the company will be considered as active even before "dateCreationUniteLegale".
-        return [_b for _b in siren_data["periodesUniteLegale"] if not _b["dateFin"]][0]
+        return next(_b for _b in siren_data["periodesUniteLegale"] if not _b["dateFin"])
 
     def _get_name_from_siren_data(self, data: dict) -> str:
         # /!\ Keep in sync with `_get_name_from_siret_data()` below.
@@ -182,9 +182,9 @@ class InseeBackend(BaseBackend):
         data = self._cached_get(subpath)["etablissement"]
         legal_unit_block = data["uniteLegale"]
         try:
-            block = [_b for _b in data["periodesEtablissement"] if _b["dateFin"] is None][0]
+            block = next(_b for _b in data["periodesEtablissement"] if _b["dateFin"] is None)
             active = block["etatAdministratifEtablissement"] == "A"
-        except IndexError:
+        except StopIteration:
             active = False
         info = models.SiretInfo(
             siret=siret,

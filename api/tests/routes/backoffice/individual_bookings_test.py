@@ -1409,13 +1409,13 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
 
         assert len(mails_testing.outbox) == 2
         assert {e["To"] for e in mails_testing.outbox} == {"email1@example.com", "email2@example.com"}
-        mail1 = [e for e in mails_testing.outbox if e["To"] == "email1@example.com"][0]
+        mail1 = next(e for e in mails_testing.outbox if e["To"] == "email1@example.com")
         assert mail1["template"] == dataclasses.asdict(TransactionalEmail.FRAUDULENT_BOOKING_SUSPICION.value)
         assert set(mail1["params"]["TOKEN_LIST"].split(", ")) == {
             booking_with_email.token,
             booking_with_venue_email.token,
         }
-        mail2 = [e for e in mails_testing.outbox if e["To"] == "email2@example.com"][0]
+        mail2 = next(e for e in mails_testing.outbox if e["To"] == "email2@example.com")
         assert mail2["template"] == dataclasses.asdict(TransactionalEmail.FRAUDULENT_BOOKING_SUSPICION.value)
         assert set(mail2["params"]["TOKEN_LIST"].split(", ")) == {booking_with_other_email.token}
 

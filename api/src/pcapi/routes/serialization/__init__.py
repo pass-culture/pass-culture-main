@@ -22,7 +22,7 @@ class BaseModel(pydantic_v1.BaseModel):
         def schema_extra(schema, model):  # type: ignore[no-untyped-def]
             for prop, value in schema.get("properties", {}).items():
                 # retrieve right field from alias or name
-                field = [x for x in model.__fields__.values() if x.alias == prop][0]
+                field = next(x for x in model.__fields__.values() if x.alias == prop)
                 if field.allow_none:
                     if "$ref" in value:
                         if issubclass(field.type_, pydantic_v1.BaseModel):

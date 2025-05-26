@@ -36,6 +36,6 @@ def create_industrial_criteria() -> dict[str, Criterion]:
 def associate_criterion_to_one_offer_with_mediation(
     offers_by_name: dict[str, Offer], criteria_by_name: dict[str, Criterion]
 ) -> None:
-    offer = list(filter(lambda o: o.mediations is not None, list(offers_by_name.values())))[0]
+    offer = next(filter(lambda o: o.mediations is not None, iter(offers_by_name.values())))
     criterion = criteria_by_name["Offre de médiation spécifique"]
     offer.criteria = [criterion]
