@@ -20,7 +20,13 @@ from tests.conftest import TestClient
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
-from . import utils
+
+ACCESSIBILITY_FIELDS = {
+    "audioDisabilityCompliant": True,
+    "mentalDisabilityCompliant": True,
+    "motorDisabilityCompliant": True,
+    "visualDisabilityCompliant": True,
+}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -32,7 +38,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     def _get_base_payload(venue_id: int) -> dict:
         return {
             "categoryRelatedFields": {"category": "RENCONTRE"},
-            "accessibility": utils.ACCESSIBILITY_FIELDS,
+            "accessibility": ACCESSIBILITY_FIELDS,
             "location": {"type": "physical", "venueId": venue_id},
             "name": "Le champ des possibles",
             "hasTicket": False,
@@ -379,7 +385,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "CONCERT", "musicType": "OTHER"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": False,
@@ -509,7 +515,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": False,
@@ -528,7 +534,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
@@ -546,7 +552,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
@@ -564,7 +570,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
@@ -583,7 +589,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
@@ -605,7 +611,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "enableDoubleBookings": True,
                 "bookingContact": "contact@example.com",
                 "bookingEmail": "nicoj@example.com",
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "categoryRelatedFields": {
@@ -637,7 +643,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "RENCONTRE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": False,
