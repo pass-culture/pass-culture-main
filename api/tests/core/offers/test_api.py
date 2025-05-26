@@ -2314,7 +2314,7 @@ class ActivateFutureOffersTest:
         offers_ids = api.activate_future_offers(publication_date=publication_date)
 
         assert offers_ids == [offer.id]
-        assert models.Offer.query.get(offer.id).isActive
+        assert db.session.query(models.Offer).get(offer.id).isActive
         assert db.session.query(models.FutureOffer).get(future_offer.id).isSoftDeleted
 
         mocked_async_index_offer_ids.assert_called_once()
@@ -2348,13 +2348,13 @@ class ActivateFutureOffersAndRemindUsersTest:
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
 
-        assert models.Offer.query.get(offer_1.id).isActive
-        assert models.Offer.query.get(offer_2.id).isActive
-        assert not models.Offer.query.get(offer_3.id).isActive
+        assert db.session.query(models.Offer).get(offer_1.id).isActive
+        assert db.session.query(models.Offer).get(offer_2.id).isActive
+        assert not db.session.query(models.Offer).get(offer_3.id).isActive
 
-        assert models.FutureOffer.query.get(future_offer_1.id).isSoftDeleted
-        assert models.FutureOffer.query.get(future_offer_2.id).isSoftDeleted
-        assert not models.FutureOffer.query.get(future_offer_3.id).isSoftDeleted
+        assert db.session.query(models.FutureOffer).get(future_offer_1.id).isSoftDeleted
+        assert db.session.query(models.FutureOffer).get(future_offer_2.id).isSoftDeleted
+        assert not db.session.query(models.FutureOffer).get(future_offer_3.id).isSoftDeleted
 
 
 @pytest.mark.usefixtures("db_session")
@@ -5419,7 +5419,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
         api.delete_offers_and_all_related_objects(offer_ids)
         assert_offers_have_been_completely_cleaned(offer_ids)
 
-        assert models.Offer.query.get(other_offer_id) is not None
+        assert db.session.query(models.Offer).get(other_offer_id) is not None
         assert models.Stock.query.filter_by(offerId=other_offer_id).one()
         assert other_offer_id in search_testing.search_store["offers"]
 
@@ -5501,5 +5501,5 @@ class DeleteUnbookableUnusedOldOffersTest:
         api.delete_unbookable_unbooked_old_offers()
         assert_offers_have_been_completely_cleaned([offer_id])
 
-        assert models.Offer.query.get(old_bookable_offer.id) is not None
-        assert models.Offer.query.get(recent_offer.id) is not None
+        assert db.session.query(models.Offer).get(old_bookable_offer.id) is not None
+        assert db.session.query(models.Offer).get(recent_offer.id) is not None
