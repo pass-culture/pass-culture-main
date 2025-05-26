@@ -14,8 +14,6 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import Stock
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -23,7 +21,7 @@ from pcapi.utils.date import format_into_utc_date
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_edit_one_stock(self, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.EventStockFactory(offer=offer, quantity=10)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Carré Or")
         price_category = offers_factories.PriceCategoryFactory(
@@ -50,11 +48,11 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"stocks_count": 1}
 
-        updated_stock = Stock.query.first()
+        updated_stock = db.session.query(offers_models.Stock).first()
         assert offer.id == updated_stock.offerId
         assert updated_stock.priceCategoryId == price_category.id
         assert updated_stock.quantity == 14
-        assert len(Stock.query.all()) == 1
+        assert db.session.query(offers_models.Stock).count() == 1
 
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -102,7 +100,7 @@ class Returns200Test:
         assert existing_stock.quantity == 10  # didn't change
 
     def test_edit_one_event_stock_created_with_price_category(self, client, caplog):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         old_price_category = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel__venue=offer.venue)
         new_price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel__venue=offer.venue, price=25
@@ -130,9 +128,9 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"stocks_count": 1}
 
-        edited_stock = Stock.query.first()
+        edited_stock = db.session.query(offers_models.Stock).first()
         assert offer.id == edited_stock.offerId
-        assert len(Stock.query.all()) == 1
+        assert db.session.query(offers_models.Stock).count() == 1
         assert edited_stock.priceCategory == new_price_category
         assert edited_stock.price == 25
 
@@ -184,7 +182,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"stocks_count": 1}
 
-        stock = offers_models.Stock.query.one()
+        stock = db.session.query(offers_models.Stock).one()
         assert stock.beginningDatetime == beginning
         assert stock.bookingLimitDatetime == beginning
 
@@ -311,7 +309,7 @@ class Returns200Test:
 
     def test_update_event_stock_quantity(self, client):
         beginning = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
         existing_stock = offers_factories.EventStockFactory(
             offer=offer,
@@ -339,7 +337,7 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        created_stock = Stock.query.first()
+        created_stock = db.session.query(offers_models.Stock).first()
         assert offer.id == created_stock.offerId
         assert created_stock.quantity == 42
 
@@ -371,7 +369,7 @@ class Returns400Test:
         }
 
     def test_patch_non_approved_offer_fails(self, client):
-        offer = offers_factories.EventOfferFactory(validation=OfferValidationStatus.PENDING)
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
         stock = offers_factories.EventStockFactory(offer=offer)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -391,11 +389,10 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        print(response.json)
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
     def test_when_stock_does_not_belong_to_offer(self, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         price_category = offers_factories.PriceCategoryFactory(offer=offer, price=23)
         existing_stock = offers_factories.EventStockFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -446,7 +443,7 @@ class Returns400Test:
         }
 
     def test_cannot_update_event_stock_with_price_higher_than_300_euros(self, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         positive_price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel__label="positive_price", price=10
         )
@@ -500,7 +497,6 @@ class Returns403Test:
             },
         )
 
-        print(response.json)
         assert response.status_code == 403
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]

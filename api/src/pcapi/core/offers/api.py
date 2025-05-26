@@ -2198,7 +2198,7 @@ def delete_offers_stocks_related_objects(offer_ids: typing.Collection[int]) -> N
     stock_ids = [row[0] for row in stock_ids_query]
 
     for chunk in get_chunks(stock_ids, chunk_size=128):
-        models.ActivationCode.query.filter(
+        db.session.query(models.ActivationCode).filter(
             models.ActivationCode.stockId.in_(chunk),
             # All bookingId should be None if venue_has_bookings is False,
             # keep condition to get an exception otherwise

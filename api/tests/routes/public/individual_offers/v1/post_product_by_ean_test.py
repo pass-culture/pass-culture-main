@@ -775,7 +775,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 204
-        assert offers_models.Stock.query.count() == 1
+        assert db.session.query(offers_models.Stock).count() == 1
 
         created_stock = db.session.query(offers_models.Stock).first()
         assert int(created_stock.price * 100) == 5678

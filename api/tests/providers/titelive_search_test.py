@@ -62,10 +62,14 @@ class TiteliveSearchTest:
         sync_date = datetime.date(2022, 12, 1)
         TiteliveMusicSearch().synchronize_products(from_date=sync_date, to_date=sync_date)
 
-        cd_product = offers_models.Product.query.filter(
-            offers_models.Product.idAtProviders == "3700187679323",
-            offers_models.Product.lastProvider == titelive_epagine_provider,
-        ).one()
+        cd_product = (
+            db.session.query(offers_models.Product)
+            .filter(
+                offers_models.Product.idAtProviders == "3700187679323",
+                offers_models.Product.lastProvider == titelive_epagine_provider,
+            )
+            .one()
+        )
         assert cd_product is not None
         assert cd_product.name == "Les dernières volontés de Mozart (symphony)"
         assert cd_product.description == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'

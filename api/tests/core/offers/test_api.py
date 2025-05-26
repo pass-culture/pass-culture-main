@@ -5301,12 +5301,12 @@ class DeleteOffersStocksRelatedObjectsTest:
         factories.ActivationCodeFactory(stock=stock)
 
         api.delete_offers_stocks_related_objects(offer_ids)
-        assert models.Stock.query.count() == 1
-        assert models.ActivationCode.query.count() == 1
+        assert db.session.query(models.Stock).count() == 1
+        assert db.session.query(models.ActivationCode).count() == 1
 
     def assert_no_more_stocks_related_objects(self):
         db.session.commit()
-        assert models.ActivationCode.query.count() == 0
+        assert db.session.query(models.ActivationCode).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -5350,21 +5350,21 @@ class DeleteOffersRelatedObjectsTest:
 
         # not efficient but will be fine for testing
         for offer_id in offer_ids:
-            assert models.Stock.query.filter_by(offerId=offer_id).count() == 0
-            assert users_models.Favorite.query.filter_by(offerId=offer_id).count() == 0
-            assert models.Mediation.query.filter_by(offerId=offer_id).count() == 0
-            assert models.OfferReport.query.filter_by(offerId=offer_id).count() == 0
+            assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
+            assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
+            assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
+            assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() == 0
 
     def assert_offer_related_objects_have_not_been_deleted(self, offer_ids):
         db.session.commit()
 
         # not efficient but will be fine for testing
         for offer_id in offer_ids:
-            assert models.Stock.query.filter_by(offerId=offer_id).count() > 0
-            assert users_models.Favorite.query.filter_by(offerId=offer_id).count() > 0
-            assert criteria_models.OfferCriterion.query.filter_by(offerId=offer_id).count() > 0
-            assert models.Mediation.query.filter_by(offerId=offer_id).count() > 0
-            assert models.OfferReport.query.filter_by(offerId=offer_id).count() > 0
+            assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() > 0
+            assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() > 0
+            assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() > 0
+            assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() > 0
+            assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() > 0
 
 
 def assert_offers_have_been_completely_cleaned(offer_ids):
@@ -5372,27 +5372,26 @@ def assert_offers_have_been_completely_cleaned(offer_ids):
     # unexpected behaviour.
     db.session.commit()
 
-    assert models.Offer.query.filter(models.Offer.id.in_(offer_ids)).count() == 0
+    assert db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids)).count() == 0
 
     # not efficient but will be fine for testing
     for offer_id in offer_ids:
         assert offer_id not in search_testing.search_store["offers"]
 
-        assert models.Stock.query.filter_by(offerId=offer_id).count() == 0
-        assert finance_models.CustomReimbursementRule.query.filter_by(offerId=offer_id).count() == 0
-        assert models.EventOpeningHours.query.filter_by(offerId=offer_id).count() == 0
-        assert users_models.Favorite.query.filter_by(offerId=offer_id).count() == 0
-        assert models.FutureOffer.query.filter_by(offerId=offer_id).count() == 0
-        assert models.HeadlineOffer.query.filter_by(offerId=offer_id).count() == 0
-        assert models.Mediation.query.filter_by(offerId=offer_id).count() == 0
-        assert chronicles_models.OfferChronicle.query.filter_by(offerId=offer_id).count() == 0
-        assert models.OfferCompliance.query.filter_by(offerId=offer_id).count() == 0
-        assert criteria_models.OfferCriterion.query.filter_by(offerId=offer_id).count() == 0
-        assert models.OfferReport.query.filter_by(offerId=offer_id).count() == 0
-        assert models.PriceCategory.query.filter_by(offerId=offer_id).count() == 0
-        assert reactions_models.Reaction.query.filter_by(offerId=offer_id).count() == 0
-        assert models.Stock.query.filter_by(offerId=offer_id).count() == 0
-        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(finance_models.CustomReimbursementRule).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.EventOpeningHours).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.FutureOffer).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.HeadlineOffer).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(chronicles_models.OfferChronicle).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.OfferCompliance).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.PriceCategory).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(reactions_models.Reaction).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
+        assert db.session.query(models.ValidationRuleOfferLink).filter_by(offerId=offer_id).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -5420,7 +5419,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
         assert_offers_have_been_completely_cleaned(offer_ids)
 
         assert db.session.query(models.Offer).get(other_offer_id) is not None
-        assert models.Stock.query.filter_by(offerId=other_offer_id).one()
+        assert db.session.query(models.Stock).filter_by(offerId=other_offer_id).one()
         assert other_offer_id in search_testing.search_store["offers"]
 
     def test_offer_is_deleted_and_unindexed_with_chunk_size_set(self):
@@ -5437,8 +5436,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
         offers = self.build_many_eligible_for_search_offers_with_related_objects()
         offer_ids = [offer.id for offer in offers]
 
-        patch_path = "pcapi.core.offers.api.db"
-        with patch(patch_path) as mock:
+        with patch("pcapi.core.offers.api.db") as mock:
             with caplog.at_level(logging.ERROR):
                 mock.session.flush.side_effect = [error] + [None for _ in range(len(offers) - 1)]
 
@@ -5449,7 +5447,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
                 assert "bad query" in caplog.records[0].extra["error"]
 
         # all offers except one (because of the error) should have been deleted
-        assert models.Offer.query.count() == 1
+        assert db.session.query(models.Offer).count() == 1
 
     def build_many_eligible_for_search_offers_with_related_objects(self, count=3):
         offers = []

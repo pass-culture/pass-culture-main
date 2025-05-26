@@ -284,7 +284,7 @@ class UpdateObjectsTest:
 
         allocine_stocks_provider.updateObjects()
 
-        existing_offer = offers_models.Offer.query.one()
+        existing_offer = db.session.query(offers_models.Offer).one()
 
         assert existing_offer.image.url == existing_offer.product.productMediations[0].url
 

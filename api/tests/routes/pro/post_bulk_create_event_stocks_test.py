@@ -8,8 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import Stock
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -17,7 +16,7 @@ from pcapi.utils.date import format_into_utc_date
 class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         first_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 1", venue=offer.venue)
         second_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 2", venue=offer.venue)
@@ -52,10 +51,10 @@ class Returns201Test:
 
         assert response.json["stocks_count"] == len(stock_data["stocks"])
 
-        created_stocks = Stock.query.order_by(Stock.price).all()
+        created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.price).all()
         assert len(created_stocks) == 3
-        assert offers_models.PriceCategory.query.count() == 2
-        assert offers_models.PriceCategoryLabel.query.count() == 2
+        assert db.session.query(offers_models.PriceCategory).count() == 2
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 2
         assert created_stocks[0].price == 20
         assert created_stocks[0].priceCategory.price == 20
         assert created_stocks[0].priceCategory.label == "Tarif 1"
@@ -71,7 +70,7 @@ class Returns201Test:
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_event_stocks_with_multi_price(self, mocked_async_index_offer_ids, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         shared_label = offers_factories.PriceCategoryLabelFactory(label="Shared", venue=offer.venue)
         first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=20)
@@ -103,10 +102,10 @@ class Returns201Test:
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 201
-        created_stocks = Stock.query.order_by(Stock.price).all()
+        created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.price).all()
         assert len(created_stocks) == 3
-        assert offers_models.PriceCategory.query.count() == 2
-        assert offers_models.PriceCategoryLabel.query.count() == 2
+        assert db.session.query(offers_models.PriceCategory).count() == 2
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 2
         assert created_stocks[0].price == 20
         assert created_stocks[0].priceCategory.price == 20
         assert created_stocks[0].priceCategory.label == "Shared"
@@ -215,7 +214,7 @@ class Returns400Test:
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.core.offers.models.Offer.MAX_STOCKS_PER_OFFER", 2)
     def test_create_event_exceed_max_stocks_count(self, mocked_async_index_offer_ids, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -271,7 +270,7 @@ class Returns400Test:
         }
 
     def test_cannot_create_event_with_wrong_price_category_id(self, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         price_category = offers_factories.PriceCategoryFactory(offer=offer)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
@@ -291,7 +290,7 @@ class Returns400Test:
         assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
     def test_cannot_create_event_stock_with_price_higher_than_300_euros(self, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         too_high_price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
         )

@@ -272,7 +272,7 @@ class Returns400Test:
         args, _ = mocked_send_signup_email.call_args
         passwordless_login_token = args[1]
 
-        user = users_models.User.query.filter_by(email="pro@example.com").one()
+        user = db.session.query(users_models.User).filter_by(email="pro@example.com").one()
         assert user.email == "pro@example.com"
         assert user.isEmailValidated is False
         response = client.patch(f"/users/validate_signup/{passwordless_login_token}")

@@ -1366,7 +1366,7 @@ def get_unbookable_unbooked_old_offer_ids(
                     raise
 
     if max_id is None:
-        max_id = models.Offer.query.order_by(models.Offer.id.desc()).first().id
+        max_id = db.session.query(models.Offer).order_by(models.Offer.id.desc()).first().id
 
     while min_id < max_id:
         try:
