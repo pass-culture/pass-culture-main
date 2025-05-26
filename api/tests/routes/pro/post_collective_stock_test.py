@@ -384,13 +384,14 @@ class Return400Test:
 
         client.with_session_auth("user@example.com")
 
-        with assert_num_queries(7):
+        with assert_num_queries(8):
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
+            # query += 1 -> rollback
             # query += 1 -> rollback
             response = client.post("/collective/stocks", json=stock_payload)
 

@@ -138,7 +138,7 @@ class ProductMediation(PcObject, Base, Model):
     __tablename__ = "product_mediation"
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType: sa_orm.Mapped[ImageType] = sa.Column(sa.Enum(ImageType), nullable=False)
+    imageType: sa_orm.Mapped[ImageType] = sa.Column(db_utils.MagicEnum(ImageType), nullable=False)
     lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: int = sa.Column(
@@ -615,7 +615,7 @@ def on_set_timespan(
     target: HeadlineOffer,
     value: psycopg2.extras.DateTimeRange,
     old_value: psycopg2.extras.DateTimeRange,
-    _initiator: sa_orm.AttributeEvent,
+    _initiator: sa_orm.AttributeEvents,
 ) -> None:
     # During object creation, old_value is not a DateTimeRange (it's the NO_VALUE symbol).
     # The after_insert event handles the count for new objects, so we can return early.

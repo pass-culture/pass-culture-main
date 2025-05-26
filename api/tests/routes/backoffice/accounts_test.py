@@ -198,13 +198,13 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_malformed_query(self, authenticated_client, legit_user):
         url = url_for(self.endpoint, q=legit_user.email, per_page="unknown_field")
 
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url)
             assert response.status_code == 400
 
     @pytest.mark.parametrize("query", ["", " ", "   ", " , ,,;"])
     def test_empty_query(self, authenticated_client, query):
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 400
 
@@ -246,7 +246,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
     def test_can_search_public_account_by_short_name(self, authenticated_client, query):
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q="v"))
             assert response.status_code == 400
 
@@ -444,7 +444,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_can_search_public_account_empty_query(self, authenticated_client):
         create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q=""))
             assert response.status_code == 400
 
@@ -462,7 +462,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_search_public_account_with_percent_is_forbidden(self, authenticated_client):
         create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
             response = authenticated_client.get(url_for(self.endpoint, q="%terms"))
             assert response.status_code == 400
 
@@ -2040,7 +2040,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
         assert response.location == expected_url
 
         user = db.session.query(users_models.User).filter_by(id=user.id).one()
@@ -5344,7 +5344,7 @@ class CreateAccountTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.account_tag.list_account_tags", _external=True)
+        assert response.location == url_for("backoffice_web.account_tag.list_account_tags")
 
         created_tag = db.session.query(users_models.UserTag).one()
         assert created_tag.name == name
@@ -5414,7 +5414,6 @@ class CreateAccountTagCategoryTest(PostEndpointHelper):
         assert response.location == url_for(
             "backoffice_web.account_tag.list_account_tags",
             active_tab="categories",
-            _external=True,
         )
 
         created_category = db.session.query(users_models.UserTagCategory).one()

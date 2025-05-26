@@ -114,7 +114,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     # by a field added in the jinja template.
     # - fetch session (1 query)
     # - fetch user (1 query)
-    expected_num_queries_when_no_query = 2
     # - fetch collective offers with joinedload including extra data (1 query)
     expected_num_queries = 3
     # - fetch collective bookings (selectinload)
@@ -879,7 +878,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
         }
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -891,7 +890,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -915,7 +914,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -931,7 +930,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -946,7 +945,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": "12, 34, A",
         }
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        with assert_num_queries(3):  # only session + current user + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
