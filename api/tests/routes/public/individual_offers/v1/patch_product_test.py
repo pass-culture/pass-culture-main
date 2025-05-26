@@ -20,8 +20,6 @@ from tests.routes import image_data
 from tests.routes.public.helpers import ProductEndpointHelper
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
-from . import utils
-
 
 @pytest.mark.usefixtures("db_session")
 class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
@@ -35,10 +33,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
 
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product.id,
-                "isActive": False,
-            },
+            json={"offerId": product.id, "isActive": False},
         )
         assert response.status_code == 404
 
@@ -49,29 +44,24 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
 
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product.id,
-                "isActive": False,
-            },
+            json={"offerId": product.id, "isActive": False},
         )
         assert response.status_code == 404
 
     def test_deactivate_offer(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             isActive=True,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             ean="1234567890124",
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product_offer.id,
-                "isActive": False,
-            },
+            json={"offerId": product_offer.id, "isActive": False},
         )
 
         assert response.status_code == 200
@@ -79,17 +69,18 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.isActive is False
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             withdrawalDetails="Des conditions de retrait sur la sellette",
             bookingEmail="notify@example.com",
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             ean="1234567890124",
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "itemCollectionDetails": None},
         )
@@ -100,12 +91,13 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.bookingEmail == "notify@example.com"
 
     def test_update_product_image(self, client, clear_tests_assets_bucket):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue, lastProvider=api_key.provider, subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id
+            venue=venue, lastProvider=venue_provider.provider, subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "image": {"file": image_data.GOOD_IMAGE}},
         )
@@ -118,16 +110,17 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
     def test_updates_booking_email(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             bookingEmail="notify@example.com",
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             ean="1234567890124",
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "bookingEmail": "spam@example.com"},
         )
@@ -136,19 +129,20 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.bookingEmail == "spam@example.com"
 
     def test_sets_accessibility_partially(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             ean="1234567890124",
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "accessibility": {"audioDisabilityCompliant": False}},
         )
@@ -166,14 +160,15 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.visualDisabilityCompliant is True
 
     def test_create_stock(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "stock": {"price": 1000, "quantity": 1}},
         )
@@ -189,15 +184,16 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.activeStocks[0].price == 10
 
     def test_update_stock_quantity(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "stock": {"quantity": "unlimited"}},
         )
@@ -213,8 +209,9 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.activeStocks[0].quantity is None
 
     def test_error_if_no_offer_is_found(self, client):
-        utils.create_offerer_provider_linked_to_venue()
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        plain_api_key, _ = self.setup_active_venue_provider()
+
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={
                 "offerId": "33",
@@ -224,34 +221,19 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert response.status_code == 404
         assert response.json == {"offerId": ["The product offer could not be found"]}
 
-    def test_inactive_venue_provider_returns_404(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            self.endpoint_url, json={"offerId": product_offer.id, "isActive": False}
-        )
-
-        assert response.status_code == 404
-
     def test_remove_stock_booking_limit_datetime(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime="2021-01-15T00:00:00Z")
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product_offer.id,
-                "stock": {"bookingLimitDatetime": None},
-            },
+            json={"offerId": product_offer.id, "stock": {"bookingLimitDatetime": None}},
         )
         assert response.status_code == 200
         assert response.json["stock"]["bookingLimitDatetime"] is None
@@ -261,17 +243,17 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.activeStocks[0].bookingLimitDatetime is None
 
     def test_update_stock_booking_limit_datetime(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
         new_limit = datetime.datetime.now() + datetime.timedelta(minutes=1)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
             json={"offerId": product_offer.id, "stock": {"bookingLimitDatetime": format_into_utc_date(new_limit)}},
         )
@@ -283,10 +265,10 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert product_offer.activeStocks[0].bookingLimitDatetime == new_limit
 
     def test_delete_stock(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
@@ -295,12 +277,9 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
         used_booking = bookings_factories.BookingFactory(stock=stock, status=bookings_models.BookingStatus.USED)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product_offer.id,
-                "stock": None,
-            },
+            json={"offerId": product_offer.id, "stock": None},
         )
         assert response.status_code == 200
         assert response.json["stock"] is None
@@ -310,22 +289,18 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert used_booking.status == bookings_models.BookingStatus.USED
 
     def test_update_subcategory_raises_error(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             subcategoryId=subcategories.ABO_LUDOTHEQUE.id,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product_offer.id,
-                "categoryRelatedFields": {
-                    "category": "LIVRE_AUDIO_PHYSIQUE",
-                },
-            },
+            json={"offerId": product_offer.id, "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"}},
         )
+
         assert response.status_code == 400
         assert response.json == {
             "product.subcategory": [
@@ -352,20 +327,17 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert response.json == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
 
     def test_update_unallowed_subcategory_product_raises_error(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             bookingEmail="notify@example.com",
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+        response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url,
-            json={
-                "offerId": product_offer.id,
-                "bookingEmail": "spam@example.com",
-            },
+            json={"offerId": product_offer.id, "bookingEmail": "spam@example.com"},
         )
 
         assert response.status_code == 400
@@ -376,10 +348,10 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         }
 
     def test_update_name_and_description(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             ean="1234567890124",
         )
@@ -406,7 +378,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
 
         expected_num_queries += 1  # check venue offerer address
         with assert_num_queries(expected_num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            response = client.with_explicit_token(plain_api_key).patch(
                 "/public/offers/v1/products",
                 json={"offerId": offer_id, "name": new_name, "description": new_desc},
             )
@@ -471,13 +443,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
         providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
-        json_data = {
-            "location": {
-                "type": "address",
-                "venueId": other_venue.id,
-                "addressId": address.id,
-            }
-        }
+        json_data = {"location": {"type": "address", "venueId": other_venue.id, "addressId": address.id}}
 
         response = self.send_update_request(client, plain_api_key, product, json_data)
         assert response.status_code == 200

@@ -53,7 +53,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert response.status_code == 404
 
     def test_post_image_with_credit_test(self, client):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
         response = client.with_explicit_token(plain_api_key).post(
@@ -68,7 +68,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
     def test_returns_400_if_no_image(self, client):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
         response = client.with_explicit_token(plain_api_key).post(
@@ -79,7 +79,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert response.json == {"file": ["A file must be provided in the request"]}
 
     def test_returns_400_if_bad_ratio_image(self, client):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         thumb = (IMAGES_DIR / "mouette_square.jpg").read_bytes()
 
@@ -92,7 +92,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert response.json == {"file": "Bad image ratio: expected 0.66, found 1.0"}
 
     def test_returns_400_wrong_content_type(self, client):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
 
@@ -107,7 +107,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
     @mock.patch("pcapi.core.offers.validation.check_image")
     def test_returns_400_image_too_small(self, mock_check_image, client):
         mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
         thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
@@ -123,7 +123,7 @@ class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
     @mock.patch("pcapi.core.offers.validation.check_image")
     def test_returns_400_content_too_large(self, mock_check_image, client):
         mock_check_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 

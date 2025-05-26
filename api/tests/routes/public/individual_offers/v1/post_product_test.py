@@ -22,7 +22,13 @@ import tests
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
-from . import utils
+
+ACCESSIBILITY_FIELDS = {
+    "audioDisabilityCompliant": True,
+    "mentalDisabilityCompliant": True,
+    "motorDisabilityCompliant": True,
+    "visualDisabilityCompliant": True,
+}
 
 
 class PostProductTest(PublicAPIVenueEndpointHelper):
@@ -37,7 +43,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                 "category": "SUPPORT_PHYSIQUE_FILM",
                 "ean": "1234567891234",
             },
-            "accessibility": utils.ACCESSIBILITY_FIELDS,
+            "accessibility": ACCESSIBILITY_FIELDS,
             "name": "Le champ des possibles",
         }
 
@@ -121,7 +127,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "enableDoubleBookings": False,
@@ -227,14 +233,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
                 "stock": {
                     "bookedQuantity": 0,
@@ -281,7 +287,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "enableDoubleBookings": True,
@@ -289,7 +295,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
             },
         )
@@ -302,14 +308,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
             },
         )
@@ -400,11 +406,11 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
             },
         )
@@ -426,7 +432,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "url": "https://monebook.com/le-visible",
                 },
                 "categoryRelatedFields": {"category": "LIVRE_NUMERIQUE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
             },
         )
@@ -447,7 +453,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "url": "https://monebook.com/le-visible",
                 },
                 "categoryRelatedFields": {"category": "LIVRE_NUMERIQUE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Jean Tartine est de retour",
                 "description": "A" * 10_001,
             },
@@ -458,19 +464,18 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
     @pytest.mark.usefixtures("db_session")
     def test_venue_allowed(self, client):
-        utils.create_offerer_provider_linked_to_venue()
         not_allowed_venue = offerers_factories.VenueFactory()
         plain_api_key, _ = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": not_allowed_venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
             },
         )
@@ -486,7 +491,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "stock": {"quantity": 1, "price": 100},
@@ -494,7 +499,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
                 "image": {"file": image_data.GOOD_IMAGE},
             },
@@ -511,14 +516,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
                 "image": {"file": image_data.WRONG_IMAGE_SIZE},
                 "stock": {"quantity": 1, "price": 100},
@@ -539,14 +544,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         encoded_bytes = base64.b64encode(image_bytes)
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
                 "image": {"file": encoded_bytes.decode()},
                 "stock": {"quantity": 1, "price": 100},
@@ -564,14 +569,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_FILM",
                     "ean": "1234567891234",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "Le champ des possibles",
                 "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
             },
@@ -588,7 +593,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {
                     "type": "digital",
@@ -596,7 +601,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "venue_id": venue_provider.id,
                 },
                 "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE", "showType": "OPERA-GRAND_OPERA"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "La flûte en chantier",
             },
         )
@@ -648,7 +653,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         response = client.with_explicit_token(plain_api_key).post(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
                 "categoryRelatedFields": {
@@ -656,7 +661,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "ean": "1234567890123",
                     "author": "Maurice",
                 },
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "A qui mieux mieux",
             },
         )
@@ -677,7 +682,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                     "venue_id": venue_provider.venue.id,
                 },
                 "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "accessibility": ACCESSIBILITY_FIELDS,
                 "name": "La flûte en chantier",
             },
         )
@@ -721,7 +726,7 @@ def build_base_payload(venue, **extra):
             "category": "SUPPORT_PHYSIQUE_FILM",
             "ean": "1234567891234",
         },
-        "accessibility": utils.ACCESSIBILITY_FIELDS,
+        "accessibility": ACCESSIBILITY_FIELDS,
         "name": "Le champ des possibles",
         **extra,
     }
