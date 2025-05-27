@@ -14,6 +14,9 @@ from pcapi.routes.backoffice.forms import utils
 from pcapi.utils import string as string_utils
 
 
+TAG_NAME_REGEX = r"^[^\s]+$"
+
+
 class AccountSearchForm(search.SearchForm):
     filter = fields.PCSelectMultipleField("Filtres", choices=utils.choices_from_enum(search.AccountSearchFilter))
 
@@ -134,3 +137,30 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
 
 class AccountUpdateRequestAcceptForm(utils.PCForm):
     motivation = fields.PCOptCommentField("Explication facultative envoyée au demandeur sur Démarches-Simplifiées")
+
+
+class UserTagBaseForm(FlaskForm):
+    name = fields.PCStringField(
+        "Nom",
+        validators=(
+            wtforms.validators.DataRequired("Information obligatoire"),
+            wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
+            wtforms.validators.Regexp(TAG_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
+        ),
+    )
+    label = fields.PCOptStringField(
+        "Libellé", validators=(wtforms.validators.Length(max=140, message="Doit contenir moins de %(max)d caractères"),)
+    )
+
+
+class EditUserTagForm(UserTagBaseForm):
+    description = fields.PCOptStringField(
+        "Description",
+        validators=(wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),),
+    )
+    # choices added later so as to query the categories only once
+    categories = fields.PCSelectMultipleField("Catégories", coerce=int)
+
+
+class CreateUserTagCategoryForm(UserTagBaseForm):
+    pass
