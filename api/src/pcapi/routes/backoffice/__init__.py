@@ -40,6 +40,7 @@ def install_routes(app: Flask) -> None:
     from .preferences import blueprint as preferences_blueprint
     from .pro import blueprint as pro_blueprint
     from .pro_users import blueprint as pro_users_blueprint
+    from .products import blueprint as products_blueprint
     from .providers import blueprint as providers_blueprint
     from .titelive import blueprint as titelive_blueprint
     from .users import blueprint as users_blueprint

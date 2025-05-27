@@ -1,0 +1,510 @@
+import dataclasses
+import datetime
+import enum
+from functools import partial
+
+import pydantic.v1 as pydantic_v1
+import sqlalchemy.orm as sa_orm
+from flask import flash
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import url_for
+from flask_login import current_user
+from markupsafe import Markup
+from werkzeug.exceptions import NotFound
+
+from pcapi.connectors.serialization import titelive_serializers
+from pcapi.connectors.titelive import GtlIdError
+from pcapi.connectors.titelive import get_by_ean13
+from pcapi.core import search
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
+from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.repository.session_management import on_commit
+from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.offers.serializer import OfferSerializer
+from pcapi.utils import requests
+
+from . import forms
+
+
+list_products_blueprint = utils.child_backoffice_blueprint(
+    "product",
+    __name__,
+    url_prefix="/pro/product",
+    permission=perm_models.Permissions.READ_OFFERS,
+)
+
+
+class ProductDetailsActionType(enum.StrEnum):
+    SYNCHRO_TITELIVE = enum.auto()
+    WHITELIST = enum.auto()
+    BLACKLIST = enum.auto()
+
+
+@dataclasses.dataclass
+class ProductDetailsAction:
+    type: ProductDetailsActionType
+    position: int
+    inline: bool
+
+
+class ProductDetailsActions:
+    def __init__(self, threshold: int) -> None:
+        self.current_pos = 0
+        self.actions: list[ProductDetailsAction] = []
+        self.threshold = threshold
+
+    def add_action(self, action_type: ProductDetailsActionType) -> None:
+        self.actions.append(
+            ProductDetailsAction(type=action_type, position=self.current_pos, inline=self.current_pos < self.threshold)
+        )
+        self.current_pos += 1
+
+    def __contains__(self, action_type: ProductDetailsActionType) -> bool:
+        return action_type in [e.type for e in self.actions]
+
+    @property
+    def inline_actions(self) -> list[ProductDetailsActionType]:
+        return [action.type for action in self.actions if action.inline]
+
+    @property
+    def additional_actions(self) -> list[ProductDetailsActionType]:
+        return [action.type for action in self.actions if not action.inline]
+
+
+def _get_product_details_actions(threshold: int) -> ProductDetailsActions:
+    product_details_actions = ProductDetailsActions(threshold)
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        product_details_actions.add_action(ProductDetailsActionType.SYNCHRO_TITELIVE)
+        product_details_actions.add_action(ProductDetailsActionType.WHITELIST)
+        product_details_actions.add_action(ProductDetailsActionType.BLACKLIST)
+    return product_details_actions
+
+
+@list_products_blueprint.route("/<int:product_id>", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_OFFERS)
+def get_product_details(product_id: int) -> utils.BackofficeResponse:
+    product = (
+        db.session.query(offers_models.Product)
+        .filter(offers_models.Product.id == product_id)
+        .options(
+            sa_orm.joinedload(offers_models.Product.offers).options(
+                sa_orm.load_only(
+                    offers_models.Offer.id,
+                    offers_models.Offer.name,
+                    offers_models.Offer.dateCreated,
+                    offers_models.Offer.isActive,
+                    offers_models.Offer.validation,
+                ),
+                sa_orm.joinedload(offers_models.Offer.stocks).options(
+                    sa_orm.load_only(
+                        offers_models.Stock.bookingLimitDatetime,
+                        offers_models.Stock.beginningDatetime,
+                        offers_models.Stock.quantity,
+                        offers_models.Stock.dnBookedQuantity,
+                        offers_models.Stock.isSoftDeleted,
+                    )
+                ),
+                sa_orm.joinedload(offers_models.Offer.venue).options(
+                    sa_orm.load_only(
+                        offerers_models.Venue.id,
+                        offerers_models.Venue.name,
+                    )
+                ),
+            ),
+            sa_orm.joinedload(offers_models.Product.productMediations),
+        )
+        .one_or_none()
+    )
+
+    if not product:
+        raise NotFound()
+
+    unlinked_offers = []
+    if product.ean:
+        unlinked_offers = (
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.ean == product.ean, offers_models.Offer.productId.is_(None))
+            .options(
+                sa_orm.load_only(
+                    offers_models.Offer.id,
+                    offers_models.Offer.name,
+                    offers_models.Offer.dateCreated,
+                    offers_models.Offer.isActive,
+                    offers_models.Offer.validation,
+                ),
+                sa_orm.joinedload(offers_models.Offer.stocks).options(
+                    sa_orm.load_only(
+                        offers_models.Stock.bookingLimitDatetime,
+                        offers_models.Stock.beginningDatetime,
+                        offers_models.Stock.quantity,
+                        offers_models.Stock.dnBookedQuantity,
+                        offers_models.Stock.isSoftDeleted,
+                    )
+                ),
+                sa_orm.joinedload(offers_models.Offer.venue).options(
+                    sa_orm.load_only(
+                        offerers_models.Venue.id,
+                        offerers_models.Venue.name,
+                    )
+                ),
+            )
+            .order_by(offers_models.Offer.id)
+            .all()
+        )
+
+    allowed_actions = _get_product_details_actions(threshold=4)
+
+    active_offers_count = sum(offer.isActive for offer in product.offers)
+    approved_active_offers_count = sum(
+        offer.validation == OfferValidationStatus.APPROVED and offer.isActive for offer in product.offers
+    )
+    approved_inactive_offers_count = sum(
+        offer.validation == OfferValidationStatus.APPROVED and not offer.isActive for offer in product.offers
+    )
+    pending_offers_count = sum(offer.validation == OfferValidationStatus.PENDING for offer in product.offers)
+    rejected_offers_count = sum(offer.validation == OfferValidationStatus.REJECTED for offer in product.offers)
+
+    if product.ean:
+        try:
+            titelive_data = get_by_ean13(product.ean)
+        except Exception as err:
+            flash(
+                Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+                "warning",
+            )
+            titelive_data = {}
+        try:
+            data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+        except Exception:
+            ineligibility_reasons = None
+        else:
+            ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
+    else:
+        titelive_data = None
+        ineligibility_reasons = None
+
+    return render_template(
+        "products/details.html",
+        product=product,
+        provider_name=product.lastProvider.name if product.lastProvider else None,
+        allowed_actions=allowed_actions,
+        action=ProductDetailsActionType,
+        product_offers=[OfferSerializer.from_orm(offer).dict() for offer in sorted(product.offers, key=lambda o: o.id)],
+        unlinked_offers=[OfferSerializer.from_orm(offer).dict() for offer in unlinked_offers],
+        titelive_data=titelive_data,
+        active_offers_count=active_offers_count,
+        approved_active_offers_count=approved_active_offers_count,
+        approved_inactive_offers_count=approved_inactive_offers_count,
+        pending_offers_count=pending_offers_count,
+        rejected_offers_count=rejected_offers_count,
+        ineligibility_reasons=ineligibility_reasons,
+        product_whitelist=product.gcuCompatibilityType == offers_models.GcuCompatibilityType.WHITELISTED,
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/synchro_titelive", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_synchro_with_titelive_form(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    try:
+        titelive_data = get_by_ean13(product.ean)
+    except Exception as err:
+        mark_transaction_as_invalid()
+        return render_template(
+            "components/turbo/modal_empty_form.html",
+            form=empty_forms.BatchForm(),
+            div_id=f"synchro-product-modal-{product.id}",
+            messages=[
+                f"Une erreur s'est produite lors de la recupération des informations Titelive: {str(err) or err.__class__.__name__}"
+            ],
+        )
+    try:
+        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+    except Exception:
+        ineligibility_reasons = None
+    else:
+        ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
+
+    return render_template(
+        "products/titelive_synchro_modal.html",
+        form=empty_forms.EmptyForm(),
+        dst=url_for(".synchro_product_with_titelive", product_id=product_id),
+        title="Données récupérer via l'API Titelive",
+        titelive_data=titelive_data,
+        div_id=f"synchro-product-modal-{product.id}",
+        button_text="Mettre le produit à jour avec ces informations",
+        ineligibility_reasons=ineligibility_reasons,
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/synchro-titelive", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def synchro_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    try:
+        titelive_product = offers_api.get_new_product_from_ean13(product.ean)
+        offers_api.fetch_or_update_product_with_titelive_data(titelive_product)
+    except requests.ExternalAPIException as err:
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+            "warning",
+        )
+    else:
+        flash("Le produit a été Synchroniser avec Titelive", "success")
+
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/whitelist", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.whitelist_product", product_id=product.id),
+        div_id=f"whitelist-product-modal-{product.id}",
+        title=f"Whitelisté le produit  {product.name}",
+        button_text="Whitelisté le produit",
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/whitelist", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def whitelist_product(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    if product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    elif product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.WHITELISTED
+
+    offers_query = db.session.query(offers_models.Offer).filter(
+        offers_models.Offer.productId == product.id,
+        offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
+        offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+    )
+    offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+    if offer_ids:
+        offers_query.update(
+            values={
+                "validation": offers_models.OfferValidationStatus.APPROVED,
+                "lastValidationDate": datetime.datetime.utcnow(),
+                "lastValidationType": OfferValidationType.MANUAL,
+                "lastValidationAuthorUserId": current_user.id,
+            },
+            synchronize_session=False,
+        )
+        db.session.flush()
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids,
+                reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+                log_extra={"ean": product.ean},
+            )
+        )
+
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/blacklist", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.blacklist_product", product_id=product.id),
+        div_id=f"blacklist-product-modal-{product.id}",
+        title=f"Blacklister le produit  {product.name}",
+        button_text="Blacklister le produit",
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/blacklist", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def blacklist_product(product_id: int) -> utils.BackofficeResponse:
+    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
+    if offers_api.reject_inappropriate_products([product.ean], current_user, rejected_by_fraud_action=True):
+        db.session.commit()
+        flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
+    else:
+        db.session.rollback()
+        flash("Une erreur s'est produite lors de l'opération", "warning")
+
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/link_offers/confirm", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
+    form = forms.BatchLinkOfferToProductForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.product.batch_link_offers_to_product", product_id=product_id),
+        div_id="batch-link-to-product-modal",
+        title=Markup("Voulez-vous associer {number_of_offers} offre(s) au produit ?").format(
+            number_of_offers=len(form.object_ids_list)
+        ),
+        button_text="Confirmer l'association",
+        information=Markup("Vous allez associer {number_of_offers} offre(s). Voulez vous continuer ?").format(
+            number_of_offers=len(form.object_ids_list),
+        ),
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/link_offers", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
+    form = forms.BatchLinkOfferToProductForm()
+    product = db.session.query(offers_models.Product).get(product_id)
+    offers = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
+    for offer in offers:
+        offer.name = product.name
+        offer.productId = product.id
+    return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+def render_search_template(form: forms.ProductSearchForm | None = None) -> str:
+    if form is None:
+        form = forms.ProductSearchForm()
+
+    return render_template(
+        "products/search.html",
+        title="Recherche produit",
+        dst=url_for(".search_product"),
+        form=form,
+    )
+
+
+@list_products_blueprint.route("/search", methods=["GET"])
+def search_product() -> utils.BackofficeResponse:
+    if not request.args:
+        return render_search_template()
+
+    form = forms.ProductSearchForm(request.args)
+    if not form.validate():
+        return render_search_template(form), 400
+
+    result_type = forms.ProductFilterTypeEnum[form.product_filter_type.data]
+    search_query = form.q.data
+
+    product = None
+    FILTER_MAP = {
+        forms.ProductFilterTypeEnum.VISA: offers_models.Product.extraData["visa"].astext,
+        forms.ProductFilterTypeEnum.ALLOCINE_ID: offers_models.Product.extraData["allocineId"].astext,
+    }
+    if result_type in FILTER_MAP:
+        field_to_filter = FILTER_MAP[result_type]
+        product = db.session.query(offers_models.Product).filter(field_to_filter == search_query).one_or_none()
+
+    elif result_type == forms.ProductFilterTypeEnum.EAN:
+        ean = search_query
+        product = db.session.query(offers_models.Product).filter_by(ean=ean).one_or_none()
+        if not product:
+            try:
+                titelive_data = get_by_ean13(ean)
+            except Exception as err:
+                flash(
+                    Markup("Une erreur s'est produite : {message}").format(message=str(err) or err.__class__.__name__),
+                    "warning",
+                )
+                titelive_data = {}
+            try:
+                data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
+            except Exception:
+                titelive_data = {}
+                ineligibility_reason = None
+            else:
+                ineligibility_reason = get_ineligibility_reasons(data.article[0], data.titre)
+
+            if not titelive_data:
+                raise NotFound()
+
+            return render_template(
+                "products/create_product_from_titelive.html",
+                form=form,
+                dst=url_for(".search_product"),
+                titelive_data=titelive_data,
+                button_text="Importer ce produit dans la base de données du pass Culture",
+                ineligibility_reason=ineligibility_reason,
+            )
+
+    if not product:
+        raise NotFound()
+
+    return redirect(url_for(".get_product_details", product_id=product.id), 303)
+
+
+@list_products_blueprint.route("/<string:ean>/import_titelive_product_form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
+    is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=empty_forms.EmptyForm(),
+        dst=url_for("backoffice_web.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
+        div_id="import-product-modal",
+        title="Voulez-vous importer ce produit ?",
+        button_text="Importer",
+    )
+
+
+@list_products_blueprint.route("/<string:ean>/import_titelive_product", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
+    is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
+
+    try:
+        product = offers_api.whitelist_product(ean)
+    except offers_exceptions.TiteLiveAPINotExistingEAN:
+        flash(Markup("L'EAN <b>{ean}</b> n'existe pas chez Titelive").format(ean=ean), "warning")
+    except GtlIdError:
+        flash(
+            Markup("L'EAN <b>{ean}</b> n'a pas de GTL ID chez Titelive").format(ean=ean),
+            "warning",
+        )
+    else:
+        if is_ineligible:
+            product.gcuCompatibilityType = offers_models.GcuCompatibilityType.WHITELISTED
+            flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
+
+        flash(Markup("Le produit <b>{product_name}</b> a été créé").format(product_name=product.name), "success")
+        return redirect(url_for(".get_product_details", product_id=product.id), 303)
+
+    return redirect(request.referrer or url_for(".search_product"), 303)
