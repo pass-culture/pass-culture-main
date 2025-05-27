@@ -1095,6 +1095,22 @@ class UpdateOffererTest:
 
 
 class DeleteOffererTest:
+    def test_delete_cascade_offerer_should_abort_when_offerer_is_linked_to_provider(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer_to_delete)
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteOffererLinkedToProvider) as exception:
+            offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteOffererLinkedToProvider"] == [
+            "Entité juridique non supprimable car elle est liée à un provider"
+        ]
+        assert db.session.query(offerers_models.Offerer).count() == 1
+        assert db.session.query(offerers_models.OffererProvider).count() == 1
+
     def test_delete_cascade_offerer_should_abort_when_offerer_has_any_bookings(self):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()
