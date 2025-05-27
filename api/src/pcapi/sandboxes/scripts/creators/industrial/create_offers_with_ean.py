@@ -21,11 +21,9 @@ def create_offers_with_ean() -> None:
     products = [db.session.query(offers_models.Product).filter(offers_models.Product.name == "multiple thumbs").one()]
     provider = providers_factories.PublicApiProviderFactory.create(name="BookProvider")
     for i in range(1, 5):
-        ean = f"9780000000{i:03}"
         products.append(
             offers_factories.ThingProductFactory.create(
                 name=f"Livre {i} avec EAN",
-                idAtProviders=ean,
                 subcategoryId=subcategories.LIVRE_PAPIER.id,
                 lastProviderId=provider.id,
                 ean=f"9780000000{i:03}",

@@ -460,7 +460,6 @@ def _create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_m
     product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
-        idAtProviders=ean,
         extraData={"gtl_id": gtl_id, "author": Fake.name()},
         ean=ean,
     )
@@ -511,7 +510,6 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
     product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
-        idAtProviders=ean,
         ean=ean,
         extraData={"author": author},
     )
