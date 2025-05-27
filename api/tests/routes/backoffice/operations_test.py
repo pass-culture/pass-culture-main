@@ -489,17 +489,8 @@ class SetResponseStatusTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-
-        db_response = (
-            db.session.query(
-                operations_models.SpecialEventResponse.status,
-            )
-            .filter(
-                operations_models.SpecialEventResponse.id == event_response.id,
-            )
-            .one()
-        )
-        assert db_response.status == response_status
+        db.session.refresh(event_response)
+        assert event_response.status == response_status
 
     def test_set_response_status_new(self, authenticated_client):
         event_response = operations_factories.SpecialEventResponseFactory(
@@ -514,17 +505,8 @@ class SetResponseStatusTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-
-        db_response = (
-            db.session.query(
-                operations_models.SpecialEventResponse.status,
-            )
-            .filter(
-                operations_models.SpecialEventResponse.id == event_response.id,
-            )
-            .one()
-        )
-        assert db_response.status == operations_models.SpecialEventResponseStatus.WITHDRAWN
+        db.session.refresh(event_response)
+        assert event_response.status == operations_models.SpecialEventResponseStatus.WITHDRAWN
 
 
 class BatchValidateResponsesStatusTest(PostEndpointHelper):
@@ -557,17 +539,10 @@ class BatchValidateResponsesStatusTest(PostEndpointHelper):
             form={"object_ids": f"{event_response.id},{event_response2.id}"},
         )
         assert response.status_code == 303
-        db_response = (
-            db.session.query(
-                operations_models.SpecialEventResponse.status,
-            )
-            .filter(
-                operations_models.SpecialEventResponse.id.in_([event_response.id, event_response2.id]),
-            )
-            .all()
-        )
-        assert db_response[0].status == response_status
-        assert db_response[1].status == response_status
+        db.session.refresh(event_response)
+        db.session.refresh(event_response2)
+        assert event_response.status == response_status
+        assert event_response2.status == response_status
 
 
 class UpdateDateEventTest(PostEndpointHelper):
@@ -587,17 +562,8 @@ class UpdateDateEventTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-
-        db_response = (
-            db.session.query(
-                operations_models.SpecialEvent.eventDate,
-            )
-            .filter(
-                operations_models.SpecialEvent.id == event.id,
-            )
-            .one()
-        )
-        assert db_response.eventDate == date
+        db.session.refresh(event)
+        assert event.eventDate == date
 
 
 class UpdateEndImportDateTest(PostEndpointHelper):
@@ -617,14 +583,39 @@ class UpdateEndImportDateTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
+        db.session.refresh(event)
+        assert event.endImportDate == date
 
-        db_response = (
-            db.session.query(
-                operations_models.SpecialEvent.endImportDate,
-            )
-            .filter(
-                operations_models.SpecialEvent.id == event.id,
-            )
-            .one()
+
+class UpdateVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.operations.update_venue"
+    endpoint_kwargs = {"special_event_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+
+    def test_set_venue(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory(venue=offerers_factories.VenueFactory())
+        venue = offerers_factories.VenueFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            special_event_id=event.id,
+            form={"venue": [str(venue.id)]},
         )
-        assert db_response.endImportDate == date
+
+        assert response.status_code == 303
+
+        db.session.refresh(event)
+        assert event.venueId == venue.id
+
+    def test_remove_venue(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory(venue=offerers_factories.VenueFactory())
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            special_event_id=event.id,
+            form={"venue": [""]},
+        )
+
+        assert response.status_code == 303
+        db.session.refresh(event)
+        assert event.venueId is None
