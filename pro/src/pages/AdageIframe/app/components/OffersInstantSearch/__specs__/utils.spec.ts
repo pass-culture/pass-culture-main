@@ -21,7 +21,6 @@ describe('adageFiltersToFacetFilters', () => {
     expect(
       adageFiltersToFacetFilters({
         domains,
-        uai: ['all'],
         students,
         eventAddressType: 'school',
         departments,
@@ -37,7 +36,6 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
         ['formats:Concert'],
-        ['offer.educationalInstitutionUAICode:all'],
         ['venue.id:123', 'venue.id:456'],
       ],
       filtersKeys: [
@@ -56,7 +54,6 @@ describe('adageFiltersToFacetFilters', () => {
     expect(
       adageFiltersToFacetFilters({
         domains,
-        uai: ['123456'],
         students,
         eventAddressType: 'school',
         departments,
@@ -72,7 +69,6 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
         ['formats:Concert'],
-        ['offer.educationalInstitutionUAICode:123456'],
       ],
       filtersKeys: [
         'eventAddressType',
@@ -81,7 +77,6 @@ describe('adageFiltersToFacetFilters', () => {
         'departments',
         'academies',
         'formats',
-        'uaiCode',
       ],
     })
   })
