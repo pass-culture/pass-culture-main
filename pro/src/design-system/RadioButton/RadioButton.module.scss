@@ -10,12 +10,11 @@
 
   // Sizing to "hug" (content width) by default
   display: inline-flex;
+  flex-direction: column;
 
   &.sizing-fill {
     display: flex;
   }
-
-  flex-direction: column;
 
   .radio-button-label {
     display: inline-flex;
@@ -34,70 +33,10 @@
     width: rem.torem(20px);
     border: rem.torem(2px) solid var(--color-border-default);
     border-radius: 50%;
-    background-color: var(--color-background-default);
+    background-color: transparent;
     appearance: none;
     outline: none;
     cursor: pointer;
-
-    &:disabled {
-      cursor: default;
-      border-color: var(--color-border-default);
-      background-color: transparent;
-    }
-
-    &:checked {
-      box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
-      border-color: var(--color-border-brand-primary);
-      background-color: var(--color-icon-brand-primary);
-    }
-
-    &:disabled:checked {
-      box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
-      border-color: var(--color-border-disabled);
-      background-color: var(--color-icon-disabled);
-    }
-
-    &:not(:disabled) {
-      &:checked:active {
-        opacity: 0.6;
-        box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
-        background-color: var(--color-icon-brand-primary);
-        border-color: var(--color-icon-brand-primary);
-      }
-
-      &:hover {
-        border-color: var(--color-border-brand-primary-hover);
-      }
-
-      &:active {
-        border-color: var(--color-border-default);
-      }
-
-      &:checked:hover {
-        background-color: var(--color-icon-brand-primary-hover);
-      }
-    }
-  }
-
-  &:hover {
-    .radio-button-label {
-      color: var(--color-text-brand-primary-hover);
-    }
-  }
-
-  &:active {
-    .radio-button-label {
-      color: var(--color-text-subtle);
-    }
-  }
-
-  &.is-disabled {
-    .radio-button-label {
-      @include fonts.body;
-
-      cursor: default;
-      color: var(--color-text-disabled);
-    }
   }
 
   &.is-checked,
@@ -105,12 +44,78 @@
     .radio-button-label {
       @include fonts.body-accent;
     }
+
+    .radio-button-input {
+      border-color: var(--color-border-brand-primary);
+      background-color: var(--color-icon-brand-primary);
+      box-shadow: inset 0 0 0 rem.torem(3px) var(--color-background-default);
+    }
   }
 
   &:focus-within {
     outline: rem.torem(1px) solid var(--color-outline-default);
     outline-offset: rem.torem(2px);
     border-radius: rem.torem(6px);
+  }
+
+  &:hover:not(.is-disabled) {
+    .radio-button-label {
+      color: var(--color-text-brand-primary-hover);
+    }
+
+    .radio-button-input {
+      border-color: var(--color-icon-brand-primary-hover);
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      .radio-button-label {
+        color: var(--color-text-brand-primary-hover);
+      }
+
+      .radio-button-input {
+        border-color: var(--color-border-brand-primary-hover);
+        background-color: var(--color-icon-brand-primary-hover);
+      }
+    }
+
+    &:active {
+      opacity: 0.6;
+
+      .radio-button-label {
+        color: var(--color-text-default);
+      }
+
+      .radio-button-input {
+        border-color: var(--color-border-default);
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        .radio-button-input {
+          border-color: var(--color-icon-brand-primary);
+        }
+      }
+    }
+  }
+
+  &.is-disabled {
+    .radio-button-label {
+      cursor: default;
+      color: var(--color-text-disabled);
+    }
+
+    .radio-button-input {
+      cursor: default;
+      border-color: var(--color-border-disabled);
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      .radio-button-input {
+        background-color: var(--color-icon-disabled);
+      }
+    }
   }
 
   // ---------------
@@ -129,84 +134,20 @@
       color: var(--color-text-default);
     }
 
-    &.is-checked,
-    &:has(:checked) {
-      background-color: var(--color-background-brand-primary-selected);
-      border-color: var(--color-border-brand-primary);
+    .right-text {
+      @include fonts.body;
+
+      margin-left: auto;
+      color: var(--color-text-default);
     }
 
-    &:hover {
-      border-color: var(--color-border-brand-primary-hover);
-
-      .description {
-        color: var(--color-text-brand-primary-hover);
-      }
-
-      .radio-button-input {
-        border-color: var(--color-border-brand-primary-hover);
-      }
-
-      &.is-checked,
-      &:has(:checked) {
-        background-color: var(--color-background-brand-primary-hover);
-        border-color: var(--color-border-brand-primary);
-
-        .radio-button-label {
-          color: var(--color-text-inverted);
-        }
-
-        .description {
-          color: var(--color-text-inverted);
-        }
-
-        .radio-button-input {
-          box-shadow: inset 0 0 0 rem.torem(3px) var(--color-text-inverted);
-          border-color: var(--color-border-inverted);
-          background-color: var(--color-background-inverted);
-        }
-      }
+    .right-tag {
+      margin-left: auto;
     }
-
-    &:active {
-      opacity: 0.6;
-      background-color: var(--color-background-default);
-      border-color: var(--color-border-subtle);
-
-      .radio-button-label {
-        color: var(--color-text-inverted);
-      }
-
-      .description {
-        color: var(--color-text-inverted);
-      }
-
-      .radio-button-input {
-        border-color: var(--color-border-default);
-      }
-
-      &.is-checked,
-      &:has(:checked) {
-        background-color: var(--color-background-brand-primary);
-        border-color: var(--color-border-brand-primary);
-
-        .radio-button-label {
-          color: var(--color-text-default);
-        }
-
-        .description {
-          color: var(--color-text-default);
-        }
-      }
-    }
-
-    // --------------
-    // Right elements
-    // --------------
-
-    // .right-text {
-    // }
 
     .right-icon {
+      color: var(--color-icon-brand-primary);
+      margin-left: auto;
       display: flex;
       align-items: center;
 
@@ -217,6 +158,7 @@
     }
 
     .right-image {
+      margin-left: auto;
       display: flex;
       align-items: center;
 
@@ -233,6 +175,121 @@
       &-img-large {
         width: rem.torem(120px);
         height: rem.torem(120px);
+      }
+    }
+
+    &.is-checked,
+    &:has(:checked) {
+      background-color: var(--color-background-brand-primary-selected);
+      border-color: var(--color-border-brand-primary);
+
+      .radio-button-input {
+        box-shadow: inset 0 0 0 rem.torem(3px)
+          var(--color-background-brand-primary-selected);
+      }
+    }
+
+    &:hover:not(.is-disabled) {
+      border-color: var(--color-border-brand-primary-hover);
+
+      .description {
+        color: var(--color-text-brand-primary-hover);
+      }
+
+      .radio-button-input {
+        border-color: var(--color-border-brand-primary-hover);
+      }
+
+      .right-icon {
+        color: var(--color-icon-brand-primary-hover);
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        border-color: var(--color-border-brand-primary-hover);
+
+        .radio-button-label {
+          color: var(--color-text-brand-primary-hover);
+        }
+
+        .description {
+          color: var(--color-text-brand-primary-hover);
+        }
+
+        .right-text {
+          color: var(--color-text-brand-primary-hover);
+        }
+
+        .radio-button-input {
+          box-shadow: inset 0 0 0 rem.torem(3px)
+            var(--color-background-brand-primary-selected);
+          border-color: var(--color-border-brand-primary-hover);
+          background-color: var(--color-icon-brand-primary-hover);
+        }
+      }
+
+      &:active {
+        opacity: 0.6;
+        border-color: var(--color-border-subtle);
+
+        .radio-button-label {
+          color: var(--color-text-default);
+        }
+
+        .description {
+          color: var(--color-text-default);
+        }
+
+        .radio-button-input {
+          border-color: var(--color-border-default);
+        }
+
+        .right-icon {
+          color: var(--color-icon-brand-primary);
+        }
+
+        &.is-checked,
+        &:has(:checked) {
+          border-color: var(--color-border-brand-primary);
+
+          .radio-button-input {
+            border-color: var(--color-border-brand-primary);
+            background-color: var(--color-background-brand-primary);
+          }
+
+          .right-text {
+            color: var(--color-text-default);
+          }
+        }
+      }
+    }
+
+    &.is-disabled {
+      border-color: var(--color-border-disabled);
+      background-color: var(--color-background-disabled);
+
+      .radio-button-label {
+        color: var(--color-text-disabled);
+      }
+
+      .description {
+        color: var(--color-text-disabled);
+      }
+
+      .right-icon {
+        color: var(--color-icon-disabled);
+      }
+
+      .right-text {
+        color: var(--color-text-disabled);
+      }
+
+      &.is-checked,
+      &:has(:checked) {
+        .radio-button-input {
+          background-color: var(--color-icon-disabled);
+          border-color: var(--color-border-disabled);
+        }
       }
     }
   }

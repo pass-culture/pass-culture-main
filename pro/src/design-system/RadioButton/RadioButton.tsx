@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, useId } from 'react'
+import { ForwardedRef, forwardRef, isValidElement, useId } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -7,8 +7,8 @@ import styles from './RadioButton.module.scss'
 
 /**
  * Props communes à tous les RadioButton
- * @property name - Nom du groupe radio (obligatoire)
  * @property label - Label affiché à côté du bouton (obligatoire)
+ * @property name - Nom du groupe radio (obligatoire)
  * @property value - Valeur du bouton (obligatoire)
  * @property className - Classe CSS additionnelle
  * @property checked - Si le bouton est sélectionné
@@ -17,10 +17,10 @@ import styles from './RadioButton.module.scss'
  * @property sizing - Taille du composant ('HUG' ou 'FILL')
  */
 type CommonProps = Partial<React.InputHTMLAttributes<HTMLInputElement>> & {
-  /** Nom du groupe radio */
-  name: string
   /** Label affiché à côté du bouton */
   label: string
+  /** Nom du groupe radio */
+  name: string
   /** Valeur du bouton */
   value: string
   /** Classe CSS additionnelle */
@@ -67,11 +67,11 @@ type DefaultVariantProps = CommonProps & {
 
 /**
  * Props pour la variante DETAILED
- * @property description - Description optionnelle
+ * @property description - Description optionnelle (uniquement pour la variante DETAILED)
  * @property childrenOnChecked - Élément JSX affiché si coché
  */
 type DetailedWithDescriptionProps = {
-  /** Description optionnelle */
+  /** Description optionnelle (uniquement pour la variante DETAILED) */
   description?: string
   /** Élément JSX affiché si coché */
   childrenOnChecked?: JSX.Element
@@ -94,11 +94,11 @@ type DetailedWithIconProps = DetailedWithDescriptionProps & {
 // Right element is tag Element
 /**
  * Variante DETAILED avec tag à droite
- * @property tag - Élément JSX (ex: <Tag />)
+ * @property tag - Élément JSX
  */
 type DetailedWithTagProps = DetailedWithDescriptionProps & {
   icon?: never
-  /** Élément JSX (ex: <Tag />) */
+  /** Élément JSX */
   tag: JSX.Element
   text?: never
   image?: never
@@ -152,7 +152,6 @@ type DetailedWithNothingProps = DetailedWithDescriptionProps & {
  * @property variant - Doit être 'DETAILED'
  */
 type DetailedVariantProps = CommonProps & {
-  /** Doit être 'DETAILED' */
   variant: 'DETAILED'
 } & (
     | DetailedWithIconProps
@@ -191,8 +190,18 @@ export const RadioButton = forwardRef(
     const id = useId()
     const descriptionId = useId()
 
+    if (
+      childrenOnChecked &&
+      (!isValidElement(childrenOnChecked) ||
+        childrenOnChecked.type !== 'fieldset')
+    ) {
+      throw new Error('`childrenOnChecked` must be a <fieldset> element')
+    }
+
     let describedBy = ariaDescribedBy ? ariaDescribedBy : ''
     describedBy += description ? ` ${descriptionId}` : ''
+
+    const isVariantDetailed = variant === 'DETAILED'
 
     return (
       <>
@@ -201,7 +210,7 @@ export const RadioButton = forwardRef(
             styles['radio-button'],
             {
               [styles['sizing-fill']]: sizing === 'FILL',
-              [styles['variant-detailed']]: variant === 'DETAILED',
+              [styles['variant-detailed']]: isVariantDetailed,
               [styles['has-children']]: childrenOnChecked,
               [styles['is-checked']]: props.checked,
               [styles['is-disabled']]: props.disabled,
@@ -221,14 +230,16 @@ export const RadioButton = forwardRef(
             />
             <div>
               {label}
-              {description && (
+              {description && isVariantDetailed && (
                 <p className={styles['description']} id={descriptionId}>
                   {description}
                 </p>
               )}
             </div>
-            {tag && <div className={styles['right-tag']}>{tag}</div>}
-            {icon && (
+            {tag && isVariantDetailed && (
+              <div className={styles['right-tag']}>{tag}</div>
+            )}
+            {icon && isVariantDetailed && (
               <div className={styles['right-icon']}>
                 <SvgIcon
                   src={icon}
@@ -237,8 +248,10 @@ export const RadioButton = forwardRef(
                 />
               </div>
             )}
-            {text && <div className={styles['right-text']}>{text}</div>}
-            {image && (
+            {text && isVariantDetailed && (
+              <div className={styles['right-text']}>{text}</div>
+            )}
+            {image && isVariantDetailed && (
               <div className={styles['right-image']}>
                 <img
                   src={image}
@@ -252,7 +265,7 @@ export const RadioButton = forwardRef(
               </div>
             )}
           </label>
-          {childrenOnChecked && props.checked && (
+          {childrenOnChecked && isVariantDetailed && props.checked && (
             <div className={styles['children-on-checked']}>
               {childrenOnChecked}
             </div>

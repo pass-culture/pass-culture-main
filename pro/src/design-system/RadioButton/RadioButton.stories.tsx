@@ -7,150 +7,126 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import imageDemo from './assets/image-demo.png'
 import { RadioButton } from './RadioButton'
 
-/* // This is only to present the component properly in the storybook file.
-const RadioButton = (
-  props: RadioButtonProps
-): ReturnType<typeof OriginalRadioButton> => {
-  return (
-    <div style={{ margin: 8, display: 'inline-block' }}>
-      <OriginalRadioButton {...props} />
-    </div>
-  )
-} */
-
 export default {
   title: 'design-system/RadioButton',
   decorators: [withRouter],
+  argTypes: {
+    checked: {
+      control: 'boolean',
+    },
+    disabled: {
+      control: 'boolean',
+    },
+  },
   component: RadioButton,
 }
 
 export const Default: StoryObj<typeof RadioButton> = {
   args: {
-    name: 'item',
+    name: 'default',
     label: 'Label',
-    value: '1',
-    variant: 'DEFAULT',
   },
 }
 
 export const DefaultDisabled: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <>
-      <RadioButton name="item" label="Label" value="1" disabled />
-    </>
-  ),
+  args: {
+    name: 'disabled',
+    label: 'Désactivé',
+    disabled: true,
+  },
 }
 
 export const Detailed: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton variant="DETAILED" name="item" label="Label" value="1" />
-  ),
+  args: {
+    name: 'detailed',
+    label: 'Détaillé',
+    variant: 'DETAILED',
+  },
 }
 
 export const DetailedWithDescription: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      name="item"
-      label="Label"
-      value="1"
-      description="Description ou exemple pour préciser"
-    />
-  ),
+  args: {
+    name: 'detailed-with-description',
+    label: 'Avec description',
+    variant: 'DETAILED',
+    description: 'Description lorem ipsum',
+  },
 }
 
 export const DetailedFullWidth: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      sizing="FILL"
-      name="offer_type"
-      label="Individuelle"
-      description="Faire une offre pour les jeunes"
-      value="1"
-    />
-  ),
+  args: {
+    name: 'detailed-full-width',
+    label: 'Taille étendue',
+    variant: 'DETAILED',
+    description: 'Description lorem ipsum',
+    sizing: 'FILL',
+  },
 }
 
 export const DetailedWithTag: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      name="offer_type"
-      label="Individuelle"
-      description="Faire une offre pour les jeunes"
-      tag={<Tag variant={TagVariant.LIGHT_GREY}>Texte</Tag>}
-      value="1"
-    />
-  ),
+  args: {
+    name: 'detailed-with-tag',
+    label: 'Avec tag',
+    variant: 'DETAILED',
+    description: 'Description lorem ipsum',
+    tag: <Tag variant={TagVariant.LIGHT_GREY}>Tag</Tag>,
+  },
 }
 
 export const DetailedWithIcon: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      name="date"
-      label="Immédiatement"
-      description="Au plus rapide selon la charge"
-      icon={strokeDateIcon}
-      value="today"
-    />
-  ),
+  args: {
+    name: 'detailed-with-icon',
+    label: 'Avec icône',
+    variant: 'DETAILED',
+    description: 'Description lorem ipsum',
+    icon: strokeDateIcon,
+  },
 }
 
 export const DetailedWithText: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      name="price"
-      label="Basique"
-      description="Fonctionnalités de base"
-      text="19€"
-      value="1"
-    />
-  ),
+  args: {
+    name: 'detailed-with-text',
+    label: 'Avec texte',
+    variant: 'DETAILED',
+    description: 'Description lorem ipsum',
+    text: '19€',
+  },
 }
 
 export const DetailedWithImage: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      name="date"
-      label="Immédiatement"
-      description="Au plus rapide selon la charge"
-      image={imageDemo}
-      value="today"
-    />
-  ),
+  args: {
+    name: 'detailed-with-image',
+    label: 'Avec image',
+    variant: 'DETAILED',
+    image: imageDemo,
+    imageSize: 'S',
+  },
 }
 
 export const DetailedWithChildrenOnChecked: StoryObj<typeof RadioButton> = {
-  render: () => (
-    <RadioButton
-      variant="DETAILED"
-      name="date"
-      label="Immédiatement"
-      description="Au plus rapide selon la charge"
-      value="today"
-      childrenOnChecked={
-        <>
-          <RadioButton
-            variant="DETAILED"
-            name="offer_type"
-            label="Individuelle"
-            description="Faire une offre pour les jeunes"
-            value="1"
-          />
-          <RadioButton
-            variant="DETAILED"
-            name="offer_type"
-            label="Collective"
-            description="Faire une offre pour les établissements"
-            value="tomorrow"
-          />
-        </>
-      }
-      checked
-    />
-  ),
+  args: {
+    name: 'detailed-with-children',
+    label: 'Avec enfants',
+    variant: 'DETAILED',
+    description: 'Description lorem ipsum',
+    value: 'today',
+    checked: true,
+    childrenOnChecked: (
+      <fieldset style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
+        <legend>Légende</legend>
+        <RadioButton
+          variant="DETAILED"
+          name="subchoice"
+          label="Sous-label 1"
+          value="1"
+        />
+        <RadioButton
+          variant="DETAILED"
+          name="subchoice"
+          label="Sous-label 2"
+          value="2"
+        />
+      </fieldset>
+    ),
+  },
 }
