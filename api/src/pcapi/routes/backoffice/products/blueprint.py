@@ -4,7 +4,6 @@ import enum
 from functools import partial
 
 import pydantic.v1 as pydantic_v1
-import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -15,7 +14,6 @@ from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
@@ -26,7 +24,6 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
-from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -193,27 +190,9 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             ineligibility_reasons = None
         else:
             ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
-
-        product_whitelist = (
-            db.session.query(fraud_models.ProductWhitelist)
-            .filter(fraud_models.ProductWhitelist.ean == product.ean)
-            .options(
-                sa_orm.load_only(
-                    fraud_models.ProductWhitelist.ean,
-                    fraud_models.ProductWhitelist.dateCreated,
-                    fraud_models.ProductWhitelist.comment,
-                    fraud_models.ProductWhitelist.authorId,
-                ),
-                sa_orm.joinedload(fraud_models.ProductWhitelist.author).load_only(
-                    users_models.User.firstName, users_models.User.lastName
-                ),
-            )
-            .one_or_none()
-        )
     else:
         titelive_data = None
         ineligibility_reasons = None
-        product_whitelist = None
 
     return render_template(
         "products/details.html",
@@ -230,7 +209,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         pending_offers_count=pending_offers_count,
         rejected_offers_count=rejected_offers_count,
         ineligibility_reasons=ineligibility_reasons,
-        product_whitelist=product_whitelist,
+        product_whitelist=product.gcuCompatibilityType == offers_models.GcuCompatibilityType.WHITELISTED,
     )
 
 
@@ -269,7 +248,6 @@ def get_product_synchro_with_titelive_form(product_id: int) -> utils.BackofficeR
         div_id=f"synchro-product-modal-{product.id}",
         button_text="Mettre le produit à jour avec ces informations",
         ineligibility_reasons=ineligibility_reasons,
-        product_whitelist=None,
     )
 
 
@@ -320,7 +298,37 @@ def whitelist_product(product_id: int) -> utils.BackofficeResponse:
     if not product:
         raise NotFound()
 
-    product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    if product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    elif product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.WHITELISTED
+
+    offers_query = db.session.query(offers_models.Offer).filter(
+        offers_models.Offer.productId == product.id,
+        offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
+        offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+    )
+    offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+    if offer_ids:
+        offers_query.update(
+            values={
+                "validation": offers_models.OfferValidationStatus.APPROVED,
+                "lastValidationDate": datetime.datetime.utcnow(),
+                "lastValidationType": OfferValidationType.MANUAL,
+                "lastValidationAuthorUserId": current_user.id,
+            },
+            synchronize_session=False,
+        )
+        db.session.flush()
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids,
+                reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+                log_extra={"ean": product.ean},
+            )
+        )
+
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
 
 
@@ -466,14 +474,10 @@ def search_product() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
     is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
-    if is_ineligible:
-        form = forms.OptionalCommentForm()
-    else:
-        form = empty_forms.EmptyForm()
 
     return render_template(
         "components/turbo/modal_form.html",
-        form=form,
+        form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
         div_id="import-product-modal",
         title="Voulez-vous importer ce produit ?",
@@ -497,58 +501,8 @@ def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
         )
     else:
         if is_ineligible:
-            try:
-                if product.ean:
-                    form = forms.OptionalCommentForm()
-                    product_whitelist = fraud_models.ProductWhitelist(
-                        comment=form.comment.data, ean=product.ean, title=product.name, authorId=current_user.id
-                    )
-                    db.session.add(product_whitelist)
-                    db.session.flush()
-            except sa.exc.IntegrityError as error:
-                mark_transaction_as_invalid()
-                flash(
-                    Markup("L'EAN <b>{ean}</b> n'a pas été ajouté dans la whitelist :<br/>{error}").format(
-                        ean=ean, error=error
-                    ),
-                    "warning",
-                )
-            except GtlIdError:
-                mark_transaction_as_invalid()
-                flash(
-                    Markup("L'EAN <b>{ean}</b> n'a pas de GTL ID côté Titelive").format(ean=ean),
-                    "warning",
-                )
-            else:
-                flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
-
-                if product:
-                    offers_query = db.session.query(offers_models.Offer).filter(
-                        offers_models.Offer.productId == product.id,
-                        offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
-                        offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-                    )
-                    offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
-
-                    if offer_ids:
-                        offers_query.update(
-                            values={
-                                "validation": offers_models.OfferValidationStatus.APPROVED,
-                                "lastValidationDate": datetime.datetime.utcnow(),
-                                "lastValidationType": OfferValidationType.MANUAL,
-                                "lastValidationAuthorUserId": current_user.id,
-                            },
-                            synchronize_session=False,
-                        )
-                        db.session.flush()
-                        on_commit(
-                            partial(
-                                search.async_index_offer_ids,
-                                offer_ids,
-                                reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
-                                log_extra={"ean": ean},
-                            )
-                        )
+            product.gcuCompatibilityType = offers_models.GcuCompatibilityType.WHITELISTED
+            flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
 
         flash(Markup("Le produit <b>{product_name}</b> a été créé").format(product_name=product.name), "success")
         return redirect(url_for(".get_product_details", product_id=product.id), 303)

@@ -1,3 +1,4 @@
+import datetime
 import html
 import json
 import re
@@ -7,6 +8,7 @@ import pytest
 from flask import url_for
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -16,6 +18,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 from pcapi.utils import requests
 
@@ -37,8 +40,8 @@ class GetProductDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + product + unlinked offers + whitelist product
-    expected_num_queries = 5
+    # session + user + product + unlinked offers
+    expected_num_queries = 4
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product(self, mock_get_by_ean13, authenticated_client):
@@ -156,7 +159,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
-        with assert_num_queries(self.expected_num_queries - 2):  # remove query unlinked offers and whitelist product
+        with assert_num_queries(self.expected_num_queries - 1):  # remove query unlinked offers
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -344,16 +347,77 @@ class PostProductWhitelistTest(PostEndpointHelper):
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    def test_whitelist_product(self, authenticated_client):
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_whitelist_product(self, mocked_async_index_offer_ids, authenticated_client):
         ean = "1234567899999"
         product = offers_factories.ProductFactory.create(
             ean=ean,
             gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         )
+
+        offers_to_restore = [
+            offers_factories.ThingOfferFactory(
+                idAtProvider=ean,
+                product=product,
+                validation=offers_models.OfferValidationStatus.REJECTED,
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+            offers_factories.ThingOfferFactory(
+                product=product,
+                validation=offers_models.OfferValidationStatus.REJECTED,
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+        ]
+        offers_not_to_restore = [
+            offers_factories.ThingOfferFactory(
+                idAtProvider=ean,
+                product=product,
+                validation=offers_models.OfferValidationStatus.REJECTED,
+                lastValidationType=OfferValidationType.AUTO,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+            offers_factories.ThingOfferFactory(
+                idAtProvider=ean,
+                product=product,
+                validation=offers_models.OfferValidationStatus.PENDING,
+                lastValidationType=OfferValidationType.AUTO,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+            offers_factories.ThingOfferFactory(
+                idAtProvider=ean,
+                product=product,
+                validation=offers_models.OfferValidationStatus.DRAFT,
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+        ]
+
         response = self.post_to_endpoint(authenticated_client, product_id=product.id)
         assert response.status_code == 303
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.COMPATIBLE
+
+        for offer in offers_to_restore:
+            offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
+            assert offer.validation == offers_models.OfferValidationStatus.APPROVED
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
+            assert offer.lastValidationType == OfferValidationType.MANUAL
+
+        for offer in offers_not_to_restore:
+            offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
+            assert not offer.validation == offers_models.OfferValidationStatus.APPROVED
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == (
+                datetime.date.today() - datetime.timedelta(days=2)
+            ).strftime("%d/%m/%Y")
+            assert not offer.lastValidationType == OfferValidationType.MANUAL
+
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [o.id for o in offers_to_restore],
+            reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+            log_extra={"ean": ean},
+        )
 
 
 class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
