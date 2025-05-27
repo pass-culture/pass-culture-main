@@ -33,7 +33,7 @@
   width: rem.torem(56px);
   height: rem.torem(32px);
   position: relative;
-  border-radius: 100vw;
+  border-radius: var(--border-radius-xxl);
   background-color: var(--color-icon-subtle);
   transform: inherit;
 }
@@ -47,7 +47,7 @@
   box-sizing: border-box;
   width: var(--diameter);
   height: var(--diameter);
-  border-radius: 50%;
+  border-radius: var(--border-radius-full);
   background-color: var(--color-background-default);
   transform: translate(0, -50%);
   will-change: transform;

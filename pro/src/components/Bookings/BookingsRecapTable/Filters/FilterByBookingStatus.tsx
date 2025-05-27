@@ -138,7 +138,6 @@ export const FilterByBookingStatus = <
                 styles['active']
             )}
           />
-          {bookingStatuses.length > 0 && <span className="status-badge-icon" />}
         </span>
       </button>
       <div className={styles['bs-filter']} id="booking-filter-tooltip">

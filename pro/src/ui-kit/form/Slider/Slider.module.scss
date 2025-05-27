@@ -12,14 +12,14 @@
     border: none;
     cursor: not-allowed;
     background-color: var(--color-background-disabled);
-    border-radius: rem.torem(6px);
+    border-radius: var(--border-radius-m);
     height: rem.torem(8px);
 
     &::-webkit-slider-thumb {
       appearance: none;
       width: rem.torem(16px);
       height: rem.torem(16px);
-      border-radius: rem.torem(16px);
+      border-radius: var(--border-radius-full);
       background-color: var(--color-icon-disabled);
     }
 

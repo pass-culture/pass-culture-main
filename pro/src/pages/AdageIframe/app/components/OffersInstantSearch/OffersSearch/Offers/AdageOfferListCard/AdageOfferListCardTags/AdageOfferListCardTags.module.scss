@@ -7,6 +7,6 @@
   margin-bottom: rem.torem(16px);
 
   &-tag {
-    border-radius: rem.torem(33px);
+    border-radius: var(--border-radius-xxxl);
   }
 }

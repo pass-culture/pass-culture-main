@@ -35,7 +35,7 @@
 .stat-block {
   display: flex;
   padding: rem.torem(16px) rem.torem(8px);
-  border-radius: rem.torem(8px);
+  border-radius: var(--border-radius-l);
 
   &-icon {
     width: rem.torem(48px);

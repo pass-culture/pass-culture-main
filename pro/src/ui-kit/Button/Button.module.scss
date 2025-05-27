@@ -8,7 +8,7 @@
 
   margin: 0;
   border: rem.torem(2px) solid;
-  border-radius: rem.torem(24px);
+  border-radius: var(--border-radius-xxxl);
   display: inline-flex;
   vertical-align: top;
   justify-content: center;
@@ -127,7 +127,7 @@
     align-items: flex-start;
     justify-content: flex-start;
     background-color: transparent;
-    border-radius: rem.torem(4px);
+    border-radius: var(--border-radius-s);
     padding: 0;
     border: none;
     height: auto;
@@ -208,7 +208,7 @@
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
     border: rem.torem(1px) solid var(--color-border-default);
-    border-radius: rem.torem(6px);
+    border-radius: var(--border-radius-m);
     max-width: rem.torem(400px);
     color: var(--color-text-default);
 

@@ -19,7 +19,7 @@
   }
 
   &-infobox {
-    border-radius: rem.torem(5px);
+    border-radius: var(--border-radius-s);
     padding: rem.torem(16px);
     background-color: var(--color-background-info);
     margin-top: rem.torem(16px);
