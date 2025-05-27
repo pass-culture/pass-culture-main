@@ -2406,6 +2406,13 @@ def delete_offerer(offerer_id: int) -> None:
     if offerer_has_bookings or offerer_has_collective_bookings:
         raise exceptions.CannotDeleteOffererWithBookingsException()
 
+    offerer_is_linked_to_provider = db.session.query(
+        db.session.query(models.OffererProvider).filter(models.OffererProvider.offererId == offerer_id).exists()
+    ).scalar()
+
+    if offerer_is_linked_to_provider:
+        raise exceptions.CannotDeleteOffererLinkedToProvider()
+
     offerer_associated_with_reimbursement_rule = db.session.query(
         db.session.query(finance_models.CustomReimbursementRule)
         .outerjoin(finance_models.CustomReimbursementRule.venue)

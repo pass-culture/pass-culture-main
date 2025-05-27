@@ -97,6 +97,14 @@ class CannotDeleteOffererWithBookingsException(ClientError):
         )
 
 
+class CannotDeleteOffererLinkedToProvider(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "cannotDeleteOffererLinkedToProvider",
+            "Entité juridique non supprimable car elle est liée à un provider",
+        )
+
+
 class CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule(ClientError):
     def __init__(self) -> None:
         super().__init__(

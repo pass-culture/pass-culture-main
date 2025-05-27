@@ -526,6 +526,10 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Impossible de supprimer une entité juridique pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
+    except offerers_exceptions.CannotDeleteOffererLinkedToProvider:
+        mark_transaction_as_invalid()
+        flash("Impossible de supprimer une entité juridique liée à un provider", "warning")
+        return _self_redirect(offerer.id)
     except offerers_exceptions.CannotDeleteOffererWithActiveOrFutureCustomReimbursementRule:
         mark_transaction_as_invalid()
         flash(
