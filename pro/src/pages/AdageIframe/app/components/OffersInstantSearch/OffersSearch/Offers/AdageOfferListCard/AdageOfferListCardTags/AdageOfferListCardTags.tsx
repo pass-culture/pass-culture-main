@@ -23,7 +23,7 @@ export function AdageOfferListCardTags({
   return (
     <div className={styles['offer-tags']}>
       {tags.map((tag) => (
-        <Tag key={tag.text} label={tag.text} />
+        <Tag key={tag.text} label={tag.text} icon={tag.icon} />
       ))}
     </div>
   )
