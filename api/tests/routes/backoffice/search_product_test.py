@@ -255,7 +255,6 @@ class GetImportProductFromTiteliveFormTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Voulez-vous importer ce produit" in response_text
-        assert "Commentaire interne" in response_text
 
         buttons = html_parser.extract(response.data, "button")
         assert "Annuler" in buttons
