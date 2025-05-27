@@ -224,7 +224,7 @@ export const FormPracticalInformation = ({
       <RadioGroup
         group={adressTypeRadios}
         legend={
-          <h2 className={styles['subtitle']}>Où se déroule votre offre ?</h2>
+          <h2 className={styles['subtitle']}>Où se déroule votre offre ? *</h2>
         }
         name="eventAddress.addressType"
         variant={RadioVariant.BOX}

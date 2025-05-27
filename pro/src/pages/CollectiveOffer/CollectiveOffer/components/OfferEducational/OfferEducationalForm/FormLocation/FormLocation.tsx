@@ -211,7 +211,7 @@ export const FormLocation = ({
         onChange={handleLocationTypeChange}
         group={locationTypeRadios}
         legend={
-          <h2 className={styles['subtitle']}>Où se déroule votre offre ?</h2>
+          <h2 className={styles['subtitle']}>Où se déroule votre offre ? *</h2>
         }
         name="location.locationType"
         variant={RadioVariant.BOX}
