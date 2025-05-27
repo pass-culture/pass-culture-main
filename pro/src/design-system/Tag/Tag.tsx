@@ -24,7 +24,7 @@ const tagIconByVariant: { [key in TagVariant]?: string } = {
   [TagVariant.LIKE]: likeIcon,
 }
 
-interface TagProps {
+export type TagProps = {
   /**
    * The label of the tag.
    */
