@@ -1,39 +1,46 @@
 import { render, screen } from '@testing-library/react'
 
-import { Tag, TagVariant } from './Tag'
+import { Tag, TagProps, TagVariant } from './Tag'
+
+function renderTag(props: TagProps) {
+  return render(<Tag {...props} />)
+}
 
 describe('Tag', () => {
   it('should always render a label', () => {
-    render(<Tag label="Département" />)
+    renderTag({ label: 'Département' })
 
     expect(screen.getByText('Département')).toBeInTheDocument()
   })
 
   it('should render an icon if provided', () => {
-    const { container } = render(<Tag label="Département" icon="icon.svg" />)
+    const { container } = renderTag({ label: 'Département', icon: 'icon.svg' })
 
     expect(container.querySelector('svg')).toBeInTheDocument()
   })
 
   it('should not render an icon if not provided', () => {
-    const { container } = render(<Tag label="Département" />)
+    const { container } = renderTag({ label: 'Département' })
 
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
   it('should not render an icon for new variant', () => {
-    const { container } = render(
-      <Tag label="Département" variant={TagVariant.NEW} icon="icon.svg" />
-    )
+    const { container } = renderTag({
+      label: 'Département',
+      icon: 'icon.svg',
+      variant: TagVariant.NEW,
+    })
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
   it.each([TagVariant.BOOKCLUB, TagVariant.HEADLINE, TagVariant.LIKE])(
     'should always render an icon for specific variant: %s',
     (variant) => {
-      const { container } = render(
-        <Tag label="Département" variant={variant} />
-      )
+      const { container } = renderTag({
+        label: 'Département',
+        variant: variant,
+      })
 
       expect(container.querySelector('svg')).toBeInTheDocument()
     }

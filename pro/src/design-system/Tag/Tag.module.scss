@@ -4,12 +4,13 @@
 .tag {
   @include fonts.body-accent-xs;
 
-  display: flex;
+  display: inline-flex;
   padding: rem.torem(2px) rem.torem(4px);
   align-items: center;
   gap: rem.torem(4px);
   border-radius: rem.torem(4px);
   width: fit-content;
+  color: var(--color-text-default);
 
   &.default {
     .icon {
