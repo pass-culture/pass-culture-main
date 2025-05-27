@@ -665,8 +665,19 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.status_code == 403
 
     @time_machine.travel(time_travel_str)
-    def test_post_offers_invalid_domain(self, public_client, payload):
+    def test_post_offers_invalid_domain_without_program(self, public_client, payload):
         payload["nationalProgramId"] = None
+        payload["domains"] = [-1]
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 404
+        assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
+
+    @time_machine.travel(time_travel_str)
+    def test_post_offers_invalid_domain_with_program(self, public_client, payload):
+        payload["nationalProgramId"] = educational_factories.NationalProgramFactory().id
         payload["domains"] = [-1]
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
