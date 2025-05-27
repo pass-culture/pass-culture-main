@@ -129,7 +129,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
         assert response.data == expected_data
 
     def test_extract_not_found(self, authenticated_client):
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
 
         response = self.post_to_endpoint(
             authenticated_client, extract_id="0", expected_num_queries=self.expected_num_queries
@@ -146,7 +146,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8),
         )
 
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         expected_data = randbytes(4096)
         with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(expected_data)
@@ -163,7 +163,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
     def test_no_file_in_bucket(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
 
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         response = self.post_to_endpoint(
             authenticated_client, extract_id=extract.id, expected_num_queries=self.expected_num_queries
         )
@@ -190,7 +190,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
         response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         assert response.location == expected_url
 
         assert db.session.query(users_models.GdprUserDataExtract).count() == 0
@@ -203,7 +203,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
 
         response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         assert response.location == expected_url
 
         response = authenticated_client.get(response.location)
@@ -214,7 +214,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
     def test_delete_gdpr_user_extract_id_gdpr_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, gdpr_id=0)
 
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         assert response.location == expected_url
 
         response = authenticated_client.get(response.location)
@@ -226,7 +226,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
         response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
         assert response.status_code == 302
 
-        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         assert response.location == expected_url
 
         assert db.session.query(users_models.GdprUserDataExtract).count() == 0

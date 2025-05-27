@@ -109,7 +109,7 @@ class UpdateRoleTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, role_id=role_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.get_roles", active_tab="management", _external=True)
+        expected_url = url_for("backoffice_web.get_roles", active_tab="management")
         assert response.location == expected_url
 
         role_to_edit = db.session.query(perm_models.Role).filter_by(id=role_to_edit.id).one()
@@ -460,7 +460,7 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert_user_equals(cards_text[0], users[0])
 
     def test_search_invalid(self, authenticated_client):
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + current user
             response = authenticated_client.get(url_for(self.endpoint, q="%"))
             assert response.status_code == 400
 
@@ -566,7 +566,6 @@ class GetBoUserTest(GetEndpointHelper):
 
         user_id = user.id
         expected_num_queries = self.expected_num_queries
-        expected_num_queries += 1  # rollback after error
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 404

@@ -111,8 +111,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     # by a field added in the jinja template.
     # - fetch session (1 query)
     # - fetch user (1 query)
+    expected_num_queries_when_no_query = 2
     # - fetch collective offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = expected_num_queries_when_no_query + 1
 
     def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
         return {
@@ -796,7 +797,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -808,7 +809,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -832,7 +833,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -848,7 +849,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -863,7 +864,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": "12, 34, A",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -932,13 +933,12 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
             q=collective_offer_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
         assert response.status_code == 200
@@ -955,13 +955,12 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert response.status_code == 303
         assert educational_testing.adage_requests[0].keys() == {"url", "sent_data"}
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
             q=collective_offer_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
         assert response.status_code == 200
@@ -991,13 +990,12 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
             q=collective_offer_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
         assert response.status_code == 200
@@ -1028,13 +1026,12 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
             q=collective_offer_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
         assert response.status_code == 200
@@ -1081,13 +1078,12 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
             "backoffice_web.collective_offer.list_collective_offers",
             q=collective_offer_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
 
@@ -1131,11 +1127,11 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
-            "backoffice_web.collective_offer.list_collective_offers", q=collective_offer_to_reject.id, _external=True
+            "backoffice_web.collective_offer.list_collective_offers", q=collective_offer_to_reject.id
         )
         response = authenticated_client.get(collective_offer_list_url)
 
@@ -1160,11 +1156,11 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
-            "backoffice_web.collective_offer.list_collective_offers", q=collective_offer_to_reject.id, _external=True
+            "backoffice_web.collective_offer.list_collective_offers", q=collective_offer_to_reject.id
         )
         response = authenticated_client.get(collective_offer_list_url)
 
@@ -1204,7 +1200,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         for collective_offer in collective_offers:
@@ -1300,7 +1296,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
+        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
         assert response.location == expected_url
 
         for collective_offer in collective_offers:
