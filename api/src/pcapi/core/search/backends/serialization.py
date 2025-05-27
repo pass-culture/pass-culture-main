@@ -396,7 +396,6 @@ class AlgoliaSerializationMixin:
                 "name": collective_offer_template.name,
                 "students": [student.value for student in collective_offer_template.students],
                 "domains": [domain.id for domain in collective_offer_template.domains],
-                "educationalInstitutionUAICode": "all",
                 "interventionArea": collective_offer_template.interventionArea,
                 "schoolInterventionArea": (
                     collective_offer_template.interventionArea

@@ -155,10 +155,7 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
           'offerer.name',
         ],
         facetFilters: [
-          [
-            'offer.educationalInstitutionUAICode:all',
-            `offer.educationalInstitutionUAICode:${adageUser.uai}`,
-          ],
+          [],
         ],
         distinct: true,
         hitsPerPage: ALGOLIA_NUMBER_VENUES_SUGGESTIONS,
