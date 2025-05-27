@@ -604,13 +604,10 @@ def create_collective_offer_public(
 
     validation.validate_offer_venue(body.offer_venue)
 
-    educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
-
+    # check domains and national program
+    educational_domains = get_educational_domains_from_ids(body.domains)
     if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
         validation.validate_national_program(body.national_program_id, educational_domains)
-
-    if len(educational_domains) != len(body.domains):
-        raise exceptions.EducationalDomainsNotFound()
 
     institution = educational_repository.get_educational_institution_public(
         institution_id=body.educational_institution_id,
