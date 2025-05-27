@@ -163,27 +163,38 @@ export function getOfferEducationalValidationSchema(
           .required('Veuillez renseigner une adresse email')
           .test(emailSchema),
     }),
-    contactUrl: yup.string().when(['contactOptions', 'contactFormType'], {
-      is: (
-        contactOptions: OfferEducationalFormValues['contactOptions'],
-        contactFormType: OfferEducationalFormValues['contactFormType']
-      ) => contactOptions?.form && contactFormType === 'url',
-      then: (schema) =>
-        schema
-          .required('Veuillez renseigner une URL de contact')
-          .url(
-            'Veuillez renseigner une URL valide, exemple : https://mon-formulaire.fr'
-          ),
-    }),
-    contactOptions: yup.object().when('isTemplate', {
-      is: (isTemplate: boolean) => isTemplate,
-      then: (schema) =>
-        schema.required().test({
-          name: 'is-one-true',
-          message: 'Veuillez sélectionner au moins un moyen de contact',
-          test: isOneTrue,
-        }),
-    }),
+    contactUrl: yup
+      .string()
+      .nullable()
+      .when(['contactOptions', 'contactFormType'], {
+        is: (
+          contactOptions: OfferEducationalFormValues['contactOptions'],
+          contactFormType: OfferEducationalFormValues['contactFormType']
+        ) => contactOptions?.form && contactFormType === 'url',
+        then: (schema) =>
+          schema
+            .required('Veuillez renseigner une URL de contact')
+            .url(
+              'Veuillez renseigner une URL valide, exemple : https://mon-formulaire.fr'
+            ),
+      }),
+    contactOptions: yup
+      .object<OfferEducationalFormValues['contactOptions']>()
+      .notRequired()
+      .shape({
+        email: yup.boolean().required(),
+        phone: yup.boolean().required(),
+        form: yup.boolean().required(),
+      })
+      .when('isTemplate', {
+        is: (isTemplate: boolean) => isTemplate,
+        then: (schema) =>
+          schema.required().test({
+            name: 'is-one-true',
+            message: 'Veuillez sélectionner au moins un moyen de contact',
+            test: isOneTrue,
+          }),
+      }),
     notificationEmails: yup
       .array()
       .of(
