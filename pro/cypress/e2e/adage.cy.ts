@@ -39,7 +39,6 @@ describe('ADAGE discovery', () => {
                       name: 'offer 280 pour eac_pending_bank_informations template request',
                       students: ['Lycée - Seconde'],
                       domains: [10],
-                      educationalInstitutionUAICode: 'all',
                       interventionArea: ['2A', '2B'],
                       schoolInterventionArea: null,
                       locationType: 'TO_BE_DEFINED',
@@ -72,11 +71,6 @@ describe('ADAGE discovery', () => {
                         name: {
                           value:
                             'offer 280 pour eac_pending_bank_informations template request',
-                          matchLevel: 'none',
-                          matchedWords: [],
-                        },
-                        educationalInstitutionUAICode: {
-                          value: 'all',
                           matchLevel: 'none',
                           matchedWords: [],
                         },
@@ -173,7 +167,7 @@ describe('ADAGE discovery', () => {
                 },
                 query: '',
                 params:
-                  'aroundLatLng=48.8566%2C%202.3522&aroundRadius=30000000&attributesToHighlight=%5B%5D&attributesToRetrieve=%5B%22objectID%22%2C%22offer.dates%22%2C%22offer.name%22%2C%22offer.thumbUrl%22%2C%22venue.name%22%2C%22venue.publicName%22%2C%22isTemplate%22%2C%22offer.interventionArea%22%5D&clickAnalytics=true&distinct=false&facetFilters=%5B%5B%22offer.educationalInstitutionUAICode%3Aall%22%2C%22offer.educationalInstitutionUAICode%3A0910620E%22%5D%5D&filters=offer.eventAddressType%3AoffererVenue%3Cscore%3D3%3E%20OR%20offer.eventAddressType%3Aschool%3Cscore%3D2%3E%20OR%20offer.eventAddressType%3Aother%3Cscore%3D1%3E&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=8&page=0&query=',
+                  'aroundLatLng=48.8566%2C%202.3522&aroundRadius=30000000&attributesToHighlight=%5B%5D&attributesToRetrieve=%5B%22objectID%22%2C%22offer.dates%22%2C%22offer.name%22%2C%22offer.thumbUrl%22%2C%22venue.name%22%2C%22venue.publicName%22%2C%22isTemplate%22%2C%22offer.interventionArea%22%5D&clickAnalytics=true&distinct=false&filters=offer.eventAddressType%3AoffererVenue%3Cscore%3D3%3E%20OR%20offer.eventAddressType%3Aschool%3Cscore%3D2%3E%20OR%20offer.eventAddressType%3Aother%3Cscore%3D1%3E&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=8&page=0&query=',
                 index: 'testing-collective-offers',
                 queryID: '324dafe3bdf5ec1e8bfeb03f89044fc0',
                 renderingContent: {},

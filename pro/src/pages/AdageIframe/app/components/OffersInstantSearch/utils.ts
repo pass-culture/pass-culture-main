@@ -18,7 +18,6 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
 
 export const adageFiltersToFacetFilters = ({
   domains,
-  uai,
   students,
   eventAddressType,
   departments,
@@ -27,7 +26,6 @@ export const adageFiltersToFacetFilters = ({
   venue,
 }: {
   domains: number[]
-  uai?: string[] | null
   students: string[]
   departments: string[]
   academies: string[]
@@ -110,15 +108,6 @@ export const adageFiltersToFacetFilters = ({
   if (filteredFormats.length > 0) {
     filtersKeys.push('formats')
     updatedFilters.push(filteredFormats)
-  }
-
-  if (uai) {
-    if (!uai.includes('all')) {
-      filtersKeys.push('uaiCode')
-    }
-    updatedFilters.push(
-      uai.map((uaiCode) => `offer.educationalInstitutionUAICode:${uaiCode}`)
-    )
   }
 
   if (filteredVenues.length > 0) {
