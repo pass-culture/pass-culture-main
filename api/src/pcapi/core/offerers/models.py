@@ -1237,9 +1237,7 @@ class OffererTagCategory(PcObject, Base, Model):
 
 class OffererProvider(PcObject, Base, Model):
     __tablename__ = "offerer_provider"
-    offererId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
-    )
+    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], back_populates="offererProviders"
     )
