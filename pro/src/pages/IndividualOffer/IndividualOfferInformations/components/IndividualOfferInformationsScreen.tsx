@@ -1,10 +1,11 @@
-import { Form, FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
@@ -26,12 +27,12 @@ import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { serializePatchOffer } from 'pages/IndividualOffer/commons/serializers'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
+import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 
 import { UsefulInformationFormValues } from '../commons/types'
 import { setDefaultInitialValuesFromOffer } from '../commons/utils'
@@ -59,11 +60,13 @@ export const IndividualOfferInformationsScreen = ({
   const notify = useNotification()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
+
   const { subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
 
   const [isUpdatesWarningDialogOpen, setIsUpdatesWarningDialogOpen] =
     useState(false)
+
   const [warningFieldsChanged, setWarningFieldsChanged] = useState<{
     address: boolean
     withdrawalInformations: boolean
@@ -85,41 +88,91 @@ export const IndividualOfferInformationsScreen = ({
     }
   }
 
-  function someFormFieldsChanged(fields: string[]): boolean {
+  // Getting selected venue at step 1 (details) to infer address fields
+  const venuesQuery = useSWR(
+    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
+  const selectedVenue = venuesQuery.data.venues.find(
+    (v) => v.id.toString() === offer.venue.id.toString()
+  )
+
+  const offerSubCategory = subCategories.find(
+    (s) => s.id === offer.subcategoryId
+  )
+
+  const conditionalFields = getOfferConditionalFields({
+    offerSubCategory,
+    receiveNotificationEmails: true,
+  })
+
+  const validationSchema = getValidationSchema({
+    subcategories: conditionalFields,
+    isDigitalOffer: offer.isDigital,
+  })
+
+  const initialValues = setDefaultInitialValuesFromOffer({
+    offer,
+    selectedVenue,
+  })
+
+  const methods = useForm<UsefulInformationFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver<UsefulInformationFormValues>(validationSchema),
+    mode: 'onTouched',
+  })
+
+  const { register, getValues, handleSubmit, formState } = methods
+
+  function someFieldsTouchedAndChanged(
+    fields: (keyof UsefulInformationFormValues)[]
+  ): boolean {
     return fields.some((field) => {
-      const fieldMeta = formik.getFieldMeta(field)
-      return fieldMeta.touched && fieldMeta.value !== fieldMeta.initialValue
+      // Check if field is touched
+      if (!formState.touchedFields[field]) {
+        return false
+      }
+
+      // Check if field value changed compared to initial
+      const currentValue = getValues(field)
+      const initialValue = initialValues[field]
+
+      return currentValue !== initialValue
     })
   }
 
   const onSubmit = async (
     formValues: UsefulInformationFormValues
   ): Promise<void> => {
+    console.log(formValues)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      const hasWithdrawalInformationsChanged = someFormFieldsChanged([
+      const withdrawalFields: (keyof UsefulInformationFormValues)[] = [
         'withdrawalDetails',
         'withdrawalDelay',
         'withdrawalType',
-      ])
+      ]
 
-      const hasAddressChanged = someFormFieldsChanged([
+      const addressFields: (keyof UsefulInformationFormValues)[] = [
         'offerLocation',
         'search-addressAutocomplete',
         'street',
         'postalCode',
         'city',
         'coords',
-      ])
+      ]
 
-      setWarningFieldsChanged((fields) => ({
-        ...fields,
+      const hasWithdrawalChanged = someFieldsTouchedAndChanged(withdrawalFields)
+      const hasAddressChanged = someFieldsTouchedAndChanged(addressFields)
+
+      setWarningFieldsChanged({
         address: hasAddressChanged,
-        withdrawalInformations: hasWithdrawalInformationsChanged,
-      }))
+        withdrawalInformations: hasWithdrawalChanged,
+      })
 
       const showUpdatesWarningModal =
-        offer.hasPendingBookings &&
-        (hasWithdrawalInformationsChanged || hasAddressChanged)
+        offer.hasPendingBookings && (hasWithdrawalChanged || hasAddressChanged)
 
       if (showUpdatesWarningModal && !isUpdatesWarningDialogOpen) {
         setIsUpdatesWarningDialogOpen(true)
@@ -165,54 +218,10 @@ export const IndividualOfferInformationsScreen = ({
       if (!isErrorAPIError(error)) {
         return
       }
-      formik.setErrors(
-        serializeApiErrors(error.body, {
-          venue: 'venueId',
-        })
-      )
-      // This is used from scroll to error
-      formik.setStatus('apiError')
 
       return notify.error(SENT_DATA_ERROR_MESSAGE)
     }
   }
-
-  // Getting selected venue at step 1 (details) to infer address fields
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-
-  const selectedVenue = venuesQuery.data.venues.find(
-    (v) => v.id.toString() === offer.venue.id.toString()
-  )
-
-  const offerSubCategory = subCategories.find(
-    (s) => s.id === offer.subcategoryId
-  )
-
-  const conditionalFields = getOfferConditionalFields({
-    offerSubCategory,
-    receiveNotificationEmails: true,
-  })
-
-  const validationSchema = getValidationSchema({
-    subcategories: conditionalFields,
-    isDigitalOffer: offer.isDigital,
-  })
-
-  const initialValues = setDefaultInitialValuesFromOffer({
-    offer,
-    selectedVenue,
-  })
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    enableReinitialize: true,
-  })
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -239,10 +248,10 @@ export const IndividualOfferInformationsScreen = ({
   }
 
   return (
-    <FormikProvider value={formik}>
-      <Form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FormLayout fullWidthActions>
-          <ScrollToFirstErrorAfterSubmit />
+          <ScrollToFirstHookFormErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
           <UsefulInformationForm
             offer={offer}
@@ -255,13 +264,13 @@ export const IndividualOfferInformationsScreen = ({
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
           isDisabled={
-            formik.isSubmitting ||
+            formState.isSubmitting ||
             isOfferDisabled(offer.status) ||
             Boolean(publishedOfferWithSameEAN)
           }
-          dirtyForm={formik.dirty}
+          dirtyForm={formState.isDirty}
         />
-      </Form>
+      </form>
 
       <ConfirmDialog
         cancelText="Annuler"
@@ -269,9 +278,7 @@ export const IndividualOfferInformationsScreen = ({
         onCancel={() => {
           setIsUpdatesWarningDialogOpen(false)
         }}
-        onConfirm={async () => {
-          await formik.submitForm()
-        }}
+        onConfirm={methods.handleSubmit(onSubmit)}
         open={isUpdatesWarningDialogOpen}
         title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
       >
@@ -293,7 +300,6 @@ export const IndividualOfferInformationsScreen = ({
           </Callout>
           <FormLayout.Row>
             <Checkbox
-              hideFooter
               label={'Prévenir les jeunes par e-mail'}
               name="shouldSendMail"
               onChange={(evt) => setSendWithdrawalMail(evt.target.checked)}
@@ -303,8 +309,8 @@ export const IndividualOfferInformationsScreen = ({
         </div>
       </ConfirmDialog>
       <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !formik.isSubmitting}
+        when={formState.isDirty && !formState.isSubmitting}
       />
-    </FormikProvider>
+    </FormProvider>
   )
 }

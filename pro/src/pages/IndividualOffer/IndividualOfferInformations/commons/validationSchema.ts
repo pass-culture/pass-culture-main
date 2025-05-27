@@ -5,6 +5,8 @@ import { emailSchema } from 'commons/utils/isValidEmail'
 
 import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
 
+import { UsefulInformationFormValues } from './types'
+
 const isAnyTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
@@ -12,6 +14,7 @@ type ValidationSchemaProps = {
   subcategories: string[]
   isDigitalOffer?: boolean
 }
+
 export const getValidationSchema = ({
   subcategories,
   isDigitalOffer = false,
@@ -71,7 +74,7 @@ export const getValidationSchema = ({
       .url('Veuillez renseigner une URL valide. Ex : https://exemple.com'),
   }
 
-  return yup.object().shape({
+  return yup.object<UsefulInformationFormValues>().shape({
     ...validationSchema,
     ...(!isDigitalOffer ? locationSchema : {}),
   })
