@@ -7,7 +7,6 @@ import pytest
 
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
@@ -757,11 +756,6 @@ class CheckBookingLimitDatetimeTest:
         "stock_factory, offer_factory, venue_factory",
         [
             (
-                educational_factories.CollectiveStockFactory,
-                educational_factories.CollectiveOfferFactory,
-                offerers_factories.VenueFactory,
-            ),
-            (
                 offers_factories.StockFactory,
                 offers_factories.DigitalOfferFactory,
                 offerers_factories.VirtualVenueFactory,
@@ -774,10 +768,7 @@ class CheckBookingLimitDatetimeTest:
     ):
         venue = venue_factory(departementCode=71)
         offer = offer_factory(venueId=venue.id)
-        if stock_factory == educational_factories.CollectiveStockFactory:
-            stock = stock_factory(collectiveOfferId=offer.id)
-        else:
-            stock = stock_factory(offerId=offer.id)
+        stock = stock_factory(offerId=offer.id)
 
         beginning_date = datetime.datetime(2024, 7, 19, 8)
         booking_limit_date = beginning_date + datetime.timedelta(hours=1)
@@ -788,7 +779,6 @@ class CheckBookingLimitDatetimeTest:
 
     def test_check_booking_limit_datetime_should_raise(self):
         stock = offers_factories.StockFactory()
-        collective_stock = educational_factories.CollectiveStockFactory()
 
         beginning_date = datetime.datetime(2024, 7, 19, 8)
         booking_limit_date = beginning_date + datetime.timedelta(days=1)
@@ -799,22 +789,13 @@ class CheckBookingLimitDatetimeTest:
                 stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
             )
 
-        # with collective stock
-        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
-            validation.check_booking_limit_datetime(
-                collective_stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
-            )
-
         with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
             validation.check_booking_limit_datetime(
                 None, beginning=beginning_date, booking_limit_datetime=booking_limit_date
             )
 
-    @pytest.mark.parametrize(
-        "stock_factory", [offers_factories.StockFactory, educational_factories.CollectiveStockFactory]
-    )
-    def test_check_booking_limit_datetime_should_not_raise_because_a_date_is_missing(self, stock_factory):
-        stock = stock_factory()
+    def test_check_booking_limit_datetime_should_not_raise_because_a_date_is_missing(self):
+        stock = offers_factories.StockFactory()
 
         beginning_date = datetime.datetime(2024, 7, 19, 8)
         booking_limit_date = beginning_date + datetime.timedelta(days=1)

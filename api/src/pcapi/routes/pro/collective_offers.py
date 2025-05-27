@@ -16,6 +16,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
+from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
@@ -234,59 +235,61 @@ def edit_collective_offer(
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     if not offerers_api.can_offerer_create_educational_offer(offerer.id):
-        raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
+        raise api_errors.ForbiddenError({"Partner": "User not in Adage can't edit the offer"})
 
     try:
         educational_api_offer.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
 
     # venue change errors
     except offers_exceptions.ForbiddenDestinationVenue:
-        raise ApiErrors({"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}, 400)
+        raise ApiErrors({"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]})
     except offers_exceptions.OfferEventInThePast:
-        raise ApiErrors({"offer": "This collective offer that has already started does not allow editing details"}, 403)
+        raise api_errors.ForbiddenError(
+            {"offer": "This collective offer that has already started does not allow editing details"}
+        )
     except offers_exceptions.NoDestinationVenue:
-        raise ApiErrors({"venueId": ["No venue with a pricing point found for the destination venue."]}, 400)
+        raise ApiErrors({"venueId": ["No venue with a pricing point found for the destination venue."]})
 
     # venue / offerer errors
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
-        raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
+        raise api_errors.ForbiddenError({"venueId": "New venue needs to have the same offerer"})
     except educational_exceptions.VenueIdDontExist:
-        raise ApiErrors({"venueId": "The venue does not exist."}, 404)
+        raise api_errors.ResourceNotFoundError({"venueId": "The venue does not exist."})
 
     # domains / national_program errors
     except educational_exceptions.NationalProgramNotFound:
-        raise ApiErrors({"global": ["National program not found"]}, 400)
+        raise ApiErrors({"global": ["National program not found"]})
     except educational_exceptions.IllegalNationalProgram:
         logger.info(
             "Could not update offer: invalid national program",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"})
     except educational_exceptions.InactiveNationalProgram:
         logger.info(
             "Could not create offer: inactive national program",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"})
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
             extra={"collective_offer_id": offer_id, "domains": body.domains},
         )
-        raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"})
 
     # edition errors
     except educational_exceptions.CollectiveOfferForbiddenAction:
-        raise ApiErrors({"offer": "This collective offer status does not allow editing details"}, 403)
+        raise api_errors.ForbiddenError({"offer": "This collective offer status does not allow editing details"})
     except educational_exceptions.CollectiveOfferIsPublicApi:
-        raise ApiErrors({"global": ["Collective offer created by public API is only editable via API."]}, 403)
-    except (
-        offers_exceptions.OfferException
-    ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
+        raise api_errors.ForbiddenError(
+            {"global": ["Collective offer created by public API is only editable via API."]}
+        )
+    except educational_exceptions.EducationalException as error:
         raise ApiErrors(error.errors)
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
@@ -329,13 +332,13 @@ def edit_collective_offer_template(
             "Could not update offer: invalid national program",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"})
     except educational_exceptions.InactiveNationalProgram:
         logger.info(
             "Could not create offer: inactive national program",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"})
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
@@ -344,16 +347,12 @@ def edit_collective_offer_template(
         raise ApiErrors({"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}, status_code=404)
 
     # edition errors
-    except (
-        offers_exceptions.OfferException
-    ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
-        raise ApiErrors(error.errors)
     except educational_exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
-        raise ApiErrors({err.field: err.msg}, 400)
-    except offers_exceptions.CollectiveOfferContactRequestError as err:
-        raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
+        raise ApiErrors({err.field: err.msg})
+    except educational_exceptions.CollectiveOfferContactRequestError as err:
+        raise ApiErrors({f"contact[{err.fields}]": err.msg})
 
     offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
@@ -582,23 +581,23 @@ def create_collective_offer_template(
             "Could not create offer: national program not found",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"})
     except educational_exceptions.IllegalNationalProgram:
         logger.info(
             "Could not create offer: invalid national program",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"})
     except educational_exceptions.InactiveNationalProgram:
         logger.info(
             "Could not create offer: inactive national program",
             extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
         )
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"})
 
     # creation errors
-    except offers_exceptions.CollectiveOfferContactRequestError as err:
-        raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
+    except educational_exceptions.CollectiveOfferContactRequestError as err:
+        raise ApiErrors({f"contact[{err.fields}]": err.msg})
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 

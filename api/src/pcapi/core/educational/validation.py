@@ -7,8 +7,10 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational.api import national_program as national_program_api
+from pcapi.core.offers import models as offers_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 if TYPE_CHECKING:
@@ -206,3 +208,49 @@ def validate_national_program(
     valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
     if national_program_id not in valid_national_program_ids:
         raise exceptions.IllegalNationalProgram()
+
+
+def check_validation_status(offer: models.CollectiveOffer | models.CollectiveOfferTemplate) -> None:
+    if offer.validation in (offers_models.OfferValidationStatus.REJECTED, offers_models.OfferValidationStatus.PENDING):
+        raise exceptions.EducationalException(
+            {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+        )
+
+
+def check_contact_request(offer: models.CollectiveOfferTemplate, in_data: dict) -> None:
+    set_email = in_data.get("contactEmail", offer.contactEmail)
+    set_phone = in_data.get("contactPhone", offer.contactPhone)
+    set_url = in_data.get("contactUrl", offer.contactUrl)
+    set_form = in_data.get("contactForm", offer.contactForm)
+
+    if not any((set_email, set_phone, set_url, set_form)):
+        raise exceptions.AllNullContactRequestDataError()
+
+    if set_url and set_form:
+        raise exceptions.UrlandFormBothSetError()
+
+
+def check_booking_limit_datetime(
+    stock: models.CollectiveStock | None,
+    beginning: datetime.datetime | None,
+    booking_limit_datetime: datetime.datetime | None,
+) -> list[datetime.datetime]:
+    if not (beginning and booking_limit_datetime):  # nothing to check
+        return []
+
+    if stock:
+        offer = stock.collectiveOffer
+
+        reference_tz = offer.venue.timezone
+
+        if offer.venue.offererAddress:
+            reference_tz = offer.venue.offererAddress.address.timezone
+
+        if reference_tz is not None:  # update to timezone
+            beginning = date_utils.default_timezone_to_local_datetime(beginning, reference_tz)
+            booking_limit_datetime = date_utils.default_timezone_to_local_datetime(booking_limit_datetime, reference_tz)
+    if booking_limit_datetime > beginning:
+        raise exceptions.EducationalException(
+            {"global": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]}
+        )
+    return [beginning, booking_limit_datetime]

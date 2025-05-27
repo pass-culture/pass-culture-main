@@ -386,30 +386,11 @@ def check_image(
         raise exceptions.ImageTooLarge(max_width, max_height)
 
 
-def check_validation_status(
-    offer: models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-) -> None:
+def check_validation_status(offer: models.Offer) -> None:
     if offer.validation in (models.OfferValidationStatus.REJECTED, models.OfferValidationStatus.PENDING):
         raise exceptions.OfferException(
             {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
         )
-
-
-def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
-    if isinstance(offer, educational_models.CollectiveOffer):
-        # collective offers are not concerned, for now.
-        return
-
-    set_email = in_data.get("contactEmail", offer.contactEmail)
-    set_phone = in_data.get("contactPhone", offer.contactPhone)
-    set_url = in_data.get("contactUrl", offer.contactUrl)
-    set_form = in_data.get("contactForm", offer.contactForm)
-
-    if not any((set_email, set_phone, set_url, set_form)):
-        raise exceptions.AllNullContactRequestDataError()
-
-    if set_url and set_form:
-        raise exceptions.UrlandFormBothSetError()
 
 
 def check_offer_can_have_activation_codes(offer: models.Offer) -> None:
@@ -578,7 +559,7 @@ def check_offer_subcategory_is_valid(offer_subcategory_id: str | None) -> None:
 
 
 def check_booking_limit_datetime(
-    stock: educational_models.CollectiveStock | models.Stock | None,
+    stock: models.Stock | None,
     beginning: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
 ) -> list[datetime.datetime]:
@@ -586,13 +567,11 @@ def check_booking_limit_datetime(
         return []
 
     if stock:
-        if isinstance(stock, educational_models.CollectiveStock):
-            offer = stock.collectiveOffer
-        else:
-            offer = stock.offer
+        offer = stock.offer
 
         reference_tz = offer.venue.timezone
-        if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock):
+
+        if offer.offererAddress:
             reference_tz = offer.offererAddress.address.timezone
         elif offer.venue.offererAddress:
             reference_tz = offer.venue.offererAddress.address.timezone
@@ -847,11 +826,6 @@ def check_for_duplicated_price_categories(
         raise api_errors.ApiErrors(
             {"priceCategories": [f"The price category {existing_price_category.label} already exists"]}
         )
-
-
-class OfferValidationError(Exception):
-    field = "all"
-    msg = "Invalid"
 
 
 def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
