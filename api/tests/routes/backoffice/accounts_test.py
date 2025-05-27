@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import decimal
 import os
 import re
 from unittest.mock import patch
@@ -933,6 +934,19 @@ class GetPublicAccountTest(GetEndpointHelper):
         # Remaining credit + Title + Initial Credit
         assert expected_remaining_text in cards_text
         assert expected_digital_remaining_text in cards_text
+
+    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client):
+        free_beneficiary = users_factories.UserFactory(roles=[users_models.UserRole.FREE_BENEFICIARY])
+        users_factories.DepositGrantFactory(
+            user=free_beneficiary, type=finance_models.DepositType.GRANT_FREE, amount=decimal.Decimal("0")
+        )
+
+        user_id = free_beneficiary.id
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+
+        assert response.status_code == 200
+        assert "0,00 € Crédit restant 0,00 €" in html_parser.extract_cards_text(response.data)
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
         _, _, _, _, random, _ = create_bunch_of_accounts()
