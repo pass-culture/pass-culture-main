@@ -7,6 +7,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvByInvoicesModel
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvQueryModel
@@ -29,6 +30,7 @@ from . import blueprint
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_reimbursements_csv(query: ReimbursementCsvQueryModel) -> bytes:
     reimbursement_details_csv = _get_reimbursements_csv_filter(current_user, query)
     return reimbursement_details_csv.encode("utf-8-sig")
@@ -68,6 +70,7 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
     api=blueprint.pro_private_schema,
     flatten=True,
 )
+@atomic()
 def get_reimbursements_csv_v2(query: ReimbursementCsvByInvoicesModel) -> bytes:
     reimbursement_details_csv = _get_reimbursments_csv_filter_by_invoices(current_user, query)
     return reimbursement_details_csv.encode("utf-8-sig")
