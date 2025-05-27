@@ -268,9 +268,13 @@ def _soft_delete_origin_venue(origin_venue: offerers_models.Venue) -> None:
 def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
     for row in _get_venue_rows(origin, destination):
-        logger.info("Starting to move offers from venue (origin): %d to venue (destination): %d", origin, destination)
         origin_venue_id = int(row[ORIGIN_VENUE_ID_HEADER])
         destination_venue_id = int(row[DESTINATION_VENUE_ID_HEADER])
+        logger.info(
+            "Starting to move offers from venue (origin): %d to venue (destination): %d",
+            origin_venue_id,
+            destination_venue_id,
+        )
 
         origin_venue = (
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == origin_venue_id).one_or_none()
