@@ -265,6 +265,12 @@
               const totalPages = Math.ceil(filteredData.length / itemsPerPage);
               const paginationDiv = document.querySelector(paginationSelector);
               if (!paginationDiv) return;
+
+              if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+              }
+
               paginationDiv.innerHTML = '';
 
               const maxPagesToShow = 20;
@@ -307,25 +313,19 @@
               }
             }
 
+            const searchableFields = ['id', 'name', 'venue_name', 'status', 'dateCreated'];
+
             function handleSearch(query) {
               const filter = document.querySelector(filterSelectSelector).value;
               const lowerQuery = query.toLowerCase();
 
               filteredData = data.filter(item => {
                 if (filter === 'all') {
-                  return (
-                    Object.values(item).some(
-                      val =>
-                      (typeof val === 'string' && val.toLowerCase().includes(lowerQuery)) ||
-                      (val && val.toString().toLowerCase().includes(lowerQuery))
-                    ) ||
-                    item.id.toString().toLowerCase().includes(lowerQuery)
-                  );
+                  return searchableFields.some(field => {
+                    return item[field] && item[field].toString().toLowerCase().includes(lowerQuery);
+                  });
                 } else {
-                  return (
-                    (item[filter] && item[filter].toString().toLowerCase().includes(lowerQuery)) ||
-                    (item.id && item.id.toString().toLowerCase().includes(lowerQuery))
-                  );
+                  return item[filter] && item[filter].toString().toLowerCase().includes(lowerQuery);
                 }
               });
 
