@@ -78,7 +78,7 @@ export const DetailsForm = ({
     <>
       <FormLayout.Section title="À propos de votre offre">
         {showAddVenueBanner && (
-          <FormLayout.Row>
+          <FormLayout.Row className={styles['row']}>
             <Callout
               links={[
                 {
@@ -99,7 +99,7 @@ export const DetailsForm = ({
         {!showAddVenueBanner && (
           <>
             {venuesOptions.length > 1 && (
-              <FormLayout.Row>
+              <FormLayout.Row className={styles['row']}>
                 <Select
                   label="Qui propose l’offre ?"
                   options={venuesOptions}
@@ -123,7 +123,7 @@ export const DetailsForm = ({
                 />
               </FormLayout.Row>
             )}
-            <FormLayout.Row>
+            <FormLayout.Row className={styles['row']}>
               <TextInput
                 count={watch('name').length}
                 label="Titre de l’offre"
@@ -134,7 +134,10 @@ export const DetailsForm = ({
                 disabled={readOnlyFields.includes('name')}
               />
             </FormLayout.Row>
-            <FormLayout.Row sideComponent={<MarkdownInfoBox />}>
+            <FormLayout.Row
+              sideComponent={<MarkdownInfoBox />}
+              className={styles['row']}
+            >
               <TextArea
                 label="Description"
                 maxLength={10000}
@@ -152,7 +155,7 @@ export const DetailsForm = ({
                     réservé votre offre sur l’application pass Culture.
                   </InfoBox>
                 }
-                className={styles['url-input']}
+                className={styles['row']}
               >
                 <TextInput
                   label="URL d’accès à l’offre"
