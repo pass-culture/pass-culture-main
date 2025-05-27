@@ -4,7 +4,6 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offer_models
 from pcapi.connectors.titelive import GtlIdError
@@ -301,9 +300,6 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         }
         assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.COMPATIBLE
 
-        whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
-        assert not whitelist_product
-
         expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
         assert response.location == expected_url
 
@@ -348,10 +344,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
             "date_parution": "2014-10-02 00:00:00",
             "num_in_collection": "5833",
         }
-        assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.COMPATIBLE
-
-        whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
-        assert whitelist_product
+        assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.WHITELISTED
 
         expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
         assert response.location == expected_url
