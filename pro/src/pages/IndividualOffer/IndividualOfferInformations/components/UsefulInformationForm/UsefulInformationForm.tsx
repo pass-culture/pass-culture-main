@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import {
   GetActiveEANOfferResponseModel,
@@ -8,17 +8,21 @@ import {
 } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
-import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/WithdrawalReminder'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
+import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
+import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
+import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
+import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -29,7 +33,6 @@ import {
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
 } from '../../commons/constants'
-import { UsefulInformationFormValues } from '../../commons/types'
 import { setFormReadOnlyFields } from '../../commons/utils'
 import { OfferLocation } from '../OfferLocation/OfferLocation'
 
@@ -42,6 +45,19 @@ interface UsefulInformationFormProps {
   publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
 
+const getFirstWithdrawalTypeEnumValue = (value: string) => {
+  switch (value) {
+    case WithdrawalTypeEnum.BY_EMAIL:
+      return ticketSentDateOptions[0].value
+
+    case WithdrawalTypeEnum.ON_SITE:
+      return ticketWithdrawalHourOptions[0].value
+
+    default:
+      return undefined
+  }
+}
+
 export const UsefulInformationForm = ({
   conditionalFields,
   offer,
@@ -49,11 +65,70 @@ export const UsefulInformationForm = ({
   publishedOfferWithSameEAN,
 }: UsefulInformationFormProps): JSX.Element => {
   const {
-    values: { withdrawalType, receiveNotificationEmails, bookingEmail },
-    setFieldValue,
-    handleChange,
-  } = useFormikContext<UsefulInformationFormValues>()
-  const accessibilityOptionsGroups = useAccessibilityOptions(setFieldValue)
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext() // retrieve all hook methods
+
+  const onNoneOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setValue('accessibility', {
+        none: true,
+        visual: false,
+        mental: false,
+        motor: false,
+        audio: false,
+      })
+
+      return
+    }
+    setValue('accessibility.none', false)
+  }
+
+  const onNormalOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue('accessibility.none', false)
+    setValue(event.target.name, event.target.checked)
+  }
+
+  const formValues = watch()
+
+  const accessibilityOptionsGroups = [
+    {
+      label: 'Visuel',
+      icon: strokeAccessibilityEyeIcon,
+      ...register(`accessibility.${AccessibilityEnum.VISUAL}`),
+      onChange: onNormalOptionChange,
+      checked: formValues.accessibility.visual,
+    },
+    {
+      label: 'Psychique ou cognitif',
+      ...register(`accessibility.${AccessibilityEnum.MENTAL}`),
+      icon: strokeAccessibilityBrainIcon,
+      onChange: onNormalOptionChange,
+      checked: formValues.accessibility.mental,
+    },
+    {
+      label: 'Moteur',
+      ...register(`accessibility.${AccessibilityEnum.MOTOR}`),
+      icon: strokeAccessibilityLegIcon,
+      onChange: onNormalOptionChange,
+      checked: formValues.accessibility.motor,
+    },
+    {
+      label: 'Auditif',
+      ...register(`accessibility.${AccessibilityEnum.AUDIO}`),
+      icon: strokeAccessibilityEarIcon,
+      onChange: onNormalOptionChange,
+      checked: formValues.accessibility.audio,
+    },
+    {
+      label: 'Non accessible',
+      ...register(`accessibility.${AccessibilityEnum.NONE}`),
+      onChange: onNoneOptionChange,
+      checked: formValues.accessibility.none,
+    },
+  ]
 
   const { subCategories } = useIndividualOfferContext()
 
@@ -61,7 +136,6 @@ export const UsefulInformationForm = ({
     (s) => s.id === offer.subcategoryId
   )
 
-  const venue = offer.venue
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
     : setFormReadOnlyFields(offer)
@@ -77,19 +151,6 @@ export const UsefulInformationForm = ({
     !offerSubCategory?.isEvent && !offer.isDigital
 
   const displayBookingContact = offerSubCategory?.canBeWithdrawable
-
-  const getFirstWithdrawalTypeEnumValue = (value: string) => {
-    switch (value) {
-      case WithdrawalTypeEnum.BY_EMAIL:
-        return ticketSentDateOptions[0].value
-
-      case WithdrawalTypeEnum.ON_SITE:
-        return ticketWithdrawalHourOptions[0].value
-
-      default:
-        return undefined
-    }
-  }
 
   if (!selectedVenue) {
     return <Spinner />
@@ -120,56 +181,60 @@ export const UsefulInformationForm = ({
                 Theses offers are not editable by the user
               */}
               <RadioGroup
+                {...register('withdrawalType')}
+                checkedOption={watch('withdrawalType')}
                 group={
-                  withdrawalType === WithdrawalTypeEnum.IN_APP
+                  formValues.withdrawalType === WithdrawalTypeEnum.IN_APP
                     ? providedTicketWithdrawalTypeRadios
                     : ticketWithdrawalTypeRadios
                 }
                 legend="Précisez la façon dont vous distribuerez les billets :"
-                name="withdrawalType"
                 // when withdrawal Type is IN_APP the field should also be readOnly.
                 // I find it better to be explicit about it
                 disabled={
                   readOnlyFields.includes('withdrawalType') ||
-                  withdrawalType === WithdrawalTypeEnum.IN_APP
+                  formValues.withdrawalType === WithdrawalTypeEnum.IN_APP
                 }
-                onChange={async (e) => {
-                  await setFieldValue(
+                onChange={(e) => {
+                  setValue('withdrawalType', e.target.value)
+                  setValue(
                     'withdrawalDelay',
                     getFirstWithdrawalTypeEnumValue(e.target.value)
                   )
-                  handleChange(e)
                 }}
               />
             </FormLayout.Row>
 
-            {withdrawalType === WithdrawalTypeEnum.BY_EMAIL && (
-              <FormLayout.Row>
+            {formValues.withdrawalType === WithdrawalTypeEnum.BY_EMAIL && (
+              <FormLayout.Row inline>
                 <Select
+                  {...register('withdrawalDelay')}
                   label="Date d’envoi"
-                  description="avant le début de l’évènement"
-                  name="withdrawalDelay"
+                  required={true}
                   options={ticketSentDateOptions}
                   disabled={readOnlyFields.includes('withdrawalDelay')}
                 />
+                <div>avant le début de l’évènement</div>
               </FormLayout.Row>
             )}
 
-            {withdrawalType === WithdrawalTypeEnum.ON_SITE && (
-              <FormLayout.Row>
+            {formValues.withdrawalType === WithdrawalTypeEnum.ON_SITE && (
+              <FormLayout.Row inline>
                 <Select
+                  {...register('withdrawalDelay')}
                   label="Heure de retrait"
-                  description="avant le début de l’évènement"
-                  name="withdrawalDelay"
+                  required={true}
                   options={ticketWithdrawalHourOptions}
                   disabled={readOnlyFields.includes('withdrawalDelay')}
                 />
+                <div>avant le début de l’évènement</div>
               </FormLayout.Row>
             )}
           </>
         )}
 
         <FormLayout.Row
+          mdSpaceAfter
           sideComponent={
             <InfoBox
               link={{
@@ -185,9 +250,8 @@ export const UsefulInformationForm = ({
           }
         >
           <TextArea
-            isOptional
             label={'Informations de retrait'}
-            name="withdrawalDetails"
+            {...register('withdrawalDetails')}
             maxLength={500}
             disabled={readOnlyFields.includes('withdrawalDetails')}
             description={
@@ -209,24 +273,27 @@ export const UsefulInformationForm = ({
             }
           >
             <TextInput
+              {...register('bookingContact')}
               label="Email de contact"
               maxLength={90}
-              name="bookingContact"
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
+              error={errors.bookingContact?.message}
+              required={true}
             />
           </FormLayout.Row>
         )}
       </FormLayout.Section>
-      <FormLayout.Section title="Lien de réservation externe en l’absence de crédit" >
+      <FormLayout.Section title="Lien de réservation externe en l’absence de crédit">
         <p className={styles['infotext']}>
-          S’ils ne disposent pas ou plus de crédit, les utilisateurs de l’application seront redirigés sur ce lien pour pouvoir néanmoins profiter de votre offre.
+          S’ils ne disposent pas ou plus de crédit, les utilisateurs de
+          l’application seront redirigés sur ce lien pour pouvoir néanmoins
+          profiter de votre offre.
         </p>
         <FormLayout.Row>
           <TextInput
-            isOptional
+            {...register('externalTicketOfficeUrl')}
             label="URL de votre site ou billetterie"
-            name="externalTicketOfficeUrl"
             type="text"
             description="Format : https://exemple.com"
             disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
@@ -236,41 +303,42 @@ export const UsefulInformationForm = ({
       <FormLayout.Section title="Modalités d’accessibilité">
         <FormLayout.Row>
           <CheckboxGroup
+            {...register('accessibility')}
             group={accessibilityOptionsGroups}
-            groupName="accessibility"
             disabled={readOnlyFields.includes('accessibility')}
             legend="Cette offre est accessible au public en situation de handicap :"
           />
         </FormLayout.Row>
       </FormLayout.Section>
       <FormLayout.Section title="Notifications">
-        <FormLayout.Row>
+        <FormLayout.Row mdSpaceAfter>
           <Checkbox
             label="Être notifié par email des réservations"
-            name="receiveNotificationEmails"
-            value=""
-            onChange={async (e) => {
+            {...register('receiveNotificationEmails')}
+            onChange={(e) => {
+              setValue('receiveNotificationEmails', e.target.checked)
+
               if (
                 e.target.checked &&
-                bookingEmail ===
+                formValues.bookingEmail ===
                   DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.bookingEmail
               ) {
-                await setFieldValue('bookingEmail', venue.bookingEmail ?? email)
+                setValue('bookingEmail', offer.venue.bookingEmail ?? email)
               }
-              handleChange(e)
             }}
             disabled={readOnlyFields.includes('receiveNotificationEmails')}
           />
         </FormLayout.Row>
-
-        {receiveNotificationEmails && (
+        {formValues.receiveNotificationEmails && (
           <FormLayout.Row>
             <TextInput
+              {...register('bookingEmail')}
               label="Email auquel envoyer les notifications"
               maxLength={90}
               name="bookingEmail"
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingEmail')}
+              required={true}
             />
           </FormLayout.Row>
         )}
