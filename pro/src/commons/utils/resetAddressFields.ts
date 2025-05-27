@@ -1,4 +1,5 @@
-import { type FormikContextType } from 'formik'
+
+import { FormikContextType } from 'formik'
 
 import { AddressFormValues } from 'commons/core/shared/types'
 
