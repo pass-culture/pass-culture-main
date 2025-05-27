@@ -7,6 +7,7 @@ from functools import partial
 import click
 from sqlalchemy import exc as sa_exc
 
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api
@@ -323,7 +324,10 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
 @click.option("--origin", type=int, required=False)
 @click.option("--destination", type=int, required=False)
 def move_batch_offer(not_dry: bool, origin: int | None, destination: int | None) -> None:
+    db.session.execute("SET SESSION statement_timeout = '600s'")  # 10 minutes
     _move_all_venue_offers(not_dry=not_dry, origin=origin, destination=destination)
+    db.session.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+
     if not_dry:
         logger.info("Finished")
     else:
