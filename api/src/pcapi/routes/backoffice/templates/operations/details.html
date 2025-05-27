@@ -88,7 +88,7 @@
               <button type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
-                      class="btn p-0">
+                      class="btn btn-outline-primary-subtle-bg border-0 px-2 py-1">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
               <ul class="dropdown-menu">
@@ -203,12 +203,17 @@
   {% endif %}
 {% endblock multi_select_menu %}
 {% block after_table %}
-  {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="preselected") , "batch-response-preselected-modal", "eager") }}
-  {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="backup") , "batch-response-backup-modal", "eager") }}
-  {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="validated") , "batch-response-validated-modal", "eager") }}
-  {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="withdrawn") , "batch-response-withdrawn-modal", "eager") }}
-  {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="waiting") , "batch-response-waiting-modal", "eager") }}
-  {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="rejected") , "batch-response-rejected-modal", "eager") }}
+  {% if can_manage_event %}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.update_date_event", special_event_id=special_event.id) , "update-event-date-modal") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.update_end_import_date", special_event_id=special_event.id) , "update-end-import-date-modal") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_update_venue_form", special_event_id=special_event.id) , "update-venue-modal") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="preselected") , "batch-response-preselected-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="backup") , "batch-response-backup-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="validated") , "batch-response-validated-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="withdrawn") , "batch-response-withdrawn-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="waiting") , "batch-response-waiting-modal", "eager") }}
+    {{ build_lazy_modal(url_for("backoffice_web.operations.get_batch_update_responses_status_form", special_event_id=special_event.id, response_status="rejected") , "batch-response-rejected-modal", "eager") }}
+  {% endif %}
 {% endblock after_table %}
 {# structure for main column (uses the blocks above) #}
 {% block main_column_container %}
@@ -239,50 +244,75 @@
     </a>
   </div>
   <div>
-    {% call description_detail_vertical("Date de l'opération") %}
-      {{ special_event.eventDate |format_date }}
-      {% if has_permission("MANAGE_OFFERS") %}
-        <button type="button"
-                class="btn p-0"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top"
-                data-bs-title="Modifier la date de l'évènement">
-          <span data-bs-toggle="modal"
-                data-bs-target="#update-event-date-modal">
-            <i class="bi bi-pencil-square"></i>
-          </span>
-        </button>
-        {{ build_lazy_modal(url_for("backoffice_web.operations.update_date_event", special_event_id=special_event.id) , "update-event-date-modal") }}
-      {% endif %}
-    {% endcall %}
-    {% call description_detail_vertical("Date de clôture des candidatures") %}
-      {{ special_event.endImportDate |format_date }}
-      {% if has_permission("MANAGE_OFFERS") %}
-        <button type="button"
-                class="btn p-0"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top"
-                data-bs-title="Modifier la date de l'évènement">
-          <span data-bs-toggle="modal"
-                data-bs-target="#update-end-import-date-modal">
-            <i class="bi bi-pencil-square"></i>
-          </span>
-        </button>
-        {{ build_lazy_modal(url_for("backoffice_web.operations.update_end_import_date", special_event_id=special_event.id) , "update-end-import-date-modal") }}
-      {% endif %}
-    {% endcall %}
-    {% call description_detail_vertical("Partenaire culturel") %}
-      {% if special_event.venueId %}
-        <a class="link-primary"
-           data-bs-toggle="tooltip"
-           data-bs-placement="top"
-           data-bs-title="Voir le partenaire culturel"
-           target="_top"
-           href="{{ url_for('backoffice_web.venue.get', venue_id=special_event.venueId) }}">{{ special_event.venue.common_name }}</a>
-      {% else %}
-        <br />
-      {% endif %}
-    {% endcall %}
+    <dl>
+      <dt class="hstack gap-1">
+        <span>Date de l'opération</span>
+        {% if can_manage_event %}
+          <button type="button"
+                  class="btn btn-outline-primary-subtle-bg border-0 px-2 py-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  data-bs-title="Modifier la date de l'évènement">
+            <span data-bs-toggle="modal"
+                  data-bs-target="#update-event-date-modal">
+              <i class="bi bi-pencil-square"></i>
+            </span>
+          </button>
+        {% endif %}
+      </dt>
+      <dd>
+        {{ special_event.eventDate |format_date }}
+      </dd>
+    </dl>
+    <dl>
+      <dt class="hstack gap-1">
+        <span>Date de clôture des candidatures</span>
+        {% if can_manage_event %}
+          <button type="button"
+                  class="btn btn-outline-primary-subtle-bg border-0 px-2 py-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  data-bs-title="Modifier la date de clôture des candidatures">
+            <span data-bs-toggle="modal"
+                  data-bs-target="#update-end-import-date-modal">
+              <i class="bi bi-pencil-square"></i>
+            </span>
+          </button>
+        {% endif %}
+      </dt>
+      <dd>
+        {{ special_event.endImportDate |format_date }}
+      </dd>
+    </dl>
+    <dl>
+      <dt class="hstack gap-1">
+        <span>Partenaire culturel</span>
+        {% if can_manage_event %}
+          <button type="button"
+                  class="btn btn-outline-primary-subtle-bg border-0 px-2 py-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  data-bs-title="Modifier le partenaire culturel de l'évènement">
+            <span data-bs-toggle="modal"
+                  data-bs-target="#update-venue-modal">
+              <i class="bi bi-pencil-square"></i>
+            </span>
+          </button>
+        {% endif %}
+      </dt>
+      <dd>
+        {% if special_event.venueId %}
+          <a class="link-primary"
+             data-bs-toggle="tooltip"
+             data-bs-placement="top"
+             data-bs-title="Voir le partenaire culturel"
+             target="_top"
+             href="{{ url_for('backoffice_web.venue.get', venue_id=special_event.venueId) }}">{{ special_event.venueId }} - {{ special_event.venue.common_name }}</a>
+        {% else %}
+          <br />
+        {% endif %}
+      </dd>
+    </dl>
     <hr />
     {% call description_detail_vertical("Nombre de candidats total") %}
       {{ stats.total }}

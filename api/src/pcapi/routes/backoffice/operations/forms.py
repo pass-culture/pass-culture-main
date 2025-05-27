@@ -5,7 +5,9 @@ from urllib.parse import urlparse
 import wtforms
 from flask_wtf import FlaskForm
 
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.operations import models
+from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
@@ -62,7 +64,6 @@ class CreateSpecialEventForm(FlaskForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
         search_inline=True,
-        field_list_compatibility=True,
     )
 
     def filter_typeform_id(self, data: str | None) -> str | None:
@@ -137,8 +138,37 @@ class UpdateResponseStatusForm(utils.PCForm):
     )
 
 
-class UpdateEventDate(utils.PCForm):
+class UpdateEventDateForm(utils.PCForm):
     date = fields.PCDateField(
         "Date",
         validators=(wtforms.validators.DataRequired("La date est obligatoire"),),
     )
+
+
+class UpdateEventVenueForm(utils.PCForm):
+    venue = fields.PCTomSelectField(
+        "Partenaire culturel",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
+    )
+
+    def validate(self) -> bool:
+        venue_id = self.venue.data[0] if (self.venue.data and self.venue.data[0]) else None
+        if venue_id:
+            exists = (
+                db.session.query(
+                    offerers_models.Venue.id,
+                )
+                .filter(
+                    offerers_models.Venue.id == venue_id,
+                )
+                .limit(1)
+                .scalar()
+            )
+            if not exists:
+                return False
+        self.venue.data = venue_id
+        return True
