@@ -5,6 +5,7 @@ from pcapi.core.finance.conf import get_credit_amount_per_age_and_eligibility
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.eligibility_api import get_pre_decree_or_current_eligibility
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 
 
@@ -26,5 +27,8 @@ def get_accepted_as_beneficiary_email_v3_data(user: User) -> models.Transactiona
 
 
 def send_accepted_as_beneficiary_email(user: User) -> None:
+    if user.eligibility == EligibilityType.FREE:
+        return
+
     data = get_accepted_as_beneficiary_email_v3_data(user)
     mails.send(recipients=[user.email], data=data)

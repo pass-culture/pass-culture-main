@@ -1939,6 +1939,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.has_free_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_FREE
         assert not user.deposit.recredits
+        assert not mails_testing.outbox
 
     def test_user_with_old_fraud_checks_get_correct_deposit_and_role(self):
         """
