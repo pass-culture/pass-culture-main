@@ -149,7 +149,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
                     "Country": {"value": "FR"},
                     "City": {"value": bank_account.offerer.city},
                     "PostalCode": {"value": bank_account.offerer.postalCode},
-                    "AddressLine1": {"value": bank_account.offerer.street[:50]},
+                    "AddressLine1": {"value": (bank_account.offerer.street or "")[:50]},
                     "State": {"value": bank_account.offerer.departementCode},
                 },
             },
