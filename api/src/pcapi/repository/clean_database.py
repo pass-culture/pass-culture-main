@@ -101,6 +101,7 @@ tables_to_clean: list[type[Model]] = [
     offerers_models.Venue,
     offerers_models.VenueEducationalStatus,
     offerers_models.UserOfferer,
+    offerers_models.OffererProvider,
     offerers_models.ApiKey,
     offerers_models.Offerer,
     offerers_models.OffererStats,
