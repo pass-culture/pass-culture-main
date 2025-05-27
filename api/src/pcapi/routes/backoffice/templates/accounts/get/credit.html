@@ -9,7 +9,11 @@
             <h6 class="card-subtitle text-muted ms-auto">{{ credit.all.initial | format_amount(target=user) }}</h6>
           </div>
           <div class="progress mt-2">
-            {% set progress_value = ( credit.all.remaining / credit.all.initial ) * 100 %}
+            {% if credit.all.initial == 0 %}
+              {% set progress_value = 0 %}
+            {% else %}
+              {% set progress_value = ( credit.all.remaining / credit.all.initial ) * 100 %}
+            {% endif %}
             <div class="progress-bar"
                  role="progressbar"
                  style="width: {{ progress_value }}%"
@@ -32,7 +36,11 @@
             <h6 class="card-subtitle text-muted ms-auto">{{ credit.digital.initial | format_amount(target=user) }}</h6>
           </div>
           <div class="progress mt-2">
-            {% set progress_value = ( credit.digital.remaining / credit.digital.initial ) * 100 %}
+            {% if credit.digital.initial == 0 %}
+              {% set progress_value = 0 %}
+            {% else %}
+              {% set progress_value = ( credit.digital.remaining / credit.digital.initial ) * 100 %}
+            {% endif %}
             <div class="progress-bar"
                  role="progressbar"
                  style="width: {{ progress_value }}%"
