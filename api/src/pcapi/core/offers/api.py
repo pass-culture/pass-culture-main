@@ -261,6 +261,9 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer, ean=body_ean
         )
 
+    changes = {key: {"old": getattr(offer, key), "new": new_value} for key, new_value in updates.items()}
+    on_commit(partial(logger.info, "update draft offer", extra={"offer": offer.id, "changes": changes}))
+
     for key, value in updates.items():
         if key == "extraData":
             if offer.product:
