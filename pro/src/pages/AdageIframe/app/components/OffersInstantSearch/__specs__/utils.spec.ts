@@ -23,11 +23,12 @@ describe('adageFiltersToFacetFilters', () => {
         domains,
         students,
         eventAddressType: 'school',
+        locationType: 'SCHOOL',
         departments,
         academies,
         formats,
         venue: venueFilter,
-      })
+      }, false)
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:school'],
@@ -56,11 +57,12 @@ describe('adageFiltersToFacetFilters', () => {
         domains,
         students,
         eventAddressType: 'school',
+        locationType: 'SCHOOL',
         departments,
         academies,
         formats,
         venue: null,
-      })
+      }, false)
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:school'],
@@ -87,11 +89,12 @@ describe('adageFiltersToFacetFilters', () => {
         domains,
         students,
         eventAddressType: 'school',
+        locationType: 'SCHOOL',
         departments,
         academies,
         formats,
         venue: null,
-      })
+      }, false)
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:school'],
@@ -118,11 +121,12 @@ describe('adageFiltersToFacetFilters', () => {
         domains,
         students,
         eventAddressType: 'offererVenue',
+        locationType: 'SCHOOL',
         departments,
         academies,
         formats,
         venue: null,
-      })
+      }, false)
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:offererVenue', 'offer.eventAddressType:other'],
@@ -152,6 +156,7 @@ describe('serializeFiltersForData', () => {
       domains: [1],
       students: ['Collège - 4e'],
       eventAddressType: 'school',
+      locationType: 'SCHOOL',
       departments: ['01'],
       academies: ['Paris'],
       formats: [EacFormat.CONCERT],
@@ -165,6 +170,7 @@ describe('serializeFiltersForData', () => {
       query: 'test',
       students: ['Collège quatrième'],
       eventAddressType: 'school',
+      locationType: 'SCHOOL',
       departments: ['01'],
       academies: ['Paris'],
       formats: ['Concert'],
