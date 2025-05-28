@@ -5,15 +5,13 @@ import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
+import { CheckboxAssetVariant } from 'design-system/Checkbox/CheckboxAsset/CheckboxAsset'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import {
-  BaseCheckbox,
-  CheckboxVariant,
-} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
@@ -124,13 +122,16 @@ export const GenericCinemaProviderForm = ({
         )}
 
         <FormLayout.Row>
-          <BaseCheckbox
+          <Checkbox
             {...register('isDuo')}
+            checked={Boolean(watch('isDuo'))}
             label="Accepter les réservations duo"
             description="Cette option permet au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur."
-            variant={CheckboxVariant.BOX}
-            icon={strokeDuoIcon}
-            checked={formValues.isDuo}
+            variant={CheckboxVariant.DETAILED}
+            asset={{
+              variant: CheckboxAssetVariant.ICON,
+              src: strokeDuoIcon,
+            }}
           />
         </FormLayout.Row>
 

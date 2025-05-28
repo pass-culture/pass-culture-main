@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useFormikContext } from 'formik'
 
 import { mapDayToFrench } from 'commons/utils/date'
-import { DayCheckbox } from 'components/IndividualOffer/StocksEventCreation/DayCheckbox'
+import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
 
 import { VenueEditionFormValues, Day } from '../types'
 
@@ -36,22 +36,30 @@ export function OpeningHoursForm() {
           const dayLabel = mapDayToFrench(day)
           return (
             <DayCheckbox
-              letter={dayLabel[0]}
-              label={dayLabel}
               name="days"
-              value={day.toLowerCase()}
-              className={styles['day-checkbox']}
               key={day}
+              label={dayLabel[0]}
+              className={styles['day-checkbox']}
               checked={days.includes(day)}
-              onClick={async () => {
-                await setFieldValue(`${day}.morningStartingHour`, '')
-                await setFieldValue(`${day}.morningEndingHour`, '')
-                await setFieldValue(`${day}.afternoonStartingHour`, '')
-                await setFieldValue(`${day}.afternoonEndingHour`, '')
-                await setFieldTouched(`${day}.morningStartingHour`, false)
-                await setFieldTouched(`${day}.morningEndingHour`, false)
-                await setFieldTouched(`${day}.afternoonStartingHour`, false)
-                await setFieldTouched(`${day}.afternoonEndingHour`, false)
+              tooltipContent={dayLabel}
+              onChange={async (e) => {
+                let newDays = new Set(days)
+                if (e.target.checked) {
+                  newDays.add(day)
+                } else {
+                  newDays.delete(day)
+                }
+                await setFieldValue('days', Array.from(newDays))
+                if (!e.target.checked) {
+                  await setFieldValue(`${day}.morningStartingHour`, '')
+                  await setFieldValue(`${day}.morningEndingHour`, '')
+                  await setFieldValue(`${day}.afternoonStartingHour`, '')
+                  await setFieldValue(`${day}.afternoonEndingHour`, '')
+                  await setFieldTouched(`${day}.morningStartingHour`, false)
+                  await setFieldTouched(`${day}.morningEndingHour`, false)
+                  await setFieldTouched(`${day}.afternoonStartingHour`, false)
+                  await setFieldTouched(`${day}.afternoonEndingHour`, false)
+                }
               }}
             />
           )
