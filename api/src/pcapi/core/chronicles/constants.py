@@ -2,17 +2,17 @@ from enum import Enum
 
 
 ANONYMIZED_EMAIL = "anonymized_email@anonymized.passculture"
-BOOK_CLUB_FORM_ID = "YeTcrzM0"
+BOOK_CLUB_FORM_ID = "K20ivtdr"
 
 
 class BookClub(Enum):
-    FORM_ID = "YeTcrzM0"
-    AGE_ID = "rKyKnH0Bdou0"
-    CITY_ID = "gu5hvRHrncJk"
-    NAME_ID = "gR02LbynlJz3"
-    BOOK_EAN_ID = "6BNEOySnyeOf"
-    CHRONICLE_ID = "sXqsCBCeNQjF"
-    DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID = "KhMauCwM2B7q"
-    DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "Z5tZToErQUsu"
-    SOCIAL_MEDIA_QUESTION_ID = "5d5ekoONsmYv"
-    SOCIAL_MEDIA_ANSWER_ID = "2cSSP6F1Suqr"
+    FORM_ID = "K20ivtdr"
+    AGE_ID = "JhzoZvt9BEtw"
+    CITY_ID = "3JuCg33mKsKM"
+    NAME_ID = "a8i1kybF46rP"
+    BOOK_EAN_ID = "CmoeTUGh6ueZ"
+    CHRONICLE_ID = "Cns4xsVc2QUB"
+    DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID = "HDGU6kbXD5uh"
+    DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "WOTBxKezQuY9"
+    SOCIAL_MEDIA_QUESTION_ID = "j9l8TcDOCNN4"
+    SOCIAL_MEDIA_ANSWER_ID = "1KVoMDhUVrEd"

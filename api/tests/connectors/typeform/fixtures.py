@@ -9,11 +9,11 @@ RESPONSE_SEARCH_FORMS = {
             "last_updated_at": "2024-08-29T08:52:18.830192Z",
             "created_at": "2024-08-29T08:52:18.830192Z",
             "settings": {"is_public": False, "is_trial": False},
-            "self": {"href": "https://api.typeform.com/forms/t4TyOteQ"},
-            "theme": {"href": "https://api.typeform.com/themes/C9b8aXtg"},
+            "self": {"href": "https://api.eu.typeform.com/forms/t4TyOteQ"},
+            "theme": {"href": "https://api.eu.typeform.com/themes/C9b8aXtg"},
             "_links": {
                 "display": "https://passculture.typeform.com/to/t4TyOteQ",
-                "responses": "https://api.typeform.com/forms/t4TyOteQ/responses",
+                "responses": "https://api.eu.typeform.com/forms/t4TyOteQ/responses",
             },
         },
         {
@@ -23,11 +23,11 @@ RESPONSE_SEARCH_FORMS = {
             "last_updated_at": "2024-08-19T12:09:19.174481Z",
             "created_at": "2024-07-31T15:10:24.523126Z",
             "settings": {"is_public": True, "is_trial": False},
-            "self": {"href": "https://api.typeform.com/forms/Y97ETpXP"},
-            "theme": {"href": "https://api.typeform.com/themes/C9b8aXtg"},
+            "self": {"href": "https://api.eu.typeform.com/forms/Y97ETpXP"},
+            "theme": {"href": "https://api.eu.typeform.com/themes/C9b8aXtg"},
             "_links": {
                 "display": "https://passculture.typeform.com/to/Y97ETpXP",
-                "responses": "https://api.typeform.com/forms/Y97ETpXP/responses",
+                "responses": "https://api.eu.typeform.com/forms/Y97ETpXP/responses",
             },
         },
         {
@@ -37,11 +37,11 @@ RESPONSE_SEARCH_FORMS = {
             "last_updated_at": "2024-08-06T12:10:22.084666Z",
             "created_at": "2024-07-19T13:42:04.48585Z",
             "settings": {"is_public": True, "is_trial": False},
-            "self": {"href": "https://api.typeform.com/forms/T9XBuGwX"},
-            "theme": {"href": "https://api.typeform.com/themes/C9b8aXtg"},
+            "self": {"href": "https://api.eu.typeform.com/forms/T9XBuGwX"},
+            "theme": {"href": "https://api.eu.typeform.com/themes/C9b8aXtg"},
             "_links": {
                 "display": "https://passculture.typeform.com/to/T9XBuGwX",
-                "responses": "https://api.typeform.com/forms/T9XBuGwX/responses",
+                "responses": "https://api.eu.typeform.com/forms/T9XBuGwX/responses",
             },
         },
     ],
@@ -51,8 +51,8 @@ RESPONSE_SINGLE_FORM = {
     "id": "aBCdEF12",
     "type": "quiz",
     "title": "Jeu concours - Maître Corbeau",
-    "workspace": {"href": "https://api.typeform.com/workspaces/zyXwvu"},
-    "theme": {"href": "https://api.typeform.com/themes/T0s1rQpo"},
+    "workspace": {"href": "https://api.eu.typeform.com/workspaces/zyXwvu"},
+    "theme": {"href": "https://api.eu.typeform.com/themes/T0s1rQpo"},
     "settings": {
         "language": "fr",
         "progress_bar": "percentage",
@@ -341,7 +341,7 @@ RESPONSE_SINGLE_FORM = {
     "published_at": "2024-09-02T12:55:53+00:00",
     "_links": {
         "display": "https://passculture.typeform.com/to/aBCdEF12",
-        "responses": "https://api.typeform.com/forms/aBCdEF12/responses",
+        "responses": "https://api.eu.typeform.com/forms/aBCdEF12/responses",
     },
 }
 
@@ -934,8 +934,8 @@ RESPONSE_FORM_WITH_ALL_TYPES = {
     "id": "AllTypes",
     "type": "quiz",
     "title": "Test types",
-    "workspace": {"href": "https://api.typeform.com/workspaces/nU4RKi"},
-    "theme": {"href": "https://api.typeform.com/themes/qHWOQ7"},
+    "workspace": {"href": "https://api.eu.typeform.com/workspaces/nU4RKi"},
+    "theme": {"href": "https://api.eu.typeform.com/themes/qHWOQ7"},
     "settings": {
         "language": "en",
         "progress_bar": "proportion",
@@ -1138,7 +1138,7 @@ RESPONSE_FORM_WITH_ALL_TYPES = {
     "published_at": "2025-01-15T13:20:45+00:00",
     "_links": {
         "display": "https://passculture.typeform.com/to/AllTypes",
-        "responses": "https://api.typeform.com/forms/AllTypes/responses",
+        "responses": "https://api.eu.typeform.com/forms/AllTypes/responses",
     },
 }
 
@@ -1243,7 +1243,7 @@ RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES = {
                         "ref": "0e2ecb2a-3f57-4367-b421-257bb0bca941",
                     },
                     "type": "file_url",
-                    "file_url": "https://api.typeform.com/forms/AllTypes/responses/nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu/fields/piy78v4evI30/files/file.jpg",
+                    "file_url": "https://api.eu.typeform.com/forms/AllTypes/responses/nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu/fields/piy78v4evI30/files/file.jpg",
                 },
                 {
                     "field": {"id": "7FEILVHV7F2z", "type": "website", "ref": "d63122cb-af09-449e-a1ef-f2ebecb70052"},
