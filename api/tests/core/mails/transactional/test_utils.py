@@ -19,7 +19,7 @@ class FormatPriceTest:
         [
             (12, "12 €"),
             (decimal.Decimal(300), "300 €"),
-            (decimal.Decimal(99.5), "99,50 €"),
+            (decimal.Decimal("99.5"), "99,50 €"),
             (150.0, "150 €"),
             (100.0 / 3.0, "33,33 €"),
         ],
@@ -39,8 +39,8 @@ class FormatPriceTest:
     @pytest.mark.parametrize(
         "price,expected",
         [
-            (decimal.Decimal(8.38), "1000 F"),
-            (decimal.Decimal(99.5), "11874 F"),
+            (decimal.Decimal("8.38"), "1000 F"),
+            (decimal.Decimal("99.5"), "11874 F"),
             (150, "17900 F"),
             (100.0 / 3.0, "3978 F"),
         ],

@@ -773,11 +773,11 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         assert len(table_rows) == 2
         assert {row["Année"] for row in table_rows} == {str(current_year), "En cours"}
 
-        current_year_revenues = [row for row in table_rows if row["Année"] == str(current_year)][0]
+        current_year_revenues = next(row for row in table_rows if row["Année"] == str(current_year))
         assert current_year_revenues["CA offres IND"] == "10,00 €"
         assert current_year_revenues["CA offres EAC"] == "42,00 €"
 
-        current_revenues = [row for row in table_rows if row["Année"] == "En cours"][0]
+        current_revenues = next(row for row in table_rows if row["Année"] == "En cours")
         assert current_revenues["CA offres IND"] == "20,00 €"
         assert current_revenues["CA offres EAC"] == "0,00 €"
 
@@ -1032,7 +1032,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert len(venue.action_history) == 2
 
         # Check the venue update action
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
+        update_action = next(action for action in venue.action_history if action.extraData["modified_info"].get("name"))
         update_snapshot = update_action.extraData["modified_info"]
         assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
@@ -1049,11 +1049,11 @@ class UpdateVenueTest(PostEndpointHelper):
         # probably not asynchronously but ends up with unpredictable results.
         # Slug could be either mon-lieu-chez-acceslibre or whatever the original slug was.
         assert data["acceslibre_url"] is None
-        acceslibre_action = [
+        acceslibre_action = next(
             action
             for action in venue.action_history
             if action.extraData["modified_info"].get("accessibilityProvider.externalAccessibilityId")
-        ][0]
+        )
         acceslibre_snapshot = acceslibre_action.extraData["modified_info"]
         assert (
             acceslibre_snapshot["accessibilityProvider.externalAccessibilityId"]["new_info"]
@@ -1269,7 +1269,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert (len(offerer_addresses)) == 2
         assert venue.offererAddressId == offerer_address.id
         assert len(venue.action_history) == 2
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
+        update_action = next(action for action in venue.action_history if action.extraData["modified_info"].get("name"))
         update_snapshot = update_action.extraData["modified_info"]
 
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId

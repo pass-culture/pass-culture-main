@@ -43,11 +43,11 @@ class DmsImportTest:
         ]
         user = users_factories.UserFactory(email="email1@example.com")
         import_all_updated_dms_applications(1)
-        user_dms_fraud_check = [
+        user_dms_fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == fraud_models.FraudCheckType.DMS
-        ][0]
+        )
         orphan_dms_application = db.session.query(fraud_models.OrphanDmsApplication).first()
         latest_import_record = db.session.query(dms_models.LatestDmsImport).first()
 

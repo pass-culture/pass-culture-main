@@ -181,12 +181,12 @@ class CGRStocksTest:
         assert created_offers[1]._extraData == None
 
         assert created_stocks[1].quantity == 168
-        assert created_stocks[1].price == Decimal(11.00)
+        assert created_stocks[1].price == Decimal("11.00")
         assert created_stocks[1].dateCreated is not None
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
-        assert created_stocks[1].priceCategory.price == Decimal(11.00)
+        assert created_stocks[1].priceCategory.price == Decimal("11.00")
         assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
         assert created_stocks[1].features == ["VF", "3D", "ICE"]
 

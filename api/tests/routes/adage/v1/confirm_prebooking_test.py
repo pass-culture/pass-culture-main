@@ -42,18 +42,18 @@ class Returns200Test:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(1400.00),
+            amount=Decimal("1400.00"),
             isFinal=True,
         )
         CollectiveBookingFactory(
-            collectiveStock__price=Decimal(20.00),
+            collectiveStock__price=Decimal("20.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.CONFIRMED,
         )
 
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(20.00),
+            collectiveStock__price=Decimal("20.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalRedactor=redactor,
@@ -96,7 +96,7 @@ class Returns200Test:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(1400.00),
+            amount=Decimal("1400.00"),
             isFinal=True,
         )
 
@@ -121,31 +121,31 @@ class Returns200Test:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(2000.00),
+            amount=Decimal("2000.00"),
             isFinal=True,
         )
         EducationalDepositFactory(
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
-            amount=Decimal(10000.00),
+            amount=Decimal("10000.00"),
             isFinal=True,
         )
         EducationalDepositFactory(
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
-            amount=Decimal(10000.00),
+            amount=Decimal("10000.00"),
             isFinal=True,
             ministry=Ministry.AGRICULTURE,
         )
         CollectiveBookingFactory(
-            collectiveStock__price=Decimal(4800.00),
+            collectiveStock__price=Decimal("4800.00"),
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationLimitDate=datetime(2021, 10, 21, 10),
         )
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(300.00),
+            collectiveStock__price=Decimal("300.00"),
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
@@ -170,24 +170,24 @@ class Returns200Test:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(2000.00),
+            amount=Decimal("2000.00"),
             isFinal=True,
         )
         EducationalDepositFactory(
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
-            amount=Decimal(10000.00),
+            amount=Decimal("10000.00"),
             isFinal=True,
         )
         EducationalDepositFactory(
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
-            amount=Decimal(10000.00),
+            amount=Decimal("10000.00"),
             isFinal=True,
             ministry=Ministry.AGRICULTURE,
         )
         CollectiveBookingFactory(
-            collectiveStock__price=Decimal(200.00),
+            collectiveStock__price=Decimal("200.00"),
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.CONFIRMED,
@@ -195,7 +195,7 @@ class Returns200Test:
         )
 
         CollectiveBookingFactory(
-            collectiveStock__price=Decimal(200.00),
+            collectiveStock__price=Decimal("200.00"),
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.CONFIRMED,
@@ -203,7 +203,7 @@ class Returns200Test:
         )
 
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(300.00),
+            collectiveStock__price=Decimal("300.00"),
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
@@ -225,17 +225,17 @@ class Returns200Test:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(2000.00),
+            amount=Decimal("2000.00"),
             isFinal=True,
         )
         EducationalDepositFactory(
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
-            amount=Decimal(10000.00),
+            amount=Decimal("10000.00"),
             isFinal=True,
         )
         CollectiveBookingFactory(
-            collectiveStock__price=Decimal(4000.00),
+            collectiveStock__price=Decimal("4000.00"),
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.CONFIRMED,
@@ -243,7 +243,7 @@ class Returns200Test:
         )
 
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(300.00),
+            collectiveStock__price=Decimal("300.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
@@ -269,7 +269,7 @@ class ReturnsErrorTest:
     @time_machine.travel("2021-10-15 09:00:00")
     def test_no_deposit_for_collective_bookings(self, client) -> None:
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(20.00),
+            collectiveStock__price=Decimal("20.00"),
             status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
@@ -287,11 +287,11 @@ class ReturnsErrorTest:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(100.00),
+            amount=Decimal("100.00"),
             isFinal=True,
         )
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
@@ -314,24 +314,24 @@ class ReturnsErrorTest:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(2000.00),
+            amount=Decimal("2000.00"),
             isFinal=True,
         )
         EducationalDepositFactory(
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
-            amount=Decimal(13000.00),
+            amount=Decimal("13000.00"),
             isFinal=True,
         )
         CollectiveBookingFactory(
-            collectiveStock__price=Decimal(4800.00),
+            collectiveStock__price=Decimal("4800.00"),
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationLimitDate=datetime(2021, 10, 21, 10),
         )
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(300.00),
+            collectiveStock__price=Decimal("300.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
@@ -350,11 +350,11 @@ class ReturnsErrorTest:
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            amount=Decimal(400.00),
+            amount=Decimal("400.00"),
             isFinal=False,
         )
         booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal("400.00"),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,

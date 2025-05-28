@@ -39,19 +39,19 @@ ALL_DISPLAYED_STATUSES = set(CollectiveOfferDisplayedStatus)
 class EducationalDepositTest:
     def test_should_raise_insufficient_fund(self) -> None:
         # When
-        educational_deposit = EducationalDeposit(amount=Decimal(1000.00), isFinal=True)
+        educational_deposit = EducationalDeposit(amount=Decimal("1000.00"), isFinal=True)
 
         # Then
         with pytest.raises(exceptions.InsufficientFund):
-            educational_deposit.check_has_enough_fund(Decimal(1100.00))
+            educational_deposit.check_has_enough_fund(Decimal("1100.00"))
 
     def test_should_raise_insufficient_temporary_fund(self) -> None:
         # When
-        educational_deposit = EducationalDeposit(amount=Decimal(1000.00), isFinal=False)
+        educational_deposit = EducationalDeposit(amount=Decimal("1000.00"), isFinal=False)
 
         # Then
         with pytest.raises(exceptions.InsufficientTemporaryFund):
-            educational_deposit.check_has_enough_fund(Decimal(900.00))
+            educational_deposit.check_has_enough_fund(Decimal("900.00"))
 
 
 class CollectiveStockIsBookableTest:

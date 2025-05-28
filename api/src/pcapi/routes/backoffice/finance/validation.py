@@ -166,7 +166,7 @@ def check_commercial_gesture_total_amount(
     amount_per_booking = input_amount / sum(booking.quantity for booking in bookings)
 
     for booking in bookings:
-        if booking.quantity * amount_per_booking > decimal.Decimal(1.20) * booking.total_amount:
+        if booking.quantity * amount_per_booking > decimal.Decimal("1.20") * booking.total_amount:
             return Valid(
                 is_valid=False,
                 message="Le montant du geste commercial ne peut pas être supérieur à 120% du montant d'une réservation sélectionnée.",

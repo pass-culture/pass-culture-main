@@ -46,7 +46,7 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
         # Response format:
         # https://developer.zendesk.com/api-reference/sales-crm/search/response/
 
-        item_dict = list(body.values())[0][0]
+        item_dict = next(iter(body.values()))[0]
         total_count: int = item_dict["meta"]["total_count"]  # how many results for the query string
 
         if total_count == 1:

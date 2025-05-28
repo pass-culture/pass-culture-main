@@ -105,9 +105,9 @@ class Returns200Test:
 
         assert len(venue.action_history) == 2
 
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
-            0
-        ]
+        update_action = next(
+            action for action in venue.action_history if action.extraData["modified_info"].get("street")
+        )
         assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
         assert update_action.venueId == venue_id
         assert update_action.authorUser.id == user_offerer.user.id
@@ -183,11 +183,11 @@ class Returns200Test:
             }
         }
 
-        acceslibre_action = [
+        acceslibre_action = next(
             action
             for action in venue.action_history
             if action.extraData["modified_info"].get("accessibilityProvider.externalAccessibilityId")
-        ][0]
+        )
         assert acceslibre_action.extraData["modified_info"] == {
             "accessibilityProvider.externalAccessibilityId": {
                 "new_info": "mon-lieu-chez-acceslibre",
@@ -382,9 +382,9 @@ class Returns200Test:
         assert response.json["postalCode"] == venue.postalCode
         assert len(venue.action_history) == 2
 
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
-            0
-        ]
+        update_action = next(
+            action for action in venue.action_history if action.extraData["modified_info"].get("street")
+        )
         update_snapshot = update_action.extraData["modified_info"]
         assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
         assert update_action.venueId == venue_id

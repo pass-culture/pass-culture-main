@@ -296,13 +296,13 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
 
     assert len(rows) == 2
     assert {"offerer contribution", "offerer revenue"} == {row["Type de ticket de facturation"] for row in rows}
-    row_revenue1 = [row for row in rows if row["Type de ticket de facturation"] == "offerer revenue"][0]
+    row_revenue1 = next(row for row in rows if row["Type de ticket de facturation"] == "offerer revenue")
     assert row_revenue1["Identifiant des coordonnées bancaires"] == str(bank_account1.id)
     assert row_revenue1["Identifiant humanisé des coordonnées bancaires"] == human_ids.humanize(bank_account1.id)
     assert row_revenue1["Référence du justificatif"] == invoice1.reference
     assert row_revenue1["Somme des tickets de facturation"] == Decimal("-6500.0")
 
-    row_contribution1 = [row for row in rows if row["Type de ticket de facturation"] == "offerer contribution"][0]
+    row_contribution1 = next(row for row in rows if row["Type de ticket de facturation"] == "offerer contribution")
     assert row_contribution1["Identifiant des coordonnées bancaires"] == str(bank_account1.id)
     assert row_contribution1["Identifiant humanisé des coordonnées bancaires"] == human_ids.humanize(bank_account1.id)
     assert row_contribution1["Référence du justificatif"] == invoice1.reference
@@ -375,10 +375,10 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
     db.session.add_all([cashflow_batch2, booking2, bank_account1, bank_account2])
     assert len(cashflow_batch2.cashflows) == 2
     assert {cashflow.bankAccountId for cashflow in cashflow_batch2.cashflows} == {bank_account1.id, bank_account2.id}
-    cashflow2 = [c for c in cashflow_batch2.cashflows if c.bankAccountId == bank_account1.id][0]
+    cashflow2 = next(c for c in cashflow_batch2.cashflows if c.bankAccountId == bank_account1.id)
     assert len(cashflow2.invoices) == 1
     invoice2 = cashflow2.invoices[0]
-    cashflow3 = [c for c in cashflow_batch2.cashflows if c.bankAccountId == bank_account2.id][0]
+    cashflow3 = next(c for c in cashflow_batch2.cashflows if c.bankAccountId == bank_account2.id)
     assert len(cashflow3.invoices) == 1
     invoice3 = cashflow3.invoices[0]
     assert booking2.status == bookings_models.BookingStatus.REIMBURSED
@@ -404,15 +404,15 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
     assert {"offerer contribution", "offerer revenue"} == {
         row["Type de ticket de facturation"] for row in invoice2_rows
     }
-    row_revenue2 = [row for row in invoice2_rows if row["Type de ticket de facturation"] == "offerer revenue"][0]
+    row_revenue2 = next(row for row in invoice2_rows if row["Type de ticket de facturation"] == "offerer revenue")
     assert row_revenue2["Identifiant des coordonnées bancaires"] == str(bank_account1.id)
     assert row_revenue2["Identifiant humanisé des coordonnées bancaires"] == human_ids.humanize(bank_account1.id)
     assert row_revenue2["Somme des tickets de facturation"] == Decimal("3000.0")
     assert row_revenue2["Type de réservation"] == "PR18+"
 
-    row_contribution2 = [
+    row_contribution2 = next(
         row for row in invoice2_rows if row["Type de ticket de facturation"] == "offerer contribution"
-    ][0]
+    )
     assert row_contribution2["Identifiant des coordonnées bancaires"] == str(bank_account1.id)
     assert row_contribution2["Identifiant humanisé des coordonnées bancaires"] == human_ids.humanize(bank_account1.id)
     assert row_contribution2["Somme des tickets de facturation"] == Decimal("0")
@@ -424,14 +424,14 @@ def test_generate_invoice_file_with_debit_note(run_command, tmp_path, monkeypatc
     assert {"offerer contribution", "offerer revenue"} == {
         row["Type de ticket de facturation"] for row in invoice3_rows
     }
-    row_revenue3 = [row for row in invoice3_rows if row["Type de ticket de facturation"] == "offerer revenue"][0]
+    row_revenue3 = next(row for row in invoice3_rows if row["Type de ticket de facturation"] == "offerer revenue")
     assert row_revenue3["Identifiant des coordonnées bancaires"] == str(bank_account2.id)
     assert row_revenue3["Identifiant humanisé des coordonnées bancaires"] == human_ids.humanize(bank_account2.id)
     assert row_revenue3["Somme des tickets de facturation"] == Decimal("-2000.0")
 
-    row_contribution3 = [
+    row_contribution3 = next(
         row for row in invoice3_rows if row["Type de ticket de facturation"] == "offerer contribution"
-    ][0]
+    )
     assert row_contribution3["Identifiant des coordonnées bancaires"] == str(bank_account2.id)
     assert row_contribution3["Identifiant humanisé des coordonnées bancaires"] == human_ids.humanize(bank_account2.id)
     assert row_contribution3["Somme des tickets de facturation"] == Decimal("0")

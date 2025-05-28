@@ -493,9 +493,9 @@ class EduconnectFraudTest:
         # Do not call educonnect_fraud_checks directly because duplicate check is common
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        invalid_item = [
+        invalid_item = next(
             item for item in fraud_items if fraud_models.FraudReasonCode.DUPLICATE_USER in item.reason_codes
-        ][0]
+        )
         assert f"Duplicat de l'utilisateur {already_existing_user.id}" in invalid_item.detail
         assert invalid_item.status == fraud_models.FraudStatus.SUSPICIOUS
 

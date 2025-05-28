@@ -2138,11 +2138,11 @@ class IdentificationSessionTest:
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 2  # profile, ubble
 
-        check = [
+        check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == fraud_models.FraudCheckType.UBBLE
-        ][0]
+        )
         assert check
         assert response.json["identificationUrl"] == expected_url
 
