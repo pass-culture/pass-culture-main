@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import { CellDefinition, CELLS_DEFINITIONS } from '../utils/cellDefinitions'
 
@@ -21,42 +20,23 @@ export type Columns = CellDefinition & {
 }
 
 type OffersTableHeadProps = {
-  areAllOffersSelected: boolean
-  isAtLeastOneOfferChecked: boolean
-  toggleSelectAllCheckboxes: () => void
   columns: Columns[]
 }
 
 export const OffersTableHead = ({
-  areAllOffersSelected,
-  isAtLeastOneOfferChecked,
-  toggleSelectAllCheckboxes,
   columns,
 }: OffersTableHeadProps): JSX.Element => {
   return (
     <thead role="rowgroup" className={styles['offers-thead']}>
       <tr>
         <th
-          id={CELLS_DEFINITIONS.CHECKBOX.id}
           role="columnheader"
-          className={classNames(
-            styles['offers-thead-th'],
-            styles['offers-thead-th-checkbox']
-          )}
+          id="offer-head-checkbox"
+          className={styles['offers-thead-th']}
         >
-          <div className={styles['offers-thead-th-checkbox-wrapper']}>
-            <BaseCheckbox
-              exceptionnallyHideLabelDespiteA11y
-              checked={areAllOffersSelected}
-              partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
-              onChange={toggleSelectAllCheckboxes}
-              label={
-                areAllOffersSelected
-                  ? 'Tout désélectionner'
-                  : 'Tout sélectionner'
-              }
-            />
-          </div>
+          <span className={styles['visually-hidden']}>
+            Sélection des offres
+          </span>
         </th>
         {columns.map(
           ({ id, title, isVisuallyHidden, sortableProps }, index) => (

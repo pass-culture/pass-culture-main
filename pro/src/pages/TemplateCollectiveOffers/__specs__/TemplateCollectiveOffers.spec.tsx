@@ -324,12 +324,8 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(nextIcon)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(
-        screen.getByLabelText(`Sélectionner l'offre "${offers[10].name}"`)
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText(`Sélectionner l'offre "${offers[0].name}"`)
-      ).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
+      expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -347,12 +343,8 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(previousIcon)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(
-        screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText(`Sélectionner l'offre "${offers[10].name}"`)
-      ).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
+      expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
     describe('when 101 offers are fetched', () => {
@@ -379,13 +371,9 @@ describe('route TemplateCollectiveOffers', () => {
           await userEvent.click(nextIcon)
         }
 
+        expect(screen.getByLabelText(offersRecap[99].name)).toBeInTheDocument()
         expect(
-          screen.getByLabelText(
-            `Sélectionner l'offre "${offersRecap[99].name}"`
-          )
-        ).toBeInTheDocument()
-        expect(
-          screen.queryByText(`Sélectionner l'offre "${offersRecap[100].name}"`)
+          screen.queryByText(offersRecap[100].name)
         ).not.toBeInTheDocument()
       })
     })
@@ -536,33 +524,33 @@ describe('route TemplateCollectiveOffers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres" & WIP_COLLAPSED_MEMORIZED_FILTERS enabled - except nameOrIsbn', async () => {
-          vi.spyOn(api, 'getCollectiveOffers')
-          const nameOrIsbn = 'Any word'
-    
-          await renderOffers(
-            {
-              nameOrIsbn,
-              venueId: '666',
-            },
-            ['WIP_COLLAPSED_MEMORIZED_FILTERS']
-          )
-    
-          await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-    
-          await waitFor(() => {
-            expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-              nameOrIsbn,
-              '1',
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              CollectiveOfferType.TEMPLATE,
-              undefined
-            )
-          })
-        })
+      vi.spyOn(api, 'getCollectiveOffers')
+      const nameOrIsbn = 'Any word'
+
+      await renderOffers(
+        {
+          nameOrIsbn,
+          venueId: '666',
+        },
+        ['WIP_COLLAPSED_MEMORIZED_FILTERS']
+      )
+
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          nameOrIsbn,
+          '1',
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          CollectiveOfferType.TEMPLATE,
+          undefined
+        )
+      })
+    })
   })
 
   it('should show draft offers', async () => {
