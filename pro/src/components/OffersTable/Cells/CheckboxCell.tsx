@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import styles from 'styles/components/Cells.module.scss'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import { CELLS_DEFINITIONS } from '../utils/cellDefinitions'
 
@@ -32,13 +32,12 @@ export const CheckboxCell = ({
       )}
       headers={`${rowId} ${CELLS_DEFINITIONS.CHECKBOX.id}`}
     >
-      <BaseCheckbox
+      <Checkbox
         checked={isSelected}
-        className="select-offer-checkbox"
-        label={`Sélectionner l'offre "${offerName}"`}
-        exceptionnallyHideLabelDespiteA11y={true}
+        label={offerName}
         disabled={disabled}
         onChange={selectOffer}
+        className={styles['label']}
       />
     </td>
   )

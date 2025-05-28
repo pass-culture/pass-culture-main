@@ -17,19 +17,22 @@ import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullDownloadIcon from 'icons/full-download.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import {
-  BaseCheckbox,
-  PartialCheck,
-} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { InvoiceActions } from './InvoiceActions'
 import styles from './InvoiceTable.module.scss'
+
+enum PartialCheck {
+  CHECKED = 'checked',
+  PARTIAL = 'partial',
+  UNCHECKED = 'unchecked',
+}
 
 type InvoiceTableProps = {
   invoices: InvoiceResponseV2Model[]
@@ -190,11 +193,11 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   return (
     <>
       <div className={styles['download-actions']} aria-live="polite">
-        <BaseCheckbox
+        <Checkbox
           className={styles['download-all-checkbox']}
           label="Tout sélectionner"
           checked={allInvoicesChecked !== PartialCheck.UNCHECKED}
-          partialCheck={allInvoicesChecked === PartialCheck.PARTIAL}
+          indeterminate={allInvoicesChecked === PartialCheck.PARTIAL}
           onChange={onAllInvoicesCheckChange}
         />
         {checkedInvoices.length > 0 && (
@@ -227,7 +230,6 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               role="columnheader"
               scope="col"
               className={styles['header-cell']}
-              colSpan={2}
             >
               <div className={styles['header-sort']}>
                 Date du justificatif
@@ -367,19 +369,11 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   className={styles['data']}
                   data-label="Sélection du justificatif"
                 >
-                  <BaseCheckbox
+                  <Checkbox
                     checked={checkedInvoices.includes(invoice.reference)}
                     onChange={() => onInvoiceCheckChange(invoice.reference)}
-                    label={`Sélection du ${invoice.amount >= 0 ? 'remboursement' : 'trop perçu'} du ${format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}`}
-                    exceptionnallyHideLabelDespiteA11y
+                    label={format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}
                   />
-                </td>
-                <td
-                  role="cell"
-                  className={cn(styles['data'], styles['date-data'])}
-                  data-label="Date du justificatif"
-                >
-                  {format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}
                 </td>
                 <td
                   role="cell"

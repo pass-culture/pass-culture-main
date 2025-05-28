@@ -135,6 +135,8 @@
 
   .checkbox-column {
     width: rem.torem(32px);
+    padding-right: rem.torem(8px);
+    text-transform: capitalize;
   }
 
   .date-column {
@@ -152,11 +154,6 @@
     // Resets the cascading style of <th> otherwise
     // the font-weight is applied to the datepicker dropdown
     font-weight: initial;
-  }
-
-  .day {
-    width: rem.torem(40px);
-    margin-right: rem.torem(8px);
   }
 
   .time-column {

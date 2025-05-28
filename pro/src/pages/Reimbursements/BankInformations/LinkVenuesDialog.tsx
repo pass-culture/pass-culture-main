@@ -10,13 +10,13 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { isEqual } from 'commons/utils/isEqual'
 import { pluralizeString } from 'commons/utils/pluralize'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import styles from './LinkVenuesDialog.module.scss'
 import { ManadgedVenueItem } from './ManagedVenueItem/ManagedVenueItem'
@@ -147,9 +147,9 @@ export const LinkVenuesDialog = ({
             >
               <div className={styles['dialog-checkboxes']}>
                 <div className={styles['dialog-select-all']}>
-                  <BaseCheckbox
+                  <Checkbox
                     checked={allVenuesSelected || selectedVenuesIds.length >= 1}
-                    partialCheck={
+                    indeterminate={
                       selectedVenuesIds.length >= 1 && !allVenuesSelected
                     }
                     onChange={() => {

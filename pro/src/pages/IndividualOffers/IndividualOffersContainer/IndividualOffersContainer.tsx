@@ -166,7 +166,7 @@ export const IndividualOffersContainer = ({
             toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
             hasFiltersOrNameSearch={hasFiltersOrNameSearch}
             selectedFilters={selectedFilters}
-            isAtLeastOneOfferChecked={selectedOffers.length > 1}
+            isAtLeastOneOfferChecked={selectedOffers.length > 0}
           />
           <div role="status">
             {selectedOffers.length > 0 && (

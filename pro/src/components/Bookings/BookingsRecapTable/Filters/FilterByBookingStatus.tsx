@@ -9,8 +9,8 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
+import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
 import fullSortIcon from 'icons/full-sort.svg'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BookingsFilters } from '../types'
@@ -96,17 +96,19 @@ export const FilterByBookingStatus = <
 
   useOnClickOrFocusOutside(containerRef, hideTooltip)
 
-  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const statusId = event.target.name
+  const handleCheckboxChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    checkboxId: string
+  ) => {
     const isSelected = event.target.checked
 
     if (!isSelected) {
       updateGlobalFilters({
-        bookingStatus: [...bookingStatuses, statusId],
+        bookingStatus: [...bookingStatuses, checkboxId],
       })
     } else {
       updateGlobalFilters({
-        bookingStatus: bookingStatuses.filter((el) => el !== statusId),
+        bookingStatus: bookingStatuses.filter((el) => el !== checkboxId),
       })
     }
   }
@@ -148,17 +150,19 @@ export const FilterByBookingStatus = <
               <legend className={styles['bs-filter-legend']}>
                 Afficher les réservations
               </legend>
-              {bookingStatusOptions.map((bookingStatus) => (
-                <BaseCheckbox
-                  key={bookingStatus.value}
-                  checked={!bookingStatuses.includes(bookingStatus.value)}
-                  id={`bs-${bookingStatus.value}`}
-                  name={bookingStatus.value}
-                  onChange={handleCheckboxChange}
-                  label={bookingStatus.title}
-                  className={styles['bs-filter-checkbox']}
-                />
-              ))}
+              <div className={styles['bs-filter-checkboxes']}>
+                {bookingStatusOptions.map((bookingStatus) => (
+                  <Checkbox
+                    variant={CheckboxVariant.DEFAULT}
+                    key={bookingStatus.value}
+                    checked={!bookingStatuses.includes(bookingStatus.value)}
+                    onChange={(e) =>
+                      handleCheckboxChange(e, bookingStatus.value)
+                    }
+                    label={bookingStatus.title}
+                  />
+                ))}
+              </div>
             </fieldset>
           </div>
         )}
