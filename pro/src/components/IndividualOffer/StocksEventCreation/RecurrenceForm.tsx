@@ -4,7 +4,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik'
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { isDateValid } from 'commons/utils/date'
+import { isDateValid, mapDayToFrench } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -25,11 +25,11 @@ import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
 
-import { DayCheckbox } from './DayCheckbox'
 import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { isLastWeekOfMonth } from './form/recurrenceUtils'
@@ -182,48 +182,28 @@ export const RecurrenceForm = ({
               {values.recurrenceType === RecurrenceType.WEEKLY && (
                 <>
                   <div className={styles['day-inputs']}>
-                    <DayCheckbox
-                      letter="L"
-                      label="Lundi"
-                      name="days"
-                      value={RecurrenceDays.MONDAY}
-                    />
-                    <DayCheckbox
-                      letter="M"
-                      label="Mardi"
-                      name="days"
-                      value={RecurrenceDays.TUESDAY}
-                    />
-                    <DayCheckbox
-                      letter="M"
-                      label="Mercredi"
-                      name="days"
-                      value={RecurrenceDays.WEDNESDAY}
-                    />
-                    <DayCheckbox
-                      letter="J"
-                      label="Jeudi"
-                      name="days"
-                      value={RecurrenceDays.THURSDAY}
-                    />
-                    <DayCheckbox
-                      letter="V"
-                      label="Vendredi"
-                      name="days"
-                      value={RecurrenceDays.FRIDAY}
-                    />
-                    <DayCheckbox
-                      letter="S"
-                      label="Samedi"
-                      name="days"
-                      value={RecurrenceDays.SATURDAY}
-                    />
-                    <DayCheckbox
-                      letter="D"
-                      label="Dimanche"
-                      name="days"
-                      value={RecurrenceDays.SUNDAY}
-                    />
+                    {Object.values(RecurrenceDays).map((day) => {
+                      const frenchDay = mapDayToFrench(day)
+                      return (
+                        <DayCheckbox
+                          key={day}
+                          label={frenchDay[0]}
+                          tooltipContent={frenchDay}
+                          checked={values.days.includes(day)}
+                          name="days"
+                          onChange={(e) => {
+                            let newDays = new Set(values.days)
+                            if (e.target.checked) {
+                              newDays.add(day)
+                            } else {
+                              newDays.delete(day)
+                            }
+                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                            setFieldValue('days', Array.from(newDays))
+                          }}
+                        />
+                      )
+                    })}
                   </div>
                   {formik.errors.days && formik.touched.days && (
                     <div className={styles['days-error']}>
