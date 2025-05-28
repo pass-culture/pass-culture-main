@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
 import { OfferAddressType } from 'apiClient/adage'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from 'commons/utils/config'
 import { isNumber } from 'commons/utils/types'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -132,6 +133,10 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
   const searchIndexIdDisplayed: null | string =
     getSearchIndexIdDisplayed(scopedResults)
 
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
+
   const formValuesArray: {
     values: SearchFormValues
     headerMessage: ReactNode
@@ -141,7 +146,7 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
     <>
       {formValuesArray.map((formValues, i) => {
         return (
-          <Index
+          <Index 
             indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
             indexId={`no_results_offers_index_${i}`}
             key={i}
@@ -155,11 +160,16 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
                   'offer.educationalInstitutionUAICode:all',
                   `offer.educationalInstitutionUAICode:${adageUser.uai}`,
                 ],
-                ...adageFiltersToFacetFilters(formValues.values).queryFilters,
+                ...adageFiltersToFacetFilters(
+                  formValues.values,
+                  isCollectiveOaActive
+                ).queryFilters,
               ]}
               query={''}
               filters={
-                'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
+                isCollectiveOaActive
+                  ? 'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
+                  : 'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
               }
               hitsPerPage={3}
               aroundLatLng={
