@@ -124,7 +124,6 @@ def get_bookings_by_offer(
 
     Return all the bookings for a given offer. Results are paginated (by default, there are `50` bookings per page)
     """
-
     offer = (
         db.session.query(offers_models.Offer)
         .filter(offers_models.Offer.id == query.offer_id)
