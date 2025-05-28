@@ -2,9 +2,15 @@ import { Form, FormikProvider, useFormikContext } from 'formik'
 import { useState } from 'react'
 import useSWR from 'swr'
 
-import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  CollectiveLocationType,
+  EacFormat,
+  OfferAddressType,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from 'commons/config/swrQueryKeys'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
@@ -49,6 +55,9 @@ export const OfferFilters = ({
   }>({})
 
   const formik = useFormikContext<SearchFormValues>()
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
 
   const { adageUser } = useAdageUser()
 
@@ -166,15 +175,26 @@ export const OfferFilters = ({
             <div className={styles['filter-container-buttons-list-items']}>
               <AdageButtonFilter
                 isActive={
-                  formik.values.eventAddressType.length > 0 &&
-                  formik.values.eventAddressType !== OfferAddressType.OTHER
+                  isCollectiveOaActive
+                    ? formik.values.locationType.length > 0 &&
+                      formik.values.locationType !==
+                        CollectiveLocationType.TO_BE_DEFINED
+                    : formik.values.eventAddressType.length > 0 &&
+                      formik.values.eventAddressType !== OfferAddressType.OTHER
                 }
                 title="Type d’intervention"
                 itemsLength={
-                  formik.values.eventAddressType &&
-                  formik.values.eventAddressType !== OfferAddressType.OTHER
-                    ? 1
-                    : null
+                  isCollectiveOaActive
+                    ? formik.values.locationType &&
+                      formik.values.locationType !==
+                        CollectiveLocationType.TO_BE_DEFINED
+                      ? 1
+                      : null
+                    : formik.values.eventAddressType &&
+                        formik.values.eventAddressType !==
+                          OfferAddressType.OTHER
+                      ? 1
+                      : null
                 }
                 isOpen={modalOpenStatus['eventAddressType']}
                 setIsOpen={setModalOpenStatus}
@@ -183,7 +203,12 @@ export const OfferFilters = ({
               >
                 <ModalFilterLayout
                   onClean={() =>
-                    onReset('eventAddressType', OfferAddressType.OTHER)
+                    onReset(
+                      'eventAddressType',
+                      isCollectiveOaActive
+                        ? CollectiveLocationType.TO_BE_DEFINED
+                        : OfferAddressType.OTHER
+                    )
                   }
                   onSearch={() => onSearch('eventAddressType')}
                 >
