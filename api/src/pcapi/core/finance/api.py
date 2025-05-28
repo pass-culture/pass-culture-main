@@ -2468,6 +2468,33 @@ def _generate_invoice_legacy(
             },
         )
 
+    # FinanceIncident.status: VALIDATED -> INVOICED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of finance incident"):
+        db.session.execute(
+            sa.text(
+                """
+            UPDATE finance_incident
+            SET
+            status =
+                CASE WHEN finance_incident.status = CAST(:cancelled AS bookingstatus)
+                THEN CAST(:cancelled AS bookingstatus)
+                ELSE CAST(:invoiced AS bookingstatus)
+                END,
+            FROMbooking_finance_incident, finance_event, pricing, cashflow_pricing
+            WHERE
+                finance_incident.id = booking_finance_incident."incidentId"
+            AND booking_finance_incident.id = finance_event."bookingFinanceIncidentId"
+            AND finance_event.id = pricing."eventId"
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """
+            ),
+            {
+                "cancelled": models.IncidentStatus.CANCELLED.value,
+                "reimbursed": models.IncidentStatus.INVOICED.value,
+                "cashflow_ids": tuple(cashflow_ids),
+            },
+        )
     db.session.commit()
     return invoice
 
@@ -3537,6 +3564,8 @@ def cancel_finance_incident(
         raise exceptions.FinanceIncidentAlreadyCancelled
     if incident.status == models.IncidentStatus.VALIDATED:
         raise exceptions.FinanceIncidentAlreadyValidated
+    if incident.status == models.IncidentStatus.INVOICED:
+        raise exceptions.FinanceIncidentAlreadyInvoiced
 
     incident.status = models.IncidentStatus.CANCELLED
     db.session.add(incident)
