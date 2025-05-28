@@ -59,6 +59,7 @@ def push_bank_accounts(count: int) -> None:
                     {"lastCegidSyncDate": datetime.datetime.utcnow()},
                     synchronize_session=False,
                 )
+                db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
     finally:
@@ -108,6 +109,7 @@ def push_invoices(count: int) -> None:
                     {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
                     synchronize_session=False,
                 )
+                db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
     finally:
