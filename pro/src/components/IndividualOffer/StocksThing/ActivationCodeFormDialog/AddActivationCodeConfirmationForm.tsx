@@ -1,6 +1,6 @@
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 
@@ -47,7 +47,6 @@ export const AddActivationCodeConfirmationForm = ({
           className={styles['date-input']}
           name="activationCodesExpirationDatetime"
           minDate={getMinimumExpirationDatetime(minDate)}
-          isOptional={true}
         />
       </div>
       <div>
