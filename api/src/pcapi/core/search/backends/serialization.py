@@ -463,7 +463,8 @@ def _get_collective_offer_template_coordinates_from_address(
             return geography_api.get_coordinates(offer)
 
         case _:
-            raise ValueError(f"Invalid locationType for collective offer template {offer.id}")
+            logger.error(f"Invalid locationType for collective offer template {offer.id}")
+            return geography_api.get_coordinates(offer.venue)
 
 
 def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> dict[str, float]:
