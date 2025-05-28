@@ -1,15 +1,18 @@
-import { format } from 'date-fns'
-
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
-import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
-import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
+import {
+  isDateValid,
+  formatShortDateForInput,
+  FORMAT_ISO_DATE_ONLY,
+} from 'commons/utils/date'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
+import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
+import { format } from 'date-fns'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
 export const buildInitialValues = (
   offer: GetIndividualOfferWithAddressResponseModel,
@@ -20,17 +23,14 @@ export const buildInitialValues = (
   }
 
   return {
-    stockId: stocks[0].id,
+    stockId: stocks.length > 0 ? stocks[0].id : undefined,
     remainingQuantity: stocks[0].remainingQuantity?.toString() || 'unlimited',
     bookingsQuantity: stocks[0].bookingsQuantity.toString(),
-    quantity:
-      stocks[0].quantity === undefined || stocks[0].quantity === null
-        ? ''
-        : stocks[0].quantity,
-    bookingLimitDatetime: stocks[0].bookingLimitDatetime
+    quantity: stocks[0].quantity ?? '',
+    bookingLimitDatetime: isDateValid(stocks[0].bookingLimitDatetime)
       ? format(
           getLocalDepartementDateTimeFromUtc(
-            stocks[0].bookingLimitDatetime,
+            new Date(stocks[0].bookingLimitDatetime),
             getDepartmentCode(offer)
           ),
           FORMAT_ISO_DATE_ONLY
@@ -40,9 +40,8 @@ export const buildInitialValues = (
     activationCodesExpirationDatetime: isDateValid(
       stocks[0].activationCodesExpirationDatetime
     )
-      ? format(
-          new Date(stocks[0].activationCodesExpirationDatetime),
-          FORMAT_ISO_DATE_ONLY
+      ? formatShortDateForInput(
+          new Date(stocks[0].activationCodesExpirationDatetime)
         )
       : '',
     activationCodes: [],

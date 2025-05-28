@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
 import { Route, Routes } from 'react-router'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -156,7 +157,7 @@ describe('screens:StocksThing', () => {
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Prix *')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Prix/)).toBeInTheDocument()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
@@ -208,15 +209,17 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
+    await userEvent.tab()
+    expect(screen.getByLabelText(/Prix/)).toHaveValue(20)
     await userEvent.click(nextButton)
 
     await waitFor(() => {
       expect(api.createThingStock).toHaveBeenCalledWith({
-          offerId: offer.id,
-          bookingLimitDatetime: null,
-          price: 20,
-          quantity: null,
+        offerId: offer.id,
+        bookingLimitDatetime: null,
+        price: 20,
+        quantity: null,
       })
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
@@ -231,7 +234,7 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(
       screen.getByLabelText('Accepter les réservations “Duo“')
     )
@@ -284,17 +287,17 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
 
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer et continuer' })
     )
 
     await waitFor(() => {
-      expect(screen.getByText('API price ERROR')).toBeInTheDocument()
+      expect(screen.getByText(/API price ERROR/)).toBeInTheDocument()
     })
-    expect(screen.getByText('API quantity ERROR')).toBeInTheDocument()
+    expect(screen.getByText(/API quantity ERROR/)).toBeInTheDocument()
     expect(
-      screen.getByText('API bookingLimitDatetime ERROR')
+      screen.getByText(/API bookingLimitDatetime ERROR/)
     ).toBeInTheDocument()
   })
 
@@ -307,7 +310,7 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
 
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer et continuer' })
     )
@@ -367,25 +370,25 @@ describe('screens:StocksThing', () => {
         })
       ).toBeDisabled()
 
-      const priceInput = screen.getByLabelText('Prix *')
+      const priceInput = screen.getByLabelText(/Prix/)
       await userEvent.clear(priceInput)
       await userEvent.type(priceInput, '14.01')
-      const expirationInput = screen.getByLabelText("Date d'expiration *")
+      const expirationInput = screen.getByLabelText(/Date d'expiration/)
       expect(expirationInput).toBeDisabled()
       const date = new Date()
-      date.setUTCHours(22, 59, 59, 999)
       expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Enregistrer et continuer'))
       expect(api.createThingStock).toHaveBeenCalledWith({
         offerId: offer.id,
-  
+
         bookingLimitDatetime: null,
         price: 14.01,
         quantity: 5,
         activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
-        activationCodesExpirationDatetime:
-          serializeThingBookingLimitDatetime(date, '75'),
-
+        activationCodesExpirationDatetime: serializeThingBookingLimitDatetime(
+          date,
+          '75'
+        ),
       })
     })
 
@@ -453,9 +456,11 @@ describe('screens:StocksThing', () => {
           name: 'Quantité',
         })
       ).toBeDisabled()
-      const expirationInput = screen.getByLabelText("Date d'expiration *")
+      const expirationInput = screen.getByLabelText(/Date d'expiration/)
       expect(expirationInput).toBeDisabled()
-      expect(expirationInput).toHaveValue('2020-12-15')
+      await waitFor(() => {
+        expect(expirationInput).toHaveValue('2020-12-15')
+      })
     })
   })
 
@@ -523,6 +528,7 @@ describe('screens:StocksThing', () => {
       }),
       '20'
     )
+    await userEvent.tab()
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -568,12 +574,15 @@ describe('screens:StocksThing', () => {
 
     const input = screen.getByLabelText('Date limite de réservation')
 
-    await userEvent.clear(input)
-    await userEvent.click(screen.getByLabelText('Prix *'))
+    await userEvent.type(input, '2020-12-16')
+    await userEvent.tab()
+    await userEvent.click(screen.getByLabelText(/Prix/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.UPDATED_BOOKING_LIMIT_DATE,
-      expect.objectContaining({ bookingLimitDatetime: '' })
+      expect.objectContaining({
+        bookingLimitDatetime: '2020-12-16T22:59:59Z',
+      })
     )
   })
 
@@ -591,8 +600,7 @@ describe('screens:StocksThing', () => {
     const input = screen.getByLabelText('Date limite de réservation')
 
     await userEvent.clear(input)
-    await userEvent.type(input, '2020-12-15')
-    await userEvent.click(screen.getByLabelText('Prix *'))
+    await userEvent.click(screen.getByLabelText(/Prix/))
 
     expect(mockLogEvent).not.toHaveBeenCalled()
   })

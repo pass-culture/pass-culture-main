@@ -11,7 +11,7 @@ export const stockThingFormValuesFactory = (
   bookingLimitDatetime: '2022-12-29',
   price: 66.6,
   activationCodes: [],
-  activationCodesExpirationDatetime: '',
+  activationCodesExpirationDatetime: undefined,
   isDuo: undefined,
   ...customStockThing,
 })

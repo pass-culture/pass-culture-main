@@ -1,17 +1,13 @@
-import { useFormik } from 'formik'
+import { Quantity } from 'ui-kit/form/QuantityInput/QuantityInput'
 
 export interface StockThingFormValues {
   stockId?: number
-  remainingQuantity: string
-  bookingsQuantity: string
-  quantity: number | null | ''
-  bookingLimitDatetime: string
-  price: number | ''
-  activationCodes: string[]
-  activationCodesExpirationDatetime: string
-  isDuo: boolean | undefined
+  remainingQuantity?: string
+  bookingsQuantity?: string
+  quantity?: Quantity
+  bookingLimitDatetime?: string | null
+  price?: number | undefined
+  activationCodes?: string[]
+  activationCodesExpirationDatetime?: string | null
+  isDuo?: boolean
 }
-
-export type StockThingFormik = ReturnType<
-  typeof useFormik<StockThingFormValues>
->

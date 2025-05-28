@@ -58,7 +58,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { DialogStockEventDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { DialogStocksEventEditConfirm } from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
-import { useNotifyFormError } from '../hooks/useNotifyFormError'
+import { useFormikNotifyFormError } from '../hooks/useNotifyFormError'
 import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getDepartmentCode } from '../utils/getDepartmentCode'
@@ -409,7 +409,7 @@ export const StocksEventEdition = ({
     enableReinitialize: true,
   })
 
-  useNotifyFormError({
+  useFormikNotifyFormError({
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
   })
