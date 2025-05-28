@@ -47,6 +47,7 @@ const initialValues = {
   domains: [],
   students: [],
   eventAddressType: '',
+  locationType: '',
   departments: [],
   academies: [],
   formats: [],
