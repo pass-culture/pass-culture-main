@@ -23,7 +23,12 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
     def test_list_educational_domains(self, client):
         plain_api_key, _ = self.setup_provider()
 
-        programs = educational_factories.NationalProgramFactory.create_batch(2)
+        active_programs = educational_factories.NationalProgramFactory.create_batch(2)
+        programs = [
+            *active_programs,
+            # this inactive program will not appear in the response
+            educational_factories.NationalProgramFactory(isActive=False),
+        ]
 
         domain1 = educational_factories.EducationalDomainFactory(name="Arts numériques", nationalPrograms=programs)
         domain2 = educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel")
@@ -33,7 +38,7 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
             assert response.status_code == 200
 
         response_list = sorted(response.json, key=itemgetter("id"))
-        domain1_programs = [{"id": p.id, "name": p.name} for p in programs]
+        domain1_programs = [{"id": p.id, "name": p.name} for p in active_programs]
         assert response_list == [
             {"id": domain1.id, "name": "Arts numériques", "nationalPrograms": domain1_programs},
             {"id": domain2.id, "name": "Cinéma, audiovisuel", "nationalPrograms": []},

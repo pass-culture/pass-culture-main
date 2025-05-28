@@ -183,11 +183,7 @@ def check_start_is_before_end(start_datetime: datetime.datetime, end_datetime: d
         raise exceptions.EndDatetimeBeforeStartDatetime()
 
 
-def validate_national_program(
-    national_program_id: int | None,
-    domains: list[models.EducationalDomain] | None,
-    check_program_is_active: bool = True,
-) -> None:
+def validate_national_program(national_program_id: int | None, domains: list[models.EducationalDomain] | None) -> None:
     if national_program_id is None:
         return
 
@@ -199,7 +195,7 @@ def validate_national_program(
     if not national_program:
         raise exceptions.NationalProgramNotFound()
 
-    if check_program_is_active and not national_program.isActive:
+    if not national_program.isActive:
         raise exceptions.InactiveNationalProgram()
 
     valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
