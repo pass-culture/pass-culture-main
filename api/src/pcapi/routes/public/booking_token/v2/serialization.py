@@ -86,9 +86,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         userName=booking.userName,
         firstName=booking.user.firstName,
         lastName=booking.user.lastName,
-        offerAddress=booking.stock.offer.offererAddress.address.street
-        if booking.stock.offer.offererAddress
-        else None,
+        offerAddress=booking.stock.offer.offererAddress.address.street if booking.stock.offer.offererAddress else None,
         offerDepartmentCode=booking.stock.offer.offererAddress.address.departmentCode
         if booking.stock.offer.offererAddress
         else None,
