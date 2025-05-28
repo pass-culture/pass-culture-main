@@ -7,8 +7,8 @@ describe('CheckboxGroup', () => {
     render(
       <CheckboxGroup
         group={[
-          { label: 'Checkbox 1', name: 'checkbox1' },
-          { label: 'Checkbox 2', name: 'checkbox2' },
+          { label: 'Checkbox 1', checked: false, onChange: () => {} },
+          { label: 'Checkbox 2', checked: false, onChange: () => {} },
         ]}
         legend="Choose multiple options"
         name="group"
@@ -25,8 +25,8 @@ describe('CheckboxGroup', () => {
     render(
       <CheckboxGroup
         group={[
-          { label: 'Checkbox 1', name: 'checkbox1' },
-          { label: 'Checkbox 2', name: 'checkbox2' },
+          { label: 'Checkbox 1', checked: false, onChange: () => {} },
+          { label: 'Checkbox 2', checked: false, onChange: () => {} },
         ]}
         legend="Choose multiple options"
         name="group"
@@ -41,8 +41,8 @@ describe('CheckboxGroup', () => {
     render(
       <CheckboxGroup
         group={[
-          { label: 'Checkbox 1', name: 'checkbox1' },
-          { label: 'Checkbox 2', name: 'checkbox2' },
+          { label: 'Checkbox 1', checked: false, onChange: () => {} },
+          { label: 'Checkbox 2', checked: false, onChange: () => {} },
         ]}
         legend="Choose multiple options"
         name="group"
@@ -54,32 +54,14 @@ describe('CheckboxGroup', () => {
     expect(screen.getByRole('group', { name: 'Choose multiple options' }))
   })
 
-  it('should render the group withou a legend and with a describedBy reference', () => {
-    render(
-      <CheckboxGroup
-        group={[
-          { label: 'Checkbox 1', name: 'checkbox1' },
-          { label: 'Checkbox 2', name: 'checkbox2' },
-        ]}
-        describedBy="my-id"
-        name="group"
-      />
-    )
-
-    expect(screen.getByRole('group')).toHaveAttribute(
-      'aria-describedby',
-      expect.stringContaining('my-id')
-    )
-  })
-
   it('should display an error message', () => {
     render(
       <CheckboxGroup
+        legend="Group legend"
         group={[
-          { label: 'Checkbox 1', name: 'checkbox1' },
-          { label: 'Checkbox 2', name: 'checkbox2' },
+          { label: 'Checkbox 1', checked: false, onChange: () => {} },
+          { label: 'Checkbox 2', checked: false, onChange: () => {} },
         ]}
-        describedBy="my-id"
         error="Error message"
         name="group"
       />

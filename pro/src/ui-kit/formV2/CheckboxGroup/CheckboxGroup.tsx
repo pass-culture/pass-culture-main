@@ -1,56 +1,48 @@
 import classNames from 'classnames'
 import { useId } from 'react'
 
-import { RequireAtLeastOne } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
+import { CheckboxAssetVariant } from 'design-system/Checkbox/CheckboxAsset/CheckboxAsset'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-
-import { Checkbox } from '../Checkbox/Checkbox'
 
 import styles from './CheckboxGroup.module.scss'
 
 type GroupOption = {
-  name: string
-  label: string | React.ReactNode
+  label: string
   icon?: string
-  childrenOnChecked?: JSX.Element
+  collapsed?: JSX.Element
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   checked?: boolean
+  indeterminate?: boolean
 }
 
-export type CheckboxGroupProps = RequireAtLeastOne<
-  {
-    name: string
-    legend?: string | React.ReactNode
-    describedBy?: string
-    group: GroupOption[]
-    disabled?: boolean
-    required?: boolean
-    variant?: CheckboxVariant
-    inline?: boolean
-    asterisk?: boolean
-    error?: string
-  },
-  'legend' | 'describedBy'
->
+export type CheckboxGroupProps = {
+  legend: string | React.ReactNode
+  group: GroupOption[]
+  disabled?: boolean
+  required?: boolean
+  variant?: CheckboxVariant
+  inline?: boolean
+  asterisk?: boolean
+  error?: string
+  name?: string
+}
 
 export const CheckboxGroup = ({
   group,
-  name,
   legend,
-  describedBy,
   disabled,
   required,
-  variant,
   inline = false,
   asterisk = true,
   error,
+  name,
 }: CheckboxGroupProps): JSX.Element => {
   const errorId = useId()
 
   return (
-    <fieldset aria-describedby={`${describedBy || ''} ${errorId}`}>
+    <fieldset aria-describedby={errorId}>
       {legend && (
         <legend className={styles['legend']}>
           {legend}
@@ -63,29 +55,29 @@ export const CheckboxGroup = ({
         })}
       >
         {group.map((item) => (
-          <div className={styles['checkbox-group-item']} key={item.name}>
+          <div className={styles['checkbox-group-item']} key={item.label}>
             <Checkbox
-              icon={item.icon}
-              error={error}
-              displayErrorMessage={false}
+              asset={
+                item.icon
+                  ? { variant: CheckboxAssetVariant.ICON, src: item.icon }
+                  : undefined
+              }
+              hasError={Boolean(error)}
               label={item.label}
-              name={item.name}
               disabled={disabled}
               onChange={item.onChange}
               onBlur={item.onBlur}
-              variant={variant}
-              checked={item.checked}
-              childrenOnChecked={item.childrenOnChecked}
+              variant={CheckboxVariant.DETAILED}
+              checked={Boolean(item.checked)}
+              collapsed={item.collapsed}
+              indeterminate={item.indeterminate}
+              name={name}
             />
           </div>
         ))}
       </div>
       <div role="alert" id={errorId}>
-        {error && (
-          <FieldError name={name} className={styles['error']}>
-            {error}
-          </FieldError>
-        )}
+        {error && <FieldError className={styles['error']}>{error}</FieldError>}
       </div>
     </fieldset>
   )
