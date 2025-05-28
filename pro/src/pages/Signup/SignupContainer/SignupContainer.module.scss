@@ -16,18 +16,6 @@
     margin-top: rem.torem(32px);
   }
 
-  .checkbox-contact {
-    margin-top: rem.torem(16px);
-
-    // @TODO : Yes we shouldn't use global selector BUT as the <input> is deeply nested,
-    // it would mean to create a specitic className and drills it downto the <input>.
-    // That sounds tedious for a so simple margin-right that can be achieved in 3 lines.
-    // We should challenge the Design
-    input[type="checkbox"] {
-      margin-right: rem.torem(12px);
-    }
-  }
-
   .buttons-field {
     display: flex;
     flex-direction: column-reverse;
