@@ -2925,7 +2925,13 @@ class CreateFromOnboardingDataTest:
 
     def test_previously_rejected_siren_same_user(self):
         offerer = offerers_factories.RejectedOffererFactory(siren="853318459")
-        rejected_venue_id = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031").id
+        rejected_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, siret="85331845900031", pricing_point="self"
+        )
+        rejected_venue_id = rejected_venue.id
+        rejected_venue_id_without_siret = offerers_factories.VenueWithoutSiretFactory(
+            managingOfferer=offerer, pricing_point=rejected_venue
+        ).id
         user = users_factories.NonAttachedProFactory()
         rejected_user_offerer = offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
 
@@ -2943,7 +2949,7 @@ class CreateFromOnboardingDataTest:
 
         assert len(offerer.managedVenues) == 1
         venue = offerer.managedVenues[0]
-        assert venue.id != rejected_venue_id
+        assert venue.id not in (rejected_venue_id, rejected_venue_id_without_siret)
         assert venue.publicName == onboarding_data.publicName
 
         actions = db.session.query(history_models.ActionHistory).all()

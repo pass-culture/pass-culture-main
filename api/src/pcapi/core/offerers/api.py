@@ -1014,11 +1014,17 @@ def create_offerer(
             _initialize_offerer(offerer)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
             user_offerer.validationStatus = ValidationStatus.VALIDATED
-            venue_ids = offerers_repository.get_venue_ids_by_offerer_ids((offerer.id,))
             # Delete venues of rejected offerer so that a new one is created from onboarding data.
             # Rejected venue should not have any booking, pricing, reimbursement rule, so it should not raise exception.
-            for venue_id in venue_ids:
-                delete_venue(venue_id)
+            # Pricing point must be deleted AFTER venues without SIRET which reference them.
+            venues_to_delete = (
+                db.session.query(models.Venue)
+                .filter(models.Venue.managingOffererId == offerer.id)
+                .order_by(models.Venue.siret.nulls_first())
+                .with_entities(models.Venue.id)
+            )
+            for venue_to_delete in venues_to_delete:
+                delete_venue(venue_to_delete.id)
         elif not user_offerer.isValidated:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
