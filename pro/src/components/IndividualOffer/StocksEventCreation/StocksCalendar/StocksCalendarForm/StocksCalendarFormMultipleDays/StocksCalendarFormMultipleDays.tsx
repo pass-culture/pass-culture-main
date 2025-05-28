@@ -6,7 +6,7 @@ import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { weekDays } from 'components/IndividualOffer/StocksEventCreation/form/constants'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
-import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 
 import { getWeekDaysInBetweenDates } from '../../utils'
@@ -108,15 +108,16 @@ export function StocksCalendarFormMultipleDays({
         />
 
         {canHaveNoEndDate && (
-          <Checkbox
-            label="Pas de date de fin"
-            className={styles['checkbox-field-layout']}
-            {...form.register('multipleDaysHasNoEndDate')}
-            onChange={async (e) => {
-              form.setValue('multipleDaysEndDate', undefined)
-              await form.register('multipleDaysHasNoEndDate').onChange(e)
-            }}
-          />
+          <div className={styles['checkbox-field-layout']}>
+            <Checkbox
+              label="Pas de date de fin"
+              checked={Boolean(form.watch('multipleDaysHasNoEndDate'))}
+              onChange={(e) => {
+                form.setValue('multipleDaysEndDate', undefined)
+                form.setValue('multipleDaysHasNoEndDate', e.target.checked)
+              }}
+            />
+          </div>
         )}
       </div>
 

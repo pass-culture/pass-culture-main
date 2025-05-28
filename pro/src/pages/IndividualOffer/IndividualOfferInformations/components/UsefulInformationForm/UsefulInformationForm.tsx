@@ -13,7 +13,7 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/WithdrawalReminder'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -52,6 +52,7 @@ export const UsefulInformationForm = ({
     values: { withdrawalType, receiveNotificationEmails, bookingEmail },
     setFieldValue,
     handleChange,
+    getFieldProps,
   } = useFormikContext<UsefulInformationFormValues>()
   const accessibilityOptionsGroups = useAccessibilityOptions(setFieldValue)
 
@@ -218,9 +219,11 @@ export const UsefulInformationForm = ({
           </FormLayout.Row>
         )}
       </FormLayout.Section>
-      <FormLayout.Section title="Lien de réservation externe en l’absence de crédit" >
+      <FormLayout.Section title="Lien de réservation externe en l’absence de crédit">
         <p className={styles['infotext']}>
-          S’ils ne disposent pas ou plus de crédit, les utilisateurs de l’application seront redirigés sur ce lien pour pouvoir néanmoins profiter de votre offre.
+          S’ils ne disposent pas ou plus de crédit, les utilisateurs de
+          l’application seront redirigés sur ce lien pour pouvoir néanmoins
+          profiter de votre offre.
         </p>
         <FormLayout.Row>
           <TextInput
@@ -247,24 +250,25 @@ export const UsefulInformationForm = ({
         <FormLayout.Row>
           <Checkbox
             label="Être notifié par email des réservations"
-            name="receiveNotificationEmails"
-            value=""
-            onChange={async (e) => {
+            checked={Boolean(getFieldProps('receiveNotificationEmails').value)}
+            onChange={(e) => {
               if (
                 e.target.checked &&
                 bookingEmail ===
                   DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.bookingEmail
               ) {
-                await setFieldValue('bookingEmail', venue.bookingEmail ?? email)
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                setFieldValue('bookingEmail', venue.bookingEmail ?? email)
               }
-              handleChange(e)
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              setFieldValue('receiveNotificationEmails', e.target.checked)
             }}
             disabled={readOnlyFields.includes('receiveNotificationEmails')}
           />
         </FormLayout.Row>
 
         {receiveNotificationEmails && (
-          <FormLayout.Row>
+          <FormLayout.Row className={styles['email-row']}>
             <TextInput
               label="Email auquel envoyer les notifications"
               maxLength={90}

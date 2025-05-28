@@ -25,14 +25,13 @@ import {
 } from 'components/IndividualOffer/PriceCategoriesScreen/form/constants'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 import { PriceInput } from 'ui-kit/formV2/PriceInput/PriceInput'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
@@ -420,10 +419,10 @@ export const PriceCategoriesScreen = ({
                 >
                   <Checkbox
                     {...register('isDuo')}
+                    checked={Boolean(watch('isDuo'))}
                     label="Accepter les réservations “Duo“"
-                    name="isDuo"
                     disabled={isDisabled}
-                    variant={CheckboxVariant.BOX}
+                    variant={CheckboxVariant.DETAILED}
                   />
                 </FormLayout.Row>
               </FormLayout.Section>

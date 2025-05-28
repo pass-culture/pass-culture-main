@@ -27,11 +27,11 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { serializePatchOffer } from 'pages/IndividualOffer/commons/serializers'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 
 import { UsefulInformationFormValues } from '../commons/types'
 import { setDefaultInitialValuesFromOffer } from '../commons/utils'
@@ -297,9 +297,7 @@ export const IndividualOfferInformationsScreen = ({
           </Callout>
           <FormLayout.Row>
             <Checkbox
-              hideFooter
-              label={'Prévenir les jeunes par e-mail'}
-              name="shouldSendMail"
+              label="Prévenir les jeunes par e-mail"
               onChange={(evt) => setSendWithdrawalMail(evt.target.checked)}
               checked={sendWithdrawalMail}
             />
