@@ -132,13 +132,14 @@ def check_is_usable(booking: Booking) -> None:
     if is_booking_for_event_and_not_confirmed:
         if booking.cancellationLimitDate is None:
             raise ValueError("Can't compute max_cancellation_date with None as cancellationLimitDate")
-        offer_departement_code = (
+        # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
+        offer_department_code = (
             booking.stock.offer.offererAddress.address.departmentCode if booking.stock.offer.offererAddress else None
         )
         max_cancellation_date = datetime.datetime.strftime(
             utc_datetime_to_department_timezone(
                 booking.cancellationLimitDate,
-                offer_departement_code,
+                offer_department_code,
             ),
             "%d/%m/%Y à %H:%M",
         )

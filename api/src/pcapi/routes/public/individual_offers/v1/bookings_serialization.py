@@ -65,6 +65,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             offer_id=booking.stock.offer.id,
             stock_id=booking.stock.id,
             offer_name=booking.stock.offer.name,
+            # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
             offer_address=booking.stock.offer.offererAddress.address.street
             if booking.stock.offer.offererAddress
             else None,
