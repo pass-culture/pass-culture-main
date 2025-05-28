@@ -513,3 +513,69 @@ def update_end_import_date(special_event_id: int) -> utils.BackofficeResponse:
         request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
         303,
     )
+
+
+@operations_blueprint.route("/<int:special_event_id>/update-venue", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def get_update_venue_form(special_event_id: int) -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.autocomplete import prefill_venues_choices
+
+    event = (
+        db.session.query(operations_models.SpecialEvent.venueId)
+        .filter(operations_models.SpecialEvent.id == special_event_id)
+        .one_or_none()
+    )
+    if not event:
+        raise NotFound()
+
+    form = operations_forms.UpdateEventVenue()
+    if event.venueId:
+        form.venue.data = [str(event.venueId)]
+        prefill_venues_choices(form.venue)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(
+            "backoffice_web.operations.update_venue",
+            special_event_id=special_event_id,
+        ),
+        div_id="update-venue-modal",
+        title="Modifier le partenaire culturel",
+        button_text="Valider",
+    )
+
+
+@operations_blueprint.route("/<int:special_event_id>/update-venue", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
+def update_venue(special_event_id: int) -> utils.BackofficeResponse:
+    event = (
+        db.session.query(operations_models.SpecialEvent.id)
+        .filter(operations_models.SpecialEvent.id == special_event_id)
+        .one_or_none()
+    )
+    if not event:
+        raise NotFound()
+
+    form = operations_forms.UpdateEventVenue()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    venue_id = form.venue.data[0] if form.venue.data and form.venue.data[0] else None
+
+    if venue_id:
+        venue = db.session.query(offerers_models.Venue.id).filter(offerers_models.Venue.id == venue_id).one_or_none()
+        if not venue:
+            raise NotFound()
+
+    db.session.query(operations_models.SpecialEvent).filter(
+        operations_models.SpecialEvent.id == special_event_id
+    ).update({"venueId": venue_id}, synchronize_session=False)
+
+    flash("Le partenaire culturel a été mise à jour", "success")
+    return redirect(
+        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
+        303,
+    )

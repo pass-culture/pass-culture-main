@@ -62,7 +62,6 @@ class CreateSpecialEventForm(FlaskForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
         search_inline=True,
-        field_list_compatibility=True,
     )
 
     def filter_typeform_id(self, data: str | None) -> str | None:
@@ -141,4 +140,15 @@ class UpdateEventDate(utils.PCForm):
     date = fields.PCDateField(
         "Date",
         validators=(wtforms.validators.DataRequired("La date est obligatoire"),),
+    )
+
+
+class UpdateEventVenue(utils.PCForm):
+    venue = fields.PCTomSelectField(
+        "Partenaire culturel",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
     )

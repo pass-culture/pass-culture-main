@@ -628,3 +628,54 @@ class UpdateEndImportDateTest(PostEndpointHelper):
             .one()
         )
         assert db_response.endImportDate == date
+
+
+class UpdateVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.operations.update_venue"
+    endpoint_kwargs = {"special_event_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
+
+    def test_set_end_venue(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory(venue=offerers_factories.VenueFactory())
+        venue = offerers_factories.VenueFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            special_event_id=event.id,
+            form={"venue": [f"{venue.id}"]},
+        )
+
+        assert response.status_code == 303
+
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEvent.venueId,
+            )
+            .filter(
+                operations_models.SpecialEvent.id == event.id,
+            )
+            .one()
+        )
+        assert db_response.venueId == venue.id
+
+    def test_remove_venue(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory(venue=offerers_factories.VenueFactory())
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            special_event_id=event.id,
+            form={"venue": [""]},
+        )
+
+        assert response.status_code == 303
+
+        db_response = (
+            db.session.query(
+                operations_models.SpecialEvent.venueId,
+            )
+            .filter(
+                operations_models.SpecialEvent.id == event.id,
+            )
+            .one()
+        )
+        assert db_response.venueId is None
