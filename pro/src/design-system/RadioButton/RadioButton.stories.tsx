@@ -1,8 +1,8 @@
 import { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import strokeDateIcon from 'icons/stroke-date.svg'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import imageDemo from './assets/image-demo.png'
 import { RadioButton } from './RadioButton'
@@ -69,7 +69,7 @@ export const DetailedWithTag: StoryObj<typeof RadioButton> = {
     label: 'Avec tag',
     variant: 'DETAILED',
     description: 'Description lorem ipsum',
-    tag: <Tag variant={TagVariant.LIGHT_GREY}>Tag</Tag>,
+    tag: <Tag variant={TagVariant.DEFAULT} label="Tag" />,
   },
 }
 
@@ -111,9 +111,9 @@ export const DetailedWithChildrenOnChecked: StoryObj<typeof RadioButton> = {
     description: 'Description lorem ipsum',
     value: 'today',
     checked: true,
-    childrenOnChecked: (
-      <fieldset style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
-        <legend>Légende</legend>
+    onChange: () => {},
+    collapsed: (
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
         <RadioButton
           variant="DETAILED"
           name="subchoice"
@@ -126,7 +126,7 @@ export const DetailedWithChildrenOnChecked: StoryObj<typeof RadioButton> = {
           label="Sous-label 2"
           value="2"
         />
-      </fieldset>
+      </div>
     ),
   },
 }

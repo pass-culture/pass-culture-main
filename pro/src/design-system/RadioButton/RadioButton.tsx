@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, isValidElement, useId } from 'react'
+import { ForwardedRef, forwardRef, useId } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -42,7 +42,7 @@ type CommonProps = Partial<React.InputHTMLAttributes<HTMLInputElement>> & {
 /**
  * Props pour la variante DEFAULT
  * @property description - Jamais utilisé ici
- * @property childrenOnChecked - Jamais utilisé ici
+ * @property collapsed - Jamais utilisé ici
  * @property icon - Jamais utilisé ici
  * @property tag - Jamais utilisé ici
  * @property text - Jamais utilisé ici
@@ -53,7 +53,7 @@ type DefaultVariantProps = CommonProps & {
   variant?: 'DEFAULT'
   sizing?: 'HUG'
   description?: never
-  childrenOnChecked?: never
+  collapsed?: never
   icon?: never
   tag?: never
   text?: never
@@ -68,13 +68,13 @@ type DefaultVariantProps = CommonProps & {
 /**
  * Props pour la variante DETAILED
  * @property description - Description optionnelle (uniquement pour la variante DETAILED)
- * @property childrenOnChecked - Élément JSX affiché si coché
+ * @property collapsed - Élément JSX affiché si coché
  */
 type DetailedWithDescriptionProps = {
   /** Description optionnelle (uniquement pour la variante DETAILED) */
   description?: string
   /** Élément JSX affiché si coché */
-  childrenOnChecked?: JSX.Element
+  collapsed?: JSX.Element
 }
 
 // Right element is an "icon" string
@@ -175,9 +175,8 @@ export const RadioButton = forwardRef(
       variant = 'DEFAULT',
       sizing,
       className,
-      ariaDescribedBy,
       description,
-      childrenOnChecked,
+      collapsed,
       icon,
       tag,
       text,
@@ -188,18 +187,6 @@ export const RadioButton = forwardRef(
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const id = useId()
-    const descriptionId = useId()
-
-    if (
-      childrenOnChecked &&
-      (!isValidElement(childrenOnChecked) ||
-        childrenOnChecked.type !== 'fieldset')
-    ) {
-      throw new Error('`childrenOnChecked` must be a <fieldset> element')
-    }
-
-    let describedBy = ariaDescribedBy ? ariaDescribedBy : ''
-    describedBy += description ? ` ${descriptionId}` : ''
 
     const isVariantDetailed = variant === 'DETAILED'
 
@@ -211,7 +198,7 @@ export const RadioButton = forwardRef(
             {
               [styles['sizing-fill']]: sizing === 'FILL',
               [styles['variant-detailed']]: isVariantDetailed,
-              [styles['has-children']]: childrenOnChecked,
+              [styles['has-children']]: collapsed,
               [styles['is-checked']]: props.checked,
               [styles['is-disabled']]: props.disabled,
             },
@@ -224,16 +211,16 @@ export const RadioButton = forwardRef(
               {...props}
               value={value}
               className={styles[`radio-button-input`]}
-              aria-describedby={describedBy}
               id={id}
               ref={ref}
+              {...(props.checked !== undefined
+                ? { checked: props.checked }
+                : {})} // To handle uncontrolled component
             />
             <div>
               {label}
               {description && isVariantDetailed && (
-                <p className={styles['description']} id={descriptionId}>
-                  {description}
-                </p>
+                <p className={styles['description']}>{description}</p>
               )}
             </div>
             {tag && isVariantDetailed && (
@@ -265,10 +252,8 @@ export const RadioButton = forwardRef(
               </div>
             )}
           </label>
-          {childrenOnChecked && isVariantDetailed && props.checked && (
-            <div className={styles['children-on-checked']}>
-              {childrenOnChecked}
-            </div>
+          {collapsed && isVariantDetailed && props.checked && (
+            <div className={styles['children-on-checked']}>{collapsed}</div>
           )}
         </div>
       </>
