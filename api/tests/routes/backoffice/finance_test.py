@@ -88,48 +88,6 @@ def incidents_fixture() -> tuple:
     return incident1, incident2, incident3
 
 
-@pytest.fixture(scope="function", name="closed_incident")
-def closed_incident_fixture() -> tuple:
-    venue = offerers_factories.VenueFactory(pricing_point="self")
-    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-    booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
-    original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
-    original_pricing = api.price_event(original_event)
-    original_pricing.status = finance_models.PricingStatus.INVOICED
-
-    original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-        booking=booking,
-        incident__status=finance_models.IncidentStatus.VALIDATED,
-        incident__venue=venue,
-        incident__forceDebitNote=True,
-    ).incident
-    events_to_price = []
-    events_to_price.extend(
-        api._create_finance_events_from_incident(
-            original_finance_incident.booking_finance_incidents[0],
-            incident_validation_date=datetime.datetime.utcnow(),
-        )
-    )
-    booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
-    events_to_price.append(
-        finance_factories.FinanceEventFactory(
-            venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
-        )
-    )
-
-    for event in events_to_price:
-        api.price_event(event)
-
-    cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
-    generated_cashflow = cashflow_batch.cashflows[0]
-    generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
-
-    db.session.flush()
-
-    return original_finance_incident
-
-
 class ListIncidentsTest(GetEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.list_incidents"
     needed_permission = perm_models.Permissions.READ_INCIDENTS
@@ -269,7 +227,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].origin.value
 
-    def test_list_incident_by_status(self, authenticated_client, incidents, closed_incident):
+    def test_list_incident_by_status(self, authenticated_client, incidents):
         with testing.assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, status=[finance_models.IncidentStatus.VALIDATED.name])
@@ -277,7 +235,7 @@ class ListIncidentsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1  # closed incident is excluded
+        assert len(rows) == 1
         assert rows[0]["ID"] == str(incidents[1].id)
 
     @pytest.mark.parametrize(
