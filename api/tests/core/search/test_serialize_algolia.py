@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 
 import pytest
 import time_machine
@@ -703,13 +704,21 @@ def test_serialize_collective_offer_template_to_be_defined_with_ff():
 
 
 @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-def test_serialize_collective_offer_template_no_location_with_ff():
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(locationType=None)
+def test_serialize_collective_offer_template_no_location_with_ff(caplog):
+    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        venue__offererAddress=venue_offerer_address,
+        locationType=None,
+    )
 
-    with pytest.raises(ValueError) as exc:
-        algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    with caplog.at_level(logging.ERROR):
+        serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
 
-    assert str(exc.value) == f"Invalid locationType for collective offer template {collective_offer_template.id}"
+    serialized["offer"]["locationType"] is None
+    assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+    [log] = caplog.records
+    assert log.message == f"Invalid locationType for collective offer template {collective_offer_template.id}"
 
 
 def test_serialize_collective_offer_template_virtual_venue():
