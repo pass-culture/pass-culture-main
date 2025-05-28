@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import strokeSearch from 'icons/stroke-search.svg'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 
 import { Option } from './MultiSelect'
@@ -62,7 +62,10 @@ export const MultiSelectPanel = ({
         </div>
       )}
 
-      <div className={styles['panel-scrollable']} data-testid="panel-scrollable">
+      <div
+        className={styles['panel-scrollable']}
+        data-testid="panel-scrollable"
+      >
         <p className={styles['visually-hidden']} role="status">
           <span>{filteredOptions.length} résultats trouvés</span>
         </p>
@@ -70,23 +73,23 @@ export const MultiSelectPanel = ({
           <ul className={styles['container']}>
             {hasSelectAllOptions && (
               <li key={'all-options'} className={styles.item}>
-                <BaseCheckbox
+                <Checkbox
                   label={'Tout sélectionner'}
                   checked={isAllChecked}
-                  labelClassName={styles['label']}
-                  inputClassName={styles['checkbox']}
+                  className={styles['label']}
                   onChange={onSelectAll}
+                  display="fill"
                 />
               </li>
             )}
             {filteredOptions.map((option) => (
               <li key={option.id} className={styles.item}>
-                <BaseCheckbox
-                  labelClassName={styles['label']}
-                  inputClassName={styles['checkbox']}
+                <Checkbox
+                  className={styles['label']}
                   label={option.label}
                   checked={option.checked}
                   onChange={() => onOptionSelect(option)}
+                  display="fill"
                 />
               </li>
             ))}

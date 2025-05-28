@@ -3,7 +3,7 @@ import { Ref } from 'react'
 
 import { SelectOption } from 'commons/custom_types/form'
 import { pluralize } from 'commons/utils/pluralize'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 
 import styles from './OptionsList.module.scss'
 
@@ -68,14 +68,14 @@ export const OptionsList = ({
                 tabIndex={-1}
               >
                 {multi ? (
-                  <BaseCheckbox
+                  <Checkbox
                     label={label}
                     checked={isSelected}
                     onChange={() => {
                       selectOption(String(value))
                     }}
-                    labelClassName={styles['label']}
-                    inputClassName={styles['input']}
+                    className={styles['label']}
+                    display="fill"
                   />
                 ) : (
                   <span
