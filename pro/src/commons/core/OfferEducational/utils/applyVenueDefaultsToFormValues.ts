@@ -4,7 +4,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 
-import { DEFAULT_EAC_FORM_VALUES } from '../constants'
+import { getDefaultEducationalValues } from '../constants'
 import { OfferEducationalFormValues } from '../types'
 
 export const applyVenueDefaultsToFormValues = (
@@ -71,7 +71,7 @@ export const applyVenueDefaultsToFormValues = (
     ...values,
     interventionArea:
       venue.collectiveInterventionArea ??
-      DEFAULT_EAC_FORM_VALUES.interventionArea,
+      getDefaultEducationalValues().interventionArea,
     eventAddress: {
       ...values.eventAddress,
       venueId: Number(values.venueId),

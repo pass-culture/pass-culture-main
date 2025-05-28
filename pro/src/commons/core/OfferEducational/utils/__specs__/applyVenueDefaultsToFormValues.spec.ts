@@ -1,10 +1,10 @@
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 
 import { applyVenueDefaultsToFormValues } from '../applyVenueDefaultsToFormValues'
 
 describe('applyVenueDefaultsToFormValues', () => {
   it('should return the initial values if the venue cant be found', () => {
-    const formValues = { ...DEFAULT_EAC_FORM_VALUES, venueId: '2' }
+    const formValues = { ...getDefaultEducationalValues(), venueId: '2' }
     const newFormValues = applyVenueDefaultsToFormValues(
       formValues,
       {
@@ -21,7 +21,7 @@ describe('applyVenueDefaultsToFormValues', () => {
 
   it('should return the accessibility values from the venue', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
-      { ...DEFAULT_EAC_FORM_VALUES, venueId: '2', offererId: '1' },
+      { ...getDefaultEducationalValues(), venueId: '2', offererId: '1' },
       {
         id: 1,
         managedVenues: [
@@ -54,7 +54,7 @@ describe('applyVenueDefaultsToFormValues', () => {
 
   it('should set disability compliance to none if no accessibility value is checked on the venue', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
-      { ...DEFAULT_EAC_FORM_VALUES, venueId: '2', offererId: '1' },
+      { ...getDefaultEducationalValues(), venueId: '2', offererId: '1' },
       {
         id: 1,
         managedVenues: [
@@ -85,7 +85,7 @@ describe('applyVenueDefaultsToFormValues', () => {
 
   it('should prefill the form values with the venue email and phone if the venue has them', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
-      { ...DEFAULT_EAC_FORM_VALUES, offererId: '1', venueId: '2' },
+      { ...getDefaultEducationalValues(), offererId: '1', venueId: '2' },
       {
         id: 1,
         managedVenues: [
@@ -110,7 +110,7 @@ describe('applyVenueDefaultsToFormValues', () => {
   it('should not prefill the form values with the venue email and phone if they already exist on in the form', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         offererId: '1',
         venueId: '2',
         email: 'test2@email.co',

@@ -1,5 +1,5 @@
 import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 
 import {
   createCollectiveOfferPayload,
@@ -7,7 +7,7 @@ import {
 } from '../createOfferPayload'
 
 const offer = {
-  ...DEFAULT_EAC_FORM_VALUES,
+  ...getDefaultEducationalValues(),
   location: {
     locationType: CollectiveLocationType.ADDRESS,
     address: {
@@ -36,7 +36,7 @@ describe('createOfferPayload', () => {
       Object.keys(
         createCollectiveOfferPayload(
           {
-            ...DEFAULT_EAC_FORM_VALUES,
+            ...getDefaultEducationalValues(),
             beginningDate: '2021-09-01',
             endingDate: '2021-09-10',
           },
@@ -50,7 +50,7 @@ describe('createOfferPayload', () => {
     expect(
       createCollectiveOfferTemplatePayload(
         {
-          ...DEFAULT_EAC_FORM_VALUES,
+          ...getDefaultEducationalValues(),
           beginningDate: '2021-09-01',
           endingDate: '2021-09-10',
           datesType: 'specific_dates',
@@ -64,7 +64,7 @@ describe('createOfferPayload', () => {
     expect(
       createCollectiveOfferTemplatePayload(
         {
-          ...DEFAULT_EAC_FORM_VALUES,
+          ...getDefaultEducationalValues(),
           beginningDate: undefined,
           endingDate: undefined,
         },
@@ -76,7 +76,7 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with email infos when the email option is checked in the form', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         contactOptions: {
           email: true,
           phone: false,
@@ -101,7 +101,7 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with phone infos when the phone option is checked in the form', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         contactOptions: {
           email: false,
           phone: true,
@@ -126,7 +126,7 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with url infos when the form option is checked in the form', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         contactOptions: {
           email: false,
           phone: false,
@@ -151,7 +151,7 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with intervention area infos when the offer address type is SCHOOL', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         eventAddress: {
           addressType: OfferAddressType.SCHOOL,
           otherAddress: '',
@@ -170,7 +170,7 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with intervention area infos when the offer address type is OTHER', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         eventAddress: {
           addressType: OfferAddressType.OTHER,
           otherAddress: '4 rue du chat qui pêche',
@@ -189,7 +189,7 @@ describe('createOfferPayload', () => {
   it('should create a template offer payload with empty intervention area infos when the offer address type is OFFERER_VENUE', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         eventAddress: {
           addressType: OfferAddressType.OFFERER_VENUE,
           otherAddress: '',

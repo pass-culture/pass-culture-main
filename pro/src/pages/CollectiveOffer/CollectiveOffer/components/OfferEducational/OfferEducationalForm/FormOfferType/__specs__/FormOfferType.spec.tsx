@@ -4,7 +4,7 @@ import { Formik } from 'formik'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -45,7 +45,7 @@ describe('FormOfferType', () => {
 
   it('should offer the national program options filtered for the selected domains', async () => {
     renderFormOfferType({
-      initialValues: DEFAULT_EAC_FORM_VALUES,
+      initialValues: getDefaultEducationalValues(),
       props: {
         ...formTypeProps,
         domainsOptions: [
@@ -79,7 +79,7 @@ describe('FormOfferType', () => {
   it('should select the existing national program', async () => {
     renderFormOfferType({
       initialValues: {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         domains: ['1'],
         nationalProgramId: '1',
       },
@@ -108,7 +108,7 @@ describe('FormOfferType', () => {
   it('should call tracker when clicking on template button', async () => {
     renderFormOfferType({
       initialValues: {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         offererId: '1',
         venueId: '2',
         domains: ['1', '2'],
@@ -138,7 +138,7 @@ describe('FormOfferType', () => {
 
   it('should not see template examples faq on bookable offer form', () => {
     renderFormOfferType({
-      initialValues: DEFAULT_EAC_FORM_VALUES,
+      initialValues: getDefaultEducationalValues(),
       props: {
         ...formTypeProps,
         isTemplate: false,
@@ -155,7 +155,7 @@ describe('FormOfferType', () => {
   it('should call tracker when clicking on "Voir des exemples" button', async () => {
     renderFormOfferType({
       initialValues: {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         offererId: '1',
         venueId: '2',
         domains: ['1', '2'],

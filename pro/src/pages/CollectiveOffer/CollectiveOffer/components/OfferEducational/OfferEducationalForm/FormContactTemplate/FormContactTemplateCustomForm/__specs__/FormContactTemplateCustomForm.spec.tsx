@@ -1,21 +1,18 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormContactTemplateCustomForm } from '../FormContactTemplateCustomForm'
 
 function renderFormContactCustomForm(
-  initialValues: OfferEducationalFormValues = DEFAULT_EAC_FORM_VALUES
+  initialValues: OfferEducationalFormValues = getDefaultEducationalValues()
 ) {
   return renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={() => {}}>
-      <FormContactTemplateCustomForm
-        disableForm={false}
-        describedBy="parent-id"
-      />
+      <FormContactTemplateCustomForm disableForm={false} />
     </Formik>
   )
 }
@@ -37,7 +34,7 @@ describe('FormContactTemplateCustomForm', () => {
 
   it("should have the custom form selected initially if it's the one checked in the form values", () => {
     renderFormContactCustomForm({
-      ...DEFAULT_EAC_FORM_VALUES,
+      ...getDefaultEducationalValues(),
       contactFormType: 'url',
       contactUrl: 'http://www.test-url.com',
     })
