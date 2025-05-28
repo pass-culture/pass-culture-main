@@ -247,7 +247,7 @@ describe('offersSearch component', () => {
     )
     await userEvent.click(screen.getByText('Choisir un département'))
     await userEvent.click(
-      screen.getByRole('option', {
+      screen.getByRole('checkbox', {
         name: '01 - Ain',
       })
     )
@@ -263,7 +263,9 @@ describe('offersSearch component', () => {
     )
 
     // Then
-    expect(screen.getByRole('option', { name: '01 - Ain' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', { name: '01 - Ain' })
+    ).toBeInTheDocument()
   })
 
   it('should display academies filter with departments options if user has selected academy filter', async () => {
@@ -277,7 +279,7 @@ describe('offersSearch component', () => {
     )
     await userEvent.click(screen.getByText('Choisir une académie'))
     await userEvent.click(
-      screen.getByRole('option', {
+      screen.getByRole('checkbox', {
         name: 'Amiens',
       })
     )
@@ -293,7 +295,7 @@ describe('offersSearch component', () => {
     )
 
     // Then
-    expect(screen.getByRole('option', { name: 'Amiens' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Amiens' })).toBeInTheDocument()
   })
 
   it('should display radius input filter if user has selected around me filter', async () => {
@@ -332,7 +334,7 @@ describe('offersSearch component', () => {
     )
     await userEvent.click(screen.getByText('Choisir une académie'))
     await userEvent.click(
-      screen.getByRole('option', {
+      screen.getByRole('checkbox', {
         name: 'Amiens',
       })
     )
