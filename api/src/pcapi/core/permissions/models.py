@@ -164,6 +164,7 @@ class Roles(enum.Enum):
     ADMIN = "admin"
     CHARGE_DEVELOPPEMENT = "charge_developpement"
     CODIR_ADMIN = "codir_admin"
+    COMMUNICATION = "communication"
     CONNECT_AS_PRO = "connect_as_pro"
     DAF = "daf"
     DAF_MANAGEMENT = "responsable_daf"
