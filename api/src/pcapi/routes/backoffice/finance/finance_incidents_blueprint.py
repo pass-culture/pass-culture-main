@@ -248,6 +248,9 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
     except finance_exceptions.FinanceIncidentAlreadyValidated:
         mark_transaction_as_invalid()
         flash("Impossible d'annuler un incident déjà validé", "warning")
+    except finance_exceptions.FinanceIncidentAlreadyInvoiced:
+        mark_transaction_as_invalid()
+        flash("Impossible d'annuler un incident déjà remboursé", "warning")
     else:
         flash("L'incident a été annulé", "success")
 

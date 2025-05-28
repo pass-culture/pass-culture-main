@@ -1631,6 +1631,8 @@ def format_finance_incident_status(incident_status: finance_models.IncidentStatu
             return "Annulé"
         case finance_models.IncidentStatus.VALIDATED:
             return "Validé"
+        case finance_models.IncidentStatus.INVOICED:
+            return "Terminé"
         case _:
             return incident_status.value
 
@@ -1649,6 +1651,8 @@ def format_finance_incident_status_badge(incident_status: finance_models.Inciden
             return format_badge("Annulé", "danger")
         case finance_models.IncidentStatus.VALIDATED:
             return format_badge("Validé", "success")
+        case finance_models.IncidentStatus.INVOICED:
+            return format_badge("Terminé", "success")  # FIXME find something else than success
 
 
 def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
