@@ -206,8 +206,14 @@ def is_eligible_for_next_recredit_activation_steps(user: users_models.User) -> b
     if not user.is_beneficiary:
         return user.is_eligible
 
-    if not user.has_beneficiary_role:
+    if user.has_beneficiary_role:
+        return False
+
+    if user.has_underage_beneficiary_role:
         return user.is_18_or_above_eligible
+
+    if user.has_free_beneficiary_role:
+        return user.is_underage_eligible or user.is_18_or_above_eligible
 
     return False
 
