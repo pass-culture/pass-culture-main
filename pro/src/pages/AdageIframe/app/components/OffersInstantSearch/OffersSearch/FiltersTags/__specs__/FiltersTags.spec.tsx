@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
-import { OfferAddressType } from 'apiClient/adage'
+import { CollectiveLocationType, OfferAddressType } from 'apiClient/adage'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
@@ -79,6 +79,7 @@ describe('FiltersTag', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
       eventAddressType: OfferAddressType.OFFERER_VENUE,
+      locationType: CollectiveLocationType.ADDRESS,
     })
 
     expect(
@@ -89,6 +90,7 @@ describe('FiltersTag', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
       eventAddressType: OfferAddressType.OFFERER_VENUE,
+      locationType: CollectiveLocationType.ADDRESS,
     })
     await userEvent.click(
       screen.getByText('Sortie chez un partenaire culturel')

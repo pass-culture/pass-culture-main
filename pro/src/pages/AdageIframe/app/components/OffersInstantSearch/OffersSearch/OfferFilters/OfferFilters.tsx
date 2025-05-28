@@ -2,9 +2,15 @@ import { Form, FormikProvider, useFormikContext } from 'formik'
 import { useState } from 'react'
 import useSWR from 'swr'
 
-import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  CollectiveLocationType,
+  EacFormat,
+  OfferAddressType,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from 'commons/config/swrQueryKeys'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
@@ -52,6 +58,9 @@ export const OfferFilters = ({
   }>({})
 
   const formik = useFormikContext<SearchFormValues>()
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
 
   const { adageUser } = useAdageUser()
 
@@ -133,18 +142,24 @@ export const OfferFilters = ({
   const adressTypeRadios: RadioGroupProps['group'] = [
     {
       label: 'Je n’ai pas de préférence (Voir tout)',
-      value: OfferAddressType.OTHER,
       sizing: 'fill',
+      value: isCollectiveOaActive
+        ? CollectiveLocationType.TO_BE_DEFINED
+        : OfferAddressType.OTHER,
     },
     {
       label: 'Sortie chez un partenaire culturel',
-      value: OfferAddressType.OFFERER_VENUE,
       sizing: 'fill',
+      value: isCollectiveOaActive
+        ? CollectiveLocationType.ADDRESS
+        : OfferAddressType.OFFERER_VENUE,
     },
     {
       label: 'Intervention d’un partenaire culturel dans mon établissement',
-      value: OfferAddressType.SCHOOL,
       sizing: 'fill',
+      value: isCollectiveOaActive
+        ? CollectiveLocationType.SCHOOL
+        : OfferAddressType.SCHOOL,
     },
   ]
 
@@ -172,31 +187,61 @@ export const OfferFilters = ({
             <div className={styles['filter-container-buttons-list-items']}>
               <AdageButtonFilter
                 isActive={
-                  formik.values.eventAddressType.length > 0 &&
-                  formik.values.eventAddressType !== OfferAddressType.OTHER
+                  isCollectiveOaActive
+                    ? formik.values.locationType.length > 0 &&
+                      formik.values.locationType !==
+                        CollectiveLocationType.TO_BE_DEFINED
+                    : formik.values.eventAddressType.length > 0 &&
+                      formik.values.eventAddressType !== OfferAddressType.OTHER
                 }
                 title="Type d’intervention"
                 itemsLength={
-                  formik.values.eventAddressType &&
-                  formik.values.eventAddressType !== OfferAddressType.OTHER
-                    ? 1
-                    : null
+                  isCollectiveOaActive
+                    ? formik.values.locationType &&
+                      formik.values.locationType !==
+                        CollectiveLocationType.TO_BE_DEFINED
+                      ? 1
+                      : null
+                    : formik.values.eventAddressType &&
+                        formik.values.eventAddressType !==
+                          OfferAddressType.OTHER
+                      ? 1
+                      : null
                 }
-                isOpen={modalOpenStatus['eventAddressType']}
+                isOpen={
+                  isCollectiveOaActive
+                    ? modalOpenStatus['locationType']
+                    : modalOpenStatus['eventAddressType']
+                }
                 setIsOpen={setModalOpenStatus}
-                filterName="eventAddressType"
+                filterName={
+                  isCollectiveOaActive ? 'locationType' : 'eventAddressType'
+                }
                 handleSubmit={formik.handleSubmit}
               >
                 <ModalFilterLayout
                   onClean={() =>
-                    onReset('eventAddressType', OfferAddressType.OTHER)
+                    onReset(
+                      isCollectiveOaActive
+                        ? 'locationType'
+                        : 'eventAddressType',
+                      isCollectiveOaActive
+                        ? CollectiveLocationType.TO_BE_DEFINED
+                        : OfferAddressType.OTHER
+                    )
                   }
-                  onSearch={() => onSearch('eventAddressType')}
+                  onSearch={() =>
+                    onSearch(
+                      isCollectiveOaActive ? 'locationType' : 'eventAddressType'
+                    )
+                  }
                 >
                   <RadioGroup
                     group={adressTypeRadios}
                     className={styles['filter-container-evenement']}
-                    name="eventAddressType"
+                    name={
+                      isCollectiveOaActive ? 'locationType' : 'eventAddressType'
+                    }
                     legend="Choisir un type d'intervention"
                     checkedOption={formik.values.eventAddressType}
                     onChange={formik.handleChange}

@@ -17,25 +17,28 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   venue: null,
 }
 
-export const adageFiltersToFacetFilters = ({
-  domains,
-  students,
-  eventAddressType,
-  locationType,
-  departments,
-  academies,
-  formats,
-  venue,
-}: {
-  domains: number[]
-  students: string[]
-  departments: string[]
-  academies: string[]
-  eventAddressType: string
-  locationType: string
-  formats: string[]
-  venue: VenueResponse | null
-}, isCollectiveOaActive: boolean) => {
+export const adageFiltersToFacetFilters = (
+  {
+    domains,
+    students,
+    eventAddressType,
+    locationType,
+    departments,
+    academies,
+    formats,
+    venue,
+  }: {
+    domains: number[]
+    students: string[]
+    departments: string[]
+    academies: string[]
+    eventAddressType: string
+    locationType: string
+    formats: string[]
+    venue: VenueResponse | null
+  },
+  isCollectiveOaActive: boolean
+) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
 
@@ -172,10 +175,15 @@ export const serializeFiltersForData = (
   }
 }
 
-export const areFiltersEmpty = (filters: SearchFormValues) => {
+export const areFiltersEmpty = (
+  filters: SearchFormValues,
+  isCollectiveOaActive: boolean
+) => {
   return (
     // Primitives defaults
-    (filters.eventAddressType === OfferAddressType.OTHER || filters.locationType === CollectiveLocationType.TO_BE_DEFINED) &&
+    (isCollectiveOaActive
+      ? filters.locationType === CollectiveLocationType.TO_BE_DEFINED
+      : filters.eventAddressType === OfferAddressType.OTHER) &&
     filters.geolocRadius === 50 &&
     // Array defaults (empty)
     filters.domains.length === 0 &&
