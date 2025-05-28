@@ -1,8 +1,8 @@
 import { useCombobox } from 'downshift'
 import { useEffect, useId, useState } from 'react'
 
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import strokeSearch from 'icons/stroke-search.svg'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 
 import styles from './AdageMultiselect.module.scss'
@@ -194,13 +194,14 @@ export const AdageMultiselect = ({
 
           return (
             <li key={`${liValueKey}`}>
-              <BaseCheckbox
+              <Checkbox
                 key={`${name}-${item.label}`}
                 label={item.label}
-                name={name}
                 checked={isChecked}
                 onChange={() => handleNewSelection(item)}
                 {...itemProps}
+                className={styles['checkbox-label']}
+                display="fill"
                 aria-selected={isChecked}
               />
             </li>
