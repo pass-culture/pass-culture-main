@@ -24,17 +24,16 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import {
   Quantity,
   QuantityInput,
 } from 'ui-kit/form/QuantityInput/QuantityInput'
-import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
@@ -370,7 +369,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               isBanner
               className={styles['callout-area-margin']}
             />
-
             <div className={styles['row']}>
               <TextInput
                 smallLabel
@@ -494,9 +492,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               >
                 <Checkbox
                   label="Accepter les réservations “Duo“"
-                  name="isDuo"
                   disabled={isDisabled}
-                  variant={CheckboxVariant.BOX}
+                  variant={CheckboxVariant.DETAILED}
+                  checked={Boolean(formik.getFieldProps('isDuo').value)}
+                  onChange={(e) =>
+                    formik.setFieldValue('isDuo', e.target.checked)
+                  }
                 />
               </FormLayout.Row>
             </FormLayout.Section>

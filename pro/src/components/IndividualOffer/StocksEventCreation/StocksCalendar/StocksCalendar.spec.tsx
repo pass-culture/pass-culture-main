@@ -126,7 +126,7 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('checkbox', { name: 'Sélectionner tous les stocks' })
+      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
     )
     await userEvent.click(screen.getAllByRole('checkbox')[2])
     await userEvent.click(screen.getAllByRole('checkbox')[2])
