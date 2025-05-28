@@ -19,7 +19,7 @@ pytestmark = [
 class SearchFormTest:
     def test_search_forms(self):
         with requests_mock.Mocker() as mocker:
-            mocker.get("https://api.typeform.com/forms?search=concours", json=fixtures.RESPONSE_SEARCH_FORMS)
+            mocker.get("https://api.eu.typeform.com/forms?search=concours", json=fixtures.RESPONSE_SEARCH_FORMS)
             forms = typeform.search_forms("concours")
 
         assert len(forms) == 3
@@ -41,7 +41,7 @@ class GetFormTest:
     def test_get_form(self):
         form_id = "aBCdEF12"
         with requests_mock.Mocker() as mocker:
-            mocker.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_SINGLE_FORM)
+            mocker.get(f"https://api.eu.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_SINGLE_FORM)
             form = typeform.get_form(form_id)
 
         assert form.form_id == form_id
@@ -78,7 +78,7 @@ class GetFormTest:
     def test_get_form_with_all_types(self):
         form_id = "AllTypes"
         with requests_mock.Mocker() as mocker:
-            mocker.get(f"https://api.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_FORM_WITH_ALL_TYPES)
+            mocker.get(f"https://api.eu.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_FORM_WITH_ALL_TYPES)
             form = typeform.get_form(form_id)
 
         assert form.form_id == form_id
@@ -88,7 +88,9 @@ class GetFormTest:
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mocker:
             mocker.get(
-                f"https://api.typeform.com/forms/{form_id}", status_code=404, json=fixtures.RESPONSE_FORM_404_NOT_FOUND
+                f"https://api.eu.typeform.com/forms/{form_id}",
+                status_code=404,
+                json=fixtures.RESPONSE_FORM_404_NOT_FOUND,
             )
             with pytest.raises(typeform.NotFoundException):
                 typeform.get_form(form_id)
@@ -98,7 +100,7 @@ class GetResponsesTest:
     def test_get_all_responses(self):
         form_id = "aBCdEF12"
         with requests_mock.Mocker() as mocker:
-            mocker.get(f"https://api.typeform.com/forms/{form_id}/responses", json=fixtures.RESPONSE_FORM_RESPONSES)
+            mocker.get(f"https://api.eu.typeform.com/forms/{form_id}/responses", json=fixtures.RESPONSE_FORM_RESPONSES)
             responses = typeform.get_responses(form_id)
 
         # Responses without contact info are ignored (form not completed)
@@ -156,7 +158,7 @@ class GetResponsesTest:
         form_id = "AllTypes"
         with requests_mock.Mocker() as mocker:
             mocker.get(
-                f"https://api.typeform.com/forms/{form_id}/responses",
+                f"https://api.eu.typeform.com/forms/{form_id}/responses",
                 json=fixtures.RESPONSE_FORM_RESPONSE_WITH_ALL_TYPES,
             )
             responses = typeform.get_responses(form_id)
@@ -178,7 +180,7 @@ class GetResponsesTest:
         assert response.answers[8].text == "123"
         assert (
             response.answers[9].text
-            == "https://api.typeform.com/forms/AllTypes/responses/nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu/fields/piy78v4evI30/files/file.jpg"
+            == "https://api.eu.typeform.com/forms/AllTypes/responses/nj0g9wtuhxhkqdw11qnj0g9wnf3edhxu/fields/piy78v4evI30/files/file.jpg"
         )
         assert response.answers[10].text == "https://example.com"
         assert response.answers[11].text == "Oui"
@@ -195,7 +197,7 @@ choice B"""
         form_id = "AllTypes"
         with requests_mock.Mocker() as mocker:
             mocker.get(
-                f"https://api.typeform.com/forms/{form_id}/responses",
+                f"https://api.eu.typeform.com/forms/{form_id}/responses",
                 json=fixtures.RESPONSE_FORM_RESPONSE_WITHOUT_LABELS,
             )
             responses = typeform.get_responses(form_id)
@@ -210,7 +212,7 @@ choice B"""
         form_id = "AaAaAa"
         with requests_mock.Mocker() as mocker:
             mocker.get(
-                f"https://api.typeform.com/forms/{form_id}/responses",
+                f"https://api.eu.typeform.com/forms/{form_id}/responses",
                 status_code=404,
                 json=fixtures.RESPONSE_FORM_RESPONSES_404_NOT_FOUND,
             )

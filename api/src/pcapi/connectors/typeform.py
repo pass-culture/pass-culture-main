@@ -163,7 +163,7 @@ def _strip(text: str | None) -> str | None:
 
 
 class TypeformBackend(BaseBackend):
-    base_url = "https://api.typeform.com"
+    base_url = "https://api.eu.typeform.com"
 
     def _get(
         self,
@@ -209,11 +209,21 @@ class TypeformBackend(BaseBackend):
         """
         path = "/forms"
         data = self._get(
-            path, params={"search": search_query, "page_size": 20, "sort_by": "created_at", "order_by": "desc"}
+            path,
+            params={
+                "search": search_query,
+                "page_size": 200,
+                "sort_by": "created_at",
+                "order_by": "desc",
+            },
         )
         return [
             TypeformForm(
-                form_id=item["id"], title=item["title"].strip(), date_created=datetime.fromisoformat(item["created_at"])
+                form_id=item["id"],
+                title=item["title"].strip(),
+                date_created=datetime.fromisoformat(
+                    item["created_at"],
+                ),
             )
             for item in data.get("items", [])
         ]
