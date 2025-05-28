@@ -11,11 +11,11 @@ import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { LegalInfos } from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import iconFullNext from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 import { EmailSpellCheckInput } from 'ui-kit/formV2/EmailSpellCheckInput/EmailSpellCheckInput'
 import { PasswordInput } from 'ui-kit/formV2/PasswordInput/PasswordInput'
 import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
@@ -137,12 +137,11 @@ export const SignupForm = (): JSX.Element => {
         )}
         <FormLayout.Row>
           <Checkbox
-            className={styles['checkbox-contact']}
             label="J’accepte d’être contacté par email pour recevoir les
                       nouveautés du pass Culture et contribuer à son
                       amélioration (facultatif)"
             {...register('contactOk')}
-            error={errors.contactOk?.message}
+            checked={Boolean(watch('contactOk'))}
           />
         </FormLayout.Row>
         <LegalInfos
