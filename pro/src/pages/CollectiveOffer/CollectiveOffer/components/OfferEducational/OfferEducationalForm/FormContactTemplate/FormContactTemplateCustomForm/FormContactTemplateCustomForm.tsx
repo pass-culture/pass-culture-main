@@ -8,18 +8,16 @@ import styles from './FormContactTemplateCustomForm.module.scss'
 
 type FormContactTemplateCustomFormProps = {
   disableForm: boolean
-  describedBy: string
 }
 
 export const FormContactTemplateCustomForm = ({
   disableForm,
-  describedBy,
 }: FormContactTemplateCustomFormProps) => {
   return (
     <div className={styles['contact-checkbox-inner-control']}>
       <RadioGroup
         name="contactFormType"
-        describedBy={describedBy}
+        legend="Choisissez un type de formulaire"
         disabled={disableForm}
         variant={RadioVariant.BOX}
         group={[

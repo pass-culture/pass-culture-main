@@ -13,7 +13,7 @@ import {
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
 
-import { DEFAULT_EAC_FORM_VALUES } from '../constants'
+import { getDefaultEducationalValues } from '../constants'
 import { isCollectiveOfferTemplate, OfferEducationalFormValues } from '../types'
 
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
@@ -22,7 +22,7 @@ const computeDurationString = (
   durationMinutes: number | undefined | null
 ): string => {
   if (!durationMinutes) {
-    return DEFAULT_EAC_FORM_VALUES.duration
+    return getDefaultEducationalValues().duration
   }
   const hours = Math.floor(durationMinutes / 60)
   const minutes = durationMinutes % 60
@@ -46,7 +46,7 @@ const getInitialOffererId = (
     return offerer.id.toString()
   }
 
-  return DEFAULT_EAC_FORM_VALUES.offererId
+  return getDefaultEducationalValues().offererId
 }
 
 const getInitialVenueId = (
@@ -71,7 +71,7 @@ const getInitialVenueId = (
     }
   }
 
-  return DEFAULT_EAC_FORM_VALUES.venueId
+  return getDefaultEducationalValues().venueId
 }
 
 export const computeInitialValuesFromOffer = (
@@ -92,6 +92,9 @@ export const computeInitialValuesFromOffer = (
     venueIdQueryParam
   )
 
+  const defaultEducationalFormValues =
+    getDefaultEducationalValues(isMarseilleEnabled)
+
   const defaultVenue = venues.find((v) => v.id.toString() === initialVenueId)
   const venueAddress = defaultVenue?.address
   const offerLocationFromVenue = defaultVenue
@@ -104,12 +107,12 @@ export const computeInitialValuesFromOffer = (
           id_oa: defaultVenue.address?.id_oa.toString() ?? '',
         },
       }
-    : DEFAULT_EAC_FORM_VALUES.location
+    : defaultEducationalFormValues.location
 
   if (offer === undefined) {
     const today = formatShortDateForInput(getToday())
     return {
-      ...DEFAULT_EAC_FORM_VALUES,
+      ...defaultEducationalFormValues,
       city: venueAddress?.city,
       street: venueAddress?.street,
       postalCode: venueAddress?.postalCode,
@@ -122,8 +125,10 @@ export const computeInitialValuesFromOffer = (
       isTemplate,
       beginningDate: isTemplate
         ? today
-        : DEFAULT_EAC_FORM_VALUES['beginningDate'],
-      endingDate: isTemplate ? today : DEFAULT_EAC_FORM_VALUES['endingDate'],
+        : defaultEducationalFormValues['beginningDate'],
+      endingDate: isTemplate
+        ? today
+        : defaultEducationalFormValues['endingDate'],
       contactOptions: {
         email: false,
         form: false,
@@ -140,7 +145,7 @@ export const computeInitialValuesFromOffer = (
   const offerLocationFromOffer = {
     locationType:
       offer.location?.locationType ??
-      DEFAULT_EAC_FORM_VALUES.location.locationType,
+      defaultEducationalFormValues.location.locationType,
     address: {
       isVenueAddress,
       label: offer.location?.address?.label ?? '',
@@ -152,15 +157,11 @@ export const computeInitialValuesFromOffer = (
     locationComment: offer.location?.locationComment,
   }
 
-  const participants = {
-    college: false,
-    lycee: false,
-    marseille: false,
-    ...buildStudentLevelsMapWithDefaultValue(
-      (studentKey: StudentLevels) => offer.students.includes(studentKey),
-      isMarseilleEnabled
-    ),
-  }
+  const participants = buildStudentLevelsMapWithDefaultValue(
+    (studentKey: StudentLevels) => offer.students.includes(studentKey),
+    isMarseilleEnabled
+  )
+
   const email = offer.contactEmail
   const phone = offer.contactPhone
   const domains = offer.domains.map(({ id }) => id.toString())
@@ -186,8 +187,8 @@ export const computeInitialValuesFromOffer = (
         !offer.motorDisabilityCompliant &&
         !offer.visualDisabilityCompliant,
     },
-    email: email ?? DEFAULT_EAC_FORM_VALUES.email,
-    phone: phone ?? DEFAULT_EAC_FORM_VALUES.phone,
+    email: email ?? defaultEducationalFormValues.email,
+    phone: phone ?? defaultEducationalFormValues.phone,
     notificationEmails: offer.bookingEmails,
     domains,
     interventionArea: offer.interventionArea,
@@ -216,9 +217,9 @@ export const computeInitialValuesFromOffer = (
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail
-        : DEFAULT_EAC_FORM_VALUES.priceDetail,
-    imageUrl: offer.imageUrl || DEFAULT_EAC_FORM_VALUES.imageUrl,
-    imageCredit: offer.imageCredit || DEFAULT_EAC_FORM_VALUES.imageCredit,
+        : defaultEducationalFormValues.priceDetail,
+    imageUrl: offer.imageUrl || defaultEducationalFormValues.imageUrl,
+    imageCredit: offer.imageCredit || defaultEducationalFormValues.imageCredit,
     'search-domains': '',
     'search-formats': '',
     'search-interventionArea': '',
@@ -232,15 +233,15 @@ export const computeInitialValuesFromOffer = (
     beginningDate:
       isCollectiveOfferTemplate(offer) && offer.dates
         ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.start))
-        : DEFAULT_EAC_FORM_VALUES.beginningDate,
+        : defaultEducationalFormValues.beginningDate,
     endingDate:
       isCollectiveOfferTemplate(offer) && offer.dates
         ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.end))
-        : DEFAULT_EAC_FORM_VALUES.endingDate,
+        : defaultEducationalFormValues.endingDate,
     hour:
       isCollectiveOfferTemplate(offer) && offer.dates
         ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
-        : DEFAULT_EAC_FORM_VALUES.hour,
+        : defaultEducationalFormValues.hour,
     formats: offer.formats,
     contactOptions: isCollectiveOfferTemplate(offer)
       ? {
