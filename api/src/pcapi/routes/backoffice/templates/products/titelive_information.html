@@ -1,0 +1,92 @@
+{% macro render_titelive_information(titelive_data, ineligibility_reasons, product_whitelist) %}
+  <div class="card mb-3 pc-ean-result">
+    <div class="row g-0">
+      <div class="col-md-4">
+        {% for article in titelive_data.oeuvre.article %}
+          {% if article.image %}
+            <img class="img-fluid rounded-start object-fit-contain"
+                 src="{{ article.imagesUrl.recto }}"
+                 alt="Illustration pour {{ titelive_data.oeuvre.titre|unescape }}"
+                 title="Illustration pour {{ titelive_data.oeuvre.titre|unescape }}" />
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">{{ titelive_data.oeuvre.titre|unescape }}</h5>
+          {% for article in titelive_data.oeuvre.article %}
+            <p class="card-text text-truncate"
+               title="{{ article.resume|unescape }}">{{ article.resume|unescape }}</p>
+          {% endfor %}
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <b>Auteur :</b> {{ titelive_data.oeuvre.auteurs }}
+          </li>
+          <li class="list-group-item">
+            <b>EAN-13 :</b> {{ titelive_data.ean }}
+          </li>
+          {% for article in titelive_data.oeuvre.article %}
+            <li class="list-group-item">
+              <b>Lectorat : </b> {{ article.id_lectorat|format_titelive_id_lectorat }}
+            </li>
+            {% if article.prixpays.fr %}
+              <li class="list-group-item">
+                <b>Prix HT :</b> {{ article.prixpays.fr.value }} {{ article.prixpays.fr.devise|unescape }}
+              </li>
+            {% endif %}
+            <li class="list-group-item">
+              <b>Taux TVA :</b> {{ article.taux_tva }} %
+            </li>
+            <li class="list-group-item">
+              <b>Code CLIL :</b> {{ article.code_clil | default("Non renseigné") }}
+            </li>
+            <li class="list-group-item">
+              <b>Code support :</b> {{ article.libellesupport }}
+              ({{ article.codesupport }})
+            </li>
+            <li class="list-group-item">
+              <b>Code GTL :</b>
+              {% if not article.gtl.first %}Non renseigné{% endif %}
+              {% if article.gtl.first %}
+                <ul class="mt-2">
+                  {% for key, value in article.gtl.first.items() %}
+                    <li>
+                      {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
+                      <ul class="mt-2">
+                        {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
+                        {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}
+                      </ul>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+        <ul class="list-group list-group-flush">
+          {% if ineligibility_reasons %}
+            <li class="list-group-item">
+              <b>Inéligible pass Culture :</b>
+              {% for ineligibility_reason in ineligibility_reasons %}{{ ineligibility_reason | format_badge("danger") }}{% endfor %}
+            </li>
+          {% endif %}
+          <li class="list-group-item">
+            <b>EAN white listé :</b> {{ 'Oui' if product_whitelist else 'Non' }}
+          </li>
+          {% if product_whitelist %}
+            <li class="list-group-item">
+              <b>Date d'ajout :</b> {{ product_whitelist.dateCreated|format_date }}
+            </li>
+            <li class="list-group-item">
+              <b>Auteur :</b> {{ product_whitelist.author.full_name }}
+            </li>
+            <li class="list-group-item">
+              <b>Commentaire :</b> {{ product_whitelist.comment }}
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
