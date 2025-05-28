@@ -23,14 +23,9 @@ const defaultValues: OfferEducationalFormValues = {
   description: 'Lorem ipsum',
   domains: ['Domain 1'],
   isTemplate: true,
-  participants: {
-    ...(Object.fromEntries(
-      Object.keys(StudentLevels).map((level) => [level, true])
-    ) as Record<StudentLevels, boolean>),
-    college: false,
-    lycee: false,
-    marseille: false,
-  },
+  participants: Object.fromEntries(
+    Object.keys(StudentLevels).map((level) => [level, true])
+  ) as Record<StudentLevels, boolean>,
   phone: '',
   offererId: '123',
   venueId: '1234',

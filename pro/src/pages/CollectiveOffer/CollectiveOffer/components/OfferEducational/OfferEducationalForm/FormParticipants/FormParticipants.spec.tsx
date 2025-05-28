@@ -109,7 +109,7 @@ describe('FormParticipants', () => {
     })
   })
 
-  it('should uncheck Collège parent checkbox on check children checkbox', async () => {
+  it('should set Collège parent checkbox to indeterminate on check children checkbox', async () => {
     const participants: Record<string, boolean> = {
       ...buildStudentLevelsMapWithDefaultValue(false),
     }
@@ -126,7 +126,7 @@ describe('FormParticipants', () => {
     )
     await userEvent.click(sixiemeCheckbox)
 
-    expect(collegeCheckbox).not.toBeChecked()
+    expect(collegeCheckbox).toBePartiallyChecked()
     expect(sixiemeCheckbox).not.toBeChecked()
   })
 
@@ -147,7 +147,7 @@ describe('FormParticipants', () => {
     )
     await userEvent.click(secondeCheckbox)
 
-    expect(lyceeCheckbox).not.toBeChecked()
+    expect(lyceeCheckbox).toBePartiallyChecked()
     expect(secondeCheckbox).not.toBeChecked()
   })
 
@@ -169,7 +169,7 @@ describe('FormParticipants', () => {
     )
     await userEvent.click(maternelleCheckbox)
 
-    expect(marseilleCheckbox).not.toBeChecked()
+    expect(marseilleCheckbox).toBePartiallyChecked()
     expect(maternelleCheckbox).not.toBeChecked()
   })
 })

@@ -2,18 +2,18 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormContactTemplate } from '../FormContactTemplate'
 
 function renderFormContact(
-  initialValues: Partial<OfferEducationalFormValues> = DEFAULT_EAC_FORM_VALUES
+  initialValues: Partial<OfferEducationalFormValues> = getDefaultEducationalValues()
 ) {
   return renderWithProviders(
     <Formik
-      initialValues={{ ...DEFAULT_EAC_FORM_VALUES, ...initialValues }}
+      initialValues={{ ...getDefaultEducationalValues(), ...initialValues }}
       onSubmit={() => {}}
     >
       <FormContactTemplate disableForm={false} />
@@ -35,7 +35,7 @@ describe('FormContactTemplate', () => {
 
     expect(
       screen.getByRole('textbox', {
-        name: 'Email de contact',
+        name: 'Adresse email',
       })
     ).toBeInTheDocument()
   })
@@ -49,7 +49,9 @@ describe('FormContactTemplate', () => {
     })
     await userEvent.click(phoneCheckbox)
 
-    expect(screen.getByText('Numéro de téléphone')).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Numéro de téléphone' })
+    ).toBeInTheDocument()
   })
 
   it('should show the custom contact form when the custom contact checkbox is checked', async () => {
