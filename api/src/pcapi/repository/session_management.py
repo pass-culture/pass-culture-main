@@ -8,7 +8,8 @@ from types import TracebackType
 
 import sqlalchemy as sa
 from flask import g
-from sqlalchemy.exc import InternalError
+from psycopg2 import InternalError as psycopg2_InternalError
+from sqlalchemy import exc as sa_exc
 
 from pcapi.models import Model
 from pcapi.models import db
@@ -165,7 +166,7 @@ def _finalize_managed_session() -> None:
 
     try:
         db.session.execute(sa.text("SELECT NOW()"))
-    except InternalError:
+    except (sa_exc.InternalError, psycopg2_InternalError):
         db.session.rollback()
         raise
 
