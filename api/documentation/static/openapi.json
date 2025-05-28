@@ -3836,9 +3836,9 @@
                         "title": "Offeraddress",
                         "type": "string"
                     },
-                    "offerDepartementCode": {
+                    "offerDepartmentCode": {
                         "nullable": true,
-                        "title": "Offerdepartementcode",
+                        "title": "Offerdepartmentcode",
                         "type": "string"
                     },
                     "offerEan": {

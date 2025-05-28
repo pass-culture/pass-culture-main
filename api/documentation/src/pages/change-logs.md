@@ -31,6 +31,9 @@ title: Pass Culture API change logs
 ## June 2025
 
 - The number of price categories per offer is now limited to 50 (endpoints: [**Create Price Categories**](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories), [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer))
+- The response of the following endpoints now includes 2 new fields, "offerAddress" and "offerDepartmentCode", that replace respectively "venueAddress" and "venueDepartementCode":
+  - [**Get Booking endpoint**](/rest-api#tag/Bookings/operation/GetBooking)
+  - [**Get Offer Bookings endpoint**](/rest-api#tag/Bookings/operation/GetOfferBookings)
 
 ## May 2025
 

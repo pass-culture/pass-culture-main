@@ -34,7 +34,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     offer_name: str
     offer_ean: str | None
     offer_address: str | None
-    offer_departement_code: str | None
+    offer_department_code: str | None
 
     venue_id: int
     venue_name: str
@@ -68,7 +68,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             offer_address=booking.stock.offer.offererAddress.address.street
             if booking.stock.offer.offererAddress
             else None,
-            offer_departement_code=booking.stock.offer.offererAddress.address.departmentCode
+            offer_department_code=booking.stock.offer.offererAddress.address.departmentCode
             if booking.stock.offer.offererAddress
             else None,
             offer_ean=booking.stock.offer.ean,
