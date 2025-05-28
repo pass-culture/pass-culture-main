@@ -1,3 +1,4 @@
+import { isValid } from 'date-fns'
 import * as yup from 'yup'
 
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
@@ -8,7 +9,7 @@ export const getValidationSchema = (
   mode: OFFER_WIZARD_MODE,
   /* istanbul ignore next: DEBT, TO FIX */
   bookingsQuantity: number,
-  stockId?: number,
+  stockId?: number
 ) => {
   const validationSchema = {
     price: yup
@@ -17,14 +18,20 @@ export const getValidationSchema = (
       .min(0, 'Le prix ne peut pas être inferieur à 0€')
       .max(300, 'Veuillez renseigner un prix inférieur à 300€')
       .required('Veuillez renseigner un prix'),
-    bookingLimitDatetime: yup.date().nullable(),
+    bookingLimitDatetime: yup
+      .string()
+      .test((v) => (v ? isValid(new Date(v)) : true))
+      .nullable(),
     quantity: yup
       .number()
       .nullable()
       .typeError('Doit être un nombre')
+      .transform((_, val) => (val || val === 0 ? Number(val) : null))
       .min(
         mode === OFFER_WIZARD_MODE.EDITION ? 0 : 1,
-        mode === OFFER_WIZARD_MODE.EDITION ? 'Doit être positif' : 'Veuillez indiquer un nombre supérieur à 0'
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? 'Doit être positif'
+          : 'Veuillez indiquer un nombre supérieur à 0'
       )
       .max(
         MAX_STOCKS_QUANTITY,
@@ -32,6 +39,12 @@ export const getValidationSchema = (
       ),
     activationCodes: yup.array(),
     isDuo: yup.boolean(),
+
+    // "generated" fields
+    stockId: yup.number().optional(),
+    remainingQuantity: yup.string().optional(),
+    activationCodesExpirationDatetime: yup.string().optional(),
+    bookingsQuantity: yup.string().optional(),
   }
 
   if (mode === OFFER_WIZARD_MODE.EDITION && bookingsQuantity > 0) {
@@ -43,6 +56,7 @@ export const getValidationSchema = (
 
   // Do not validate if there is no stock in edition
   // (so you can delete the last stock of a published offer)
-  const shouldApplyValidationSchema = mode === OFFER_WIZARD_MODE.CREATION || stockId !== undefined
+  const shouldApplyValidationSchema =
+    mode === OFFER_WIZARD_MODE.CREATION || stockId !== undefined
   return yup.object().shape(shouldApplyValidationSchema ? validationSchema : {})
 }

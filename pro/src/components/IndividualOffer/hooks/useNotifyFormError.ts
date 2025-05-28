@@ -1,12 +1,13 @@
-import type { FormikErrors } from 'formik'
 import { useEffect } from 'react'
+import { FieldErrors } from 'react-hook-form'
 
 import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
+import { OffererFormValues } from 'components/SignupJourneyForm/Offerer/Offerer'
 
 interface UseNotifyFormErrorProps {
   isSubmitting: boolean
-  errors: FormikErrors<any>
+  errors: FieldErrors<OffererFormValues>
 }
 
 export const useNotifyFormError = ({

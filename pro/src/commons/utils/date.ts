@@ -2,7 +2,7 @@ import { isValid } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
-const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
+export const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
 export const FORMAT_DD_MM_YYYY_HH_mm = 'dd/MM/yyyy HH:mm'
 export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
@@ -162,4 +162,12 @@ export function mapDayToFrench(
   }
 }
 
-export const DAYS_IN_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
+export const DAYS_IN_ORDER = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+]
