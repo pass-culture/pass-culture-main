@@ -72,13 +72,11 @@ export const CollectiveOffersTable = ({
       offersCount={offers.length}
       isLoading={isLoading}
       resetFilters={resetFilters}
+      areAllOffersSelected={areAllOffersSelected}
+      isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
+      toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
     >
-      <OffersTableHead
-        areAllOffersSelected={areAllOffersSelected}
-        isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-        toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-        columns={columns}
-      />
+      <OffersTableHead columns={columns} />
       <CollectiveOffersTableBody
         offers={currentPageItems}
         selectOffer={setSelectedOffer}

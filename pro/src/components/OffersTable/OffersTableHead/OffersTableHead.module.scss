@@ -20,10 +20,6 @@
       @include a11y.visually-hidden-reset;
 
       padding: rem.torem(8px) rem.torem(16px);
-
-      &-wrapper {
-        display: flex;
-      }
     }
 
     &-actions {

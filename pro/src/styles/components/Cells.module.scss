@@ -263,3 +263,9 @@
 .expiration-date-cell {
   padding: 0;
 }
+
+.label {
+  *:not(input) {
+    @include a11y.visually-hidden;
+  }
+}

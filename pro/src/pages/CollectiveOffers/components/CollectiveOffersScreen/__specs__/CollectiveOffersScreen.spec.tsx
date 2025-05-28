@@ -124,10 +124,10 @@ describe('CollectiveOffersScreen', () => {
     })
 
     expect(
-      screen.getByLabelText(`Sélectionner l'offre "${firstOffer.name}"`)
+      screen.getByRole('checkbox', { name: firstOffer.name })
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText(`Sélectionner l'offre "${secondOffer.name}"`)
+      screen.getByRole('checkbox', { name: secondOffer.name })
     ).toBeInTheDocument()
   })
 
@@ -152,7 +152,9 @@ describe('CollectiveOffersScreen', () => {
       offers: [...offersRecap, collectiveOfferFactory()],
     })
 
-    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    expect(
+      screen.getByRole('checkbox', { name: offersRecap[0].name })
+    ).toBeInTheDocument()
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
@@ -162,7 +164,9 @@ describe('CollectiveOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    expect(
+      screen.getByRole('checkbox', { name: offersRecap[0].name })
+    ).toBeInTheDocument()
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
@@ -174,7 +178,9 @@ describe('CollectiveOffersScreen', () => {
       offers: offersRecap,
     })
 
-    screen.getByLabelText(`Sélectionner l'offre "${offersRecap[0].name}"`)
+    expect(
+      screen.getByRole('checkbox', { name: offersRecap[0].name })
+    ).toBeInTheDocument()
     expect(await screen.findByText('100+ offres')).toBeInTheDocument()
   })
 
@@ -283,9 +289,7 @@ describe('CollectiveOffersScreen', () => {
       user: currentUser,
     })
 
-    const checkbox = screen.getByLabelText(
-      `Sélectionner l'offre "${offersRecap[0].name}"`
-    )
+    const checkbox = screen.getByRole('checkbox', { name: offersRecap[0].name })
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -317,18 +321,18 @@ describe('CollectiveOffersScreen', () => {
       offers,
     })
 
-    const firstOfferCheckbox = screen.getByLabelText(
-      `Sélectionner l'offre "${offers[0].name}"`
-    )
-    const secondOfferCheckbox = screen.getByLabelText(
-      `Sélectionner l'offre "${offers[1].name}"`
-    )
-    const thirdOfferCheckbox = screen.getByLabelText(
-      `Sélectionner l'offre "${offers[2].name}"`
-    )
-    const fourthOfferCheckbox = screen.getByLabelText(
-      `Sélectionner l'offre "${offers[3].name}"`
-    )
+    const firstOfferCheckbox = screen.getByRole('checkbox', {
+      name: offers[0].name,
+    })
+    const secondOfferCheckbox = screen.getByRole('checkbox', {
+      name: offers[1].name,
+    })
+    const thirdOfferCheckbox = screen.getByRole('checkbox', {
+      name: offers[2].name,
+    })
+    const fourthOfferCheckbox = screen.getByRole('checkbox', {
+      name: offers[3].name,
+    })
 
     await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 

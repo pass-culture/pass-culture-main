@@ -702,12 +702,8 @@ describe('route Offers', () => {
 
       await userEvent.click(nextIcon)
 
-      expect(
-        screen.getByLabelText(`Sélectionner l'offre "${offers[10].name}"`)
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
-      ).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
+      expect(screen.queryByLabelText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -723,12 +719,8 @@ describe('route Offers', () => {
 
       await userEvent.click(previousIcon)
 
-      expect(
-        screen.getByLabelText(`Sélectionner l'offre "${offers[0].name}"`)
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText(`Sélectionner l'offre "${offers[10].name}"`)
-      ).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
+      expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
     describe('when 101 offers are fetched', () => {
@@ -755,15 +747,9 @@ describe('route Offers', () => {
           await userEvent.click(nextIcon)
         }
 
+        expect(screen.getByLabelText(offersRecap[99].name)).toBeInTheDocument()
         expect(
-          screen.getByLabelText(
-            `Sélectionner l'offre "${offersRecap[99].name}"`
-          )
-        ).toBeInTheDocument()
-        expect(
-          screen.queryByLabelText(
-            `Sélectionner l'offre "${offersRecap[100].name}"`
-          )
+          screen.queryByLabelText(offersRecap[100].name)
         ).not.toBeInTheDocument()
       })
     })
