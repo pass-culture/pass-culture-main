@@ -1,7 +1,7 @@
 import { useField, useFormikContext } from 'formik'
 import { useEffect, useState, useRef } from 'react'
 
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { TextInput, TextInputProps } from 'ui-kit/form/TextInput/TextInput'
 
 export type Quantity = number | ''
@@ -120,7 +120,7 @@ export const QuantityInput = ({
   }
 
   const inputExtension = (
-    <BaseCheckbox
+    <Checkbox
       ref={unlimitedRef}
       label="Illimité"
       name={unlimitedName}
