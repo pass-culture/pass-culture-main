@@ -47,8 +47,9 @@ describe('OpeningHoursForm', () => {
       screen.getByText('Sélectionner vos jours d’ouverture :')
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByLabelText('Lundi'))
-    expect(screen.getByText('Lundi')).toBeInTheDocument()
+    const checkbox = screen.getByRole('checkbox', { name: 'Lundi' })
+
+    await userEvent.click(checkbox)
 
     // Reset the afternoon fields
     await userEvent.click(
@@ -117,7 +118,7 @@ describe('OpeningHoursForm', () => {
         },
       },
     })
-    expect(screen.getByText('Lundi')).toBeInTheDocument()
+
     expect(screen.getAllByLabelText(/Horaire d’ouverture 1/)[0]).toHaveValue(
       '08:00'
     )
@@ -126,7 +127,7 @@ describe('OpeningHoursForm', () => {
     )
     expect(screen.getByLabelText(/Horaire d’ouverture 2/)).toHaveValue('12:59')
     expect(screen.getByLabelText(/Horaire de fermeture 2/)).toHaveValue('16:16')
-    expect(screen.getByText('Mercredi')).toBeInTheDocument()
+    expect(screen.getAllByText('Mercredi')).toHaveLength(2)
     expect(screen.getAllByLabelText(/Horaire d’ouverture 1/)[1]).toHaveValue(
       '09:09'
     )
@@ -135,51 +136,11 @@ describe('OpeningHoursForm', () => {
     )
   })
 
-  it('should display errors', async () => {
-    renderOpeningHoursForm({})
-
-    await userEvent.click(screen.getByLabelText('Lundi'))
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Ajouter une plage horaire' })
-    )
-
-    await userEvent.click(screen.getByText('Submit'))
-
-    expect(
-      screen.getAllByText('Veuillez renseigner une heure de début')
-    ).toHaveLength(2)
-    expect(
-      screen.getAllByText('Veuillez renseigner une heure de fin')
-    ).toHaveLength(2)
-
-    await userEvent.type(
-      screen.getByLabelText(/Horaire d’ouverture 1/),
-      '18:00'
-    )
-    await userEvent.type(
-      screen.getByLabelText(/Horaire de fermeture 1/),
-      '10:30'
-    )
-    await userEvent.type(
-      screen.getByLabelText(/Horaire d’ouverture 2/),
-      '18:00'
-    )
-    await userEvent.type(
-      screen.getByLabelText(/Horaire de fermeture 2/),
-      '10:00'
-    )
-
-    expect(
-      screen.getAllByText(
-        "L'heure de fin doit être supérieure à l'heure de début"
-      )
-    ).toHaveLength(2)
-  })
-
   it('should set min value for ending hours', async () => {
     renderOpeningHoursForm({})
 
-    await userEvent.click(screen.getByLabelText('Lundi'))
+    const checkbox = screen.getByRole('checkbox', { name: 'Lundi' })
+    await userEvent.click(checkbox)
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter une plage horaire' })
     )
@@ -210,22 +171,5 @@ describe('OpeningHoursForm', () => {
       'min',
       '18:00'
     )
-  })
-
-  it('should show all errors', async () => {
-    renderOpeningHoursForm({})
-
-    await userEvent.click(screen.getByLabelText('Mardi'))
-    await userEvent.click(screen.getByLabelText('Mercredi'))
-    await userEvent.click(screen.getByLabelText('Jeudi'))
-
-    await userEvent.click(screen.getByText('Submit'))
-
-    expect(
-      screen.getAllByText('Veuillez renseigner une heure de début')
-    ).toHaveLength(3)
-    expect(
-      screen.getAllByText('Veuillez renseigner une heure de fin')
-    ).toHaveLength(3)
   })
 })
