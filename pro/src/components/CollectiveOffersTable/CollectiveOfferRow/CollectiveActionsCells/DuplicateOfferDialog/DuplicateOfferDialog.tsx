@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 
 import styles from './DuplicateOfferDialog.module.scss'
 
@@ -35,7 +35,7 @@ export const DuplicateOfferDialog = ({
         restera alors à sélectionner l’établissement scolaire qui a fait une
         demande et à renseigner les informations de dates et prix.
       </p>
-      <BaseCheckbox
+      <Checkbox
         label="Je ne souhaite plus voir cette information"
         checked={isCheckboxChecked}
         onChange={() => setIsCheckboxChecked(!isCheckboxChecked)}
