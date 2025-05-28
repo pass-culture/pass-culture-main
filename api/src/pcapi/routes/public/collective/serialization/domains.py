@@ -16,7 +16,11 @@ class CollectiveOffersDomainResponseModel(BaseModel):
 
     @classmethod
     def build(cls, domain: models.EducationalDomain) -> "CollectiveOffersDomainResponseModel":
-        programs = [NationalProgramModel(id=program.id, name=program.name) for program in domain.nationalPrograms]
+        programs = [
+            NationalProgramModel(id=program.id, name=program.name)
+            for program in domain.nationalPrograms
+            if program.isActive
+        ]
         return cls(id=domain.id, name=domain.name, nationalPrograms=programs)
 
 
