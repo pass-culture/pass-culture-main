@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useEffect, useState, useRef } from 'react'
 
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './QuantityInput.module.scss'
@@ -117,7 +117,7 @@ export const QuantityInput = ({
   }
 
   const inputExtension = (
-    <BaseCheckbox
+    <Checkbox
       ref={unlimitedRef}
       label="Illimité"
       name={unlimitedName}
