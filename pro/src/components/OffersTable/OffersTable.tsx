@@ -1,6 +1,7 @@
 import { MAX_OFFERS_TO_DISPLAY } from 'commons/core/Offers/constants'
 import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
 import { NoResults } from 'components/NoResults/NoResults'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -14,6 +15,9 @@ type OffersTableProps = {
   resetFilters: () => void
   children: React.ReactNode
   pagination?: React.ReactNode
+  areAllOffersSelected: boolean
+  isAtLeastOneOfferChecked: boolean
+  toggleSelectAllCheckboxes: () => void
 }
 
 export const OffersTable = ({
@@ -24,7 +28,13 @@ export const OffersTable = ({
   resetFilters,
   children,
   pagination,
+  areAllOffersSelected,
+  isAtLeastOneOfferChecked,
+  toggleSelectAllCheckboxes,
 }: OffersTableProps) => {
+  const isSelectAllIndeterminate =
+    !areAllOffersSelected && isAtLeastOneOfferChecked
+
   return (
     <>
       <div role="status">
@@ -56,6 +66,18 @@ export const OffersTable = ({
         <>
           {hasOffers && (
             <>
+              <div className={styles['select-all-checkbox']}>
+                <Checkbox
+                  checked={areAllOffersSelected}
+                  indeterminate={isSelectAllIndeterminate}
+                  onChange={toggleSelectAllCheckboxes}
+                  label={
+                    areAllOffersSelected
+                      ? 'Tout désélectionner'
+                      : 'Tout sélectionner'
+                  }
+                />
+              </div>
               <table
                 role="table"
                 className={styles['offers-table-table']}

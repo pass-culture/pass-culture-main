@@ -12,11 +12,11 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, removeTime } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getPriceCategoryName } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { Checkbox } from 'ui-kit/formV2/Checkbox/Checkbox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -116,35 +116,29 @@ export function StocksCalendarTable({
           />
         )}
       </DialogBuilder>
+      {mode === OFFER_WIZARD_MODE.CREATION && (
+        <div className={styles['select-all']}>
+          <Checkbox
+            label="Tout sélectionner"
+            indeterminate={
+              checkedStocks.size < stocks.length && checkedStocks.size > 0
+            }
+            checked={checkedStocks.size === stocks.length}
+            onChange={() => {
+              if (checkedStocks.size < stocks.length) {
+                updateCheckedStocks(new Set(stocks.map((s) => s.id)))
+              } else {
+                updateCheckedStocks(new Set())
+              }
+            }}
+          />
+        </div>
+      )}
       <table className={styles['table']}>
         <thead className={styles['thead']}>
           <tr>
             <th className={styles['thead-th']}>
-              <div className={styles['thead-th-date']}>
-                {mode === OFFER_WIZARD_MODE.CREATION && (
-                  <Checkbox
-                    label={
-                      <span className={styles['visually-hidden']}>
-                        Sélectionner tous les stocks
-                      </span>
-                    }
-                    partialCheck={
-                      checkedStocks.size < stocks.length &&
-                      checkedStocks.size > 0
-                    }
-                    checked={checkedStocks.size === stocks.length}
-                    onChange={() => {
-                      if (checkedStocks.size < stocks.length) {
-                        updateCheckedStocks(new Set(stocks.map((s) => s.id)))
-                      } else {
-                        updateCheckedStocks(new Set())
-                      }
-                    }}
-                    name="select-all"
-                  />
-                )}
-                Date
-              </div>
+              <div className={styles['thead-th-date']}>Date</div>
             </th>
             <th className={styles['thead-th']}>Horaire</th>
             <th className={styles['thead-th']}>Tarif</th>
@@ -168,17 +162,13 @@ export function StocksCalendarTable({
               (p) => p.id === stock.priceCategoryId
             )
 
-            const checkboxDateLabel = stock.beginningDatetime ? (
-              <span className={styles['tbody-td-date']}>
-                {formatLocalTimeDateString(
+            const checkboxDateLabel = stock.beginningDatetime
+              ? formatLocalTimeDateString(
                   stock.beginningDatetime,
                   departmentCode,
                   FORMAT_DD_MM_YYYY
-                )}
-              </span>
-            ) : (
-              'Date invalide'
-            )
+                )
+              : 'Date invalide'
 
             const canDeleteStock =
               mode !== OFFER_WIZARD_MODE.READ_ONLY &&
