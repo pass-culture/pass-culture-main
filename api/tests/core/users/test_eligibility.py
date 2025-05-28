@@ -349,6 +349,42 @@ class EligibilityForNextRecreditActivationStepsTest:
 
         assert can_do_next_activation_steps
 
+    @pytest.mark.parametrize("age", [17, 18])
+    def test_next_recredit_steps_from_free_eligibility_to_underage_or_eighteen(self, age):
+        user = users_factories.UserFactory(age=age, roles=[users_models.UserRole.FREE_BENEFICIARY])
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert can_do_next_activation_steps
+
+    def test_next_recredit_steps_from_underage_eligibility_to_eighteen(self):
+        user = users_factories.UserFactory(age=18, roles=[users_models.UserRole.UNDERAGE_BENEFICIARY])
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert can_do_next_activation_steps
+
+    def test_next_recredit_steps_not_available_for_sixteen_free_beneficiary(self):
+        user = users_factories.UserFactory(age=16, roles=[users_models.UserRole.FREE_BENEFICIARY])
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert not can_do_next_activation_steps
+
+    def test_next_recredit_steps_not_available_for_seventeen_underage_beneficiary(self):
+        user = users_factories.UserFactory(age=17, roles=[users_models.UserRole.UNDERAGE_BENEFICIARY])
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert not can_do_next_activation_steps
+
+    def test_next_recredit_steps_not_available_for_eighteen_beneficiary(self):
+        user = users_factories.UserFactory(roles=[users_models.UserRole.BENEFICIARY])
+
+        can_do_next_activation_steps = eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
+
+        assert not can_do_next_activation_steps
+
 
 class EligibilityDatesTest:
     @pytest.mark.features(WIP_FREE_ELIGIBILITY=False)
