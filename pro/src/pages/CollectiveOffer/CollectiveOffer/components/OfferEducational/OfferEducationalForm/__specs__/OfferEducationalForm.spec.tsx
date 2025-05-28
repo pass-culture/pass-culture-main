@@ -6,7 +6,7 @@ import { describe, expect } from 'vitest'
 import { CollectiveOfferTemplateAllowedAction } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import {
   Mode,
   OfferEducationalFormValues,
@@ -37,7 +37,7 @@ const renderOfferEducationalForm = (
   renderWithProviders(
     <Formik
       initialValues={{
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         venueId: '1',
         offererId: '1',
         ...initialValues,

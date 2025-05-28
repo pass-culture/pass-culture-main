@@ -6,7 +6,7 @@ import {
   GetEducationalOffererVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
@@ -160,7 +160,7 @@ export const FormPracticalInformation = ({
       ) {
         await setFieldValue(
           'eventAddress.venueId',
-          DEFAULT_EAC_FORM_VALUES.eventAddress.venueId
+          getDefaultEducationalValues().eventAddress.venueId
         )
         setCurrentVenue(null)
       }
@@ -171,7 +171,7 @@ export const FormPracticalInformation = ({
       ) {
         await setFieldValue(
           'eventAddress.otherAddress',
-          DEFAULT_EAC_FORM_VALUES.eventAddress.otherAddress
+          getDefaultEducationalValues().eventAddress.otherAddress
         )
       }
     }

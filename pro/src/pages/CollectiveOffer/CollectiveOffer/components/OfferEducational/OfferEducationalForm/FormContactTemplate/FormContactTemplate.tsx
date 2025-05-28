@@ -1,9 +1,5 @@
-import { useField } from 'formik'
-import { useId } from 'react'
-
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplate.module.scss'
@@ -16,23 +12,14 @@ interface FormContactTemplateProps {
 export const FormContactTemplate = ({
   disableForm,
 }: FormContactTemplateProps): JSX.Element => {
-  const [, contactOptionsMeta] = useField({ name: 'contactOptions' })
-  const hasError =
-    contactOptionsMeta.touched && Boolean(contactOptionsMeta.error)
-  const ariaDescribedBy = hasError ? 'error-contactOptions' : undefined
-
-  const formCheckboxLabelId = useId()
-
   const contactOptions = [
     {
       name: 'contactOptions.email',
       label: 'Par email',
-      ariaDescribedBy,
-      childrenOnChecked: (
+      collapsed: (
         <div className={styles['contact-checkbox-inner-control']}>
           <TextInput
-            aria-label="Email de contact"
-            label=""
+            label="Adresse email"
             isOptional
             name="email"
             disabled={disableForm}
@@ -44,13 +31,11 @@ export const FormContactTemplate = ({
     {
       name: 'contactOptions.phone',
       label: 'Par téléphone',
-      ariaDescribedBy,
-      childrenOnChecked: (
+      collapsed: (
         <div className={styles['contact-checkbox-inner-control']}>
           <PhoneNumberInput
             name="phone"
-            aria-label="Numéro de téléphone de contact"
-            label=""
+            label="Numéro de téléphone"
             disabled={disableForm}
             isOptional
           />
@@ -59,14 +44,8 @@ export const FormContactTemplate = ({
     },
     {
       name: 'contactOptions.form',
-      label: <span id={formCheckboxLabelId}>Via un formulaire</span>,
-      ariaDescribedBy,
-      childrenOnChecked: (
-        <FormContactTemplateCustomForm
-          disableForm={disableForm}
-          describedBy={formCheckboxLabelId}
-        />
-      ),
+      label: 'Via un formulaire',
+      collapsed: <FormContactTemplateCustomForm disableForm={disableForm} />,
     },
   ]
 
@@ -82,7 +61,6 @@ export const FormContactTemplate = ({
         hideAsterisk
         group={contactOptions}
         disabled={disableForm}
-        variant={CheckboxVariant.BOX}
       />
     </div>
   )
