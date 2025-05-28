@@ -9,6 +9,7 @@ interface SearchFormValuesWithQuery {
   departments: string[]
   academies: string[]
   eventAddressType: string
+  locationType: string
   geolocRadius: number
   formats: string[]
   venue: VenueResponse | null
