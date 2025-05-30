@@ -44,7 +44,7 @@ export const LinkVenuesDialog = ({
     useState<boolean>(false)
 
   const availableManagedVenuesIds = managedVenues
-    .filter((venue) => !venue.bankAccountId && venue.hasPricingPoint)
+    .filter((venue) => venue.hasPricingPoint)
     .map((venue) => venue.id)
   const notification = useNotification()
   const { logEvent } = useAnalytics()
@@ -53,8 +53,8 @@ export const LinkVenuesDialog = ({
     (venue) => venue.id
   )
   const [selectedVenuesIds, setSelectedVenuesIds] = useState(initialVenuesIds)
-  const allVenuesSelected = availableManagedVenuesIds.every(
-    (venueId) => selectedVenuesIds.indexOf(venueId) >= 0
+  const allVenuesSelected = availableManagedVenuesIds.every((venueId) =>
+    selectedVenuesIds.includes(venueId)
   )
 
   const saveButtonRef = useRef<HTMLButtonElement>(null)
@@ -148,7 +148,7 @@ export const LinkVenuesDialog = ({
               <div className={styles['dialog-checkboxes']}>
                 <div className={styles['dialog-select-all']}>
                   <Checkbox
-                    checked={allVenuesSelected || selectedVenuesIds.length >= 1}
+                    checked={allVenuesSelected}
                     indeterminate={
                       selectedVenuesIds.length >= 1 && !allVenuesSelected
                     }
