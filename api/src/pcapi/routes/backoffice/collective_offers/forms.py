@@ -37,6 +37,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     ID = "ID de l'offre"
     VENUE = "Partenaires culturels"
     NAME = "Nom de l'offre"
+    SYNCHRONIZED = "Offre synchronisée"
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     PRICE = "Prix"
@@ -63,6 +64,7 @@ form_field_configuration = {
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "PRICE": {"field": "price", "operator": ["EQUALS", "LESS_THAN", "GREATER_THAN_OR_EQUAL_TO"]},
+    "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
     "MINISTRY": {"field": "ministry", "operator": ["IN", "NOT_IN"]},
     "MEG": {"field": "boolean", "operator": ["NULLABLE"]},
     "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},

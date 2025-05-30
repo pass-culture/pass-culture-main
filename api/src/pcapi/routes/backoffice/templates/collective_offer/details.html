@@ -5,7 +5,14 @@
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as %}
 {% block title %}{{ collective_offer.name }}{% endblock %}
-{% block header_extra %}<div>{{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}</div>{% endblock %}
+{% block header_extra %}
+  <div>
+    {% call badges.badges_container() %}
+      {% if collective_offer.providerId %}{{ collective_offer.provider.name | format_badge("primary") }}{% endif %}
+      {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
+    {% endcall %}
+  </div>
+{% endblock %}
 {% block action_buttons %}
   {% if is_collective_offer_price_editable and has_permission("ADVANCED_PRO_SUPPORT") %}
     {{ action_bar_button("pencil-square", "Ajuster le prix", modal_id="#update-collective-offer-price") }}

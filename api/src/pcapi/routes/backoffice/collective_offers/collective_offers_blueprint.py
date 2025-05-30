@@ -28,6 +28,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
@@ -125,6 +126,11 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "price",
         "column": aliased_stock.price,
         "inner_join": "stock",
+    },
+    "SYNCHRONIZED": {
+        "field": "boolean",
+        "special": lambda x: x != "true",
+        "column": educational_models.CollectiveOffer.providerId,
     },
     "MINISTRY": {
         "field": "ministry",
@@ -295,6 +301,7 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.formats,
                 educational_models.CollectiveOffer.authorId,
                 educational_models.CollectiveOffer.rejectionReason,
+                educational_models.CollectiveOffer.providerId,
             ),
             sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.startDatetime,
@@ -337,6 +344,9 @@ def _get_collective_offers(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.provider).load_only(
+                providers_models.Provider.name,
             ),
         )
     )
@@ -731,6 +741,9 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.template).load_only(
                 educational_models.CollectiveOfferTemplate.name,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.provider).load_only(
+                providers_models.Provider.name,
             ),
         )
     )

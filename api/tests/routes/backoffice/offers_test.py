@@ -62,6 +62,7 @@ def offers_fixture(criteria) -> tuple:
         subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
         author=users_factories.ProFactory(),
         extraData={"musicType": 501, "musicSubType": 510, "gtl_id": "02050000"},
+        lastProvider=providers_factories.ProviderFactory(name="Music Provider"),
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
@@ -177,6 +178,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == offers[0].venue.name
         assert rows[0]["Date(s) de l'évènement"] == ""
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
+        assert rows[0]["Partenaire technique"] == "Music Provider"
 
         if stock_data_expected:
             assert rows[0]["Stock réservé"] == "0"

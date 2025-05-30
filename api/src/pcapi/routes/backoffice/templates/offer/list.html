@@ -64,6 +64,7 @@
   <th scope="col">Partenaire culturel</th>
   <th scope="col"
       data-pc-column-name="Toutes les offres du partenaire culturel">Offres du partenaire culturel</th>
+  <th scope="col">Partenaire technique</th>
 {% endblock %}
 {% block table_body %}
   {% for row in rows %}
@@ -219,6 +220,9 @@
         {% endcall %}
       </td>
       <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
+      <td>
+        {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
+      </td>
     </tr>
   {% endfor %}
 {% endblock %}

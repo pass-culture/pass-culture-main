@@ -44,6 +44,7 @@
     <th scope="col">Ministère</th>
     <th scope="col">Année</th>
   {% endif %}
+  <th scope="col">Partenaire technique</th>
 {% endblock %}
 {% block table_body %}
   {% for row in rows %}
@@ -144,6 +145,9 @@
           {% endif %}
         </td>
       {% endif %}
+      <td>
+        {% if collective_offer.providerId %}{{ collective_offer.provider.name | format_badge("primary") }}{% endif %}
+      </td>
     </tr>
   {% endfor %}
 {% endblock %}
