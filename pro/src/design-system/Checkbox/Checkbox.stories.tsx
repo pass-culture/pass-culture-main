@@ -5,11 +5,7 @@ import strokeCalendarIcon from 'icons/stroke-date.svg'
 
 import dog from '../assets/dog.jpg'
 
-import { Checkbox, CheckboxVariant } from './Checkbox'
-import {
-  CheckboxAssetImageSizeVariant,
-  CheckboxAssetVariant,
-} from './CheckboxAsset/CheckboxAsset'
+import { Checkbox } from './Checkbox'
 
 export default {
   title: 'design-system/Checkbox',
@@ -31,14 +27,14 @@ export default {
 export const Default: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DEFAULT,
+    variant: 'default',
   },
 }
 
 export const DefaultChecked: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DEFAULT,
+    variant: 'default',
     checked: true,
   },
 }
@@ -46,7 +42,7 @@ export const DefaultChecked: StoryObj<typeof Checkbox> = {
 export const DefaultIndeterminate: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DEFAULT,
+    variant: 'default',
     checked: true,
     indeterminate: true,
   },
@@ -55,7 +51,7 @@ export const DefaultIndeterminate: StoryObj<typeof Checkbox> = {
 export const DefaultHasError: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DEFAULT,
+    variant: 'default',
     hasError: true,
   },
 }
@@ -63,7 +59,7 @@ export const DefaultHasError: StoryObj<typeof Checkbox> = {
 export const DefaultDisabled: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DEFAULT,
+    variant: 'default',
     disabled: true,
   },
 }
@@ -71,7 +67,7 @@ export const DefaultDisabled: StoryObj<typeof Checkbox> = {
 export const DetailedWithDescription: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
 }
@@ -79,7 +75,7 @@ export const DetailedWithDescription: StoryObj<typeof Checkbox> = {
 export const DetailedFill: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     display: 'fill',
   },
@@ -88,7 +84,7 @@ export const DetailedFill: StoryObj<typeof Checkbox> = {
 export const DetailedChecked: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     checked: true,
   },
@@ -97,7 +93,7 @@ export const DetailedChecked: StoryObj<typeof Checkbox> = {
 export const DetailedHasError: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     hasError: true,
   },
@@ -106,7 +102,7 @@ export const DetailedHasError: StoryObj<typeof Checkbox> = {
 export const DetailedDisabled: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     disabled: true,
   },
@@ -115,27 +111,27 @@ export const DetailedDisabled: StoryObj<typeof Checkbox> = {
 export const DetailedWithIcon: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    asset: { variant: CheckboxAssetVariant.ICON, src: strokeCalendarIcon },
+    asset: { variant: 'icon', src: strokeCalendarIcon },
   },
 }
 
 export const DetailedWithText: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    asset: { variant: CheckboxAssetVariant.TEXT, text: '32 €' },
+    asset: { variant: 'text', text: '32 €' },
   },
 }
 
 export const DetailedWithImage: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    asset: { variant: CheckboxAssetVariant.IMAGE, src: dog },
+    asset: { variant: 'image', src: dog },
   },
 }
 
@@ -151,12 +147,12 @@ export const DetailedWithMediumImage: StoryObj<typeof Checkbox> = {
 export const DetailedWithBigImage: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     asset: {
-      variant: CheckboxAssetVariant.IMAGE,
+      variant: 'image',
       src: dog,
-      size: CheckboxAssetImageSizeVariant.L,
+      size: 'l',
     },
   },
 }
@@ -164,7 +160,7 @@ export const DetailedWithBigImage: StoryObj<typeof Checkbox> = {
 export const DetailedWithTag: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     asset: {
       variant: 'tag',
@@ -176,8 +172,8 @@ export const DetailedWithTag: StoryObj<typeof Checkbox> = {
 export const DetailedWithCollapsedContent: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
-    variant: CheckboxVariant.DETAILED,
-    asset: { variant: CheckboxAssetVariant.ICON, src: strokeCalendarIcon },
+    variant: 'detailed',
+    asset: { variant: 'icon', src: strokeCalendarIcon },
     checked: true,
     collapsed: <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>,
   },
