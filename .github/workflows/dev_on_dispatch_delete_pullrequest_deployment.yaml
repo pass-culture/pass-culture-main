@@ -9,7 +9,7 @@ on:
 
 jobs:
   delete-pullrequest-deployment:
-    name: "Delete PR deployment" 
+    name: "Delete PR deployment"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -17,28 +17,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       # Get github api token
       - name: "Get secrets (github)"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Liste des repositories à cloner
+          repositories: |
+            pass-culture-deployment
+            pass-culture-main
+            rendered-manifests
+            pc-connect
+          permission-contents: write
       # Checkout rendered-manifests repository
       - uses: actions/checkout@v4
         with:
           repository: pass-culture/rendered-manifests
-          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.github-token.outputs.token }}
           path: ./rendered-manifests
-          ref: 'pcapi/pullrequests'
+          ref: "pcapi/pullrequests"
 
       - name: "Delete PR deployment"
         run: |
@@ -56,7 +69,7 @@ jobs:
           fi
 
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
@@ -66,7 +79,7 @@ jobs:
         with:
           cluster_scope: metier
           cluster_environment: ehp
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       - name: "Wait for argocd applications to be deleted; delete namespace"
         continue-on-error: true
