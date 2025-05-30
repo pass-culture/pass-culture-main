@@ -1,6 +1,8 @@
 import { useFormikContext } from 'formik'
 
 import { OfferAddressType } from 'apiClient/adage'
+import { CollectiveLocationType } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
@@ -53,17 +55,32 @@ export const FiltersTags = ({
   const { values, setFieldValue, handleSubmit } =
     useFormikContext<SearchFormValues>()
 
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
+
   const getOfferAdressTypeTag = () => {
-    if (values.eventAddressType === OfferAddressType.OTHER) {
+    if (
+      values.eventAddressType === OfferAddressType.OTHER &&
+      values.locationType === CollectiveLocationType.TO_BE_DEFINED
+    ) {
       return <></>
     }
     const label =
-      values.eventAddressType === OfferAddressType.OFFERER_VENUE
+      values.eventAddressType === OfferAddressType.OFFERER_VENUE &&
+      values.locationType === CollectiveLocationType.ADDRESS
         ? 'Sortie chez un partenaire culturel'
         : 'Intervention d’un partenaire culturel dans mon établissement'
 
     return createTag(label, () => {
-      void setFieldValue('eventAddressType', OfferAddressType.OTHER)
+      if (isCollectiveOaActive) {
+        void setFieldValue(
+          'eventAddressType',
+          CollectiveLocationType.TO_BE_DEFINED
+        )
+      } else {
+        void setFieldValue('eventAddressType', OfferAddressType.OTHER)
+      }
       setLocalisationFilterState(LocalisationFilterStates.NONE)
       handleSubmit()
     })
