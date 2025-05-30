@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import { PricingPointDialog } from '../PricingPointDialog/PricingPointDialog'
 
@@ -32,21 +32,22 @@ export function ManadgedVenueItem({
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
     useState<boolean>(false)
 
-  function handleVenueChange(event: any) {
+  function handleVenueChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+    id: number
+  ) {
     if (event.target.checked) {
-      setSelectedVenuesIds([...selectedVenuesIds, parseInt(event.target.value)])
+      setSelectedVenuesIds([...selectedVenuesIds, id])
     } else {
       setSelectedVenuesIds(
-        selectedVenuesIds.filter(
-          (venueId) => venueId !== parseInt(event.target.value)
-        )
+        selectedVenuesIds.filter((venueId) => venueId !== id)
       )
     }
   }
 
   return (
     <div className={styles['dialog-checkbox-container']}>
-      <BaseCheckbox
+      <Checkbox
         disabled={
           (Boolean(venue.bankAccountId) &&
             venue.bankAccountId !== selectedBankAccount.id) ||
@@ -54,9 +55,8 @@ export function ManadgedVenueItem({
         }
         label={venue.commonName}
         name={venue.id.toString()}
-        value={venue.id}
         checked={selectedVenuesIds.indexOf(venue.id) >= 0}
-        onChange={handleVenueChange}
+        onChange={(e) => handleVenueChange(e, venue.id)}
       />
       {!venue.hasPricingPoint && (
         <DialogBuilder

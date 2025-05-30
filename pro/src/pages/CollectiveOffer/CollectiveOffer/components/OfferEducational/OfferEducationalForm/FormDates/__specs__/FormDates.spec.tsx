@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addYears, format } from 'date-fns'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -41,7 +41,7 @@ describe('FormDates', () => {
   }
   it('should display error message if ending date is more than 3 years from today', async () => {
     renderFormDates(defaultProps, {
-      ...DEFAULT_EAC_FORM_VALUES,
+      ...getDefaultEducationalValues(),
       isTemplate: true,
       beginningDate: '',
       datesType: 'specific_dates',
@@ -56,7 +56,7 @@ describe('FormDates', () => {
 
   it('should limit ending date to beggining date when value', () => {
     renderFormDates(defaultProps, {
-      ...DEFAULT_EAC_FORM_VALUES,
+      ...getDefaultEducationalValues(),
       isTemplate: true,
       beginningDate: new Date().toString(),
       endingDate: '',
@@ -72,7 +72,7 @@ describe('FormDates', () => {
     renderFormDates(
       { ...defaultProps, dateCreated: '2021-01-01' },
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         isTemplate: true,
         beginningDate: new Date().toString(),
         endingDate: '',
@@ -101,7 +101,7 @@ describe('FormDates', () => {
       renderFormDates(
         { ...defaultProps, dateCreated: '2021-01-01' },
         {
-          ...DEFAULT_EAC_FORM_VALUES,
+          ...getDefaultEducationalValues(),
           isTemplate: true,
           ...dates,
           datesType: 'permanent',
@@ -119,7 +119,7 @@ describe('FormDates', () => {
     renderFormDates(
       { ...defaultProps, dateCreated: '2021-01-01' },
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         isTemplate: true,
       }
     )
@@ -143,7 +143,7 @@ describe('FormDates', () => {
     renderFormDates(
       { ...defaultProps, dateCreated: '2021-01-01' },
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         beginningDate: startDate,
         endingDate: addYears(new Date(), 4).toString(),
         datesType: 'specific_dates',
@@ -173,7 +173,7 @@ describe('FormDates', () => {
     renderFormDates(
       { ...defaultProps, dateCreated: '2021-01-01' },
       {
-        ...DEFAULT_EAC_FORM_VALUES,
+        ...getDefaultEducationalValues(),
         isTemplate: true,
         datesType: 'specific_dates',
         beginningDate: '',

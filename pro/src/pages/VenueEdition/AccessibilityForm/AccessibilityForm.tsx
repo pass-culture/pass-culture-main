@@ -6,9 +6,9 @@ import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { isEqual } from 'commons/utils/isEqual'
 import { ExternalAccessibility } from 'components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { AccessibilityCallout } from 'pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from './AccessibilityForm.module.scss'
@@ -64,6 +64,13 @@ export const AccessibilityForm = ({
             <FormLayout.Row>
               <Checkbox
                 label="Appliquer le changement à toutes les offres existantes"
+                checked={values.isAccessibilityAppliedOnAllOffers}
+                onChange={(e) =>
+                  setFieldValue(
+                    'isAccessibilityAppliedOnAllOffers',
+                    e.target.checked
+                  )
+                }
                 name="isAccessibilityAppliedOnAllOffers"
                 className={styles['apply-on-all-offers-checkbox']}
               />

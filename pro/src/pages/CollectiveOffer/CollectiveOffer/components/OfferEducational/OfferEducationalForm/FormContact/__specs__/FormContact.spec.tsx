@@ -1,18 +1,18 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormContact } from '../FormContact'
 
 function renderFormContact(
-  initialValues: Partial<OfferEducationalFormValues> = DEFAULT_EAC_FORM_VALUES
+  initialValues: Partial<OfferEducationalFormValues> = getDefaultEducationalValues()
 ) {
   return renderWithProviders(
     <Formik
-      initialValues={{ ...DEFAULT_EAC_FORM_VALUES, ...initialValues }}
+      initialValues={{ ...getDefaultEducationalValues(), ...initialValues }}
       onSubmit={() => {}}
     >
       <FormContact disableForm={false} />

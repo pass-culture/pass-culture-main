@@ -1,7 +1,5 @@
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-
 import { CheckboxGroup, CheckboxGroupProps } from './CheckboxGroup'
 
 export default {
@@ -14,13 +12,11 @@ const defaultArgs = {
   legend: 'Choisir une option',
   group: [
     {
-      name: 'checkbox1',
       label: 'checkbox 1',
       onChange: () => {},
       checked: true,
     },
     {
-      name: 'checkbox2',
       label: 'checkbox 2',
       onChange: () => {},
       checked: false,
@@ -66,20 +62,20 @@ export const WithinForm = {
 }
 
 export const Disabled = {
-  args: { ...defaultArgs, variant: CheckboxVariant.BOX, disabled: true },
+  args: { ...defaultArgs, variant: 'detailed', disabled: true },
 }
 
 export const WithBorder = {
   args: {
     ...defaultArgs,
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
   },
 }
 
 export const Inline = {
   args: {
     ...defaultArgs,
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
     inline: true,
   },
 }

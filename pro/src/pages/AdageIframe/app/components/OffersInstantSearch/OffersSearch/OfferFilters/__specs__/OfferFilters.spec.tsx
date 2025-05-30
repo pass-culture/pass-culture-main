@@ -193,7 +193,7 @@ describe('OfferFilters', () => {
     )
 
     expect(
-      await screen.findByRole('option', { name: '01 - Ain' })
+      screen.getByRole('checkbox', { name: '01 - Ain' })
     ).toBeInTheDocument()
   })
   it('should display academies options in localisation filter modal', async () => {
@@ -294,7 +294,7 @@ describe('OfferFilters', () => {
       screen.getByRole('button', { name: 'Niveau scolaire (1)' })
     )
 
-    const options = screen.getAllByRole('option')
+    const options = screen.getAllByRole('checkbox')
 
     //  Verify that the selected option comes first
     expect(options[0]).toHaveAccessibleName('Collège - 5e')

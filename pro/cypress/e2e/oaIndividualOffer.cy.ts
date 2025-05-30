@@ -118,7 +118,7 @@ describe('Create individual offers with OA', () => {
     cy.contains('11 dates')
 
     cy.stepLog({ message: 'I want to update my offer' })
-    cy.findByText(eventName).click()
+    cy.findAllByText(eventName).eq(1).click()
     cy.findByText('Informations pratiques').click()
     cy.url().should('contain', '/pratiques')
     cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')
@@ -254,7 +254,7 @@ describe('Create individual offers with OA', () => {
     })
 
     cy.stepLog({ message: 'I want to update my offer' })
-    cy.findByText(offerTitle).click()
+    cy.findAllByText(offerTitle).eq(1).click()
     cy.findByText('Informations pratiques').click()
     cy.url().should('contain', '/pratiques')
     cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')

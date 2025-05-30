@@ -162,7 +162,7 @@
 .label {
   @include fonts.body;
 
-  padding: rem.torem(11.2px) rem.torem(16px) rem.torem(11.2px) 0;
+  padding: rem.torem(11.2px) rem.torem(16px);
 }
 
 .checkbox {

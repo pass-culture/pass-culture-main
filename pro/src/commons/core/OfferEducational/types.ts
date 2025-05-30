@@ -38,10 +38,6 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   }
   interventionArea: string[]
   participants: {
-    college: boolean
-    lycee: boolean
-    marseille: boolean
-  } & {
     [K in StudentLevels]: boolean
   }
   accessibility: AccessibilityFormValues

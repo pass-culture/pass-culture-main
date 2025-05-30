@@ -1,7 +1,5 @@
 import { Formik } from 'formik'
 
-import { CheckboxVariant } from '../shared/BaseCheckbox/BaseCheckbox'
-
 import { CheckboxGroup } from './CheckboxGroup'
 
 export default {
@@ -48,7 +46,7 @@ export const Default = {
 export const Box = {
   args: {
     ...Default.args,
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
   },
 }
 
@@ -56,7 +54,7 @@ export const BoxInline = {
   args: {
     ...Default.args,
     inline: true,
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
   },
 }
 
@@ -68,7 +66,7 @@ export const BoxWithChildren = {
       name: `checkBoxes.${item}`,
       childrenOnChecked: <span>Child content for {item}</span>,
     })),
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
   },
 }
 
@@ -86,11 +84,10 @@ export const BoxWithCheckboxGroupChildren = {
             { label: 'sub-foo', name: `checkBoxes.sub-foo-${i}` },
             { label: 'sub-bar', name: `checkBoxes.sub-bar-${i}` },
           ]}
-          variant={CheckboxVariant.BOX}
         />
       ),
     })),
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
   },
 }
 
@@ -102,18 +99,17 @@ export const BoxWithCheckboxGroupChildrenNoLegend = {
       name: `checkBoxes.${item}`,
       childrenOnChecked: (
         <CheckboxGroup
-          describedBy="parent-name-id"
+          legend="Group legend"
           groupName="sub-name"
           group={[
             { label: 'sub-foo', name: `checkBoxes.sub-foo-${i}` },
             { label: 'sub-bar', name: `checkBoxes.sub-bar-${i}` },
           ]}
-          variant={CheckboxVariant.BOX}
           inline={i === 0}
         />
       ),
     })),
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
   },
 }
 
@@ -126,19 +122,18 @@ export const BoxWithCheckboxGroupChildrenDisabled = {
       name: `checkBoxes.${item}`,
       childrenOnChecked: (
         <CheckboxGroup
-          describedBy="parent-name-id"
+          legend="Group legend"
           groupName="sub-name"
           group={[
             { label: 'sub-foo', name: `checkBoxes.sub-foo-${i}` },
             { label: 'sub-bar', name: `checkBoxes.sub-bar-${i}` },
           ]}
-          variant={CheckboxVariant.BOX}
           inline={i === 0}
           disabled={true}
         />
       ),
     })),
-    variant: CheckboxVariant.BOX,
+    variant: 'detailed',
     groupName: 'checkBoxes',
     legend: 'This is the legend',
   },

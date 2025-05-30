@@ -1,6 +1,6 @@
 import { CollectiveLocationType } from 'apiClient/adage'
 import { OfferContactFormEnum } from 'apiClient/v1'
-import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from 'commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
@@ -46,7 +46,7 @@ describe('computeInitialValuesFromOffer', () => {
     const venue = venues[0]
 
     expect(computeInitialValuesFromOffer(offerer, false, venues)).toEqual({
-      ...DEFAULT_EAC_FORM_VALUES,
+      ...getDefaultEducationalValues(),
       offererId: '1',
       venueId: '2',
       city: 'Paris',

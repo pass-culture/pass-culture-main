@@ -74,11 +74,11 @@ export const IndividualOffersTable = ({
       isLoading={isLoading}
       resetFilters={resetFilters}
       pagination={pagination}
+      areAllOffersSelected={areAllOffersSelected}
+      isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
+      toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
     >
       <OffersTableHead
-        areAllOffersSelected={areAllOffersSelected}
-        isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-        toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         columns={[
           CELLS_DEFINITIONS.NAME,
           CELLS_DEFINITIONS.ADDRESS,

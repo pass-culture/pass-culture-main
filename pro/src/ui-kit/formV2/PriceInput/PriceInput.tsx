@@ -6,7 +6,7 @@ import React, {
   ForwardedRef,
 } from 'react'
 
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './PriceInput.module.scss'
@@ -114,7 +114,7 @@ export const PriceInput = React.forwardRef(
     }
 
     const inputExtension = (
-      <BaseCheckbox
+      <Checkbox
         ref={freeRef}
         label="Gratuit"
         checked={isFree}

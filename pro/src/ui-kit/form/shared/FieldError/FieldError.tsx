@@ -8,7 +8,7 @@ import styles from './FieldError.module.scss'
 interface FieldErrorProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
-  name: string
+  name?: string
   iconAlt?: string
 }
 
@@ -18,7 +18,7 @@ export const FieldError = ({
   name,
   iconAlt = '',
 }: FieldErrorProps): JSX.Element => (
-  <div className={cn(styles['field-error'], className)} id={`error-${name}`}>
+  <div className={cn(styles['field-error'], className)}>
     <SvgIcon src={strokeErrorIcon} alt={iconAlt} width="16" />
     <span className={styles['field-error-text']} data-testid={`error-${name}`}>
       {children}

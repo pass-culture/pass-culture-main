@@ -28,16 +28,13 @@ import {
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddRecurrencesButton } from 'components/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { SelectInput, SelectInputVariant } from 'ui-kit/form/Select/SelectInput'
-import {
-  BaseCheckbox,
-  PartialCheck,
-} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -66,6 +63,12 @@ export interface StocksEventListProps {
   readonly?: boolean
   onStocksLoad?: (hasStocks: boolean) => void
   canAddStocks?: boolean
+}
+
+enum PartialCheck {
+  CHECKED = 'checked',
+  PARTIAL = 'partial',
+  UNCHECKED = 'unchecked',
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
@@ -373,10 +376,10 @@ export const StocksEventList = ({
         <>
           <div className={styles['select-all-container']}>
             {!readonly && (
-              <BaseCheckbox
+              <Checkbox
                 label="Tout sélectionner"
                 checked={allStocksChecked !== PartialCheck.UNCHECKED}
-                partialCheck={allStocksChecked === PartialCheck.PARTIAL}
+                indeterminate={allStocksChecked === PartialCheck.PARTIAL}
                 onChange={onAllStocksCheckChange}
               />
             )}
@@ -615,10 +618,10 @@ export const StocksEventList = ({
                       data-label="Sélection du stock"
                     >
                       {!readonly && (
-                        <BaseCheckbox
+                        <Checkbox
                           checked={checkedStocks[stockIndex]}
                           onChange={() => onStockCheckChange(stockIndex)}
-                          label=""
+                          label={beginningDay}
                         />
                       )}
                     </td>
@@ -632,9 +635,11 @@ export const StocksEventList = ({
                           styles['capitalize']
                         )}
                       >
-                        <div className={styles['day']}>
-                          <strong>{beginningDay}</strong>
-                        </div>
+                        {readonly && (
+                          <div className={styles['day']}>
+                            <strong>{beginningDay}</strong>
+                          </div>
+                        )}
                         <div>{beginningDate}</div>
                       </div>
                     </td>

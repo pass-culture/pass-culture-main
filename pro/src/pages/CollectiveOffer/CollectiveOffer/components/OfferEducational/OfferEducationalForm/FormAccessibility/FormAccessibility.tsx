@@ -3,7 +3,6 @@ import { useFormikContext } from 'formik'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
-import { CheckboxVariant } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import styles from './FormAccessibility.module.scss'
 
@@ -28,7 +27,6 @@ export const FormAccessibility = ({
         hideAsterisk
         groupName="accessibility"
         disabled={disableForm}
-        variant={CheckboxVariant.BOX}
       />
     </div>
   )

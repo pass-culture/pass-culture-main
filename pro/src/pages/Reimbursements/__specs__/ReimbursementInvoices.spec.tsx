@@ -108,26 +108,23 @@ describe('reimbursementsWithFilters', () => {
 
     // first line
     expect(
-      screen.getByText('Sélection du remboursement du 02/11/2022')
+      screen.getByRole('checkbox', { name: '02/11/2022' })
     ).toBeInTheDocument()
-    expect(screen.getByText('02/11/2022')).toBeInTheDocument()
     expect(screen.getAllByText('First bank account')).toHaveLength(2)
     expect(screen.getByText('VIR7')).toBeInTheDocument()
     expect(screen.getByText(/100,00/)).toBeInTheDocument()
 
     // second line
     expect(
-      screen.getByText('Sélection du trop perçu du 03/11/2022')
+      screen.getByRole('checkbox', { name: '03/11/2022' })
     ).toBeInTheDocument()
-    expect(screen.getByText('03/11/2022')).toBeInTheDocument()
     expect(screen.getByText('N/A')).toBeInTheDocument()
     expect(screen.getByText(/50,00/)).toBeInTheDocument()
 
     // third line
     expect(
-      screen.getByText('Sélection du remboursement du 02/10/2023')
+      screen.getByRole('checkbox', { name: '02/10/2023' })
     ).toBeInTheDocument()
-    expect(screen.getByText('02/10/2023')).toBeInTheDocument()
     expect(screen.getByText('VIR9, VIR12')).toBeInTheDocument()
     expect(screen.getByText(/75,00/)).toBeInTheDocument()
   })
@@ -162,12 +159,12 @@ describe('reimbursementsWithFilters', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByText('Remboursement')).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Sélection du remboursement du 02/11/2022')
+      screen.getByRole('checkbox', { name: '02/11/2022' })
     ).toBeInTheDocument()
 
     expect(screen.getByText('Trop perçu')).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Sélection du trop perçu du 03/11/2022')
+      screen.getByRole('checkbox', { name: '03/11/2022' })
     ).toBeInTheDocument()
   })
 
@@ -208,24 +205,24 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const reimbursementCells = await screen.findAllByRole('cell')
-    expect(reimbursementCells[4].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[11].innerHTML).toContain('N/A')
-    expect(reimbursementCells[18].innerHTML).toContain('VIR9, VIR12')
+    expect(reimbursementCells[3].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[9].innerHTML).toContain('N/A')
+    expect(reimbursementCells[15].innerHTML).toContain('VIR9, VIR12')
     const orderButton = screen.getAllByRole('img', {
       name: 'Trier par ordre croissant',
     })[3]
     await userEvent.click(orderButton)
 
     let refreshedCells = screen.getAllByRole('cell')
-    expect(refreshedCells[4].innerHTML).toContain('N/A')
-    expect(refreshedCells[11].innerHTML).toContain('VIR7')
-    expect(refreshedCells[18].innerHTML).toContain('VIR9, VIR12')
+    expect(refreshedCells[3].innerHTML).toContain('N/A')
+    expect(refreshedCells[9].innerHTML).toContain('VIR7')
+    expect(refreshedCells[15].innerHTML).toContain('VIR9, VIR12')
 
     await userEvent.click(orderButton)
     refreshedCells = screen.getAllByRole('cell')
-    expect(reimbursementCells[4].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[11].innerHTML).toContain('N/A')
-    expect(reimbursementCells[18].innerHTML).toContain('VIR9, VIR12')
+    expect(reimbursementCells[3].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[9].innerHTML).toContain('N/A')
+    expect(reimbursementCells[15].innerHTML).toContain('VIR9, VIR12')
   })
 
   it('should contain sort informations for a11y', async () => {

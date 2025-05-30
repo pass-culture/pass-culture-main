@@ -1,23 +1,19 @@
 import { useField } from 'formik'
 
-import {
-  BaseCheckbox,
-  CheckboxVariant,
-} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import { Checkbox, CheckboxProps } from 'design-system/Checkbox/Checkbox'
 
 interface CheckboxGroupItemProps {
   setGroupTouched(): void
   name: string
-  label: string | React.ReactNode
+  label: string
   description?: string
   icon?: string
   hasError?: boolean
   disabled?: boolean
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   ariaDescribedBy?: string
-  variant?: CheckboxVariant
-  childrenOnChecked?: JSX.Element
-  shouldShowChildren?: boolean
+  variant?: CheckboxProps['variant']
+  collapsed?: JSX.Element
 }
 
 export const CheckboxGroupItem = ({
@@ -28,10 +24,7 @@ export const CheckboxGroupItem = ({
   icon,
   disabled,
   onChange,
-  ariaDescribedBy,
-  variant,
-  childrenOnChecked,
-  shouldShowChildren,
+  collapsed,
 }: CheckboxGroupItemProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
@@ -44,17 +37,17 @@ export const CheckboxGroupItem = ({
   }
 
   return (
-    <BaseCheckbox
-      {...field}
-      icon={icon}
+    <Checkbox
+      asset={icon ? { variant: 'icon', src: icon } : undefined}
       hasError={hasError}
       label={label}
       onChange={onCustomChange}
       disabled={disabled}
-      ariaDescribedBy={ariaDescribedBy}
-      variant={variant}
-      childrenOnChecked={childrenOnChecked}
-      shouldShowChildren={shouldShowChildren}
+      variant="detailed"
+      display="fill"
+      collapsed={collapsed}
+      name={name}
+      checked={Boolean(field.checked)}
     />
   )
 }
