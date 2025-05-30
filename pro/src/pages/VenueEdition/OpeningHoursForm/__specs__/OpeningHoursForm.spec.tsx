@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik, Form } from 'formik'
+import { Form, Formik } from 'formik'
 
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'

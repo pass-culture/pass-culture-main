@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
@@ -27,12 +27,18 @@ function renderPricingPoints(
   defaultProps: PricingPointProps,
   options?: RenderWithProvidersOptions
 ) {
-  renderWithProviders(
-    <Formik initialValues={{}} onSubmit={() => {}}>
-      <PricingPoint {...defaultProps} />
-    </Formik>,
-    options
-  )
+  const Wrapper = () => {
+    const methods = useForm({ defaultValues: {} })
+    return (
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(() => {})}>
+          <PricingPoint {...defaultProps} />
+        </form>
+      </FormProvider>
+    )
+  }
+
+  renderWithProviders(<Wrapper />, options)
 }
 
 describe('PricingPoint', () => {
@@ -81,6 +87,7 @@ describe('PricingPoint', () => {
       ...notifsImport,
       error: mockNotifyError,
     }))
+
     renderPricingPoints(defaultProps)
 
     await userEvent.selectOptions(

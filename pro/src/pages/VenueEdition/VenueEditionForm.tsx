@@ -1,5 +1,5 @@
 import { Form, Formik, FormikConfig, FormikConsumer, FormikProps } from 'formik'
-import { useNavigate, useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -276,6 +276,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 <VenueFormActionBar
                   venue={venue}
                   disableFormSubmission={!formik.dirty}
+                  isSubmitting={formik.isSubmitting}
                 />
                 <RouteLeavingGuardVenueEdition
                   shouldBlock={formik.dirty && !formik.isSubmitting}

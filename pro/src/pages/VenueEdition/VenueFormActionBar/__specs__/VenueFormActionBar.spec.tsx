@@ -1,32 +1,46 @@
 import { screen } from '@testing-library/react'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import {
   VenueFormActionBar,
   VenueFormActionBarProps,
 } from '../VenueFormActionBar'
 
-const renderVenueFormActionBar = (
-  props: Partial<VenueFormActionBarProps> = {}
-) => {
-  renderWithProviders(
-    <Formik initialValues={{}} onSubmit={vi.fn()}>
-      <VenueFormActionBar {...props} />
-    </Formik>,
-    {
-      user: sharedCurrentUserFactory(),
-      features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
-    }
-  )
+function renderVenueFormActionBar(
+  defaultProps: VenueFormActionBarProps,
+  options?: RenderWithProvidersOptions
+) {
+  const Wrapper = () => {
+    const methods = useForm({ defaultValues: {} })
+    return (
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(() => {})}>
+          <VenueFormActionBar {...defaultProps} />
+        </form>
+      </FormProvider>
+    )
+  }
+
+  options = {
+    user: sharedCurrentUserFactory(),
+    features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
+  }
+
+  renderWithProviders(<Wrapper />, options)
 }
 
 describe('VenueFormActionBar', () => {
   it('should display right message on edition', () => {
-    renderVenueFormActionBar()
+    renderVenueFormActionBar({
+      venue: { ...defaultGetVenue },
+    })
     expect(screen.getByText('Enregistrer')).toBeInTheDocument()
   })
 

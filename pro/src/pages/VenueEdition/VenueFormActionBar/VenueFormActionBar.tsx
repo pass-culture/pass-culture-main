@@ -1,34 +1,31 @@
-import { useFormikContext } from 'formik'
-
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { getPathToNavigateTo } from '../context'
-import { VenueEditionFormValues } from '../types'
 
 import styles from './VenueFormActionBar.module.scss'
 
 export interface VenueFormActionBarProps {
   venue?: GetVenueResponseModel
+  isSubmitting?: boolean
   disableFormSubmission?: boolean
 }
 
 export const VenueFormActionBar = ({
   venue,
   disableFormSubmission,
+  isSubmitting = false,
 }: VenueFormActionBarProps) => {
-  const { isSubmitting } = useFormikContext<
-    VenueEditionFormValues | VenueSettingsFormValues
-  >()
-
   return (
     <div className={styles['action-bar']}>
       <ButtonLink
         variant={ButtonVariant.SECONDARY}
-        to={getPathToNavigateTo(venue?.managingOfferer.id as number, venue?.id as number)}
+        to={getPathToNavigateTo(
+          venue?.managingOfferer.id as number,
+          venue?.id as number
+        )}
       >
         Annuler
       </ButtonLink>

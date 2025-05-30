@@ -1,8 +1,15 @@
+import { useFormContext } from 'react-hook-form'
+
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
+import { VenueSettingsFormValues } from '../types'
+
 export const WithdrawalDetails = () => {
+  const methods = useFormContext<VenueSettingsFormValues>()
+  const { register } = methods
+
   return (
     <FormLayout.Section title="Informations de retrait de vos offres">
       <FormLayout.Row
@@ -23,11 +30,11 @@ export const WithdrawalDetails = () => {
         }
       >
         <TextArea
+          {...register('withdrawalDetails')}
           name="withdrawalDetails"
           label="Informations de retrait"
           maxLength={500}
           description="Par exemple : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email..."
-          isOptional
         />
       </FormLayout.Row>
     </FormLayout.Section>
