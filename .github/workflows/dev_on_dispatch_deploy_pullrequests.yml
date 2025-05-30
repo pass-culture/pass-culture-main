@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       sandbox:
-        description: 'Sandbox installed'
+        description: "Sandbox installed"
         required: true
-        default: 'empty'
+        default: "empty"
         type: choice
         options:
           - empty
           - industrial
       front-only:
-        description: 'Deploy only frontend (skip API deploy)'
+        description: "Deploy only frontend (skip API deploy)"
         required: false
         default: false
         type: boolean
@@ -24,9 +24,9 @@ env:
 
 jobs:
   deploy-preview-env-init:
-    name: 'Init'
+    name: "Init"
     runs-on: ubuntu-latest
-    outputs: 
+    outputs:
       # checksum-tag is the sha1sum of the api folder. It is used to tag the docker image
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       # resource_label names every resources created by this workflow. It is the sha1sum of the branch name
@@ -134,11 +134,11 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-
   deploy-api:
     name: "Deploy pullrequest"
     runs-on: ubuntu-latest
-    needs: [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
+    needs:
+      [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
     if: always() && !failure() && !cancelled() && inputs.front-only == false
     environment: pullrequest
     permissions:
@@ -149,25 +149,39 @@ jobs:
         with:
           ref: ${{github.ref}}
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       # Get github api token that will be used to commit and push api_version to pass-culture-deployment repository
       - name: "Get secrets (github)"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
-      - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: github-token
         with:
-          service_account : ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Liste des repositories à cloner
+          repositories: |
+            pass-culture-deployment
+            pass-culture-main
+            rendered-manifests
+            pc-connect
+          permission-contents: write
+
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: "Connect to cluster"
@@ -175,14 +189,14 @@ jobs:
         with:
           cluster_scope: metier
           cluster_environment: ehp
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
       - uses: actions/checkout@v4.2.1
         with:
           repository: pass-culture/pass-culture-deployment
           ref: master
-          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.github-token.outputs.token }}
           path: ./pass-culture-deployment
 
       # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
@@ -198,7 +212,7 @@ jobs:
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
 
-      # Create pullrequest namespace and externalsecret containing pgsql credentials 
+      # Create pullrequest namespace and externalsecret containing pgsql credentials
       - name: "Installing Pullrequest deployment prerequisites"
         run: |
           set -e
@@ -226,9 +240,9 @@ jobs:
 
       # We have to reauthenticate to GCP because render-manifests removes previous authenthication
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
-          service_account : ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: "Connect to cluster"
@@ -236,7 +250,7 @@ jobs:
         with:
           cluster_scope: metier
           cluster_environment: ehp
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       # Wait for ApplicationSet Controller to create applications
       # TODO : Change to webhook once appset controller ingress gets proper Health endpoint

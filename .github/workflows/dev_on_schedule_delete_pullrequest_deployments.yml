@@ -5,7 +5,7 @@ on:
     # This cron is defined in UTC timezone. It means that it will run :
     # - during summer hours between 7:27am - 7:27pm
     # - during winter hours between 6:27am - 6:27pm
-    # we cannot yet specify timezone : 
+    # we cannot yet specify timezone :
     # https://github.com/orgs/community/discussions/13454
     # Why 27? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
     # Cron jobs might be delayed or even completely skipped.
@@ -34,15 +34,29 @@ jobs:
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
+
+      - name: Authenticate through github app ghactionci
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: github-token
+        with:
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Liste des repositories à cloner
+          repositories: |
+            pass-culture-deployment
+            pass-culture-main
+            rendered-manifests
+            pc-connect
+          permission-contents: write
 
       # Checkout rendered-manifests repository
       - uses: actions/checkout@v4
         with:
           repository: pass-culture/rendered-manifests
-          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          token: ${{ steps.github-token.outputs.token }}
           path: ./rendered-manifests
           ref: "pcapi/pullrequests"
 
@@ -63,7 +77,7 @@ jobs:
         with:
           cluster_scope: metier
           cluster_environment: ehp
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
+          api_token_github: ${{ steps.github-token.outputs.token }}
 
       - name: "Delete PR deployments"
         run: |
