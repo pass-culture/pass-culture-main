@@ -1,5 +1,6 @@
-import { FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -45,6 +46,23 @@ export const VenueSettingsScreen = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
 
+  const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
+    generateSiretValidationSchema(
+      venue.isVirtual,
+      isSiretValued,
+      offerer.siren,
+      initialValues.siret
+    )
+  )
+
+  const methods = useForm<VenueSettingsFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(formValidationSchema as any),
+    mode: 'onBlur',
+  })
+
+  const { setError } = methods
+
   const onSubmit = async (values: VenueSettingsFormValues) => {
     try {
       await api.editVenue(
@@ -85,8 +103,7 @@ export const VenueSettingsScreen = ({
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
-        formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
-        formik.setStatus('apiError')
+        setError('root', serializeApiErrors(formErrors, apiFieldsMap))
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
@@ -96,26 +113,12 @@ export const VenueSettingsScreen = ({
       })
     }
   }
-  const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
-    generateSiretValidationSchema(
-      venue.isVirtual,
-      isSiretValued,
-      offerer.siren,
-      initialValues.siret
-    )
-  )
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit: onSubmit,
-    validationSchema: formValidationSchema,
-  })
 
   return (
     <>
       <MandatoryInfo />
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} noValidate>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
           <VenueSettingsForm
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
@@ -124,7 +127,7 @@ export const VenueSettingsScreen = ({
             offerer={offerer}
           />
         </form>
-      </FormikProvider>
+      </FormProvider>
     </>
   )
 }

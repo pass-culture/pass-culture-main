@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react'
 import cn from 'classnames'
-import { useField, useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
@@ -15,7 +15,7 @@ import { type VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { Select } from 'ui-kit/form/Select/Select'
+import { Select } from 'ui-kit/formV2/Select/Select'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'
@@ -26,27 +26,26 @@ export interface PricingPointProps {
 }
 
 export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
-  const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
     useState(false)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
-  const [pricingPointSelectField] = useField({ name: 'venueSiret' })
   const [isSubmitingPricingPoint, setIsSubmitingPricingPoint] = useState(false)
   const notify = useNotification()
-  const formik = useFormikContext<VenueSettingsFormValues>()
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext<VenueSettingsFormValues>()
 
-  useEffect(() => {
-    setCanSubmit(!pricingPointSelectField.value)
-  }, [pricingPointSelectField.value])
+  const venueSiret = watch('venueSiret')
 
   const handleClick = async () => {
-    const pricingPointId = pricingPointSelectField.value
     if (venue.id) {
       setIsSubmitingPricingPoint(true)
       try {
         await api.linkVenueToPricingPoint(venue.id, {
-          pricingPointId: pricingPointId,
+          pricingPointId: Number(venueSiret),
         })
         setIsInputDisabled(true)
         setIsBannerVisible(false)
@@ -135,20 +134,20 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
       <div className={styles['dropdown-container']}>
         <div className={styles['select']}>
           <Select
+            {...register('venueSiret')}
             disabled={venue.pricingPoint?.id ? true : isInputDisabled}
-            id="venueSiret"
-            name="venueSiret"
             data-testid={'pricingPointSelect'}
-            onChange={formik.handleChange}
             label="Structure avec SIRET utilisée pour le calcul de votre barème de remboursement"
             options={pricingPointOptions}
+            required={true}
+            error={errors.venueSiret?.message}
           />
         </div>
         {!isInputDisabled && !venue.pricingPoint && (
           <Button
             className={styles['space-left']}
             onClick={() => setIsConfirmSiretDialogOpen(true)}
-            disabled={canSubmit}
+            disabled={!venueSiret}
           >
             Valider la sélection
           </Button>

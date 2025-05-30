@@ -1,5 +1,5 @@
-import { useFormikContext } from 'formik'
 import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { getDataFromAddress } from 'apiClient/adresse/apiAdresse'
 import { getSiretData } from 'commons/core/Venue/getSiretData'
@@ -7,8 +7,8 @@ import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
 import { handleAddressSelect } from 'commons/utils/handleAddressSelect'
 import { serializeAdressData } from 'components/Address/serializer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Toggle } from 'ui-kit/Toggle/Toggle'
 
@@ -36,7 +36,11 @@ export const SiretOrCommentFields = ({
   const [isSiretSelected, setIsSiretSelected] = useState(
     !isToggleDisabled || initialSiret.length > 0
   )
-  const { setFieldValue } = useFormikContext<VenueSettingsFormValues>()
+  const {
+    setValue,
+    register,
+    formState: { errors },
+  } = useFormContext<VenueSettingsFormValues>()
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handleToggleClick = () => {
@@ -47,16 +51,17 @@ export const SiretOrCommentFields = ({
     setIsSiretSelected(!isSiretSelected)
   }
 
-  const formatSiret = async (siret: string) => {
+  const formatSiret = (siret: string) => {
     // remove character when it's not a number
     // this way we're sure that this field only accept number
-    if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
-      await setFieldValue('siret', humanizeSiret(siret))
+    if (!(siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
+      setValue('siret', humanizeSiret(siret))
     }
   }
 
   const onSiretChange = async (siret: string) => {
-    await formatSiret(siret)
+    formatSiret(siret)
+
     if (
       !valideSiretLength(siret) ||
       !isSiretStartingWithSiren(siret, siren) ||
@@ -74,16 +79,13 @@ export const SiretOrCommentFields = ({
       setIsFieldNameFrozen?.(
         response.values !== undefined && response.values.siret.length > 0
       )
-      await setFieldValue('name', response.values?.name)
+      setValue('name', response.values?.name ?? '')
       // getSuggestions pour récupérer les adresses
       const addressSuggestions = await getDataFromAddress(address)
-      await setFieldValue('search-addressAutocomplete', address)
-      await setFieldValue('addressAutocomplete', address)
+      setValue('search-addressAutocomplete', address)
+      setValue('addressAutocomplete', address)
 
-      handleAddressSelect(
-        setFieldValue,
-        serializeAdressData(addressSuggestions)[0]
-      )
+      handleAddressSelect(setValue, serializeAdressData(addressSuggestions)[0])
     } catch {
       return
     }
@@ -93,6 +95,7 @@ export const SiretOrCommentFields = ({
     <>
       {isCreatedEntity && (
         <FormLayout.Row
+          mdSpaceAfter
           sideComponent={
             isSiretSelected ? (
               <InfoBox>
@@ -113,23 +116,28 @@ export const SiretOrCommentFields = ({
           />
         </FormLayout.Row>
       )}
-      {isSiretSelected ? (
-        <TextInput
-          name="siret"
-          label="SIRET de la structure"
-          type="text"
-          onChange={(e) => onSiretChange(e.target.value)}
-        />
-      ) : (
-        <TextArea
-          label="Commentaire de la structure sans SIRET"
-          name="comment"
-          description="Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique."
-          isOptional={isSiretSelected}
-          maxLength={500}
-          rows={6}
-        />
-      )}
+      <FormLayout.Row mdSpaceAfter>
+        {isSiretSelected ? (
+          <TextInput
+            {...register('siret')}
+            label="SIRET de la structure"
+            type="text"
+            onChange={(e) => onSiretChange(e.target.value)}
+            error={errors.siret?.message}
+            required={true}
+          />
+        ) : (
+          <TextArea
+            {...register('comment')}
+            label="Commentaire de la structure sans SIRET"
+            description="Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique."
+            required={!isSiretSelected}
+            maxLength={500}
+            initialRows={6}
+            error={errors.comment?.message}
+          />
+        )}
+      </FormLayout.Row>
     </>
   )
 }
