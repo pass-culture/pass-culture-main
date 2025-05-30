@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react'
 import cn from 'classnames'
-import { useField, useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
@@ -15,7 +15,7 @@ import { type VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { Select } from 'ui-kit/form/Select/Select'
+import { Select } from 'ui-kit/formV2/Select/Select'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'
@@ -31,22 +31,21 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
     useState(false)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
-  const [pricingPointSelectField] = useField({ name: 'venueSiret' })
   const [isSubmitingPricingPoint, setIsSubmitingPricingPoint] = useState(false)
   const notify = useNotification()
-  const formik = useFormikContext<VenueSettingsFormValues>()
+  const { register, watch } = useFormContext<VenueSettingsFormValues>()
 
   useEffect(() => {
-    setCanSubmit(!pricingPointSelectField.value)
-  }, [pricingPointSelectField.value])
+    setCanSubmit(!watch('venueSiret'))
+  }, [watch])
 
   const handleClick = async () => {
-    const pricingPointId = pricingPointSelectField.value
+    const pricingPointId = watch('venueSiret')
     if (venue.id) {
       setIsSubmitingPricingPoint(true)
       try {
         await api.linkVenueToPricingPoint(venue.id, {
-          pricingPointId: pricingPointId,
+          pricingPointId: Number(pricingPointId),
         })
         setIsInputDisabled(true)
         setIsBannerVisible(false)
@@ -135,11 +134,10 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
       <div className={styles['dropdown-container']}>
         <div className={styles['select']}>
           <Select
+            {...register('venueSiret')}
             disabled={venue.pricingPoint?.id ? true : isInputDisabled}
             id="venueSiret"
-            name="venueSiret"
             data-testid={'pricingPointSelect'}
-            onChange={formik.handleChange}
             label="Structure avec SIRET utilisée pour le calcul de votre barème de remboursement"
             options={pricingPointOptions}
           />

@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
@@ -22,29 +23,33 @@ import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-const renderForm = (
+function renderForm(
   venue: GetVenueResponseModel,
   options?: RenderWithProvidersOptions
-) => {
+) {
+  const Wrapper = () => {
+    const methods = useForm({ defaultValues: {} })
+    return (
+      <FormProvider {...methods}>
+        <VenueEditionFormScreen venue={venue} />
+      </FormProvider>
+    )
+  }
+
+  options = {
+    initialRouterEntries: ['/edition'],
+    user: sharedCurrentUserFactory(),
+    ...options,
+  }
+
   renderWithProviders(
     <>
       <Routes>
-        <Route
-          path="*"
-          element={
-            <>
-              <VenueEditionFormScreen venue={venue} />
-            </>
-          }
-        />
+        <Route path="*" element={<Wrapper />} />
       </Routes>
       <Notification />
     </>,
-    {
-      initialRouterEntries: ['/edition'],
-      user: sharedCurrentUserFactory(),
-      ...options,
-    }
+    options
   )
 }
 
