@@ -181,10 +181,6 @@ describe('OffersSuggestions', () => {
       expect.objectContaining({
         aroundRadius: 30_000_000,
         facetFilters: [
-          [
-            'offer.educationalInstitutionUAICode:all',
-            'offer.educationalInstitutionUAICode:1234567A',
-          ],
         ],
       }),
       {}
@@ -212,10 +208,6 @@ describe('OffersSuggestions', () => {
       expect.objectContaining({
         aroundRadius: 30_000_000,
         facetFilters: [
-          [
-            'offer.educationalInstitutionUAICode:all',
-            'offer.educationalInstitutionUAICode:1234567A',
-          ],
         ],
       }),
       {}
@@ -243,10 +235,6 @@ describe('OffersSuggestions', () => {
       expect.objectContaining({
         aroundRadius: 30_000_000,
         facetFilters: [
-          [
-            'offer.educationalInstitutionUAICode:all',
-            'offer.educationalInstitutionUAICode:1234567A',
-          ],
         ],
       }),
       {}

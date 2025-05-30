@@ -13,7 +13,6 @@
   "queryLanguages": ["fr"],
   "attributesForFaceting": [
     "filterOnly(offer.domains)",
-    "filterOnly(offer.educationalInstitutionUAICode)",
     "filterOnly(offer.eventAddressType)",
     "filterOnly(offer.locationType)",
     "filterOnly(offer.interventionArea)",

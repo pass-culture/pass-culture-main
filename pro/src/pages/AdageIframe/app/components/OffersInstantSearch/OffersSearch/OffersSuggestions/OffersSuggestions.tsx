@@ -150,13 +150,7 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
               attributesToHighlight={[]}
               attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
               clickAnalytics
-              facetFilters={[
-                [
-                  'offer.educationalInstitutionUAICode:all',
-                  `offer.educationalInstitutionUAICode:${adageUser.uai}`,
-                ],
-                ...adageFiltersToFacetFilters(formValues.values).queryFilters,
-              ]}
+              facetFilters={adageFiltersToFacetFilters(formValues.values).queryFilters}
               query={''}
               filters={
                 'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'

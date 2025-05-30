@@ -114,9 +114,9 @@ export const OffersInstantSearch = (): JSX.Element | null => {
       try {
         const result = siretParam
           ? await apiAdage.getVenueBySiret(
-              siretParam,
-              relativeOffersIncludedParam
-            )
+            siretParam,
+            relativeOffersIncludedParam
+          )
           : await apiAdage.getVenueById(venueParam, relativeOffersIncludedParam)
 
         setFilters({ ...ADAGE_FILTERS_DEFAULT_VALUES, venue: result })
@@ -152,10 +152,9 @@ export const OffersInstantSearch = (): JSX.Element | null => {
           attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
           clickAnalytics
           facetFilters={
-            adageFiltersToFacetFilters({
-              ...filters,
-              uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
-            }).queryFilters
+            adageFiltersToFacetFilters(
+              filters
+            ).queryFilters
           }
           filters={
             'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
