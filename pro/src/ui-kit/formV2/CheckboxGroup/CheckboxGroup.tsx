@@ -14,6 +14,7 @@ type GroupOption = {
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   checked?: boolean
   indeterminate?: boolean
+  ref?: React.RefObject<HTMLInputElement>
 }
 
 export type CheckboxGroupProps = {
@@ -69,6 +70,7 @@ export const CheckboxGroup = ({
               collapsed={item.collapsed}
               indeterminate={item.indeterminate}
               name={name}
+              ref={item.ref}
             />
           </div>
         ))}
