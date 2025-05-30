@@ -2152,40 +2152,6 @@ class NationalProgram(PcObject, models.Base, models.Model):
     )
 
 
-class NationalProgramOfferLinkHistory(PcObject, models.Base, models.Model):
-    """
-    Keep a track on national program and collective offer links.
-    It might be useful to find if an offer has been part of a given
-    program or not.
-    """
-
-    __tablename__ = "national_program_offer_link_history"
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    collectiveOfferId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
-    )
-    nationalProgramId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
-    )
-
-
-class NationalProgramOfferTemplateLinkHistory(PcObject, models.Base, models.Model):
-    """
-    Keep a track on national program and collective offer template links.
-    It might be useful to find if an offer has been part of a given
-    program or not.
-    """
-
-    __tablename__ = "national_program_offer_template_link_history"
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    collectiveOfferTemplateId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
-    )
-    nationalProgramId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
-    )
-
-
 PROGRAM_MARSEILLE_EN_GRAND = "marseille_en_grand"
 
 
