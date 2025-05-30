@@ -27,79 +27,16 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/bookings", methods=["POST"])
-@spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
+@spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400], on_empty_status=204)
 @authenticated_and_active_user_required
-def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
+def book_offer(user: User, body: BookOfferRequest) -> None:
     stock = db.session.query(Stock).get(body.stock_id)
     if not stock:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
-    try:
-        booking = bookings_api.book_offer(
-            beneficiary=user,
-            stock_id=body.stock_id,
-            quantity=body.quantity,
-        )
-
-    except StockDoesNotExist:
-        logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
-
-    except (
-        bookings_exceptions.UserHasInsufficientFunds,
-        bookings_exceptions.DigitalExpenseLimitHasBeenReached,
-        bookings_exceptions.PhysicalExpenseLimitHasBeenReached,
-    ):
-        logger.info("Could not book offer: insufficient credit", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"code": "INSUFFICIENT_CREDIT"})
-
-    except bookings_exceptions.OfferIsAlreadyBooked:
-        logger.info("Could not book offer: offer already booked", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"code": "ALREADY_BOOKED"})
-
-    except bookings_exceptions.StockIsNotBookable:
-        logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"code": "STOCK_NOT_BOOKABLE"})
-
-    except bookings_exceptions.OfferCategoryNotBookableByUser:
-        logger.info(
-            "Could not book offer: category is not bookable by user",
-            extra={"stock_id": body.stock_id, "subcategory_id": stock.offer.subcategoryId, "user_roles": user.roles},
-        )
-        raise ApiErrors({"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"})
-    except UnexpectedCinemaProvider:
-        logger.info(
-            "Could not book offer: The CinemaProvider for the Venue does not match the Offer Provider",
-            extra={"offer_id": stock.offer.id, "venue_id": stock.offer.venue.id},
-        )
-        raise ApiErrors({"code": "CINEMA_PROVIDER_ERROR"})
-    except InactiveProvider:
-        logger.info(
-            "Could not book offer: The CinemaProvider for this offer is inactive",
-            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-        )
-        raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
-    except external_bookings_exceptions.ExternalBookingTimeoutException:
-        raise ApiErrors({"code": "PROVIDER_BOOKING_TIMEOUT"})
-    except external_bookings_exceptions.ExternalBookingException as error:
-        if stock.offer.lastProvider.hasTicketingService:
-            logger.info(
-                "Could not book offer: Error when booking external ticket. Message: %s",
-                str(error),
-                extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-            )
-            raise ApiErrors({"code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED", "message": str(error)})
-        logger.info(
-            "Could not book offer: Error when booking external ticket",
-            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-        )
-        raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
-    except external_bookings_exceptions.ExternalBookingSoldOutError:
-        raise ApiErrors({"code": "PROVIDER_STOCK_SOLD_OUT"})
-    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError:
-        raise ApiErrors({"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"})
-    return BookOfferResponse(bookingId=booking.id)
+    # No bookings, no problems
+    return None
 
 
 @blueprint.native_route("/bookings", methods=["GET"])
