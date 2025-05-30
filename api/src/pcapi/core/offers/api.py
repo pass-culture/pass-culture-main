@@ -2073,13 +2073,18 @@ def upsert_movie_product_from_provider(
                 _update_movie_product(existing_product, movie, provider.id, id_at_providers)
             return existing_product
 
+        product_name = movie.title
+
+        if len(movie.title) > 140:
+            product_name = movie.title[0:139] + "…"
+
         product = offers_models.Product(
             description=movie.description,
             durationMinutes=movie.duration,
             extraData=None,
             idAtProviders=id_at_providers,
             lastProviderId=provider.id,
-            name=movie.title,
+            name=product_name,
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
         _update_product_extra_data(product, movie)
