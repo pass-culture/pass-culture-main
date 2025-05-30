@@ -1,33 +1,48 @@
 import { screen, waitFor } from '@testing-library/react'
-import { Form, Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
+import { Button } from 'ui-kit/Button/Button'
 
 import {
   ReimbursementFields,
   ReimbursementFieldsProps,
 } from '../ReimbursementFields'
 
-const renderReimbursementFields = async (props: ReimbursementFieldsProps) => {
-  const rtlReturn = renderWithProviders(
-    <Formik onSubmit={() => {}} initialValues={{}}>
-      {({ handleSubmit }) => (
-        <Form onSubmit={handleSubmit}>
-          <ReimbursementFields {...props} />
-        </Form>
-      )}
-    </Formik>
-  )
+const renderReimbursementFields = async (
+  defaultProps: ReimbursementFieldsProps,
+  options?: RenderWithProvidersOptions
+) => {
+  const Wrapper = () => {
+    const methods = useForm({
+      defaultValues: {},
+      mode: 'onBlur',
+    })
+
+    return (
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(() => {})}>
+          <ReimbursementFields {...defaultProps} />
+          <Button type="submit" isLoading={false}>
+            Enregistrer
+          </Button>
+        </form>
+      </FormProvider>
+    )
+  }
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
   await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
-  return rtlReturn
+  renderWithProviders(<Wrapper />, options)
 }
 
 describe('ReimbursementFields', () => {

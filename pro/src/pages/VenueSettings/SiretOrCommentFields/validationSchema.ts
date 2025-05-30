@@ -3,6 +3,8 @@ import * as yup from 'yup'
 import { siretApiValidate } from 'commons/core/Venue/siretApiValidate'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
 
+import { VenueSettingsFormValues } from '../types'
+
 export const valideSiretLength = (siret: string) =>
   unhumanizeSiret(siret).length === 14
 
@@ -57,6 +59,6 @@ export const generateSiretValidationSchema = (
 
   /* istanbul ignore next */
   return yup
-    .object()
+    .object<VenueSettingsFormValues>()
     .shape(isSiretValued ? siretValidationSchema : commentValidationSchema)
 }

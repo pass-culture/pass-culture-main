@@ -1,4 +1,5 @@
-import { useField, useFormikContext } from 'formik'
+import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
 import {
@@ -7,12 +8,9 @@ import {
   VenueProviderResponse,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import { resetAddressFields } from 'commons/utils/resetAddressFields'
-import { AddressSelect } from 'components/Address/Address'
-import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
@@ -20,8 +18,10 @@ import { buildVenueTypesOptions } from 'pages/VenueEdition/buildVenueTypesOption
 import { VenueFormActionBar } from 'pages/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { AddressManual } from 'ui-kit/formV2/AddressManual/AddressManual'
+import { AddressSelect } from 'ui-kit/formV2/AddressSelect/AddressSelect'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
@@ -44,25 +44,30 @@ export const VenueSettingsForm = ({
   venueProviders,
   venue,
 }: VenueFormProps) => {
-  const formik = useFormikContext<VenueSettingsFormValues>()
-  const { initialValues, dirty, isSubmitting } = formik
+  const methods = useFormContext<VenueSettingsFormValues>()
+  const {
+    getValues,
+    register,
+    setValue,
+    formState: { isDirty, isSubmitting },
+  } = methods
+
   const location = useLocation()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
-  const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
-    useField('manuallySetAddress')
+  const [manuallySetAddress, setManuallySetAddress] = useState<boolean>()
 
-  const toggleManuallySetAddress = async () => {
-    const isAddressManual = !manuallySetAddress.value
-    await setManuallySetAddress(isAddressManual)
+  const toggleManuallySetAddress = () => {
+    const isAddressManual = !manuallySetAddress
+    setManuallySetAddress(isAddressManual)
     if (isAddressManual) {
-      await resetAddressFields({ formik })
+      // resetAddressFields({ formik })
     }
   }
 
   return (
     <>
-      <ScrollToFirstErrorAfterSubmit />
+      <ScrollToFirstHookFormErrorAfterSubmit />
 
       {!venue.isVirtual && (
         <OffersSynchronization venueProviders={venueProviders} venue={venue} />
@@ -73,7 +78,7 @@ export const VenueSettingsForm = ({
           {!venue.isVirtual && (
             <FormLayout.Row>
               <SiretOrCommentFields
-                initialSiret={initialValues.siret}
+                initialSiret={getValues('siret')}
                 isToggleDisabled
                 isCreatedEntity={false}
                 updateIsSiretValued={updateIsSiretValued}
@@ -83,7 +88,7 @@ export const VenueSettingsForm = ({
           )}
 
           <FormLayout.Row>
-            <TextInput name="name" label="Raison sociale" disabled />
+            <TextInput {...register('name')} label="Raison sociale" disabled />
           </FormLayout.Row>
 
           {!venue.isVirtual && (
@@ -96,30 +101,41 @@ export const VenueSettingsForm = ({
                   </InfoBox>
                 }
               >
-                <TextInput name="publicName" label="Nom public" isOptional />
+                <TextInput {...register('publicName')} label="Nom public" />
               </FormLayout.Row>
 
               <FormLayout.Row>
-                <AddressSelect disabled={manuallySetAddress.value} />
+                <AddressSelect
+                  {...register('search-addressAutocomplete')}
+                  disabled={manuallySetAddress}
+                  label={'Adresse postale'}
+                  onAddressChosen={(addressData) => {
+                    setValue('street', addressData.address)
+                    setValue('postalCode', addressData.postalCode)
+                    setValue('city', addressData.city)
+                    setValue('latitude', String(addressData.latitude))
+                    setValue('longitude', String(addressData.longitude))
+                    setValue('banId', addressData.id)
+                    setValue('inseeCode', addressData.inseeCode)
+                  }}
+                />
               </FormLayout.Row>
 
               <>
                 <FormLayout.Row>
                   <Button
                     variant={ButtonVariant.QUATERNARY}
-                    icon={
-                      manuallySetAddress.value ? fullBackIcon : fullNextIcon
-                    }
+                    icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
                     onClick={toggleManuallySetAddress}
                   >
-                    {manuallySetAddress.value ? (
+                    {manuallySetAddress ? (
                       <>Revenir à la sélection automatique</>
                     ) : (
                       <>Vous ne trouvez pas votre adresse ?</>
                     )}
                   </Button>
                 </FormLayout.Row>
-                {manuallySetAddress.value && <AddressManual />}
+                {manuallySetAddress && <AddressManual />}
               </>
             </>
           )}
@@ -128,6 +144,7 @@ export const VenueSettingsForm = ({
         <FormLayout.Section title="Activité principale">
           <FormLayout.Row>
             <Select
+              {...register('venueType')}
               options={[
                 {
                   value: '',
@@ -135,7 +152,6 @@ export const VenueSettingsForm = ({
                 },
                 ...venueTypesOptions,
               ]}
-              name="venueType"
               label="Activité principale"
               disabled={venue.isVirtual}
             />
@@ -156,11 +172,12 @@ export const VenueSettingsForm = ({
             }
           >
             <TextInput
+              {...register('bookingEmail')}
               name="bookingEmail"
               label="Adresse email"
               type="email"
               description="Format : email@exemple.com"
-              isOptional={venue.isVirtual}
+              required={!venue.isVirtual}
               disabled={venue.isVirtual}
             />
           </FormLayout.Row>
@@ -175,8 +192,8 @@ export const VenueSettingsForm = ({
         )}
       </FormLayout>
 
-      <VenueFormActionBar venue={venue} disableFormSubmission={!formik.dirty} />
-      <RouteLeavingGuardIndividualOffer when={dirty && !isSubmitting} />
+      <VenueFormActionBar venue={venue} disableFormSubmission={!isDirty} />
+      <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
     </>
   )
 }
