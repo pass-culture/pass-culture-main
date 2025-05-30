@@ -28,7 +28,7 @@ const formattedBookingDate = (booking: GetBookingResponse): string => {
     ? 'Permanent'
     : formatLocalTimeDateString(
         booking.datetime,
-        booking.venueDepartmentCode || undefined,
+        booking.offerDepartmentCode || undefined,
         "dd/MM/yyyy - HH'h'mm"
       )
 }
