@@ -1,7 +1,5 @@
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CheckboxVariant } from 'design-system/Checkbox/Checkbox'
-
 import { CheckboxGroup, CheckboxGroupProps } from './CheckboxGroup'
 
 export default {
@@ -64,20 +62,20 @@ export const WithinForm = {
 }
 
 export const Disabled = {
-  args: { ...defaultArgs, variant: CheckboxVariant.DETAILED, disabled: true },
+  args: { ...defaultArgs, variant: 'detailed', disabled: true },
 }
 
 export const WithBorder = {
   args: {
     ...defaultArgs,
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
   },
 }
 
 export const Inline = {
   args: {
     ...defaultArgs,
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     inline: true,
   },
 }

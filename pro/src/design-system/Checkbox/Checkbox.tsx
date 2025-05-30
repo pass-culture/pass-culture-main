@@ -7,11 +7,6 @@ import {
   CheckboxAssetProps,
 } from './CheckboxAsset/CheckboxAsset'
 
-export enum CheckboxVariant {
-  DEFAULT = 'default',
-  DETAILED = 'detailed',
-}
-
 type CheckboxBaseProps = {
   /**
    * Classname applied to the `label` tag. Do not use this prop unless absolutely necessary.
@@ -30,7 +25,7 @@ type CheckboxBaseProps = {
    */
   checked: boolean
   /**
-   * Whether the checkbox partially checked or not.
+   * Whether the checkbox is partially checked or not.
    */
   indeterminate?: boolean
   /**
@@ -40,7 +35,7 @@ type CheckboxBaseProps = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void
   /**
-   * Name of the input checkbox
+   * Name of the input checkbox. Not necessary unless using a form library that relies on the name of the element.
    */
   name?: string
 }
@@ -48,14 +43,14 @@ type CheckboxBaseProps = {
 export type CheckboxProps = CheckboxBaseProps &
   (
     | {
-        variant?: CheckboxVariant.DEFAULT
+        variant?: 'default'
         description?: never
         asset?: never
         collapsed?: never
         display?: 'hug' | 'fill'
       }
     | {
-        variant?: CheckboxVariant.DETAILED
+        variant?: 'detailed'
         /**
          * Description test displayed under the checkbox label.
          */
@@ -74,7 +69,7 @@ export type CheckboxProps = CheckboxBaseProps &
         display?: 'hug' | 'fill'
       }
     | {
-        variant?: CheckboxVariant.DETAILED
+        variant?: 'detailed'
         description?: string
         asset?: CheckboxAssetProps
         collapsed: React.ReactNode
@@ -87,7 +82,7 @@ export const Checkbox = forwardRef(
     {
       className,
       label,
-      variant = CheckboxVariant.DEFAULT,
+      variant = 'default',
       description,
       asset,
       collapsed,
@@ -138,7 +133,7 @@ export const Checkbox = forwardRef(
             ref={(e) => {
               //  The ref could be a ref callback function or a ref object
               if (ref instanceof Function) {
-                ref?.(e)
+                ref(e)
               } else if (ref) {
                 ref.current = e
               }

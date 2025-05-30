@@ -1,7 +1,5 @@
 import { Formik } from 'formik'
 
-import { CheckboxVariant } from 'design-system/Checkbox/Checkbox'
-
 import { CheckboxGroup } from './CheckboxGroup'
 
 export default {
@@ -48,7 +46,7 @@ export const Default = {
 export const Box = {
   args: {
     ...Default.args,
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
   },
 }
 
@@ -56,7 +54,7 @@ export const BoxInline = {
   args: {
     ...Default.args,
     inline: true,
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
   },
 }
 
@@ -68,7 +66,7 @@ export const BoxWithChildren = {
       name: `checkBoxes.${item}`,
       childrenOnChecked: <span>Child content for {item}</span>,
     })),
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
   },
 }
 
@@ -89,7 +87,7 @@ export const BoxWithCheckboxGroupChildren = {
         />
       ),
     })),
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
   },
 }
 
@@ -111,7 +109,7 @@ export const BoxWithCheckboxGroupChildrenNoLegend = {
         />
       ),
     })),
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
   },
 }
 
@@ -135,7 +133,7 @@ export const BoxWithCheckboxGroupChildrenDisabled = {
         />
       ),
     })),
-    variant: CheckboxVariant.DETAILED,
+    variant: 'detailed',
     groupName: 'checkBoxes',
     legend: 'This is the legend',
   },
