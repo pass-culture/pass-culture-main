@@ -1,4 +1,6 @@
 from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
 import pytest
 
@@ -29,11 +31,16 @@ class Returns200Test:
             url="http://example.com/offer",
         )
 
+        publication_dt = datetime.now(tz=timezone.utc) + timedelta(days=10)
+        booking_allowed_dt = datetime.now(tz=timezone.utc) + timedelta(days=30)
+
         data = {
             "name": "New name",
             "description": "New description",
             "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
             "extraData": {"gtl_id": "07000000"},
+            "publicationDatetime": publication_dt.isoformat(),
+            "bookingAllowedDatetime": booking_allowed_dt.isoformat(),
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
@@ -45,6 +52,8 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert updated_offer.description == "New description"
+        assert updated_offer.publicationDatetime == publication_dt.replace(tzinfo=None)
+        assert updated_offer.bookingAllowedDatetime == booking_allowed_dt.replace(tzinfo=None)
         assert not updated_offer.product
 
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
@@ -512,5 +521,104 @@ class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, client):
         email = "user@example.com"
         users_factories.UserFactory(email=email)
+
         response = client.with_session_auth(email).patch("/offers/draft/12345", json={})
         assert response.status_code == 404
+
+
+USER_EMAIL = "user@example.com"
+
+
+@pytest.fixture(name="offer")
+def offer_fixture():
+    user_offerer = offerers_factories.UserOffererFactory(user__email=USER_EMAIL)
+    venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    return offers_factories.OfferFactory(venue=venue)
+
+
+@pytest.fixture(name="offer")
+def auth_client_fixture(client, offer):
+    # offer fixture is needed because it sets the user and its offerer which
+    # are needed before authentication.
+    return client.with_session_auth(USER_EMAIL)
+
+
+def dt_with_delta(days, tz=timezone.utc):
+    return datetime.now(tz=tz) + timedelta(days=days)
+
+
+@pytest.mark.usefixtures("db_session")
+class PatchDraftOfferFuturePublicationErrorsTest:
+    def test_booking_allowed_dt_before_publication_dt_is_not_allowed(self, auth_client, offer):
+        publication_dt = dt_with_delta(days=10)
+        booking_allowed_dt = dt_with_delta(days=5)
+
+        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
+        assert response.status_code == 400
+        assert response.json == {"bookingAllowedDatetime": ["must be after `publicationDatetime`"]}
+
+    def test_publication_dt_must_be_timezone_aware(self, auth_client, offer):
+        publication_dt = dt_with_delta(days=10, tz=None)
+        booking_allowed_dt = dt_with_delta(days=30)
+
+        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
+        assert response.status_code == 400
+        assert response.json == {"publicationDatetime": ["The datetime must be timezone-aware."]}
+
+    def test_booking_allowed_dt_must_be_timezone_aware(self, auth_client, offer):
+        publication_dt = dt_with_delta(days=10)
+        booking_allowed_dt = dt_with_delta(days=30, tz=None)
+
+        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
+        assert response.status_code == 400
+        assert response.json == {"bookingAllowedDatetime": ["The datetime must be timezone-aware."]}
+
+    def test_publication_dt_cannot_be_in_the_past(self, auth_client, offer):
+        publication_dt = dt_with_delta(days=-100)
+        booking_allowed_dt = dt_with_delta(days=30)
+
+        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
+        assert response.status_code == 400
+        assert response.json == {"publicationDatetime": ["The datetime must be in the future."]}
+
+    def test_booking_allowed_dt_cannot_be_in_the_past(self, auth_client, offer):
+        publication_dt = dt_with_delta(days=10)
+        booking_allowed_dt = dt_with_delta(days=-30)
+
+        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
+        assert response.status_code == 400
+        assert response.json == {"bookingAllowedDatetime": ["The datetime must be in the future."]}
+
+    def test_either_both_are_set_or_both_are_null(self, auth_client, offer):
+        publication_dt = dt_with_delta(days=10)
+        booking_allowed_dt = dt_with_delta(days=30)
+
+        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
+        assert response.status_code == 200
+
+        response = self.send_request(auth_client, offer.id, None, None)
+        assert response.status_code == 200
+
+        response = self.send_request(auth_client, offer.id, publication_dt, None)
+        assert response.status_code == 400
+        assert response.json == {
+            "__root__": [
+                "either both `publicationDatetime` and `bookingAllowedDatetime` are set or both are null",
+            ]
+        }
+
+        response = self.send_request(auth_client, offer.id, None, booking_allowed_dt)
+        assert response.status_code == 400
+        assert response.json == {
+            "__root__": [
+                "either both `publicationDatetime` and `bookingAllowedDatetime` are set or both are null",
+            ]
+        }
+
+    def send_request(self, client, offer_id, publication_dt, booking_allowed_dt):
+        data = {
+            "publicationDatetime": publication_dt.isoformat() if publication_dt else None,
+            "bookingAllowedDatetime": booking_allowed_dt.isoformat() if booking_allowed_dt else None,
+        }
+
+        return client.patch(f"offers/draft/{offer_id}", json=data)
