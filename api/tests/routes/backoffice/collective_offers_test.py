@@ -21,6 +21,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -72,6 +73,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
         collectiveOffer__venue__postalCode="47000",
         collectiveOffer__venue__departementCode="47",
+        collectiveOffer__provider=providers_factories.ProviderFactory(name="Cinéma Provider"),
         price=10.1,
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
@@ -152,6 +154,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Ministère"] == "MENjs"
         first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
+        assert rows[0]["Partenaire technique"] == "Cinéma Provider"
 
     def test_list_collective_offers_without_fraud_permission(
         self,
@@ -918,6 +921,40 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
 
+    def test_list_collective_offers_has_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        educational_factories.CollectiveOfferFactory(name="good", provider=provider)
+        educational_factories.CollectiveOfferFactory(name="bad")
+        query_args = {
+            "search-0-search_field": "SYNCHRONIZED",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "true",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+    def test_list_collective_offers_has_no_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        educational_factories.CollectiveOfferFactory(name="bad", provider=provider)
+        educational_factories.CollectiveOfferFactory(name="good")
+        query_args = {
+            "search-0-search_field": "SYNCHRONIZED",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "false",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_offer.validate_collective_offer"
@@ -1622,6 +1659,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     def test_nominal(self, legit_user, authenticated_client):
         start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         end_date = start_date + datetime.timedelta(days=28)
+        provider = providers_factories.ProviderFactory(name="Cinéma Provider")
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__startDatetime=start_date,
             collectiveStock__endDatetime=end_date,
@@ -1634,6 +1672,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__template=educational_factories.CollectiveOfferTemplateFactory(
                 name="offre Vito Cortizone pour lieu que l'on ne peut refuser"
             ),
+            collectiveStock__collectiveOffer__provider=provider,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
@@ -1645,6 +1684,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         badges = html_parser.extract_badges(response.data)
         assert "• Validée" in badges
+        assert "Cinéma Provider" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Date de l'évènement"] == f"{start_date:%d/%m/%Y} → {end_date:%d/%m/%Y}"

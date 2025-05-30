@@ -570,6 +570,7 @@ def _get_offers_by_ids(
                 offers_models.Offer.lastValidationType,
                 offers_models.Offer.isActive,
                 offers_models.Offer._extraData,
+                offers_models.Offer.lastProviderId,
             ),
             sa_orm.contains_eager(offers_models.Offer.venue).options(
                 sa_orm.load_only(
@@ -603,6 +604,9 @@ def _get_offers_by_ids(
                 users_models.User.lastName,
             ),
             sa_orm.joinedload(offers_models.Offer.compliance),
+            sa_orm.joinedload(offers_models.Offer.lastProvider).load_only(
+                providers_models.Provider.name,
+            ),
         )
     )
 
