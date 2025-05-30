@@ -11,18 +11,6 @@ from pcapi.utils.date import format_into_utc_date
 logger = logging.getLogger(__name__)
 
 
-def serialize_collective_offer(
-    offer: educational_models.CollectiveOffer,
-) -> serialize_offers.CollectiveOfferResponseModel:
-    offer_venue_id = offer.offerVenue.get("venueId")
-    if offer_venue_id:
-        offer_venue = get_venue_by_id(offer_venue_id)
-    else:
-        offer_venue = None
-
-    return serialize_offers.CollectiveOfferResponseModel.build(offer=offer, offerVenue=offer_venue)
-
-
 def serialize_collective_offer_template(
     offer_template: educational_models.CollectiveOfferTemplate, is_favorite: bool
 ) -> serialize_offers.CollectiveOfferTemplateResponseModel:

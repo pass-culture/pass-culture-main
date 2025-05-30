@@ -10,9 +10,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
@@ -31,6 +28,7 @@ def redactor_fixture():
     return educational_factories.EducationalRedactorFactory(email=EMAIL)
 
 
+@pytest.mark.usefixtures("clean_database")
 class CollectiveOfferTest:
     # 1. fetch redactor
     # 2. fetch collective offer and related data
@@ -127,9 +125,7 @@ class CollectiveOfferTest:
         )
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
-        num_queries = 1  # fetch collective offer and related data
-        num_queries += 1  # fetch redactor
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
         assert response.status_code == 200
