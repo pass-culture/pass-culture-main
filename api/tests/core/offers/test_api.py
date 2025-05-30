@@ -4783,6 +4783,18 @@ class CreateMovieProductFromProviderTest:
         assert product.extraData["allocineId"] == 12345
         assert product.extraData.get("visa") is None
 
+    def test_creates_allocine_product_even_if_the_title_is_too_long(self):
+        movie = self._get_movie(allocine_id="12345")
+        movie.title = "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de la cinquième division entre 1953 et 1956"
+
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        assert product.extraData["allocineId"] == 12345
+        assert (
+            product.name
+            == "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de…"
+        )
+
     def test_do_nothing_if_no_allocine_id_and_no_visa(self):
         # Given
         movie = self._get_movie(allocine_id=None, visa=None)
