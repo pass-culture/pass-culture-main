@@ -5,58 +5,45 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CheckboxAsset.module.scss'
 
-export enum CheckboxAssetVariant {
-  ICON = 'icon',
-  TAG = 'tag',
-  TEXT = 'test',
-  IMAGE = 'image',
-}
-
-export enum CheckboxAssetImageSizeVariant {
-  S = 's',
-  M = 'm',
-  L = 'l',
-}
-
 export type CheckboxAssetProps =
   | {
-      variant: CheckboxAssetVariant.ICON
+      variant: 'icon'
       src: string
       size?: never
       text?: never
       tag?: never
     }
   | {
-      variant: CheckboxAssetVariant.TAG
+      variant: 'tag'
       size?: never
       text?: never
       src?: never
       tag: TagProps
     }
   | {
-      variant: CheckboxAssetVariant.TEXT
+      variant: 'text'
       text: string
       size?: never
       src?: never
       tag?: never
     }
   | {
-      variant: CheckboxAssetVariant.IMAGE
+      variant: 'image'
       src: string
       text?: never
       tag?: never
-      size?: CheckboxAssetImageSizeVariant
+      size?: 's' | 'm' | 'l'
     }
 
 export function CheckboxAsset({
   className,
   variant,
   src,
-  size = CheckboxAssetImageSizeVariant.S,
+  size = 's',
   text,
   tag,
 }: { className?: string } & CheckboxAssetProps) {
-  if (variant === CheckboxAssetVariant.ICON) {
+  if (variant === 'icon') {
     return (
       <div className={classNames(styles['icon'], className)}>
         <SvgIcon alt="" src={src} />
@@ -64,7 +51,7 @@ export function CheckboxAsset({
     )
   }
 
-  if (variant === CheckboxAssetVariant.IMAGE) {
+  if (variant === 'image') {
     return (
       <div className={classNames(styles['image'], styles[size], className)}>
         <img src={src} alt="" className={styles['img']} />
@@ -72,7 +59,7 @@ export function CheckboxAsset({
     )
   }
 
-  if (variant === CheckboxAssetVariant.TEXT) {
+  if (variant === 'text') {
     return <div className={classNames(styles['text'], className)}>{text}</div>
   }
 

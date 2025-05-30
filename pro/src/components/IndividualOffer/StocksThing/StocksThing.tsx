@@ -24,7 +24,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -493,7 +493,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 <Checkbox
                   label="Accepter les réservations “Duo“"
                   disabled={isDisabled}
-                  variant={CheckboxVariant.DETAILED}
+                  variant="detailed"
                   checked={Boolean(formik.getFieldProps('isDuo').value)}
                   onChange={(e) =>
                     formik.setFieldValue('isDuo', e.target.checked)

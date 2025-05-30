@@ -1,8 +1,7 @@
 import classNames from 'classnames'
 import { useId } from 'react'
 
-import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
-import { CheckboxAssetVariant } from 'design-system/Checkbox/CheckboxAsset/CheckboxAsset'
+import { Checkbox, CheckboxProps } from 'design-system/Checkbox/Checkbox'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 
 import styles from './CheckboxGroup.module.scss'
@@ -22,7 +21,7 @@ export type CheckboxGroupProps = {
   group: GroupOption[]
   disabled?: boolean
   required?: boolean
-  variant?: CheckboxVariant
+  variant?: CheckboxProps['variant']
   inline?: boolean
   asterisk?: boolean
   error?: string
@@ -58,16 +57,14 @@ export const CheckboxGroup = ({
           <div className={styles['checkbox-group-item']} key={item.label}>
             <Checkbox
               asset={
-                item.icon
-                  ? { variant: CheckboxAssetVariant.ICON, src: item.icon }
-                  : undefined
+                item.icon ? { variant: 'icon', src: item.icon } : undefined
               }
               hasError={Boolean(error)}
               label={item.label}
               disabled={disabled}
               onChange={item.onChange}
               onBlur={item.onBlur}
-              variant={CheckboxVariant.DETAILED}
+              variant="detailed"
               checked={Boolean(item.checked)}
               collapsed={item.collapsed}
               indeterminate={item.indeterminate}
