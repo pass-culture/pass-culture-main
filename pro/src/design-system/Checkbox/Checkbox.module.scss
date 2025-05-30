@@ -42,6 +42,7 @@
   }
 
   @supports selector(:has(*)) {
+    //  If has is available, use it to only show the focus ouline on `focus-visible`
     &:focus-within {
       outline: none;
       border-radius: unset;

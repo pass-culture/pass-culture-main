@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Checkbox, CheckboxProps, CheckboxVariant } from './Checkbox'
-import { CheckboxAssetVariant } from './CheckboxAsset/CheckboxAsset'
+import { Checkbox, CheckboxProps } from './Checkbox'
 
 const renderCheckbox = (props: CheckboxProps) => {
   render(<Checkbox {...props} />)
@@ -11,7 +10,7 @@ describe('Checkbox', () => {
   it('should display the input and the label of the checkbox', () => {
     renderCheckbox({
       label: 'Checkbox label',
-      variant: CheckboxVariant.DEFAULT,
+      variant: 'default',
       checked: false,
       onChange: () => {},
     })
@@ -23,11 +22,11 @@ describe('Checkbox', () => {
     renderCheckbox({
       label: 'Checkbox label',
       description: 'Lorem ipsum',
-      variant: CheckboxVariant.DETAILED,
+      variant: 'detailed',
       checked: false,
       onChange: () => {},
       asset: {
-        variant: CheckboxAssetVariant.IMAGE,
+        variant: 'image',
         src: '',
       },
     })
@@ -39,11 +38,11 @@ describe('Checkbox', () => {
     renderCheckbox({
       label: 'Checkbox label',
       description: 'Lorem ipsum',
-      variant: CheckboxVariant.DETAILED,
+      variant: 'detailed',
       checked: false,
       onChange: () => {},
       asset: {
-        variant: CheckboxAssetVariant.TEXT,
+        variant: 'text',
         text: 'Asset text',
       },
     })
@@ -54,7 +53,7 @@ describe('Checkbox', () => {
     renderCheckbox({
       label: 'Checkbox label',
       description: 'Lorem ipsum',
-      variant: CheckboxVariant.DETAILED,
+      variant: 'detailed',
       checked: false,
       onChange: () => {},
       collapsed: <>Test collapsed</>,
@@ -66,7 +65,7 @@ describe('Checkbox', () => {
     renderCheckbox({
       label: 'Checkbox label',
       description: 'Lorem ipsum',
-      variant: CheckboxVariant.DETAILED,
+      variant: 'detailed',
       collapsed: <>Test collapsed</>,
       checked: true,
       onChange: () => {},
@@ -74,10 +73,10 @@ describe('Checkbox', () => {
     expect(screen.getByText('Test collapsed')).toBeInTheDocument()
   })
 
-  it('should pe partially checked', () => {
+  it('should be partially checked', () => {
     renderCheckbox({
       label: 'Checkbox label',
-      variant: CheckboxVariant.DEFAULT,
+      variant: 'default',
       checked: true,
       indeterminate: true,
       onChange: () => {},

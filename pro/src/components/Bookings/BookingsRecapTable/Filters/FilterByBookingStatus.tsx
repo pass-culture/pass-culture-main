@@ -9,7 +9,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
-import { Checkbox, CheckboxVariant } from 'design-system/Checkbox/Checkbox'
+import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullSortIcon from 'icons/full-sort.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -153,7 +153,7 @@ export const FilterByBookingStatus = <
               <div className={styles['bs-filter-checkboxes']}>
                 {bookingStatusOptions.map((bookingStatus) => (
                   <Checkbox
-                    variant={CheckboxVariant.DEFAULT}
+                    variant="default"
                     key={bookingStatus.value}
                     checked={!bookingStatuses.includes(bookingStatus.value)}
                     onChange={(e) =>
