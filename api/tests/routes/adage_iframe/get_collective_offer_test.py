@@ -8,10 +8,9 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models import offer_mixin
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
 
 stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
@@ -30,6 +29,7 @@ def redactor_fixture():
     return educational_factories.EducationalRedactorFactory(email=EMAIL)
 
 
+@pytest.mark.usefixtures("clean_database")
 class CollectiveOfferTest:
     num_queries = 1  # fetch collective offer and related data
     num_queries += 1  # fetch redactor
@@ -56,13 +56,7 @@ class CollectiveOfferTest:
         )
         offer = stock.collectiveOffer
 
-        dst = url_for("adage_iframe.get_collective_offer", offer_id=stock.collectiveOfferId)
-        num_queries = self.num_queries + 1  # fetch offerVenue venue details
-        with assert_num_queries(num_queries):
-            response = eac_client.get(dst)
-
-        assert response.status_code == 200
-        assert response.json == {
+        expected = {
             "description": "offer description",
             "id": offer.id,
             "isExpired": False,
@@ -101,12 +95,12 @@ class CollectiveOfferTest:
             "contactPhone": offer.contactPhone,
             "offerVenue": {
                 "addressType": "offererVenue",
-                "address": venue.street,
-                "city": venue.city,
+                "address": "1 boulevard Poissonnière",
+                "city": "Paris",
                 "distance": None,
                 "name": venue.name,
                 "otherAddress": "",
-                "postalCode": venue.postalCode,
+                "postalCode": "75002",
                 "publicName": venue.publicName,
                 "venueId": venue.id,
             },
@@ -135,6 +129,14 @@ class CollectiveOfferTest:
             "isTemplate": False,
         }
 
+        dst = url_for("adage_iframe.get_collective_offer", offer_id=stock.collectiveOfferId)
+        num_queries = self.num_queries + 1  # fetch offerVenue venue details
+        with assert_num_queries(num_queries):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        assert response.json == expected
+
     def test_location_address_venue(self, eac_client):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.PublishedCollectiveOfferFactory(
@@ -147,8 +149,14 @@ class CollectiveOfferTest:
 
         dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
 
+        # we need to clear the session, otherwise some items will be loaded with unexpected relations
+        db.session.expunge_all()
+
         with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
+
+        # add the venue back to the session to access its attributes
+        db.session.add(venue)
 
         assert response.status_code == 200
         response_location = response.json["location"]
