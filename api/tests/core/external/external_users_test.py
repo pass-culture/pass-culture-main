@@ -5,6 +5,8 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
+from pcapi.core.achievements.factories import AchievementFactory
+from pcapi.core.achievements.models import AchievementEnum
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
@@ -206,6 +208,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
+        achievements=[],
     )
 
 
@@ -263,6 +266,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
+        achievements=[],
     )
 
 
@@ -333,6 +337,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
+        achievements=[],
     )
 
 
@@ -459,6 +464,7 @@ def test_get_user_attributes_not_beneficiary():
         subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
+        achievements=[],
     )
 
 
@@ -605,3 +611,19 @@ def test_get_most_favorite_subcategories_two_equal():
         subcategories.SEANCE_CINE.id,
         subcategories.FESTIVAL_MUSIQUE.id,
     }
+
+
+def test_get_user_attributes_with_achievements(db_session):
+    user = BeneficiaryFactory()
+    booking = BookingFactory(user=user)
+    AchievementFactory(
+        user=user,
+        booking=booking,
+        name=AchievementEnum.FIRST_MOVIE_BOOKING,
+        unlockedDate=datetime(2025, 1, 1, 12, 0, 0),
+        seenDate=datetime(2025, 1, 2, 12, 0, 0),
+    )
+
+    attributes = get_user_attributes(user)
+
+    assert attributes.achievements == ["FIRST_MOVIE_BOOKING"]

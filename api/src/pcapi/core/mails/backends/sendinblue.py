@@ -33,6 +33,8 @@ class SendinblueBackend(BaseBackend):
             configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
         else:
             configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+        if settings.PROXY_CERT_BUNDLE is not None:
+            configuration.ssl_ca_cert = settings.PROXY_CERT_BUNDLE
         self.contacts_api = brevo_python.ContactsApi(brevo_python.ApiClient(configuration))
 
     def send_mail(
