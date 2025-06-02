@@ -2,6 +2,8 @@ import datetime
 import logging
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
@@ -33,6 +35,9 @@ def create_industrial_individual_offerers() -> None:
         user__email="joe.autoentrepreneur@example.com",
     )
     offerers_factories.VenueRegistrationFactory.create(venue=venue, webPresence="https://www.example.com/ae/joe")
+    finance_factories.BankAccountFactory.create(
+        offerer=offerer, label="Compte de Joe", status=finance_models.BankAccountApplicationStatus.ON_GOING
+    )
 
     # individual offerer with email sent, no collective
     offerer = offerers_factories.NotValidatedOffererFactory.create(
@@ -55,6 +60,9 @@ def create_industrial_individual_offerers() -> None:
     )
     offerers_factories.IndividualOffererSubscriptionFactory.create(offerer=offerer)
     offerers_factories.VenueRegistrationFactory.create(venue=venue, webPresence="https://www.example.com/ae/jack")
+    finance_factories.BankAccountFactory.create(
+        offerer=offerer, label="Compte de Jack", status=finance_models.BankAccountApplicationStatus.ON_GOING
+    )
 
     # individual offerer with Adage application submitted
     offerer = offerers_factories.NotValidatedOffererFactory.create(

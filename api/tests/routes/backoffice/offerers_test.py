@@ -2785,12 +2785,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert html_parser.count_table_rows(response.data) == 0
 
 
-class GetValidateOffererFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.validation.get_validate_offerer_form"
+class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    def test_get_validate_offerer_form(self, legit_user, authenticated_client):
+    def test_get_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NotValidatedOffererFactory()
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
@@ -2798,8 +2797,57 @@ class GetValidateOffererFormTest(GetEndpointHelper):
 
         with assert_num_queries(3):  # session + current user + offerer
             response = authenticated_client.get(url)
-            # Rendering is not checked, but at least the fetched frame does not crash
             assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert offerer.name.upper() in content
+        assert "coordonnées bancaires" not in content
+
+    def test_get_form_with_bank_account(self, legit_user, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        finance_factories.BankAccountFactory.create(
+            offerer=offerer, status=finance_models.BankAccountApplicationStatus.REFUSED
+        )
+        bank_account = finance_factories.BankAccountFactory.create(
+            offerer=offerer, status=finance_models.BankAccountApplicationStatus.ON_GOING
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        with assert_num_queries(3):  # session + current user + offerer and bank accounts
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert (
+            "Un dossier de coordonnées bancaires est en cours sur Démarches-Simplifiées pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
+            f"Dossier n°{bank_account.dsApplicationId} : En instruction" in content
+        )
+
+    def test_get_form_with_several_bank_accounts(self, legit_user, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        for status in list(finance_models.BankAccountApplicationStatus):
+            finance_factories.BankAccountFactory.create(offerer=offerer, status=status)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        with assert_num_queries(3):  # session + current user + offerer and bank accounts
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert (
+            "3 dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
+            in content
+        )
+
+
+class GetValidateOffererFormTest(GetValidateOrRejectOffererFormTestHelper):
+    endpoint = "backoffice_web.validation.get_validate_offerer_form"
 
 
 class ValidateOffererTest(ActivateOffererHelper):
@@ -2941,21 +2989,8 @@ class ValidateOffererTest(ActivateOffererHelper):
         assert approved_offer.lastValidationType == offer_mixin.OfferValidationType.AUTO
 
 
-class GetRejectOffererFormTest(GetEndpointHelper):
+class GetRejectOffererFormTest(GetValidateOrRejectOffererFormTestHelper):
     endpoint = "backoffice_web.validation.get_reject_offerer_form"
-    endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
-
-    def test_get_reject_offerer_form(self, legit_user, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        db.session.expire(offerer)
-
-        with assert_num_queries(3):  # session + current user + offerer
-            response = authenticated_client.get(url)
-            # Rendering is not checked, but at least the fetched frame does not crash
-            assert response.status_code == 200
 
 
 class RejectOffererTest(DeactivateOffererHelper):

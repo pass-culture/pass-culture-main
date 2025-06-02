@@ -3,6 +3,7 @@ import typing
 from functools import partial
 from urllib.parse import urlparse
 
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -13,6 +14,8 @@ from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -24,6 +27,7 @@ from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
@@ -105,16 +109,64 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     )
 
 
+def _get_validation_action_information(offerer_id: int) -> tuple[offerers_models.Offerer, str | None]:
+    offerer = (
+        db.session.query(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.id == offerer_id)
+        .outerjoin(
+            finance_models.BankAccount,
+            sa.and_(
+                finance_models.BankAccount.offererId == offerers_models.Offerer.id,
+                finance_models.BankAccount.status.in_(
+                    [
+                        finance_models.BankAccountApplicationStatus.DRAFT,
+                        finance_models.BankAccountApplicationStatus.ON_GOING,
+                        finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
+                    ]
+                ),
+            ),
+        )
+        .options(sa_orm.contains_eager(offerers_models.Offerer.bankAccounts))
+        .one_or_none()
+    )
+
+    if not offerer:
+        raise NotFound()
+
+    if offerer.bankAccounts:
+        if len(offerer.bankAccounts) == 1:
+            information = Markup(
+                "Un dossier de coordonnées bancaires est en cours sur Démarches-Simplifiées pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : <ul>"
+            )
+        else:
+            information = Markup(
+                "{count} dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas : <ul>"
+            ).format(count=len(offerer.bankAccounts))
+
+        for pending_bank_account in offerer.bankAccounts:
+            information += Markup(
+                '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
+            ).format(
+                procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
+                application_number=pending_bank_account.dsApplicationId,
+                status=filters.format_dms_application_status_badge(pending_bank_account.status),
+            )
+        information += Markup("</ul>")
+    else:
+        information = None
+
+    return offerer, information
+
+
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
-
-    form = offerer_forms.OffererValidationForm()
+    offerer, information = _get_validation_action_information(offerer_id)
 
     return render_template(
         "components/turbo/modal_form.html",
-        form=form,
+        information=information,
+        form=offerer_forms.OffererValidationForm(),
         dst=url_for("backoffice_web.validation.validate_offerer", offerer_id=offerer.id),
         div_id=f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Valider l'entité juridique {offerer.name.upper()}",
@@ -157,13 +209,12 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
-
-    form = offerer_forms.OffererRejectionForm()
+    offerer, information = _get_validation_action_information(offerer_id)
 
     return render_template(
         "components/turbo/modal_form.html",
-        form=form,
+        information=information,
+        form=offerer_forms.OffererRejectionForm(),
         dst=url_for("backoffice_web.validation.reject_offerer", offerer_id=offerer.id),
         div_id=f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Rejeter l'entité juridique {offerer.name.upper()}",
