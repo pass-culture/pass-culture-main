@@ -55,6 +55,7 @@ common_user_attributes = attributes_models.UserAttributes(
     subscribed_themes=["cinema"],
     suspension_date=None,
     suspension_reason=None,
+    achievements=[],
 )
 
 

@@ -147,6 +147,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
+        achievements=[],
     )
 
 
@@ -403,7 +404,9 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
 
     user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
+    achievements = [achievement.name.value for achievement in user.achievements]
     return models.UserAttributes(
+        achievements=achievements,
         booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
@@ -412,20 +415,19 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         date_created=user.dateCreated,
         date_of_birth=user_birth_date,
         departement_code=user.departementCode,
-        deposits_count=len(user.deposits),
         deposit_activation_date=user.deposit_activation_date,
         deposit_expiration_date=user.deposit_expiration_date,
+        deposits_count=len(user.deposits),
         domains_credit=domains_credit,
         eligibility=user.eligibility,
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
-        user_id=user.id,
         is_active=user.isActive,
         is_beneficiary=user.is_beneficiary,
         is_current_beneficiary=is_current_beneficiary,
-        is_former_beneficiary=is_former_beneficiary,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
+        is_former_beneficiary=is_former_beneficiary,
         is_phone_validated=user.is_phone_validated,
         is_pro=False,
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
@@ -435,9 +437,9 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,
-        most_booked_subcategory=bookings_attributes.most_booked_subcategory,
         most_booked_movie_genre=bookings_attributes.most_booked_movie_genre,
         most_booked_music_type=bookings_attributes.most_booked_music_type,
+        most_booked_subcategory=bookings_attributes.most_booked_subcategory,
         most_favorite_offer_subcategories=most_favorite_offer_subcategories,
         phone_number=user.phoneNumber,
         postal_code=user.postalCode,
@@ -450,6 +452,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         subscribed_themes=user.get_notification_subscriptions().subscribed_themes,
         suspension_date=user.suspension_date,
         suspension_reason=user.suspension_reason,
+        user_id=user.id,
     )
 
 
