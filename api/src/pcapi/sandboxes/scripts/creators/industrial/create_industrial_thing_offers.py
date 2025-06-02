@@ -3,6 +3,7 @@ import logging
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
@@ -25,7 +26,6 @@ def create_industrial_thing_offers(
 
     thing_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if not s.is_event]
 
-    id_at_provider = 1234
     thing_index = 0
     offer_index = 0
     for offerer in offerers_by_name.values():
@@ -61,11 +61,10 @@ def create_industrial_thing_offers(
                 subcategoryId=subcategory.id,
                 isActive=is_active,
                 url="http://example.com" if subcategory.is_online_only else None,
-                idAtProvider=str(id_at_provider),
+                lastProvider=providers_factories.ProviderFactory(),
                 extraData=offers_factories.build_extra_data_from_subcategory(subcategory.id, set_all_fields=False),
             )
             offer_index += 1
-            id_at_provider += 1
 
         thing_index += THINGS_PER_OFFERER
 
