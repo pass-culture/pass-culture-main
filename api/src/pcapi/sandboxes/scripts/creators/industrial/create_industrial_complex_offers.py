@@ -1,5 +1,6 @@
 import datetime
 
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -72,7 +73,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
 
     movie_offer = offers_factories.OfferFactory.create(
         venue=next(offerers_iterator).managedVenues[0],
-        idAtProvider="pouet provider",
+        lastProvider=providers_factories.ProviderFactory(),
         product=movie_product,
         isActive=True,
         isDuo=False,
@@ -111,7 +112,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
         venue=next(offerers_iterator).managedVenues[0],
         withdrawalDetails="Demander à la caisse",
         bookingEmail="caisse@example.com",
-        idAtProvider="pouet provider",
+        lastProvider=providers_factories.ProviderFactory(),
         product=book_product,
         isActive=True,
         isDuo=False,
