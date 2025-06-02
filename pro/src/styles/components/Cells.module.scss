@@ -189,24 +189,6 @@
   }
 }
 
-.pop-in {
-  background-color: var(--color-background-default);
-  border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(6px);
-  z-index: zIndex.$profil-pop-in-z-index;
-  width: 100dvw;
-  height: 100dvh;
-  padding: rem.torem(8px);
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
-
-  @media screen and (min-width: size.$tablet) {
-    height: auto;
-    width: rem.torem(270px);
-    margin-left: 0;
-    margin-top: 0;
-  }
-}
-
 .menu {
   display: flex;
   flex-direction: column;
