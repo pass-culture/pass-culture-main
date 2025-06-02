@@ -192,6 +192,7 @@ export const VenueEdition = (): JSX.Element | null => {
           venue={venue}
           offerer={offerer}
           venueTypes={venueTypes}
+          context={context}
           key={venueId}
         />
 

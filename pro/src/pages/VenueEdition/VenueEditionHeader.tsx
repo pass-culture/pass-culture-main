@@ -35,6 +35,7 @@ export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
   offerer: GetOffererResponseModel
   venueTypes: VenueTypeResponseModel[]
+  context: 'collective' | 'partnerPage' | 'address'
 }
 
 export const buildInitialValues = (
@@ -63,6 +64,7 @@ export const VenueEditionHeader = ({
   venue,
   offerer,
   venueTypes,
+  context,
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
@@ -163,17 +165,19 @@ export const VenueEditionHeader = ({
           >
             Paramètres généraux
           </ButtonLink>
-          {isOpenToPublicEnabled && venue.isPermanent && (
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
-              icon={fullLinkIcon}
-              to={`${WEBAPP_URL}/lieu/${venue.id}`}
-              isExternal
-              opensInNewTab
-            >
-              Visualiser votre page
-            </ButtonLink>
-          )}
+          {isOpenToPublicEnabled &&
+            venue.isPermanent &&
+            context === 'partnerPage' && (
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                icon={fullLinkIcon}
+                to={`${WEBAPP_URL}/lieu/${venue.id}`}
+                isExternal
+                opensInNewTab
+              >
+                Visualiser votre page
+              </ButtonLink>
+            )}
           {imageValues.originalImageUrl && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}
