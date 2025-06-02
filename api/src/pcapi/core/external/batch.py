@@ -98,6 +98,9 @@ def format_user_attributes(
     if batch_extra_data:
         attributes["date(u.last_status_update_date)"] = _format_date(batch_extra_data["last_status_update_date"])
 
+    if user_attributes.achievements:
+        attributes["ut.achievements"] = user_attributes.achievements
+
     return attributes
 
 

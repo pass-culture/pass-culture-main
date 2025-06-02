@@ -481,6 +481,7 @@ class AccountCreationTest:
         expected_num_queries += 1  # favorites
         expected_num_queries += 1  # deposit
         expected_num_queries += 1  # action history
+        expected_num_queries += 1  # achievements
         with assert_num_queries(expected_num_queries):
             response = client.post("/native/v1/account", json=data)
             assert response.status_code == 204, response.json

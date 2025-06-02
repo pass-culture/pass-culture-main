@@ -147,6 +147,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
+        achievements=[],
     )
 
 
@@ -403,7 +404,9 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
 
     user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
+    achievements = [achievement.name.value for achievement in user.achievements]
     return models.UserAttributes(
+        achievements=achievements,
         booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
