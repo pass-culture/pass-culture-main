@@ -236,8 +236,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     publicName = sa.Column(sa.String(255), nullable=True)
     sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
-    isVisibleInApp = sa.Column(sa.Boolean, nullable=False, default=True, server_default=sa.sql.expression.true())
-
     isVirtual: bool = sa.Column(
         sa.Boolean,
         nullable=False,

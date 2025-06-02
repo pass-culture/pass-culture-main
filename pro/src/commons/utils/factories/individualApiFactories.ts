@@ -363,7 +363,6 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     hasAdageId: false,
     hasCreatedOffer: false,
     isVirtual: false,
-    isVisibleInApp: true,
     name: 'Mon super lieu',
     id: 1,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
