@@ -17,6 +17,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
 from pcapi.core.offers import models as offer_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
@@ -295,6 +296,7 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
         else:
             try:
                 with atomic():
+                    offers_repository.lock_stocks_for_venue(origin_venue_id)
                     _move_individual_offers(origin_venue, destination_venue)
                     _move_collective_offers(origin_venue, destination_venue)
                     _move_collective_offer_template(origin_venue, destination_venue)
@@ -328,7 +330,7 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
 @click.option("--origin", type=int, required=False)
 @click.option("--destination", type=int, required=False)
 def move_batch_offer(not_dry: bool, origin: int | None, destination: int | None) -> None:
-    db.session.execute("SET SESSION statement_timeout = '600s'")  # 10 minutes
+    db.session.execute("SET SESSION statement_timeout = '1200s'")  # 20 minutes
     _move_all_venue_offers(not_dry=not_dry, origin=origin, destination=destination)
     db.session.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
 
