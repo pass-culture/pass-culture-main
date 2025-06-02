@@ -1228,9 +1228,6 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     logger.info("Generating bank accounts file")
     file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
 
-    logger.info("Generating legacy bank accounts file")
-    file_paths["legacy_bank_accounts"] = _generate_legacy_bank_accounts_file(batch.cutoff)
-
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch)
 
@@ -1448,61 +1445,6 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     )
 
     return _write_csv("bank_accounts", header, rows=query, row_formatter=_row_formatter)
-
-
-def _row_formatter_legacy(row: typing.Any) -> tuple:
-    return (
-        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
-        human_ids.humanize(row.id),
-        str(row.id),
-        _clean_for_accounting(row.offerer_siren),
-        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
-        _clean_for_accounting(row.iban),
-        _clean_for_accounting(row.bic),
-    )
-
-
-def _generate_legacy_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
-    header = (
-        "Lieux liés au compte bancaire",
-        "Identifiant humanisé des coordonnées bancaires",
-        "Identifiant des coordonnées bancaires",
-        "SIREN de la structure",
-        "Nom de la structure - Libellé des coordonnées bancaires",
-        "IBAN",
-        "BIC",
-    )
-    query = (
-        db.session.query(models.BankAccount)
-        .filter(
-            models.BankAccount.id.in_(
-                db.session.query(offerers_models.VenueBankAccountLink)
-                .filter(offerers_models.VenueBankAccountLink.timespan.contains(cutoff))
-                .with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
-            )
-        )
-        .join(models.BankAccount.offerer)
-        .join(models.BankAccount.venueLinks)
-        .group_by(
-            models.BankAccount.id,
-            models.BankAccount.label,
-            models.BankAccount.iban,
-            models.BankAccount.bic,
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.siren,
-        )
-        .order_by(models.BankAccount.id)
-    ).with_entities(
-        models.BankAccount.id,
-        sa_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
-        offerers_models.Offerer.name.label("offerer_name"),
-        offerers_models.Offerer.siren.label("offerer_siren"),
-        models.BankAccount.label.label("label"),
-        models.BankAccount.iban.label("iban"),
-        models.BankAccount.bic.label("bic"),
-    )
-
-    return _write_csv("legacy_bank_accounts", header, rows=query, row_formatter=_row_formatter_legacy)
 
 
 def _clean_for_accounting(value: str) -> str:
@@ -1939,7 +1881,6 @@ def generate_invoices_and_debit_notes(batch: models.CashflowBatch) -> None:
                 },
             )
 
-    # TODO: remove csv generation once migration to the new finance tool is finalized
     with log_elapsed(logger, "Generated CSV invoices file"):
         path = generate_invoice_file(batch)
     drive_folder_name = _get_drive_folder_name(batch)
