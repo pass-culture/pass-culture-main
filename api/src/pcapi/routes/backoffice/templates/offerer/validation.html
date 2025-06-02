@@ -40,7 +40,6 @@
   <th>ID</th>
   <th>Nom</th>
   <th>État</th>
-  {% if has_validate_permission %}<th>Top Acteur</th>{% endif %}
   <th>Tags</th>
   <th>
     <a href="{{ date_created_sort_url }}"
@@ -104,26 +103,6 @@
       <td>{{ offerer.id }}</td>
       <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
       <td>{{ offerer | format_offerer_status_badge }}</td>
-      {% if has_validate_permission %}
-        <td>
-          {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}
-          <div class="form-check form-switch">
-            <form action="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) }}"
-                  name="{{ url_for('backoffice_web.validation.toggle_top_actor', offerer_id=offerer.id) | action_to_name }}"
-                  method="post">
-              {{ csrf_token }}
-              <input class="form-check-input"
-                     type="checkbox"
-                     role="switch"
-                     name="is_top_actor"
-                     id="top-switch-{{ offerer.id }}"
-                     aria-label="{{ top_actor_checked | format_bool }}"
-                     onChange="this.form.submit()"
-                     {{ "checked" if top_actor_checked else "" }} />
-            </form>
-          </div>
-        </td>
-      {% endif %}
       <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
       <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
       <td>

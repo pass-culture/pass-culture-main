@@ -325,11 +325,6 @@ class BatchCommentAndTagOffererForm(empty_forms.BatchForm, CommentAndTagOffererF
     pass
 
 
-class TopActorForm(FlaskForm):
-    # Optional because the request is sent with an empty value when disabled, "on" when enabled
-    is_top_actor = wtforms.HiddenField("Top acteur", validators=(wtforms.validators.Optional(),))
-
-
 class AddProUserForm(FlaskForm):
     pro_user_id = fields.PCSelectField("Compte pro", choices=[], validate_choice=False, coerce=int)
     comment = fields.PCCommentField("Commentaire interne")

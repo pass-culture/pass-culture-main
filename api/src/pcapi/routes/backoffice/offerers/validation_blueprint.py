@@ -3,7 +3,6 @@ import typing
 from functools import partial
 from urllib.parse import urlparse
 
-import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -264,51 +263,6 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     )
 
     flash(Markup("L'entité juridique <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
-    return _redirect_after_offerer_validation_action()
-
-
-@validation_blueprint.route("/offerer/<int:offerer_id>/top-actor", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = (
-        db.session.query(offerers_models.Offerer)
-        .filter_by(id=offerer_id)
-        .populate_existing()
-        .with_for_update(key_share=True, read=True)
-        .one_or_none()
-    )
-    if not offerer:
-        raise NotFound()
-
-    try:
-        tag = db.session.query(offerers_models.OffererTag).filter(offerers_models.OffererTag.name == "top-acteur").one()
-    except sa.exc.NoResultFound:
-        mark_transaction_as_invalid()
-        flash("Le tag top-acteur n'existe pas", "warning")
-        return _redirect_after_offerer_validation_action()
-
-    form = offerer_forms.TopActorForm()
-    if not form.validate():
-        mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_offerer_validation_action()
-
-    if form.is_top_actor.data and form.is_top_actor.data == "on":
-        # Associate the tag with offerer
-        try:
-            db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
-            db.session.flush()
-        except sa.exc.IntegrityError:
-            # Already in database
-            mark_transaction_as_invalid()
-    else:
-        # Remove the tag from offerer
-        db.session.query(offerers_models.OffererTagMapping).filter(
-            offerers_models.OffererTagMapping.offererId == offerer.id,
-            offerers_models.OffererTagMapping.tagId == tag.id,
-        ).delete()
-        db.session.flush()
-
     return _redirect_after_offerer_validation_action()
 
 
