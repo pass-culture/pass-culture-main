@@ -109,7 +109,6 @@ class GetOffererTest:
                     "id": venue.id,
                     "isPermanent": venue.isPermanent,
                     "isVirtual": venue.isVirtual,
-                    "isVisibleInApp": venue.isVisibleInApp,
                     "hasAdageId": bool(venue.adageId),
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "hasPartnerPage": False,

@@ -51,7 +51,6 @@ export type GetVenueResponseModel = {
   isOpenToPublic: boolean;
   isPermanent?: boolean | null;
   isVirtual: boolean;
-  isVisibleInApp?: boolean;
   latitude?: number | null;
   longitude?: number | null;
   managingOfferer: GetVenueManagingOffererResponseModel;
