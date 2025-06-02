@@ -607,12 +607,6 @@ def collective_venue_booking_fixture(venue_with_accepted_bank_account, today):
     return used, cancelled
 
 
-@pytest.fixture(name="top_acteur_tag")
-def top_acteur_tag_fixture():
-    category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
-    return offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur", categories=[category])
-
-
 @pytest.fixture(name="adage_tag")
 def adage_tag_fixture():
     category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")

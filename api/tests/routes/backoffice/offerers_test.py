@@ -2138,7 +2138,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 offerer.dateCreated.strftime("%d/%m/%Y") for offerer in to_be_validated_offerers
             ]
 
-        def _test_payload_content(self, auth_client, top_acteur_column_expected):
+        def test_payload_content(self, authenticated_client, offerer_tags):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
                 offerer__validationStatus=ValidationStatus.NEW,
@@ -2193,7 +2193,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             with assert_num_queries(self.expected_num_queries):
-                response = auth_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
@@ -2201,10 +2201,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
             assert rows[0]["Nom"] == user_offerer.offerer.name
             assert rows[0]["État"] == "Nouvelle"
-            if top_acteur_column_expected:
-                assert rows[0]["Top Acteur"] == ""  # no text
-            else:
-                assert "Top Acteur" not in rows[0]
             assert tag.label in rows[0]["Tags"]
             assert other_category_tag.label in rows[0]["Tags"]
             assert rows[0]["Date de la demande"] == "03/10/2022"
@@ -2217,13 +2213,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
             assert dms_adage_data == []
-
-        def test_payload_content(self, authenticated_client, top_acteur_tag):
-            self._test_payload_content(authenticated_client, True)
-
-        def test_payload_content_as_read_only_user(self, client, read_only_bo_user, offerer_tags):
-            auth_client = client.with_bo_session_auth(read_only_bo_user)
-            self._test_payload_content(auth_client, False)
 
         def test_payload_content_no_action(self, authenticated_client):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -3176,44 +3165,6 @@ class SetOffererPendingTest(DeactivateOffererHelper):
         assert response.status_code == 404
 
 
-class ToggleTopActorTest(PostEndpointHelper):
-    endpoint = "backoffice_web.validation.toggle_top_actor"
-    endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
-
-    def test_toggle_is_top_actor(self, authenticated_client, top_acteur_tag):
-        offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
-
-        assert response.status_code == 303
-        offerer_mappings = db.session.query(offerers_models.OffererTagMapping).all()
-        assert len(offerer_mappings) == 1
-        assert offerer_mappings[0].tagId == top_acteur_tag.id
-        assert offerer_mappings[0].offererId == offerer.id
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
-
-        assert response.status_code == 303
-        assert db.session.query(offerers_models.OffererTagMapping).count() == 0
-
-    def test_toggle_is_top_actor_twice_true(self, authenticated_client, top_acteur_tag):
-        offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
-
-        for _ in range(2):
-            response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
-            assert response.status_code == 303
-
-        offerer_mappings = db.session.query(offerers_models.OffererTagMapping).all()
-        assert len(offerer_mappings) == 1
-        assert offerer_mappings[0].tagId == top_acteur_tag.id
-        assert offerer_mappings[0].offererId == offerer.id
-
-    def test_toggle_top_actor_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        response = self.post_to_endpoint(authenticated_client, offerer_id=1, form={"is_top_actor": "on"})
-        assert response.status_code == 404
-
-
 class ListUserOffererToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.list_offerers_attachments_to_validate"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
@@ -3256,7 +3207,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
                 user_offerer.dateCreated.strftime("%d/%m/%Y") for user_offerer in to_be_validated
             ]
 
-    def _test_payload_content(self, auth_client, offerer_tags):
+    def test_payload_content(self, authenticated_client, offerer_tags):
         owner_user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
             offerer__tags=[offerer_tags[1]],
@@ -3295,7 +3246,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = auth_client.get(url_for(self.endpoint))
+            response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -3309,13 +3260,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Nom Entité juridique"] == owner_user_offerer.offerer.name
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
-
-    def test_payload_content(self, authenticated_client, offerer_tags):
-        self._test_payload_content(authenticated_client, offerer_tags)
-
-    def test_payload_content_as_read_only_user(self, client, read_only_bo_user, offerer_tags):
-        auth_client = client.with_bo_session_auth(read_only_bo_user)
-        self._test_payload_content(auth_client, offerer_tags)
 
     def test_payload_content_no_action(self, authenticated_client, offerer_tags):
         owner_user_offerer = offerers_factories.UserOffererFactory(
