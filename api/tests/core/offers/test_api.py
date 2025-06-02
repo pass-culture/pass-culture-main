@@ -4837,6 +4837,28 @@ class CreateMovieProductFromProviderTest:
         db.session.refresh(offer)
         assert offer.productId == allocine_movie.id
 
+    def test_updates_product_if_exists_and_title_is_too_ling(self):
+        allocine_id = 12345
+        visa = "67890"
+
+        allocine_movie = factories.ProductFactory(extraData={"allocineId": allocine_id})
+        random_movie_with_visa = factories.ProductFactory(extraData={"visa": visa})
+
+        movie = self._get_movie(allocine_id=str(allocine_id), visa=visa)
+        movie.title = "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de la cinquième division entre 1953 et 1956"
+        offer = factories.OfferFactory(product=random_movie_with_visa)
+
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        assert allocine_movie.lastProvider.id == self.allocine_provider.id
+
+        db.session.refresh(offer)
+        assert offer.productId == allocine_movie.id
+        assert (
+            product.name
+            == "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de…"
+        )
+
     def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
         # Given
         product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
