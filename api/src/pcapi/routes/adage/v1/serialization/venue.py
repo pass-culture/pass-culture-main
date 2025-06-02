@@ -5,7 +5,6 @@ from pydantic.v1 import PositiveInt
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueLabel
-from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.routes.serialization import BaseModel
 
 
@@ -71,7 +70,6 @@ class VenueModel(BaseModel):
     label: VenueLabelModel | None
     siren: str
     isPermanent: bool
-    isAdmin: bool
     offerer: OffererModel
     bannerUrl: str | None
     bannerMeta: dict | None
@@ -139,7 +137,6 @@ class VenueModel(BaseModel):
             label=venue.venueLabel,
             siren=venue.managingOfferer.siren,
             isPermanent=venue.isPermanent,
-            isAdmin=venue.venueTypeCode == VenueTypeCode.ADMINISTRATIVE,
             offerer=venue.managingOfferer,
             bannerUrl=venue.bannerUrl,
             bannerMeta=venue.bannerMeta,
