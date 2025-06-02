@@ -21,7 +21,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.providers.titelive_book_search import get_ineligibility_reason
+from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -71,9 +71,9 @@ def search_titelive() -> utils.BackofficeResponse:
     try:
         data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, json["oeuvre"])
     except Exception:
-        ineligibility_reason = None
+        ineligibility_reasons = None
     else:
-        ineligibility_reason = get_ineligibility_reason(data.article[0], data.titre)
+        ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
 
     product_whitelist = (
         db.session.query(fraud_models.ProductWhitelist)
@@ -96,7 +96,7 @@ def search_titelive() -> utils.BackofficeResponse:
         form=form,
         dst=url_for(".search_titelive"),
         json=json,
-        ineligibility_reason=ineligibility_reason,
+        ineligibility_reasons=ineligibility_reasons,
         product_whitelist=product_whitelist,
     )
 
