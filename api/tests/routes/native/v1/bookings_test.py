@@ -5,6 +5,7 @@ import re
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -50,7 +51,8 @@ class PostBookingTest:
     identifier = "pascal.ture@example.com"
 
     def test_post_bookings(self, client):
-        stock = offers_factories.StockFactory()
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+        stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=yesterday)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         client = client.with_token(self.identifier)
@@ -729,6 +731,32 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json == {"code": "STOCK_NOT_BOOKABLE"}
         assert db.session.query(Booking).count() == 0
+
+    def test_offer_cannot_be_booked_if_not_bookable_yet(self, client):
+        later = datetime.now(timezone.utc) + timedelta(days=64)
+        stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=later)
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        assert response.json == {"code": "STOCK_NOT_BOOKABLE"}
+        assert db.session.query(Booking).count() == 0
+
+    def test_offer_without_allowed_booking_dt_set_can_be_booked(self, client):
+        stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=None)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 200
+
+        booking = db.session.query(Booking).filter(Booking.stockId == stock.id).first()
+        assert booking.userId == user.id
+        assert response.json["bookingId"] == booking.id
+        assert booking.status == BookingStatus.CONFIRMED
 
 
 class GetBookingsTest:
