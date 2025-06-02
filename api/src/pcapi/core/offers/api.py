@@ -2054,6 +2054,9 @@ def upsert_movie_product_from_provider(
     )
     existing_product_with_visa = offers_repository.get_movie_product_by_visa(movie.visa) if movie.visa else None
 
+    if len(movie.title) > 140:
+        movie.title = movie.title[0:139] + "…"
+
     with transaction():
         existing_product = existing_product_with_allocine_id or existing_product_with_visa
         if (
@@ -2075,17 +2078,12 @@ def upsert_movie_product_from_provider(
                 _update_movie_product(existing_product, movie, provider.id, id_at_providers)
             return existing_product
 
-        product_name = movie.title
-
-        if len(movie.title) > 140:
-            product_name = movie.title[0:139] + "…"
-
         product = offers_models.Product(
             description=movie.description,
             durationMinutes=movie.duration,
             extraData=None,
             lastProviderId=provider.id,
-            name=product_name,
+            name=movie.title,
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
         _update_product_extra_data(product, movie)
