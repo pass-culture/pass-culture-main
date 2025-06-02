@@ -35,6 +35,7 @@ class SendinblueUserUpdateData:
 
 
 class SendinblueAttributes(Enum):
+    ACHIEVEMENTS = "ACHIEVEMENTS"
     BOOKED_OFFER_CATEGORIES = "BOOKED_OFFER_CATEGORIES"
     BOOKED_OFFER_CATEGORIES_COUNT = "BOOKED_OFFER_CATEGORIES_COUNT"
     BOOKED_OFFER_SUBCATEGORIES = "BOOKED_OFFER_SUBCATEGORIES"
@@ -198,7 +199,7 @@ def _get_attr(
 
 
 def format_user_attributes(attributes: attributes_models.UserAttributes | attributes_models.ProAttributes) -> dict:
-    return {
+    result = {
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES_COUNT.value: _get_attr(attributes, "booking_categories", len),
         SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(
@@ -271,7 +272,10 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
         SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
         SendinblueAttributes.EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
+        SendinblueAttributes.ACHIEVEMENTS.value: _get_attr(attributes, "achievements", format_list) or [],
     }
+
+    return result
 
 
 def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
