@@ -154,9 +154,6 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
           'venue.publicName',
           'offerer.name',
         ],
-        facetFilters: [
-          [],
-        ],
         distinct: true,
         hitsPerPage: ALGOLIA_NUMBER_VENUES_SUGGESTIONS,
         clickAnalytics: false,
