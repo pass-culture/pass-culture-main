@@ -53,9 +53,21 @@
   }
 
   &:focus-within {
-    outline: rem.torem(1px) solid var(--color-outline-default);
-    outline-offset: rem.torem(2px);
-    border-radius: rem.torem(6px);
+    @include outline.focus-outline(rem.torem(4px));
+
+    border-radius: rem.torem(4px);
+  }
+
+  @supports selector(:has(*)) {
+    &:focus-within {
+      outline: none;
+    }
+
+    &:has(.radio-button-input:focus-visible) {
+      @include outline.focus-outline(rem.torem(4px));
+
+      border-radius: rem.torem(4px);
+    }
   }
 
   &:hover:not(.is-disabled) {
@@ -163,21 +175,24 @@
         align-items: center;
 
         &-img-small {
-          border-radius: rem.torem(8px);
+          border-radius: rem.torem(4px);
           width: rem.torem(40px);
           height: rem.torem(40px);
+          object-fit: cover;
         }
 
         &-img-medium {
-          border-radius: rem.torem(8px);
+          border-radius: rem.torem(4px);
           width: rem.torem(80px);
           height: rem.torem(80px);
+          object-fit: cover;
         }
 
         &-img-large {
           border-radius: rem.torem(8px);
           width: rem.torem(120px);
           height: rem.torem(120px);
+          object-fit: cover;
         }
       }
     }
@@ -301,16 +316,18 @@
         > .radio-button-label > .radio-button-input {
           background-color: var(--color-icon-disabled);
           border-color: var(--color-border-disabled);
+          box-shadow: inset 0 0 0 rem.torem(3px)
+            var(--color-background-disabled);
         }
       }
     }
   }
 
   // -------------------
-  // Children on checked
+  // Collapsed content
   // -------------------
 
-  &.has-children {
+  &.is-collapsed {
     // Automatically sizing to "fill" (full width) if has children
     display: flex;
 
@@ -342,7 +359,7 @@
     }
   }
 
-  .children-on-checked {
+  .collapsed {
     padding: 0 rem.torem(16px) rem.torem(16px);
   }
 }

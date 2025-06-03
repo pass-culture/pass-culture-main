@@ -1,57 +1,61 @@
 import cn from 'classnames'
 import { ForwardedRef, forwardRef, useId } from 'react'
 
+import { Tag, TagProps } from 'design-system/Tag/Tag'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButton.module.scss'
 
 /**
- * Props communes à tous les RadioButton
- * @property label - Label affiché à côté du bouton (obligatoire)
- * @property name - Nom du groupe radio (obligatoire)
- * @property value - Valeur du bouton (obligatoire)
- * @property className - Classe CSS additionnelle
- * @property checked - Si le bouton est sélectionné
- * @property ariaDescribedBy - id(s) pour aria-describedby
- * @property variant - Variante d'affichage ('DEFAULT' ou 'DETAILED')
- * @property sizing - Taille du composant ('HUG' ou 'FILL')
+ * Common props for all RadioButton
+ * @property label - Label displayed next to the button (required)
+ * @property name - Radio group name (required)
+ * @property value - Button value (required)
+ * @property checked - If the button is selected
+ * @property variant - Display variant ('default' or 'detailed')
+ * @property sizing - Component size ('hug' or 'fill')
+ * @property disabled - If the radio is disabled
+ * @property onChange - Event handler for change
+ * @property onBlur - Event handler for blur
  */
-type CommonProps = Partial<React.InputHTMLAttributes<HTMLInputElement>> & {
-  /** Label affiché à côté du bouton */
+type CommonProps = {
+  /** Label displayed next to the radio */
   label: string
-  /** Nom du groupe radio */
+  /** Radio group name */
   name: string
-  /** Valeur du bouton */
+  /** radio value */
   value: string
-  /** Classe CSS additionnelle */
-  className?: string
-  /** Si le bouton est sélectionné */
+  /** If the radio is selected */
   checked?: boolean
-  /** id(s) pour aria-describedby */
-  ariaDescribedBy?: string
-  /** Variante d'affichage */
-  variant?: 'DEFAULT' | 'DETAILED'
-  /** Taille du composant */
-  sizing?: 'HUG' | 'FILL'
+  /** Display variant */
+  variant?: 'default' | 'detailed'
+  /** Component size */
+  sizing?: 'hug' | 'fill'
+  /** If the radio is disabled */
+  disabled?: boolean
+  /** Event handler for change */
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  /** Event handler for blur */
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
 }
 
 // ---------------
-// Variant DEFAULT
+// Variant default
 // ---------------
 
 /**
- * Props pour la variante DEFAULT
- * @property description - Jamais utilisé ici
- * @property collapsed - Jamais utilisé ici
- * @property icon - Jamais utilisé ici
- * @property tag - Jamais utilisé ici
- * @property text - Jamais utilisé ici
- * @property image - Jamais utilisé ici
- * @property imageSize - Jamais utilisé ici
+ * Props for the default variant
+ * @property description - Never used here
+ * @property collapsed - Never used here
+ * @property icon - Never used here
+ * @property tag - Never used here
+ * @property text - Never used here
+ * @property image - Never used here
+ * @property imageSize - Never used here
  */
 type DefaultVariantProps = CommonProps & {
-  variant?: 'DEFAULT'
-  sizing?: 'HUG'
+  variant?: 'default'
+  sizing?: 'hug'
   description?: never
   collapsed?: never
   icon?: never
@@ -62,28 +66,28 @@ type DefaultVariantProps = CommonProps & {
 }
 
 // ---------------
-// Variant DETAILED
+// Variant detailed
 // ---------------
 
 /**
- * Props pour la variante DETAILED
- * @property description - Description optionnelle (uniquement pour la variante DETAILED)
- * @property collapsed - Élément JSX affiché si coché
+ * Props for the detailed variant
+ * @property description - Optional description (only for the detailed variant)
+ * @property collapsed - JSX element displayed if checked
  */
 type DetailedWithDescriptionProps = {
-  /** Description optionnelle (uniquement pour la variante DETAILED) */
+  /** Optional description (only for the detailed variant) */
   description?: string
-  /** Élément JSX affiché si coché */
+  /** JSX element displayed if checked */
   collapsed?: JSX.Element
 }
 
 // Right element is an "icon" string
 /**
- * Variante DETAILED avec icône à droite
- * @property icon - Nom de l'icône
+ * detailed variant with icon on the right
+ * @property icon - Icon name
  */
 type DetailedWithIconProps = DetailedWithDescriptionProps & {
-  /** Nom de l'icône */
+  /** Icon name */
   icon: string
   tag?: never
   text?: never
@@ -91,15 +95,14 @@ type DetailedWithIconProps = DetailedWithDescriptionProps & {
   imageSize?: never
 }
 
-// Right element is tag Element
+// Right element is a <Tag/>
 /**
- * Variante DETAILED avec tag à droite
- * @property tag - Élément JSX
+ * detailed variant with tag on the right
+ * @property tag - TagProps
  */
 type DetailedWithTagProps = DetailedWithDescriptionProps & {
   icon?: never
-  /** Élément JSX */
-  tag: JSX.Element
+  tag: TagProps
   text?: never
   image?: never
   imageSize?: never
@@ -107,13 +110,13 @@ type DetailedWithTagProps = DetailedWithDescriptionProps & {
 
 // Right element is simple "text" string
 /**
- * Variante DETAILED avec texte à droite
- * @property text - Texte à afficher
+ * detailed variant with text on the right
+ * @property text - Text to display
  */
 type DetailedWithTextProps = DetailedWithDescriptionProps & {
   icon?: never
   tag?: never
-  /** Texte à afficher */
+  /** Text to display */
   text: string
   image?: never
   imageSize?: never
@@ -121,22 +124,22 @@ type DetailedWithTextProps = DetailedWithDescriptionProps & {
 
 // Right element is an "image", and can eventually have a size
 /**
- * Variante DETAILED avec image à droite
- * @property image - URL de l'image
- * @property imageSize - Taille de l'image ('S', 'M', 'L')
+ * detailed variant with image on the right
+ * @property image - Image URL
+ * @property imageSize - Image size ('S', 'M', 'L')
  */
 type DetailedWithImageProps = DetailedWithDescriptionProps & {
   icon?: never
   tag?: never
   text?: never
-  /** URL de l'image */
+  /** Image URL */
   image: string
-  /** Taille de l'image */
+  /** Image size ('S', 'M', 'L') */
   imageSize?: 'S' | 'M' | 'L'
 }
 
 /**
- * Variante DETAILED sans élément à droite
+ * detailed variant with nothing on the right
  */
 type DetailedWithNothingProps = DetailedWithDescriptionProps & {
   icon?: never
@@ -146,13 +149,13 @@ type DetailedWithNothingProps = DetailedWithDescriptionProps & {
   imageSize?: never
 }
 
-// Specific to DETAILED variant
+// Specific to detailed variant
 /**
- * Props spécifiques à la variante DETAILED
- * @property variant - Doit être 'DETAILED'
+ * Props specific to the detailed variant
+ * @property variant - Must be 'detailed'
  */
 type DetailedVariantProps = CommonProps & {
-  variant: 'DETAILED'
+  variant: 'detailed'
 } & (
     | DetailedWithIconProps
     | DetailedWithTagProps
@@ -163,7 +166,7 @@ type DetailedVariantProps = CommonProps & {
 
 // Final assembled type for RadioButton Component
 /**
- * Props du composant RadioButton (DEFAULT ou DETAILED)
+ * Props for the RadioButton component (default or detailed)
  */
 type RadioButtonProps = DefaultVariantProps | DetailedVariantProps
 
@@ -172,9 +175,8 @@ export const RadioButton = forwardRef(
     {
       label,
       value,
-      variant = 'DEFAULT',
+      variant = 'default',
       sizing,
-      className,
       description,
       collapsed,
       icon,
@@ -182,40 +184,39 @@ export const RadioButton = forwardRef(
       text,
       image,
       imageSize = 'S',
-      ...props
+      disabled,
+      checked,
+      onChange,
+      onBlur,
     }: RadioButtonProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const id = useId()
 
-    const isVariantDetailed = variant === 'DETAILED'
+    const isVariantDetailed = variant === 'detailed'
 
     return (
       <>
         <div
-          className={cn(
-            styles['radio-button'],
-            {
-              [styles['sizing-fill']]: sizing === 'FILL',
-              [styles['variant-detailed']]: isVariantDetailed,
-              [styles['has-children']]: collapsed,
-              [styles['is-checked']]: props.checked,
-              [styles['is-disabled']]: props.disabled,
-            },
-            className
-          )}
+          className={cn(styles['radio-button'], {
+            [styles['sizing-fill']]: sizing === 'fill',
+            [styles['variant-detailed']]: isVariantDetailed,
+            [styles['is-collapsed']]: collapsed,
+            [styles['is-checked']]: checked,
+            [styles['is-disabled']]: disabled,
+          })}
         >
           <label htmlFor={id} className={styles['radio-button-label']}>
             <input
               type="radio"
-              {...props}
               value={value}
               className={styles[`radio-button-input`]}
               id={id}
               ref={ref}
-              {...(props.checked !== undefined
-                ? { checked: props.checked }
-                : {})} // To handle uncontrolled component
+              {...(checked !== undefined ? { checked } : {})}
+              onChange={onChange}
+              onBlur={onBlur}
+              disabled={disabled}
             />
             <div>
               {label}
@@ -223,37 +224,41 @@ export const RadioButton = forwardRef(
                 <p className={styles['description']}>{description}</p>
               )}
             </div>
-            {tag && isVariantDetailed && (
-              <div className={styles['right-tag']}>{tag}</div>
-            )}
-            {icon && isVariantDetailed && (
-              <div className={styles['right-icon']}>
-                <SvgIcon
-                  src={icon}
-                  alt=""
-                  className={styles['right-icon-svg']}
-                />
-              </div>
-            )}
-            {text && isVariantDetailed && (
-              <div className={styles['right-text']}>{text}</div>
-            )}
-            {image && isVariantDetailed && (
-              <div className={styles['right-image']}>
-                <img
-                  src={image}
-                  alt=""
-                  className={cn({
-                    [styles['right-image-img-small']]: imageSize === 'S',
-                    [styles['right-image-img-medium']]: imageSize === 'M',
-                    [styles['right-image-img-large']]: imageSize === 'L',
-                  })}
-                />
-              </div>
+            {isVariantDetailed && (
+              <>
+                {tag && (
+                  <div className={styles['right-tag']}>
+                    <Tag {...tag} />
+                  </div>
+                )}
+                {icon && (
+                  <div className={styles['right-icon']}>
+                    <SvgIcon
+                      src={icon}
+                      alt=""
+                      className={styles['right-icon-svg']}
+                    />
+                  </div>
+                )}
+                {text && <div className={styles['right-text']}>{text}</div>}
+                {image && (
+                  <div className={styles['right-image']}>
+                    <img
+                      src={image}
+                      alt=""
+                      className={cn({
+                        [styles['right-image-img-small']]: imageSize === 'S',
+                        [styles['right-image-img-medium']]: imageSize === 'M',
+                        [styles['right-image-img-large']]: imageSize === 'L',
+                      })}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </label>
-          {collapsed && isVariantDetailed && props.checked && (
-            <div className={styles['children-on-checked']}>{collapsed}</div>
+          {collapsed && isVariantDetailed && checked && (
+            <div className={styles['collapsed']}>{collapsed}</div>
           )}
         </div>
       </>

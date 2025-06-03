@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
+import { TagVariant } from 'design-system/Tag/Tag'
+
 import { RadioButton } from './RadioButton'
 
 describe('<RadioButton />', () => {
@@ -26,7 +28,7 @@ describe('<RadioButton />', () => {
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
+        variant="detailed"
         description="Ma description"
       />
     )
@@ -34,17 +36,19 @@ describe('<RadioButton />', () => {
   })
 
   it('renders the tag on the right in DETAILED variant', () => {
-    const tag = <span data-testid="tag">TAG</span>
-    const { getByTestId } = render(
+    const { getByText } = render(
       <RadioButton
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
-        tag={tag}
+        variant="detailed"
+        tag={{
+          label: 'Tag',
+          variant: TagVariant.SUCCESS,
+        }}
       />
     )
-    expect(getByTestId('tag')).toBeInTheDocument()
+    expect(getByText('Tag')).toBeInTheDocument()
   })
 
   it('renders the icon on the right in DETAILED variant', () => {
@@ -53,7 +57,7 @@ describe('<RadioButton />', () => {
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
+        variant="detailed"
         icon="icon.svg"
       />
     )
@@ -66,7 +70,7 @@ describe('<RadioButton />', () => {
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
+        variant="detailed"
         text="19€"
       />
     )
@@ -79,7 +83,7 @@ describe('<RadioButton />', () => {
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
+        variant="detailed"
         image="image.png"
         imageSize="M"
       />
@@ -95,7 +99,7 @@ describe('<RadioButton />', () => {
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
+        variant="detailed"
         checked={false}
         onChange={() => {}}
         collapsed={children}
@@ -107,37 +111,13 @@ describe('<RadioButton />', () => {
         label="Label"
         name="groupe"
         value="valeur"
-        variant="DETAILED"
+        variant="detailed"
         checked={true}
         onChange={() => {}}
         collapsed={children}
       />
     )
     expect(queryByTestId('children')).toBeInTheDocument()
-  })
-
-  it('forwards className', () => {
-    const { container } = render(
-      <RadioButton
-        label="Label"
-        name="groupe"
-        value="valeur"
-        className="test-class"
-      />
-    )
-    expect(container.firstChild).toHaveClass('test-class')
-  })
-
-  it('forwards additional props', () => {
-    const { getByLabelText } = render(
-      <RadioButton
-        label="Label"
-        name="groupe"
-        value="valeur"
-        data-testid="radio"
-      />
-    )
-    expect(getByLabelText('Label')).toHaveAttribute('data-testid', 'radio')
   })
 
   it('handles checked state', () => {
@@ -182,18 +162,5 @@ describe('<RadioButton />', () => {
     )
     getByLabelText('Label').click()
     expect(handleChange).toHaveBeenCalled()
-  })
-
-  it('handles data-testid prop', () => {
-    const { getByTestId } = render(
-      <RadioButton
-        label="Label"
-        name="groupe"
-        value="valeur"
-        data-testid="custom-testid"
-      />
-    )
-
-    expect(getByTestId('custom-testid')).toBeInTheDocument()
   })
 })
