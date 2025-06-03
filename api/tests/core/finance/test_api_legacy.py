@@ -47,10 +47,6 @@ def clean_temp_files_fixture(tmp_path, monkeypatch):
     monkeypatch.setattr(api.tempfile, "mkdtemp", lambda: tmp_path)
 
 
-def get_statuses(model):
-    return {s for (s,) in db.session.query(model).with_entities(getattr(model, "status"))}
-
-
 class PriceEventTest:
     def test_pricing_partial_overpayment_incident_workflow(self):
         # regular overpayment incident workflow:
@@ -2503,13 +2499,10 @@ class GenerateInvoiceTest:
         assert cashflow.logs[1].statusBefore == models.CashflowStatus.UNDER_REVIEW
         assert cashflow.logs[1].statusAfter == models.CashflowStatus.ACCEPTED
         for pricing in pricings:
+            assert pricing.status == models.PricingStatus.INVOICED
             assert pricing.logs[1].statusBefore == models.PricingStatus.PROCESSED
             assert pricing.logs[1].statusAfter == models.PricingStatus.INVOICED
             assert pricing.logs[1].reason == models.PricingLogReason.GENERATE_INVOICE
-        cashflow_statuses = get_statuses(models.Cashflow)
-        assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
-        pricing_statuses = get_statuses(models.Pricing)
-        assert pricing_statuses == {models.PricingStatus.INVOICED}
         assert indiv_booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
         assert indiv_booking1.reimbursementDate == invoice.date  # updated
         assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated

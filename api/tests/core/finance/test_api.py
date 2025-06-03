@@ -4140,6 +4140,74 @@ def test_get_drive_folder_name():
     assert name == "2022-04 - jusqu'au 30 avril"
 
 
+class ValidateInvoiceTest:
+    def test_validate_invoice_and_dependent_objects(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=offerer, bank_account=bank_account
+        )
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer)
+        indiv_finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking1 = indiv_finance_event1.booking
+        indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking2 = indiv_finance_event2.booking
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking1 = collective_finance_event1.collectiveBooking
+        collective_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking2 = collective_finance_event2.collectiveBooking
+        for e in (collective_finance_event1, collective_finance_event2, indiv_finance_event1, indiv_finance_event2):
+            api.price_event(e)
+        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
+        cashflow = db.session.query(models.Cashflow).one()
+        pricings = db.session.query(models.Pricing).all()
+        assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
+        assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
+        assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
+        indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
+        collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
+        db.session.flush()
+
+        invoice = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=[cashflow.id],
+        )
+        assert invoice.status == models.InvoiceStatus.PENDING
+        assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
+        assert cashflow.logs[1].statusBefore == models.CashflowStatus.UNDER_REVIEW
+        assert cashflow.logs[1].statusAfter == models.CashflowStatus.PENDING_ACCEPTANCE
+
+        api.validate_invoice(invoice.id)
+        db.session.commit()
+
+        assert invoice.status == models.InvoiceStatus.PAID
+        assert cashflow.status == models.CashflowStatus.ACCEPTED
+        assert cashflow.logs[2].statusBefore == models.CashflowStatus.PENDING_ACCEPTANCE
+        assert cashflow.logs[2].statusAfter == models.CashflowStatus.ACCEPTED
+        for pricing in pricings:
+            assert pricing.status == models.PricingStatus.INVOICED
+            assert pricing.logs[1].statusBefore == models.PricingStatus.PROCESSED
+            assert pricing.logs[1].statusAfter == models.PricingStatus.INVOICED
+            assert pricing.logs[1].reason == models.PricingLogReason.GENERATE_INVOICE
+        assert indiv_booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
+        assert indiv_booking1.reimbursementDate == invoice.date  # updated
+        assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
+        assert indiv_booking2.reimbursementDate == invoice.date  # updated
+        assert collective_booking1.status == educational_models.CollectiveBookingStatus.REIMBURSED  # updated
+        assert collective_booking1.reimbursementDate == invoice.date  # updated
+        assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
+        assert collective_booking2.reimbursementDate == invoice.date  # updated
+
+
 class CreateOffererReimbursementRuleTest:
     def test_create_rule(self):
         offerer = offerers_factories.OffererFactory()
