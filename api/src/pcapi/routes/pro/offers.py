@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+from functools import partial
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
@@ -26,6 +27,7 @@ from pcapi.core.reminders.external import reminders_notifications
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -378,12 +380,8 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-def send_to_n8n(offer: models.Offer) -> None:
-    url = "http://n8n:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
-
-    # serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
-
-    data = {
+def serialize_offer_for_n8n(offer: models.Offer) -> dict:
+    return {
         "offer": {
             "id": offer.id,
             "name": offer.name,
@@ -396,7 +394,11 @@ def send_to_n8n(offer: models.Offer) -> None:
         },
     }
 
-    json_data = json.dumps(data)
+
+def send_to_n8n(offer_data: dict) -> None:
+    url = "http://n8n:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
+
+    json_data = json.dumps(offer_data)
     requests.post(url=url, headers={"Content-Type": "application/json"}, data=json_data)
 
 
@@ -429,7 +431,12 @@ def patch_publish_offer(
         offers_api.update_offer_fraud_information(offer, user=current_user)
         offers_api.publish_offer(offer, publication_date=body.publicationDate)
 
-        send_to_n8n(offer=offer)
+        on_commit(
+            partial(
+                send_to_n8n,
+                offer_data=serialize_offer_for_n8n(offer),
+            )
+        )
     except exceptions.OfferException as exc:
         raise api_errors.ApiErrors(exc.errors)
 

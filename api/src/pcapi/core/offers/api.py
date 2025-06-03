@@ -1332,14 +1332,14 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         if rule_flags_offer(rule, offer):
             flagging_rules.append(rule)
 
-    if flagging_rules:
-        status = models.OfferValidationStatus.PENDING
-        offer.flaggingValidationRules = flagging_rules
-        if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=True)
-    else:
-        if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=False)
+    # if flagging_rules:
+    #     status = models.OfferValidationStatus.PENDING
+    #     offer.flaggingValidationRules = flagging_rules
+    #     if isinstance(offer, models.Offer):
+    #         compliance.update_offer_compliance_score(offer, is_primary=True)
+    # else:
+    #     if isinstance(offer, models.Offer):
+    #         compliance.update_offer_compliance_score(offer, is_primary=False)
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
