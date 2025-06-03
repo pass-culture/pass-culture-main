@@ -113,8 +113,6 @@ class ExpectedFieldsEnum(enum.Enum):
         """
         Acceslibre may return a combinaison of several fields, comma separated
         """
-        # FIXME: ogeber 03.04.2024 I've ask acceslibre to return fields in a list instead of a comma separated string
-        # When done, we can delete this method and use `if label not in [item.value for item in ExpectedFieldsEnum]` instead
         enum_list: list[ExpectedFieldsEnum] = []
         for enum_option in cls:
             if enum_option.value in input_string:

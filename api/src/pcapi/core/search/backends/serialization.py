@@ -261,7 +261,7 @@ class AlgoliaSerializationMixin:
                 "rankingWeight": offer.rankingWeight,
                 "releaseDate": release_date,
                 "bookFormat": extra_data.get("bookFormat"),
-                # TODO(thconte, 2024-08-23): keep searchGroups and remove
+                # TODO(thconte, 2025-12-23): keep searchGroups and remove
                 # remove searchGroupNamev2 once app minimal version has been bumped
                 "searchGroupNamev2": search_groups,
                 "searchGroups": search_groups,

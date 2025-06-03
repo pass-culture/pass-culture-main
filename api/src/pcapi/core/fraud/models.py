@@ -103,7 +103,7 @@ class FraudReasonCode(enum.Enum):
 class FraudStatus(enum.Enum):
     KO = "KO"
     OK = "OK"
-    SUBSCRIPTION_ON_HOLD = "SUBSCRIPTION_ON_HOLD"  # todo : find a name
+    SUBSCRIPTION_ON_HOLD = "SUBSCRIPTION_ON_HOLD"
     SUSPICIOUS = "SUSPICIOUS"
 
 

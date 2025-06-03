@@ -168,7 +168,6 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
 
     for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
         if extra_data.get(field_name):
-            # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
             formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
 
     return formatted_extra_data
