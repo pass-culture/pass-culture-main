@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 
 import sqlalchemy as sqla
@@ -22,6 +23,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.core.reminders.external import reminders_notifications
+from pcapi.core.search.backends.serialization import AlgoliaSerializationMixin
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
@@ -30,6 +32,7 @@ from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests
 from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -376,6 +379,21 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
+def send_to_n8n(offer: models.Offer, is_prod: bool = False) -> None:
+    test_url = "http://localhost:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
+    prod_url = "http://localhost:5678/webhook/53264810-97e4-4c14-9dc7-3a83389bb62d"
+
+    serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
+
+    data = {
+        "offer": serialized_offer,
+        "temps_fort_description": "",
+    }
+
+    json_data = json.dumps(data)
+    requests.post(url=prod_url if is_prod else test_url, headers={"Content-Type": "application/json"}, data=json_data)
+
+
 @private_api.route("/offers/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
@@ -404,6 +422,8 @@ def patch_publish_offer(
     try:
         offers_api.update_offer_fraud_information(offer, user=current_user)
         offers_api.publish_offer(offer, publication_date=body.publicationDate)
+
+        send_to_n8n(offer=offer, is_prod=True)
     except exceptions.OfferException as exc:
         raise api_errors.ApiErrors(exc.errors)
 

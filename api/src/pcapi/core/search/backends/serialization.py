@@ -254,7 +254,7 @@ class AlgoliaSerializationMixin:
                 "musicType": music_type_labels,
                 "name": offer.name,
                 "nativeCategoryId": native_categories,
-                "prices": sorted(prices),
+                "prices": sorted([float(p) for p in prices]),
                 "publicationDate": (
                     offer.publicationDate.timestamp() if offer.publicationDate and not offer.isReleased else None
                 ),
