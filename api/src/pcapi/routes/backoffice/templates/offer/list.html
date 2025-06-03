@@ -38,6 +38,7 @@
   {% endif %}
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
   <th scope="col">Score temps fort</th>
+  <th scope="col">Raison du score temps fort</th>
   <th scope="col">Date(s) de l'évènement</th>
   <th scope="col">Date(s) limite(s) de réservation</th>
   {% if not has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Créateur de l'offre</th>{% endif %}
@@ -183,6 +184,17 @@
       {% endif %}
       {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
       <td>{{ offer._extraData["matchScore"] }}</td>
+      <td>
+        <div style="overflow: hidden;text-overflow: ellipsis;max-width: 200px;white-space: nowrap;">
+          {{ offer._extraData["scoreReason"] }}
+        </div>
+        <i class="bi bi-info-circle"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-custom-class="primary-tooltip"
+            data-bs-html="true"
+            data-bs-title="{{ offer._extraData['scoreReason'] }}"></i>
+      </td>
       <td>
         {% if row.offer_event_dates|length > 0 %}
           {% if row.offer_event_dates|length == 1 %}

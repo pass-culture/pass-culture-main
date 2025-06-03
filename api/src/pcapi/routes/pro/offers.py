@@ -391,7 +391,7 @@ def send_to_n8n(offer: models.Offer) -> None:
             "subcategoryLabel": offer.subcategory.app_label,
         },
         "temps_fort": {
-            "name": "Hack ton temps fort",
+            "name": "Fête du cinéma",
             "description": "C'est la fête du cinéma",
         },
     }
