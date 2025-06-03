@@ -7,7 +7,6 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import validation as bookings_validation
-from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
@@ -36,8 +35,6 @@ def _get_base_booking_query() -> sa_orm.Query:
         .filter(providers_models.VenueProvider.isActive == True)
         .join(offers_models.Stock)
         .join(offers_models.Offer)
-        .join(offers_models.Offer.offererAddress)
-        .join(offerers_models.OffererAddress.address)
         .options(
             sa_orm.contains_eager(booking_models.Booking.venue)
             .load_only(
@@ -63,19 +60,9 @@ def _get_base_booking_query() -> sa_orm.Query:
                 offers_models.Offer._extraData,
                 offers_models.Offer.subcategoryId,
             )
-            # .joinedload(offers_models.Offer.offererAddress)
-            # .joinedload(offerers_models.OffererAddress.address)
-            # .options(
-            #     sa_orm.contains_eager(offers_models.Offer.offererAddress)
-            #     .contains_eager(offerers_models.OffererAddress.address)
-            #     .load_only(geography_models.Address.street, geography_models.Address.departmentCode),
-            # )
+            .joinedload(offers_models.Offer.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
         )
-        .options(
-                sa_orm.contains_eager(offers_models.Offer.offererAddress)
-                .contains_eager(offerers_models.OffererAddress.address)
-                .load_only(geography_models.Address.street, geography_models.Address.departmentCode),
-            )
     )
 
 
