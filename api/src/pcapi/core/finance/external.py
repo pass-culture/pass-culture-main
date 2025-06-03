@@ -4,6 +4,7 @@ import time
 
 from flask import current_app as app
 
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
@@ -109,6 +110,9 @@ def push_invoices(count: int) -> None:
                     {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
                     synchronize_session=False,
                 )
+                # TODO We validate whether cegid succeeds in doing the payment or not for now.
+                # Later, validate_invoice will only be called in case of success
+                finance_api.validate_invoice(invoice_id)
                 db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)

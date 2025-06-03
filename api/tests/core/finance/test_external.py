@@ -38,10 +38,18 @@ class ExternalFinanceTest:
         assert dummy_bank_accounts[0] == bank_account
 
     def test_push_invoices(self):
-        invoice1 = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.PENDING)
-        invoice2 = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.PAID)
-        invoice3 = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.PENDING_PAYMENT)
-        invoice4 = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.REJECTED)
+        invoice1 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
+        )
+        invoice2 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PAID, cashflows=[finance_factories.CashflowFactory()]
+        )
+        invoice3 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT, cashflows=[finance_factories.CashflowFactory()]
+        )
+        invoice4 = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.REJECTED, cashflows=[finance_factories.CashflowFactory()]
+        )
 
         external.push_invoices(10)
         db.session.flush()
@@ -49,7 +57,7 @@ class ExternalFinanceTest:
         db.session.refresh(invoice2)
         db.session.refresh(invoice3)
         db.session.refresh(invoice4)
-        assert invoice1.status == finance_models.InvoiceStatus.PENDING_PAYMENT
+        assert invoice1.status == finance_models.InvoiceStatus.PAID
         assert invoice2.status == finance_models.InvoiceStatus.PAID
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert invoice4.status == finance_models.InvoiceStatus.REJECTED
