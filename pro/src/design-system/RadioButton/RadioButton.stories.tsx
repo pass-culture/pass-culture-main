@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
+import { TagVariant } from 'design-system/Tag/Tag'
 import strokeDateIcon from 'icons/stroke-date.svg'
 
 import imageDemo from './assets/image-demo.png'
@@ -40,7 +40,7 @@ export const Detailed: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed',
     label: 'Détaillé',
-    variant: 'DETAILED',
+    variant: 'detailed',
   },
 }
 
@@ -48,7 +48,7 @@ export const DetailedWithDescription: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-description',
     label: 'Avec description',
-    variant: 'DETAILED',
+    variant: 'detailed',
     description: 'Description lorem ipsum',
   },
 }
@@ -57,9 +57,9 @@ export const DetailedFullWidth: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-full-width',
     label: 'Taille étendue',
-    variant: 'DETAILED',
+    variant: 'detailed',
     description: 'Description lorem ipsum',
-    sizing: 'FILL',
+    sizing: 'fill',
   },
 }
 
@@ -67,9 +67,12 @@ export const DetailedWithTag: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-tag',
     label: 'Avec tag',
-    variant: 'DETAILED',
+    variant: 'detailed',
     description: 'Description lorem ipsum',
-    tag: <Tag variant={TagVariant.DEFAULT} label="Tag" />,
+    tag: {
+      label: 'Tag',
+      variant: TagVariant.SUCCESS,
+    },
   },
 }
 
@@ -77,7 +80,7 @@ export const DetailedWithIcon: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-icon',
     label: 'Avec icône',
-    variant: 'DETAILED',
+    variant: 'detailed',
     description: 'Description lorem ipsum',
     icon: strokeDateIcon,
   },
@@ -87,7 +90,7 @@ export const DetailedWithText: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-text',
     label: 'Avec texte',
-    variant: 'DETAILED',
+    variant: 'detailed',
     description: 'Description lorem ipsum',
     text: '19€',
   },
@@ -97,7 +100,7 @@ export const DetailedWithImage: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-image',
     label: 'Avec image',
-    variant: 'DETAILED',
+    variant: 'detailed',
     image: imageDemo,
     imageSize: 'S',
   },
@@ -107,7 +110,7 @@ export const DetailedWithCollapsed: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-collapsed',
     label: 'Avec enfants',
-    variant: 'DETAILED',
+    variant: 'detailed',
     description: 'Description lorem ipsum',
     value: 'today',
     checked: true,
@@ -115,13 +118,13 @@ export const DetailedWithCollapsed: StoryObj<typeof RadioButton> = {
     collapsed: (
       <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
         <RadioButton
-          variant="DETAILED"
+          variant="detailed"
           name="subchoice"
           label="Sous-label 1"
           value="1"
         />
         <RadioButton
-          variant="DETAILED"
+          variant="detailed"
           name="subchoice"
           label="Sous-label 2"
           value="2"
