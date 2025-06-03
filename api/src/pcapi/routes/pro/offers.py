@@ -379,19 +379,18 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-def send_to_n8n(offer: models.Offer, is_prod: bool = False) -> None:
-    test_url = "http://localhost:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
-    prod_url = "http://localhost:5678/webhook/53264810-97e4-4c14-9dc7-3a83389bb62d"
+def send_to_n8n(offer: models.Offer) -> None:
+    url = "http://localhost:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
 
     serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
 
     data = {
         "offer": serialized_offer,
-        "temps_fort_description": "",
+        "temps_fort_description": "Fête du cinéma",
     }
 
     json_data = json.dumps(data)
-    requests.post(url=prod_url if is_prod else test_url, headers={"Content-Type": "application/json"}, data=json_data)
+    requests.post(url=url, headers={"Content-Type": "application/json"}, data=json_data)
 
 
 @private_api.route("/offers/publish", methods=["PATCH"])
@@ -423,7 +422,7 @@ def patch_publish_offer(
         offers_api.update_offer_fraud_information(offer, user=current_user)
         offers_api.publish_offer(offer, publication_date=body.publicationDate)
 
-        send_to_n8n(offer=offer, is_prod=True)
+        send_to_n8n(offer=offer)
     except exceptions.OfferException as exc:
         raise api_errors.ApiErrors(exc.errors)
 

@@ -51,6 +51,18 @@ services:
     stdin_open: true
     tty: true
 
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    networks:
+      - web_nw
+    depends_on:
+      - flask
+    volumes:
+      - n8n_data:/home/node/.n8n
+
   backoffice:
     build:
       context: ./api
@@ -131,3 +143,4 @@ volumes:
   postgres_data:
   postgres_data_test:
   redis_data:
+  n8n_data:
