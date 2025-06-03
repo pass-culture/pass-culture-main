@@ -27,8 +27,8 @@ class Returns200Test:
     num_queries += 1  # select offer
     num_queries += 1  # select user
     num_queries += 1  # select venue
-    num_queries += 1  # select offer offererAddress
-    num_queries += 1  # select address
+    # num_queries += 1  # select offer offererAddress
+    # num_queries += 1  # select address
 
     def test_when_user_has_rights_and_regular_offer(self, client):
         past = datetime.utcnow() - timedelta(days=2)
