@@ -62,7 +62,6 @@ def _check_destination_venue_validity(
 ) -> str | None:
     venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
         origin_venue,
-        include_without_pricing_points=True,
         only_similar_pricing_points=True,
         filter_same_bank_account=True,
     )

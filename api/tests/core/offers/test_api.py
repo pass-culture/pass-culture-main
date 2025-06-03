@@ -5056,13 +5056,22 @@ class EditPriceCategoryTest:
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveOfferTest:
+    def get_new_venue_with_pricing_point(self, offer: models.Offer) -> offerers_models.Venue:
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=new_venue,
+            pricingPoint=new_venue,
+            timespan=[datetime.utcnow() - timedelta(days=1), None],
+        )
+        return new_venue
+
     def test_move_physical_offer_without_pricing_point(self):
         """Moving an offer from a venue without pricing point to another venue
-        without pricing point should work and the offer's location should not change."""
+        with pricing point should work and the offer's location should not change."""
         offer = factories.OfferFactory()
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        new_venue = self.get_new_venue_with_pricing_point(offer)
         assert offer.venue.current_pricing_point is None
-        assert new_venue.current_pricing_point is None
+        assert new_venue.current_pricing_point is not None
         assert offer.offererAddressId == offer.venue.offererAddressId
         assert offer.offererAddressId != new_venue.offererAddressId
 
@@ -5078,6 +5087,20 @@ class MoveOfferTest:
         assert offer.offererAddress.addressId == initial_address_id
         assert offer.offererAddress.label == initial_oa_label
 
+    def test_move_physical_offer_without_pricing_point_to_venue_without_pricing_point(self):
+        """Moving an offer from a venue without pricing point to another venue
+        without pricing point should not work"""
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        assert offer.venue.current_pricing_point is None
+        assert new_venue.current_pricing_point is None
+
+        with pytest.raises(exceptions.NoDestinationVenue):
+            api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue != new_venue
+
     def test_move_physical_offer_that_has_a_dedicated_oa(self):
         """Moving an offer that has a custom location from a venue to another venue
         should not change its location."""
@@ -5087,8 +5110,7 @@ class MoveOfferTest:
         offer = factories.OfferFactory(
             venue__managingOfferer=offerer, offererAddress=offer_oa, venue__offererAddress=venue_oa
         )
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        assert new_venue.current_pricing_point is None
+        new_venue = self.get_new_venue_with_pricing_point(offer)
         assert offer.offererAddressId != new_venue.offererAddressId
         initial_offerer_address_id = offer_oa.id
 
@@ -5102,17 +5124,12 @@ class MoveOfferTest:
         """Moving a physical offer from a venue to another venue without
         a pricing point should raise an exception"""
         offer = factories.OfferFactory()
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(
             venue=offer.venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer),
             timespan=[datetime.utcnow() - timedelta(days=7), None],
         )
-        offerers_factories.VenuePricingPointLinkFactory(
-            venue=new_venue,
-            pricingPoint=offerers_factories.VenueFactory(managingOfferer=new_venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
-        )
+        new_venue = self.get_new_venue_with_pricing_point(offer)
         assert offer.venue.current_pricing_point != new_venue.current_pricing_point
 
         with pytest.raises(exceptions.NoDestinationVenue):
@@ -5143,7 +5160,7 @@ class MoveOfferTest:
             quantity=10,
             beginningDatetime=tomorow,
         )
-        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        new_venue = self.get_new_venue_with_pricing_point(offer)
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)
@@ -5211,8 +5228,8 @@ class MoveOfferTest:
     )
     def test_move_offer_with_different_statuses(self, state):
         venue = offerers_factories.VenueFactory()
-        new_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offer = self.create_offer_by_state(venue, state)
+        new_venue = self.get_new_venue_with_pricing_point(offer)
 
         api.move_offer(offer, new_venue)
 

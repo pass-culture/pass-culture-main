@@ -890,7 +890,6 @@ def get_move_collective_offer_form(collective_offer_id: int) -> utils.Backoffice
 
     venue_choices = offerers_repository.get_offerers_venues_with_pricing_point(
         collective_offer.venue,
-        include_without_pricing_points=True,
         only_similar_pricing_points=True,
         filter_same_bank_account=True,
     )

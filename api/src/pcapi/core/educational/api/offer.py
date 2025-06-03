@@ -1285,7 +1285,6 @@ def check_can_move_collective_offer_venue(
 
     venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
         collective_offer.venue,
-        include_without_pricing_points=not with_restrictions,
         only_similar_pricing_points=not with_restrictions,
         filter_same_bank_account=not with_restrictions,
     )

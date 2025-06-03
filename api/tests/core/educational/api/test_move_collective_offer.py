@@ -10,6 +10,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api
 from pcapi.models import db
 
@@ -63,12 +64,23 @@ def create_offer_by_booking_state(venue, state):
 
 @pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveCollectiveOfferSuccessTest:
+    def get_destination_venue_with_pricing_point(
+        self, collective_offer: educational_models.CollectiveOffer
+    ) -> offerers_models.Venue:
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=destination_venue,
+            pricingPoint=destination_venue,
+            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+        )
+        return destination_venue
+
     def test_move_collective_offer_with_its_own_OA(self):
         """
         Ensure the collective offer with its own OA keeps it once moved.
         """
         collective_offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        destination_venue = self.get_destination_venue_with_pricing_point(collective_offer)
         source_venue = collective_offer.venue
         assert collective_offer.offererAddress != source_venue.offererAddress
         offer_OA_id = collective_offer.offererAddressId
@@ -83,7 +95,7 @@ class MoveCollectiveOfferSuccessTest:
         Ensure the collective offer using the venue's OA get a new OA once moved if that OA did not exist before.
         """
         collective_offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        destination_venue = self.get_destination_venue_with_pricing_point(collective_offer)
         source_venue = collective_offer.venue
         assert collective_offer.offererAddress == source_venue.offererAddress
 
@@ -100,7 +112,7 @@ class MoveCollectiveOfferSuccessTest:
         Ensure the collective offer using the venue's OA can fit in an existing OA once moved.
         """
         collective_offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        destination_venue = self.get_destination_venue_with_pricing_point(collective_offer)
         source_venue = collective_offer.venue
         destination_OA = offerers_factories.OffererAddressFactory(
             offerer=source_venue.managingOfferer,
@@ -117,12 +129,10 @@ class MoveCollectiveOfferSuccessTest:
 
     def test_move_collective_offer_without_pricing_points(self):
         """
-        A collective offer on a venue without pricing point can be moved to another venue without pricing point
+        A collective offer on a venue without pricing point can be moved to another venue with pricing point
         """
         collective_offer = educational_factories.CollectiveOfferFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
-        assert collective_offer.venue.current_pricing_point_link is None
-        assert destination_venue.current_pricing_point_link is None
+        destination_venue = self.get_destination_venue_with_pricing_point(collective_offer)
 
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
@@ -313,8 +323,8 @@ class MoveCollectiveOfferSuccessTest:
     )
     def test_move_collective_offer_with_different_statuses(self, state):
         venue = offerers_factories.VenueFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         collective_offer = educational_factories.create_collective_offer_by_status(state, venue=venue)
+        destination_venue = self.get_destination_venue_with_pricing_point(collective_offer)
 
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
@@ -333,8 +343,8 @@ class MoveCollectiveOfferSuccessTest:
     )
     def test_move_collective_offer_with_different_booking_statuses(self, state):
         venue = offerers_factories.VenueFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         collective_offer = create_offer_by_booking_state(venue, state)
+        destination_venue = self.get_destination_venue_with_pricing_point(collective_offer)
 
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
@@ -346,6 +356,21 @@ class MoveCollectiveOfferSuccessTest:
 
 @pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveCollectiveOfferFailTest:
+    def test_move_collective_offer_without_pricing_point_to_venue_without_pricing_point(self):
+        """
+        A collective offer on a venue without pricing point cannot be moved to another venue without pricing point
+        """
+        collective_offer = educational_factories.CollectiveOfferFactory()
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        assert collective_offer.venue.current_pricing_point_link is None
+        assert destination_venue.current_pricing_point_link is None
+
+        with pytest.raises(api.exceptions.NoDestinationVenue):
+            collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.venue != destination_venue
+
     def test_move_collective_offer_with_different_pricing_point(self):
         venue = offerers_factories.VenueFactory()
         invalid_destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)

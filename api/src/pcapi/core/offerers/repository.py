@@ -816,14 +816,12 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
 
 def get_offerers_venues_with_pricing_point(
     venue: models.Venue,
-    include_without_pricing_points: bool = False,
     only_similar_pricing_points: bool = False,
     filter_same_bank_account: bool = False,
 ) -> list[models.Venue]:
     """
     Returns the venues of an offerer - excluding provided venue - and their associated active pricing points.
     By default, returns only the venues with pricing points.
-    `include_without_pricing_points` includes venues without active pricing points.
     `only_similar_pricing_points` includes only venues with the same pricing points as the provided venue.
     `filter_same_bank_account` exclude venues with a different bank account.
     """
@@ -835,7 +833,6 @@ def get_offerers_venues_with_pricing_point(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
                 models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
             ),
-            isouter=include_without_pricing_points,
         )
         .filter(
             models.Venue.managingOffererId == venue.managingOffererId,
