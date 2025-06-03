@@ -1,5 +1,6 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
+{% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/logo.html" as logo %}
 {% set username = user.firstName | empty_string_if_null + ' ' + user.lastName | empty_string_if_null | upper %}
@@ -19,6 +20,9 @@
               {% endset %}
               {{ user_label | format_badge("secondary") }}
             {% endif %}
+            {% call badges.badges_container() %}
+              {% for tag in user.tags %}{{ (tag.label or tag.name) | format_badge("secondary") }}{% endfor %}
+            {% endcall %}
             {% if duplicate_user_id %}
               <small><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"
    target="_blank">User ID
@@ -179,39 +183,13 @@
               </div>
             {% endif %}
             {% if anonymize_form %}
-              <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
-                      data-bs-toggle="modal"
-                      data-bs-target="#review-anonymization_confirmation"
-                      type="button">Anonymiser</button>
-              <div class="modal modal-lg fade"
-                   id="review-anonymization_confirmation"
-                   tabindex="-1"
-                   aria-labelledby="review-anonymization_confirmation-label"
-                   aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <form action="{{ anonymize_public_accounts_dst }}"
-                          name="{{ anonymize_public_accounts_dst }}"
-                          method="post">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Anonymiser les données</h5>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-floating my-3">{{ build_form_fields_group(anonymize_form) }}</div>
-                      </div>
-                      {{ anonymize_form.csrf_token }}
-                      <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-primary-subtle-bg"
-                                data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit"
-                                class="btn btn-primary">Enregistrer</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              {% endif %}
-            </div>
+              <div>
+                {{ build_modal_form("anonymize-public-account", anonymize_public_accounts_dst, anonymize_form, "Anonymiser", "Anonymiser", "Enregistrer") }}
+              </div>
+            {% endif %}
+            {% if tag_public_account_form %}
+              <div>{{ build_modal_form("tag-public-account", tag_public_account_dst, tag_public_account_form, "Taguer", "Taguer", "Enregistrer") }}</div>
+            {% endif %}
           </div>
         </div>
       </div>

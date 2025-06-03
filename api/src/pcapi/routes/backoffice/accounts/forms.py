@@ -1,5 +1,6 @@
 import datetime
 
+import sqlalchemy.orm as sa_orm
 import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
@@ -7,6 +8,7 @@ from flask_wtf import FlaskForm
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
@@ -15,6 +17,20 @@ from pcapi.utils import string as string_utils
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
+
+
+def _get_tags_query() -> sa_orm.Query:
+    return (
+        db.session.query(users_models.UserTag)
+        .order_by(users_models.UserTag.label)
+        .options(
+            sa_orm.load_only(
+                users_models.UserTag.id,
+                users_models.UserTag.name,
+                users_models.UserTag.label,
+            )
+        )
+    )
 
 
 class AccountSearchForm(search.SearchForm):
@@ -164,3 +180,12 @@ class EditUserTagForm(UserTagBaseForm):
 
 class CreateUserTagCategoryForm(UserTagBaseForm):
     pass
+
+
+class TagAccountForm(FlaskForm):
+    tags = fields.PCQuerySelectMultipleField(
+        "Tags",
+        query_factory=_get_tags_query,
+        get_pk=lambda tag: tag.id,
+        get_label=lambda tag: tag.label or tag.name,
+    )

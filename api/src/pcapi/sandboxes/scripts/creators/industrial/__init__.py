@@ -67,6 +67,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_object
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import create_industrial_thing_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import create_industrial_thing_stocks
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_user_tags import create_industrial_user_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import create_industrial_venues
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues_with_timezone import (
     create_industrial_venues_with_timezone,
@@ -150,6 +151,8 @@ def save_industrial_sandbox() -> None:
     create_industrial_provider_external_bookings()
 
     create_industrial_offerer_tags()
+
+    create_industrial_user_tags()
 
     offerer_with_several_venues = create_offerer_with_several_venues()
 
