@@ -74,6 +74,9 @@ class OfferExtraData(typing.TypedDict, total=False):
     stageDirector: str | None
     visa: str | None
 
+    matchScore: int | None
+    scoreReason: str | None
+
     # allocine
     allocineId: int | None
     backlink: str | None

@@ -385,8 +385,16 @@ def send_to_n8n(offer: models.Offer) -> None:
     serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
 
     data = {
-        "offer": serialized_offer,
-        "temps_fort_description": "Fête du cinéma",
+        "offer": {
+            "id": offer.id,
+            "name": offer.name,
+            "description": offer.description,
+            "subcategoryLabel": offer.subcategory.app_label,
+        },
+        "temps_fort": {
+            "name": "Hack ton temps fort",
+            "description": "C'est la fête du cinéma",
+        },
     }
 
     json_data = json.dumps(data)
