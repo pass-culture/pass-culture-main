@@ -23,7 +23,6 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.core.reminders.external import reminders_notifications
-from pcapi.core.search.backends.serialization import AlgoliaSerializationMixin
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
@@ -382,7 +381,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
 def send_to_n8n(offer: models.Offer) -> None:
     url = "http://n8n:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
 
-    serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
+    # serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
 
     data = {
         "offer": {
