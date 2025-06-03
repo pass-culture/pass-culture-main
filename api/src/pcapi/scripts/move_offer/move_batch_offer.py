@@ -310,10 +310,7 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
                     )
 
                     if not_dry:
-                        venue_ids_to_reindex = [origin_venue_id]
-                        if destination_venue_updated_to_permanent:
-                            venue_ids_to_reindex.append(destination_venue_id)
-                        on_commit(partial(search.reindex_venue_ids, venue_ids_to_reindex))
+                        on_commit(partial(search.reindex_venue_ids, [origin_venue_id]))
                         logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
                     else:
                         db.session.flush()
