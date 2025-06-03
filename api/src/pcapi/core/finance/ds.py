@@ -14,7 +14,7 @@ from pcapi.use_cases.save_venue_bank_informations import ImportBankAccountFactor
 
 logger = logging.getLogger(__name__)
 
-MARK_WITHOUT_CONTINUATION_MOTIVATION = "Marked without continuation & archived through automatic process (PC-24035)"
+MARK_WITHOUT_CONTINUATION_MOTIVATION = "Classé sans suite et archivé automatiquement"  # visible in DS
 
 
 def update_ds_applications_for_procedure(

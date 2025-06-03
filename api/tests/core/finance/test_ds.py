@@ -273,8 +273,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=31)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=2 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -319,7 +319,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=29)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
