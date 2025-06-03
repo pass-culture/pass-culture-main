@@ -9,9 +9,7 @@ class StrongTimeBody(BaseModel):
 
 
 @public_api.route("/strong-time", methods=["POST"])
-@spectree_serialize(on_success_status=200)
+@spectree_serialize(on_success_status=204)
 def post_strong_time(body: StrongTimeBody) -> int:
     # offer: models.Offer = models.Offer.query.get(body.offerId)
     print(body)
-
-    return 200

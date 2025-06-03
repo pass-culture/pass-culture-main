@@ -380,7 +380,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
 
 
 def send_to_n8n(offer: models.Offer) -> None:
-    url = "http://localhost:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
+    url = "http://n8n:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
 
     serialized_offer = AlgoliaSerializationMixin.serialize_offer(offer=offer, last_30_days_bookings=1)
 
