@@ -50,6 +50,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     TAG = "Tag"
     HEADLINE = "Offres à la une"
     VALIDATED_OFFERER = "Entité juridique validée"
+    SCORE = "Score temps fort"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -89,6 +90,14 @@ form_field_configuration = {
     "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
     "PRICE": {
         "field": "price",
+        "operator": [
+            "EQUALS",
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+        ],
+    },
+    "SCORE": {
+        "field": "integer",
         "operator": [
             "EQUALS",
             "GREATER_THAN_OR_EQUAL_TO",
