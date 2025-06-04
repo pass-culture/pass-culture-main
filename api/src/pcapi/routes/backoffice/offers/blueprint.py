@@ -202,6 +202,10 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": offerers_models.Offerer.isValidated,
         "inner_join": "offerer",
     },
+    "SCORE": {
+        "field": "integer",
+        "column": sa.cast(offers_models.Offer._extraData.op("->>")("matchScore"), sa.Integer),
+    },
     "VALIDATION": {
         "field": "validation",
         "column": offers_models.Offer.validation,

@@ -146,6 +146,31 @@ export const DetailsForm = ({
                 error={errors.description?.message}
               />
             </FormLayout.Row>
+            <FormLayout.Row
+              sideComponent={
+                <InfoBox>
+                  En choisissant un évènement associé vous permettez à votre
+                  offre d’apparaitre dans les pages de l’application conçues
+                  spécialement pour cet évènement.
+                </InfoBox>
+              }
+              className={styles['row']}
+            >
+              <Select
+                name={'strongTime'}
+                label="Évenement associé"
+                options={[
+                  {
+                    label: 'Aucun',
+                    value: 'none',
+                  },
+                ]}
+                defaultOption={{
+                  label: 'Journées Européennes du Patrimoine 2025',
+                  value: 'JEP2025',
+                }}
+              />
+            </FormLayout.Row>
             {(categoryStatus === CATEGORY_STATUS.ONLINE ||
               offer?.isDigital) && (
               <FormLayout.Row
