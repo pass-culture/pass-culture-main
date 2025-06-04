@@ -3,9 +3,9 @@ from sqlalchemy.orm import joinedload
 from pcapi.core.offers.models import FutureOffer
 from pcapi.core.offers.models import Offer
 from pcapi.core.reminders.models import FutureOfferReminder
+from pcapi.core.reminders.models import OfferReminder
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization.reminder import PostReminderRequest
 
 
 def get_reminders(user: User) -> list[FutureOfferReminder]:
@@ -21,23 +21,19 @@ def get_reminders(user: User) -> list[FutureOfferReminder]:
     ).all()
 
 
-def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOfferReminder:
-    query = db.session.query(FutureOffer).filter(FutureOffer.offerId == reminder_body.offer_id)
-    future_offer = query.first_or_404()
-
-    existing_reminder = (
+def get_future_offer_reminder(user_id: int, future_offer_id: int) -> FutureOfferReminder | None:
+    return (
         db.session.query(FutureOfferReminder)
-        .filter(FutureOfferReminder.futureOfferId == future_offer.id, FutureOfferReminder.userId == user.id)
+        .filter(
+            FutureOfferReminder.futureOfferId == future_offer_id,
+            FutureOfferReminder.userId == user_id,
+        )
         .one_or_none()
     )
 
-    if existing_reminder:
-        return existing_reminder
 
-    reminder = FutureOfferReminder(
-        userId=user.id,
-        futureOfferId=future_offer.id,
-    )
+def create_future_offer_reminder(user: User, future_offer: FutureOffer) -> FutureOfferReminder:
+    reminder = FutureOfferReminder(userId=user.id, futureOfferId=future_offer.id)
 
     db.session.add(reminder)
     db.session.flush()
@@ -45,7 +41,23 @@ def create_reminder(user: User, reminder_body: PostReminderRequest) -> FutureOff
     return reminder
 
 
-def delete_reminder(user: User, reminder_id: int) -> None:
+def delete_future_offer_reminder(user: User, reminder_id: int) -> None:
     reminder = db.session.query(FutureOfferReminder).filter_by(id=reminder_id, user=user).first_or_404()
 
     db.session.delete(reminder)
+
+
+def create_offer_reminder(user: User, offer: Offer) -> OfferReminder:
+    reminder = OfferReminder(userId=user.id, offerId=offer.id)
+
+    db.session.add(reminder)
+    db.session.flush()
+
+    return reminder
+
+
+def delete_offer_reminder(user: User, offer_id: int) -> None:
+    reminder = db.session.query(OfferReminder).filter_by(offerId=offer_id, user=user).one_or_none()
+
+    if reminder:
+        db.session.delete(reminder)

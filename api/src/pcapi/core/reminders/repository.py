@@ -1,5 +1,6 @@
 from pcapi.core.offers.models import FutureOffer
 from pcapi.core.reminders.models import FutureOfferReminder
+from pcapi.core.reminders.models import OfferReminder
 from pcapi.models import db
 
 
@@ -22,3 +23,7 @@ def delete_reminders_on_offer(offer_id: int) -> None:
     db.session.query(FutureOfferReminder).filter(FutureOfferReminder.id.in_(future_offer_reminders_query)).delete(
         synchronize_session=False
     )
+
+
+def delete_offer_reminders_on_offer(offer_id: int) -> None:
+    db.session.query(OfferReminder).filter(OfferReminder.offerId == offer_id).delete(synchronize_session=False)

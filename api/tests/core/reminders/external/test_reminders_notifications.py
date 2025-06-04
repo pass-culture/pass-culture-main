@@ -27,6 +27,10 @@ class NotifyUsersFutureOfferActivatedTest:
         factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_2)
         factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_3)
 
+        factories.OfferReminderFactory(offer=offer, user=user_1)
+        factories.OfferReminderFactory(offer=offer, user=user_2)
+        factories.OfferReminderFactory(offer=offer_2, user=user_3)
+
         notify_users_future_offer_activated(offer)
 
         expected_push_counts = 1  # for trigger event future offer activated
@@ -70,6 +74,9 @@ class NotifyUsersFutureOfferActivatedTest:
             .all()
         )
         assert future_offer_reminders == []
+
+        offer_reminders = db.session.query(models.OfferReminder).filter(models.OfferReminder.offerId == offer.id).all()
+        assert offer_reminders == []
 
     def test_notify_no_users_future_offer_activated(self, caplog):
         user_1 = users_factories.UserFactory()
