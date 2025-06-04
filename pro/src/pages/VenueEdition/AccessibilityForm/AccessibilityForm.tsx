@@ -9,7 +9,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { AccessibilityCallout } from 'pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 
 import styles from './AccessibilityForm.module.scss'
 
@@ -26,9 +26,12 @@ export const AccessibilityForm = ({
   externalAccessibilityData,
   isSubSubSection,
 }: AccessiblityFormProps) => {
-  const { values, setFieldValue, initialValues } =
+  const { values, setFieldValue, initialValues, getFieldMeta } =
     useFormikContext<VenueEditionFormValues>()
-  const checkboxGroup = useAccessibilityOptions(setFieldValue)
+  const checkboxGroup = useAccessibilityOptions(
+    setFieldValue,
+    values.accessibility
+  )
 
   const hasChangedSinceLastSubmit = useMemo(
     () => !isEqual(values.accessibility, initialValues.accessibility),
@@ -56,8 +59,10 @@ export const AccessibilityForm = ({
           <FormLayout.Row>
             <CheckboxGroup
               group={checkboxGroup}
-              groupName="accessibility"
+              name="accessibility"
+              required
               legend="Votre établissement est accessible au public en situation de handicap :"
+              error={getFieldMeta('accessibility').error}
             />
           </FormLayout.Row>
           {hasChangedSinceLastSubmit && (

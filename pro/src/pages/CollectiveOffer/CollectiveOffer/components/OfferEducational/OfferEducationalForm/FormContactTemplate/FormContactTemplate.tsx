@@ -1,6 +1,9 @@
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { useFormikContext } from 'formik'
+
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 
 import styles from './FormContactTemplate.module.scss'
 import { FormContactTemplateCustomForm } from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'
@@ -12,10 +15,15 @@ interface FormContactTemplateProps {
 export const FormContactTemplate = ({
   disableForm,
 }: FormContactTemplateProps): JSX.Element => {
+  const { values, setFieldValue, getFieldMeta } =
+    useFormikContext<OfferEducationalFormValues>()
+
   const contactOptions = [
     {
-      name: 'contactOptions.email',
       label: 'Par email',
+      checked: Boolean(values.contactOptions?.email),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setFieldValue('contactOptions.email', e.target.checked),
       collapsed: (
         <div className={styles['contact-checkbox-inner-control']}>
           <TextInput
@@ -29,8 +37,10 @@ export const FormContactTemplate = ({
       ),
     },
     {
-      name: 'contactOptions.phone',
       label: 'Par téléphone',
+      checked: Boolean(values.contactOptions?.phone),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setFieldValue('contactOptions.phone', e.target.checked),
       collapsed: (
         <div className={styles['contact-checkbox-inner-control']}>
           <PhoneNumberInput
@@ -43,7 +53,9 @@ export const FormContactTemplate = ({
       ),
     },
     {
-      name: 'contactOptions.form',
+      checked: Boolean(values.contactOptions?.form),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        setFieldValue('contactOptions.form', e.target.checked),
       label: 'Via un formulaire',
       collapsed: <FormContactTemplateCustomForm disableForm={disableForm} />,
     },
@@ -52,15 +64,17 @@ export const FormContactTemplate = ({
   return (
     <div className={styles['container']}>
       <CheckboxGroup
-        groupName="contactOptions"
+        name="contactOptions"
         legend={
           <h2 className={styles['subtitle']}>
             Comment les enseignants peuvent-ils vous contacter ? *
           </h2>
         }
-        hideAsterisk
+        required
+        asterisk={false}
         group={contactOptions}
         disabled={disableForm}
+        error={getFieldMeta('contactOptions').error}
       />
     </div>
   )

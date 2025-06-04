@@ -77,7 +77,7 @@ export const DetailedFill: StoryObj<typeof Checkbox> = {
     label: 'Checkbox label',
     variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    display: 'fill',
+    sizing: 'fill',
   },
 }
 

@@ -201,7 +201,7 @@ export const AdageMultiselect = ({
                 onChange={() => handleNewSelection(item)}
                 {...itemProps}
                 className={styles['checkbox-label']}
-                display="fill"
+                sizing="fill"
                 aria-selected={isChecked}
               />
             </li>
