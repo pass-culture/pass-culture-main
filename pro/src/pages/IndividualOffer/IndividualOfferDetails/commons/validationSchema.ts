@@ -25,7 +25,7 @@ export const getValidationSchema = ({
 }) => {
   return yup.object<DetailsFormValues>().shape({
     name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
-    description: yup.string(),
+    description: yup.string().required('Veuillez renseigner une description'),
     author: yup.string(),
     performer: yup.string(),
     ean: eanValidation,
