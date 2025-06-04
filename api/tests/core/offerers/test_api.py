@@ -130,7 +130,6 @@ class CreateVenueTest:
         assert action.offerer is None
         assert action.venue == venue
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_venue_is_permanent_when_created_with_siret(self):
         user_offerer = offerers_factories.UserOffererFactory()
         data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
@@ -139,7 +138,6 @@ class CreateVenueTest:
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_venue_is_permanent_when_created_open_to_public(self):
         user_offerer = offerers_factories.UserOffererFactory()
         init_data = self.base_data(user_offerer.offerer) | {
@@ -153,7 +151,6 @@ class CreateVenueTest:
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_venue_is_permanent_when_created_with_siret_and_open_to_public(self):
         user_offerer = offerers_factories.UserOffererFactory()
         init_data = self.base_data(user_offerer.offerer) | {"isOpenToPublic": True}
@@ -163,7 +160,6 @@ class CreateVenueTest:
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_venue_is_not_permanent_when_created_without_siret_nor_is_open_to_public(self):
         user_offerer = offerers_factories.UserOffererFactory()
         init_data = self.base_data(user_offerer.offerer) | {

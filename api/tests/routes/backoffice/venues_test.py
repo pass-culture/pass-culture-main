@@ -322,7 +322,6 @@ class GetVenueTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"04", "05", "06"}
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_get_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory(
             venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),

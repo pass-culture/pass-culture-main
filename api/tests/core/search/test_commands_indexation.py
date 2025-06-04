@@ -156,9 +156,9 @@ def test_partially_index_venues(app):
 
 @pytest.mark.usefixtures("clean_database")
 def test_partially_index_venues_removes_non_eligible_venues(app):
-    future_not_indexable_venue = offerers_factories.VenueFactory(isPermanent=True)
+    future_not_indexable_venue = offerers_factories.VenueFactory(isOpenToPublic=True)
     offers_factories.OfferFactory(venue=future_not_indexable_venue)
-    indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)
+    indexable_venue1 = offerers_factories.VenueFactory(isOpenToPublic=True)
     offers_factories.OfferFactory(venue=indexable_venue1)
 
     expected_to_be_reindexed = {
@@ -176,7 +176,7 @@ def test_partially_index_venues_removes_non_eligible_venues(app):
     assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
 
     ### This is the actual test: the venue is no longer eligible for search ###
-    future_not_indexable_venue.isPermanent = False
+    future_not_indexable_venue.isOpenToPublic = False
     repository.save(future_not_indexable_venue)
 
     expected_to_be_reindexed = {
