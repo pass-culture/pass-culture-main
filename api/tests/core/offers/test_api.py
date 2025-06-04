@@ -5130,6 +5130,25 @@ class MoveOfferTest:
         assert offer.offererAddress.addressId == initial_address_id
         assert offer.offererAddress.label == initial_oa_label
 
+    def test_move_physical_offer_without_pricing_point_to_venue_with_pricing_point(self):
+        """Moving an offer from a venue without pricing point to another venue
+        with pricing point should not work"""
+        offer = factories.OfferFactory()
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=new_venue,
+            pricingPoint=new_venue,
+            timespan=[datetime.utcnow() - timedelta(days=1), None],
+        )
+        assert offer.venue.current_pricing_point is None
+        assert new_venue.current_pricing_point is not None
+
+        with pytest.raises(exceptions.NoDestinationVenue):
+            api.move_offer(offer, new_venue)
+
+        db.session.refresh(offer)
+        assert offer.venue != new_venue
+
     def test_move_physical_offer_that_has_a_dedicated_oa(self):
         """Moving an offer that has a custom location from a venue to another venue
         should not change its location."""

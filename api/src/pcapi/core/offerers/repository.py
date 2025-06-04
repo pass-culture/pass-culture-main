@@ -854,10 +854,18 @@ def get_offerers_venues_with_pricing_point(
         )
         .order_by(models.Venue.common_name)
     )
-    if only_similar_pricing_points and venue.current_pricing_point_link:
-        venues_choices_query = venues_choices_query.filter(
-            models.VenuePricingPointLink.pricingPointId == venue.current_pricing_point_link.pricingPointId
-        )
+    if only_similar_pricing_points:
+        if venue.current_pricing_point_link:
+            venues_choices_query = venues_choices_query.filter(
+                models.VenuePricingPointLink.pricingPointId == venue.current_pricing_point_link.pricingPointId
+            )
+        else:
+            # The goal here is to filter only venues without pricing point.
+            # We need to remove venues with pricing point from venues_choices_query
+            # It is not possible to filter over Venue.pricing_point_links
+            # so we filter over models.VenuePricingPointLink.venueId == None
+            # but we could filter over models.VenuePricingPointLink.pricingPointId == None
+            venues_choices_query = venues_choices_query.filter(models.VenuePricingPointLink.venueId == None)
 
     if filter_same_bank_account:
         venues_choices_query = venues_choices_query.outerjoin(
