@@ -391,7 +391,7 @@ def serialize_offer_for_n8n(offer: models.Offer) -> dict:
         },
         "temps_fort": {
             "name": "Journées Européennes du Patrimoine 2025",
-            "description": "Les Journées Européennes du Patrimoine sont de retour les 20 et 21 septembre 2025 ! Au programme : des centaines d'événements gratuits dans toute la France, des visites insolites, des rencontres... dans des lieux vraiment exceptionnels. Ça n'arrive qu'une fois dans l'année, donc ne passe pas à côté ! Lieux iconiques, spectaculaires, insolites, ou minimalistes, en solo, entre potes ou en famille, viens te créer plein de souvenirs et en prendre plein les yeux !",
+            "description": "Les Journées européennes du patrimoine sont de retour les 20 et 21 septembre 2025, avec pour thème : les patrimoines maritimes et des itinéraires, des réseaux et des connexions ! Au programme : des centaines d'événements gratuits dans toute la France, des visites insolites, des rencontres... dans des lieux vraiment exceptionnels. Ça n'arrive qu'une fois dans l'année, donc ne passe pas à côté ! Lieux iconiques, spectaculaires, insolites, ou minimalistes, en solo, entre potes ou en famille, viens te créer plein de souvenirs et en prendre plein les yeux !",
         },
     }
 
