@@ -103,7 +103,6 @@ class Returns200Test:
                     "label": None,
                     "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
-                    "isAdmin": False,
                     "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
                     "bannerUrl": "http://example.com/image_cropped.png",
                     "bannerMeta": {
@@ -293,7 +292,6 @@ class Returns200Test:
                     "label": None,
                     "siren": venue1.managingOfferer.siren,
                     "isPermanent": venue1.isPermanent,
-                    "isAdmin": False,
                     "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
                     "bannerUrl": None,
                     "bannerMeta": None,
@@ -324,7 +322,6 @@ class Returns200Test:
                     "label": None,
                     "siren": venue2.managingOfferer.siren,
                     "isPermanent": venue2.isPermanent,
-                    "isAdmin": False,
                     "offerer": {"id": venue2.managingOfferer.id, "name": venue2.managingOfferer.name},
                     "bannerUrl": None,
                     "bannerMeta": None,
