@@ -47,10 +47,10 @@ export type CheckboxProps = CheckboxBaseProps &
         description?: never
         asset?: never
         collapsed?: never
-        display?: 'hug' | 'fill'
+        sizing?: 'hug' | 'fill'
       }
     | {
-        variant?: 'detailed'
+        variant: 'detailed'
         /**
          * Description test displayed under the checkbox label.
          */
@@ -62,18 +62,11 @@ export type CheckboxProps = CheckboxBaseProps &
         /**
          * Content collapsed, displayed under the checkbox input when the checkbox is checked.
          */
-        collapsed?: never
+        collapsed?: React.ReactNode
         /**
          * Display for the checkbox container. If `hug`, the width of the checkbox fits its content. If `fill` the checkbox takes all the available space.
          */
-        display?: 'hug' | 'fill'
-      }
-    | {
-        variant?: 'detailed'
-        description?: string
-        asset?: CheckboxAssetProps
-        collapsed: React.ReactNode
-        display?: 'fill'
+        sizing?: 'hug' | 'fill'
       }
   )
 
@@ -86,7 +79,7 @@ export const Checkbox = forwardRef(
       description,
       asset,
       collapsed,
-      display = collapsed ? 'fill' : 'hug',
+      sizing = collapsed ? 'fill' : 'hug',
       hasError,
       checked,
       indeterminate,
@@ -118,7 +111,7 @@ export const Checkbox = forwardRef(
             [styles['has-error']]: hasError,
             [styles['has-collapsed-content']]: Boolean(collapsed),
           },
-          styles[display]
+          styles[sizing]
         )}
       >
         <label

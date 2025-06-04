@@ -87,9 +87,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.url().should('contain', '/parcours-inscription/activite')
     cy.findByLabelText('Activité principale *').select('Spectacle vivant')
     cy.findByText('Étape suivante').click()
-    cy.findByTestId('error-targetCustomer').contains(
-      'Veuillez sélectionner une des réponses ci-dessus'
-    )
+    cy.findByText('Veuillez sélectionner une des réponses ci-dessus')
 
     cy.stepLog({ message: 'an error message is raised' })
     cy.findByTestId('global-notification-error')

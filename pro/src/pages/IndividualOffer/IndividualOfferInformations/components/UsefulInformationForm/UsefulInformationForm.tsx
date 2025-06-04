@@ -14,11 +14,11 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/WithdrawalReminder'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -49,12 +49,21 @@ export const UsefulInformationForm = ({
   publishedOfferWithSameEAN,
 }: UsefulInformationFormProps): JSX.Element => {
   const {
-    values: { withdrawalType, receiveNotificationEmails, bookingEmail },
+    values: {
+      withdrawalType,
+      receiveNotificationEmails,
+      bookingEmail,
+      accessibility,
+    },
     setFieldValue,
     handleChange,
     getFieldProps,
+    getFieldMeta,
   } = useFormikContext<UsefulInformationFormValues>()
-  const accessibilityOptionsGroups = useAccessibilityOptions(setFieldValue)
+  const accessibilityOptionsGroups = useAccessibilityOptions(
+    setFieldValue,
+    accessibility
+  )
 
   const { subCategories } = useIndividualOfferContext()
 
@@ -240,9 +249,11 @@ export const UsefulInformationForm = ({
         <FormLayout.Row>
           <CheckboxGroup
             group={accessibilityOptionsGroups}
-            groupName="accessibility"
+            name="accessibility"
             disabled={readOnlyFields.includes('accessibility')}
             legend="Cette offre est accessible au public en situation de handicap :"
+            required
+            error={getFieldMeta('accessibility').error}
           />
         </FormLayout.Row>
       </FormLayout.Section>

@@ -78,7 +78,7 @@ export const MultiSelectPanel = ({
                   checked={isAllChecked}
                   className={styles['label']}
                   onChange={onSelectAll}
-                  display="fill"
+                  sizing="fill"
                 />
               </li>
             )}
@@ -89,7 +89,7 @@ export const MultiSelectPanel = ({
                   label={option.label}
                   checked={option.checked}
                   onChange={() => onOptionSelect(option)}
-                  display="fill"
+                  sizing="fill"
                 />
               </li>
             ))}

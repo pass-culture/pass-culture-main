@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 
+import { AccessibilityFormValues } from 'commons/core/shared/types'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -69,7 +70,7 @@ const LABELS = {
       motor: 'Moteur',
       audio: 'Auditif',
       none: 'Non accessible',
-    }
+    },
   },
   external: {
     title: 'Modalités d’accessibilité via acceslibre',
@@ -79,14 +80,16 @@ const LABELS = {
       'Handicap cognitif',
       'Handicap auditif',
       'Handicap visuel',
-    ]
+    ],
   },
 }
 
 describe('Accessibility', () => {
   it('should not render a callout when venue is not permanent', () => {
     renderAccessibility(
-      {},
+      {
+        accessibility: {} as AccessibilityFormValues,
+      },
       {
         isVenuePermanent: false,
         externalAccessibilityId: null,
@@ -101,7 +104,9 @@ describe('Accessibility', () => {
   describe('when accessibility is defined via acceslibre', () => {
     it('should render an appropriate title and callout', () => {
       renderAccessibility(
-        {},
+        {
+          accessibility: {} as AccessibilityFormValues,
+        },
         {
           isVenuePermanent: true,
           externalAccessibilityId: MOCK_DATA.externalAccessibilityId,
@@ -115,7 +120,9 @@ describe('Accessibility', () => {
 
     it('should render collapsible sections for external accessibility', () => {
       renderAccessibility(
-        {},
+        {
+          accessibility: {} as AccessibilityFormValues,
+        },
         {
           isVenuePermanent: true,
           externalAccessibilityId: MOCK_DATA.externalAccessibilityId,
@@ -123,7 +130,7 @@ describe('Accessibility', () => {
         }
       )
 
-      LABELS.external.collapsibleSectionTitles.forEach(title => {
+      LABELS.external.collapsibleSectionTitles.forEach((title) => {
         expect(screen.getByText(title)).toBeInTheDocument
       })
     })
@@ -132,7 +139,9 @@ describe('Accessibility', () => {
   describe('when accessibility is not defined via acceslibre', () => {
     it('should render an appropriate title and callout', () => {
       renderAccessibility(
-        {},
+        {
+          accessibility: {} as AccessibilityFormValues,
+        },
         {
           isVenuePermanent: true,
           externalAccessibilityId: null,
@@ -146,7 +155,9 @@ describe('Accessibility', () => {
 
     it('should render internal accessibility checkboxes', () => {
       renderAccessibility(
-        {},
+        {
+          accessibility: {} as AccessibilityFormValues,
+        },
         {
           isVenuePermanent: true,
           externalAccessibilityId: null,
@@ -154,7 +165,7 @@ describe('Accessibility', () => {
         }
       )
 
-      Object.entries(LABELS.internal.checkboxLabels).forEach(([,label]) => {
+      Object.entries(LABELS.internal.checkboxLabels).forEach(([, label]) => {
         expect(screen.getByText(label)).toBeInTheDocument()
       })
     })
@@ -170,24 +181,24 @@ describe('Accessibility', () => {
         },
       }
 
-      renderAccessibility(
-        initialValues,
-        {
-          isVenuePermanent: true,
-          externalAccessibilityId: null,
-          externalAccessibilityData: null,
-        }
-      )
+      renderAccessibility(initialValues, {
+        isVenuePermanent: true,
+        externalAccessibilityId: null,
+        externalAccessibilityData: null,
+      })
 
-      const visualCheckbox = screen.getByLabelText(LABELS.internal.checkboxLabels.visual)
+      const visualCheckbox = screen.getByLabelText(
+        LABELS.internal.checkboxLabels.visual
+      )
       await userEvent.click(visualCheckbox)
 
       await waitFor(() => {
-        const allOffersCheckbox = screen.getByLabelText('Appliquer le changement à toutes les offres existantes')
+        const allOffersCheckbox = screen.getByLabelText(
+          'Appliquer le changement à toutes les offres existantes'
+        )
         expect(allOffersCheckbox).toBeInTheDocument()
       })
     })
-
 
     it('should submit the form when the submit button is clicked', async () => {
       const initialValues = {
@@ -200,25 +211,27 @@ describe('Accessibility', () => {
         },
       }
 
-      renderAccessibility(
-        initialValues,
-        {
-          isVenuePermanent: true,
-          externalAccessibilityId: null,
-          externalAccessibilityData: null,
-        }
-      )
+      renderAccessibility(initialValues, {
+        isVenuePermanent: true,
+        externalAccessibilityId: null,
+        externalAccessibilityData: null,
+      })
 
       const changedValues = { ...initialValues }
-      const changedCheckboxes: Array<keyof typeof LABELS.internal.checkboxLabels> = ['mental', 'motor']
+      const changedCheckboxes: Array<
+        keyof typeof LABELS.internal.checkboxLabels
+      > = ['mental', 'motor']
       for (const checkbox of changedCheckboxes) {
-        changedValues.accessibility[checkbox] = !initialValues.accessibility[checkbox]
+        changedValues.accessibility[checkbox] =
+          !initialValues.accessibility[checkbox]
 
         if (changedValues.accessibility[checkbox]) {
           changedValues.accessibility.none = false
         }
 
-        const checkboxElement = screen.getByLabelText(LABELS.internal.checkboxLabels[checkbox])
+        const checkboxElement = screen.getByLabelText(
+          LABELS.internal.checkboxLabels[checkbox]
+        )
         await userEvent.click(checkboxElement)
       }
 

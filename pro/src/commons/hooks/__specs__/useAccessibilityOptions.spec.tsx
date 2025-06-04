@@ -2,21 +2,21 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { AccessibilityFormValues } from 'commons/core/shared/types'
+import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 
 import { useAccessibilityOptions } from '../useAccessibilityOptions'
 
 const mockSetFieldValue = vi.fn()
 
 function TestCheckboxGroup() {
-  const group = useAccessibilityOptions(mockSetFieldValue)
+  const group = useAccessibilityOptions(
+    mockSetFieldValue,
+    {} as AccessibilityFormValues
+  )
 
   return (
-    <CheckboxGroup
-      group={group}
-      groupName="accessibility"
-      legend="accessibility"
-    />
+    <CheckboxGroup group={group} name="accessibility" legend="accessibility" />
   )
 }
 
@@ -71,10 +71,12 @@ describe('useAccessibilityOptions', () => {
     await userEvent.click(noneCheckbox)
     await userEvent.click(noneCheckbox)
     expect(mockSetFieldValue).toHaveBeenCalledTimes(2)
-    expect(mockSetFieldValue).toHaveBeenNthCalledWith(
-      2,
-      'accessibility.none',
-      false
-    )
+    expect(mockSetFieldValue).toHaveBeenNthCalledWith(2, 'accessibility', {
+      none: true,
+      visual: false,
+      mental: false,
+      motor: false,
+      audio: false,
+    })
   })
 })

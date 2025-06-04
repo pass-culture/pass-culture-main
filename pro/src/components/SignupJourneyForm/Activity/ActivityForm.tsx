@@ -9,14 +9,13 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import { buildVenueTypesOptions } from 'pages/VenueEdition/buildVenueTypesOptions'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
-import { activityTargetCustomerCheckboxGroup } from './constants'
 
 export interface ActivityFormValues {
   venueTypeCode: string
@@ -35,7 +34,8 @@ export interface ActivityFormProps {
 export const ActivityForm = ({
   venueTypes,
 }: ActivityFormProps): JSX.Element => {
-  const { values, errors } = useFormikContext<ActivityFormValues>()
+  const { values, errors, setFieldValue, getFieldMeta } =
+    useFormikContext<ActivityFormValues>()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
@@ -126,9 +126,26 @@ export const ActivityForm = ({
       />
       <FormLayout.Row className={styles['target-customer-row']}>
         <CheckboxGroup
-          group={activityTargetCustomerCheckboxGroup}
-          groupName="targetCustomer"
+          group={[
+            {
+              label: 'Au grand public',
+              checked: values.targetCustomer.individual,
+              sizing: 'fill',
+              onChange: (e) =>
+                setFieldValue('targetCustomer.individual', e.target.checked),
+            },
+            {
+              label: 'À des groupes scolaires',
+              checked: values.targetCustomer.educational,
+              sizing: 'fill',
+              onChange: (e) =>
+                setFieldValue('targetCustomer.educational', e.target.checked),
+            },
+          ]}
+          name="targetCustomer"
           legend="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
+          error={getFieldMeta('targetCustomer').error}
+          required
         />
       </FormLayout.Row>
     </FormLayout.Section>

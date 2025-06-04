@@ -15,6 +15,7 @@ type GroupOption = {
   checked?: boolean
   indeterminate?: boolean
   ref?: React.RefObject<HTMLInputElement>
+  sizing?: CheckboxProps['sizing']
 }
 
 export type CheckboxGroupProps = {
@@ -71,6 +72,7 @@ export const CheckboxGroup = ({
               indeterminate={item.indeterminate}
               name={name}
               ref={item.ref}
+              sizing={item.sizing}
             />
           </div>
         ))}

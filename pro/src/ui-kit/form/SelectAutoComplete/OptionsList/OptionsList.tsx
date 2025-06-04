@@ -75,7 +75,7 @@ export const OptionsList = ({
                       selectOption(String(value))
                     }}
                     className={styles['label']}
-                    display="fill"
+                    sizing="fill"
                   />
                 ) : (
                   <span
