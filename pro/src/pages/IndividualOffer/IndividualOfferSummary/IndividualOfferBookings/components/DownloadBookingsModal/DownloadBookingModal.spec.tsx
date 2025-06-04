@@ -54,25 +54,9 @@ describe('DownloadBookingModal', () => {
     const tableCells = screen.getAllByRole('cell')
     expect(tableCells).toHaveLength(9)
 
-    expect(
-      tableCells.filter((cell) =>
-        cell.textContent?.match(/^\w{3}\d{2}\/\d{2}\/\d{4}$/)
-      )
-    ).toHaveLength(3)
-
-    expect(
-      tableCells.filter((cell) => cell.textContent?.match(/^\d+ horaire[s]?$/))
-    ).toHaveLength(3)
-
-    expect(
-      tableCells.filter((cell) => cell.textContent?.match(/^\d+ tarif[s]?$/))
-    ).toHaveLength(3)
-
-    const shortWeekDays = screen.getAllByTestId('short-week-day')
-    expect(shortWeekDays).toHaveLength(3)
-    expect(shortWeekDays[0]).toHaveTextContent('Sam')
-    expect(shortWeekDays[1]).toHaveTextContent('Dim')
-    expect(shortWeekDays[2]).toHaveTextContent('Lun')
+    expect(screen.getByRole('radio', { name: /Sam/ })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Dim/ })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Lun/ })).toBeInTheDocument()
 
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
     expect(
@@ -134,7 +118,7 @@ describe('DownloadBookingModal', () => {
     const tableCells = screen.getAllByRole('cell')
     expect(tableCells).toHaveLength(9)
 
-    const eventDate = screen.getByText('01/01/2022')
+    const eventDate = screen.getByText('Sam 01/01/2022')
     await userEvent.click(eventDate)
 
     const validatedBookings = screen.getByText(

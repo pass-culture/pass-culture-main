@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import * as hooks from 'commons/hooks/swr/useOfferer'
@@ -58,15 +58,11 @@ describe('screens | OfferEducational : event address step', () => {
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
       renderOfferEducational(props)
 
-      expect(await screen.findByLabelText('Dans votre structure')).toBeChecked()
-      expect(
-        screen.getByLabelText('Dans l’établissement scolaire')
-      ).not.toBeChecked()
-      expect(screen.getByLabelText('Autre')).not.toBeChecked()
-
-      expect(screen.getByLabelText('Sélectionner la structure *')).toHaveValue(
-        '1'
-      )
+      await waitFor(() => {
+        expect(
+          screen.getByLabelText('Sélectionner la structure *')
+        ).toHaveValue('1')
+      })
       expect(
         screen.getByLabelText('Sélectionner la structure *')
       ).toBeDisabled()

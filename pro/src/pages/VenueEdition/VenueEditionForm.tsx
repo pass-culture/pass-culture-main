@@ -1,4 +1,10 @@
-import { Form, Formik, FormikConfig, FormikConsumer, FormikProps } from 'formik'
+import {
+  Form,
+  FormikConsumer,
+  FormikProps,
+  FormikProvider,
+  useFormik,
+} from 'formik'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -66,10 +72,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (
-    values,
-    formikHelpers
-  ) => {
+  const onSubmit = async function (values: VenueEditionFormValues) {
     try {
       await api.editVenue(
         venue.id,
@@ -112,8 +115,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
-        formikHelpers.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
-        formikHelpers.setStatus('apiError')
+        formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
+        formik.setStatus('apiError')
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
@@ -123,7 +126,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       })
     }
   }
-
   const isAccessibilityDefinedViaAccesLibre = !!venue.externalAccessibilityData
   const mandatoryFields = {
     isOpenToPublic: isOpenToPublicEnabled,
@@ -137,155 +139,158 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const hasMandatoryInfo =
     mandatoryFields.accessibility || mandatoryFields.isOpenToPublic
 
-  return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={getValidationSchema({ mandatoryFields })}
-    >
-      {(formikProps) => (
-        <Form>
-          <ScrollToFirstErrorAfterSubmit />
-          <FormLayout fullWidthActions>
-            <FormLayout.Section title="Vos informations pour le grand public">
-              {hasMandatoryInfo && <MandatoryInfo />}
-              <FormLayout.SubSection
-                title="À propos de votre activité"
-                description={
-                  venue.isVirtual
-                    ? undefined
-                    : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
-                }
-              >
-                <FormLayout.Row>
-                  <TextArea
-                    name="description"
-                    label="Description"
-                    description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-                    maxLength={1000}
-                    isOptional
-                  />
-                </FormLayout.Row>
-              </FormLayout.SubSection>
-              {isOpenToPublicEnabled ? (
-                <FormLayout.SubSection title="Accueil du public">
-                  <FormLayout.Row>
-                    <OpenToPublicToggle
-                      onChange={async (e) => {
-                        if (e.target.value === 'false') {
-                          await resetOpeningHoursAndAccessibility(formikProps)
-                        }
-                      }}
-                      radioDescriptions={{
-                        yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
-                      }}
-                    />
-                  </FormLayout.Row>
-                  {formikProps.values.isOpenToPublic === 'true' && (
-                    <>
-                      <FormLayout.SubSubSection
-                        title="Adresse et horaires"
-                        className={styles['opening-hours-subsubsection']}
-                      >
-                        <FormLayout.Row>
-                          <TextInput
-                            name="street"
-                            label="Adresse postale"
-                            className={
-                              styles[
-                                'opening-hours-subsubsection-address-input'
-                              ]
-                            }
-                            disabled
-                            isOptional
-                            value={getFormattedAddress(venue.address)}
-                          />
-                          <Callout
-                            testId="address-callout"
-                            className={
-                              styles['opening-hours-subsubsection-callout']
-                            }
-                          >
-                            Pour modifier l’adresse de votre structure,
-                            rendez-vous dans votre page Paramètres généraux.
-                          </Callout>
-                        </FormLayout.Row>
-                        <FormLayout.Row>
-                          <OpeningHoursForm />
-                        </FormLayout.Row>
-                      </FormLayout.SubSubSection>
-                      <AccessibilityForm
-                        isVenuePermanent={true}
-                        externalAccessibilityId={venue.externalAccessibilityId}
-                        externalAccessibilityData={
-                          venue.externalAccessibilityData
-                        }
-                        isSubSubSection
-                      />
-                    </>
-                  )}
-                </FormLayout.SubSection>
-              ) : (
-                <>
-                  {venue.isPermanent && (
-                    <FormLayout.SubSection title="Horaires d'ouverture">
-                      <OpeningHoursForm />
-                    </FormLayout.SubSection>
-                  )}
-                  <AccessibilityForm
-                    isVenuePermanent={Boolean(venue.isPermanent)}
-                    externalAccessibilityId={venue.externalAccessibilityId}
-                    externalAccessibilityData={venue.externalAccessibilityData}
-                  />
-                </>
-              )}
-              <FormLayout.SubSection
-                title="Contact"
-                description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
-              >
-                <FormLayout.Row>
-                  <PhoneNumberInput
-                    name="phoneNumber"
-                    label="Téléphone"
-                    isOptional
-                  />
-                </FormLayout.Row>
-                <FormLayout.Row>
-                  <TextInput
-                    name="email"
-                    label="Adresse email"
-                    description="Format : email@exemple.com"
-                    isOptional
-                  />
-                </FormLayout.Row>
-                <FormLayout.Row>
-                  <TextInput
-                    name="webSite"
-                    label="URL de votre site web"
-                    description="Format : https://exemple.com"
-                    isOptional
-                  />
-                </FormLayout.Row>
-              </FormLayout.SubSection>
-            </FormLayout.Section>
-          </FormLayout>
+  const formik = useFormik({
+    initialValues: initialValues,
+    onSubmit: onSubmit,
+    validationSchema: getValidationSchema({ mandatoryFields }),
+  })
 
-          <FormikConsumer>
-            {(formik) => (
-              <>
-                <VenueFormActionBar
-                  venue={venue}
-                  disableFormSubmission={!formik.dirty}
-                  isSubmitting={formik.isSubmitting}
+  return (
+    <FormikProvider value={formik}>
+      <Form>
+        <ScrollToFirstErrorAfterSubmit />
+        <FormLayout fullWidthActions>
+          <FormLayout.Section title="Vos informations pour le grand public">
+            {hasMandatoryInfo && <MandatoryInfo />}
+            <FormLayout.SubSection
+              title="À propos de votre activité"
+              description={
+                venue.isVirtual
+                  ? undefined
+                  : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+              }
+            >
+              <FormLayout.Row>
+                <TextArea
+                  name="description"
+                  label="Description"
+                  description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                  maxLength={1000}
+                  isOptional
                 />
-                <RouteLeavingGuardVenueEdition
-                  shouldBlock={formik.dirty && !formik.isSubmitting}
+              </FormLayout.Row>
+            </FormLayout.SubSection>
+            {isOpenToPublicEnabled ? (
+              <FormLayout.SubSection title="Accueil du public">
+                <FormLayout.Row>
+                  <OpenToPublicToggle
+                    onChange={async (e) => {
+                      await formik.setFieldValue(
+                        'isOpenToPublic',
+                        e.target.value
+                      )
+
+                      if (e.target.value === 'false') {
+                        await resetOpeningHoursAndAccessibility(formik)
+                      }
+                    }}
+                    radioDescriptions={{
+                      yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
+                    }}
+                  />
+                </FormLayout.Row>
+                {formik.values.isOpenToPublic === 'true' && (
+                  <>
+                    <FormLayout.SubSubSection
+                      title="Adresse et horaires"
+                      className={styles['opening-hours-subsubsection']}
+                    >
+                      <FormLayout.Row>
+                        <TextInput
+                          name="street"
+                          label="Adresse postale"
+                          className={
+                            styles['opening-hours-subsubsection-address-input']
+                          }
+                          disabled
+                          isOptional
+                          value={getFormattedAddress(venue.address)}
+                        />
+                        <Callout
+                          testId="address-callout"
+                          className={
+                            styles['opening-hours-subsubsection-callout']
+                          }
+                        >
+                          Pour modifier l’adresse de votre structure,
+                          rendez-vous dans votre page Paramètres généraux.
+                        </Callout>
+                      </FormLayout.Row>
+                      <FormLayout.Row>
+                        <OpeningHoursForm />
+                      </FormLayout.Row>
+                    </FormLayout.SubSubSection>
+                    <AccessibilityForm
+                      isVenuePermanent={true}
+                      externalAccessibilityId={venue.externalAccessibilityId}
+                      externalAccessibilityData={
+                        venue.externalAccessibilityData
+                      }
+                      isSubSubSection
+                    />
+                  </>
+                )}
+              </FormLayout.SubSection>
+            ) : (
+              <>
+                {venue.isPermanent && (
+                  <FormLayout.SubSection title="Horaires d'ouverture">
+                    <OpeningHoursForm />
+                  </FormLayout.SubSection>
+                )}
+                <AccessibilityForm
+                  isVenuePermanent={Boolean(venue.isPermanent)}
+                  externalAccessibilityId={venue.externalAccessibilityId}
+                  externalAccessibilityData={venue.externalAccessibilityData}
                 />
               </>
             )}
-          </FormikConsumer>
-        </Form>
-      )}
-    </Formik>
+            <FormLayout.SubSection
+              title="Contact"
+              description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
+            >
+              <FormLayout.Row>
+                <PhoneNumberInput
+                  name="phoneNumber"
+                  label="Téléphone"
+                  isOptional
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  name="email"
+                  label="Adresse email"
+                  description="Format : email@exemple.com"
+                  isOptional
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  name="webSite"
+                  label="URL de votre site web"
+                  description="Format : https://exemple.com"
+                  isOptional
+                />
+              </FormLayout.Row>
+            </FormLayout.SubSection>
+          </FormLayout.Section>
+        </FormLayout>
+
+        <FormikConsumer>
+          {(formik) => (
+            <>
+              <VenueFormActionBar
+                venue={venue}
+                disableFormSubmission={!formik.dirty}
+                isSubmitting={formik.isSubmitting}
+              />
+              <RouteLeavingGuardVenueEdition
+                shouldBlock={formik.dirty && !formik.isSubmitting}
+              />
+            </>
+          )}
+        </FormikConsumer>
+      </Form>
+    </FormikProvider>
   )
 }

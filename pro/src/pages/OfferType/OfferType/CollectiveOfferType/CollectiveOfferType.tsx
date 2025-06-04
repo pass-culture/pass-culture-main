@@ -15,7 +15,6 @@ import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './CollectiveOfferType.module.scss'
@@ -41,6 +40,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
     <>
       {offerer?.isValidated && offerer.allowedOnAdage && (
         <RadioGroup
+          variant="detailed"
           name="collectiveOfferSubtype"
           className={styles['container']}
           legend={
@@ -66,7 +66,6 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
               icon: strokeTemplateOfferIcon,
             },
           ]}
-          variant={RadioVariant.BOX}
         />
       )}
 
@@ -74,6 +73,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
         getValues('offer.collectiveOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
           <RadioGroup
+            variant="detailed"
             name="collectiveOfferSubtypeDuplicate"
             className={styles['container']}
             legend={
@@ -101,7 +101,6 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                 icon: strokeDuplicateOfferIcon,
               },
             ]}
-            variant={RadioVariant.BOX}
           />
         )}
 
