@@ -146,6 +146,25 @@ export const DetailsForm = ({
                 error={errors.description?.message}
               />
             </FormLayout.Row>
+            <FormLayout.Row
+              sideComponent={<MarkdownInfoBox />}
+              className={styles['row']}
+            >
+              <Select
+                name={'strongTime'}
+                label="Évenement associé"
+                options={[
+                  {
+                    label: 'Aucun',
+                    value: 'none',
+                  },
+                ]}
+                defaultOption={{
+                  label: 'Journées Européennes du Patrimoine 2025',
+                  value: 'JEP2025',
+                }}
+              />
+            </FormLayout.Row>
             {(categoryStatus === CATEGORY_STATUS.ONLINE ||
               offer?.isDigital) && (
               <FormLayout.Row

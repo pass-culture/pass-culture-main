@@ -10,6 +10,7 @@ import { useOffererNamesQuery } from 'commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { Newsletter } from 'components/Newsletter/Newsletter'
+import { HeroHighlightBanner } from 'pages/AdageIframe/app/components/HeroHighlightBanner/HeroHighlightBanner'
 import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -80,6 +81,17 @@ export const Homepage = (): JSX.Element => {
   return (
     <>
       <Layout mainHeading="Bienvenue sur votre espace partenaire">
+        <HeroHighlightBanner
+          title={
+            '✨ Les Journées Européennes du Patrimoine 2025 approchent : créez une offre spéciale pour l’occasion !'
+          }
+          description={
+            "Votre offre  sera mise en avant sur les pages de l'application jeune en lien avec le temps fort."
+          }
+          redirectTo={
+            '/offre/individuelle/creation/details?offer-type=PHYSICAL_EVENT'
+          }
+        />
         <div className={styles['reimbursements-banners']}>
           <AddBankAccountCallout offerer={selectedOfferer} />
           <LinkVenueCallout offerer={selectedOfferer} />
@@ -91,13 +103,11 @@ export const Homepage = (): JSX.Element => {
             offerer={selectedOfferer}
           />
         )}
-
         {selectedOfferer?.isValidated && selectedOfferer.isActive && (
           <section className={styles['section']}>
             <StatisticsDashboard offerer={selectedOfferer} />
           </section>
         )}
-
         <section className={styles['section']} ref={offerersRef}>
           <Offerers
             selectedOfferer={selectedOfferer}
@@ -107,7 +117,6 @@ export const Homepage = (): JSX.Element => {
             venueTypes={venueTypes}
           />
         </section>
-
         {isUserOffererValidated &&
           hasNoVenueVisible &&
           selectedOfferer !== null && (
@@ -118,7 +127,6 @@ export const Homepage = (): JSX.Element => {
               />
             </section>
           )}
-
         <section className={styles['section']} ref={profileRef}>
           <div className={styles['newsletter']}>
             <Newsletter />

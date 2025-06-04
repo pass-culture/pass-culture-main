@@ -72,7 +72,14 @@ export const OfferSection = ({
       text: offerData.venuePublicName || offerData.venueName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: !offerData.description ? '-' : <Markdown markdownText={offerData.description} /> },
+    {
+      title: 'Description',
+      text: !offerData.description ? (
+        '-'
+      ) : (
+        <Markdown markdownText={offerData.description} />
+      ),
+    },
   ].concat(
     offer.isDigital
       ? {
