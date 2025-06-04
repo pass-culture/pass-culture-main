@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
-import { OfferAddressType } from 'apiClient/adage'
+import { CollectiveLocationType, OfferAddressType } from 'apiClient/adage'
 import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
@@ -147,12 +147,74 @@ describe('OA feature flag', () => {
     })
     expect(screen.getByText('Localisation de l’offre')).toBeInTheDocument()
   })
-  it('should display the right wording with the OA FF', () => {
-    renderAdageOfferInfoSection({
-      offer: {
-        ...defaultCollectiveOffer,
+
+  it('should display the right address when location type is address', () => {
+    renderAdageOfferInfoSection(
+      {
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              id: 1,
+              id_oa: 1,
+              isManualEdition: false,
+              latitude: 48.8566,
+              longitude: 2.3522,
+              label: 'Label',
+              street: '123 Rue de Meaux',
+              city: 'Paris',
+              postalCode: '75000',
+            },
+          },
+        },
       },
-    })
-    expect(screen.getByText('Localisation de l’offre')).toBeInTheDocument()
+      { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
+    )
+
+    expect(
+      screen.getByText('Label - 123 Rue de Meaux, 75000, Paris')
+    ).toBeInTheDocument()
+  })
+
+  it('should display the right wording when location type is to be defined', () => {
+    renderAdageOfferInfoSection(
+      {
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          location: {
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+            locationComment: 'Test comment section',
+          },
+        },
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
+    )
+
+    expect(
+      screen.getByText('À déterminer avec l’enseignant')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Commentaire')).toBeInTheDocument()
+    expect(screen.getByText('Test comment section')).toBeInTheDocument()
+  })
+
+  it('should display the right wording when location type is school', () => {
+    renderAdageOfferInfoSection(
+      {
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          location: {
+            locationType: CollectiveLocationType.SCHOOL,
+          },
+        },
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
+    )
+
+    expect(
+      screen.getByText(
+        'Le partenaire culturel se déplace dans les établissements scolaires.'
+      )
+    ).toBeInTheDocument()
   })
 })
