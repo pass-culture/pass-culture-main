@@ -31,6 +31,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CreateVenueProviderTest:
+    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=False)
     @pytest.mark.parametrize(
         "venue_type, is_permanent",
         (
@@ -66,7 +67,6 @@ class CreateVenueProviderTest:
                 reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
             )
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     @pytest.mark.parametrize(
         "venue_type",
         (

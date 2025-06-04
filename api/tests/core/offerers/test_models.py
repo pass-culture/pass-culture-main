@@ -183,7 +183,6 @@ class VenueIsEligibleForSearchTest:
         offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     @pytest.mark.parametrize(
         "open_to_public,permanent,validation_status,active,venue_type_code,has_indiv_offer,is_eligible_for_search",
         [

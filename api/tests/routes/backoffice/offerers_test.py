@@ -1760,7 +1760,6 @@ class GetOffererVenuesTest(GetEndpointHelper):
     # - WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
     expected_num_queries = 4
 
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = datetime.datetime.utcnow()
         other_offerer = offerers_factories.OffererFactory()
