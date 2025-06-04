@@ -1,8 +1,11 @@
 import {
+  CollectiveLocationType,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
+  GetCollectiveOfferLocationModel,
   OfferAddressType,
 } from 'apiClient/adage'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 
 import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
@@ -17,7 +20,7 @@ export type AdageOfferInfoSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
 }
 
-function getLocationForOfferVenue(
+export function getLocationForOfferVenue(
   offerVenue: CollectiveOfferResponseModel['offerVenue']
 ) {
   switch (offerVenue.addressType) {
@@ -38,12 +41,44 @@ function getLocationForOfferVenue(
   }
 }
 
+export function getLocation(
+  location: GetCollectiveOfferLocationModel,
+  header: boolean = false
+) {
+  switch (location.locationType) {
+    case CollectiveLocationType.TO_BE_DEFINED:
+      return 'À déterminer avec l’enseignant'
+    case CollectiveLocationType.SCHOOL:
+      return header
+        ? 'Dans l’établissement scolaire'
+        : 'Le partenaire culturel se déplace dans les établissements scolaires.'
+    case CollectiveLocationType.ADDRESS:
+    default:
+      return (
+        <>
+          <div>
+            {location.address?.label} - {location.address?.street},{' '}
+            {location.address?.postalCode}, {location.address?.city}
+          </div>
+        </>
+      )
+  }
+}
+
 export const AdageOfferInfoSection = ({
   offer,
 }: AdageOfferInfoSectionProps) => {
   const offerVenue = offer.offerVenue
 
-  const location = getLocationForOfferVenue(offerVenue)
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
+
+  const location = isCollectiveOaActive
+    ? offer.location
+      ? getLocation(offer.location)
+      : 'Localisation à définir'
+    : getLocationForOfferVenue(offerVenue)
 
   const interventionArea = offer.interventionArea
 
@@ -57,6 +92,17 @@ export const AdageOfferInfoSection = ({
         </h3>
         {location}
       </div>
+
+      {offer.location &&
+        offer.location.locationType ===
+          CollectiveLocationType.TO_BE_DEFINED && (
+          <div className={styles['offer-section-group-item']}>
+            <h3 className={styles['offer-section-group-item-subtitle']}>
+              Commentaire
+            </h3>
+            {offer.location.locationComment ?? '-'}
+          </div>
+        )}
 
       <div className={styles['offer-section-group-item']}>
         <h3 className={styles['offer-section-group-item-subtitle']}>
@@ -75,7 +121,9 @@ export const AdageOfferInfoSection = ({
         interventionArea.length > 0 && (
           <div className={styles['offer-section-group-item']}>
             <h3 className={styles['offer-section-group-item-subtitle']}>
-              Zone de mobilité
+              {isCollectiveOaActive
+                ? 'Départements de mobilité'
+                : 'Zone de mobilité'}
             </h3>
             {getInterventionAreaLabelsToDisplay(interventionArea).map(
               (area, i) => (
