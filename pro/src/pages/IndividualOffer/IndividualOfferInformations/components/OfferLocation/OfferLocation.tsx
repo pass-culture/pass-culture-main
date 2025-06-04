@@ -13,9 +13,8 @@ import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './OfferLocation.module.scss'
 
@@ -44,6 +43,7 @@ export const OfferLocation = ({
   const onChangeOfferLocation = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    formik.handleChange(event)
     const isVenueAddress = event.target.value !== OFFER_LOCATION.OTHER_ADDRESS
     setShowOtherAddress(!isVenueAddress)
     if (isVenueAddress) {
@@ -92,31 +92,26 @@ export const OfferLocation = ({
       title="Localisation de l’offre"
       className={styles['offer-location-wrapper']}
     >
-      <p className={styles['infotext']}>
-        Il s’agit de l’adresse à laquelle les jeunes devront se présenter.
-      </p>
-      <FormLayout.Row className={styles['location-row']}>
-        <RadioButton
-          variant={RadioVariant.BOX}
-          label={venueFullText}
-          name="offerLocation"
-          value={venue?.address?.id_oa.toString() ?? ''}
-          required
-          onChange={onChangeOfferLocation}
-          disabled={readOnlyFields.includes('offerLocation')}
-        />
-      </FormLayout.Row>
-      <FormLayout.Row className={styles['location-row']}>
-        <RadioButton
-          variant={RadioVariant.BOX}
-          label="À une autre adresse"
-          name="offerLocation"
-          value={OFFER_LOCATION.OTHER_ADDRESS}
-          required
-          onChange={onChangeOfferLocation}
-          disabled={readOnlyFields.includes('offerLocation')}
-        />
-      </FormLayout.Row>
+      <RadioGroup
+        legend="Il s’agit de l’adresse à laquelle les jeunes devront se présenter."
+        name="offerLocation"
+        variant="detailed"
+        group={[
+          {
+            label: venueFullText,
+            value: venue?.address?.id_oa.toString() ?? '',
+            sizing: 'fill',
+          },
+          {
+            label: 'À une autre adresse',
+            value: OFFER_LOCATION.OTHER_ADDRESS,
+            sizing: 'fill',
+          },
+        ]}
+        checkedOption={formik.values.offerLocation}
+        onChange={onChangeOfferLocation}
+        disabled={readOnlyFields.includes('offerLocation')}
+      />
       {showOtherAddress && (
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>

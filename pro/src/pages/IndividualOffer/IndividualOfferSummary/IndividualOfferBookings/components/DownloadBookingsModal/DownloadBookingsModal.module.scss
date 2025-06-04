@@ -59,12 +59,6 @@
   }
 }
 
-.table-row:focus-within {
-  @include outline.focus-outline;
-
-  border-radius: rem.torem(4px);
-}
-
 .table-column {
   padding: rem.torem(8px) 0;
 }

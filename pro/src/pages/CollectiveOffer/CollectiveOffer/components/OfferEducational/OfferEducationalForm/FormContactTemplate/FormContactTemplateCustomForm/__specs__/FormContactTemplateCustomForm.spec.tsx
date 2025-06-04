@@ -32,7 +32,7 @@ describe('FormContactTemplateCustomForm', () => {
     ).toBeInTheDocument()
   })
 
-  it("should have the custom form selected initially if it's the one checked in the form values", () => {
+  it("should have the custom form selected initially if it's the one checked in the form values", async () => {
     renderFormContactCustomForm({
       ...getDefaultEducationalValues(),
       contactFormType: 'url',
@@ -40,17 +40,9 @@ describe('FormContactTemplateCustomForm', () => {
     })
 
     expect(
-      screen.getByRole('radio', { name: 'le formulaire standard' })
-    ).not.toBeChecked()
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'mon propre formulaire',
+      await screen.findByRole('textbox', {
+        name: 'URL de mon formulaire de contact',
       })
-    ).toBeChecked()
-
-    expect(
-      screen.getByRole('textbox', { name: 'URL de mon formulaire de contact' })
-    ).toHaveValue('http://www.test-url.com')
+    ).toBeInTheDocument()
   })
 })

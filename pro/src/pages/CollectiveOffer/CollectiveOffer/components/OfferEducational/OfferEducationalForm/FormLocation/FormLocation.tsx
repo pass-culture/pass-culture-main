@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 
 import {
   CollectiveLocationType,
@@ -14,10 +14,12 @@ import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import {
+  RadioGroup,
+  RadioGroupProps,
+} from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -31,7 +33,6 @@ export const FormLocation = ({
   venues,
   disableForm,
 }: FormLocationProps): JSX.Element => {
-  const specificAddressId = useId()
   const formik = useFormikContext<OfferEducationalFormValues>()
   const setFieldValue = formik.setFieldValue
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
@@ -70,6 +71,8 @@ export const FormLocation = ({
   const handleAddressLocationChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    await setFieldValue('location.address.id_oa', event.target.value)
+
     const isSpecificAddress = event.target.value === 'SPECIFIC_ADDRESS'
 
     if (isSpecificAddress) {
@@ -86,31 +89,33 @@ export const FormLocation = ({
     await setFieldValue('location.address.isManualEdition', false)
   }
 
-  const locationTypeRadios = [
+  const locationTypeRadios: RadioGroupProps['group'] = [
     {
-      label: <span id={specificAddressId}>À une adresse précise</span>,
+      label: 'À une adresse précise',
       value: CollectiveLocationType.ADDRESS,
-      childrenOnChecked: (
+      sizing: 'fill',
+      collapsed: (
         <RadioGroup
-          describedBy={specificAddressId}
           onChange={handleAddressLocationChange}
-          variant={RadioVariant.BOX}
           disabled={disableForm}
+          legend="Type d'adresse"
+          variant="detailed"
+          checkedOption={formik.getFieldProps('location.address.id_oa').value}
+          name="location.address.id_oa"
           group={[
             {
-              label: (
-                <span>
-                  {selectedVenue &&
-                    `${selectedVenue.address?.label} - ${selectedVenue.address?.street}
-                  ${selectedVenue.address?.postalCode} ${selectedVenue.address?.city}`}
-                </span>
-              ),
+              label: selectedVenue
+                ? `${selectedVenue.address?.label} - ${selectedVenue.address?.street}
+                  ${selectedVenue.address?.postalCode} ${selectedVenue.address?.city}`
+                : 'Adresse du lieu sélectionné',
               value: selectedVenue?.address?.id_oa.toString() ?? '',
+              sizing: 'fill',
             },
             {
               label: 'Autre adresse',
               value: 'SPECIFIC_ADDRESS',
-              childrenOnChecked: (
+              sizing: 'fill',
+              collapsed: (
                 <>
                   <TextInput
                     label="Intitulé de la localisation"
@@ -152,14 +157,14 @@ export const FormLocation = ({
               ),
             },
           ]}
-          name={'location.address.id_oa'}
         />
       ),
     },
     {
       label: 'En établissement scolaire',
       value: CollectiveLocationType.SCHOOL,
-      childrenOnChecked: (
+      sizing: 'fill',
+      collapsed: (
         <InterventionAreaMultiSelect
           label="Indiquez aux enseignants les départements dans lesquels vous
             proposez votre offre."
@@ -170,7 +175,8 @@ export const FormLocation = ({
     {
       label: 'À déterminer avec l’enseignant',
       value: CollectiveLocationType.TO_BE_DEFINED,
-      childrenOnChecked: (
+      sizing: 'fill',
+      collapsed: (
         <>
           <InterventionAreaMultiSelect
             label="Même si le lieu reste à définir, précisez aux enseignants les départements dans lesquels vous proposez votre offre."
@@ -190,6 +196,7 @@ export const FormLocation = ({
   const handleLocationTypeChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    await setFieldValue('location.locationType', event.target.value)
     if (event.target.value === CollectiveLocationType.ADDRESS) {
       const { address } = selectedVenue || {}
       // If here, the user chose to use the venue address
@@ -210,12 +217,13 @@ export const FormLocation = ({
       <RadioGroup
         onChange={handleLocationTypeChange}
         group={locationTypeRadios}
+        variant="detailed"
         legend={
           <h2 className={styles['subtitle']}>Où se déroule votre offre ? *</h2>
         }
         name="location.locationType"
-        variant={RadioVariant.BOX}
         disabled={disableForm}
+        checkedOption={formik.getFieldProps('location.locationType').value}
       />
     </FormLayout.Row>
   )

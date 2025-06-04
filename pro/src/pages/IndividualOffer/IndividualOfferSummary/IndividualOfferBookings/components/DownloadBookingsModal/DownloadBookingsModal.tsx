@@ -15,12 +15,12 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
 import { pluralize } from 'commons/utils/pluralize'
+import { RadioButton } from 'design-system/RadioButton/RadioButton'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { BaseRadio, RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import style from './DownloadBookingsModal.module.scss'
@@ -92,24 +92,11 @@ export const DownloadBookingsModal = ({
     return (
       <tr key={eventDate} className={style['table-row']}>
         <td className={style['table-column']}>
-          <BaseRadio
-            type="radio"
+          <RadioButton
             value={eventDate}
             name="bookings-date-select"
             checked={selectedDate === eventDate}
-            className={style['bookings-date-radio']}
-            label={
-              <div className={style['radio-label']}>
-                <abbr
-                  title={day}
-                  className={style['bookings-day']}
-                  data-testid="short-week-day"
-                >
-                  {day.substring(0, 3)}
-                </abbr>
-                <span>{format(date, FORMAT_DD_MM_YYYY)}</span>
-              </div>
-            }
+            label={`${day.substring(0, 3)} ${format(date, FORMAT_DD_MM_YYYY)}`}
             onChange={() => setSelectedDate(eventDate)}
           />
         </td>
@@ -172,6 +159,7 @@ export const DownloadBookingsModal = ({
         )}
       </fieldset>
       <RadioGroup
+        variant="detailed"
         legend="Sélectionnez le type de réservations :"
         name="selectedBookingType"
         onChange={(e) => {
@@ -194,7 +182,6 @@ export const DownloadBookingsModal = ({
             icon: strokeDeskIcon,
           },
         ]}
-        variant={RadioVariant.BOX}
       />
 
       <DialogBuilder.Footer>

@@ -524,7 +524,7 @@ describe('VenueEditionFormScreen', () => {
         )
 
         const toggle = screen.getByRole('group', {
-          name: 'Accueillez-vous du public dans votre structure ? *',
+          name: 'Accueillez-vous du public dans votre structure ?',
         })
         expect(toggle).toBeInTheDocument()
       })
