@@ -4,7 +4,8 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { TagVariant } from 'design-system/Tag/Tag'
 import strokeDateIcon from 'icons/stroke-date.svg'
 
-import imageDemo from './assets/image-demo.png'
+import imageDemo from '../assets/dog.jpg'
+
 import { RadioButton } from './RadioButton'
 
 export default {
@@ -102,7 +103,7 @@ export const DetailedWithImage: StoryObj<typeof RadioButton> = {
     label: 'Avec image',
     variant: 'detailed',
     image: imageDemo,
-    imageSize: 'S',
+    imageSize: 's',
   },
 }
 

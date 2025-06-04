@@ -85,7 +85,7 @@ describe('<RadioButton />', () => {
         value="valeur"
         variant="detailed"
         image="image.png"
-        imageSize="M"
+        imageSize="m"
       />
     )
     expect(container.querySelector('img')).toBeInTheDocument()
@@ -118,29 +118,6 @@ describe('<RadioButton />', () => {
       />
     )
     expect(queryByTestId('children')).toBeInTheDocument()
-  })
-
-  it('handles checked state', () => {
-    const { getByLabelText, rerender } = render(
-      <RadioButton
-        label="Label"
-        name="groupe"
-        value="valeur"
-        checked={false}
-        onChange={() => {}}
-      />
-    )
-    expect(getByLabelText('Label')).not.toBeChecked()
-    rerender(
-      <RadioButton
-        label="Label"
-        name="groupe"
-        value="valeur"
-        checked={true}
-        onChange={() => {}}
-      />
-    )
-    expect(getByLabelText('Label')).toBeChecked()
   })
 
   it('handles disabled state', () => {

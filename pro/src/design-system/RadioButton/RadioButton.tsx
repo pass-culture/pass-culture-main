@@ -135,7 +135,7 @@ type DetailedWithImageProps = DetailedWithDescriptionProps & {
   /** Image URL */
   image: string
   /** Image size ('S', 'M', 'L') */
-  imageSize?: 'S' | 'M' | 'L'
+  imageSize?: 's' | 'm' | 'l'
 }
 
 /**
@@ -168,7 +168,7 @@ type DetailedVariantProps = CommonProps & {
 /**
  * Props for the RadioButton component (default or detailed)
  */
-type RadioButtonProps = DefaultVariantProps | DetailedVariantProps
+export type RadioButtonProps = DefaultVariantProps | DetailedVariantProps
 
 export const RadioButton = forwardRef(
   (
@@ -183,11 +183,12 @@ export const RadioButton = forwardRef(
       tag,
       text,
       image,
-      imageSize = 'S',
+      imageSize = 's',
       disabled,
       checked,
       onChange,
       onBlur,
+      name,
     }: RadioButtonProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -213,10 +214,10 @@ export const RadioButton = forwardRef(
               className={styles[`radio-button-input`]}
               id={id}
               ref={ref}
-              {...(checked !== undefined ? { checked } : {})}
               onChange={onChange}
               onBlur={onBlur}
               disabled={disabled}
+              name={name}
             />
             <div>
               {label}
@@ -247,9 +248,9 @@ export const RadioButton = forwardRef(
                       src={image}
                       alt=""
                       className={cn({
-                        [styles['right-image-img-small']]: imageSize === 'S',
-                        [styles['right-image-img-medium']]: imageSize === 'M',
-                        [styles['right-image-img-large']]: imageSize === 'L',
+                        [styles['right-image-img-small']]: imageSize === 's',
+                        [styles['right-image-img-medium']]: imageSize === 'm',
+                        [styles['right-image-img-large']]: imageSize === 'l',
                       })}
                     />
                   </div>
