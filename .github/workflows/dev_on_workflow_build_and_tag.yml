@@ -15,7 +15,7 @@ on:
       tag_prefix:
         required: false
         type: string
-        default: 'release'
+        default: "release"
 
       tag_number:
         # 200.0.2 for example.
@@ -32,6 +32,9 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   build-and-tag-version:
     runs-on: ubuntu-22.04
@@ -41,17 +44,16 @@ jobs:
       TAG_NAME: v${{ inputs.tag_number }}
     steps:
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-            PUSH_TOKEN:passculture-metier-ehp/passculture-main-push-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             COSIGN_KMS_KEY:passculture-metier-ehp/cosign_kms_key
@@ -59,7 +61,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.base_ref }}
-          token: ${{ steps.secrets.outputs.PUSH_TOKEN }}
       - name: "Configure git author"
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"
