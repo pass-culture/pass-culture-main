@@ -117,7 +117,7 @@ class MoveCollectiveOfferSuccessTest:
 
     def test_move_collective_offer_without_pricing_points(self):
         """
-        A collective offer on a venue without pricing point can be moved to another venue without pricing point
+        A collective offer on a venue without pricing point can only be moved to another venue without pricing point
         """
         collective_offer = educational_factories.CollectiveOfferFactory()
         destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
@@ -129,20 +129,22 @@ class MoveCollectiveOfferSuccessTest:
         db.session.refresh(collective_offer)
         assert collective_offer.venue == destination_venue
 
-    def test_move_collective_offer_without_pricing_point_to_venue_with_pricing_point(self):
+    def test_move_collective_offer_with_inactive_pricing_points(self):
         """
-        A collective offer on a venue without pricing point can be moved to another venue with a pricing point
+        A collective offer on a venue without pricing point can only be moved to another venue without pricing point
         """
-        venue = offerers_factories.VenueFactory()
-        destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        pricing_point_venue_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, name="current")
-
+        collective_offer = educational_factories.CollectiveOfferFactory()
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(
             venue=destination_venue,
-            pricingPoint=pricing_point_venue_1,
-            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            pricingPoint=destination_venue,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            ],
         )
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        assert collective_offer.venue.current_pricing_point_link is None
+        assert destination_venue.current_pricing_point_link is None
 
         collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
 
@@ -346,6 +348,26 @@ class MoveCollectiveOfferSuccessTest:
 
 @pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveCollectiveOfferFailTest:
+    def test_move_collective_offer_without_pricing_point_to_venue_with_pricing_point(self):
+        """
+        A collective offer on a venue without pricing point cannot be moved to another venue with pricing point
+        """
+        collective_offer = educational_factories.CollectiveOfferFactory()
+        destination_venue = offerers_factories.VenueFactory(managingOfferer=collective_offer.venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=destination_venue,
+            pricingPoint=destination_venue,
+            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+        )
+        assert collective_offer.venue.current_pricing_point_link is None
+        assert destination_venue.current_pricing_point_link is not None
+
+        with pytest.raises(api.exceptions.NoDestinationVenue):
+            collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
+
+        db.session.refresh(collective_offer)
+        assert collective_offer.venue != destination_venue
+
     def test_move_collective_offer_with_different_pricing_point(self):
         venue = offerers_factories.VenueFactory()
         invalid_destination_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
