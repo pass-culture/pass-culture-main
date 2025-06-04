@@ -1279,6 +1279,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Actif"
         case "adageId":
             return "ID ADAGE"
+        case "isOpenToPublic":
+            return "Accueil du public"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
