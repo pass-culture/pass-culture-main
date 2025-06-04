@@ -35,7 +35,6 @@ interface OfferSummaryProps {
 }
 
 export const OfferSection = ({
-  conditionalFields,
   offer,
   isEventPublicationFormShown,
 }: OfferSummaryProps): JSX.Element => {
@@ -61,18 +60,20 @@ export const OfferSection = ({
     return <Spinner />
   }
 
-  const offerTypeDescriptions: Description[] = [
-    { title: 'Catégorie', text: offerData.categoryName },
-    { title: 'Sous-catégorie', text: offerData.subCategoryName },
-  ]
-
   const aboutDescriptions: Description[] = [
     {
       title: 'Structure',
       text: offerData.venuePublicName || offerData.venueName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: !offerData.description ? '-' : <Markdown markdownText={offerData.description} /> },
+    {
+      title: 'Description',
+      text: !offerData.description ? (
+        '-'
+      ) : (
+        <Markdown markdownText={offerData.description} />
+      ),
+    },
   ].concat(
     offer.isDigital
       ? {
@@ -81,65 +82,6 @@ export const OfferSection = ({
         }
       : []
   )
-
-  const artisticInfoDescriptions: Description[] = []
-  if (conditionalFields.includes('musicType')) {
-    artisticInfoDescriptions.push({
-      title: 'Genre musical',
-      text: offerData.musicTypeName || '-',
-    })
-  }
-  if (conditionalFields.includes('showType')) {
-    artisticInfoDescriptions.push({
-      title: 'Type de spectacle',
-      text: offerData.showTypeName || '-',
-    })
-  }
-  if (offerData.showSubTypeName) {
-    artisticInfoDescriptions.push({
-      title: 'Sous-type',
-      text: offerData.showSubTypeName,
-    })
-  }
-
-  if (conditionalFields.includes('speaker')) {
-    artisticInfoDescriptions.push({
-      title: 'Intervenant',
-      text: offerData.speaker,
-    })
-  }
-  if (conditionalFields.includes('author')) {
-    artisticInfoDescriptions.push({ title: 'Auteur', text: offerData.author })
-  }
-  if (conditionalFields.includes('visa')) {
-    artisticInfoDescriptions.push({
-      title: 'Visa d’exploitation',
-      text: offerData.visa,
-    })
-  }
-  if (conditionalFields.includes('ean')) {
-    artisticInfoDescriptions.push({ title: 'EAN-13', text: offerData.ean })
-  }
-  if (conditionalFields.includes('stageDirector')) {
-    artisticInfoDescriptions.push({
-      title: 'Metteur en scène',
-      text: offerData.stageDirector,
-    })
-  }
-  if (conditionalFields.includes('performer')) {
-    artisticInfoDescriptions.push({
-      title: 'Interprète',
-      text: offerData.performer,
-    })
-  }
-  if (conditionalFields.includes('durationMinutes')) {
-    artisticInfoDescriptions.push({
-      title: 'Durée',
-      text: offerData.durationMinutes
-        ? `${offerData.durationMinutes} min`
-        : '-',
-    })
-  }
 
   const practicalInfoDescriptions: Description[] = []
   if (offerData.withdrawalType) {
@@ -170,20 +112,6 @@ export const OfferSection = ({
     })
   }
 
-  const artisticInformationsFields = [
-    'speaker',
-    'author',
-    'visa',
-    'stageDirector',
-    'performer',
-    'ean',
-    'durationMinutes',
-  ]
-
-  const displayArtisticInformations = artisticInformationsFields.some((field) =>
-    conditionalFields.includes(field)
-  )
-
   return (
     <SummarySection
       title="Détails de l’offre"
@@ -204,14 +132,6 @@ export const OfferSection = ({
       <SummarySubSection title="À propos de votre offre">
         <SummaryDescriptionList descriptions={aboutDescriptions} />
       </SummarySubSection>
-      <SummarySubSection title="Type d’offre">
-        <SummaryDescriptionList descriptions={offerTypeDescriptions} />
-      </SummarySubSection>
-      {displayArtisticInformations && (
-        <SummarySubSection title="Informations artistiques">
-          <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
-        </SummarySubSection>
-      )}
       <SummarySection
         title="Informations pratiques"
         editLink={getIndividualOfferUrl({

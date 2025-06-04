@@ -49,11 +49,6 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     musicTypesQuery.data
   )
 
-  const subcategory = subCategories.find(
-    (sucategory) => sucategory.id === offer.subcategoryId
-  )
-  const conditionalFields = subcategory?.conditionalFields || []
-
   const aboutDescriptions: Description[] = [
     {
       title: 'Structure',
@@ -76,86 +71,6 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
         }
       : []
   )
-
-  const typeDescriptions: Description[] = [
-    { title: 'Catégorie', text: offerData.categoryName },
-    { title: 'Sous-catégorie', text: offerData.subCategoryName },
-  ]
-
-  const artisticInfoDescriptions: Description[] = []
-  if (conditionalFields.includes('musicType')) {
-    artisticInfoDescriptions.push({
-      title: 'Genre musical',
-      text: offerData.musicTypeName || '-',
-    })
-  }
-  if (conditionalFields.includes('showType')) {
-    artisticInfoDescriptions.push({
-      title: 'Type de spectacle',
-      text: offerData.showTypeName || '-',
-    })
-  }
-  if (offerData.showSubTypeName) {
-    artisticInfoDescriptions.push({
-      title: 'Sous-type',
-      text: offerData.showSubTypeName,
-    })
-  }
-  if (conditionalFields.includes('speaker')) {
-    artisticInfoDescriptions.push({
-      title: 'Intervenant',
-      text: offerData.speaker,
-    })
-  }
-  if (conditionalFields.includes('author')) {
-    artisticInfoDescriptions.push({ title: 'Auteur', text: offerData.author })
-  }
-  if (conditionalFields.includes('visa')) {
-    artisticInfoDescriptions.push({
-      title: 'Visa d’exploitation',
-      text: offerData.visa,
-    })
-  }
-  if (conditionalFields.includes('ean')) {
-    artisticInfoDescriptions.push({ title: 'EAN-13', text: offerData.ean })
-  }
-  if (conditionalFields.includes('stageDirector')) {
-    artisticInfoDescriptions.push({
-      title: 'Metteur en scène',
-      text: offerData.stageDirector,
-    })
-  }
-  if (conditionalFields.includes('performer')) {
-    artisticInfoDescriptions.push({
-      title: 'Interprète',
-      text: offerData.performer,
-    })
-  }
-  if (subcategory?.isEvent) {
-    artisticInfoDescriptions.push({
-      title: 'Durée',
-      text: offerData.durationMinutes
-        ? `${offerData.durationMinutes} min`
-        : '-',
-    })
-  }
-
-  const artisticInformationsFields = [
-    'speaker',
-    'author',
-    'visa',
-    'stageDirector',
-    'performer',
-    'ean',
-    'durationMinutes',
-    'showType',
-    'gtl_id',
-  ]
-
-  const displayArtisticInformations = artisticInformationsFields.some(
-    (field) => conditionalFields.includes(field) || subcategory?.isEvent
-  )
-
   const cannotEditDetails = offerData.isProductBased
 
   return (
@@ -183,14 +98,6 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
           <SummarySubSection title="A propos de votre offre">
             <SummaryDescriptionList descriptions={aboutDescriptions} />
           </SummarySubSection>
-          <SummarySubSection title="Type d’offre">
-            <SummaryDescriptionList descriptions={typeDescriptions} />
-          </SummarySubSection>
-          {displayArtisticInformations && (
-            <SummarySubSection title="Informations artistiques">
-              <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
-            </SummarySubSection>
-          )}
         </SummarySection>
       </SummaryContent>
       <SummaryAside>

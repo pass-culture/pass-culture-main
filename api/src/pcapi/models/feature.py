@@ -152,6 +152,7 @@ class FeatureToggle(enum.Enum):
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     )
+    WIP_HACKATON_AUTOMATICALLY_ASSIGN_OFFER_CATEGORY = "Assigne automatiquement une catégorie et une sous catégorie à une offre à partir de son titre et sa description grace à l'IA"
     WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_REFACTO_FUTURE_OFFER = "Activer la nouvelle gestion des publications dans le futur"
     WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY = "Autoriser le rattachement seulement pour les collectivités"
@@ -233,6 +234,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
+    FeatureToggle.WIP_HACKATON_AUTOMATICALLY_ASSIGN_OFFER_CATEGORY,
     FeatureToggle.WIP_IS_OPEN_TO_PUBLIC,
     FeatureToggle.WIP_REFACTO_FUTURE_OFFER,
     FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,

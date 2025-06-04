@@ -331,7 +331,8 @@ export const IndividualOfferDetailsScreen = ({
             isDisabled={
               form.formState.isSubmitting ||
               Boolean(offer && isOfferDisabled(offer.status)) ||
-              Boolean(publishedOfferWithSameEAN)
+              Boolean(publishedOfferWithSameEAN) ||
+              form.formState.errors.root?.type === 'asyncJobNotFinished'
             }
             dirtyForm={form.formState.isDirty || offer === null}
           />
