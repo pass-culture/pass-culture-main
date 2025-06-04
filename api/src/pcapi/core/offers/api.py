@@ -1867,7 +1867,11 @@ def move_offer(
         db.session.query(bookings_models.Booking)
         .with_entities(bookings_models.Booking.id)
         .join(bookings_models.Booking.stock)
-        .filter(models.Stock.offerId == offer.id)
+        .filter(
+            models.Stock.offerId == offer.id,
+            bookings_models.Booking.venueId == original_venue.id,
+        )
+        .limit(10_000)
     )
     bookings = db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(bookings_ids))
 
@@ -1894,7 +1898,8 @@ def move_offer(
             price_category.priceCategoryLabel = labels_mapping[price_category.priceCategoryLabel]
             db.session.add(price_category)
 
-        bookings.update({"venueId": destination_venue.id}, synchronize_session=False)
+        while updated_bookings := bookings.update({"venueId": destination_venue.id}, synchronize_session=False):
+            logger.info("Updated %d bookings for offer %d", updated_bookings, offer_id)
 
     on_commit(
         partial(
