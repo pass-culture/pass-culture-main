@@ -5,7 +5,7 @@ import { FieldError } from '../FieldError/FieldError'
 
 import styles from './FieldSetLayout.module.scss'
 
-export interface FieldSetLayoutProps {
+interface FieldSetLayoutProps {
   children: React.ReactNode
   legend?: string | React.ReactNode
   className?: string
