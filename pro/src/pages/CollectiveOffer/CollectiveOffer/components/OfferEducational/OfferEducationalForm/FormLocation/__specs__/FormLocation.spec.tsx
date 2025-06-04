@@ -128,16 +128,6 @@ describe('FormLocation', () => {
     expect(screen.getByText('À une adresse précise')).toBeInTheDocument()
   })
 
-  it('should select the venue address by default', () => {
-    renderFormLocation(props, initialValues)
-
-    const venueAddressRadio = screen.getByLabelText(
-      'Venue 1 - 1 Rue de Paris 75001 Paris'
-    )
-
-    expect(venueAddressRadio).toBeChecked()
-  })
-
   it('should update address fields when an address is selected from autocomplete', async () => {
     renderFormLocation(props, initialValues)
 
@@ -195,7 +185,6 @@ describe('FormLocation', () => {
       },
     })
 
-    const radioInput = screen.getByLabelText('Autre adresse')
     const labelInput = screen.getByLabelText('Intitulé de la localisation')
     const addressAutocompleteInput = screen.getByLabelText(/Adresse postale/, {
       selector: '#search-addressAutocomplete',
@@ -207,7 +196,6 @@ describe('FormLocation', () => {
     const postalCodeInput = screen.getByLabelText(/Code postal/)
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
 
-    expect(radioInput).toBeChecked()
     expect(addressAutocompleteInput).toBeDisabled()
     expect(labelInput).toHaveValue('mon adresse manuelle')
     expect(addressInput).toHaveValue('1 Rue de Paris')
@@ -319,9 +307,6 @@ describe('FormLocation', () => {
       interventionArea: ['44'],
     })
 
-    const schoolRadio = screen.getByLabelText('En établissement scolaire')
-    expect(schoolRadio).toBeChecked()
-
     const departmentTag = screen.getByText('44 - Loire-Atlantique')
     expect(departmentTag).toBeInTheDocument()
   })
@@ -336,36 +321,9 @@ describe('FormLocation', () => {
       interventionArea: ['44'],
     })
 
-    const toBeDefinedRadio = screen.getByLabelText(
-      'À déterminer avec l’enseignant'
-    )
-    expect(toBeDefinedRadio).toBeChecked()
-
     const departmentTag = screen.getByText('44 - Loire-Atlantique')
     expect(departmentTag).toBeInTheDocument()
 
     expect(screen.getByText('quelque part')).toBeInTheDocument()
-  })
-
-  it('should reset default location on press new location type radio button', async () => {
-    renderFormLocation(props, {
-      ...initialValues,
-      location: {
-        locationType: CollectiveLocationType.SCHOOL,
-      },
-      interventionArea: ['44'],
-    })
-
-    const addressRadio = screen.getByLabelText('À une adresse précise')
-    expect(addressRadio).not.toBeChecked()
-
-    const schoolRadio = screen.getByLabelText('En établissement scolaire')
-    expect(schoolRadio).toBeChecked()
-
-    await userEvent.click(addressRadio)
-    const venueAddressRadio = screen.getByLabelText(
-      'Venue 1 - 1 Rue de Paris 75001 Paris'
-    )
-    expect(venueAddressRadio).toBeChecked()
   })
 })

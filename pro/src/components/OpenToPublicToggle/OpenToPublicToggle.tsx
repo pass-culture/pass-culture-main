@@ -1,7 +1,7 @@
 import { useField } from 'formik'
+import { useId } from 'react'
 
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './OpenToPublicToggle.module.scss'
 
@@ -23,6 +23,8 @@ export const OpenToPublicToggle = ({
   radioDescriptions = {},
   onChange,
 }: OpenToPublicToggleProps): JSX.Element => {
+  const descriptionId = useId()
+
   const [isOpenToPublic] = useField('isOpenToPublic')
   const finalRadioDescriptions = {
     ...DEFAULT_RADIO_DESCRIPTIONS,
@@ -35,8 +37,8 @@ export const OpenToPublicToggle = ({
         name="isOpenToPublic"
         className={styles['open-to-public-toggle']}
         legend="Accueillez-vous du public dans votre structure ?"
-        describedBy="description"
-        variant={RadioVariant.BOX}
+        describedBy={descriptionId}
+        variant="detailed"
         group={[
           {
             label: 'Oui',
@@ -48,11 +50,11 @@ export const OpenToPublicToggle = ({
           },
         ]}
         displayMode="inline"
-        isOptional={false}
         onChange={onChange}
+        checkedOption={isOpenToPublic.value}
       />
       <span
-        id="description"
+        id={descriptionId}
         className={styles['open-to-public-toggle-description']}
         aria-live="polite"
       >

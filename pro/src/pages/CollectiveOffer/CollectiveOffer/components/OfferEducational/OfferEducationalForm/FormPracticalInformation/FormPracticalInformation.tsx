@@ -12,10 +12,12 @@ import { offerInterventionOptions } from 'commons/core/shared/interventionOption
 import { SelectOption } from 'commons/custom_types/form'
 import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import {
+  RadioGroup,
+  RadioGroupProps,
+} from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
@@ -88,11 +90,12 @@ export const FormPracticalInformation = ({
     />
   )
 
-  const adressTypeRadios = [
+  const adressTypeRadios: RadioGroupProps['group'] = [
     {
       label: EVENT_ADDRESS_VENUE_LABEL,
       value: OfferAddressType.OFFERER_VENUE,
-      childrenOnChecked: (
+      sizing: 'fill',
+      collapsed: (
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || disableForm}
@@ -114,7 +117,8 @@ export const FormPracticalInformation = ({
     {
       label: EVENT_ADDRESS_SCHOOL_LABEL,
       value: OfferAddressType.SCHOOL,
-      childrenOnChecked: (
+      sizing: 'fill',
+      collapsed: (
         <FormLayout.Row
           sideComponent={
             <InfoBox className={styles['info-box-children']}>
@@ -130,7 +134,8 @@ export const FormPracticalInformation = ({
     {
       label: EVENT_ADDRESS_OTHER_LABEL,
       value: OfferAddressType.OTHER,
-      childrenOnChecked: (
+      sizing: 'fill',
+      collapsed: (
         <FormLayout.Row
           sideComponent={
             <InfoBox className={styles['info-box-children']}>
@@ -222,12 +227,16 @@ export const FormPracticalInformation = ({
   return (
     <FormLayout.Row>
       <RadioGroup
+        variant="detailed"
+        checkedOption={values.eventAddress.addressType}
+        onChange={(e) =>
+          setFieldValue('eventAddress.addressType', e.target.value)
+        }
         group={adressTypeRadios}
         legend={
           <h2 className={styles['subtitle']}>Où se déroule votre offre ? *</h2>
         }
         name="eventAddress.addressType"
-        variant={RadioVariant.BOX}
         disabled={disableForm}
       />
     </FormLayout.Row>

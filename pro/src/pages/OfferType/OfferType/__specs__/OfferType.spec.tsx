@@ -125,7 +125,7 @@ describe('OfferType', () => {
     renderOfferTypes()
 
     expect(
-      await screen.findByRole('heading', { name: 'Votre offre est :' })
+      await screen.findByRole('heading', { name: 'Votre offre est' })
     ).toBeInTheDocument()
 
     await userEvent.click(
@@ -148,7 +148,7 @@ describe('OfferType', () => {
     renderOfferTypes()
 
     expect(
-      await screen.findByRole('heading', { name: 'Votre offre est :' })
+      await screen.findByRole('heading', { name: 'Votre offre est' })
     ).toBeInTheDocument()
 
     await userEvent.click(

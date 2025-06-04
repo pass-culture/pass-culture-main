@@ -15,10 +15,10 @@ import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformation
 import { WithdrawalReminder } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/WithdrawalReminder'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -121,6 +121,7 @@ export const UsefulInformationForm = ({
                 Theses offers are not editable by the user
               */}
               <RadioGroup
+                variant="detailed"
                 group={
                   withdrawalType === WithdrawalTypeEnum.IN_APP
                     ? providedTicketWithdrawalTypeRadios
@@ -128,6 +129,7 @@ export const UsefulInformationForm = ({
                 }
                 legend="Précisez la façon dont vous distribuerez les billets :"
                 name="withdrawalType"
+                checkedOption={withdrawalType || WithdrawalTypeEnum.NO_TICKET}
                 // when withdrawal Type is IN_APP the field should also be readOnly.
                 // I find it better to be explicit about it
                 disabled={

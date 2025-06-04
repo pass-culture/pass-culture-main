@@ -47,7 +47,7 @@ describe('OfferTypeIndividual', () => {
   it('should only display macro choices when nothing is on url', async () => {
     renderOfferTypeIndividual()
 
-    expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
+    expect(await screen.findByText('Votre offre est')).toBeInTheDocument()
     expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
     expect(await screen.findByText('Un bien numérique')).toBeInTheDocument()
     expect(

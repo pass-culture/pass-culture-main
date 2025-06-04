@@ -4,9 +4,8 @@ import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './EventPublicationForm.module.scss'
@@ -56,7 +55,8 @@ const getPublicationHoursOptions = (): SelectOption[] => {
 
 export const EventPublicationForm = () => {
   const today = new Date()
-  const { values } = useFormikContext<EventPublicationFormValues>()
+  const { values, handleChange } =
+    useFormikContext<EventPublicationFormValues>()
 
   return (
     <>
@@ -73,25 +73,22 @@ export const EventPublicationForm = () => {
               ) : null
             }
           >
-            <div className={styles['radio-group']}>
-              <RadioButton
-                label="Tout de suite"
-                name="publicationMode"
-                value="now"
-                variant={RadioVariant.BOX}
-              />
-
-              <RadioButton
-                label="À une date et heure précise"
-                name="publicationMode"
-                value="later"
-                variant={RadioVariant.BOX}
-              />
-            </div>
+            <RadioGroup
+              legend="Choisissez un type de publication"
+              name="publicationMode"
+              variant="detailed"
+              displayMode="inline"
+              group={[
+                { label: 'Tout de suite', value: 'now' },
+                { label: 'À une date et heure précise', value: 'later' },
+              ]}
+              checkedOption={values.publicationMode}
+              onChange={handleChange}
+            />
           </FormLayout.Row>
 
           {values.publicationMode === 'later' && (
-            <FormLayout.Row inline>
+            <FormLayout.Row inline className={styles['publish-later']}>
               <DatePicker
                 label="Date de publication"
                 name="publicationDate"

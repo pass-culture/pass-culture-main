@@ -1,8 +1,9 @@
+import { useField, useFormikContext } from 'formik'
+
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 
@@ -13,18 +14,22 @@ type FormContactTemplateCustomFormProps = {
 export const FormContactTemplateCustomForm = ({
   disableForm,
 }: FormContactTemplateCustomFormProps) => {
+  const [formType] = useField('contactFormType')
+  const { handleChange } = useFormikContext()
   return (
     <div className={styles['contact-checkbox-inner-control']}>
       <RadioGroup
         name="contactFormType"
         legend="Choisissez un type de formulaire"
         disabled={disableForm}
-        variant={RadioVariant.BOX}
+        checkedOption={formType.value}
+        variant="detailed"
+        onChange={handleChange}
         group={[
           {
             label: 'le formulaire standard',
             value: 'form',
-            childrenOnChecked: (
+            collapsed: (
               <ButtonLink
                 isExternal
                 to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
@@ -39,10 +44,9 @@ export const FormContactTemplateCustomForm = ({
           {
             label: 'mon propre formulaire',
             value: 'url',
-            childrenOnChecked: (
+            collapsed: (
               <TextInput
-                label=""
-                aria-label="URL de mon formulaire de contact"
+                label="URL de mon formulaire de contact"
                 isOptional
                 name="contactUrl"
                 disabled={disableForm}

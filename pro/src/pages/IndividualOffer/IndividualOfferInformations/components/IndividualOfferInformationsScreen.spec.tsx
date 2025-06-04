@@ -226,11 +226,11 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
       address: {
         city: 'Paris',
-        isManualEdition: undefined,
+        isManualEdition: false,
         isVenueAddress: true,
         label: 'MINISTERE DE LA CULTURE',
-        latitude: '48.87171',
-        longitude: '2.30829',
+        latitude: 48.87171,
+        longitude: 2.30829,
         postalCode: '75001',
         street: '3 Rue de Valois',
         banId: '75101_9575_00003',

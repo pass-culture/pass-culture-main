@@ -9,7 +9,6 @@ import {
 } from 'components/IndividualOffer/StocksEventCreation/form/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import { StocksCalendarFormSpecificTimeSlots } from './StocksCalendarFormSpecificTimeSlots/StocksCalendarFormSpecificTimeSlots'
@@ -63,7 +62,7 @@ export function StocksCalendarFormTimeAndPrice({
         legend={
           <h2 className={styles['title']}>Le public doit se présenter :</h2>
         }
-        variant={RadioVariant.BOX}
+        variant="detailed"
         className={styles['time-slot-type-group']}
         displayMode="inline-grow"
         checkedOption={form.watch('timeSlotType')}

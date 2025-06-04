@@ -19,13 +19,12 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
-import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
@@ -115,10 +114,13 @@ export const RecurrenceForm = ({
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(priceCategoryOptions),
   })
-  const { values, setFieldValue } = formik
+  const { values, setFieldValue, handleChange } = formik
   const monthlyOptions = getMonthlyOptions(values)
 
-  const onRecurrenceTypeChange = async () => {
+  const onRecurrenceTypeChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    handleChange(e)
     await setFieldValue('startingDate', '')
     await setFieldValue('endingDate', '')
   }
@@ -134,51 +136,33 @@ export const RecurrenceForm = ({
             Tous les champs suivis d’un * sont obligatoires.
           </div>
 
+          <div className={styles['recurrence-section']}>
+            <RadioGroup
+              legend={
+                <h2 className={styles['legend']}>
+                  <SvgIcon
+                    alt=""
+                    src={strokeDateIcon}
+                    className={styles['legend-icon']}
+                  />{' '}
+                  Cet évènement aura lieu
+                </h2>
+              }
+              displayMode="inline"
+              name="recurrenceType"
+              group={[
+                { label: 'Une seule fois', value: RecurrenceType.UNIQUE },
+                { label: 'Tous les jours', value: RecurrenceType.DAILY },
+                { label: 'Toutes les semaines', value: RecurrenceType.WEEKLY },
+                { label: 'Tous les mois', value: RecurrenceType.MONTHLY },
+              ]}
+              variant="detailed"
+              onChange={onRecurrenceTypeChange}
+              checkedOption={values.recurrenceType}
+            />
+          </div>
           <fieldset>
             <div className={styles['section']}>
-              <h2 className={styles['legend']}>
-                <SvgIcon
-                  alt=""
-                  src={strokeDateIcon}
-                  className={styles['legend-icon']}
-                />{' '}
-                Cet évènement aura lieu
-              </h2>
-
-              <div className={styles['radio-group']}>
-                <RadioButton
-                  label="Une seule fois"
-                  name="recurrenceType"
-                  value={RecurrenceType.UNIQUE}
-                  variant={RadioVariant.BOX}
-                  onChange={onRecurrenceTypeChange}
-                />
-
-                <RadioButton
-                  label="Tous les jours"
-                  name="recurrenceType"
-                  value={RecurrenceType.DAILY}
-                  variant={RadioVariant.BOX}
-                  onChange={onRecurrenceTypeChange}
-                />
-
-                <RadioButton
-                  label="Toutes les semaines"
-                  name="recurrenceType"
-                  value={RecurrenceType.WEEKLY}
-                  variant={RadioVariant.BOX}
-                  onChange={onRecurrenceTypeChange}
-                />
-
-                <RadioButton
-                  label="Tous les mois"
-                  name="recurrenceType"
-                  value={RecurrenceType.MONTHLY}
-                  variant={RadioVariant.BOX}
-                  onChange={onRecurrenceTypeChange}
-                />
-              </div>
-
               {values.recurrenceType === RecurrenceType.WEEKLY && (
                 <>
                   <div className={styles['day-inputs']}>
