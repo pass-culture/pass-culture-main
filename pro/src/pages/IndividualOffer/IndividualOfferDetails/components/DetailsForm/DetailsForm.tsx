@@ -147,7 +147,13 @@ export const DetailsForm = ({
               />
             </FormLayout.Row>
             <FormLayout.Row
-              sideComponent={<MarkdownInfoBox />}
+              sideComponent={
+                <InfoBox>
+                  En choisissant un évènement associé vous permettez à votre
+                  offre d’apparaitre dans les pages de l’application conçues
+                  spécialement pour cet évènement.
+                </InfoBox>
+              }
               className={styles['row']}
             >
               <Select
