@@ -61,7 +61,8 @@ class PostReminderTest:
     num_queries_success = 1  # select user
     num_queries_success += 1  # select future_offer
     num_queries_success += 1  # select future_offer_reminder
-    num_queries_success += 1  # insert reminder
+    num_queries_success += 1  # insert future_offer_reminder
+    num_queries_success += 1  # insert offer_reminder
 
     def test_should_be_logged_in_to_post_reminder(self, client):
         with assert_num_queries(0):
@@ -96,6 +97,7 @@ class PostReminderTest:
             reminder = user.future_offer_reminders[0]
             assert reminder.futureOffer.id == future_offer.id
             assert response.json == {"id": reminder.id, "offer": {"id": offer_id}}
+            assert len(user.offer_reminders) == 1
 
     def test_already_existing_reminder(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -132,6 +134,12 @@ class DeleteReminderTest:
     num_queries_success = 1  # select user
     num_queries_success += 1  # select future_offer_reminder
     num_queries_success += 1  # delete reminder
+    # TEMPORARY
+    num_queries_success += 1  # select future_offer_reminder
+    num_queries_success += 1  # select future_offer
+    num_queries_success += 1  # select offer
+    num_queries_success += 1  # select offer_reminder
+    num_queries_success += 1  # delete offer_reminder
 
     def test_should_be_logged_in_to_delete_reminder(self, client):
         with assert_num_queries(0):
@@ -196,6 +204,9 @@ class DeleteReminderTest:
         reminder_1 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user)
         _ = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user)
 
+        reminders_factories.OfferReminderFactory(offer=offer_1, user=user)
+        offer_reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user)
+
         assert len(user.future_offer_reminders) == 2
 
         reminder_id = reminder_1.id
@@ -205,3 +216,5 @@ class DeleteReminderTest:
             assert response.status_code == 204
 
         assert len(user.future_offer_reminders) == 1
+        assert len(user.offer_reminders) == 1
+        assert user.offer_reminders[0].id == offer_reminder_2.id
