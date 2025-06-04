@@ -197,7 +197,7 @@ def check_validate_or_cancel_finance_incidents(
             ),
         )
 
-    if {incident.status for incident in finance_incidents} != set([finance_models.IncidentStatus.CREATED]):
+    if {incident.status for incident in finance_incidents} != {finance_models.IncidentStatus.CREATED}:
         return Valid(
             is_valid=False,
             message="""Seuls les incidents au statut "créé" peuvent faire l'objet d'une {action}""".format(
