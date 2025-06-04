@@ -386,17 +386,18 @@ def serialize_offer_for_n8n(offer: models.Offer) -> dict:
             "id": offer.id,
             "name": offer.name,
             "description": offer.description,
-            "subcategoryLabel": offer.subcategory.app_label,
+            "category": offer.category.pro_label,
+            "subcategoryLabel": offer.subcategory.pro_label,
         },
         "temps_fort": {
-            "name": "Fête du cinéma",
-            "description": "C'est la fête du cinéma",
+            "name": "Journées Européennes du Patrimoine 2025",
+            "description": "Les Journées Européennes du Patrimoine sont de retour les 20 et 21 septembre 2025 ! Au programme : des centaines d'événements gratuits dans toute la France, des visites insolites, des rencontres... dans des lieux vraiment exceptionnels. Ça n'arrive qu'une fois dans l'année, donc ne passe pas à côté ! Lieux iconiques, spectaculaires, insolites, ou minimalistes, en solo, entre potes ou en famille, viens te créer plein de souvenirs et en prendre plein les yeux !",
         },
     }
 
 
 def send_to_n8n(offer_data: dict) -> None:
-    url = "http://n8n:5678/webhook-test/53264810-97e4-4c14-9dc7-3a83389bb62d"
+    url = "http://n8n:5678/webhook-test/2a91b65e-fadf-4e5c-934f-1ce8f0ff3df6"
 
     json_data = json.dumps(offer_data)
     requests.post(url=url, headers={"Content-Type": "application/json"}, data=json_data)
