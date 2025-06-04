@@ -1,14 +1,10 @@
 import cn from 'classnames'
 
 import {
-  BaseRadio,
-  BaseRadioProps,
-  RadioVariant,
-} from 'ui-kit/form/shared/BaseRadio/BaseRadio'
-import {
-  FieldSetLayout,
-  FieldSetLayoutProps,
-} from 'ui-kit/form/shared/FieldSetLayout/FieldSetLayout'
+  RadioButton,
+  RadioButtonProps,
+} from 'design-system/RadioButton/RadioButton'
+import { FieldSetLayout } from 'ui-kit/form/shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
@@ -19,15 +15,6 @@ type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
   {
     [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>
   }[Keys]
-
-type GroupOption = {
-  label: string | JSX.Element
-  value: string
-  icon?: BaseRadioProps['icon']
-  iconPosition?: BaseRadioProps['iconPosition']
-  description?: BaseRadioProps['description']
-  childrenOnChecked?: JSX.Element
-}
 
 /**
  * Props for the RadioGroup component.
@@ -45,7 +32,7 @@ export type RadioGroupProps = RequireAtLeastOne<
     /**
      * The legend of the `fieldset`. If this prop is empty, the `describedBy` must be used.
      */
-    legend?: FieldSetLayoutProps['legend']
+    legend: React.ReactNode
     /**
      * A reference to the text element that describes the radio group. If this prop is empty, the `legend` must be used.
      */
@@ -55,19 +42,18 @@ export type RadioGroupProps = RequireAtLeastOne<
      * Each item contains a label and a value.
      * The label is what's displayed while the value is used as an identifier.
      */
-    group: GroupOption[]
+    group: Omit<
+      RadioButtonProps,
+      'checked' | 'name' | 'onChange' | 'disabled'
+    >[]
     /**
      * Selected option, required if the group is non-controlled
      */
-    checkedOption?: GroupOption['value']
+    checkedOption?: string
     /**
      * Custom CSS class applied to the group's `fieldset` element.
      */
     className?: string
-    /**
-     * Variant of the radio inputs styles within the group.
-     */
-    variant?: RadioVariant.BOX
     /**
      * Callback function to handle changes in the radio group.
      */
@@ -83,10 +69,7 @@ export type RadioGroupProps = RequireAtLeastOne<
      * If "inline-grow", buttons are displayed in a row, and they share the available width.
      */
     displayMode?: 'default' | 'inline' | 'inline-grow'
-    /**
-     * Error message
-     */
-    error?: string
+    variant?: RadioButtonProps['variant']
   },
   'legend' | 'describedBy'
 >
@@ -119,18 +102,16 @@ export const RadioGroup = ({
   legend,
   describedBy,
   className,
-  variant,
   onChange,
   isOptional = true,
   displayMode,
-  error,
   checkedOption,
+  variant,
 }: RadioGroupProps): JSX.Element => {
   return (
     <FieldSetLayout
       className={cn(styles['radio-group'], className)}
       dataTestId={`wrapper-${name}`}
-      error={error}
       legend={legend}
       name={`radio-group-${name}`}
       ariaDescribedBy={describedBy}
@@ -140,20 +121,14 @@ export const RadioGroup = ({
       <div className={styles[`radio-group-display-${displayMode}`]}>
         {group.map((item) => (
           <div className={styles['radio-group-item']} key={item.value}>
-            <BaseRadio
+            {/* @ts-expect-error */}
+            <RadioButton
+              {...item}
               disabled={disabled}
-              label={item.label}
               name={name}
-              value={item.value}
-              variant={variant}
-              hasError={Boolean(error)}
+              variant={variant || item.variant}
               onChange={onChange}
-              icon={item.icon}
-              iconPosition={item.iconPosition}
-              description={item.description}
               checked={checkedOption === item.value}
-              {...(error ? { ariaDescribedBy: `error-${name}` } : {})}
-              childrenOnChecked={item.childrenOnChecked}
             />
           </div>
         ))}
