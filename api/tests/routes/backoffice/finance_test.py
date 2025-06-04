@@ -44,92 +44,6 @@ pytestmark = [
 ]
 
 
-@pytest.fixture(scope="function", name="invoiced_pricing")
-def invoiced_pricing_fixture() -> list:
-    return finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
-
-
-@pytest.fixture(scope="function", name="invoiced_collective_pricing")
-def invoiced_collective_pricing_fixture() -> list:
-    return finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)
-
-
-@pytest.fixture(scope="function", name="incidents")
-def incidents_fixture() -> tuple:
-    incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
-        incident__id=36,
-        booking=bookings_factories.BookingFactory(id=20, stock__offer__id=40),
-        incident__status=finance_models.IncidentStatus.CREATED,
-        incident__origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
-        incident__zendeskId=1,
-    ).incident
-    history_factories.ActionHistoryFactory(
-        actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
-        financeIncident=incident1,
-        actionDate=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
-    )
-
-    incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
-        incident__id=37,
-        collectiveBooking=educational_factories.CollectiveBookingFactory(
-            id=30, collectiveStock__collectiveOffer__id=50
-        ),
-        incident__status=finance_models.IncidentStatus.VALIDATED,
-        incident__origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
-    ).incident
-
-    incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
-        incident__id=38,
-        booking=bookings_factories.BookingFactory(id=40, stock__offer__id=60),
-        incident__status=finance_models.IncidentStatus.CANCELLED,
-        incident__origin=finance_models.FinanceIncidentRequestOrigin.FRAUDE,
-    ).incident
-
-    return incident1, incident2, incident3
-
-
-@pytest.fixture(scope="function", name="closed_incident")
-def closed_incident_fixture() -> tuple:
-    venue = offerers_factories.VenueFactory(pricing_point="self")
-    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-    booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
-    original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
-    original_pricing = api.price_event(original_event)
-    original_pricing.status = finance_models.PricingStatus.INVOICED
-
-    original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-        booking=booking,
-        incident__status=finance_models.IncidentStatus.VALIDATED,
-        incident__venue=venue,
-        incident__forceDebitNote=True,
-    ).incident
-    events_to_price = []
-    events_to_price.extend(
-        api._create_finance_events_from_incident(
-            original_finance_incident.booking_finance_incidents[0],
-            incident_validation_date=datetime.datetime.utcnow(),
-        )
-    )
-    booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
-    events_to_price.append(
-        finance_factories.FinanceEventFactory(
-            venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
-        )
-    )
-
-    for event in events_to_price:
-        api.price_event(event)
-
-    cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
-    generated_cashflow = cashflow_batch.cashflows[0]
-    generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
-
-    db.session.flush()
-
-    return original_finance_incident
-
-
 class ListIncidentsTest(GetEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.list_incidents"
     needed_permission = perm_models.Permissions.READ_INCIDENTS
@@ -171,105 +85,187 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[1]["Montant total"] == "10,02 €"
         assert rows[1]["Ticket Zendesk"] == "1"
 
-    def test_list_incident_by_incident_id(self, authenticated_client, incidents):
-        searched_id = str(incidents[0].id)
+    def test_list_incident_by_incident_id(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, booking.id, booking.stock.offerId])
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            collectiveBooking__id=max_id + 1,
+            collectiveBooking__collectiveStock__collectiveOffer__id=max_id + 1,
+        )
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__id=max_id + 2,
+            booking__id=max_id + 2,
+            booking__stock__offer__id=max_id + 2,
+        )
+        incident_id = str(incident.id)
 
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            response = authenticated_client.get(url_for(self.endpoint, q=incident_id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == searched_id
+        assert rows[0]["ID"] == incident_id
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
-        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incident.booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
+        assert rows[0]["Entité juridique"] == incident.venue.managingOfferer.name
+        assert rows[0]["Partenaire culturel"] == incident.venue.name
+        assert rows[0]["Origine de la demande"] == incident.origin.value
 
-    def test_list_incident_by_booking_id(self, authenticated_client, incidents):
-        searched_id = str(incidents[0].booking_finance_incidents[0].bookingId)
+    def test_list_incident_by_booking_id(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, booking.id, booking.stock.offerId])
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            collectiveBooking__id=max_id + 1,
+            collectiveBooking__collectiveStock__collectiveOffer__id=max_id + 1,
+        )
+        booking_id = str(booking.id)
 
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            response = authenticated_client.get(url_for(self.endpoint, q=booking_id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["ID"] == str(incident.id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
-        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incident.booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
+        assert rows[0]["Entité juridique"] == incident.venue.managingOfferer.name
+        assert rows[0]["Partenaire culturel"] == incident.venue.name
+        assert rows[0]["Origine de la demande"] == incident.origin.value
 
-    def test_list_incident_by_offer_id(self, authenticated_client, incidents):
+    def test_list_incident_by_offer_id(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, booking.id, booking.stock.offerId])
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            booking__id=max_id + 1,
+            booking__stock__offer__id=max_id + 1,
+        )
+        offer_id = str(booking.stock.offerId)
+
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="40"))
+            response = authenticated_client.get(url_for(self.endpoint, q=offer_id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 2
-        assert {row["ID"] for row in rows} == {str(incidents[0].id), str(incidents[2].id)}
+        assert incident.id != booking.id
+        assert incident.id != booking.stock.offerId
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incident.id)
 
-    def test_list_incident_by_collective_booking_id(self, authenticated_client, incidents):
-        searched_id = str(incidents[1].booking_finance_incidents[0].collectiveBookingId)
+    def test_list_incident_by_collective_booking_id(self, authenticated_client):
+        collective_booking = educational_factories.CollectiveBookingFactory()
+        incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+            collectiveBooking=collective_booking,
+        ).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, collective_booking.id, collective_booking.collectiveStock.collectiveOfferId])
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            collectiveBooking__id=max_id + 1,
+            collectiveBooking__collectiveStock__collectiveOffer__id=max_id + 1,
+        )
+        collective_booking_id = str(collective_booking.id)
 
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            response = authenticated_client.get(url_for(self.endpoint, q=collective_booking_id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[1].id)
+        assert rows[0]["ID"] == str(incident.id)
         assert rows[0]["Statut de l'incident"] == "Terminé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Collective"
-        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incident.booking_finance_incidents))
         assert rows[0]["Montant total"] == "100,00 €"
-        assert rows[0]["Entité juridique"] == incidents[1].venue.managingOfferer.name
-        assert rows[0]["Partenaire culturel"] == incidents[1].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[1].origin.value
+        assert rows[0]["Entité juridique"] == incident.venue.managingOfferer.name
+        assert rows[0]["Partenaire culturel"] == incident.venue.name
+        assert rows[0]["Origine de la demande"] == incident.origin.value
 
-    def test_list_incident_by_collective_offer_id(self, authenticated_client, incidents):
+    def test_list_incident_by_collective_offer_id(self, authenticated_client):
+        collective_booking = educational_factories.CollectiveBookingFactory()
+        incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking=collective_booking
+        ).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, collective_booking.id, collective_booking.collectiveStock.collectiveOfferId])
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            collectiveBooking__id=max_id + 1,
+            collectiveBooking__collectiveStock__collectiveOffer__id=max_id + 1,
+        )
+        collective_offer_id = str(collective_booking.collectiveStock.collectiveOfferId)
+
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="50"))
+            response = authenticated_client.get(url_for(self.endpoint, q=collective_offer_id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[1].id)
+        assert rows[0]["ID"] == str(incident.id)
 
-    def test_list_incident_by_token(self, authenticated_client, incidents):
-        searched_id = incidents[0].booking_finance_incidents[0].booking.token
+    def test_list_incident_by_token(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, booking.id, booking.stock.offerId])
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__id=max_id + 1,
+            booking__id=max_id + 1,
+            booking__stock__offer__id=max_id + 1,
+        )
+        booking_token = booking.token
 
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            response = authenticated_client.get(url_for(self.endpoint, q=booking_token))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["ID"] == str(incident.id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
-        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incident.booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
+        assert rows[0]["Entité juridique"] == incident.venue.managingOfferer.name
+        assert rows[0]["Partenaire culturel"] == incident.venue.name
+        assert rows[0]["Origine de la demande"] == incident.origin.value
 
-    def test_list_incident_by_status(self, authenticated_client, incidents, closed_incident):
+    def test_list_incident_by_status(self, authenticated_client):
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.CREATED,
+        )
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.CANCELLED,
+        )
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+        ).incident
         with testing.assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, status=[finance_models.IncidentStatus.VALIDATED.name])
@@ -277,87 +273,110 @@ class ListIncidentsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1  # closed incident is excluded
-        assert rows[0]["ID"] == str(incidents[1].id)
+        assert len(rows) == 1  # closed and validated incidents are excluded
+        assert rows[0]["ID"] == str(incident.id)
 
-    @pytest.mark.parametrize(
-        "incident_type, expected_results",
-        [
-            ("OVERPAYMENT", {"36", "37", "38"}),
-            ("COMMERCIAL_GESTURE", {"39"}),
-        ],
-    )
-    def test_list_incident_by_incident_kind(self, authenticated_client, incidents, incident_type, expected_results):
-        finance_factories.IndividualBookingFinanceCommercialGestureFactory(
-            incident__id=39,
-            booking=bookings_factories.BookingFactory(id=50, stock__offer__id=70),
+    def test_list_incident_by_incident_kind_commercial_gesture(self, authenticated_client):
+        incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory().incident
+        finance_factories.IndividualBookingFinanceIncidentFactory()
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, incident_type="COMMERCIAL_GESTURE"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incident.id)
+
+    def test_list_incident_by_incident_kind_overpayment(self, authenticated_client):
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        finance_factories.IndividualBookingFinanceCommercialGestureFactory()
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, incident_type="OVERPAYMENT"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incident.id)
+
+    def test_list_incident_by_booking_type_true(self, authenticated_client):
+        incident = finance_factories.CollectiveBookingFinanceIncidentFactory().incident
+        finance_factories.IndividualBookingFinanceIncidentFactory()
+
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, is_collective="true"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incident.id)
+
+    def test_list_incident_by_booking_type_false(self, authenticated_client):
+        finance_factories.CollectiveBookingFinanceIncidentFactory()
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
+
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, is_collective="false"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incident.id)
+
+    def test_list_incident_by_zendesk_id(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__zendeskId=1,
+            booking=booking,
+        ).incident
+        # Ensure that incident.id != other_booking.id or other_offer.id
+        max_id = max([incident.id, booking.id, booking.stock.offerId])
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__zendeskId=2,
+            incident__id=max_id + 1,
+            booking__id=max_id + 1,
+            booking__stock__offer__id=max_id + 1,
         )
+
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, incident_type=incident_type))
+            response = authenticated_client.get(url_for(self.endpoint, q="1"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == len(expected_results)
-        assert {row["ID"] for row in rows} == expected_results
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incident.id)
 
-    @pytest.mark.parametrize(
-        "is_collective, expected_results",
-        [
-            ("true", {"37"}),
-            ("false", {"36", "38"}),
-        ],
-    )
-    def test_list_incident_by_booking_type(self, authenticated_client, incidents, is_collective, expected_results):
+    def test_list_incident_by_origin(self, authenticated_client):
+        incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
+        ).incident
+        incident2 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO,
+        ).incident
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__origin=finance_models.FinanceIncidentRequestOrigin.FRAUDE,
+        )
+
         with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, is_collective=is_collective))
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    origin=[
+                        finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                        finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO.name,
+                    ],
+                )
+            )
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == len(expected_results)
-        assert {row["ID"] for row in rows} == expected_results
+        assert len(rows) == 2
+        assert {row["ID"] for row in rows} == {str(incident1.id), str(incident2.id)}
 
-    @pytest.mark.parametrize(
-        "zendesk_id,expected_incident",
-        [
-            (1, {"36"}),
-            (2, set()),
-        ],
-    )
-    def test_list_incident_by_zendesk_id(self, authenticated_client, incidents, zendesk_id, expected_incident):
-        with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=zendesk_id))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == len(expected_incident)
-        assert {row["ID"] for row in rows} == expected_incident
-
-    @pytest.mark.parametrize(
-        "origin,expected_incident",
-        [
-            ([finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name], {"36"}),
-            ([finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO.name], {"37"}),
-            ([finance_models.FinanceIncidentRequestOrigin.FRAUDE.name], {"38"}),
-            (
-                [
-                    finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
-                    finance_models.FinanceIncidentRequestOrigin.SUPPORT_PRO.name,
-                ],
-                {"36", "37"},
-            ),
-        ],
-    )
-    def test_list_incident_by_origin(self, authenticated_client, incidents, origin, expected_incident):
-        with testing.assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, origin=origin))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == len(expected_incident)
-        assert {row["ID"] for row in rows} == expected_incident
-
-    def test_list_incident_by_offerer(self, authenticated_client, incidents):
-        offerer_id = incidents[0].venue.managingOffererId
+    def test_list_incident_by_offerer(self, authenticated_client):
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        offerer_id = str(incident.venue.managingOffererId)
 
         with testing.assert_num_queries(self.expected_num_queries + 1):  # +1 to prefill offerer selection in form
             response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_id))
@@ -365,19 +384,21 @@ class ListIncidentsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["ID"] == str(incident.id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
-        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incident.booking_finance_incidents))
         assert rows[0]["Montant total"] == "11,00 €"
-        assert rows[0]["Entité juridique"] == incidents[0].venue.managingOfferer.name
-        assert rows[0]["Partenaire culturel"] == incidents[0].venue.name
-        assert rows[0]["Origine de la demande"] == incidents[0].origin.value
+        assert rows[0]["Entité juridique"] == incident.venue.managingOfferer.name
+        assert rows[0]["Partenaire culturel"] == incident.venue.name
+        assert rows[0]["Origine de la demande"] == incident.origin.value
 
-    def test_list_incident_by_venue(self, authenticated_client, incidents):
-        venue_id = incidents[1].venueId
+    def test_list_incident_by_venue(self, authenticated_client):
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        venue_id = str(incident.venueId)
 
         with testing.assert_num_queries(self.expected_num_queries + 1):  # +1 to prefill venue selection in form
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
@@ -385,9 +406,17 @@ class ListIncidentsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[1].id)
+        assert rows[0]["ID"] == str(incident.id)
 
-    def test_list_incident_by_dates(self, authenticated_client, incidents):
+    def test_list_incident_by_dates(self, authenticated_client):
+        incident = finance_factories.IndividualBookingFinanceIncidentFactory().incident
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            financeIncident=incident,
+            actionDate=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
+        )
+        finance_factories.IndividualBookingFinanceIncidentFactory()
+
         with testing.assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -400,7 +429,7 @@ class ListIncidentsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["ID"] == str(incident.id)
 
 
 class GetIncidentCancellationFormTest(GetEndpointHelper):
@@ -793,15 +822,21 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
             assert "Générer une note de débit à la prochaine échéance" in response_text
             assert "Récupérer l'argent sur les prochaines réservations Mode de compensation" in response_text
 
-    def test_validate_finance_incidents_with_other_status_then_created(
-        self,
-        authenticated_client,
-        incidents,
-    ):
+    def test_validate_finance_incidents_with_other_status_then_created(self, authenticated_client):
+        incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.CREATED,
+        ).incident
+        incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+        ).incident
+        incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.CANCELLED,
+        ).incident
+
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "object_ids": "36,37,38",
+                "object_ids": f"{incident1.id},{incident2.id},{incident3.id}",
             },
         )
 
@@ -811,21 +846,18 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    def test_validate_finance_incidents_with_different_type(
-        self,
-        authenticated_client,
-        incidents,
-    ):
-        finance_factories.CollectiveBookingFinanceIncidentFactory(
-            incident__id=40,
+    def test_validate_finance_incidents_with_different_type(self, authenticated_client):
+        incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CREATED,
-            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
-        )
+        ).incident
+        incident2 = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            incident__status=finance_models.IncidentStatus.CREATED
+        ).incident
 
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "object_ids": "36,40",
+                "object_ids": f"{incident1.id},{incident2.id}",
             },
         )
 
@@ -848,20 +880,18 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
         ],
     )
     def test_cancel_finance_incidents_form(self, authenticated_client, kind, expected_result):
-        finance_factories.CollectiveBookingFinanceIncidentFactory(
-            incident__id=39,
+        incident1 = finance_factories.CollectiveBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CREATED,
             incident__kind=kind,
-        )
-        finance_factories.CollectiveBookingFinanceIncidentFactory(
-            incident__id=40,
+        ).incident
+        incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CREATED,
             incident__kind=kind,
-        )
+        ).incident
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"object_ids": "39,40"},
+            form={"object_ids": f"{incident1.id},{incident2.id}"},
         )
 
         assert response.status_code == 200
@@ -869,15 +899,21 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
         assert f"Voulez-vous annuler les {expected_result} sélectionnés ?" in response_text
         assert "Vous allez annuler 2 incident(s). Voulez vous continuer ?" in response_text
 
-    def test_validate_finance_incidents_with_other_status_then_created(
-        self,
-        authenticated_client,
-        incidents,
-    ):
+    def test_validate_finance_incidents_with_other_status_then_created(self, authenticated_client):
+        incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.CREATED,
+        ).incident
+        incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+        ).incident
+        incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.CANCELLED,
+        ).incident
+
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "object_ids": "36,37,38",
+                "object_ids": f"{incident1.id},{incident2.id},{incident3.id}",
             },
         )
 
@@ -887,20 +923,17 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
-    def test_cancel_finance_incidents_with_different_type(
-        self,
-        authenticated_client,
-        incidents,
-    ):
-        finance_factories.CollectiveBookingFinanceIncidentFactory(
-            incident__id=40,
+    def test_cancel_finance_incidents_with_different_type(self, authenticated_client):
+        incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CREATED,
-            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
-        )
+        ).incident
+        incident2 = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            incident__status=finance_models.IncidentStatus.CREATED
+        ).incident
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"object_ids": "36,40"},
+            form={"object_ids": f"{incident1.id},{incident2.id}"},
         )
 
         assert response.status_code == 200
@@ -1372,7 +1405,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
             assert response.status_code == 200
 
         header = html_parser.get_tag(response.data, class_="incident-header")
-        badges = html_parser.extract(header, tag="span", class_="badge")
+        badges = html_parser.extract_badges(header)
         assert badges == ["Créé", "Total"]
 
         content = html_parser.content_as_text(response.data)
@@ -1495,7 +1528,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        badges = html_parser.extract_badges(response.data)
         assert badges == ["Créé", "Total", "Annulée", "Ancien Pass 18"]  # incident badges + booking badges
 
         content = html_parser.content_as_text(response.data)
@@ -1601,13 +1634,14 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
             (offerers_factories.CaledonianVenueFactory, True),
         ],
     )
-    def test_get_overpayment_creation_for_one_booking_form(
-        self, authenticated_client, invoiced_pricing, venue_factory, show_xfp_amount
-    ):
+    def test_get_overpayment_creation_for_one_booking_form(self, authenticated_client, venue_factory, show_xfp_amount):
         venue = venue_factory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
-        booking = bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing])
+        booking = bookings_factories.ReimbursedBookingFactory(
+            stock=stock,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)],
+        )
         object_ids = str(booking.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -1672,10 +1706,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
-        selected_bookings = [
-            bookings_factories.ReimbursedBookingFactory(),
-            bookings_factories.ReimbursedBookingFactory(),
-        ]
+        selected_bookings = bookings_factories.ReimbursedBookingFactory.create_batch(2)
         object_ids = ",".join(str(booking.id) for booking in selected_bookings)
 
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
@@ -1697,9 +1728,9 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
 
     expected_num_queries = 10
 
-    def test_get_form(self, authenticated_client, invoiced_collective_pricing):
+    def test_get_form(self, authenticated_client):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
-            pricings=[invoiced_collective_pricing]
+            pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)]
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -1727,10 +1758,10 @@ class CreateOverpaymentTest(PostEndpointHelper):
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
-    def test_create_incident_from_one_booking(
-        self, legit_user, authenticated_client, invoiced_pricing, zendesk_id, comment
-    ):
-        booking = bookings_factories.ReimbursedBookingFactory(pricings=[invoiced_pricing])
+    def test_create_incident_from_one_booking(self, legit_user, authenticated_client, zendesk_id, comment):
+        booking = bookings_factories.ReimbursedBookingFactory(
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)],
+        )
 
         object_ids = str(booking.id)
 
@@ -1796,9 +1827,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
-    def test_create_incident_from_multiple_booking(
-        self, legit_user, authenticated_client, invoiced_pricing, zendesk_id, comment
-    ):
+    def test_create_incident_from_multiple_booking(self, legit_user, authenticated_client, zendesk_id, comment):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
@@ -2134,9 +2163,9 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
-    def test_create_incident(self, authenticated_client, invoiced_collective_pricing, zendesk_id, comment):
+    def test_create_incident(self, authenticated_client, zendesk_id, comment):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
-            pricings=[invoiced_collective_pricing]
+            pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)],
         )
 
         response = self.post_to_endpoint(
@@ -2172,11 +2201,9 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
             (finance_models.IncidentStatus.CANCELLED, 2),
         ],
     )
-    def test_incident_already_exists(
-        self, authenticated_client, incident_status, expected_incident_count, invoiced_collective_pricing
-    ):
+    def test_incident_already_exists(self, authenticated_client, incident_status, expected_incident_count):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
-            pricings=[invoiced_collective_pricing]
+            pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)],
         )
         finance_factories.CollectiveBookingFinanceIncidentFactory(
             collectiveBooking=collective_booking, incident__status=incident_status
