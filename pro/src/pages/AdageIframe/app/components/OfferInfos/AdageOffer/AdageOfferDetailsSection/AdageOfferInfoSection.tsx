@@ -44,41 +44,36 @@ export function getLocationForOfferVenue(
 export function getLocation(
   location: GetCollectiveOfferLocationModel,
   header: boolean = false
-) {
-  switch (location.locationType) {
-    case CollectiveLocationType.TO_BE_DEFINED:
-      return 'À déterminer avec l’enseignant'
-    case CollectiveLocationType.SCHOOL:
-      return header
-        ? 'Dans l’établissement scolaire'
-        : 'Le partenaire culturel se déplace dans les établissements scolaires.'
-    case CollectiveLocationType.ADDRESS:
-    default:
-      return (
-        <>
-          <div>
-            {location.address?.label} - {location.address?.street},{' '}
-            {location.address?.postalCode}, {location.address?.city}
-          </div>
-        </>
-      )
+): JSX.Element | string {
+  if (location.locationType === CollectiveLocationType.TO_BE_DEFINED) {
+    return 'À déterminer avec l’enseignant'
   }
+
+  if (location.locationType === CollectiveLocationType.SCHOOL) {
+    return header
+      ? 'Dans l’établissement scolaire'
+      : 'Le partenaire culturel se déplace dans les établissements scolaires.'
+  }
+
+  return (
+    <div>
+      {location.address?.label} - {location.address?.street},{' '}
+      {location.address?.postalCode}, {location.address?.city}
+    </div>
+  )
 }
 
 export const AdageOfferInfoSection = ({
   offer,
 }: AdageOfferInfoSectionProps) => {
-  const offerVenue = offer.offerVenue
-
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
 
-  const location = isCollectiveOaActive
-    ? offer.location
+  const location =
+    isCollectiveOaActive && offer.location
       ? getLocation(offer.location)
-      : 'Localisation à définir'
-    : getLocationForOfferVenue(offerVenue)
+      : getLocationForOfferVenue(offer.offerVenue)
 
   const interventionArea = offer.interventionArea
 
