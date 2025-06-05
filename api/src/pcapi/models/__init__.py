@@ -71,8 +71,10 @@ if settings.USE_FLASK_SQLALCHEMY:
         Model = db.Model
 
 else:
-    from pcapi.models.session_manager import DbClass
+    from pcapi.models import session_manager
 
-    db = DbClass(engine_options=_engine_options)
+    db = session_manager.DbClass(
+        engine_options=_engine_options,
+    )
 
     Model = db.Model

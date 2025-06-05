@@ -691,6 +691,12 @@ def _transaction(request, _db):
     """
     Create a transactional context for tests to run in.
     """
+
+    from pcapi import settings
+
+    if not settings.USE_FLASK_SQLALCHEMY:
+        return
+
     # Start a transaction
     connection = _db.engine.connect()
     transaction = connection.begin()
@@ -752,6 +758,11 @@ def _engine(request, _transaction, mocker):
     """
     Mock out direct access to the semi-global Engine object.
     """
+    from pcapi import settings
+
+    if not settings.USE_FLASK_SQLALCHEMY:
+        return
+
     connection, _, session = _transaction
 
     # Make sure that any attempts to call `connect()` simply return a
@@ -812,6 +823,17 @@ def _engine(request, _transaction, mocker):
     return engine
 
 
+from dataclasses import dataclass
+
+
+@dataclass
+class SessionStructre:
+    engine: None
+    connection: None
+    transaction: None
+    nested: None
+
+
 @pytest.fixture(scope="function")
 def db_session(_engine, _transaction, mocker, request):
     """
@@ -827,16 +849,43 @@ def db_session(_engine, _transaction, mocker, request):
     """
 
     # No need for the fixture, `clean_database` will do the job
+    from pcapi import settings
+
+    nested = False
+
     if "clean_database" in request.fixturenames:
-        return None
+        yield None
+    elif not settings.USE_FLASK_SQLALCHEMY:
+        engine = db.engine
+        connection = engine.connect()
+        transaction = connection.begin()
+        db.session = db.session_maker(bind=connection)
+        nested = connection.begin_nested()
+        session_data = SessionStructre(
+            engine=engine,
+            connection=connection,
+            transaction=transaction,
+            nested=nested,
+        )
 
-    _, _, _session = _transaction
+        @sa.event.listens_for(db.session, "after_transaction_end")
+        def end_savepoint(session, transaction):
+            if not session_data.nested.is_active:
+                session_data.nested = connection.begin_nested()
 
-    # Whenever the code tries to access a Flask session, use the Session object
-    # instead
-    mocker.patch("pcapi.models.db.session", new=_session)
+        yield
+        db.session.close()
+        session_data.transaction.rollback()
+        session_data.connection.close()
+        db.remove_session()
+    else:
+        _, _, _session = _transaction
 
-    return _session
+        # Whenever the code tries to access a Flask session, use the Session object
+        # instead
+        mocker.patch("pcapi.models.db.session", new=_session)
+
+        yield _session
 
 
 #################################################################################################################

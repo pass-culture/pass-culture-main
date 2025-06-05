@@ -8,6 +8,7 @@ from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.session import Session as SessionBase
 
 from pcapi import settings
 from pcapi.models.pc_object import BaseQuery
@@ -16,7 +17,9 @@ from pcapi.models.pc_object import BaseQuery
 EXTENSION_NAME = "pcapi-sqlalchemy"
 
 
-# TODO test clean engine_dict after timeout
+# TODO test gérer les tests + najouter la subsession (et comprendre pourquoi ça ne amrche pas)
+# commande qui ne amrche pas:
+# botest tests/routes/backoffice/operations_test.py::CreateEventTest::test_create_event  tests/routes/backoffice/operations_test.py::CreateEventTest::test_create_event_without_venue
 
 
 class EnginesContainer:
@@ -104,6 +107,15 @@ class DbClass:
             g.sqlalchemy_session = session
         return g.sqlalchemy_session
 
+    @session.setter
+    def session(self, session) -> None:
+        self.remove_session()
+        g.sqlalchemy_session = session
+
+    @session.deleter
+    def session(self) -> None:
+        self.remove_session()
+
     @property
     def engine(self) -> sa.engine.Engine:
         engines_container = self._get_engines_container()
@@ -123,3 +135,13 @@ class DbClass:
         if number == 1:
             engines_container = self._get_engines_container()
             engines_container.clean_engines(settings.SQLALCHEMY_UNUSED_ENGINE_TIMEOUT)
+
+
+class TestSession(SessionBase):
+    pass
+
+
+def get_session_class() -> type[SessionBase]:
+    if settings.IS_RUNNING_TESTS:
+        return TestSession
+    return SessionBase
