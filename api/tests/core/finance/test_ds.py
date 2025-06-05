@@ -357,26 +357,20 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
-    def test_too_old_dsv5_application_waiting_for_anything_is_mark_without_continuation(
-        self, mock_graphql_client, mock_mark_without_continuation, mock_archive_application
+    def test_too_old_dsv5_application_with_no_instructor_message_is_not_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
-        bank_account = BankAccountFactory(dsApplicationId=application_id, status=status)
-        status_history = BankAccountStatusHistoryFactory(
-            bankAccount=bank_account, status=status, timespan=(datetime.datetime.utcnow(),)
-        )
-        venue = VenueFactory(managingOfferer=bank_account.offerer)
-        # This shouldn't happen but we need to be sure that if any venue is linked to a bank account
-        # that is going to be marked without continuation, it's unlinked.
-        # We don't want any Cashflow to be generated using non valid bank accounts
-        VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
+        BankAccountFactory(dsApplicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "last_fields_modification": dead_line_application,
             "application_id": application_id,
             "annotations": [
                 {
@@ -392,6 +386,72 @@ class MarkWithoutApplicationTooOldApplicationsTest:
                     "stringValue": "false",
                     "updatedAt": dead_line_annotation,
                     "checked": False,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()
+
+        bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.DRAFT
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_dsv5_application_waiting_for_nothing_and_unanswered_is_mark_without_continuation(
+        self, mock_graphql_client, mock_mark_without_continuation, mock_archive_application
+    ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.DRAFT
+        bank_account = BankAccountFactory(dsApplicationId=application_id, status=status)
+        status_history = BankAccountStatusHistoryFactory(
+            bankAccount=bank_account, status=status, timespan=(datetime.datetime.utcnow(),)
+        )
+        venue = VenueFactory(managingOfferer=bank_account.offerer)
+        # This shouldn't happen but we need to be sure that if any venue is linked to a bank account
+        # that is going to be marked without continuation, it's unlinked.
+        # We don't want any Cashflow to be generated using non valid bank accounts
+        VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
+        fields_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "last_fields_modification": fields_application,
+            "application_id": application_id,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "false",
+                    "checked": False,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "false",
+                    "updatedAt": dead_line_annotation,
+                    "checked": False,
+                },
+            ],
+            "messages": [
+                {
+                    "email": "contact@demarches-simplifiees.fr",
+                    "createdAt": fields_application,
+                },
+                {
+                    # unanswered message to user
+                    "email": "instructeur@passculture.app",
+                    "createdAt": dead_line_application,
                 },
             ],
         }

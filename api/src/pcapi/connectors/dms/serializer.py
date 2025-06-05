@@ -306,6 +306,8 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
     number: int
     state: dms_models.GraphQLApplicationStates
     updated_at: datetime
+    updated_by_user_at: datetime
+    last_message_sent_by_instructor_at: datetime | None
     processing_error_pc: ProcessingErrorPassCulture | None
     waiting_for_offerer_validation: WaitingForOffererValidation | None
     waiting_for_adage_validation: WaitingForAdageValidation | None
@@ -321,6 +323,18 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
         to_representation["number"] = obj["number"]
         to_representation["state"] = obj["state"]
         to_representation["updated_at"] = obj["dateDerniereModification"]
+
+        user_actions_dates = [obj["dateDerniereModificationChamps"]] + [
+            message["createdAt"] for message in obj.get("messages", []) if message["email"] == obj["usager"]["email"]
+        ]
+        to_representation["updated_by_user_at"] = max(user_actions_dates)
+
+        instructor_messages_dates = [
+            message["createdAt"] for message in obj.get("messages", []) if message["email"].endswith("@passculture.app")
+        ]
+        to_representation["last_message_sent_by_instructor_at"] = (
+            max(instructor_messages_dates) if instructor_messages_dates else None
+        )
 
         for annotation in obj["annotations"]:
             match annotation["label"]:
@@ -382,6 +396,8 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
                 if (
                     self.waiting_for_offerer_validation.checked is False
                     and self.waiting_for_adage_validation.checked is False
+                    and self.last_message_sent_by_instructor_at is not None
+                    and self.updated_by_user_at < self.last_message_sent_by_instructor_at < dead_line_annotation
                 ):
                     logger.info(
                         "[DS] application is not waiting for validation of any kind",
