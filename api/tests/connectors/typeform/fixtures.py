@@ -345,6 +345,200 @@ RESPONSE_SINGLE_FORM = {
     },
 }
 
+
+RESPONSE_SINGLE_FORM_NO_PROPERTIES = {
+    "id": "aBCdEF12",
+    "type": "quiz",
+    "title": "Jeu concours - Maître Corbeau",
+    "workspace": {"href": "https://api.eu.typeform.com/workspaces/zyXwvu"},
+    "theme": {"href": "https://api.eu.typeform.com/themes/T0s1rQpo"},
+    "settings": {
+        "language": "fr",
+        "progress_bar": "percentage",
+        "meta": {
+            "title": "Tente de gagner une place pour le concert de Maître Corbeau 🔥",
+            "allow_indexing": True,
+            "description": "Tente de gagner une place pour le concert de Maître Corbeau 🔥",
+            "image": {"href": "https://images.typeform.com/images/3gS4hIJKL5Mn"},
+        },
+        "hide_navigation": False,
+        "is_public": True,
+        "is_trial": False,
+        "show_progress_bar": True,
+        "show_typeform_branding": False,
+        "are_uploads_public": False,
+        "show_time_to_complete": False,
+        "show_number_of_submissions": False,
+        "show_cookie_consent": False,
+        "show_question_number": True,
+        "show_key_hint_on_choices": True,
+        "autosave_progress": True,
+        "free_form_navigation": False,
+        "use_lead_qualification": False,
+        "pro_subdomain_enabled": False,
+    },
+    "thankyou_screens": [
+        {
+            "id": "sGHnKD9iMoaC",
+            "ref": "61154bd9-3306-4aad-bf51-2ebb2059722c",
+            "title": "*Dommage, cette offre est réservée aux bénéficiaires du pass Culture *⚡\n\nRetrouve toute l'actualité culturelle et les bons plans du moment sur nos réseaux sociaux !",
+            "type": "thankyou_screen",
+            "properties": {"show_button": False, "share_icons": False, "button_mode": "default_redirect"},
+        },
+        {
+            "id": "Th68jR2gFsFp",
+            "ref": "1a8bc854-2be2-4b5e-aad3-3bd0695fdc87",
+            "title": "*Merci, ton inscription au tirage au sort a bien été prise en compte. Les personnes sélectionnées seront contactées très prochainement !*\n\nEn attendant les résultats, retrouve tous les événements exclusifs et les offres du moment sur l'application 👇",
+            "type": "thankyou_screen",
+            "properties": {
+                "show_button": True,
+                "share_icons": False,
+                "button_mode": "redirect",
+                "button_text": "C'est parti !",
+                "redirect_url": "https://passculture.app/accueil",
+            },
+        },
+        {
+            "id": "KAIvA7R6AqkT",
+            "ref": "e10316d1-5b92-4549-900b-34a78afd22de",
+            "title": "*Dommage ! Sans cette confirmation, nous ne pouvons donner suite à ta participation.*\n\nD'autres offres exclusives sont régulièrement mises en ligne, garde un œil sur l'application 👇",
+            "type": "thankyou_screen",
+            "properties": {
+                "show_button": True,
+                "share_icons": False,
+                "button_mode": "redirect",
+                "button_text": "C'est parti !",
+                "redirect_url": "https://passculture.app/accueil",
+            },
+        },
+        {
+            "id": "DefaultTyScreen",
+            "ref": "default_tys",
+            "title": "C'est fait ! Merci pour votre temps.",
+            "type": "thankyou_screen",
+            "properties": {"show_button": False, "share_icons": False},
+        },
+    ],
+    "welcome_screens": [
+        {
+            "id": "Qa1gJibaCcru",
+            "ref": "b4b3409d-b5bc-4f5a-90fe-2c388a59be08",
+            "title": "*Tente de gagner une place pour le concert de Maître Corbeau* 🔥",
+            "properties": {
+                "show_button": True,
+                "button_text": "Je tente ma chance !",
+                "description": "Si tu es sélectionné·e, tu gagneras 1 place pour le concert de Maître Corbeau le dimanche 22 septembre à l'Arbre Perché dans le cadre du Festival Paroles & Musiques !\n\n*Fermeture du tirage au sort : dimanche 15 septembre à 23h59*",
+            },
+            "attachment": {
+                "type": "image",
+                "href": "https://images.typeform.com/images/AaAaAAaaaA1A",
+                "properties": {"description": "A utiliser en priorité_(c)Marcin Kempski"},
+            },
+            "layout": {
+                "type": "stack",
+                "attachment": {
+                    "type": "image",
+                    "href": "https://images.typeform.com/images/AaAaAAaaaA1A",
+                    "properties": {"description": "A utiliser en priorité_(c)Marcin Kempski"},
+                },
+                "viewport_overrides": {"small": {"type": "stack"}, "large": {"type": "float", "placement": "left"}},
+            },
+        }
+    ],
+    "fields": [
+        {
+            "id": "fC7aoAXHEfNR",
+            "title": "Es-tu *bénéficiaire du pass Culture* ? ",
+            "ref": "15c7f155-c67d-4729-a250-2942037acf68",
+            "validations": {"required": True},
+            "type": "yes_no",
+        },
+    ],
+    "logic": [
+        {
+            "type": "field",
+            "ref": "15c7f155-c67d-4729-a250-2942037acf68",
+            "actions": [
+                {
+                    "action": "jump",
+                    "details": {"to": {"type": "thankyou", "value": "61154bd9-3306-4aad-bf51-2ebb2059722c"}},
+                    "condition": {
+                        "op": "is",
+                        "vars": [
+                            {"type": "field", "value": "15c7f155-c67d-4729-a250-2942037acf68"},
+                            {"type": "choice", "value": "470bfdd6-1224-4266-8f27-9f2a20d0f876"},
+                        ],
+                    },
+                }
+            ],
+        },
+        {
+            "type": "field",
+            "ref": "826fc72d-363e-432e-a6d0-912919a66e18",
+            "actions": [
+                {
+                    "action": "jump",
+                    "details": {"to": {"type": "thankyou", "value": "e10316d1-5b92-4549-900b-34a78afd22de"}},
+                    "condition": {
+                        "op": "is",
+                        "vars": [
+                            {"type": "field", "value": "826fc72d-363e-432e-a6d0-912919a66e18"},
+                            {"type": "choice", "value": "012d34bc-83d6-4974-8ed9-87c2d13f6e9b"},
+                        ],
+                    },
+                }
+            ],
+        },
+        {
+            "type": "field",
+            "ref": "2f0712f0-4422-44da-8442-ec2a0fc63f5a",
+            "actions": [
+                {
+                    "action": "jump",
+                    "details": {"to": {"type": "thankyou", "value": "1a8bc854-2be2-4b5e-aad3-3bd0695fdc87"}},
+                    "condition": {
+                        "op": "is",
+                        "vars": [
+                            {"type": "field", "value": "2f0712f0-4422-44da-8442-ec2a0fc63f5a"},
+                            {"type": "choice", "value": "dfd8cad9-b9dd-429b-9162-80ca8a34a1d0"},
+                        ],
+                    },
+                },
+                {
+                    "action": "jump",
+                    "details": {"to": {"type": "thankyou", "value": "e10316d1-5b92-4549-900b-34a78afd22de"}},
+                    "condition": {
+                        "op": "is",
+                        "vars": [
+                            {"type": "field", "value": "2f0712f0-4422-44da-8442-ec2a0fc63f5a"},
+                            {"type": "choice", "value": "5e15bde8-d0b0-490f-8140-a636072ee7fa"},
+                        ],
+                    },
+                },
+            ],
+        },
+        {
+            "type": "field",
+            "ref": "e7b90c1d-ca86-4aa0-9977-da3c1570bb89",
+            "actions": [
+                {
+                    "action": "jump",
+                    "details": {"to": {"type": "field", "value": "2f0712f0-4422-44da-8442-ec2a0fc63f5a"}},
+                    "condition": {"op": "always", "vars": []},
+                }
+            ],
+        },
+    ],
+    "created_at": "2024-09-02T12:51:25+00:00",
+    "last_updated_at": "2024-09-03T09:51:23+00:00",
+    "published_at": "2024-09-02T12:55:53+00:00",
+    "_links": {
+        "display": "https://passculture.typeform.com/to/aBCdEF12",
+        "responses": "https://api.eu.typeform.com/forms/aBCdEF12/responses",
+    },
+}
+
+
 RESPONSE_FORM_RESPONSES = {
     "items": [
         {
@@ -924,6 +1118,32 @@ RESPONSE_FORM_RESPONSES = {
                     "boolean": False,
                 }
             ],
+        },
+    ],
+    "total_items": 9,
+    "page_count": 1,
+}
+
+
+RESPONSE_FORM_WITHOUT_ANSWERS_RESPONSES = {
+    "items": [
+        {
+            "landing_id": "s09vbei0xt31g0tjs09vbeezwuggl5yd",
+            "token": "s09vbei0xt31g0tjs09vbeezwuggl5yd",  # ggignore
+            "response_id": "s09vbei0xt31g0tjs09vbeezwuggl5yd",
+            "response_type": "completed",
+            "landed_at": "2024-09-04T16:50:05Z",
+            "submitted_at": "2024-09-04T16:50:14Z",
+            "metadata": {
+                "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0",
+                "platform": "other",
+                "referer": "https://passculture.typeform.com/to/aBCdEF12?typeform-source=passculture.app",
+                "network_id": "ac2f5482b5",
+                "browser": "default",
+            },
+            "hidden": {},
+            "calculated": {"score": 0},
+            "answers": None,
         },
     ],
     "total_items": 9,
