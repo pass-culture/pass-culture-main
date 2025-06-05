@@ -6625,7 +6625,7 @@
                         "type": "string"
                     },
                     "stock": {
-                        "$ref": "#/components/schemas/StockCreation"
+                        "$ref": "#/components/schemas/StockUpsert"
                     }
                 },
                 "required": [
@@ -8539,6 +8539,7 @@
                     "quantity": {
                         "anyOf": [
                             {
+                                "exclusiveMinimum": 0,
                                 "type": "integer"
                             },
                             {
@@ -8550,11 +8551,11 @@
                         ],
                         "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
+                        "nullable": true,
                         "title": "Quantity"
                     }
                 },
                 "required": [
-                    "quantity",
                     "price"
                 ],
                 "title": "StockCreation",
@@ -8599,6 +8600,48 @@
                     }
                 },
                 "title": "StockEdition",
+                "type": "object"
+            },
+            "StockUpsert": {
+                "properties": {
+                    "bookingLimitDatetime": {
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookinglimitdatetime",
+                        "type": "string"
+                    },
+                    "price": {
+                        "description": "Offer price in euro cents",
+                        "example": 1000,
+                        "maximum": 30000,
+                        "minimum": 0,
+                        "title": "Price",
+                        "type": "integer"
+                    },
+                    "quantity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "enum": [
+                                    "unlimited"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
+                        "example": 10,
+                        "nullable": true,
+                        "title": "Quantity"
+                    }
+                },
+                "required": [
+                    "price"
+                ],
+                "title": "StockUpsert",
                 "type": "object"
             },
             "TELECHARGEMENT_LIVRE_AUDIO_create": {

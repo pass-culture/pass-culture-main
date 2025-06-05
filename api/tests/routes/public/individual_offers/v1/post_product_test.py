@@ -268,7 +268,10 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
                 {"price": -1200, "quantity": "unlimited"},
                 {"stock.price": ["ensure this value is greater than or equal to 0"]},
             ),
-            ({"price": 1200, "quantity": -1}, {"stock.quantity": ["Value must be positive"]}),
+            (
+                {"price": 1200, "quantity": -1},
+                {"stock.quantity": ["ensure this value is greater than 0", "unexpected value; permitted: 'unlimited'"]},
+            ),
         ],
     )
     @pytest.mark.usefixtures("db_session")
