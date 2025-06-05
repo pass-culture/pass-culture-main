@@ -146,7 +146,7 @@ export const VenueOfferSteps = ({
               </ButtonLink>
             )}
 
-            {!offererHasBankAccount && displayButtonDependingVenue && (
+            {offerer.isValidated && !offererHasBankAccount && displayButtonDependingVenue && (
               <ButtonLink
                 className={styles['step-button-width']}
                 variant={ButtonVariant.BOX}

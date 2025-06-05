@@ -17,6 +17,7 @@ export const AddBankAccountCallout = ({
   const location = useLocation()
   const displayBankAccountBanner =
     offerer &&
+    offerer.isValidated &&
     !offerer.hasPendingBankAccount &&
     !offerer.hasValidBankAccount &&
     !offerer.hasBankAccountWithPendingCorrections &&
