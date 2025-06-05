@@ -3,6 +3,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Tag } from 'design-system/Tag/Tag'
 
 import { getOfferTags } from '../../utils/getOfferTags'
@@ -18,7 +19,11 @@ export function AdageOfferListCardTags({
   offer,
   adageUser,
 }: AdageOfferListCardTagsProps) {
-  const tags = getOfferTags(offer, adageUser)
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
+
+  const tags = getOfferTags(offer, adageUser, true, isCollectiveOaActive)
 
   return (
     <div className={styles['offer-tags']}>
