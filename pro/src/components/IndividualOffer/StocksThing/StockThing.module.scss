@@ -25,27 +25,21 @@
 .button-actions {
   display: flex;
   gap: rem.torem(16px);
-  flex-direction: column;
+  flex-direction: row;
   margin-bottom: rem.torem(16px);
-}
-
-.button-action {
-  justify-content: start;
 }
 
 @media (min-width: size.$tablet) {
   .row {
     flex-direction: row;
     gap: rem.torem(16px);
-    align-items: flex-start;
+    align-items: center;
+    max-width: rem.torem(540px);
+    justify-content: space-between;
   }
 
-  .field-layout-xsmall {
-    max-width: rem.torem(100px);
-  }
-
-  .field-layout-small {
-    max-width: rem.torem(180px);
+  .field-layout-input {
+    width: 100%;
   }
 
   .field-layout-shrink {
@@ -54,10 +48,5 @@
 
   .field-layout-footer {
     min-height: rem.torem(32px);
-  }
-
-  .button-actions {
-    flex-direction: row;
-    margin-top: rem.torem(40px);
   }
 }
