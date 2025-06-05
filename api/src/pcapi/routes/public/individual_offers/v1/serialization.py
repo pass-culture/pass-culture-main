@@ -440,6 +440,7 @@ def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None
 class StockCreation(BaseStockCreation):
     price: offer_price_model = fields.PRICE
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
+    quantity: pydantic_v1.PositiveInt | UNLIMITED_LITERAL | None = fields.QUANTITY  # type: ignore[assignment]
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
@@ -448,6 +449,10 @@ class StockCreation(BaseStockCreation):
         if value < 0:
             raise ValueError("Value must be positive")
         return value
+
+
+class StockUpsert(StockCreation):
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = fields.QUANTITY
 
 
 class BaseStockEdition(serialization.ConfiguredBaseModel):
@@ -488,7 +493,7 @@ class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
         ean: str = fields.EAN
     else:
         ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
-    stock: StockCreation
+    stock: StockUpsert
 
     class Config:
         extra = "forbid"

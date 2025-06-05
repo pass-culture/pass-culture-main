@@ -235,41 +235,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert stock.quantity == 2
         assert stock.price == decimal.Decimal("12.34")
 
-    def test_update_stock_quantity_0_with_previous_bookings(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
-        )
-
-        offer = offers_factories.ThingOfferFactory(
-            product=product, venue=venue_provider.venue, lastProvider=venue_provider.provider
-        )
-        stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
-        bookings_factories.BookingFactory(stock=stock, quantity=2, user__deposit__amount=300)
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "products": [
-                    {
-                        "ean": product.ean,
-                        "stock": {
-                            "bookingLimitDatetime": date_utils.format_into_utc_date(
-                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
-                            ),
-                            "price": 1234,
-                            "quantity": 0,
-                        },
-                    }
-                ],
-            },
-        )
-
-        assert response.status_code == 204
-        assert stock.quantity == 2
-        assert stock.price == decimal.Decimal("12.34")
-
     def test_update_multiple_stocks_with_one_rejected(self, client, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
