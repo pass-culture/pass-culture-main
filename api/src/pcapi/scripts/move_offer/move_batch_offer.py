@@ -296,13 +296,49 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
         else:
             try:
                 with atomic():
+                    logger.info("Locking stocks for venue %d", origin_venue_id, extra={"venue_id": origin_venue_id})
                     offers_repository.lock_stocks_for_venue(origin_venue_id)
+                    logger.info(
+                        "Stocks locked for venue %d, starting to move individual offers",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     _move_individual_offers(origin_venue, destination_venue)
+                    logger.info(
+                        "individual offers moved for venue %d, moving collective offers",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     _move_collective_offers(origin_venue, destination_venue)
+                    logger.info(
+                        "Collective offers moved for venue %d, moving collective offer templates",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     _move_collective_offer_template(origin_venue, destination_venue)
+                    logger.info(
+                        "Collective offer templates moved for venue %d, moving collective offer playlists",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     _move_collective_offer_playlist(origin_venue, destination_venue)
+                    logger.info(
+                        "Collective offer playlists moved for venue %d, moving price category labels",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     _move_price_category_label(origin_venue, destination_venue)
+                    logger.info(
+                        "Price category labels moved for venue %d, moving finance incidents",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     _move_finance_incident(origin_venue, destination_venue)
+                    logger.info(
+                        "Finance incidents moved for venue %d, updating destination venue to permanent/softdelete",
+                        origin_venue_id,
+                        extra={"venue_id": origin_venue_id},
+                    )
                     destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
                     _soft_delete_origin_venue(origin_venue)
                     _create_action_history(
