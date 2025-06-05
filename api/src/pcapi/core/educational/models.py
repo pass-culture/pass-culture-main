@@ -893,7 +893,7 @@ class CollectiveOffer(
 
         return not self.isArchived, -date_limit_score, self.dateCreated
 
-    @property
+    @hybrid_property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
         if self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
@@ -954,6 +954,92 @@ class CollectiveOffer(
 
         logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
         return CollectiveOfferDisplayedStatus.PUBLISHED
+
+    @displayedStatus.expression  # type: ignore[no-redef]
+    def displayedStatus(cls):
+        aliased_booking = sa_orm.aliased(CollectiveBooking)
+        last_booking_subquery = (
+            sa.select(aliased_booking.status)
+            .filter(aliased_booking.collectiveStockId == CollectiveStock.id)
+            .order_by(aliased_booking.dateCreated.desc())
+            .limit(1)
+            .correlate(CollectiveStock)
+            .scalar_subquery()
+        )
+
+        return sa.case(
+            (
+                cls.isArchived.is_(True),
+                CollectiveOfferDisplayedStatus.ARCHIVED.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
+                CollectiveOfferDisplayedStatus.DRAFT.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
+                CollectiveOfferDisplayedStatus.UNDER_REVIEW.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
+                CollectiveOfferDisplayedStatus.REJECTED.name,
+            ),
+            (
+                cls.validation != offer_mixin.OfferValidationStatus.APPROVED.name,
+                "IMPOSSIBLE",
+            ),
+            (
+                cls.isActive.is_(False),
+                CollectiveOfferDisplayedStatus.HIDDEN.name,
+            ),
+            (
+                last_booking_subquery.is_(None),
+                sa.case(
+                    (
+                        CollectiveStock.startDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.CANCELLED.name,
+                    ),
+                    (
+                        CollectiveStock.bookingLimitDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.EXPIRED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.PUBLISHED.name,
+                ),
+            ),
+            (
+                last_booking_subquery == CollectiveBookingStatus.PENDING.name,
+                sa.case(
+                    (
+                        CollectiveStock.bookingLimitDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.EXPIRED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.PREBOOKED.name,
+                ),
+            ),
+            (
+                last_booking_subquery == CollectiveBookingStatus.CONFIRMED.name,
+                sa.case(
+                    (
+                        CollectiveStock.endDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.ENDED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.BOOKED.name,
+                ),
+            ),
+            (
+                last_booking_subquery == CollectiveBookingStatus.USED.name,
+                CollectiveOfferDisplayedStatus.ENDED.name,
+            ),
+            (
+                last_booking_subquery == CollectiveBookingStatus.REIMBURSED.name,
+                CollectiveOfferDisplayedStatus.REIMBURSED.name,
+            ),
+            (
+                last_booking_subquery == CollectiveBookingStatus.CANCELLED.name,
+                CollectiveOfferDisplayedStatus.CANCELLED.name,
+            ),
+            else_=CollectiveOfferDisplayedStatus.PUBLISHED.name,
+        )
 
     def _get_allowed_actions(self) -> tuple[CollectiveOfferAllowedAction, ...]:
         displayed_status = self.displayedStatus
