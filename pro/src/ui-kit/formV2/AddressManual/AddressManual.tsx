@@ -22,10 +22,11 @@ export const AddressManual = ({
 }: AddressManualProps): JSX.Element => {
   const methods = useFormContext<AddressFormValues>()
 
-  const [coords, coordsMeta] = methods.getValues('coords')
+  const coords = methods.watch('coords')
 
   const onCoordsBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCoords = event.target.value
+
     let latitude = '',
       longitude = ''
 
@@ -84,7 +85,7 @@ export const AddressManual = ({
         />
       </FormLayout.Row>
 
-      {coords && !coordsMeta && (
+      {coords && (
         <>
           <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
             <ButtonLink

@@ -19,28 +19,39 @@ vi.mock('commons/utils/coords', () => ({
   },
 }))
 
+function renderAddressManual({
+  coords = '',
+}: {
+  coords?: string
+  coordsMeta?: boolean
+}) {
+  const Wrapper = () => {
+    const methods = useForm({
+      defaultValues: {
+        street: '',
+        postalCode: '',
+        city: '',
+        coords: coords,
+        latitude: '',
+        longitude: '',
+      },
+    })
+
+    return (
+      <FormProvider {...methods}>
+        <AddressManual />
+      </FormProvider>
+    )
+  }
+
+  render(<Wrapper />)
+}
+
 describe('AddressManual', () => {
   it('renders and handles coords input blur event with userEvent', async () => {
-    const Wrapper = () => {
-      const methods = useForm({
-        defaultValues: {
-          street: '',
-          postalCode: '',
-          city: '',
-          coords: '',
-          latitude: '',
-          longitude: '',
-        },
-      })
-
-      return (
-        <FormProvider {...methods}>
-          <AddressManual />
-        </FormProvider>
-      )
-    }
-
-    render(<Wrapper />)
+    renderAddressManual({
+      coords: '',
+    })
 
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/i)
 
@@ -53,5 +64,35 @@ describe('AddressManual', () => {
     await userEvent.clear(coordsInput)
     await userEvent.type(coordsInput, `48°51'12.0"N 2°20'56.3"E`)
     await userEvent.tab() // blur
+  })
+
+  it('should render Callout and ButtonLink when coords is provided', () => {
+    const coords = '48.8566%2C2.3522'
+
+    renderAddressManual({ coords })
+
+    const callout = screen.getByText('Vérifiez la localisation en cliquant ici')
+
+    expect(callout).toBeInTheDocument()
+    expect(callout).toBeInTheDocument()
+    expect(callout).toHaveAttribute(
+      'href',
+      'https://google.com/maps/place/48.8566,2.3522'
+    )
+    expect(callout).toHaveTextContent(
+      'Vérifiez la localisation en cliquant ici'
+    )
+  })
+
+  it('should not render anything when coords is undefined', () => {
+    const coords = undefined
+
+    renderAddressManual({ coords })
+
+    screen.queryByText('Vérifiez la localisation en cliquant ici')
+
+    expect(
+      screen.queryByText('Vérifiez la localisation en cliquant ici')
+    ).not.toBeInTheDocument()
   })
 })
