@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
@@ -26,6 +27,9 @@ export const OfferCardComponent = ({
   playlistId,
 }: CardComponentProps) => {
   const location = useLocation()
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
 
   const currentPathname = location.pathname.split('/')[2]
   const [searchParams] = useSearchParams()
@@ -76,16 +80,18 @@ export const OfferCardComponent = ({
         </div>
 
         <div className={styles['offer-tag-container']}>
-          {getOfferTags(offer, adageUser, false).map((tag) => {
-            return (
-              <Tag
-                key={tag.text}
-                label={tag.text}
-                icon={tag.icon}
-                variant={TagVariant.DEFAULT}
-              />
-            )
-          })}
+          {getOfferTags(offer, adageUser, false, isCollectiveOaActive).map(
+            (tag) => {
+              return (
+                <Tag
+                  key={tag.text}
+                  label={tag.text}
+                  icon={tag.icon}
+                  variant={TagVariant.DEFAULT}
+                />
+              )
+            }
+          )}
         </div>
 
         <div className={styles['offer-name']} data-testid="card-offer">
