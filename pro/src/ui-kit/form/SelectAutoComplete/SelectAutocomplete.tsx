@@ -53,7 +53,6 @@ export const SelectAutocomplete = ({
   label,
   multi = false,
   options,
-  smallLabel = false,
   resetOnOpen = true,
   description,
   onSearch = () => {},
@@ -271,7 +270,6 @@ export const SelectAutocomplete = ({
       label={label}
       name={`search-${name}`}
       showError={searchMeta.touched && !!meta.error}
-      smallLabel={smallLabel}
       inline={inline}
       description={description}
       isLabelHidden={isLabelHidden}

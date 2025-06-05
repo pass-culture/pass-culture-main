@@ -31,14 +31,6 @@ export const Default: Story = {
   },
 }
 
-export const SmallLabel: Story = {
-  args: {
-    name: 'quantity',
-    label: 'Quantité',
-    smallLabel: true,
-  },
-}
-
 export const Required: Story = {
   args: {
     name: 'quantity',
