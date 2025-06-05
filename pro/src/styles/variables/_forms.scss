@@ -8,5 +8,5 @@ $input-error-reserved-space: rem.torem(16px);
 $input-space-before-error: rem.torem(8px);
 $label-space-before-input: rem.torem(8px);
 $label-small-space-before-input: rem.torem(16px);
-$input-label-min-height: rem.torem(16px);
-$input-description-min-height: rem.torem(16px);
+$input-label-min-height: rem.torem(var(--typography-body-line-height));
+$input-description-min-height: rem.torem(var(--typography-body-xs-line-height));

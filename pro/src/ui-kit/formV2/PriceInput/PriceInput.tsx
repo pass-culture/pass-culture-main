@@ -9,16 +9,14 @@ import React, {
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
 
-import styles from './PriceInput.module.scss'
-
 /**
  * Props for the PriceInput component.
  *
- * @extends Pick<TextInputProps, 'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'>
+ * @extends Pick<TextInputProps, 'name' | 'max' | 'rightIcon' | 'disabled' | 'className'>
  */
 export type PriceInputProps = Pick<
   TextInputProps,
-  'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'
+  'name' | 'max' | 'rightIcon' | 'disabled' | 'className'
 > & {
   /**
    * A label for the input,
@@ -62,7 +60,6 @@ export const PriceInput = React.forwardRef(
       max,
       rightIcon,
       disabled,
-      smallLabel,
       showFreeCheckbox,
       hideAsterisk = false,
       updatePriceValue,
@@ -129,7 +126,6 @@ export const PriceInput = React.forwardRef(
         <TextInput
           ref={priceRef}
           className={className}
-          labelClassName={smallLabel ? styles['input-layout-small-label'] : ''}
           required={!hideAsterisk}
           name={name}
           label={label}
