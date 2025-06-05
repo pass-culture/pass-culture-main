@@ -111,7 +111,7 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
           <dd>
             {formatLocalTimeDateString(
               startDatetime,
-              venue.departmentCode,
+              offer.location?.address?.departmentCode,
               'dd/MM/yyyy à HH:mm'
             )}
           </dd>

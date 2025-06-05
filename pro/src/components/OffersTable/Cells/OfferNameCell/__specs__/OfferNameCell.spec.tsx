@@ -3,10 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { OfferStatus } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import {
-  collectiveOfferFactory,
-  listOffersVenueFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   listOffersOfferFactory,
@@ -116,7 +113,9 @@ describe('OfferNameCell', () => {
           beginningDatetime: date,
         }),
       ],
-      venue: listOffersVenueFactory({ departementCode: 'FR' }),
+      address: getAddressResponseIsLinkedToVenueModelFactory({
+        departmentCode: 'FR',
+      }),
     })
 
     renderOfferNameCell({
@@ -147,7 +146,9 @@ describe('OfferNameCell', () => {
           beginningDatetime: '2024-12-12T13:00:00',
         }),
       ],
-      venue: listOffersVenueFactory({ departementCode: 'FR' }),
+      address: getAddressResponseIsLinkedToVenueModelFactory({
+        departmentCode: 'FR',
+      }),
     })
 
     renderOfferNameCell({

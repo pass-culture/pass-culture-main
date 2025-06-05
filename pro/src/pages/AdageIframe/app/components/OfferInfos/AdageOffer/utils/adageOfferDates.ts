@@ -38,7 +38,7 @@ export function getFormattedDatesForBookableOffer(
     return `Le ${getDateTimeToFrenchText(
       getLocalDepartementDateTimeFromUtc(
         offer.stock.startDatetime,
-        offer.venue.departmentCode
+        offer.location?.address?.departmentCode
       ),
       { dateStyle: 'long', timeStyle: 'short' }
     )}`
@@ -47,11 +47,11 @@ export function getFormattedDatesForBookableOffer(
   return getRangeToFrenchText(
     getLocalDepartementDateTimeFromUtc(
       offer.stock.startDatetime,
-      offer.venue.departmentCode
+      offer.location?.address?.departmentCode
     ),
     getLocalDepartementDateTimeFromUtc(
       offer.stock.endDatetime,
-      offer.venue.departmentCode
+      offer.location?.address?.departmentCode
     ),
     true
   )

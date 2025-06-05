@@ -128,7 +128,10 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.eventAddressType:offererVenue', 'offer.eventAddressType:other'],
         ['offer.students:Collège - 4e'],
         ['offer.domains:1'],
-        ['venue.departmentCode:01', 'offer.interventionArea:01'],
+        [
+          'offer.location.address.departmentCode:01',
+          'offer.interventionArea:01',
+        ],
         ['venue.academy:Paris'],
         ['formats:Concert'],
       ],

@@ -53,7 +53,7 @@ export const adageFiltersToFacetFilters = ({
     ])
   } else {
     filteredDepartments = departments.flatMap((department) => [
-      `venue.departmentCode:${department}`,
+      `offer.location.address.departmentCode:${department}`,
       `offer.interventionArea:${department}`,
     ])
   }
