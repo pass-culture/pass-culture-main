@@ -8,12 +8,7 @@ import styles from './QuantityInput.module.scss'
 
 export type QuantityInputProps = Pick<
   TextInputProps,
-  | 'disabled'
-  | 'className'
-  | 'required'
-  | 'asterisk'
-  | 'smallLabel'
-  | 'className'
+  'disabled' | 'className' | 'required' | 'asterisk' | 'className'
 > & {
   /**
    * A label for the text input.

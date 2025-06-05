@@ -9,16 +9,11 @@ export type Quantity = number | ''
 /**
  * Props for the QuantityInput component.
  *
- * @extends Pick<TextInputProps, 'disabled' | 'className' | 'classNameFooter' | 'isLabelHidden' | 'smallLabel' | 'isOptional'>
+ * @extends Pick<TextInputProps, 'disabled' | 'className' | 'classNameFooter' | 'isLabelHidden' | 'isOptional'>
  */
 export type QuantityInputProps = Pick<
   TextInputProps,
-  | 'disabled'
-  | 'className'
-  | 'classNameFooter'
-  | 'isLabelHidden'
-  | 'smallLabel'
-  | 'isOptional'
+  'disabled' | 'className' | 'classNameFooter' | 'isLabelHidden' | 'isOptional'
 > & {
   /**
    * A label for the input, also used as the aria-label for the group.
@@ -68,7 +63,6 @@ export const QuantityInput = ({
   className,
   classNameFooter,
   isLabelHidden,
-  smallLabel,
   isOptional,
   min = 0,
 }: QuantityInputProps) => {
@@ -133,7 +127,6 @@ export const QuantityInput = ({
   return (
     <TextInput
       focusRef={quantityRef}
-      smallLabel={smallLabel}
       name={quantityName}
       label={label}
       isOptional={isOptional}

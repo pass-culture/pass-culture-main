@@ -96,7 +96,6 @@ export const TextInput = ({
   isLabelHidden = false,
   countCharacters,
   maxLength = 255,
-  smallLabel,
   isOptional = false,
   focusRef,
   leftIcon,
@@ -171,7 +170,6 @@ export const TextInput = ({
       maxLength={maxLength}
       name={name}
       showError={showError}
-      smallLabel={smallLabel}
       inline={inline}
       description={description}
       clearButtonProps={clearButtonProps}

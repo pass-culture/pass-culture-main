@@ -24,7 +24,6 @@ export const Select = ({
   isOptional = false,
   disabled,
   label,
-  smallLabel,
   description,
   inline,
   onChange,
@@ -54,7 +53,6 @@ export const Select = ({
       label={label}
       name={name}
       showError={meta.touched && !!meta.error}
-      smallLabel={smallLabel}
       inline={inline}
       isLabelHidden={isLabelHidden}
       classNameLabel={classNameLabel}

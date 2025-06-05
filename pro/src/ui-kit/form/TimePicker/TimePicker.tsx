@@ -26,7 +26,6 @@ export const TimePicker = ({
   disabled,
   label,
   isLabelHidden = false,
-  smallLabel,
   clearButtonProps,
   filterVariant,
   isOptional = false,
@@ -45,7 +44,6 @@ export const TimePicker = ({
       isLabelHidden={isLabelHidden}
       name={name}
       showError={showError}
-      smallLabel={smallLabel}
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
       classNameInput={classNameInput}

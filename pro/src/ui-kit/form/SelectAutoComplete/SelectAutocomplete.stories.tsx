@@ -51,7 +51,6 @@ const defaultProps: Args = {
   label: 'Département',
   hideTags: false,
   isOptional: false,
-  smallLabel: false,
   searchInOptions: searchPatternInOptions,
 }
 
