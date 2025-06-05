@@ -3,7 +3,6 @@ import typing
 from functools import partial
 from urllib.parse import urlparse
 
-import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -109,59 +108,54 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     )
 
 
-def _get_validation_action_information(offerer_id: int) -> tuple[offerers_models.Offerer, str | None]:
-    offerer = (
-        db.session.query(offerers_models.Offerer)
-        .filter(offerers_models.Offerer.id == offerer_id)
-        .outerjoin(
-            finance_models.BankAccount,
-            sa.and_(
-                finance_models.BankAccount.offererId == offerers_models.Offerer.id,
-                finance_models.BankAccount.status.in_(
-                    [
-                        finance_models.BankAccountApplicationStatus.DRAFT,
-                        finance_models.BankAccountApplicationStatus.ON_GOING,
-                        finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
-                    ]
-                ),
+def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> str | None:
+    bank_accounts = (
+        db.session.query(finance_models.BankAccount)
+        .filter(
+            finance_models.BankAccount.offererId.in_(offerer_ids),
+            finance_models.BankAccount.status.in_(
+                [
+                    finance_models.BankAccountApplicationStatus.DRAFT,
+                    finance_models.BankAccountApplicationStatus.ON_GOING,
+                    finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
+                ]
             ),
         )
-        .options(sa_orm.contains_eager(offerers_models.Offerer.bankAccounts))
-        .one_or_none()
+        .order_by(finance_models.BankAccount.offererId)
+        .all()
     )
 
-    if not offerer:
-        raise NotFound()
+    if not bank_accounts:
+        return None
 
-    if offerer.bankAccounts:
-        if len(offerer.bankAccounts) == 1:
-            information = Markup(
-                "Un dossier de coordonnées bancaires est en cours sur Démarches-Simplifiées pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : <ul>"
-            )
-        else:
-            information = Markup(
-                "{count} dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas : <ul>"
-            ).format(count=len(offerer.bankAccounts))
-
-        for pending_bank_account in offerer.bankAccounts:
-            information += Markup(
-                '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
-            ).format(
-                procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
-                application_number=pending_bank_account.dsApplicationId,
-                status=filters.format_dms_application_status_badge(pending_bank_account.status),
-            )
-        information += Markup("</ul>")
+    offerers_text = filters.pluralize(len(offerer_ids), "cette entité juridique", "ces entités juridiques")
+    if len(bank_accounts) == 1:
+        information = Markup(
+            "Un dossier de coordonnées bancaires est en cours sur Démarches-Simplifiées pour {offerers_text}, son traitement n'est pas automatique, ne l'oublions pas : <ul>"
+        ).format(offerers_text=offerers_text)
     else:
-        information = None
+        information = Markup(
+            "{count} dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour {offerers_text}, leur traitement n'est pas automatique, ne les oublions pas : <ul>"
+        ).format(count=len(bank_accounts), offerers_text=offerers_text)
 
-    return offerer, information
+    for pending_bank_account in bank_accounts:
+        information += Markup(
+            '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
+        ).format(
+            procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
+            application_number=pending_bank_account.dsApplicationId,
+            status=filters.format_dms_application_status_badge(pending_bank_account.status),
+        )
+    information += Markup("</ul>")
+
+    return information
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer, information = _get_validation_action_information(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    information = _get_validation_action_information([offerer_id])
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -209,7 +203,8 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer, information = _get_validation_action_information(offerer_id)
+    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    information = _get_validation_action_information([offerer_id])
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -361,12 +356,19 @@ def _offerer_batch_action(
     return _redirect_after_offerer_validation_action()
 
 
-@validation_blueprint.route("/offerer/batch-validate-form", methods=["GET"])
+@validation_blueprint.route("/offerer/batch-validate-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_validate_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOffererValidationForm()
+
+    if form.object_ids.data:
+        information = _get_validation_action_information(form.object_ids_list)
+    else:
+        information = None
+
     return render_template(
         "components/turbo/modal_form.html",
+        information=information,
         form=form,
         dst=url_for("backoffice_web.validation.batch_validate_offerer"),
         div_id="batch-validate-modal",
@@ -436,12 +438,19 @@ def batch_set_offerer_pending() -> utils.BackofficeResponse:
     )
 
 
-@validation_blueprint.route("/offerer/batch-reject-form", methods=["GET"])
+@validation_blueprint.route("/offerer/batch-reject-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOffererRejectionForm()
+
+    if form.object_ids.data:
+        information = _get_validation_action_information(form.object_ids_list)
+    else:
+        information = None
+
     return render_template(
         "components/turbo/modal_form.html",
+        information=information,
         form=form,
         dst=url_for("backoffice_web.validation.batch_reject_offerer"),
         div_id="batch-reject-modal",
