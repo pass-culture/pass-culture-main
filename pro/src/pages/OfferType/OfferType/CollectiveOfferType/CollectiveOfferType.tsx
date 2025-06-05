@@ -15,7 +15,6 @@ import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './CollectiveOfferType.module.scss'
@@ -41,6 +40,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
     <>
       {offerer?.isValidated && offerer.allowedOnAdage && (
         <RadioGroup
+          variant="detailed"
           name="collectiveOfferSubtype"
           className={styles['container']}
           legend={
@@ -56,17 +56,22 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
               value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
               description:
                 'Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
-              icon: strokeBookedIcon,
+              asset: {
+                variant: 'icon',
+                src: strokeBookedIcon,
+              },
             },
             {
               label: 'Une offre vitrine',
               value: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE,
               description:
                 'Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
-              icon: strokeTemplateOfferIcon,
+              asset: {
+                variant: 'icon',
+                src: strokeTemplateOfferIcon,
+              },
             },
           ]}
-          variant={RadioVariant.BOX}
         />
       )}
 
@@ -74,6 +79,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
         getValues('offer.collectiveOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
           <RadioGroup
+            variant="detailed"
             name="collectiveOfferSubtypeDuplicate"
             className={styles['container']}
             legend={
@@ -91,17 +97,22 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                 value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
                 description:
                   'Créer une nouvelle offre réservable en partant d’un formulaire vierge.',
-                icon: strokeNewOfferIcon,
+                asset: {
+                  variant: 'icon',
+                  src: strokeNewOfferIcon,
+                },
               },
               {
                 label: 'Dupliquer les informations d’une offre vitrine',
                 value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE,
                 description:
                   'Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
-                icon: strokeDuplicateOfferIcon,
+                asset: {
+                  variant: 'icon',
+                  src: strokeDuplicateOfferIcon,
+                },
               },
             ]}
-            variant={RadioVariant.BOX}
           />
         )}
 

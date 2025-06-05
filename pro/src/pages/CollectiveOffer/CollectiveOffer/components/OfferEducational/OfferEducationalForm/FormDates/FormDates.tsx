@@ -6,9 +6,8 @@ import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './FormDates.module.scss'
 
@@ -45,6 +44,9 @@ export const FormDates = ({
       </h2>
       <RadioGroup
         disabled={disableForm}
+        variant="detailed"
+        checkedOption={values.datesType}
+        onChange={(e) => setFieldValue('datesType', e.target.value)}
         group={[
           {
             label: 'Tout au long de l’année scolaire, l’offre est permanente',
@@ -53,7 +55,7 @@ export const FormDates = ({
           {
             label: 'À une date ou une période précise',
             value: 'specific_dates',
-            childrenOnChecked: (
+            collapsed: (
               <>
                 <Callout className={styles.banner}>
                   Votre offre sera mise en pause automatiquement à l’issue des
@@ -84,7 +86,6 @@ export const FormDates = ({
             ),
           },
         ]}
-        variant={RadioVariant.BOX}
         describedBy={subtitleId}
         name="datesType"
       />

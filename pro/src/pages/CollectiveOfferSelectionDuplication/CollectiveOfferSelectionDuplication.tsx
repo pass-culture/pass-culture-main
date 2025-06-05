@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -25,11 +24,10 @@ import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Thumb } from 'ui-kit/Thumb/Thumb'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 
@@ -172,46 +170,34 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               </FormikProvider>
               <FormikProvider value={formikSelection}>
                 <Form>
-                  <fieldset>
-                    <legend>
-                      <p className={styles['offer-info']}>
-                        {showAll
-                          ? 'Les dernières offres vitrines créées'
-                          : `${pluralize(offers.length, 'offre')} vitrine`}
-                      </p>
-                      <p className={styles['visually-hidden']} role="status">
-                        {pluralize(offers.length, 'offre vitrine trouvée')}
-                      </p>
-                    </legend>
+                  <RadioGroup
+                    variant="detailed"
+                    legend={
+                      <>
+                        <p>
+                          {showAll
+                            ? 'Les dernières offres vitrines créées'
+                            : `${pluralize(offers.length, 'offre')} vitrine`}
+                        </p>
+                        <p className={styles['visually-hidden']} role="status">
+                          {pluralize(offers.length, 'offre vitrine trouvée')}
+                        </p>
+                      </>
+                    }
+                    group={offers.slice(0, 5).map((offer) => ({
+                      value: offer.id.toString(),
+                      label: offer.name,
+                      description: offer.venue.name,
+                      variant: 'detailed',
+                      image: offer.imageUrl as string,
+                      imageSize: 'm',
 
-                    {offers.slice(0, 5).map((offer) => (
-                      <div
-                        key={offer.id}
-                        className={cn(styles['offer-selection'], {
-                          [styles['offer-selected']]:
-                            formikSelection.values.templateOfferId ===
-                            offer.id.toString(),
-                        })}
-                      >
-                        <RadioButton
-                          name="templateOfferId"
-                          value={offer.id.toString()}
-                          label={
-                            <div className={styles['offer-selection-label']}>
-                              <Thumb
-                                url={offer.imageUrl}
-                                className={styles['img-offer']}
-                              />
-                              <p className={styles['offer-title']}>
-                                <strong>{offer.name}</strong>
-                                {offer.venue.name}
-                              </p>
-                            </div>
-                          }
-                        />
-                      </div>
-                    ))}
-                  </fieldset>
+                      sizing: 'fill',
+                    }))}
+                    name="templateOfferId"
+                    checkedOption={formikSelection.values.templateOfferId}
+                    onChange={formikSelection.handleChange}
+                  />
                   {offers.length < 1 && (
                     <div className={styles['search-no-results']}>
                       <SvgIcon

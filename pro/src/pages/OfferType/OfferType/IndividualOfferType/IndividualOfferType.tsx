@@ -7,7 +7,6 @@ import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './IndividualOfferType.module.scss'
@@ -19,11 +18,12 @@ export const IndividualOfferType = () => {
 
   return (
     <RadioGroup
+      variant="detailed"
       name="individualOfferSubtype"
       className={cn(styles['container'], {
         [styles['container-onboarding']]: isOnboarding,
       })}
-      legend={<h2 className={styles['legend']}>Votre offre est :</h2>}
+      legend={<h2 className={styles['legend']}>Votre offre est</h2>}
       onChange={(e) => setValue('offer.individualOfferSubtype', e.target.value)}
       checkedOption={getValues('offer.individualOfferSubtype')}
       group={[
@@ -32,28 +32,43 @@ export const IndividualOfferType = () => {
           value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
           description:
             'Livre, instrument de musique, abonnement, cartes et pass…',
-          icon: thingStrokeIcon,
+          asset: {
+            variant: 'icon',
+            src: thingStrokeIcon,
+          },
+          sizing: 'fill',
         },
         {
           label: 'Un bien numérique',
           value: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
           description: 'Ebook, jeu vidéo, abonnement streaming...',
-          icon: strokeVirtualThingIcon,
+          asset: {
+            variant: 'icon',
+            src: strokeVirtualThingIcon,
+          },
+          sizing: 'fill',
         },
         {
           label: 'Un évènement physique daté',
           value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT,
           description: 'Concert, représentation, conférence, ateliers...',
-          icon: strokeDateIcon,
+          asset: {
+            variant: 'icon',
+            src: strokeDateIcon,
+          },
+          sizing: 'fill',
         },
         {
           label: 'Un évènement numérique daté',
           value: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
           description: 'Livestream, cours en ligne, conférence en ligne...',
-          icon: strokeVirtualEventIcon,
+          asset: {
+            variant: 'icon',
+            src: strokeVirtualEventIcon,
+          },
+          sizing: 'fill',
         },
       ]}
-      variant={RadioVariant.BOX}
     />
   )
 }

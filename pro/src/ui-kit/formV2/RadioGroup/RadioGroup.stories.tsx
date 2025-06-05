@@ -1,8 +1,6 @@
 import { PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
-
 import { RadioGroup, RadioGroupProps } from './RadioGroup'
 
 export default {
@@ -72,13 +70,13 @@ export const WithinForm = {
 }
 
 export const Disabled = {
-  args: { ...defaultArgs, variant: RadioVariant.BOX, disabled: true },
+  args: { ...defaultArgs, variant: 'detailed', disabled: true },
 }
 
 export const WithBorder = {
   args: {
     ...defaultArgs,
-    variant: RadioVariant.BOX,
+    variant: 'detailed',
     name: 'name 2',
   },
 }
@@ -86,7 +84,7 @@ export const WithBorder = {
 export const Inline = {
   args: {
     ...defaultArgs,
-    variant: RadioVariant.BOX,
+    variant: 'detailed',
     displayMode: 'inline',
   },
 }
@@ -94,7 +92,7 @@ export const Inline = {
 export const InlineGrow = {
   args: {
     ...defaultArgs,
-    variant: RadioVariant.BOX,
+    variant: 'detailed',
     displayMode: 'inline-grow',
   },
 }
@@ -102,14 +100,13 @@ export const InlineGrow = {
 export const WithChildren = {
   args: {
     ...defaultArgs,
-    variant: RadioVariant.BOX,
+    variant: 'detailed',
     group: defaultArgs.group.map((g, i) => ({
       ...g,
       childrenOnChecked: (
         <RadioGroup
           legend="Choisir une sous-option"
           name="name 4"
-          variant={RadioVariant.BOX}
           group={[
             { label: `Sous-option ${i + 1} 1`, value: `option${i}1` },
             { label: `Sous-option ${i + 1} 2`, value: `option${i}2` },
@@ -124,7 +121,7 @@ export const WithChildren = {
 export const InnerRadioGroupWithNoLegend = {
   args: {
     ...defaultArgs,
-    variant: RadioVariant.BOX,
+    variant: 'detailed',
     name: 'name 5',
     group: [
       {
@@ -142,7 +139,6 @@ export const InnerRadioGroupWithNoLegend = {
           <RadioGroup
             name="subgroup"
             describedBy="my-id-3"
-            variant={RadioVariant.BOX}
             group={[
               { label: 'Sous-option 1', value: 'sub-option-1' },
               { label: 'Sous-option 2', value: 'sub-option-2' },
@@ -158,14 +154,13 @@ export const WithChildrenDisabled = {
   args: {
     ...defaultArgs,
     disabled: true,
-    variant: RadioVariant.BOX,
+    variant: 'detailed',
     group: defaultArgs.group.map((g, i) => ({
       ...g,
       childrenOnChecked: (
         <RadioGroup
           legend="Choisir une sous-option"
           name="name 4"
-          variant={RadioVariant.BOX}
           group={[
             { label: `Sous-option ${i + 1} 1`, value: `option${i}1` },
             { label: `Sous-option ${i + 1} 2`, value: `option${i}2` },

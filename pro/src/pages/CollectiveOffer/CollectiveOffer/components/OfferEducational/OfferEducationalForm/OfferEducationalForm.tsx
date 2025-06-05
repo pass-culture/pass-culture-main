@@ -152,7 +152,6 @@ export const OfferEducationalForm = ({
   return (
     <>
       <ScrollToFirstErrorAfterSubmit />
-
       <FormLayout className={styles['educational-form']} fullWidthActions>
         {isCollectiveOffer(offer) && offer.isPublicApi && (
           <BannerPublicApi className={styles['banner-space']}>

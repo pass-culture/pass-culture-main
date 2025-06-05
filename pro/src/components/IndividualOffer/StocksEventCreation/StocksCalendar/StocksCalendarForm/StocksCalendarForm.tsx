@@ -8,7 +8,6 @@ import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import {
@@ -116,10 +115,10 @@ export function StocksCalendarForm({
           <MandatoryInfo />
           <RadioGroup
             name="durationType"
-            variant={RadioVariant.BOX}
             displayMode="inline-grow"
             checkedOption={form.watch('durationType')}
             className={styles['duration-type-group']}
+            variant="detailed"
             onChange={(e) =>
               form.setValue(
                 'durationType',

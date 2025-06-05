@@ -14,12 +14,15 @@ import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Slider } from 'ui-kit/form/Slider/Slider'
 import {
   AdageMultiselect,
   ItemProps,
 } from 'ui-kit/formV2/AdageMultiselect/AdageMultiselect'
+import {
+  RadioGroup,
+  RadioGroupProps,
+} from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
@@ -127,18 +130,21 @@ export const OfferFilters = ({
     formik.handleSubmit()
   }
 
-  const adressTypeRadios = [
+  const adressTypeRadios: RadioGroupProps['group'] = [
     {
       label: 'Je n’ai pas de préférence (Voir tout)',
       value: OfferAddressType.OTHER,
+      sizing: 'fill',
     },
     {
       label: 'Sortie chez un partenaire culturel',
       value: OfferAddressType.OFFERER_VENUE,
+      sizing: 'fill',
     },
     {
       label: 'Intervention d’un partenaire culturel dans mon établissement',
       value: OfferAddressType.SCHOOL,
+      sizing: 'fill',
     },
   ]
 
@@ -192,6 +198,8 @@ export const OfferFilters = ({
                     className={styles['filter-container-evenement']}
                     name="eventAddressType"
                     legend="Choisir un type d'intervention"
+                    checkedOption={formik.values.eventAddressType}
+                    onChange={formik.handleChange}
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>

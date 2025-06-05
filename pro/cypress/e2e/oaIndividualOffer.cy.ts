@@ -126,9 +126,6 @@ describe('Create individual offers with OA', () => {
     cy.url().should('contain', '/edition/pratiques')
 
     cy.stepLog({ message: 'I update the OA' })
-    cy.findByLabelText(
-      'Mon Lieu – 1 boulevard Poissonnière 75002 Paris'
-    ).should('be.checked')
     cy.findByLabelText('À une autre adresse').click()
     cy.findByLabelText('Intitulé de la localisation').type(
       'Libellé de mon adresse'
@@ -262,9 +259,6 @@ describe('Create individual offers with OA', () => {
     cy.url().should('contain', '/edition/pratiques')
 
     cy.stepLog({ message: 'I update the OA' })
-    cy.findByLabelText(
-      'Mon Lieu – 1 boulevard Poissonnière 75002 Paris'
-    ).should('be.checked')
     cy.findByLabelText('À une autre adresse').click()
     cy.findByLabelText('Intitulé de la localisation').type(
       'Libellé de mon adresse custom'

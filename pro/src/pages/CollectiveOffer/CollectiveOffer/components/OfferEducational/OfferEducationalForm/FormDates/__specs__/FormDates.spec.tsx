@@ -125,16 +125,10 @@ describe('FormDates', () => {
     )
 
     expect(
-      screen.getByRole('radio', {
-        name: 'Tout au long de l’année scolaire, l’offre est permanente',
-      })
-    ).toBeChecked()
-
-    expect(
-      screen.getByRole('radio', {
-        name: 'À une date ou une période précise',
-      })
-    ).not.toBeChecked()
+      screen.queryByText(
+        'Votre offre sera mise en pause automatiquement à l’issue des dates précisées ci-dessous.'
+      )
+    ).not.toBeInTheDocument()
   })
 
   it('should not erase the selected dates when changing from specific dates offer to permanent and back', async () => {

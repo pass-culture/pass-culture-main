@@ -19,9 +19,6 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import phoneStrokeIcon from 'icons/stroke-phone.svg'
-import strokeProfIcon from 'icons/stroke-prof.svg'
-import { RadioVariant } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -150,6 +147,7 @@ export const OfferTypeScreen = () => {
               {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
               {!isOnboarding && (
                 <RadioGroup
+                  variant="detailed"
                   name="offerType"
                   legend={
                     <h2 className={styles['legend']}>
@@ -164,17 +162,14 @@ export const OfferTypeScreen = () => {
                     {
                       label: 'Au grand public',
                       value: OFFER_TYPES.INDIVIDUAL_OR_DUO,
-                      icon: phoneStrokeIcon,
-                      iconPosition: 'center',
+                      sizing: 'fill',
                     },
                     {
                       label: 'À un groupe scolaire',
                       value: OFFER_TYPES.EDUCATIONAL,
-                      icon: strokeProfIcon,
-                      iconPosition: 'center',
+                      sizing: 'fill',
                     },
                   ]}
-                  variant={RadioVariant.BOX}
                   displayMode="inline-grow"
                 />
               )}

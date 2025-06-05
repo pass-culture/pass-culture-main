@@ -73,7 +73,13 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           )}
         </Button>
         {manuallySetAddress.value && <AddressManual />}
-        {isOpenToPublicEnabled && <OpenToPublicToggle />}
+        {isOpenToPublicEnabled && (
+          <OpenToPublicToggle
+            onChange={async (e) => {
+              await formik.setFieldValue('isOpenToPublic', e.target.value)
+            }}
+          />
+        )}
       </FormLayout.Row>
     </FormLayout.Section>
   )

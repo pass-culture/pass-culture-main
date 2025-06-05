@@ -1,6 +1,7 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/commons/constants'
+import { RadioGroupProps } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import { UsefulInformationFormValues } from './types'
 
@@ -30,26 +31,30 @@ export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormVal
     coords: '',
   }
 
-export const ticketWithdrawalTypeRadios = [
+export const ticketWithdrawalTypeRadios: RadioGroupProps['group'] = [
   {
     label: 'Aucun billet n’est nécessaire',
     value: WithdrawalTypeEnum.NO_TICKET,
+    sizing: 'fill',
   },
   {
     label: 'Les billets seront envoyés par email',
     value: WithdrawalTypeEnum.BY_EMAIL,
+    sizing: 'fill',
   },
   {
     label: 'Retrait sur place (guichet, comptoir...)',
     value: WithdrawalTypeEnum.ON_SITE,
+    sizing: 'fill',
   },
 ]
 
-export const providedTicketWithdrawalTypeRadios = [
+export const providedTicketWithdrawalTypeRadios: RadioGroupProps['group'] = [
   ...ticketWithdrawalTypeRadios,
   {
     label: 'Les billets seront affichés dans l’application',
     value: WithdrawalTypeEnum.IN_APP,
+    sizing: 'fill',
   },
 ]
 
