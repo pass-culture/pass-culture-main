@@ -70,9 +70,12 @@ export const DetailedWithTag: StoryObj<typeof RadioButton> = {
     label: 'Avec tag',
     variant: 'detailed',
     description: 'Description lorem ipsum',
-    tag: {
-      label: 'Tag',
-      variant: TagVariant.SUCCESS,
+    asset: {
+      variant: 'tag',
+      tag: {
+        label: 'Tag',
+        variant: TagVariant.SUCCESS,
+      },
     },
   },
 }
@@ -83,7 +86,10 @@ export const DetailedWithIcon: StoryObj<typeof RadioButton> = {
     label: 'Avec icône',
     variant: 'detailed',
     description: 'Description lorem ipsum',
-    icon: strokeDateIcon,
+    asset: {
+      variant: 'icon',
+      src: strokeDateIcon,
+    },
   },
 }
 
@@ -93,7 +99,10 @@ export const DetailedWithText: StoryObj<typeof RadioButton> = {
     label: 'Avec texte',
     variant: 'detailed',
     description: 'Description lorem ipsum',
-    text: '19€',
+    asset: {
+      variant: 'text',
+      text: '19€',
+    },
   },
 }
 
@@ -102,8 +111,11 @@ export const DetailedWithImage: StoryObj<typeof RadioButton> = {
     name: 'detailed-with-image',
     label: 'Avec image',
     variant: 'detailed',
-    image: imageDemo,
-    imageSize: 's',
+    asset: {
+      variant: 'image',
+      src: imageDemo,
+      size: 's',
+    },
   },
 }
 

@@ -172,14 +172,20 @@ export const DownloadBookingsModal = ({
             value: BookingsExportStatusFilter.VALIDATED,
             description:
               'Les réservations au statut confirmées et validées ne sont plus annulables par les bénéficiaires."',
-            icon: strokeDeskIcon,
+            asset: {
+              variant: 'icon',
+              src: strokeDeskIcon,
+            },
           },
           {
             label: 'Toutes les réservations',
             value: BookingsExportStatusFilter.ALL,
             description:
               'Les réservations dont le statut n’est pas “confirmée” ou “validée” pourront encore être annulées par les bénéficiaires."',
-            icon: strokeDeskIcon,
+            asset: {
+              variant: 'icon',
+              src: strokeDeskIcon,
+            },
           },
         ]}
       />
