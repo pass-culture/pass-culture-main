@@ -17,14 +17,6 @@ export const Default: Story = {
   },
 }
 
-export const SmallLabel: Story = {
-  args: {
-    name: 'email',
-    label: 'Email',
-    smallLabel: true,
-  },
-}
-
 export const WithCheckbox: Story = {
   args: {
     name: 'email',

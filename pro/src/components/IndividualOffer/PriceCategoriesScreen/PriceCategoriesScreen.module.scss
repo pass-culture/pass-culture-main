@@ -4,12 +4,14 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
 
+$icon-size: rem.torem(24px);
+
 .label-input {
   width: 100%;
 }
 
 .price-input {
-  width: rem.torem(200px);
+  margin-top: 0;
 }
 
 .duo-section {
@@ -25,8 +27,8 @@
   padding: 0;
   height: fit-content;
   margin-top: calc(
-    forms.$input-label-min-height + forms.$label-small-space-before-input +
-      (size.$input-min-height / 2) - (rem.torem(24px) / 2)
+    forms.$input-label-min-height + forms.$label-space-before-input +
+      (size.$input-min-height / 2) - ($icon-size / 2)
   );
 
   &-svg {
@@ -36,8 +38,7 @@
 }
 
 .form-layout-row-price-category {
-  border-radius: rem.torem(4px);
-  padding-bottom: rem.torem(24px);
+  margin-bottom: rem.torem(48px);
 }
 
 .visually-hidden {
@@ -46,22 +47,18 @@
 
 @media (min-width: size.$tablet) {
   .label-input {
-    width: rem.torem(424px);
+    width: rem.torem(200px);
+  }
 
-    &-label {
-      @include fonts.body-accent-xs;
-
-      display: block;
-      min-height: forms.$input-label-min-height;
-      margin-bottom: forms.$label-small-space-before-input !important;
-    }
+  .price-input {
+    margin-top: calc(forms.$input-description-min-height * 2);
   }
 
   .delete-icon {
     margin-top: calc(
-      forms.$label-space-before-input + forms.$input-description-min-height +
-        forms.$input-label-min-height + forms.$label-small-space-before-input +
-        (size.$input-min-height / 2) - (rem.torem(16px) / 2)
+      forms.$input-label-min-height + forms.$input-description-min-height * 2 +
+        forms.$label-space-before-input + (size.$input-min-height / 2) -
+        ($icon-size / 2)
     );
   }
 
@@ -70,6 +67,6 @@
   }
 
   .form-layout-row-price-category {
-    padding-bottom: 0;
+    margin-bottom: rem.torem(16px);
   }
 }
