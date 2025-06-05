@@ -5,8 +5,8 @@
           {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
           {% if submit_form %}href="#" data-submit-form="{{ submit_form }}"{% endif %}
           type="button">
-    {{ title }}
     <i class="bi bi-{{ icon }}"></i>
+    {{ title }}
   </button>
 {% endmacro %}
 {% macro action_bar_additional_button(icon, title, modal_id=none, submit_form=none) %}
