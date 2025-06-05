@@ -137,6 +137,8 @@
             type="button"
             class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
             data-modal-selector="#batch-validate-modal"
+            data-mode="fetch"
+            data-fetch-url="{{ url_for('backoffice_web.validation.get_batch_validate_offerer_form') }}"
             data-use-confirmation-modal="true">Valider</button>
     <button disabled
             type="button"
@@ -147,6 +149,8 @@
             type="button"
             class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
             data-use-confirmation-modal="true"
+            data-mode="fetch"
+            data-fetch-url="{{ url_for('backoffice_web.validation.get_batch_reject_offerer_form') }}"
             data-modal-selector="#batch-reject-modal">Rejeter</button>
   </div>
 {% endblock %}
