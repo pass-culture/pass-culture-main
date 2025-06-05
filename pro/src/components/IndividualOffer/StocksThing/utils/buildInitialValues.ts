@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
@@ -7,12 +9,12 @@ import {
   formatShortDateForInput,
   FORMAT_ISO_DATE_ONLY,
 } from 'commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
-import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
-import { format } from 'date-fns'
-import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+
 
 export const buildInitialValues = (
   offer: GetIndividualOfferWithAddressResponseModel,

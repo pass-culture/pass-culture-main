@@ -21,8 +21,10 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getToday, isDateValid } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { isNumber } from 'commons/utils/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
+import { serializeThingBookingLimitDatetime } from 'components/IndividualOffer/StocksThing/adapters/serializers'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
@@ -49,8 +51,6 @@ import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 import { setFormReadOnlyFields } from './utils/setFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
-import { serializeThingBookingLimitDatetime } from 'components/IndividualOffer/StocksThing/adapters/serializers'
-import { isNumber } from 'commons/utils/types'
 
 export interface StocksThingProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -380,12 +380,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               description={description}
               links={links}
               isBanner
-              className={styles['callout-area-margin']}
+              className={styles['-area-margin']}
             />
             <div className={styles['row']}>
               <TextInput
                 {...register('price')}
-                /*smallLabel*/
                 name="price"
                 label="Prix"
                 required
@@ -396,8 +395,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 rightIcon={strokeEuroIcon}
                 step="0.01"
                 min={0}
-                className={styles['field-layout-xsmall']}
+                className={styles['field-layout-input']}
               />
+            </div>
+            <div className={styles['row']}>
               <DatePicker
                 name="bookingLimitDatetime"
                 label="Date limite de réservation"
@@ -411,7 +412,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   maxDateTime ? new Date(maxDateTime) : undefined
                 )}
                 disabled={readOnlyFields.includes('bookingLimitDatetime')}
-                className={styles['field-layout-small']}
+                className={styles['field-layout-input']}
                 onBlur={() => {
                   if (
                     watch('bookingLimitDatetime') !== null &&
@@ -437,16 +438,16 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               {showExpirationDate && (
                 <DatePicker
                   {...register('activationCodesExpirationDatetime')}
-                  /*smallLabel*/
                   name="activationCodesExpirationDatetime"
                   label="Date d'expiration"
                   /*classNameFooter={styles['field-layout-footer']}*/
-                  className={styles['field-layout-small']}
+                  className={styles['field-layout-input']}
                   disabled={true}
                 />
               )}
+            </div>
+            <div className={styles['row']}>
               <QuantityInput
-                /*smallLabel*/
                 value={
                   watch('quantity') && isNumber(watch('quantity'))
                     ? Number(watch('quantity'))
@@ -456,10 +457,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 disabled={readOnlyFields.includes('quantity')}
                 onChange={onQuantityChange}
                 onBlur={onQuantityChange}
-                className={styles['field-layout-small']}
+                className={styles['field-layout-input']}
                 /*classNameFooter={styles['field-layout-footer']}*/
                 minimum={minQuantity}
               />
+            </div>
+            <div className={styles['row']}>
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
                   <TextInput
@@ -469,7 +472,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     label="Stock restant"
                     hasLabelLineBreak={false}
                     isOptional
-                    /*smallLabel*/
                     className={styles['field-layout-shrink']}
                     /*classNameFooter={styles['field-layout-footer']}*/
                   />
@@ -480,7 +482,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     readOnly
                     label="Réservations"
                     isOptional
-                    /*smallLabel*/
                     className={styles['field-layout-shrink']}
                     /*classNameFooter={styles['field-layout-footer']}*/
                   />

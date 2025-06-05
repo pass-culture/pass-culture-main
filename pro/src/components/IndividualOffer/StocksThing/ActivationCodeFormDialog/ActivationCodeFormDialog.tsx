@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 
 import { Dialog } from 'components/Dialog/Dialog'
 import strokeCodeIcon from 'icons/stroke-code.svg'
@@ -10,7 +11,6 @@ import {
 import styles from './ActivationCodeFormDialog.module.scss'
 import { AddActivationCodeConfirmationForm } from './AddActivationCodeConfirmationForm'
 import { AddActivationCodeForm } from './AddActivationCodeForm'
-import { UseFormSetValue } from 'react-hook-form'
 
 interface ActivationCodeFormProps {
   onCancel: () => void

@@ -1,12 +1,14 @@
+import { format } from 'date-fns'
+import { ChangeEvent } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
+
+import { isDateValid, FORMAT_ISO } from 'commons/utils/date'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 
 import styles from './ActivationCodeFormDialog.module.scss'
-import { UseFormSetValue } from 'react-hook-form'
-import { isDateValid, FORMAT_ISO } from 'commons/utils/date'
-import { ChangeEvent } from 'react'
-import { format } from 'date-fns'
+
 
 interface AddActivationCodeConfirmationFormProps {
   unsavedActivationCodes: string[] | undefined
