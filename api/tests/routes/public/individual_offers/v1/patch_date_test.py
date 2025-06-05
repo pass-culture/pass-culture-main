@@ -242,6 +242,20 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert stock.quantity == 11
 
+    def test_update_quantity_to_zero_deletes_the_existing_stock(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        stock = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue, offer__lastProvider=venue_provider.provider, quantity=10
+        )
+
+        url = self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id)
+        response = client.with_explicit_token(plain_api_key).patch(url, json={"quantity": 0})
+        assert response.status_code == 204
+
+        db.session.refresh(stock)
+        assert stock.isSoftDeleted
+
     def test_update_stock_with_existing_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(

@@ -249,6 +249,9 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
     if not body.stock:
         return
 
+    if body.stock.quantity == 0:
+        return
+
     try:
         offers_api.create_stock(
             offer=product,
@@ -268,7 +271,6 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
-    on_empty_status=204,
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -280,7 +282,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
         )
     ),
 )
-def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse | None:
+def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create Product Offer
 
@@ -288,9 +290,6 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     """
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
-
-    if body.stock and body.stock.quantity == 0:
-        return None
 
     try:
         with repository.transaction():

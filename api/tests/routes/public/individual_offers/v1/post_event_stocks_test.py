@@ -147,6 +147,95 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             ],
         }
 
+    def test_new_dates_with_zero_quantity_are_not_created_but_response_is_ok(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, carre_or_price_category = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=4)
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(next_month),
+                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                        "price_category_id": carre_or_price_category.id,
+                        "quantity": 10,
+                        "id_at_provider": "id_098765",
+                    },
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(next_month),
+                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                        "price_category_id": carre_or_price_category.id,
+                        "quantity": 0,
+                        "id_at_provider": "id_123456",
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 200
+
+        created_stocks = offers_models.Stock.query.filter(offers_models.Stock.offerId == event.id).all()
+        assert len(created_stocks) == 1
+
+        created_stock = created_stocks[0]
+        assert created_stock.idAtProviders == "id_098765"
+        assert created_stock.quantity == 10
+
+        assert response.json == {
+            "dates": [
+                {
+                    "beginningDatetime": date_utils.format_into_utc_date(next_month),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "bookedQuantity": 0,
+                    "quantity": 10,
+                    "id": created_stock.id,
+                    "priceCategory": {
+                        "id": carre_or_price_category.id,
+                        "label": "carre or",
+                        "price": int(carre_or_price_category.price * 100),
+                        "idAtProvider": None,
+                    },
+                    "idAtProvider": "id_098765",
+                }
+            ]
+        }
+
+    def test_nothing_is_created_when_every_new_date_has_a_zero_quantity(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, carre_or_price_category = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=4)
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(next_month),
+                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                        "price_category_id": carre_or_price_category.id,
+                        "quantity": 0,
+                        "id_at_provider": "id_123456",
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.json == {"dates": []}
+
+        created_stocks = offers_models.Stock.query.filter(offers_models.Stock.offerId == event.id).all()
+        assert len(created_stocks) == 0
+
     def test_should_raise_404_because_of_invalid_offer_id(self, client):
         plain_api_key, _ = self.setup_provider()
 
