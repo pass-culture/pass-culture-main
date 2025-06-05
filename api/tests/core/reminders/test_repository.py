@@ -14,13 +14,11 @@ class GetUserIdsWithRemindersTest:
         user_3 = users_factories.UserFactory()
 
         offer = offer_factories.OfferFactory()
-        future_offer = offer_factories.FutureOfferFactory(offer=offer)
         offer_2 = offer_factories.OfferFactory()
-        future_offer_2 = offer_factories.FutureOfferFactory(offer=offer_2)
 
-        factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_1)
-        factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_2)
-        factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_3)
+        factories.OfferReminderFactory(offer=offer, user=user_1)
+        factories.OfferReminderFactory(offer=offer, user=user_2)
+        factories.OfferReminderFactory(offer=offer_2, user=user_3)
 
         user_ids = repository.get_user_ids_with_reminders(offer.id)
 
@@ -29,22 +27,20 @@ class GetUserIdsWithRemindersTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class DeleteRemindersOnOfferTest:
+class DeleteOfferRemindersOnOfferTest:
     def test_delete_reminders_on_offer(self):
         user_1 = users_factories.UserFactory()
         user_2 = users_factories.UserFactory()
         user_3 = users_factories.UserFactory()
 
         offer = offer_factories.OfferFactory()
-        future_offer = offer_factories.FutureOfferFactory(offer=offer)
         offer_2 = offer_factories.OfferFactory()
-        future_offer_2 = offer_factories.FutureOfferFactory(offer=offer_2)
 
-        factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_1)
-        factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_2)
-        factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_3)
+        factories.OfferReminderFactory(offer=offer, user=user_1)
+        factories.OfferReminderFactory(offer=offer, user=user_2)
+        factories.OfferReminderFactory(offer=offer_2, user=user_3)
 
-        repository.delete_reminders_on_offer(offer.id)
+        repository.delete_offer_reminders_on_offer(offer.id)
 
         user_ids = repository.get_user_ids_with_reminders(offer.id)
 

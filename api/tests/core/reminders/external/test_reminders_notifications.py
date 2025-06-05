@@ -19,13 +19,7 @@ class NotifyUsersFutureOfferActivatedTest:
         user_3 = users_factories.UserFactory()
 
         offer = offer_factories.EventOfferFactory(isDuo=True, name="Super Future Offer")
-        future_offer = offer_factories.FutureOfferFactory(offer=offer)
         offer_2 = offer_factories.OfferFactory()
-        future_offer_2 = offer_factories.FutureOfferFactory(offer=offer_2)
-
-        factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_1)
-        factories.FutureOfferReminderFactory(futureOffer=future_offer, user=user_2)
-        factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_3)
 
         factories.OfferReminderFactory(offer=offer, user=user_1)
         factories.OfferReminderFactory(offer=offer, user=user_2)
@@ -68,13 +62,6 @@ class NotifyUsersFutureOfferActivatedTest:
         event_payload = future_offer_activated_event["payload"]
         assert event_payload == expected_payload
 
-        future_offer_reminders = (
-            db.session.query(models.FutureOfferReminder)
-            .filter(models.FutureOfferReminder.futureOfferId == future_offer.id)
-            .all()
-        )
-        assert future_offer_reminders == []
-
         offer_reminders = db.session.query(models.OfferReminder).filter(models.OfferReminder.offerId == offer.id).all()
         assert offer_reminders == []
 
@@ -82,11 +69,9 @@ class NotifyUsersFutureOfferActivatedTest:
         user_1 = users_factories.UserFactory()
 
         offer = offer_factories.OfferFactory()
-        _ = offer_factories.FutureOfferFactory(offer=offer)
         offer_2 = offer_factories.OfferFactory()
-        future_offer_2 = offer_factories.FutureOfferFactory(offer=offer_2)
 
-        factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_1)
+        factories.OfferReminderFactory(offer=offer_2, user=user_1)
 
         with caplog.at_level(logging.WARNING):
             notify_users_future_offer_activated(offer)
