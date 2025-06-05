@@ -42,9 +42,12 @@ describe('<RadioButton />', () => {
         name="groupe"
         value="valeur"
         variant="detailed"
-        tag={{
-          label: 'Tag',
-          variant: TagVariant.SUCCESS,
+        asset={{
+          variant: 'tag',
+          tag: {
+            label: 'Tag',
+            variant: TagVariant.SUCCESS,
+          },
         }}
       />
     )
@@ -58,7 +61,10 @@ describe('<RadioButton />', () => {
         name="groupe"
         value="valeur"
         variant="detailed"
-        icon="icon.svg"
+        asset={{
+          variant: 'icon',
+          src: 'icon.svg',
+        }}
       />
     )
     expect(container.querySelector('svg, img')).toBeInTheDocument()
@@ -71,7 +77,7 @@ describe('<RadioButton />', () => {
         name="groupe"
         value="valeur"
         variant="detailed"
-        text="19€"
+        asset={{ variant: 'text', text: '19€' }}
       />
     )
     expect(getByText('19€')).toBeInTheDocument()
@@ -84,8 +90,7 @@ describe('<RadioButton />', () => {
         name="groupe"
         value="valeur"
         variant="detailed"
-        image="image.png"
-        imageSize="m"
+        asset={{ variant: 'image', src: 'image.png', size: 'm' }}
       />
     )
     expect(container.querySelector('img')).toBeInTheDocument()
