@@ -44,7 +44,7 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
-import styles from './StockThing.module.scss'
+import styles from './StocksThing.module.scss'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
@@ -366,7 +366,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               description={description}
               links={links}
               isBanner
-              className={styles['-area-margin']}
+              className={styles['callout-area-margin']}
             />
             <div className={styles['row']}>
               <TextInput
@@ -476,10 +476,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         </FormLayout>
         {canBeDuo && (
           <FormLayout fullWidthActions>
-            <FormLayout.Section
-              className={styles['duo-section']}
-              title="Réservations “Duo”"
-            >
+            <FormLayout.Section title="Réservations “Duo”">
               <DuoCheckbox
                 checked={Boolean(formik.getFieldProps('isDuo').value)}
                 onChange={(e) =>
