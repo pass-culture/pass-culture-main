@@ -119,19 +119,37 @@ export const RadioGroup = ({
       hideFooter
     >
       <div className={styles[`radio-group-display-${displayMode}`]}>
-        {group.map((item) => (
-          <div className={styles['radio-group-item']} key={item.value}>
-            {/* @ts-expect-error */}
-            <RadioButton
-              {...item}
-              disabled={disabled}
-              name={name}
-              variant={variant || item.variant}
-              onChange={onChange}
-              checked={checkedOption === item.value}
-            />
-          </div>
-        ))}
+        {group.map((item) => {
+          const itemVariant = variant || item.variant
+
+          const radioButtonProps = {
+            disabled: disabled,
+            name: name,
+            onChange: onChange,
+            checked: checkedOption === item.value,
+          }
+
+          return (
+            <div className={styles['radio-group-item']} key={item.value}>
+              {itemVariant === 'default' ? (
+                <RadioButton
+                  {...item}
+                  {...radioButtonProps}
+                  variant="default"
+                  description={undefined}
+                  asset={undefined}
+                  collapsed={undefined}
+                />
+              ) : (
+                <RadioButton
+                  {...item}
+                  {...radioButtonProps}
+                  variant="detailed"
+                />
+              )}
+            </div>
+          )
+        })}
       </div>
     </FieldSetLayout>
   )
