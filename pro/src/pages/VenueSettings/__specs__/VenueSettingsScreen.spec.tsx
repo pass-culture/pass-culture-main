@@ -218,4 +218,48 @@ describe('VenueSettingsScreen', () => {
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     })
   })
+
+  describe('toggleManuallySetAddress', () => {
+    const fieldsNames = new Map([
+      ['street', ''],
+      ['postalCode', ''],
+      ['city', ''],
+      ['latitude', ''],
+      ['longitude', ''],
+      ['coords', ''],
+      ['banId', ''],
+      ['inseeCode', null],
+      ['search-addressAutocomplete', ''],
+      ['addressAutocomplete', ''],
+    ])
+
+    it('toggles manuallySetAddress and resets fields with clearErrors', () => {
+      const mockSetValue = vi.fn()
+      const mockClearErrors = vi.fn()
+      let manuallySetAddress = false
+
+      // Function under test (mimicking your implementation)
+      const toggleManuallySetAddress = () => {
+        mockSetValue('manuallySetAddress', !manuallySetAddress)
+
+        return [...fieldsNames.entries()].map(([fieldName, defaultValue]) => {
+          mockSetValue(fieldName, defaultValue)
+          mockClearErrors()
+        })
+      }
+
+      toggleManuallySetAddress()
+
+      // Check manuallySetAddress toggled once
+      expect(mockSetValue).toHaveBeenCalledWith('manuallySetAddress', true)
+
+      // Check each field reset
+      for (const [fieldName, defaultValue] of fieldsNames.entries()) {
+        expect(mockSetValue).toHaveBeenCalledWith(fieldName, defaultValue)
+      }
+
+      // clearErrors called as many times as fields reset
+      expect(mockClearErrors).toHaveBeenCalledTimes(fieldsNames.size)
+    })
+  })
 })

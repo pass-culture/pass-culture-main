@@ -11,9 +11,9 @@ import {
 } from 'apiClient/v1'
 import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
-  VisibilityFormValues,
   isCollectiveOffer,
   Mode,
+  VisibilityFormValues,
 } from 'commons/core/OfferEducational/types'
 import {
   extractInitialVisibilityValues,

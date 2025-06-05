@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
@@ -142,7 +142,7 @@ describe('components | SiretOrCommentFields', () => {
       const siretInput = screen.getByLabelText(/SIRET de la structure/i)
 
       // Simulate input change with a valid siret starting with siren
-      fireEvent.change(siretInput, { target: { value: '12345678901234' } })
+      await userEvent.type(siretInput, '12345678901234')
 
       await waitFor(() => {
         expect(api.getSiretInfo).toHaveBeenCalledWith('12345678901234')
@@ -213,6 +213,7 @@ describe('components | SiretOrCommentFields', () => {
 
       expect(siretInput.value).toEqual('')
     })
+
     it('user should be able to enter number characters', async () => {
       renderSiretOrComment(props)
 
@@ -227,6 +228,7 @@ describe('components | SiretOrCommentFields', () => {
 
       expect(siretInput.value).toEqual('123')
     })
+
     it('should display too short message if siret is not 14 characters if venue is non virtual', async () => {
       renderSiretOrComment(props)
 
@@ -246,6 +248,7 @@ describe('components | SiretOrCommentFields', () => {
       )
       expect(errorMessage).toBeInTheDocument()
     })
+
     it('should display error message if siret does not match siren if venue is non virtual', async () => {
       renderSiretOrComment(props)
 
@@ -265,6 +268,7 @@ describe('components | SiretOrCommentFields', () => {
       )
       expect(errorMessage).toBeInTheDocument()
     })
+
     it('should call api validation and display error message if siret is not valid if venue is non virtual', async () => {
       vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(
         'Le code siret est invalide'
@@ -289,6 +293,7 @@ describe('components | SiretOrCommentFields', () => {
       expect(errorMessage).toBeInTheDocument()
     })
   })
+
   describe('should validate comment on submit', () => {
     it('should display error message if comment empty', async () => {
       renderSiretOrComment(props, false)
@@ -307,5 +312,14 @@ describe('components | SiretOrCommentFields', () => {
         screen.getByText('Veuillez renseigner un commentaire')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should display InfoBox when SIRET is selected', () => {
+    renderSiretOrComment(props)
+    expect(
+      screen.getByText(
+        /Le SIRET de la structure doit être lié au SIREN de votre entitée juridique/i
+      )
+    ).toBeInTheDocument()
   })
 })
