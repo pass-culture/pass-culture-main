@@ -222,7 +222,7 @@ jobs:
 
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.4.6
+        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v3.0.0
         with:
           environment: pullrequest
           app_name: pcapi
@@ -230,7 +230,7 @@ jobs:
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
+          api_token_github: ${{ steps.github-token.outputs.token }}
           chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
           rendered_manifests_target_branch: "pcapi/pullrequests"
