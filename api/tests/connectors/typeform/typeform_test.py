@@ -95,6 +95,14 @@ class GetFormTest:
             with pytest.raises(typeform.NotFoundException):
                 typeform.get_form(form_id)
 
+    def test_get_form_without_properties(self):
+        form_id = "no_properties"
+        with requests_mock.Mocker() as mocker:
+            mocker.get(f"https://api.eu.typeform.com/forms/{form_id}", json=fixtures.RESPONSE_SINGLE_FORM_NO_PROPERTIES)
+            form = typeform.get_form(form_id)
+
+        assert len(form.fields) == 1
+
 
 class GetResponsesTest:
     def test_get_all_responses(self):
@@ -192,6 +200,17 @@ class GetResponsesTest:
 choice C
 choice B"""
         )
+
+    def test_get_responses_without_answers(self):
+        form_id = "no_answers"
+        with requests_mock.Mocker() as mocker:
+            mocker.get(
+                f"https://api.eu.typeform.com/forms/{form_id}/responses",
+                json=fixtures.RESPONSE_FORM_WITHOUT_ANSWERS_RESPONSES,
+            )
+            responses = typeform.get_responses(form_id)
+
+        assert len(responses) == 0
 
     def test_get_choices_response_without_labels(self):
         form_id = "AllTypes"

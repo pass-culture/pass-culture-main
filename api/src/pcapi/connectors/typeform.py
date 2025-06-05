@@ -185,7 +185,14 @@ class TypeformBackend(BaseBackend):
             raise NotFoundException(url)
 
         if not response.ok:
-            logger.error("Error from Typeform API", extra={"url": url, "status_code": response.status_code})
+            logger.error(
+                "Error from Typeform API",
+                extra={
+                    "url": url,
+                    "status_code": response.status_code,
+                    "message": response.text,
+                },
+            )
             raise TypeformApiException(f"Error {response.status_code} response from Typeform API: {url}")
 
         try:
@@ -197,13 +204,13 @@ class TypeformBackend(BaseBackend):
     def _extract_questions(self, fields: dict) -> list[TypeformQuestion]:
         questions = []
         for field in fields:
-            if "fields" in field["properties"]:
+            if "fields" in field.get("properties", {}):
                 questions += self._extract_questions(field["properties"]["fields"])
             elif field["type"] not in ("phone_number", "email"):
                 questions.append(TypeformQuestion(field_id=field["id"], title=field["title"].strip()))
         return questions
 
-    def search_forms(self, search_query: str) -> list[TypeformForm]:
+    def _search_forms(self, search_query: str, page: int) -> tuple[list[TypeformForm], int]:
         """
         Documentation: https://www.typeform.com/developers/create/reference/retrieve-forms/
         """
@@ -215,9 +222,11 @@ class TypeformBackend(BaseBackend):
                 "page_size": 200,
                 "sort_by": "created_at",
                 "order_by": "desc",
+                "page": page,
             },
         )
-        return [
+        page_count = data.get("page_count", 1)
+        forms = [
             TypeformForm(
                 form_id=item["id"],
                 title=item["title"].strip(),
@@ -227,6 +236,17 @@ class TypeformBackend(BaseBackend):
             )
             for item in data.get("items", [])
         ]
+        return forms, page_count
+
+    def search_forms(self, search_query: str) -> list[TypeformForm]:
+        """
+        Handle the pagination for when we need to retrieve more than 200 forms
+        """
+        forms, page_count = self._search_forms(search_query=search_query, page=1)
+        # we already have page 1 and the page index starts at 1
+        for page in range(2, page_count + 1):
+            forms += self._search_forms(search_query, page=page)[0]
+        return forms
 
     def get_form(self, form_id: str) -> TypeformForm:
         """
@@ -238,7 +258,7 @@ class TypeformBackend(BaseBackend):
             form_id=data["id"],
             title=data["title"].strip(),
             date_created=datetime.fromisoformat(data["created_at"]),
-            fields=self._extract_questions(data["fields"]),
+            fields=self._extract_questions(data.get("fields", {})),
         )
 
     def get_responses(
@@ -265,6 +285,9 @@ class TypeformBackend(BaseBackend):
             email = None
             answers = []
 
+            if not item.get("answers"):
+                # ignore a response without answers or when `answers` field is null
+                continue
             for answer in item["answers"]:
                 match answer["type"]:
                     case "phone_number":
