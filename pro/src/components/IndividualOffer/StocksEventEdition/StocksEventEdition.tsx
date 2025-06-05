@@ -717,7 +717,6 @@ export const StocksEventEdition = ({
                           >
                             <td className={styles['data']}>
                               <DatePicker
-                                smallLabel
                                 name={`stocks[${index}]beginningDate`}
                                 label="Date"
                                 isLabelHidden
@@ -730,7 +729,6 @@ export const StocksEventEdition = ({
 
                             <td className={styles['data']}>
                               <TimePicker
-                                smallLabel
                                 label="Horaire"
                                 isLabelHidden
                                 name={`stocks[${index}]beginningTime`}
@@ -744,7 +742,6 @@ export const StocksEventEdition = ({
                               <Select
                                 name={`stocks[${index}]priceCategoryId`}
                                 options={priceCategoriesOptions}
-                                smallLabel
                                 label="Tarif"
                                 isLabelHidden
                                 defaultOption={{
@@ -760,7 +757,6 @@ export const StocksEventEdition = ({
 
                             <td className={styles['data']}>
                               <DatePicker
-                                smallLabel
                                 name={`stocks[${index}]bookingLimitDatetime`}
                                 label="Date limite de réservation"
                                 isLabelHidden
@@ -776,7 +772,6 @@ export const StocksEventEdition = ({
 
                             <td className={styles['data']}>
                               <QuantityInput
-                                smallLabel
                                 isLabelHidden
                                 label={
                                   mode === OFFER_WIZARD_MODE.EDITION
@@ -800,7 +795,6 @@ export const StocksEventEdition = ({
                                 readOnly
                                 label="Réservations"
                                 isLabelHidden
-                                smallLabel
                               />
                             </td>
 
