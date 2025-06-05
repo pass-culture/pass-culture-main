@@ -24,17 +24,13 @@ class GetRemindersTest:
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
-        offer_1 = offers_factories.OfferFactory(isActive=False)
-        offer_2 = offers_factories.OfferFactory(isActive=False)
-
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
+        offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
-        future_offer_1 = offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
-        future_offer_2 = offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=future_publication_date)
-
-        reminder_1 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user_1)
-        reminder_2 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_1)
-        reminder_3 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_2)
+        reminder_1 = reminders_factories.OfferReminderFactory(offer=offer_1, user=user_1)
+        reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user_1)
+        reminder_3 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user_2)
 
         expected_reminders_1 = {
             "reminders": [
@@ -59,9 +55,8 @@ class GetRemindersTest:
 
 class PostReminderTest:
     num_queries_success = 1  # select user
-    num_queries_success += 1  # select future_offer
-    num_queries_success += 1  # select future_offer_reminder
-    num_queries_success += 1  # insert future_offer_reminder
+    num_queries_success += 1  # select offer
+    num_queries_success += 1  # select offer_reminder
     num_queries_success += 1  # insert offer_reminder
 
     def test_should_be_logged_in_to_post_reminder(self, client):
@@ -84,9 +79,8 @@ class PostReminderTest:
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
-        offer = offers_factories.OfferFactory(isActive=False)
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-        future_offer = offers_factories.FutureOfferFactory(offer=offer, publicationDate=future_publication_date)
+        offer = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
         for user in [user_1, user_2]:
             client.with_token(user.email)
@@ -94,24 +88,20 @@ class PostReminderTest:
             with assert_num_queries(self.num_queries_success):
                 response = client.post("/native/v1/me/reminders", json={"offerId": offer_id})
                 assert response.status_code == 201
-            reminder = user.future_offer_reminders[0]
-            assert reminder.futureOffer.id == future_offer.id
+            reminder = user.offer_reminders[0]
+            assert reminder.offerId == offer.id
             assert response.json == {"id": reminder.id, "offer": {"id": offer_id}}
             assert len(user.offer_reminders) == 1
 
     def test_already_existing_reminder(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        offer_1 = offers_factories.OfferFactory(isActive=False)
-        offer_2 = offers_factories.OfferFactory(isActive=False)
-
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
+        offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
-        future_offer_1 = offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
-        future_offer_2 = offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=future_publication_date)
-
-        _ = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user)
-        reminder_2 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user)
+        _ = reminders_factories.OfferReminderFactory(offer=offer_1, user=user)
+        reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user)
 
         client.with_token(user.email)
 
@@ -120,26 +110,20 @@ class PostReminderTest:
         num_queries += 1  # select reminder
         offer_id = offer_2.id
 
-        assert len(user.future_offer_reminders) == 2
+        assert len(user.offer_reminders) == 2
 
         with assert_num_queries(num_queries):
             response = client.post("/native/v1/me/reminders", json={"offerId": offer_id})
             assert response.status_code == 201
 
-        assert len(user.future_offer_reminders) == 2
+        assert len(user.offer_reminders) == 2
         assert response.json == {"id": reminder_2.id, "offer": {"id": offer_id}}
 
 
 class DeleteReminderTest:
     num_queries_success = 1  # select user
-    num_queries_success += 1  # select future_offer_reminder
-    num_queries_success += 1  # delete reminder
-    # TEMPORARY
-    num_queries_success += 1  # select future_offer_reminder
-    num_queries_success += 1  # select future_offer
-    num_queries_success += 1  # select offer
     num_queries_success += 1  # select offer_reminder
-    num_queries_success += 1  # delete offer_reminder
+    num_queries_success += 1  # delete reminder
 
     def test_should_be_logged_in_to_delete_reminder(self, client):
         with assert_num_queries(0):
@@ -163,19 +147,15 @@ class DeleteReminderTest:
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
-        offer_1 = offers_factories.OfferFactory(isActive=False)
-        offer_2 = offers_factories.OfferFactory(isActive=False)
-
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
+        offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
-        future_offer_1 = offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
-        future_offer_2 = offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=future_publication_date)
+        _ = reminders_factories.OfferReminderFactory(offer=offer_1, user=user_1)
+        reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user_2)
 
-        _ = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user_1)
-        reminder_2 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user_2)
-
-        assert len(user_1.future_offer_reminders) == 1
-        assert len(user_2.future_offer_reminders) == 1
+        assert len(user_1.offer_reminders) == 1
+        assert len(user_2.offer_reminders) == 1
 
         num_queries = 1  # select user
         num_queries += 1  # select future_offer_reminder
@@ -187,34 +167,26 @@ class DeleteReminderTest:
             response = client.with_token(user_email).delete(f"/native/v1/me/reminders/{reminder_id}")
             assert response.status_code == 404
 
-        assert len(user_1.future_offer_reminders) == 1
-        assert len(user_2.future_offer_reminders) == 1
+        assert len(user_1.offer_reminders) == 1
+        assert len(user_2.offer_reminders) == 1
 
     def test_delete_reminder(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        offer_1 = offers_factories.OfferFactory(isActive=False)
-        offer_2 = offers_factories.OfferFactory(isActive=False)
-
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
+        offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
-        future_offer_1 = offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
-        future_offer_2 = offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=future_publication_date)
-
-        reminder_1 = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_1, user=user)
-        _ = reminders_factories.FutureOfferReminderFactory(futureOffer=future_offer_2, user=user)
-
-        reminders_factories.OfferReminderFactory(offer=offer_1, user=user)
+        offer_reminder_1 = reminders_factories.OfferReminderFactory(offer=offer_1, user=user)
         offer_reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user)
 
-        assert len(user.future_offer_reminders) == 2
+        assert len(user.offer_reminders) == 2
 
-        reminder_id = reminder_1.id
+        reminder_id = offer_reminder_1.id
         user_email = user.email
         with assert_num_queries(self.num_queries_success):
             response = client.with_token(user_email).delete(f"/native/v1/me/reminders/{reminder_id}")
             assert response.status_code == 204
 
-        assert len(user.future_offer_reminders) == 1
         assert len(user.offer_reminders) == 1
         assert user.offer_reminders[0].id == offer_reminder_2.id
