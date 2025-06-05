@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 @atomic()
 def get_reminders(user: users_models.User) -> serialization.GetRemindersResponse:
     reminders = reminders_api.get_reminders(user)
-    reminders_reponse = [
-        serialization.ReminderResponse(id=reminder.id, offer=reminder.futureOffer.offer) for reminder in reminders
+    reminders_response = [
+        serialization.ReminderResponse(id=reminder.id, offer=reminder.offer) for reminder in reminders
     ]
 
-    return serialization.GetRemindersResponse(reminders=reminders_reponse)
+    return serialization.GetRemindersResponse(reminders=reminders_response)
 
 
 @blueprint.native_route("/me/reminders", methods=["POST"])
@@ -36,24 +36,17 @@ def get_reminders(user: users_models.User) -> serialization.GetRemindersResponse
 @authenticated_and_active_user_required
 @atomic()
 def post_reminder(user: users_models.User, body: serialization.PostReminderRequest) -> serialization.ReminderResponse:
-    future_offer: offers_models.FutureOffer = (
-        db.session.query(offers_models.FutureOffer)
-        .filter(offers_models.FutureOffer.offerId == body.offer_id)
-        .one_or_none()
-    )
-    if not future_offer:
+    offer: offers_models.Offer = db.session.query(offers_models.Offer).filter_by(id=body.offer_id).one_or_none()
+
+    if not offer:
         raise NotFound()
 
-    reminder = reminders_api.get_future_offer_reminder(user.id, future_offer.id)
+    reminder = reminders_api.get_offer_reminder(user.id, offer.id)
 
     if not reminder:
-        reminder = reminders_api.create_future_offer_reminder(user, future_offer)
-        # NOTE: (tcoudray-pass, 04/06/2025)
-        # On effectue une double écriture avant de remplacer
-        # `FutureOfferReminder` par `OfferReminder`
-        reminders_api.create_offer_reminder(user, future_offer.offer)
+        reminder = reminders_api.create_offer_reminder(user, offer)
 
-    return serialization.ReminderResponse(id=reminder.id, offer=reminder.futureOffer.offer)
+    return serialization.ReminderResponse(id=reminder.id, offer=reminder.offer)
 
 
 @blueprint.native_route("/me/reminders/<int:reminder_id>", methods=["DELETE"])
@@ -61,12 +54,11 @@ def post_reminder(user: users_models.User, body: serialization.PostReminderReque
 @authenticated_and_active_user_required
 @atomic()
 def delete_reminder(user: users_models.User, reminder_id: int) -> None:
-    # NOTE: (tcoudray-pass, 04/06/2025)
-    # On effectue une double écriture avant de remplacer
-    # `FutureOfferReminder` par `OfferReminder`
-    reminder: reminders_models.FutureOfferReminder = (
-        db.session.query(reminders_models.FutureOfferReminder).filter_by(id=reminder_id, user=user).first_or_404()
+    reminder: reminders_models.OfferReminder = (
+        db.session.query(reminders_models.OfferReminder).filter_by(id=reminder_id, user=user).one_or_none()
     )
-    reminders_api.delete_offer_reminder(user, reminder.futureOffer.offer.id)
 
-    reminders_api.delete_future_offer_reminder(user, reminder_id)
+    if not reminder:
+        raise NotFound()
+
+    db.session.delete(reminder)
