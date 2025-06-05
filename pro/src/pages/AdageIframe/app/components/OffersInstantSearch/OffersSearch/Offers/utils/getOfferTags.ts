@@ -1,5 +1,6 @@
 import {
   AuthenticatedResponse,
+  CollectiveLocationType,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
@@ -36,7 +37,8 @@ function getFormattedPrice(price: number) {
 export function getOfferTags(
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
   adageUser: AuthenticatedResponse,
-  showAllTags: boolean = true
+  showAllTags: boolean = true,
+  isCollectiveOaActive: boolean = false
 ) {
   const isTemplate = isCollectiveOfferTemplate(offer)
 
@@ -56,46 +58,87 @@ export function getOfferTags(
       }
     )
 
+  const distanceFromOffer =
+    offer.location &&
+    offer.location.address &&
+    offer.location.address.latitude &&
+    offer.location.address.longitude &&
+    (adageUser.lat || adageUser.lat === 0) &&
+    (adageUser.lon || adageUser.lon === 0) &&
+    getHumanizeRelativeDistance(
+      {
+        latitude: offer.location.address.latitude,
+        longitude: offer.location.address.longitude,
+      },
+      {
+        latitude: adageUser.lat,
+        longitude: adageUser.lon,
+      }
+    )
+
   const tags: OfferTag[] = []
-  switch (offer.offerVenue.addressType) {
-    case OfferAddressType.SCHOOL: {
-      tags.push({
+  if (isCollectiveOaActive && offer.location) {
+    const locationTypeMap = {
+      [CollectiveLocationType.SCHOOL]: {
         icon: fullLocationIcon,
         text: 'Dans l’établissement scolaire',
-      })
-      if (distanceToOfferer && showAllTags) {
-        tags.push({
-          icon: fullLocationIcon,
-          text: `Partenaire situé à ${distanceToOfferer}`,
-        })
-      }
-      break
+      },
+      [CollectiveLocationType.ADDRESS]: {
+        icon: fullLocationIcon,
+        text: `Sortie à ${distanceFromOffer}`,
+      },
+      [CollectiveLocationType.TO_BE_DEFINED]: {
+        icon: fullLocationIcon,
+        text: 'Lieu à déterminer',
+      },
     }
-    case OfferAddressType.OFFERER_VENUE: {
-      tags.push({ icon: fullLocationIcon, text: 'Sortie' })
-      if (offer.offerVenue.distance || offer.offerVenue.distance === 0) {
-        tags.push({
-          icon: fullLocationIcon,
-          text: `À ${humanizeDistance(offer.offerVenue.distance * 1000)}`,
-        })
-      }
-      break
-    }
-    case OfferAddressType.OTHER: {
-      tags.push(
-        { icon: fullLocationIcon, text: 'Sortie' },
-        { icon: fullLocationIcon, text: 'Lieu à définir' }
-      )
 
+    const locationTag = locationTypeMap[offer.location.locationType]
+    tags.push(locationTag)
+
+    if (distanceToOfferer && showAllTags) {
+      tags.push({
+        icon: fullLocationIcon,
+        text: `Partenaire situé à ${distanceToOfferer}`,
+      })
+    }
+  } else {
+    const locationTypeMap = {
+      [OfferAddressType.SCHOOL]: {
+        icon: fullLocationIcon,
+        text: 'Dans l’établissement scolaire',
+      },
+      [OfferAddressType.OFFERER_VENUE]: {
+        icon: fullLocationIcon,
+        text: 'Sortie',
+      },
+      [OfferAddressType.OTHER]: [
+        { icon: fullLocationIcon, text: 'Sortie' },
+        { icon: fullLocationIcon, text: 'Lieu à définir' },
+      ],
+    }
+
+    const locationTag = locationTypeMap[offer.offerVenue.addressType]
+    tags.push(...(Array.isArray(locationTag) ? locationTag : [locationTag]))
+
+    if (OfferAddressType.OFFERER_VENUE === offer.offerVenue.addressType && offer.offerVenue.distance || offer.offerVenue.distance === 0) {
+      tags.push({
+        icon: fullLocationIcon,
+        text: `À ${humanizeDistance(offer.offerVenue.distance * 1000)}`,
+      })
+    }
+
+    if (
+      OfferAddressType.SCHOOL === offer.offerVenue.addressType ||
+      OfferAddressType.OTHER === offer.offerVenue.addressType
+    ) {
       if (distanceToOfferer && showAllTags) {
         tags.push({
           icon: fullLocationIcon,
           text: `Partenaire situé à ${distanceToOfferer}`,
         })
       }
-      break
     }
-    default:
   }
 
   if (!showAllTags) {

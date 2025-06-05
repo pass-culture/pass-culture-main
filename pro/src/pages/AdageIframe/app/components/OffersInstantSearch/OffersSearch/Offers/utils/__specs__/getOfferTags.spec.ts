@@ -3,6 +3,7 @@ import {
   OfferAddressType,
   StudentLevels,
   CollectiveOfferResponseModel,
+  CollectiveLocationType,
 } from 'apiClient/adage'
 import {
   defaultAdageUser,
@@ -112,10 +113,40 @@ describe('getOfferTags', () => {
       ])
     )
 
-    expect(tagsReduced).toEqual(
-      expect.arrayContaining(['Sortie', 'Lieu à définir'])
+    expect(tagsReduced).toEqual(['Sortie', 'Lieu à définir'])
+  })
+
+  it('should return the list of tags when the offer happens at another location when ff os is enabled', () => {
+    const offer: CollectiveOfferTemplateResponseModel = {
+      ...templateOffer,
+      location: {
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
+        locationComment: 'Comment',
+      },
+      dates: undefined,
+    }
+    const tags = getOfferTags(
+      offer,
+      { ...adageUser, lat: 10, lon: 10 },
+      true,
+      true
+    ).map((tag) => tag.text)
+    const tagsReduced = getOfferTags(
+      offer,
+      { ...adageUser, lat: 20, lon: 20 },
+      false,
+      true
+    ).map((tag) => tag.text)
+
+    expect(tags).toEqual(
+      expect.arrayContaining([
+        'Lieu à déterminer',
+        'Partenaire situé à 900+ km',
+        'Disponible toute l’année',
+      ])
     )
-    expect(tagsReduced).toHaveLength(2)
+
+    expect(tagsReduced).toEqual(['Lieu à déterminer'])
   })
 
   it('should return a multi level tag if there are multiple student levels', () => {
