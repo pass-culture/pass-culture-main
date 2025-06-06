@@ -13,6 +13,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
 from pcapi.routes.serialization.bookings_recap_serialize import EventDateScheduleAndPriceCategoriesCountModel
@@ -29,6 +30,7 @@ from . import blueprint
 @blueprint.pro_private_api.route("/bookings/pro", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
+@atomic()
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     per_page_limit = 1000
@@ -69,6 +71,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 @blueprint.pro_private_api.route("/bookings/pro/userHasBookings", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
+@atomic()
 def get_user_has_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
     return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
@@ -84,6 +87,7 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
     offer = db.session.query(Offer).get(int(offer_id))
@@ -116,6 +120,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
     offer = db.session.query(Offer).get(int(offer_id))
@@ -148,6 +153,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.CSV)
 
@@ -162,6 +168,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     },
     api=blueprint.pro_private_schema,
 )
+@atomic()
 def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.EXCEL)
 
@@ -169,6 +176,7 @@ def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
 @blueprint.pro_private_api.route("/bookings/dates/<int:offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=EventDatesInfos, api=blueprint.pro_private_schema)
+@atomic()
 def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDatesInfos:
     user = current_user._get_current_object()
     offer = db.session.query(Offer).get(offer_id)
