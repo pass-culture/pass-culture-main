@@ -21,6 +21,7 @@ export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   isDisabled?: boolean
+  publicationMode?: 'later' | 'now'
   step: OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
   saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement>
@@ -30,6 +31,7 @@ export const ActionBar = ({
   onClickNext,
   onClickPrevious,
   isDisabled = false,
+  publicationMode = 'now',
   step,
   dirtyForm,
   saveEditionChangesButtonRef,
@@ -135,7 +137,9 @@ export const ActionBar = ({
               )}
 
               <Button type="submit" disabled={isDisabled}>
-                Publier l’offre
+                {publicationMode === 'later'
+                  ? 'Programmer l’offre'
+                  : 'Publier l’offre'}
               </Button>
             </>
           ) : (

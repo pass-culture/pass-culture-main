@@ -58,51 +58,57 @@ export const EventPublicationForm = () => {
   const { values, handleChange } =
     useFormikContext<EventPublicationFormValues>()
 
+  const PublicationDatePicker = values.publicationMode === 'later' && (
+    <FormLayout.Row inline className={styles['publish-later']}>
+      <DatePicker
+        label="Date"
+        name="publicationDate"
+        minDate={today}
+        className={styles['date-picker']}
+      />
+      <Select
+        label="Heure"
+        name="publicationTime"
+        options={getPublicationHoursOptions()}
+        defaultOption={{ label: 'HH:MM', value: '' }}
+        className={styles['time-picker']}
+      />
+    </FormLayout.Row>
+  )
+
   return (
     <>
       <FormLayout fullWidthActions className={styles['form']}>
         <FormLayout.Section title="Date de publication">
           <FormLayout.Row
             sideComponent={
-              values.publicationMode === 'later' ? (
-                <InfoBox>
-                  Votre offre doit être validée, ce qui peut prendre jusqu’à
-                  72h. Après validation elle sera automatiquement publiée à la
-                  date et heure indiquées.
-                </InfoBox>
-              ) : null
+              <InfoBox>
+                Dans le cas où votre offre est en instruction par l’équipe
+                Conformité, sa validation peut prendre jusqu’à 72h. <br />
+                Après validation elle sera automatiquement publiée ou programmée
+                comme vous l’avez choisi.
+              </InfoBox>
             }
           >
             <RadioGroup
-              legend="Choisissez un type de publication"
+              legend="Quand votre offre doit-elle être publiée dans l’application ?"
               name="publicationMode"
               variant="detailed"
-              displayMode="inline"
               group={[
-                { label: 'Tout de suite', value: 'now' },
-                { label: 'À une date et heure précise', value: 'later' },
+                { label: 'Publier maintenant', value: 'now', sizing: 'fill' },
+                {
+                  label: 'Publier plus tard',
+                  description:
+                    'L’offre restera secrète pour le public jusqu’à sa publication.',
+                  value: 'later',
+                  sizing: 'fill',
+                  collapsed: PublicationDatePicker,
+                },
               ]}
               checkedOption={values.publicationMode}
               onChange={handleChange}
             />
           </FormLayout.Row>
-
-          {values.publicationMode === 'later' && (
-            <FormLayout.Row inline className={styles['publish-later']}>
-              <DatePicker
-                label="Date de publication"
-                name="publicationDate"
-                minDate={today}
-              />
-
-              <Select
-                label="Heure de publication"
-                name="publicationTime"
-                options={getPublicationHoursOptions()}
-                defaultOption={{ label: 'HH:MM', value: '' }}
-              />
-            </FormLayout.Row>
-          )}
         </FormLayout.Section>
       </FormLayout>
 
