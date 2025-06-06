@@ -9,9 +9,7 @@ import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import { CheckboxGroupProps } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 
 export const useAccessibilityOptions = (
-  setFieldValue:
-    | ((field: string, value: any) => void)
-    | UseFormSetValue<OfferEducationalFormValues>,
+  setFieldValue: ((field: string, value: any) => void) | UseFormSetValue<any>,
   accessibilityValues: OfferEducationalFormValues['accessibility']
 ) => {
   const onNoneOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
