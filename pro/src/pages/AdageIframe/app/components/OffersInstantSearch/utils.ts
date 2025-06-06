@@ -1,4 +1,4 @@
-import { VenueResponse } from 'apiClient/adage'
+import { CollectiveLocationType, VenueResponse } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
 
@@ -11,28 +11,34 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   departments: [],
   academies: [],
   eventAddressType: OfferAddressType.OTHER,
+  locationType: CollectiveLocationType.TO_BE_DEFINED,
   geolocRadius: 50,
   formats: [],
   venue: null,
 }
 
-export const adageFiltersToFacetFilters = ({
-  domains,
-  students,
-  eventAddressType,
-  departments,
-  academies,
-  formats,
-  venue,
-}: {
-  domains: number[]
-  students: string[]
-  departments: string[]
-  academies: string[]
-  eventAddressType: string
-  formats: string[]
-  venue: VenueResponse | null
-}) => {
+export const adageFiltersToFacetFilters = (
+  {
+    domains,
+    students,
+    eventAddressType,
+    locationType,
+    departments,
+    academies,
+    formats,
+    venue,
+  }: {
+    domains: number[]
+    students: string[]
+    departments: string[]
+    academies: string[]
+    eventAddressType: string
+    locationType: string
+    formats: string[]
+    venue: VenueResponse | null
+  },
+  isCollectiveOaActive: boolean
+) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
 
@@ -47,35 +53,67 @@ export const adageFiltersToFacetFilters = ({
   const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
   let filteredDepartments: string[] = []
-  if (eventAddressType === OfferAddressType.SCHOOL) {
-    filteredDepartments = departments.flatMap((department) => [
-      `offer.schoolInterventionArea:${department}`,
-    ])
+
+  if (isCollectiveOaActive) {
+    if (locationType === CollectiveLocationType.SCHOOL) {
+      filteredDepartments = departments.flatMap((department) => [
+        `offer.schoolInterventionArea:${department}`,
+      ])
+    } else {
+      filteredDepartments = departments.flatMap((department) => [
+        `venue.departmentCode:${department}`,
+        `offer.interventionArea:${department}`,
+      ])
+    }
   } else {
-    filteredDepartments = departments.flatMap((department) => [
-      `venue.departmentCode:${department}`,
-      `offer.interventionArea:${department}`,
-    ])
+    if (eventAddressType === OfferAddressType.SCHOOL) {
+      filteredDepartments = departments.flatMap((department) => [
+        `offer.schoolInterventionArea:${department}`,
+      ])
+    } else {
+      filteredDepartments = departments.flatMap((department) => [
+        `venue.departmentCode:${department}`,
+        `offer.interventionArea:${department}`,
+      ])
+    }
   }
 
   const filteredAcademies: string[] = academies.map(
     (academy) => `venue.academy:${academy}`
   )
 
-  switch (eventAddressType) {
-    case 'school':
-      filtersKeys.push('eventAddressType')
-      updatedFilters.push([`offer.eventAddressType:school`])
-      break
-    case 'offererVenue':
-      filtersKeys.push('eventAddressType')
-      updatedFilters.push([
-        `offer.eventAddressType:offererVenue`,
-        `offer.eventAddressType:other`,
-      ])
-      break
-    default:
-      break
+  if (isCollectiveOaActive) {
+    switch (locationType) {
+      case 'SCHOOL':
+        filtersKeys.push('locationType')
+        updatedFilters.push([`offer.locationType:SCHOOL`])
+        break
+      case 'ADDRESS':
+        filtersKeys.push('locationType')
+        updatedFilters.push([
+          `offer.locationType:ADDRESS`,
+          `offer.locationType:TO_BE_DEFINED`,
+        ])
+        break
+      default:
+        break
+    }
+  } else {
+    switch (eventAddressType) {
+      case 'school':
+        filtersKeys.push('eventAddressType')
+        updatedFilters.push([`offer.eventAddressType:school`])
+        break
+      case 'offererVenue':
+        filtersKeys.push('eventAddressType')
+        updatedFilters.push([
+          `offer.eventAddressType:offererVenue`,
+          `offer.eventAddressType:other`,
+        ])
+        break
+      default:
+        break
+    }
   }
 
   const filteredVenues = venue
@@ -145,10 +183,15 @@ export const serializeFiltersForData = (
   }
 }
 
-export const areFiltersEmpty = (filters: SearchFormValues) => {
+export const areFiltersEmpty = (
+  filters: SearchFormValues,
+  isCollectiveOaActive: boolean
+) => {
   return (
     // Primitives defaults
-    filters.eventAddressType === OfferAddressType.OTHER &&
+    (isCollectiveOaActive
+      ? filters.locationType === CollectiveLocationType.TO_BE_DEFINED
+      : filters.eventAddressType === OfferAddressType.OTHER) &&
     filters.geolocRadius === 50 &&
     // Array defaults (empty)
     filters.domains.length === 0 &&

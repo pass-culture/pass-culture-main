@@ -49,6 +49,7 @@ export interface SearchFormValues {
   departments: string[]
   academies: string[]
   eventAddressType: string
+  locationType: string
   geolocRadius: number
   formats: string[]
   venue: VenueResponse | null
@@ -65,6 +66,9 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   const programParam = params.get('program')
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
+  const isCollectiveOaActive = useActiveFeature(
+    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
+  )
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )
@@ -114,9 +118,9 @@ export const OffersInstantSearch = (): JSX.Element | null => {
       try {
         const result = siretParam
           ? await apiAdage.getVenueBySiret(
-            siretParam,
-            relativeOffersIncludedParam
-          )
+              siretParam,
+              relativeOffersIncludedParam
+            )
           : await apiAdage.getVenueById(venueParam, relativeOffersIncludedParam)
 
         setFilters({ ...ADAGE_FILTERS_DEFAULT_VALUES, venue: result })
@@ -152,12 +156,13 @@ export const OffersInstantSearch = (): JSX.Element | null => {
           attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
           clickAnalytics
           facetFilters={
-            adageFiltersToFacetFilters(
-              filters
-            ).queryFilters
+            adageFiltersToFacetFilters(filters, isCollectiveOaActive)
+              .queryFilters
           }
           filters={
-            'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
+            isCollectiveOaActive
+              ? 'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
+              : 'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
           }
           hitsPerPage={8}
           aroundLatLng={
