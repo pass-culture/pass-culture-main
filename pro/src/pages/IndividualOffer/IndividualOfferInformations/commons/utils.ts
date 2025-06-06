@@ -20,7 +20,7 @@ import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from './constants'
 import { UsefulInformationFormValues } from './types'
 
 interface SetDefaultInitialValuesFromOfferProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer?: GetIndividualOfferWithAddressResponseModel | null
   selectedVenue?: VenueListItemResponseModel | undefined
 }
 
@@ -28,6 +28,10 @@ export function setDefaultInitialValuesFromOffer({
   offer,
   selectedVenue = undefined,
 }: SetDefaultInitialValuesFromOfferProps): UsefulInformationFormValues {
+  if (!offer) {
+    return DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES
+  }
+
   const baseAccessibility = {
     [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
     [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant,
@@ -40,6 +44,7 @@ export function setDefaultInitialValuesFromOffer({
   )
 
   let addressFields = {}
+
   if (offer.address) {
     const { latitude, longitude } = offer.address
     const addressAutocomplete = computeAddressDisplayName(offer.address, false)
@@ -60,10 +65,10 @@ export function setDefaultInitialValuesFromOffer({
       'search-addressAutocomplete': addressAutocomplete,
       addressAutocomplete,
       coords,
-      banId: offer.address.banId,
-      inseeCode: offer.address.inseeCode,
+      banId: offer.address.banId ?? '',
+      inseeCode: offer.address.inseeCode ?? '',
       locationLabel: offer.address.label ?? '',
-      street: offer.address.street,
+      street: offer.address.street ?? '',
       postalCode: offer.address.postalCode,
       city: offer.address.city,
       latitude: String(offer.address.latitude),
@@ -73,10 +78,10 @@ export function setDefaultInitialValuesFromOffer({
     addressFields = {
       offerLocation: String(selectedVenue.address.id_oa),
       coords: `${selectedVenue.address.latitude}, ${selectedVenue.address.longitude}`,
-      banId: selectedVenue.address.banId,
-      inseeCode: selectedVenue.address.inseeCode,
+      banId: selectedVenue.address.banId ?? '',
+      inseeCode: selectedVenue.address.inseeCode ?? '',
       locationLabel: selectedVenue.address.label ?? '',
-      street: selectedVenue.address.street,
+      street: selectedVenue.address.street ?? '',
       postalCode: selectedVenue.address.postalCode,
       city: selectedVenue.address.city,
       latitude: String(selectedVenue.address.latitude),
@@ -91,7 +96,9 @@ export function setDefaultInitialValuesFromOffer({
       offer.withdrawalDetails ||
       DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
     withdrawalDelay:
-      offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
+      offer.withdrawalDelay === null
+        ? undefined
+        : offer.withdrawalDelay?.toString(),
     withdrawalType: offer.withdrawalType || WithdrawalTypeEnum.NO_TICKET,
     accessibility: {
       [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,

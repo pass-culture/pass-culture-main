@@ -1,17 +1,22 @@
+import { UseFormSetValue } from 'react-hook-form'
+
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
+import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOfferInformations/commons/types'
 import { CheckboxGroupProps } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
 
 export const useAccessibilityOptions = (
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined
-  ) => void,
+  setFieldValue:
+    | UseFormSetValue<UsefulInformationFormValues>
+    | ((
+        field: string,
+        value: any,
+        shouldValidate?: boolean | undefined
+      ) => void),
   accessibilityValues: OfferEducationalFormValues['accessibility']
 ) => {
   const onNoneOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {

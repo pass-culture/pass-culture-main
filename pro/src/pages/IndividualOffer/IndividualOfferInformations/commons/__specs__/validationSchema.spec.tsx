@@ -88,6 +88,7 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema({ subcategories: [] })
     await expect(
       schema.validate({
+        ...defaultValue,
         accessibility: {
           mental: true,
           audio: false,
@@ -101,6 +102,7 @@ describe('getValidationSchema', () => {
 
     await expect(
       schema.validate({
+        ...defaultValue,
         accessibility: {
           mental: false,
           audio: false,
@@ -140,15 +142,15 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema({ subcategories: [] })
     await expect(
       schema.validate({
-        externalTicketOfficeUrl: 'https://example.com',
         ...defaultValue,
+        externalTicketOfficeUrl: 'https://example.com',
       })
     ).resolves.toBeTruthy()
 
     await expect(
       schema.validate({
-        externalTicketOfficeUrl: 'invalid-url',
         ...defaultValue,
+        externalTicketOfficeUrl: 'invalid-url',
       })
     ).rejects.toThrow(
       'Veuillez renseigner une URL valide. Ex : https://exemple.com'
@@ -159,16 +161,24 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema({ subcategories: [] })
     await expect(schema.validate(defaultValue)).resolves.toBeTruthy()
 
-    await expect(schema.validate(defaultAccessibility)).rejects.toThrow(
-      'Veuillez sélectionner un choix'
-    )
+    const valuesWithoutSelectedOfferLocation = {
+      ...defaultLocation,
+      ...defaultAccessibility,
+      offerLocation: '',
+    }
+    await expect(
+      schema.validate(valuesWithoutSelectedOfferLocation)
+    ).rejects.toThrow('Veuillez sélectionner un choix')
 
     const virtualSchema = getValidationSchema({
       subcategories: [],
       isDigitalOffer: true,
     })
     await expect(
-      virtualSchema.validate(defaultAccessibility)
+      virtualSchema.validate({
+        ...defaultLocation,
+        ...defaultAccessibility,
+      })
     ).resolves.toBeTruthy()
   })
 })
