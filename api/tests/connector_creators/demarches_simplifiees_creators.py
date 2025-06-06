@@ -145,12 +145,14 @@ def get_bank_info_response_procedure_v4_as_batch(
 
 def get_bank_info_response_procedure_v5(
     state: str = GraphQLApplicationStates.accepted.value,
-    annotations: list | None = None,
+    annotations: list[dict] | None = None,
+    messages: list[dict] | None = None,
     b64_encoded_application_id: str = "RG9zc2llci0xNDc0MjY1NA==",
     application_id: int = 14742654,
     bic: str = "BICAGRIFRPP",
     iban: str = "FR76 3000 6000 0112 3456 7890 189",
     last_modification_date: str = "2023-10-26T14:51:09+02:00",
+    last_fields_modification: str = "2023-10-26T14:51:09+02:00",
     last_pending_correction_date: str | None = None,
     siret: str = "85331845900049",
     label: str | None = "Intitulé du compte bancaire",
@@ -171,7 +173,9 @@ def get_bank_info_response_procedure_v5(
                         "number": application_id,
                         "state": state,
                         "dateDerniereModification": last_modification_date,
+                        "dateDerniereModificationChamps": last_fields_modification,
                         "dateDerniereCorrectionEnAttente": last_pending_correction_date,
+                        "usager": {"email": "usager@example.com"},
                         "demandeur": {"siret": siret},
                         "champs": [
                             {
@@ -267,6 +271,13 @@ def get_bank_info_response_procedure_v5(
                                 "label": "Annotation technique (réservée à pcapi)",
                                 "stringValue": "",
                                 "value": None,
+                            },
+                        ],
+                        "messages": messages
+                        or [
+                            {
+                                "email": "contact@demarches-simplifiees.fr",
+                                "createdAt": last_modification_date,
                             },
                         ],
                     }

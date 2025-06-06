@@ -19,26 +19,34 @@ query getDemarche($demarcheNumber: Int!, $state: DossierState, $order: Order, $f
         number
         state
         dateDerniereModification
+        dateDerniereModificationChamps
         dateDerniereCorrectionEnAttente
-	demandeur {
-	  ... on PersonneMorale {
-	     siret
-	  }
-	}
+        usager {
+          email
+        }
+        demandeur {
+          ... on PersonneMorale {
+	       siret
+	      }
+	    }
         champs {
           ...ChampFragment
         }
         annotations {
           id
           label
-	  updatedAt
-	  stringValue
-	  ... on TextChamp {
-	    value
-	  }
-	  ... on CheckboxChamp {
-	    checked: value
-	  }
+          updatedAt
+          stringValue
+          ... on TextChamp {
+            value
+          }
+          ... on CheckboxChamp {
+            checked: value
+          }
+        }
+        messages {
+          email
+          createdAt
         }
       }
     }
