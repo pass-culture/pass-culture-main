@@ -5329,10 +5329,11 @@ class TagPublicAccountTest(PostEndpointHelper):
         assert set(user.tags) == {tag1, tag2}
         assert html_parser.extract_alert(response.data) == "Tags mis à jour avec succès"
 
-    def test_tag_public_account_action_history(self, authenticated_client, legit_user):
-        tag = users_factories.UserTagFactory(label="Ambassadeur A")
-        user = users_factories.UserFactory()
-        form_data = {"tags": [tag.id]}
+    def test_tag_public_account_action_history_add_tag(self, authenticated_client, legit_user):
+        tag_A = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag_B = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[tag_A])
+        form_data = {"tags": [tag_A.id, tag_B.id]}
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
         assert response.status_code == 200
@@ -5343,4 +5344,21 @@ class TagPublicAccountTest(PostEndpointHelper):
         assert action.userId == user.id
         assert action.offererId is None
         assert action.venueId is None
-        assert action.extraData["modified_info"] == {"tags": {"new_info": ["Ambassadeur A"], "old_info": []}}
+        assert action.extraData["modified_info"] == {"tags": {"old_info": None, "new_info": ["Ambassadeur B"]}}
+
+    def test_tag_public_account_action_history_remove_tag(self, authenticated_client, legit_user):
+        tag_A = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag_B = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[tag_A, tag_B])
+        form_data = {"tags": [tag_B.id]}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user.id
+        assert action.offererId is None
+        assert action.venueId is None
+        assert action.extraData["modified_info"] == {"tags": {"old_info": ["Ambassadeur A"], "new_info": None}}
