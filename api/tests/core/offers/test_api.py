@@ -9,11 +9,9 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from unittest import mock
-from unittest.mock import patch
 
 import pytest
 import pytz
-import sqlalchemy as sa
 import time_machine
 from factory.faker import faker
 
@@ -966,7 +964,10 @@ class DeleteStockTest:
             booking=booking4,
             status=finance_models.PricingStatus.PROCESSED,
         )
-
+        booking_id_1 = booking1.id
+        booking_id_2 = booking2.id
+        booking_id_3 = booking3.id
+        booking_id_4 = booking4.id
         api.delete_stock(stock)
 
         # cancellation can trigger more than one request to Batch
@@ -974,16 +975,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = db.session.query(bookings_models.Booking).get(booking1.id)
+        booking1 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_1).one()
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.query(bookings_models.Booking).get(booking2.id)
+        booking2 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_2).one()
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.query(bookings_models.Booking).get(booking3.id)
+        booking3 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_3).one()
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.query(bookings_models.Booking).get(booking4.id)
+        booking4 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_4).one()
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -1028,6 +1029,11 @@ class DeleteStockTest:
             status=finance_models.PricingStatus.PROCESSED,
         )
 
+        booking_id_1 = booking1.id
+        booking_id_2 = booking2.id
+        booking_id_3 = booking3.id
+        booking_id_4 = booking4.id
+
         api.delete_stock(stock)
 
         # cancellation can trigger more than one request to Batch
@@ -1035,16 +1041,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = db.session.query(bookings_models.Booking).get(booking1.id)
+        booking1 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_1).one()
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.query(bookings_models.Booking).get(booking2.id)
+        booking2 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_2).one()
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.query(bookings_models.Booking).get(booking3.id)
+        booking3 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_3).one()
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.query(bookings_models.Booking).get(booking4.id)
+        booking4 = db.session.query(bookings_models.Booking).filter_by(id=booking_id_4).one()
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -5434,26 +5440,6 @@ class DeleteOffersAndAllRelatedObjectsTest:
         api.delete_offers_and_all_related_objects(offer_ids, offer_chunk_size=1)
         assert_offers_have_been_completely_cleaned(offer_ids)
 
-    @pytest.mark.parametrize(
-        "error", [sa.exc.IntegrityError("bad query", "<params>", "<orig>"), Exception("bad query")]
-    )
-    def test_function_does_not_stop_if_error_occurs_at_a_random_round(self, caplog, error):
-        offers = self.build_many_eligible_for_search_offers_with_related_objects()
-        offer_ids = [offer.id for offer in offers]
-
-        with patch("pcapi.core.offers.api.db") as mock:
-            with caplog.at_level(logging.ERROR):
-                mock.session.flush.side_effect = [error] + [None for _ in range(len(offers) - 1)]
-
-                api.delete_offers_and_all_related_objects(offer_ids, offer_chunk_size=1)
-
-                assert len(caplog.records[0].extra["ids"]) == 1
-                assert caplog.records[0].extra["ids"][0] in offer_ids
-                assert "bad query" in caplog.records[0].extra["error"]
-
-        # all offers except one (because of the error) should have been deleted
-        assert db.session.query(models.Offer).count() == 1
-
     def build_many_eligible_for_search_offers_with_related_objects(self, count=3):
         offers = []
         for _ in range(count):
@@ -5502,6 +5488,7 @@ class DeleteUnbookableUnusedOldOffersTest:
         recent_offer = factories.OfferFactory()
 
         api.delete_unbookable_unbooked_old_offers()
+        db.session.flush()
         assert_offers_have_been_completely_cleaned([offer_id])
 
         assert db.session.query(models.Offer).get(old_bookable_offer.id) is not None

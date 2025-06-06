@@ -2215,7 +2215,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +2 select custom reimbursement rule (from find_reimbursement_rule)
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 2):
             invoice = api._generate_invoice_legacy(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2259,7 +2260,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +1 select custom reimbursement rule (from find_reimbursement_rule)
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):
             invoice = api._generate_invoice_legacy(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2299,7 +2301,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +1 select custom reimbursement rule (from find_reimbursement_rule)
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):
             invoice = api._generate_invoice_legacy(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2344,7 +2347,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +2 select custom reimbursement rule (from find_reimbursement_rule)
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 2):
             invoice = api._generate_invoice_legacy(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
