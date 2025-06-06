@@ -43,7 +43,7 @@ export const applyVenueDefaultsToFormValues = (
     street: selectedVenue?.address?.street ?? '',
   }
   const isVenueAddress =
-    values.location.locationType === CollectiveLocationType.ADDRESS &&
+    values.location?.locationType === CollectiveLocationType.ADDRESS &&
     values.location.address?.isVenueAddress
 
   if (isOfferCreated) {
