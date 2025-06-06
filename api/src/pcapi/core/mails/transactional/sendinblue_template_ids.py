@@ -84,6 +84,11 @@ class TransactionalEmail(Enum):
     UPDATE_REQUEST_ASK_FOR_CORRECTION = models.Template(id_prod=1441, id_not_prod=175)
     UPDATE_REQUEST_IDENTITY_THEFT = models.Template(id_prod=1569, id_not_prod=200)
     UPDATE_REQUEST_NO_USER_FOUND = models.Template(id_prod=1443, id_not_prod=198)
+    UPDATE_REQUEST_DUPLICATE_EMAIL = models.Template(id_prod=1566, id_not_prod=205)
+    UPDATE_REQUEST_ALREADY_USED_EMAIL = models.Template(id_prod=1567, id_not_prod=204)
+    UPDATE_REQUEST_DUPLICATE_PHONE_NUMBER = models.Template(id_prod=1581, id_not_prod=201)
+    UPDATE_REQUEST_ALREADY_USED_PHONE_NUMBER = models.Template(id_prod=1580, id_not_prod=202)
+    UPDATE_REQUEST_DUPLICATE_FULL_NAME = models.Template(id_prod=1579, id_not_prod=203)
 
     # UBBLE KO REMINDER
     UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(id_prod=824, id_not_prod=116)
