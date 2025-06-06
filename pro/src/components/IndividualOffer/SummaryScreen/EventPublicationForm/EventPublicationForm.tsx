@@ -62,29 +62,31 @@ export const EventPublicationForm = () => {
     <>
       <FormLayout fullWidthActions className={styles['form']}>
         <FormLayout.Section title="Date de publication">
+          <p className={styles['infotext']}>
+            Quand votre offre doit-elle être publiée dans l’application ?
+          </p>
           <FormLayout.Row
             sideComponent={
-              values.publicationMode === 'later' ? (
-                <InfoBox>
-                  Votre offre doit être validée, ce qui peut prendre jusqu’à
-                  72h. Après validation elle sera automatiquement publiée à la
-                  date et heure indiquées.
-                </InfoBox>
-              ) : null
+              <InfoBox>
+                Dans le cas où votre offre est en instruction par l’équipe
+                Conformité, sa validation peut prendre jusqu’à 72h. <br />
+                Après validation elle sera automatiquement publiée ou programmée
+                comme vous l’avez choisi.
+              </InfoBox>
             }
           >
             <div className={styles['radio-group']}>
               <RadioButton
-                label="Tout de suite"
+                label="Publier maintenant"
                 name="publicationMode"
                 value="now"
                 variant={RadioVariant.BOX}
               />
-
               <RadioButton
-                label="À une date et heure précise"
+                label="Publier plus tard"
                 name="publicationMode"
                 value="later"
+                description="L’offre restera secrète pour le public jusqu’à sa publication."
                 variant={RadioVariant.BOX}
               />
             </div>

@@ -158,13 +158,6 @@ export const SummaryScreen = () => {
               <strong>Vous y êtes presque !</strong>
               <br />
               Vérifiez les informations ci-dessous avant de publier votre offre.
-              {
-                <>
-                  <br />
-                  Si vous souhaitez la publier plus tard, vous pouvez retrouver
-                  votre brouillon dans la liste de vos offres.
-                </>
-              }
             </Callout>
 
             {showEventPublicationForm && <EventPublicationForm />}
@@ -214,6 +207,7 @@ export const SummaryScreen = () => {
         <ActionBar
           onClickPrevious={handlePreviousStep}
           step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+          publicationMode={formik.values.publicationMode}
           isDisabled={
             (mode !== OFFER_WIZARD_MODE.CREATION
               ? false
