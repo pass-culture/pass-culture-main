@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 
 import pcapi.core.finance.repository as finance_repository
+import pcapi.utils.date as date_utils
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
@@ -12,7 +13,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.utils.date import utc_datetime_to_department_timezone
 
 from .exceptions import NoActivationCodeAvailable
 from .exceptions import OfferCategoryNotBookableByUser
@@ -53,11 +53,26 @@ def check_quantity(offer: Offer, quantity: int) -> None:
         raise exceptions.QuantityIsInvalid("Vous ne pouvez réserver qu'une place pour cette offre.")
 
 
+def _stock_can_be_booked(stock: Stock) -> bool:
+    starting_from = stock.offer.bookingAllowedDatetime
+    if not starting_from:
+        return True
+
+    timezoned_starting_from = date_utils.default_timezone_to_local_datetime(starting_from, "UTC")
+    return timezoned_starting_from <= datetime.datetime.now(datetime.timezone.utc)
+
+
 def check_stock_is_bookable(stock: Stock, quantity: int) -> None:
     # The first part already checks that the stock is not sold out,
     # but we need to make sure that we can book `quantity` (which
     # could be 2), hence the second part of the check).
-    if not stock.isBookable or (stock.quantity is not None and stock.remainingQuantity < quantity):
+    # Also, a stock can be booked only if its offer bookingAllowedDatetime
+    # is past.
+    if (
+        not stock.isBookable
+        or (stock.quantity is not None and stock.remainingQuantity < quantity)
+        or not _stock_can_be_booked(stock)
+    ):
         raise exceptions.StockIsNotBookable()
 
 
@@ -134,7 +149,7 @@ def check_is_usable(booking: Booking) -> None:
             raise ValueError("Can't compute max_cancellation_date with None as cancellationLimitDate")
         venue_departement_code = booking.venue.departementCode
         max_cancellation_date = datetime.datetime.strftime(
-            utc_datetime_to_department_timezone(
+            date_utils.utc_datetime_to_department_timezone(
                 booking.cancellationLimitDate,
                 venue_departement_code,
             ),
