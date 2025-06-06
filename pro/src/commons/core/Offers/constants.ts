@@ -143,14 +143,3 @@ export const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
   { label: 'Offre vitrine', value: 'template' },
   { label: 'Offre réservable', value: 'offer' },
 ]
-
-export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
-  ALL_PROVIDERS: [
-    'audioDisabilityCompliant',
-    'mentalDisabilityCompliant',
-    'motorDisabilityCompliant',
-    'visualDisabilityCompliant',
-    'accessibility',
-  ],
-  ALLOCINE: ['isDuo'],
-}

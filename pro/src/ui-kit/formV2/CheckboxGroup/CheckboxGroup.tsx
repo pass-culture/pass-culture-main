@@ -28,6 +28,10 @@ export type CheckboxGroupProps = {
   asterisk?: boolean
   error?: string
   name?: string
+  /**
+   * Callback function to handle changes in the radio group.
+   */
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const CheckboxGroup = ({
@@ -39,6 +43,7 @@ export const CheckboxGroup = ({
   asterisk = true,
   error,
   name,
+  onChange,
 }: CheckboxGroupProps): JSX.Element => {
   const errorId = useId()
 
@@ -64,7 +69,10 @@ export const CheckboxGroup = ({
               hasError={Boolean(error)}
               label={item.label}
               disabled={disabled}
-              onChange={item.onChange}
+              onChange={(ev) => {
+                item.onChange?.(ev)
+                onChange?.(ev)
+              }}
               onBlur={item.onBlur}
               variant="detailed"
               checked={Boolean(item.checked)}

@@ -2,27 +2,27 @@ import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
 
 export type UsefulInformationFormValues = {
-  isEvent?: boolean
-  isNational: boolean
-  withdrawalDelay?: number | null
-  withdrawalType?: WithdrawalTypeEnum | null
-  withdrawalDetails?: string
   accessibility: AccessibilityFormValues
-  receiveNotificationEmails: boolean
-  bookingEmail: string
-  externalTicketOfficeUrl?: string | null
-  bookingContact?: string
-  offerLocation?: string | undefined
-  manuallySetAddress?: boolean
-  'search-addressAutocomplete'?: string
   addressAutocomplete?: string
-  coords?: string
-  banId?: string | null
-  inseeCode?: string | null
-  locationLabel?: string | null
-  street?: string | null
-  postalCode?: string
+  banId?: string
+  bookingContact?: string
+  bookingEmail?: string
   city?: string
+  coords?: string
+  externalTicketOfficeUrl?: string
+  inseeCode?: string
+  isEvent?: boolean
+  isNational?: boolean
   latitude?: string
+  locationLabel?: string
   longitude?: string
+  manuallySetAddress?: boolean
+  offerLocation?: string
+  postalCode?: string
+  receiveNotificationEmails?: boolean
+  'search-addressAutocomplete'?: string
+  street?: string
+  withdrawalDelay?: string
+  withdrawalType?: WithdrawalTypeEnum
+  withdrawalDetails?: string
 }

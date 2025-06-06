@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -135,14 +135,10 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       await screen.findByRole('heading', { name: 'Retrait de l’offre' })
     ).toBeInTheDocument()
 
-    const withdrawalDetails = await screen.findByTestId(
-      'wrapper-withdrawalDetails'
-    )
+    const withdrawalDetails = screen.getByRole('textbox', {
+      name: /Informations de retrait/,
+    })
     expect(withdrawalDetails).toBeInTheDocument()
-
-    expect(
-      within(withdrawalDetails).getByText('Informations de retrait')
-    ).toBeInTheDocument()
 
     expect(
       await screen.findByRole('heading', { name: 'Modalités d’accessibilité' })

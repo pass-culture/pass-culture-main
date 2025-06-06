@@ -3,8 +3,7 @@ import * as yup from 'yup'
 import { checkCoords } from 'commons/utils/coords'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 
-const locationSchema = {
-  offerLocation: yup.string().trim().required('Veuillez sélectionner un choix'),
+export const validationSchema = {
   addressAutocomplete: yup
     .string()
     .trim()
@@ -16,25 +15,6 @@ const locationSchema = {
           'Veuillez sélectionner une adresse parmi les suggestions'
         ),
     }),
-  street: yup
-    .string()
-    .trim()
-    .when(['offerLocation'], {
-      is: (offerLocation: string) =>
-        offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
-      then: (schema) =>
-        schema.required('Veuillez renseigner une adresse postale'),
-    }),
-  postalCode: yup
-    .string()
-    .trim()
-    .when(['offerLocation'], {
-      is: (offerLocation: string) =>
-        offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
-      then: (schema) => schema.required('Veuillez renseigner un code postal'),
-    })
-    .min(5, 'Veuillez renseigner un code postal valide')
-    .max(5, 'Veuillez renseigner un code postal valide'),
   city: yup
     .string()
     .trim()
@@ -56,9 +36,25 @@ const locationSchema = {
             checkCoords(value)
           ),
     }),
-}
-
-export const validationSchema = {
   locationLabel: yup.string(),
-  ...locationSchema,
+  offerLocation: yup.string().trim().required('Veuillez sélectionner un choix'),
+  postalCode: yup
+    .string()
+    .trim()
+    .when(['offerLocation'], {
+      is: (offerLocation: string) =>
+        offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
+      then: (schema) => schema.required('Veuillez renseigner un code postal'),
+    })
+    .min(5, 'Veuillez renseigner un code postal valide')
+    .max(5, 'Veuillez renseigner un code postal valide'),
+  street: yup
+    .string()
+    .trim()
+    .when(['offerLocation'], {
+      is: (offerLocation: string) =>
+        offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
+      then: (schema) =>
+        schema.required('Veuillez renseigner une adresse postale'),
+    }),
 }

@@ -1,24 +1,25 @@
-import { useField, useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
-import { resetAddressFields } from 'commons/utils/resetAddressFields'
-import { AddressSelect } from 'components/Address/Address'
-import { AddressManual } from 'components/AddressManual/AddressManual'
+import { AddressFormValues } from 'commons/core/shared/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
-import { IndividualOfferFormValues } from 'pages/IndividualOffer/commons/types'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { AddressManual } from 'ui-kit/formV2/AddressManual/AddressManual'
+import { AddressSelect } from 'ui-kit/formV2/AddressSelect/AddressSelect'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+
+import { UsefulInformationFormValues } from '../../commons/types'
 
 import styles from './OfferLocation.module.scss'
 
-interface OfferLocationProps {
+export interface OfferLocationProps {
   venue: VenueListItemResponseModel | undefined
   readOnlyFields: string[]
 }
@@ -27,60 +28,76 @@ export const OfferLocation = ({
   venue,
   readOnlyFields,
 }: OfferLocationProps): JSX.Element => {
-  const formik = useFormikContext<IndividualOfferFormValues>()
+  const {
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<UsefulInformationFormValues>()
+  const offerLocation = watch('offerLocation')
+  const manuallySetAddress = watch('manuallySetAddress')
 
   const [showOtherAddress, setShowOtherAddress] = useState(
-    formik.values.offerLocation === OFFER_LOCATION.OTHER_ADDRESS
+    offerLocation === OFFER_LOCATION.OTHER_ADDRESS
   )
 
-  useEffect(() => {
-    setShowOtherAddress(formik.values.offerLocation === 'other')
-  }, [formik.values.offerLocation])
+  const resetAddressFields = () => {
+    const fieldNames: (keyof AddressFormValues)[] = [
+      'street',
+      'postalCode',
+      'city',
+      'latitude',
+      'longitude',
+      'coords',
+      'banId',
+      'inseeCode',
+      'search-addressAutocomplete',
+      'addressAutocomplete',
+    ]
 
-  const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
-    useField('manuallySetAddress')
+    fieldNames.forEach((fieldName) => {
+      setValue(fieldName, '')
+    })
+  }
 
-  const onChangeOfferLocation = async (
+  const onChangeOfferLocation = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    formik.handleChange(event)
     const isVenueAddress = event.target.value !== OFFER_LOCATION.OTHER_ADDRESS
     setShowOtherAddress(!isVenueAddress)
+    setValue('manuallySetAddress', false)
+
     if (isVenueAddress) {
-      // If here, the user chose to use the venue address
-      // Manually set the form fields with venue address values
+      // If here, the user chose to use the venue address so
+      // we reset the form fields with the related address values.
 
       // Avoid crashes if the venue doesn't have an OA, but this shouldn't technically happens
       if (!venue?.address) {
         return
       }
 
-      await Promise.all([
-        formik.setFieldValue('manuallySetAddress', false),
-        formik.setFieldValue('inseeCode', venue.address.inseeCode),
-        formik.setFieldValue('banId', venue.address.banId),
-        formik.setFieldValue('city', venue.address.city),
-        formik.setFieldValue('locationLabel', venue.address.label),
-        formik.setFieldValue('latitude', venue.address.latitude),
-        formik.setFieldValue('longitude', venue.address.longitude),
-        formik.setFieldValue(
-          'coords',
-          `${venue.address.latitude}, ${venue.address.longitude}`
-        ),
-        formik.setFieldValue('postalCode', venue.address.postalCode),
-        formik.setFieldValue('street', venue.address.street),
-      ])
+      setValue('inseeCode', venue.address.inseeCode ?? '')
+      setValue('banId', venue.address.banId ?? '')
+      setValue('city', venue.address.city)
+      setValue('latitude', venue.address.latitude.toString())
+      setValue('longitude', venue.address.longitude.toString())
+      setValue(
+        'coords',
+        `${venue.address.latitude}, ${venue.address.longitude}`
+      )
+      setValue('postalCode', venue.address.postalCode)
+      setValue('street', venue.address.street ?? '')
+      setValue('locationLabel', venue.address.label ?? '')
+      setValue('offerLocation', venue.address.id_oa.toString())
     } else {
-      await resetAddressFields({ formik })
-      await formik.setFieldValue('locationLabel', '')
-      await formik.setFieldTouched('locationLabel', false)
+      resetAddressFields()
+      setValue('locationLabel', '')
+      setValue('offerLocation', OFFER_LOCATION.OTHER_ADDRESS)
     }
   }
 
-  const toggleManuallySetAddress = async () => {
-    const isAddressManual = !manuallySetAddress.value
-    await setManuallySetAddress(isAddressManual)
-    await resetAddressFields({ formik })
+  const toggleManuallySetAddress = () => {
+    setValue('manuallySetAddress', !manuallySetAddress)
   }
 
   const venueAddress = venue?.address
@@ -108,7 +125,7 @@ export const OfferLocation = ({
             sizing: 'fill',
           },
         ]}
-        checkedOption={formik.values.offerLocation}
+        checkedOption={offerLocation}
         onChange={onChangeOfferLocation}
         disabled={readOnlyFields.includes('offerLocation')}
       />
@@ -116,38 +133,48 @@ export const OfferLocation = ({
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>
             <TextInput
+              {...register('locationLabel')}
               label="Intitulé de la localisation"
-              name="locationLabel"
-              isOptional
               disabled={readOnlyFields.includes('locationLabel')}
             />
           </FormLayout.Row>
-
           <FormLayout.Row>
             <AddressSelect
+              {...register('addressAutocomplete')}
+              label="Adresse postale"
               disabled={
-                manuallySetAddress.value ||
+                manuallySetAddress ||
                 readOnlyFields.includes('addressAutocomplete')
               }
               className={styles['location-field']}
+              error={errors.addressAutocomplete?.message}
+              onAddressChosen={(addressData) => {
+                setValue('manuallySetAddress', false)
+                setValue('street', addressData.address)
+                setValue('postalCode', addressData.postalCode)
+                setValue('city', addressData.city)
+                setValue('latitude', String(addressData.latitude))
+                setValue('longitude', String(addressData.longitude))
+                setValue('banId', addressData.id)
+                setValue('inseeCode', addressData.inseeCode)
+              }}
             />
           </FormLayout.Row>
-
           <FormLayout.Row>
             <Button
               variant={ButtonVariant.QUATERNARY}
-              icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
+              icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
               onClick={toggleManuallySetAddress}
               disabled={readOnlyFields.includes('manuallySetAddress')}
             >
-              {manuallySetAddress.value ? (
+              {manuallySetAddress ? (
                 <>Revenir à la sélection automatique</>
               ) : (
                 <>Vous ne trouvez pas votre adresse ?</>
               )}
             </Button>
           </FormLayout.Row>
-          {manuallySetAddress.value && (
+          {manuallySetAddress && (
             <AddressManual readOnlyFields={readOnlyFields} />
           )}
         </div>

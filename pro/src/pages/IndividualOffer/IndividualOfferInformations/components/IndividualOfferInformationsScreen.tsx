@@ -1,10 +1,11 @@
-import { Form, FormikProvider, useFormik } from 'formik'
-import { useRef, useState } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useRef, useState, useEffect } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
@@ -20,16 +21,18 @@ import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { usePrevious } from 'commons/hooks/usePrevious'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
+import { isEqual } from 'commons/utils/isEqual'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import { serializePatchOffer } from 'pages/IndividualOffer/commons/serializers'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
+import { serializePatchOffer } from 'pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 
@@ -87,16 +90,9 @@ export const IndividualOfferInformationsScreen = ({
     }
   }
 
-  function someFormFieldsChanged(fields: string[]): boolean {
-    return fields.some((field) => {
-      const fieldMeta = formik.getFieldMeta(field)
-      return fieldMeta.touched && fieldMeta.value !== fieldMeta.initialValue
-    })
-  }
+  const onSubmit = async (): Promise<void> => {
+    const formValues = form.getValues()
 
-  const onSubmit = async (
-    formValues: UsefulInformationFormValues
-  ): Promise<void> => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       const hasWithdrawalInformationsChanged = someFormFieldsChanged([
         'withdrawalDetails',
@@ -130,12 +126,10 @@ export const IndividualOfferInformationsScreen = ({
     }
 
     try {
-      const shouldNotSendExtraData = !!offer.productId
       const requestBody = serializePatchOffer({
         offer,
         formValues,
         shouldSendMail: sendWithdrawalMail,
-        shouldNotSendExtraData,
       })
       const response = await api.patchOffer(offer.id, requestBody)
 
@@ -167,15 +161,15 @@ export const IndividualOfferInformationsScreen = ({
       if (!isErrorAPIError(error)) {
         return
       }
-      formik.setErrors(
-        serializeApiErrors(error.body, {
-          venue: 'venueId',
-        })
-      )
-      // This is used from scroll to error
-      formik.setStatus('apiError')
 
-      return notify.error(SENT_DATA_ERROR_MESSAGE)
+      for (const field in error.body) {
+        form.setError(field as keyof UsefulInformationFormValues, {
+          message: error.body[field],
+        })
+      }
+
+      notify.error(SENT_DATA_ERROR_MESSAGE)
+      return
     }
   }
 
@@ -208,13 +202,32 @@ export const IndividualOfferInformationsScreen = ({
     offer,
     selectedVenue,
   })
+  const previousInitialValues = usePrevious(initialValues)
+  const initialValuesHasChanged = !isEqual(previousInitialValues, initialValues)
 
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    enableReinitialize: true,
+  // Workaround since react-hook-form does not reset the form when defaultValues change.
+  useEffect(() => {
+    if (initialValuesHasChanged) {
+      form.reset(initialValues)
+    }
+  }, [initialValuesHasChanged])
+
+  const form = useForm<UsefulInformationFormValues>({
+    defaultValues: initialValues,
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
   })
+
+  const someFormFieldsChanged = (
+    fields: (keyof UsefulInformationFormValues)[]
+  ): boolean => {
+    return fields.some((field) => {
+      const fieldState = form.getFieldState(field)
+      const fieldValue = form.getValues(field)
+
+      return fieldState.isTouched && fieldValue !== initialValues[field]
+    })
+  }
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -241,40 +254,14 @@ export const IndividualOfferInformationsScreen = ({
   }
 
   return (
-    <FormikProvider value={formik}>
-      <Form>
-        <FormLayout fullWidthActions>
-          <ScrollToFirstErrorAfterSubmit />
-          <FormLayout.MandatoryInfo />
-          <UsefulInformationForm
-            offer={offer}
-            selectedVenue={selectedVenue}
-            conditionalFields={conditionalFields}
-            publishedOfferWithSameEAN={publishedOfferWithSameEAN}
-          />
-        </FormLayout>
-        <ActionBar
-          onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
-          isDisabled={
-            formik.isSubmitting ||
-            isOfferDisabled(offer.status) ||
-            Boolean(publishedOfferWithSameEAN)
-          }
-          dirtyForm={formik.dirty}
-          saveEditionChangesButtonRef={saveEditionChangesButtonRef}
-        />
-      </Form>
-
+    <>
       <ConfirmDialog
         cancelText="Annuler"
         confirmText="Je confirme le changement"
         onCancel={() => {
           setIsUpdatesWarningDialogOpen(false)
         }}
-        onConfirm={async () => {
-          await formik.submitForm()
-        }}
+        onConfirm={form.handleSubmit(onSubmit)}
         open={isUpdatesWarningDialogOpen}
         title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
         refToFocusOnClose={saveEditionChangesButtonRef}
@@ -304,9 +291,35 @@ export const IndividualOfferInformationsScreen = ({
           </FormLayout.Row>
         </div>
       </ConfirmDialog>
+
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <ScrollToFirstHookFormErrorAfterSubmit />
+          <FormLayout fullWidthActions>
+            <FormLayout.MandatoryInfo />
+            <UsefulInformationForm
+              selectedVenue={selectedVenue}
+              conditionalFields={conditionalFields}
+              publishedOfferWithSameEAN={publishedOfferWithSameEAN}
+            />
+          </FormLayout>
+          <ActionBar
+            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
+            isDisabled={
+              form.formState.isSubmitting ||
+              isOfferDisabled(offer.status) ||
+              Boolean(publishedOfferWithSameEAN)
+            }
+            dirtyForm={form.formState.isDirty}
+            saveEditionChangesButtonRef={saveEditionChangesButtonRef}
+          />
+        </form>
+      </FormProvider>
+
       <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !formik.isSubmitting}
+        when={form.formState.isDirty && !form.formState.isSubmitting}
       />
-    </FormikProvider>
+    </>
   )
 }
