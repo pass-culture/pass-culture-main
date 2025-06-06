@@ -8,6 +8,7 @@ import sys
 import time
 import typing
 import urllib.parse
+from dataclasses import dataclass
 from pathlib import Path
 from pprint import pprint
 from unittest.mock import MagicMock
@@ -51,6 +52,14 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid
 from tests.serialization.extended_spec_tree_test import test_extended_spec_tree_blueprint
 from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
+
+
+@dataclass
+class SessionStructre:
+    engine: None
+    connection: None
+    transaction: None
+    nested: None
 
 
 def run_migrations():
@@ -823,17 +832,6 @@ def _engine(request, _transaction, mocker):
     return engine
 
 
-from dataclasses import dataclass
-
-
-@dataclass
-class SessionStructre:
-    engine: None
-    connection: None
-    transaction: None
-    nested: None
-
-
 @pytest.fixture(scope="function")
 def db_session(_engine, _transaction, mocker, request):
     """
@@ -856,6 +854,8 @@ def db_session(_engine, _transaction, mocker, request):
     if "clean_database" in request.fixturenames:
         yield None
     elif not settings.USE_FLASK_SQLALCHEMY:
+        # from: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+        # TODO RPA: after migration to sqlalchemy 2.0 migrate to https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
         engine = db.engine
         connection = engine.connect()
         transaction = connection.begin()
@@ -873,8 +873,12 @@ def db_session(_engine, _transaction, mocker, request):
             if not session_data.nested.is_active:
                 session_data.nested = connection.begin_nested()
 
-        yield
-        db.session.close()
+        yield db.session
+        try:
+            db.session.close()
+        except Exception:
+            # some tests do not open a session
+            pass
         session_data.transaction.rollback()
         session_data.connection.close()
         db.remove_session()

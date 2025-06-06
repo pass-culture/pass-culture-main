@@ -13,23 +13,6 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 class ProviderApiKeyRequiredTest:
-    def _get_app_test_client(self) -> TestClient:
-        app = flask.Flask(__name__)
-
-        @app.route("/test", methods=["GET"])
-        @users_authentifications.provider_api_key_required
-        def index():
-            return flask.jsonify({"result": "you are authenticated"})
-
-        # Simulate `routes.error_handlers.generic_error_handlers.restize_api_errors`...
-        # without importing the function, which fails because it
-        # expects to have a proper Flask app with a context.
-        @app.errorhandler(api_errors.ApiErrors)
-        def handle_api_errors(error):
-            return flask.jsonify(error.errors), error.status_code
-
-        return TestClient(app.test_client())
-
     def _setup_api_key(self, provider=None, offerer=None) -> str:
         offerer = offerer or offerers_factories.OffererFactory(name="Technical provider")
 
@@ -47,58 +30,52 @@ class ProviderApiKeyRequiredTest:
 
         return plain_api_key
 
-    def test_should_raise_401_because_no_api_key_given(self):
-        client = self._get_app_test_client()
-        response = client.get("/test")
+    def test_should_raise_401_because_no_api_key_given(self, client):
+        response = client.get("/public/providers/v1/provider")
 
         assert response.status_code == 401
         assert response.json == {"auth": "API key required"}
 
-    def test_should_raise_401_because_invalid_api_key_given(self):
-        client = self._get_app_test_client()
-        response = client.with_explicit_token("invalid API key").get("/test")
+    def test_should_raise_401_because_invalid_api_key_given(self, client):
+        response = client.with_explicit_token("invalid API key").get("/public/providers/v1/provider")
 
         assert response.status_code == 401
         assert response.json == {"auth": "API key required"}
 
-    def test_should_raise_401_because_deprecated_api_key_given(self):
+    def test_should_raise_401_because_deprecated_api_key_given(self, client):
         # deprecated = not linked to a provider
         plain_api_key = self._setup_api_key(provider=None)
-        client = self._get_app_test_client()
-        response = client.with_explicit_token(plain_api_key).get("/test")
+        response = client.with_explicit_token(plain_api_key).get("/public/providers/v1/provider")
 
         assert response.status_code == 401
         assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
 
-    def test_should_raise_403_because_inactive_offerer(self):
+    def test_should_raise_403_because_inactive_offerer(self, client):
         provider = providers_factories.PublicApiProviderFactory()
         offerer = offerers_factories.OffererFactory(isActive=False)
         plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
-        client = self._get_app_test_client()
-        response = client.with_explicit_token(plain_api_key).get("/test")
+        response = client.with_explicit_token(plain_api_key).get("/public/providers/v1/provider")
 
         assert response.status_code == 403
         assert response.json == {"auth": ["Inactive offerer"]}
 
-    def test_should_raise_403_because_inactive_provider(self):
+    def test_should_raise_403_because_inactive_provider(self, client):
         provider = providers_factories.PublicApiProviderFactory(isActive=False)
         offerer = offerers_factories.OffererFactory()
         plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
-        client = self._get_app_test_client()
-        response = client.with_explicit_token(plain_api_key).get("/test")
+        response = client.with_explicit_token(plain_api_key).get("/public/providers/v1/provider")
 
         assert response.status_code == 403
         assert response.json == {"auth": ["Inactive provider"]}
 
-    def test_should_be_successful(self):
+    def test_should_be_successful(self, client):
         provider = providers_factories.PublicApiProviderFactory()
         offerer = offerers_factories.OffererFactory()
         plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
-        client = self._get_app_test_client()
-        response = client.with_explicit_token(plain_api_key).get("/test")
+        response = client.with_explicit_token(plain_api_key).get("/public/providers/v1/provider")
 
         assert response.status_code == 200
-        assert response.json == {"result": "you are authenticated"}
+        assert "Public API Provider" in response.json.get("name")
 
 
 @pytest.mark.usefixtures("db_session")

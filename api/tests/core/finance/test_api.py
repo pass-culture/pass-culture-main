@@ -1066,9 +1066,12 @@ class PriceEventsTest:
             booking__dateUsed=self.few_minutes_ago,
             booking__stock__offer__venue__pricing_point="self",
         )
-
+        event1_id = event1.id
+        event2_id = event2.id
         api.price_events(min_date=self.few_minutes_ago)
 
+        event1 = db.session.query(models.FinanceEvent).filter_by(id=event1_id).one()
+        event2 = db.session.query(models.FinanceEvent).filter_by(id=event2_id).one()
         assert len(event1.pricings) == 1
         assert len(event2.pricings) == 1
         assert event1.status == models.FinanceEventStatus.PRICED
@@ -3626,7 +3629,9 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+
+        # +2 select custom reimbursement rules
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 2):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -3670,7 +3675,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +1 select custom reimbursement rules
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -3710,7 +3716,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +1 select custom reimbursement rules
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -3755,7 +3762,8 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        # +2 select custom reimbursement rules
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 2):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
