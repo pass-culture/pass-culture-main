@@ -96,6 +96,24 @@ class PcTableMultiSelect extends PcAddOn {
     return $table.querySelectorAll(PcTableMultiSelect.CHECKBOXES_SELECTOR)
   }
 
+  #getVisibleCheckboxes($table) {
+    const allCheckboxes = this.#getCheckboxes($table)
+    return Array.from(allCheckboxes).filter($checkbox => {
+      const $row = $checkbox.closest('tr')
+      return $row && window.getComputedStyle($row).display !== 'none'
+    })
+  }
+
+  #getSelectableCheckboxes($table) {
+    const isFeatureEnabled = $table.dataset.tableMultiSelectIgnoreHiddenRows === 'true';
+
+    if (isFeatureEnabled) {
+      return this.#getVisibleCheckboxes($table);
+    } else {
+      return Array.from(this.#getCheckboxes($table));
+    }
+  }
+
   #onCheckboxAllClick = (event) => {
     const { tableMultiSelectId } = event.target.dataset
     const $table = this.#getTableFromTableMultiSelectId(tableMultiSelectId)
@@ -112,22 +130,42 @@ class PcTableMultiSelect extends PcAddOn {
       this.state[tableMultiSelectId].selectedRowsIds.delete(id)
     }
 
-    // Manage The indeterminate state of select-all checkbox
-    this.#getCheckboxAll($table).indeterminate = (this.state[tableMultiSelectId].selectedRowsIds.size < this.state[tableMultiSelectId].rowsIds.size && this.state[tableMultiSelectId].selectedRowsIds.size > 0)
+    const selectableCheckboxes = this.#getSelectableCheckboxes($table)
+    const selectedCount = selectableCheckboxes.filter($cb => this.state[tableMultiSelectId].selectedRowsIds.has($cb.dataset.id)).length
+
+    const $checkboxAll = this.#getCheckboxAll($table)
+
+    if (selectedCount === 0) {
+        $checkboxAll.checked = false
+        $checkboxAll.indeterminate = false
+    } else if (selectedCount === selectableCheckboxes.length) {
+        $checkboxAll.checked = true
+        $checkboxAll.indeterminate = false
+    } else {
+        $checkboxAll.checked = false
+        $checkboxAll.indeterminate = true
+    }
 
     this.#emitChangeEvent($table)
   }
 
   #batchSelect = ($table, checked) => {
     const { tableMultiSelectId } = $table.dataset
-    const selectedRowsIds = new Set([])
-    this.#getCheckboxes($table).forEach(($checkbox) => {
+    const selectableCheckboxes = this.#getSelectableCheckboxes($table)
+
+    selectableCheckboxes.forEach(($checkbox) => {
       $checkbox.checked = checked
       if (checked) {
-        selectedRowsIds.add($checkbox.dataset.id)
+        this.state[tableMultiSelectId].selectedRowsIds.add($checkbox.dataset.id)
+      } else {
+        this.state[tableMultiSelectId].selectedRowsIds.delete($checkbox.dataset.id)
       }
     })
-    this.state[tableMultiSelectId].selectedRowsIds = selectedRowsIds
+
+    const $checkboxAll = this.#getCheckboxAll($table)
+    $checkboxAll.checked = checked
+    $checkboxAll.indeterminate = false
+
     this.#emitChangeEvent($table)
   }
 
@@ -136,7 +174,8 @@ class PcTableMultiSelect extends PcAddOn {
     dispatchEvent(new CustomEvent(`${this.name}:change`, {
       detail: {
         tableMultiSelectId,
-        ...this.state[tableMultiSelectId],
+        rowsIds: Array.from(this.state[tableMultiSelectId].rowsIds),
+        selectedRowsIds: Array.from(this.state[tableMultiSelectId].selectedRowsIds),
       }
     }))
   }

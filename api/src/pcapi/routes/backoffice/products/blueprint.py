@@ -27,7 +27,6 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.offers.serializer import OfferSerializer
 from pcapi.utils import requests
 
 from . import forms
@@ -196,8 +195,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         provider_name=product.lastProvider.name if product.lastProvider else None,
         allowed_actions=allowed_actions,
         action=ProductDetailsActionType,
-        product_offers=[OfferSerializer.from_orm(offer).dict() for offer in product.offers],
-        unlinked_offers=[OfferSerializer.from_orm(offer).dict() for offer in unlinked_offers],
+        unlinked_offers=unlinked_offers,
         titelive_data=titelive_data,
         active_offers_count=active_offers_count,
         approved_active_offers_count=approved_active_offers_count,

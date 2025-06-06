@@ -49,6 +49,16 @@
        href="#{{ section_name }}-section">{{ section_title }}</a>
   </li>
 {% endmacro %}
+{% macro content_navbar_button(section_name, section_title, default=False) %}
+  <li class="nav-item">
+    <button class="nav-link px-3 py-2 {% if default %}active{% endif %}"
+            id="{{ section_name }}-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#{{ section_name }}-data"
+            type="button"
+            role="tab">{{ section_title }}</button>
+  </li>
+{% endmacro %}
 {% macro details_content_wrapper(navbar_name) %}
   <div data-bs-spy="scroll"
        data-bs-target="#{{ navbar_name }}-navbar"
