@@ -957,6 +957,9 @@ class CollectiveOffer(
 
     @displayedStatus.expression  # type: ignore[no-redef]
     def displayedStatus(cls):
+        # to use this property, CollectiveOffer must be queried with a join on CollectiveStock
+        # so that correlate(CollectiveStock) links to the correct stock
+
         last_booking_subquery = (
             sa.select(CollectiveBooking.status)
             .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
@@ -994,7 +997,7 @@ class CollectiveOffer(
             ),
             (
                 cls.validation != offer_mixin.OfferValidationStatus.APPROVED.name,
-                "IMPOSSIBLE",
+                CollectiveOfferDisplayedStatus.PUBLISHED.name,
             ),
             (
                 cls.isActive.is_(False),
@@ -1048,7 +1051,7 @@ class CollectiveOffer(
                     (
                         sa.and_(
                             last_booking_subquery_reason == CollectiveBookingCancellationReasons.EXPIRED.name,
-                            CollectiveStock.startDatetime >= sa.func.now(),
+                            sa.func.now() <= CollectiveStock.startDatetime,
                         ),
                         CollectiveOfferDisplayedStatus.EXPIRED.name,
                     ),
