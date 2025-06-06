@@ -89,6 +89,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "test_extended_spec_tree_blueprint.openapi_apidoc",  # → response.status_code = 200
     "test_extended_spec_tree_blueprint.spectree_get_test_endpoint",  # → response.status_code = 204
     "test_extended_spec_tree_blueprint.spectree_post_test_endpoint",  # → response.status_code = 204
+    "institutional.openapi_/institutional",  # → response.status_code = 200
 ]
 
 SUFFIX_WHITE_LIST = [
