@@ -66,6 +66,8 @@ type MultiSelectProps = {
 
   /** Trigger function to display error message when element is unfocus */
   onBlur?: () => void
+
+  onClose?: () => void
 } & (
   | {
       /**
@@ -133,6 +135,7 @@ export const MultiSelect = forwardRef(
       required = false,
       asterisk = true,
       onBlur,
+      onClose,
     }: MultiSelectProps,
     forwardedRef: ForwardedRef<HTMLFieldSetElement>
   ): JSX.Element => {
@@ -143,7 +146,20 @@ export const MultiSelect = forwardRef(
     const containerRef = useRef<HTMLDivElement>(null)
     const id = useId()
 
-    const toggleDropdown = () => setIsOpen((prev) => !prev)
+    const closeDropdown = () => {
+      if (isOpen) {
+        setIsOpen(false)
+        onClose?.()
+      }
+    }
+
+    const toggleDropdown = () =>
+      setIsOpen((prev) => {
+        if (prev) {
+          onClose?.()
+        }
+        return !prev
+      })
 
     useEffect(() => {
       if (selectedOptions) {
@@ -191,7 +207,7 @@ export const MultiSelect = forwardRef(
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false)
+        closeDropdown()
       }
     }
 
@@ -203,7 +219,7 @@ export const MultiSelect = forwardRef(
       }
     }, [])
 
-    useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
+    useOnClickOrFocusOutside(containerRef, closeDropdown)
 
     return (
       <fieldset className={styles.container} onBlur={onBlur} ref={forwardedRef}>

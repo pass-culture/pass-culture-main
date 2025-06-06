@@ -1,4 +1,5 @@
-import { FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -108,9 +109,9 @@ export const OfferEducational = ({
         )
       : baseInitialValues
 
-  const onSubmit = async (offerValues: OfferEducationalFormValues) => {
+  const onSubmit = async () => {
     let response = null
-
+    const offerValues = form.watch()
     try {
       if (isTemplate) {
         if (offer === undefined) {
@@ -192,7 +193,7 @@ export const OfferEducational = ({
           }
         )
 
-        formik.setErrors(serializedError)
+        /*  formik.setErrors(serializedError) */
         notify.error(FORM_ERROR_MESSAGE)
       } else {
         notify.error(SENT_DATA_ERROR_MESSAGE)
@@ -200,18 +201,20 @@ export const OfferEducational = ({
     }
   }
 
-  const { resetForm, ...formik } = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema: getOfferEducationalValidationSchema(isCollectiveOaActive),
+  const form = useForm<OfferEducationalFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(
+      getOfferEducationalValidationSchema(isCollectiveOaActive)
+    ),
+    shouldFocusError: false,
+    mode: 'onTouched',
   })
 
   if (
     mode === Mode.CREATION &&
-    formik.values.offererId !== selectedOffererId?.toString()
+    form.watch('offererId') !== selectedOffererId?.toString()
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    formik.setFieldValue('offererId', selectedOffererId?.toString())
+    form.setValue('offererId', selectedOffererId?.toString() || '')
   }
 
   return (
@@ -223,13 +226,8 @@ export const OfferEducational = ({
           mode={mode}
         />
       )}
-      <FormikProvider
-        value={{
-          ...formik,
-          resetForm,
-        }}
-      >
-        <form onSubmit={formik.handleSubmit}>
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <OfferEducationalForm
             mode={mode}
             userOfferer={userOfferer}
@@ -240,13 +238,13 @@ export const OfferEducational = ({
             onImageUpload={onImageUpload}
             isOfferCreated={isOfferCreated}
             offer={offer}
-            isSubmitting={formik.isSubmitting}
+            isSubmitting={form.formState.isSubmitting}
             venues={venues}
           />
         </form>
-      </FormikProvider>
+      </FormProvider>
       <RouteLeavingGuardCollectiveOfferCreation
-        when={formik.dirty && !formik.isSubmitting}
+        when={form.formState.isDirty && !form.formState.isSubmitting}
       />
     </>
   )
