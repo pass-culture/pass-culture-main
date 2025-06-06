@@ -656,7 +656,8 @@ class GetPublicAccountTest(GetEndpointHelper):
     # user data
     # check if user is waiting to be anonymized
     # bookings
-    expected_num_queries = 5
+    # user tags (for tag account form display)
+    expected_num_queries = 6
     expected_num_queries_with_ff = expected_num_queries + 1
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
@@ -698,6 +699,15 @@ class GetPublicAccountTest(GetEndpointHelper):
     class AnonymizeUserButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
         button_label = "Anonymiser"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory()
+            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+
+    class TagPublicAccountButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+        button_label = "Taguer"
 
         @property
         def path(self):
@@ -1195,6 +1205,18 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         available_button = html_parser.extract(response.data, tag="button")
         assert "Anonymiser" not in available_button
+
+    def test_get_pulic_account_tags(self, authenticated_client):
+        tag1 = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag2 = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[tag1, tag2])
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        badges = html_parser.extract_badges(response.data)
+        assert {"Ambassadeur A", "Ambassadeur B"}.intersection(badges) == {"Ambassadeur A", "Ambassadeur B"}
 
 
 class GetUserActivityTest(GetEndpointHelper):
@@ -5266,3 +5288,77 @@ class CreateAccountTagCategoryTest(PostEndpointHelper):
         )
 
         assert db.session.query(users_models.UserTagCategory).count() == 1
+
+
+class TagPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.tag_public_account"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
+
+    def test_update_tag_public_account(self, authenticated_client):
+        tag1 = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag2 = users_factories.UserTagFactory(label="Ambassadeur B")
+        tag3 = users_factories.UserTagFactory(label="Ambassadeur C")
+        user = users_factories.UserFactory(tags=[tag1, tag2])
+        form_data = {"tags": [tag2.id, tag3.id]}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+        assert {t.id for t in user.tags} == {tag2.id, tag3.id}
+        assert html_parser.extract_alert(response.data) == "Tags mis à jour avec succès"
+
+    def test_remove_public_account_tags(self, authenticated_client):
+        tag1 = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag2 = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[tag1, tag2])
+        form_data = {"tags": []}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+        assert user.tags == []
+        assert html_parser.extract_alert(response.data) == "Tags mis à jour avec succès"
+
+    def test_add_public_account_tags(self, authenticated_client):
+        tag1 = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag2 = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[])
+        form_data = {"tags": [tag1.id, tag2.id]}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+        assert set(user.tags) == {tag1, tag2}
+        assert html_parser.extract_alert(response.data) == "Tags mis à jour avec succès"
+
+    def test_tag_public_account_action_history_add_tag(self, authenticated_client, legit_user):
+        tag_A = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag_B = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[tag_A])
+        form_data = {"tags": [tag_A.id, tag_B.id]}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user.id
+        assert action.offererId is None
+        assert action.venueId is None
+        assert action.extraData["modified_info"] == {"tags": {"old_info": None, "new_info": ["Ambassadeur B"]}}
+
+    def test_tag_public_account_action_history_remove_tag(self, authenticated_client, legit_user):
+        tag_A = users_factories.UserTagFactory(label="Ambassadeur A")
+        tag_B = users_factories.UserTagFactory(label="Ambassadeur B")
+        user = users_factories.UserFactory(tags=[tag_A, tag_B])
+        form_data = {"tags": [tag_B.id]}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user.id
+        assert action.offererId is None
+        assert action.venueId is None
+        assert action.extraData["modified_info"] == {"tags": {"old_info": ["Ambassadeur A"], "new_info": None}}

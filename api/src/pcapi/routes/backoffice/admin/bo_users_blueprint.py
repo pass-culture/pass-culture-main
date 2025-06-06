@@ -112,6 +112,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
             .joinedload(perm_models.BackOfficeUserProfile.roles)
             .joinedload(perm_models.Role.permissions),
             sa_orm.joinedload(users_models.User.deposits),
+            sa_orm.joinedload(users_models.User.tags),
         )
         .one_or_none()
     )

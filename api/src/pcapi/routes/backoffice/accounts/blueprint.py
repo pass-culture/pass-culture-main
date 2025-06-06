@@ -107,6 +107,49 @@ def _load_current_deposit_data(query: BaseQuery, join_needed: bool = True) -> Ba
     return query.options(sa_orm.contains_eager(users_models.User.deposits))
 
 
+@public_accounts_blueprint.route("<int:user_id>/tags", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
+def tag_public_account(user_id: int) -> utils.BackofficeResponse:
+    user = (
+        db.session.query(users_models.User)
+        .filter(users_models.User.id == user_id)
+        .options(
+            sa_orm.load_only(users_models.User.id),
+            sa_orm.joinedload(users_models.User.tags).load_only(users_models.UserTag.id, users_models.UserTag.label),
+        )
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
+    form = account_forms.TagAccountForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for(".get_public_account", user_id=user_id), code=303)
+
+    old_tags = {str(tag) for tag in user.tags}
+    new_tags = {str(tag) for tag in form.tags.data}
+    removed_tags = old_tags - new_tags
+    added_tags = new_tags - old_tags
+
+    user.tags = form.tags.data
+
+    if added_tags or removed_tags:
+        history_api.add_action(
+            history_models.ActionType.INFO_MODIFIED,
+            author=current_user,
+            user=user,
+            modified_info={"tags": {"old_info": sorted(removed_tags) or None, "new_info": sorted(added_tags) or None}},
+        )
+
+    db.session.add(user)
+    db.session.flush()
+
+    flash("Tags mis à jour avec succès", "success")
+
+    return redirect(url_for(".get_public_account", user_id=user_id, active_tab="history"), code=303)
+
+
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
 def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
@@ -306,6 +349,7 @@ def render_public_account_details(
             .load_only(users_models.User.firstName, users_models.User.lastName),
             sa_orm.joinedload(users_models.User.email_history),
             sa_orm.joinedload(users_models.User.gdprUserDataExtracts),
+            sa_orm.joinedload(users_models.User.tags),
         )
         .one_or_none()
     )
@@ -419,6 +463,10 @@ def render_public_account_details(
         key=lambda action: action["creationDate"],
         reverse=True,
     )
+
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
+        kwargs["tag_public_account_form"] = account_forms.TagAccountForm(tags=user.tags)
+        kwargs["tag_public_account_dst"] = url_for(".tag_public_account", user_id=user.id)
 
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
     return render_template(
