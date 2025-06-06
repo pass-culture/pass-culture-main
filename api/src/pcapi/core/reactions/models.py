@@ -53,7 +53,7 @@ def on_set_product_reaction(
     target: Reaction,
     value: ReactionTypeEnum,
     old_value: ReactionTypeEnum,
-    _initiator: sa_orm.AttributeEvent,
+    _initiator: sa_orm.AttributeEventToken,
 ) -> None:
     if target.productId is None:
         return
