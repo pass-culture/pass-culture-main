@@ -1,12 +1,9 @@
-import json
-import re
 from unittest.mock import patch
 
 import pytest
 from flask import url_for
 
 from pcapi.core.categories import subcategories
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -51,10 +48,10 @@ class GetProductDetailsTest(GetEndpointHelper):
             lastProvider=allocine_provider,
         )
 
-        offers_factories.OfferFactory.create(product=product, ean="1234567891234")
+        linked_offer = offers_factories.OfferFactory.create(product=product, ean="1234567891234")
 
         # offre non liées au produit
-        offers_factories.OfferFactory.create(ean="1234567891234")
+        unlinked_offer = offers_factories.OfferFactory.create(ean="1234567891234")
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -108,6 +105,16 @@ class GetProductDetailsTest(GetEndpointHelper):
         badges = html_parser.extract_badges(response.data)
         assert "• Compatible" in badges
 
+        product_offer = html_parser.extract_table_rows(response.data, table_id="offers-table")
+        assert product_offer[0]["ID"] == str(linked_offer.id)
+        assert product_offer[0]["Nom"] == linked_offer.name
+        assert product_offer[0]["Statut"] == "Épuisée"
+
+        product_unlinked_offer = html_parser.extract_table_rows(response.data, table_id="unlinked-offers-table")
+        assert product_unlinked_offer[0]["ID"] == str(unlinked_offer.id)
+        assert product_unlinked_offer[0]["Nom"] == unlinked_offer.name
+        assert product_unlinked_offer[0]["Statut"] == "Épuisée"
+
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product_without_ean(self, mock_get_by_ean13, authenticated_client):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
@@ -122,47 +129,6 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert not card_ean
 
         mock_get_by_ean13.assert_not_called()
-
-    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
-    def test_get_detail_product_check_offer_format(self, mock_get_by_ean13, authenticated_client):
-        product = offers_factories.ProductFactory.create(
-            description="Une offre pour tester",
-            ean="1234567891234",
-            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
-        )
-
-        offer = offers_factories.OfferFactory.create(
-            product=product, venue=offerers_factories.VenueFactory.create(name="Venue 1"), ean="1234567891234"
-        )
-        offers_factories.StockFactory.create(offer=offer, price=10)
-
-        # offre non liées au produit
-        unlinked_offer = offers_factories.OfferFactory.create(
-            venue=offerers_factories.VenueFactory.create(name="Venue 2"), ean="1234567891234"
-        )
-
-        url = url_for(self.endpoint, product_id=product.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-        scripts = soup.find_all("script")
-        for script in scripts:
-            if "offers = " in str(script):
-                offers_json = re.search(r"const (unlinked_offers|offers) = (\[\{.*?\}\]);", str(script))
-                if offers_json:
-                    offers = json.loads(offers_json.group(2))
-                    if offers_json.group(1) == "offers":
-                        assert offers[0]["id"] == offer.id
-                        assert offers[0]["name"] == offer.name
-                        assert offers[0]["venue_name"] == offer.venue.name
-                        assert offers[0]["status"] == "Publiée"
-                    elif offers_json.group(1) == "unlinked_offers":
-                        assert offers[0]["id"] == unlinked_offer.id
-                        assert offers[0]["name"] == unlinked_offer.name
-                        assert offers[0]["venue_name"] == unlinked_offer.venue.name
-                        assert offers[0]["status"] == "Épuisée"
 
 
 class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):

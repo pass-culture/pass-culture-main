@@ -56,6 +56,7 @@ JS_FILES = [
     Path("src/pcapi/static/backoffice/js/addons/pc-table-manager.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-submit-form-button.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-section-focus-onload.js"),
+    Path("src/pcapi/static/backoffice/js/addons/pc-table-paginator.js"),
 ]
 CSS_BUNDLE = Path("src/pcapi/static/backoffice/css/bundle.css")
 CSS_FILES = [

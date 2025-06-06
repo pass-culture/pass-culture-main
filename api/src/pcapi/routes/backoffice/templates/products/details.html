@@ -27,140 +27,110 @@
   {% endif %}
 {% endblock action_buttons %}
 {% block details_container %}
+  <!-- INFO -->
+  {# section info #}
+  {% call content_navbar("product-details") %}
+    {{ content_navbar_button('product', 'Détails', default=True) }}
+    {% if product.ean and titelive_data and titelive_data.oeuvre %}{{ content_navbar_button('titelive', 'Informations Titelive') }}{% endif %}
+    {{ content_navbar_button('linked-offers', 'Offres liées') }}
+    {% if unlinked_offers %}{{ content_navbar_button('unlinked-offers', 'Offres non liées') }}{% endif %}
+  {% endcall %}
   {% call details_content_wrapper("product-details") %}
-    <!-- INFO -->
-    {% call nav_section("info", "Détails du produit") %}
-      <div class="d-flex gap-1">
-        <div class="flex-grow-1">
-          {% if product.ean or product.extraData.visa or product.extraData.allocineId %}
-            <h5>Informations techniques</h5>
-            {% if product.ean %}
-              {% call description_detail_horizontal("EAN") %}
-                {{ product.ean }}
-                {{ clipboard.copy_to_clipboard(product.ean, "Copier") }}
-              {% endcall %}
-            {% endif %}
-            {% if product.extraData.visa %}
-              {% call description_detail_horizontal("Visa") %}
-                {{ product.extraData.visa }}
-                {{ clipboard.copy_to_clipboard(product.extraData.visa, "Copier") }}
-              {% endcall %}
-            {% endif %}
-            {% if product.extraData.allocineId %}
-              {% call description_detail_horizontal("Allocine ID") %}
-                {{ product.extraData.allocineId }}
-                {{ clipboard.copy_to_clipboard(product.extraData.allocineId, "Copier") }}
-              {% endcall %}
-            {% endif %}
-          {% endif %}
-          <h5>Informations artistiques</h5>
-          {% if product.extraData.author %}
-            {% call description_detail_horizontal("Auteur") %}
-              {{ product.extraData.author }}
-            {% endcall %}
-          {% endif %}
-          {% if product.extraData.editeur %}
-            {% call description_detail_horizontal("Éditeur") %}
-              {{ product.extraData.editeur }}
-            {% endcall %}
-          {% endif %}
-          {% if product.extraData.performer %}
-            {% call description_detail_horizontal("Interprète") %}
-              {{ product.extraData.performer }}
-            {% endcall %}
-          {% endif %}
-          {% if product.durationMinutes %}
-            {% call description_detail_horizontal("Durée") %}
-              {{ product.durationMinutes }} minutes
-            {% endcall %}
-          {% endif %}
-          {% if product.extraData.diffusionVersion %}
-            {% call description_detail_horizontal("Langue") %}
-              {{ product.extraData.diffusionVersion }}
-            {% endcall %}
-          {% endif %}
-          {% call description_detail_horizontal("Description") %}
-            {{ product.description | empty_string_if_null | nl2br }}
-          {% endcall %}
-        </div>
-        <div class="flex-shrink-1">
-          {% if product.images["recto"] %}
-            <figure class="figure">
-              <div class="d-flex justify-content-center align-items-center">
-                <object class="d-block offer-image"
-                        data="{{ product.images['recto'] }}"
-                        type="image/jpeg">
-                  <div class="d-flex bg-secondary-subtle justify-content-center align-items-center product-no-image">
-                    <i class="bi bi-file-image fs-2"
-                       data-bs-toggle="tooltip"
-                       data-bs-placement="top"
-                       data-bs-title="Image invalide"></i>
-                  </div>
-                </object>
-              </div>
-            </figure>
-          {% else %}
-            <div class="d-flex bg-secondary-subtle justify-content-center align-items-center product-no-image">
-              <i class="bi bi-file-image fs-2"
-                 data-bs-toggle="tooltip"
-                 data-bs-placement="top"
-                 data-bs-title="Pas d'image"></i>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    {% endcall %}
-    {# section info #}
-    <ul class="nav nav-tabs mb-3"
-        id="offersTab"
-        role="tablist">
-      {% if product.ean and titelive_data and titelive_data.oeuvre %}
-        <li class="nav-item"
-            role="presentation">
-          <button class="nav-link active"
-                  id="titelive-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#titelive-data"
-                  type="button"
-                  role="tab">Informations Titelive</button>
-        </li>
-      {% endif %}
-      <li class="nav-item"
-          role="presentation">
-        <button class="nav-link {% if not (product.ean and titelive_data and titelive_data.oeuvre) %}active{% endif %}"
-                id="linked-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#linked-offers"
-                type="button"
-                role="tab">Offres liées</button>
-      </li>
-      {% if unlinked_offers %}
-        <li class="nav-item"
-            role="presentation">
-          <button class="nav-link"
-                  id="unlinked-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#unlinked-offers"
-                  type="button"
-                  role="tab">Offres non liées</button>
-        </li>
-      {% endif %}
-    </ul>
     <div class="tab-content"
          id="offersTabContent">
+      <div class="tab-pane fade show active"
+           id="product-data"
+           role="tabpanel">
+        <div class="d-flex gap-1">
+          <div class="flex-grow-1">
+            {% if product.ean or product.extraData.visa or product.extraData.allocineId %}
+              <h5>Informations techniques</h5>
+              {% if product.ean %}
+                {% call description_detail_horizontal("EAN") %}
+                  {{ product.ean }}
+                  {{ clipboard.copy_to_clipboard(product.ean, "Copier") }}
+                {% endcall %}
+              {% endif %}
+              {% if product.extraData.visa %}
+                {% call description_detail_horizontal("Visa") %}
+                  {{ product.extraData.visa }}
+                  {{ clipboard.copy_to_clipboard(product.extraData.visa, "Copier") }}
+                {% endcall %}
+              {% endif %}
+              {% if product.extraData.allocineId %}
+                {% call description_detail_horizontal("Allocine ID") %}
+                  {{ product.extraData.allocineId }}
+                  {{ clipboard.copy_to_clipboard(product.extraData.allocineId, "Copier") }}
+                {% endcall %}
+              {% endif %}
+            {% endif %}
+            <h5>Informations artistiques</h5>
+            {% if product.extraData.author %}
+              {% call description_detail_horizontal("Auteur") %}
+                {{ product.extraData.author }}
+              {% endcall %}
+            {% endif %}
+            {% if product.extraData.editeur %}
+              {% call description_detail_horizontal("Éditeur") %}
+                {{ product.extraData.editeur }}
+              {% endcall %}
+            {% endif %}
+            {% if product.extraData.performer %}
+              {% call description_detail_horizontal("Interprète") %}
+                {{ product.extraData.performer }}
+              {% endcall %}
+            {% endif %}
+            {% if product.durationMinutes %}
+              {% call description_detail_horizontal("Durée") %}
+                {{ product.durationMinutes }} minutes
+              {% endcall %}
+            {% endif %}
+            {% if product.extraData.diffusionVersion %}
+              {% call description_detail_horizontal("Langue") %}
+                {{ product.extraData.diffusionVersion }}
+              {% endcall %}
+            {% endif %}
+            {% call description_detail_horizontal("Description") %}
+              {{ product.description | empty_string_if_null | nl2br }}
+            {% endcall %}
+          </div>
+          <div class="flex-shrink-1">
+            {% if product.images["recto"] %}
+              <figure class="figure">
+                <div class="d-flex justify-content-center align-items-center">
+                  <object class="d-block offer-image"
+                          data="{{ product.images['recto'] }}"
+                          type="image/jpeg">
+                    <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+                      <i class="bi bi-file-image fs-2"
+                         data-bs-toggle="tooltip"
+                         data-bs-placement="top"
+                         data-bs-title="Image invalide"></i>
+                    </div>
+                  </object>
+                </div>
+              </figure>
+            {% else %}
+              <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+                <i class="bi bi-file-image fs-2"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   data-bs-title="Pas d'image"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
       {% if product.ean and titelive_data and titelive_data.oeuvre %}
-        <div class="tab-pane fade show active"
+        <div class="tab-pane fade"
              id="titelive-data"
              role="tabpanel">{{ render_titelive_information(titelive_data, ineligibility_reasons, product_whitelist) }}</div>
       {% endif %}
-      <div class="tab-pane fade {% if not (product.ean and titelive_data and titelive_data.oeuvre) %}show active{% endif %}"
-           id="linked-offers"
+      <div class="tab-pane fade"
+           id="linked-offers-data"
            role="tabpanel">
-        <p class="lead num-results-linked-offer">
-          {{ product_offers | length }} résultat{{ product_offers | length |
-          pluralize }}
-        </p>
-        <div class="mb-3 d-flex gap-2">
+        <div id="linked-offer-search-controls"
+             class="mb-3 d-flex gap-2">
           <input type="text"
                  class="form-control"
                  id="search-linked-offers"
@@ -170,13 +140,17 @@
             <option value="all">Filtrer sur tous les champs</option>
             <option value="id">ID</option>
             <option value="name">Nom</option>
-            <option value="venue_name">Partenaire culturel</option>
+            <option value="venue">Partenaire culturel</option>
             <option value="status">Statut</option>
             <option value="dateCreated">Date de création</option>
           </select>
         </div>
         <table id="offers-table"
-               class="table table-borderless table-hover">
+               class="table table-borderless table-hover pc-table-paginator"
+               data-pc-items-per-page="20"
+               data-pc-max-visible-pages="20"
+               data-pc-show-total-count="true"
+               data-pc-search-container-id="linked-offer-search-controls">
           <thead class="table-light">
             <tr class="table-secondary fs-7">
               <th>ID</th>
@@ -187,206 +161,24 @@
             </tr>
           </thead>
           <tbody>
+            {% for offer in product.offers | sort(attribute="id", reverse=True) %}
+              <tr>
+                <td data-search-key="id">{{ links.build_offer_details_link(offer) }}</td>
+                <td data-search-key="name">{{ offer.name }}</td>
+                <td data-search-key="venue">{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
+                <td data-search-key="status">{{ offer.status | format_offer_status }}</td>
+                <td data-search-key="dateCreated">{{ offer.dateCreated | format_date_time }}</td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
-        <div id="linked-offers-pagination"
-             class="pagination"></div>
-        <style>
-          .pagination {
-            margin-top: 20px;
-          }
-
-          .pagination a.page-link {
-            margin: 0 3px;
-            text-decoration: none;
-            padding: 4px 8px;
-            border: none;
-            background: none;
-            font-weight: normal;
-            cursor: pointer;
-          }
-
-          .pagination a.page-link.active {
-            font-weight: bold;
-            color: black;
-            text-decoration: underline;
-          }
-
-          .pagination button {
-            margin-left: 10px;
-            padding: 4px 10px;
-            cursor: pointer;
-          }
-        </style>
-        <script>
-          function initPaginatedTable({
-            data,
-            tableSelector,
-            paginationSelector,
-            searchInputSelector = null,
-            filterSelectSelector = null,
-            itemsPerPage = 20,
-            rowRenderer,
-            resultsCountSelector
-          }) {
-            let currentPage = 1;
-            let filteredData = [...data];
-
-            function displayPage(page) {
-              const tbody = document.querySelector(`${tableSelector} tbody`);
-              const paginationDiv = document.querySelector(paginationSelector);
-              const resultsCountElement = document.querySelector(resultsCountSelector);
-              if (!tbody || !paginationDiv || !resultsCountElement) return;
-
-              tbody.innerHTML = '';
-              paginationDiv.innerHTML = '';
-
-              resultsCountElement.innerHTML = `${filteredData.length} résultat${filteredData.length > 1 ? 's' : ''}`;
-              if (filteredData.length === 0) return;
-
-              const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-              if (page < 1 || page > totalPages) return;
-
-              currentPage = page;
-              const startIndex = (page - 1) * itemsPerPage;
-              const endIndex = startIndex + itemsPerPage;
-              const pageData = filteredData.slice(startIndex, endIndex);
-
-              pageData.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = rowRenderer(item);
-                tbody.appendChild(row);
-              });
-
-              updatePagination();
-            }
-
-            function updatePagination() {
-              const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-              const paginationDiv = document.querySelector(paginationSelector);
-              if (!paginationDiv) return;
-
-              if (totalPages <= 1) {
-                paginationDiv.innerHTML = '';
-                return;
-              }
-
-              paginationDiv.innerHTML = '';
-
-              const maxPagesToShow = 20;
-              let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-              let endPage = startPage + maxPagesToShow - 1;
-
-              if (endPage > totalPages) {
-                endPage = totalPages;
-                startPage = Math.max(1, endPage - maxPagesToShow + 1);
-              }
-
-              if (currentPage > 1) {
-                const prevBtn = document.createElement('a');
-                prevBtn.textContent = 'Précédent';
-                prevBtn.classList.add('pagination-text-link');
-                prevBtn.classList.add('mt-1');
-                prevBtn.onclick = () => displayPage(currentPage - 1);
-                paginationDiv.appendChild(prevBtn);
-              }
-
-              for (let i = startPage; i <= endPage; i++) {
-                const pageLink = document.createElement('a');
-                pageLink.textContent = i;
-                pageLink.classList.add('page-link');
-                if (i === currentPage) pageLink.classList.add('active');
-                pageLink.addEventListener('click', e => {
-                  e.preventDefault();
-                  displayPage(i);
-                });
-                paginationDiv.appendChild(pageLink);
-              }
-
-              if (currentPage < totalPages) {
-                const nextBtn = document.createElement('a');
-                nextBtn.textContent = 'Suivant';
-                nextBtn.classList.add('pagination-text-link');
-                nextBtn.classList.add('mt-1');
-                nextBtn.onclick = () => displayPage(currentPage + 1);
-                paginationDiv.appendChild(nextBtn);
-              }
-            }
-
-            const searchableFields = ['id', 'name', 'venue_name', 'status', 'dateCreated'];
-
-            function handleSearch(query) {
-              const filter = document.querySelector(filterSelectSelector).value;
-              const lowerQuery = query.toLowerCase();
-
-              filteredData = data.filter(item => {
-                if (filter === 'all') {
-                  return searchableFields.some(field => {
-                    return item[field] && item[field].toString().toLowerCase().includes(lowerQuery);
-                  });
-                } else {
-                  return item[filter] && item[filter].toString().toLowerCase().includes(lowerQuery);
-                }
-              });
-
-              displayPage(1);
-            }
-
-            if (searchInputSelector) {
-              const input = document.querySelector(searchInputSelector);
-              if (input) {
-                input.addEventListener('input', () => {
-                  handleSearch(input.value);
-                });
-              }
-            }
-
-            if (filterSelectSelector) {
-              const filterSelect = document.querySelector(filterSelectSelector);
-              if (filterSelect) {
-                filterSelect.addEventListener('change', () => {
-                  handleSearch(document.querySelector(searchInputSelector).value);
-                });
-              }
-            }
-
-            displayPage(1);
-          }
-        </script>
-        {# djlint:off #}
-            <script>
-                const offers = {{ product_offers | tojson }};
-
-                initPaginatedTable({
-                  data: offers,
-                  tableSelector: '#offers-table',
-                  paginationSelector: '#linked-offers-pagination',
-                  searchInputSelector: '#search-linked-offers',
-                  filterSelectSelector: '#filter-select-linked-offer',
-                  itemsPerPage: 20,
-                  rowRenderer: offer => `
-                        <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
-                        <td>${offer.name}</td>
-                        <td>
-                          <a href="/pro/venue/${offer.venue_id}" class="link-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Voir le partenaire culturel" target="_top">${offer.venue_name}</a>
-                        </td>
-                        <td>${offer.status}</td>
-                        <td>${offer.dateCreated}</td>
-                      `,
-                  resultsCountSelector: '.num-results-linked-offer'
-                });
-</script>
-        {# djlint:on #}
       </div>
       {% if unlinked_offers %}
         <div class="tab-pane fade"
-             id="unlinked-offers"
+             id="unlinked-offers-data"
              role="tabpanel">
-          <p class="lead num-results-unlinked-offer">
-            {{ unlinked_offers | length }}
-            résultat{{ unlinked_offers | length | pluralize }}
-          </p>
-          <div class="mb-3 d-flex gap-2">
+          <div id="unlinked-offer-search-controls"
+               class="mb-3 d-flex gap-2">
             <input type="text"
                    class="form-control"
                    id="search-unlinked-offers"
@@ -396,7 +188,7 @@
               <option value="all">Filtrer sur tous les champs</option>
               <option value="id">ID</option>
               <option value="name">Nom</option>
-              <option value="venue_name">Partenaire culturel</option>
+              <option value="venue">Partenaire culturel</option>
               <option value="status">Statut</option>
               <option value="dateCreated">Date de création</option>
             </select>
@@ -409,7 +201,7 @@
                  data-input-ids-name="object_ids">
               <button disabled
                       type="button"
-                      class="btn btn-outline-primary"
+                      class="btn btn-outline-primary mb-2"
                       data-use-confirmation-modal="true"
                       data-mode="fetch"
                       data-fetch-url="{{ url_for('backoffice_web.product.confirm_link_offers_forms', product_id=product.id) }}"
@@ -417,8 +209,13 @@
             </div>
           {% endif %}
           <table id="unlinked-offers-table"
-                 class="mt-3 table table-borderless table-hover"
-                 data-table-multi-select-id="table-link-offer-to-product-validation">
+                 class="mt-3 table table-borderless table-hover pc-table-paginator"
+                 data-pc-items-per-page="20"
+                 data-pc-max-visible-pages="20"
+                 data-pc-show-total-count="true"
+                 data-pc-search-container-id="unlinked-offer-search-controls"
+                 data-table-multi-select-id="table-link-offer-to-product-validation"
+                 data-table-multi-select-ignore-hidden-rows="true">
             <thead class="table-light">
               <tr class="table-secondary fs-7">
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
@@ -436,109 +233,95 @@
               </tr>
             </thead>
             <tbody id="offres-non-liees">
+              {% for offer in unlinked_offers | sort(attribute="id", reverse=True) %}
+                <tr>
+                  <td>
+                    <input type="checkbox"
+                           class="form-check-input"
+                           name="pc-table-multi-select-check-{{ offer.id }}"
+                           data-id="{{ offer.id }}" />
+                  </td>
+                  <td data-search-key="id">{{ links.build_offer_details_link(offer) }}</td>
+                  <td data-search-key="name">{{ offer.name }}</td>
+                  <td data-search-key="venue">{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
+                  <td data-search-key="status">{{ offer.status | format_offer_status }}</td>
+                  <td data-search-key="dateCreated">{{ offer.dateCreated | format_date_time }}</td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
-          <div id="unlinked-offers-pagination"
-               class="pagination"></div>
           {% if has_permission("PRO_FRAUD_ACTIONS") %}
             {{ build_lazy_modal(url_for("backoffice_web.product.confirm_link_offers_forms", product_id=product.id) ,
             "batch-link-to-product-modal", "true") }}
           {% endif %}
-          {# djlint:off #}
-            <script>
-                const unlinked_offers = {{ unlinked_offers | tojson }};
-                initPaginatedTable({
-                  data: unlinked_offers,
-                  tableSelector: '#unlinked-offers-table',
-                  paginationSelector: '#unlinked-offers-pagination',
-                  searchInputSelector: '#search-unlinked-offers',
-                  filterSelectSelector: '#filter-select-unlinked-offer',
-                  itemsPerPage: 20,
-                  rowRenderer: offer => `
-                      <td>
-                        <input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-${offer.id}" data-id="${offer.id}" />
-                      </td>
-                      <td><a href="/pro/offer/${offer.id}" class="link-primary">${offer.id}</a></td>
-                      <td>${offer.name}</td>
-                      <td>
-                        <a href="/pro/venue/${offer.venue_id}" class="link-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Voir le partenaire culturel" target="_top">${offer.venue_name}</a>
-                      </td>
-                      <td>${offer.status}</td>
-                      <td>${offer.dateCreated}</td>
-                    `,
-                    resultsCountSelector: '.num-results-unlinked-offer'
-                });
-</script>
-            {# djlint:off #}
-
         </div>
-        {% endif %}
+      {% endif %}
     </div>
+  {% endcall %}
+{% endblock details_container %}
+{% block side_column %}
+  <!-- BUTTONS -->
+  <div>
+    {% call description_detail_vertical("Product ID") %}
+      {{ product.id }}
+      {{ clipboard.copy_to_clipboard(product.id, "Copier") }}
     {% endcall %}
-    {% endblock details_container %}
-    {% block side_column %}
-    <!-- BUTTONS -->
-    <div>
-        {% call description_detail_vertical("Product ID") %}
-        {{ product.id }}
-        {{ clipboard.copy_to_clipboard(product.id, "Copier") }}
-        {% endcall %}
-        {% call description_detail_vertical("Catégorie") %}
-        {{ product.subcategoryId | format_offer_category }}
-        {% endcall %}
-        {% call description_detail_vertical("Sous-catégorie") %}
-        {{ product.subcategoryId | format_offer_subcategory }}
-        {% endcall %}
-        {% set extra_data = product.extraData %}
-        {% if extra_data.gtl_id %}
-        {% call description_detail_vertical("Type de musique") %}
+    {% call description_detail_vertical("Catégorie") %}
+      {{ product.subcategoryId | format_offer_category }}
+    {% endcall %}
+    {% call description_detail_vertical("Sous-catégorie") %}
+      {{ product.subcategoryId | format_offer_subcategory }}
+    {% endcall %}
+    {% set extra_data = product.extraData %}
+    {% if extra_data.gtl_id %}
+      {% call description_detail_vertical("Type de musique") %}
         {{ extra_data.gtl_id | format_music_gtl_id }}
-        {% endcall %}
-        {% endif %}
-        {% if extra_data.showType or extra_data.showSubType %}
-        {% call description_detail_vertical("Type de spectacle") %}
+      {% endcall %}
+    {% endif %}
+    {% if extra_data.showType or extra_data.showSubType %}
+      {% call description_detail_vertical("Type de spectacle") %}
         {{ extra_data.showType | format_show_type }} - {{ extra_data.showSubType | format_show_subtype }}
-        {% endcall %}
-        {% endif %}
-        {% if extra_data.genres %}
-        {% call description_detail_vertical("Genres") %}
+      {% endcall %}
+    {% endif %}
+    {% if extra_data.genres %}
+      {% call description_detail_vertical("Genres") %}
         {{ extra_data.genres | format_string_list }}
-        {% endcall %}
-        {% endif %}
-        <hr/>
-        {% call description_detail_vertical("Nombre d'offres associées") %}
-        {{ product_offers | length }}
-        {% endcall %}
-        {% call description_detail_vertical("Approuvées actives") %}
-        {{ approved_active_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("Approuvées inactives") %}
-        {{ approved_inactive_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("En attente") %}
-        {{ pending_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("Rejetées") %}
-        {{ rejected_offers_count }}
-        {% endcall %}
-        {% call description_detail_vertical("Offres non liées") %}
-        {{ unlinked_offers | length }}
-        {% endcall %}
-    </div>
+      {% endcall %}
+    {% endif %}
+    <hr />
+    {% call description_detail_vertical("Nombre d'offres associées") %}
+      {{ product.offers | length }}
+    {% endcall %}
+    {% call description_detail_vertical("Approuvées actives") %}
+      {{ approved_active_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("Approuvées inactives") %}
+      {{ approved_inactive_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("En attente") %}
+      {{ pending_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("Rejetées") %}
+      {{ rejected_offers_count }}
+    {% endcall %}
+    {% call description_detail_vertical("Offres non liées") %}
+      {{ unlinked_offers | length }}
+    {% endcall %}
+  </div>
 </div>
 {% endblock side_column %}
 {% block extra_main_content %}
-<!-- HIDDEN FORMS/AND MODALS -->
-{% if action.SYNCHRO_TITELIVE in allowed_actions %}
-{{ build_lazy_modal(url_for('backoffice_web.product.get_product_synchronize_with_titelive_form', product_id=product.id)
-, "synchro-product-modal-" + product.id|string) }}
-{% endif %}
-{% if action.WHITELIST in allowed_actions %}
-{{ build_lazy_modal(url_for('backoffice_web.product.get_product_whitelist_form', product_id=product.id) ,
-"whitelist-product-modal-" + product.id|string) }}
-{% endif %}
-{% if action.BLACKLIST in allowed_actions %}
-{{ build_lazy_modal(url_for('backoffice_web.product.get_product_blacklist_form', product_id=product.id) ,
-"blacklist-product-modal-" + product.id|string) }}
-{% endif %}
+  <!-- HIDDEN FORMS/AND MODALS -->
+  {% if action.SYNCHRO_TITELIVE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.product.get_product_synchronize_with_titelive_form', product_id=product.id) 
+    , "synchro-product-modal-" + product.id|string) }}
+  {% endif %}
+  {% if action.WHITELIST in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.product.get_product_whitelist_form', product_id=product.id) ,
+    "whitelist-product-modal-" + product.id|string) }}
+  {% endif %}
+  {% if action.BLACKLIST in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.product.get_product_blacklist_form', product_id=product.id) ,
+    "blacklist-product-modal-" + product.id|string) }}
+  {% endif %}
 {% endblock extra_main_content %}
