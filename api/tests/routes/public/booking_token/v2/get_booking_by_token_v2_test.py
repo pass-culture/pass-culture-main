@@ -20,15 +20,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
 class Returns200Test:
     num_queries = 1  # select user
-    num_queries += 1  # select booking
+    num_queries += 1  # select booking, stock, offer, venue, address
     num_queries += 1  # check user has rights on offerer
     num_queries += 1  # check if a pricing processed or invoiced exists for this booking
-    num_queries += 1  # select stock
-    num_queries += 1  # select offer
     num_queries += 1  # select user
-    num_queries += 1  # select venue
-    num_queries += 1  # select offer offererAddress
-    num_queries += 1  # select address
 
     def test_when_user_has_rights_and_regular_offer(self, client):
         past = datetime.utcnow() - timedelta(days=2)
@@ -113,14 +108,9 @@ class Returns200Test:
 
 class NonStandardGetTest:
     num_queries = 1  # select api_key
-    num_queries += 1  # select booking
+    num_queries += 1  # select booking, stock, offer, venue, address
     num_queries += 1  # check if a pricing processed or invoiced exists for this booking
-    num_queries += 1  # select stock
-    num_queries += 1  # select offer
     num_queries += 1  # select user
-    num_queries += 1  # select venue
-    num_queries += 1  # select offer offererAddress
-    num_queries += 1  # select address
 
     def test_non_standard_get_on_token_endpoint(self, client):
         # This is a test following the incident caused by a check on the JSON sent by API user (PR #12928 introduced the bug, PR #13062 fixed it)
@@ -194,13 +184,9 @@ class Returns403Test:
 
         url = f"/v2/bookings/token/{booking.token}"
         num_queries = 1  # Select user
-        num_queries += 1  # Select booking
+        num_queries += 1  # select booking, stock, offer, venue, address
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
-        num_queries += 1  # select stock
-        num_queries += 1  # select venue
-        num_queries += 1  # select offer offererAddress
-        num_queries += 1  # select address
         client = client.with_basic_auth(pro_user.email)
         with testing.assert_num_queries(num_queries):
             response = client.get(url)
