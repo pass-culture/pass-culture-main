@@ -1524,6 +1524,10 @@ MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS = {
     subcategory.id for subcategory in [SUPPORT_PHYSIQUE_MUSIQUE_CD, SUPPORT_PHYSIQUE_MUSIQUE_VINYLE]
 }
 
+HIDEABLE_QRCODE_SUBCATEGORIES = [CONCERT.id, FESTIVAL_MUSIQUE.id]
+
+NUMBER_SECONDS_HIDE_QR_CODE = 3600 * 24 * 2
+
 
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)

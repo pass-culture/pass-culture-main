@@ -2267,3 +2267,25 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
 
         assert app.redis_client.llen("api:external_bookings:barcodes") == 2
         assert stock.quantity == 26
+
+
+@pytest.mark.parametrize(
+    "is_digital,is_external,subcategory_id,expected",
+    (
+        (True, False, subcategories.LIVESTREAM_MUSIQUE.id, False),
+        (False, False, subcategories.SEANCE_CINE.id, True),
+        (False, True, subcategories.SEANCE_CINE.id, False),
+        (False, False, subcategories.CONCERT.id, False),
+        (False, True, subcategories.CONCERT.id, False),
+        (False, False, subcategories.ATELIER_PRATIQUE_ART.id, False),
+        (False, True, subcategories.ATELIER_PRATIQUE_ART.id, False),
+        (False, False, subcategories.LIVRE_PAPIER.id, True),
+    ),
+)
+@pytest.mark.usefixtures("clean_database")
+def test_voucher_is_displayed(is_digital, is_external, subcategory_id, expected):
+    offer = offers_factories.OfferFactory(subcategoryId=subcategory_id)
+    if is_digital:
+        offer.url = "example.com"
+
+    assert api.is_voucher_displayed(offer, is_external) is expected

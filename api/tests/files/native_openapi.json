@@ -125,6 +125,25 @@
                 "title": "AchievementsResponse",
                 "type": "array"
             },
+            "ActivationCodeResponse": {
+                "properties": {
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "expirationDate": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Expirationdate",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code"
+                ],
+                "title": "ActivationCodeResponse",
+                "type": "object"
+            },
             "ActivityIdEnum": {
                 "description": "An enumeration.",
                 "enum": [
@@ -493,6 +512,17 @@
                 "title": "BookingOfferExtraData",
                 "type": "object"
             },
+            "BookingOfferExtraDataV2": {
+                "properties": {
+                    "ean": {
+                        "nullable": true,
+                        "title": "Ean",
+                        "type": "string"
+                    }
+                },
+                "title": "BookingOfferExtraDataV2",
+                "type": "object"
+            },
             "BookingOfferResponse": {
                 "properties": {
                     "address": {
@@ -621,6 +651,116 @@
                 "title": "BookingOfferResponseAddress",
                 "type": "object"
             },
+            "BookingOfferResponseAddressV2": {
+                "properties": {
+                    "city": {
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "coordinates": {
+                        "$ref": "#/components/schemas/Coordinates"
+                    },
+                    "label": {
+                        "nullable": true,
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "postalCode": {
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "nullable": true,
+                        "title": "Street",
+                        "type": "string"
+                    },
+                    "timezone": {
+                        "title": "Timezone",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "postalCode",
+                    "city",
+                    "coordinates",
+                    "timezone"
+                ],
+                "title": "BookingOfferResponseAddressV2",
+                "type": "object"
+            },
+            "BookingOfferResponseV2": {
+                "properties": {
+                    "address": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BookingOfferResponseAddressV2"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "BookingOfferResponseAddressV2"
+                    },
+                    "bookingContact": {
+                        "nullable": true,
+                        "title": "Bookingcontact",
+                        "type": "string"
+                    },
+                    "extraData": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BookingOfferExtraDataV2"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "BookingOfferExtraDataV2"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferImageResponse"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "OfferImageResponse"
+                    },
+                    "isDigital": {
+                        "title": "Isdigital",
+                        "type": "boolean"
+                    },
+                    "isPermanent": {
+                        "title": "Ispermanent",
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "subcategoryId": {
+                        "$ref": "#/components/schemas/SubcategoryIdEnum"
+                    },
+                    "url": {
+                        "nullable": true,
+                        "title": "Url",
+                        "type": "string"
+                    },
+                    "venue": {
+                        "$ref": "#/components/schemas/BookingVenueResponseV2"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "isDigital",
+                    "isPermanent",
+                    "subcategoryId",
+                    "venue"
+                ],
+                "title": "BookingOfferResponseV2",
+                "type": "object"
+            },
             "BookingReponse": {
                 "properties": {
                     "activationCode": {
@@ -736,6 +876,103 @@
                 "title": "BookingReponse",
                 "type": "object"
             },
+            "BookingResponse": {
+                "properties": {
+                    "canReact": {
+                        "title": "Canreact",
+                        "type": "boolean"
+                    },
+                    "cancellationDate": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Cancellationdate",
+                        "type": "string"
+                    },
+                    "cancellationReason": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BookingCancellationReasons"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "completedUrl": {
+                        "nullable": true,
+                        "title": "Completedurl",
+                        "type": "string"
+                    },
+                    "confirmationDate": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Confirmationdate",
+                        "type": "string"
+                    },
+                    "dateCreated": {
+                        "format": "date-time",
+                        "title": "Datecreated",
+                        "type": "string"
+                    },
+                    "dateUsed": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Dateused",
+                        "type": "string"
+                    },
+                    "enablePopUpReaction": {
+                        "title": "Enablepopupreaction",
+                        "type": "boolean"
+                    },
+                    "expirationDate": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Expirationdate",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "quantity": {
+                        "title": "Quantity",
+                        "type": "integer"
+                    },
+                    "stock": {
+                        "$ref": "#/components/schemas/BookingStockResponseV2"
+                    },
+                    "ticket": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TicketResponse"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "TicketResponse"
+                    },
+                    "totalAmount": {
+                        "title": "Totalamount",
+                        "type": "integer"
+                    },
+                    "userReaction": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ReactionTypeEnum"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "dateCreated",
+                    "quantity",
+                    "stock",
+                    "totalAmount",
+                    "enablePopUpReaction",
+                    "canReact"
+                ],
+                "title": "BookingResponse",
+                "type": "object"
+            },
             "BookingStockResponse": {
                 "properties": {
                     "beginningDatetime": {
@@ -777,6 +1014,47 @@
                 "title": "BookingStockResponse",
                 "type": "object"
             },
+            "BookingStockResponseV2": {
+                "properties": {
+                    "beginningDatetime": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Beginningdatetime",
+                        "type": "string"
+                    },
+                    "features": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Features",
+                        "type": "array"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "offer": {
+                        "$ref": "#/components/schemas/BookingOfferResponseV2"
+                    },
+                    "price": {
+                        "title": "Price",
+                        "type": "integer"
+                    },
+                    "priceCategoryLabel": {
+                        "nullable": true,
+                        "title": "Pricecategorylabel",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "features",
+                    "offer",
+                    "price"
+                ],
+                "title": "BookingStockResponseV2",
+                "type": "object"
+            },
             "BookingVenueResponse": {
                 "properties": {
                     "bannerUrl": {
@@ -815,6 +1093,44 @@
                 "title": "BookingVenueResponse",
                 "type": "object"
             },
+            "BookingVenueResponseV2": {
+                "properties": {
+                    "bannerUrl": {
+                        "nullable": true,
+                        "title": "Bannerurl",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "isOpenToPublic": {
+                        "title": "Isopentopublic",
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "publicName": {
+                        "nullable": true,
+                        "title": "Publicname",
+                        "type": "string"
+                    },
+                    "timezone": {
+                        "title": "Timezone",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "timezone",
+                    "isOpenToPublic"
+                ],
+                "title": "BookingVenueResponseV2",
+                "type": "object"
+            },
             "BookingsResponse": {
                 "properties": {
                     "ended_bookings": {
@@ -842,6 +1158,35 @@
                     "hasBookingsAfter18"
                 ],
                 "title": "BookingsResponse",
+                "type": "object"
+            },
+            "BookingsResponseV2": {
+                "properties": {
+                    "endedBookings": {
+                        "items": {
+                            "$ref": "#/components/schemas/BookingResponse"
+                        },
+                        "title": "Endedbookings",
+                        "type": "array"
+                    },
+                    "hasBookingsAfter18": {
+                        "title": "Hasbookingsafter18",
+                        "type": "boolean"
+                    },
+                    "ongoingBookings": {
+                        "items": {
+                            "$ref": "#/components/schemas/BookingResponse"
+                        },
+                        "title": "Ongoingbookings",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "endedBookings",
+                    "ongoingBookings",
+                    "hasBookingsAfter18"
+                ],
+                "title": "BookingsResponseV2",
                 "type": "object"
             },
             "CallToActionIcon": {
@@ -1459,6 +1804,19 @@
                 ],
                 "title": "EmailHistoryEventTypeEnum"
             },
+            "EmailResponse": {
+                "properties": {
+                    "hasTicketEmailBeenSent": {
+                        "title": "Hasticketemailbeensent",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "hasTicketEmailBeenSent"
+                ],
+                "title": "EmailResponse",
+                "type": "object"
+            },
             "EmailUpdateStatusResponse": {
                 "properties": {
                     "expired": {
@@ -1602,6 +1960,24 @@
                 "title": "ExternalAccessibilityDataModel",
                 "type": "object"
             },
+            "ExternalBookingDataResponseV2": {
+                "properties": {
+                    "barcode": {
+                        "title": "Barcode",
+                        "type": "string"
+                    },
+                    "seat": {
+                        "nullable": true,
+                        "title": "Seat",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "barcode"
+                ],
+                "title": "ExternalBookingDataResponseV2",
+                "type": "object"
+            },
             "ExternalBookingResponse": {
                 "properties": {
                     "barcode": {
@@ -1618,6 +1994,20 @@
                     "barcode"
                 ],
                 "title": "ExternalBookingResponse",
+                "type": "object"
+            },
+            "ExternalBookingResponseV2": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExternalBookingDataResponseV2"
+                        },
+                        "nullable": true,
+                        "title": "Data",
+                        "type": "array"
+                    }
+                },
+                "title": "ExternalBookingResponseV2",
                 "type": "object"
             },
             "FavoriteMediationResponse": {
@@ -4310,6 +4700,79 @@
                 "title": "SuspendAccountForSuspiciousLoginRequest",
                 "type": "object"
             },
+            "TicketResponse": {
+                "properties": {
+                    "activationCode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ActivationCodeResponse"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "ActivationCodeResponse"
+                    },
+                    "email": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/EmailResponse"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "EmailResponse"
+                    },
+                    "externalBooking": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ExternalBookingResponseV2"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "ExternalBookingResponseV2"
+                    },
+                    "noTicket": {
+                        "title": "Noticket",
+                        "type": "boolean"
+                    },
+                    "token": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TokenResponse"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "TokenResponse"
+                    },
+                    "voucher": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/VoucherResponse"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "VoucherResponse"
+                    },
+                    "withdrawal": {
+                        "$ref": "#/components/schemas/WithdrawalResponse"
+                    }
+                },
+                "required": [
+                    "withdrawal",
+                    "noTicket"
+                ],
+                "title": "TicketResponse",
+                "type": "object"
+            },
+            "TokenResponse": {
+                "properties": {
+                    "data": {
+                        "nullable": true,
+                        "title": "Data",
+                        "type": "string"
+                    }
+                },
+                "title": "TokenResponse",
+                "type": "object"
+            },
             "TrustedDevice": {
                 "properties": {
                     "deviceId": {
@@ -4971,6 +5434,41 @@
                     }
                 },
                 "title": "VisualDisabilityModel",
+                "type": "object"
+            },
+            "VoucherResponse": {
+                "properties": {
+                    "data": {
+                        "nullable": true,
+                        "title": "Data",
+                        "type": "string"
+                    }
+                },
+                "title": "VoucherResponse",
+                "type": "object"
+            },
+            "WithdrawalResponse": {
+                "properties": {
+                    "delay": {
+                        "nullable": true,
+                        "title": "Delay",
+                        "type": "integer"
+                    },
+                    "details": {
+                        "nullable": true,
+                        "title": "Details",
+                        "type": "string"
+                    },
+                    "type": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/WithdrawalTypeEnum"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "title": "WithdrawalResponse",
                 "type": "object"
             },
             "WithdrawalTypeEnum": {
@@ -7931,6 +8429,45 @@
                     }
                 },
                 "summary": "get_venue <GET>",
+                "tags": []
+            }
+        },
+        "/native/v2/bookings": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_bookings",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookingsResponseV2"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_bookings <GET>",
                 "tags": []
             }
         },
