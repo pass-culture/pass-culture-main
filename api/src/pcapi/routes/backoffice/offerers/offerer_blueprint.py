@@ -31,6 +31,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -43,6 +44,7 @@ from pcapi.routes.backoffice.bookings import forms as bookings_forms
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
@@ -1027,9 +1029,99 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
 
     return render_template(
         "offerer/get/details/managed_venues.html",
+        offerer_id=offerer_id,
         rows=rows,
         connect_as=connect_as,
     )
+
+
+def _render_get_create_venue_without_siret_form(form: pro_forms.CreateVenueWithoutSIRETForm, offerer_id: int) -> str:
+    return render_template(
+        "components/turbo/modal_form.html",
+        information="Ce formulaire permet de créer un nouveau partenaire culturel rattaché au SIRET choisi.",
+        form=form,
+        dst=url_for("backoffice_web.offerer.create_venue", offerer_id=offerer_id),
+        div_id="create-venue-modal",  # must be consistent with parameter passed to build_lazy_modal
+        title="Créer un partenaire culturel sans SIRET",
+        button_text="Créer le partenaire culturel",
+        data_turbo=True,
+    )
+
+
+@offerer_blueprint.route("/create-without-siret", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
+def get_create_venue_without_siret_form(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        db.session.query(offerers_models.Offerer)
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
+        .filter(offerers_models.Offerer.id == offerer_id)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
+    form = pro_forms.CreateVenueWithoutSIRETForm(offerer)
+    return _render_get_create_venue_without_siret_form(form, offerer_id)
+
+
+@offerer_blueprint.route("/create-without-siret", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
+def create_venue(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        db.session.query(offerers_models.Offerer)
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
+        .filter(offerers_models.Offerer.id == offerer_id)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
+    form = pro_forms.CreateVenueWithoutSIRETForm(offerer)
+    if not form.validate():
+        mark_transaction_as_invalid()
+        return _render_get_create_venue_without_siret_form(form, offerer_id), 400
+
+    attachment_venue = offerers_api.get_venue_by_id(form.attachement_venue.data)
+    assert attachment_venue.offererAddress
+
+    address_body_model = offerers_schemas.AddressBodyModel(
+        street=offerers_schemas.VenueAddress(attachment_venue.offererAddress.address.street),
+        city=offerers_schemas.VenueCity(attachment_venue.offererAddress.address.city),
+        postalCode=offerers_schemas.VenuePostalCode(attachment_venue.offererAddress.address.postalCode),
+        inseeCode=offerers_schemas.VenueInseeCode(attachment_venue.offererAddress.address.inseeCode),
+        latitude=float(attachment_venue.offererAddress.address.latitude),
+        longitude=float(attachment_venue.offererAddress.address.longitude),
+        banId=attachment_venue.offererAddress.address.banId,
+        label=None,
+    )
+
+    venue_creation_info = venues_serialize.PostVenueBodyModel(
+        address=address_body_model,
+        comment=offerers_schemas.VenueComment("Lieu sans SIRET car dépend du SIRET d'un autre lieu"),
+        siret=None,
+        bookingEmail=offerers_schemas.VenueBookingEmail(attachment_venue.bookingEmail),
+        managingOffererId=offerer_id,
+        name=offerers_schemas.VenueName(form.public_name.data),
+        publicName=offerers_schemas.VenuePublicName(form.public_name.data),
+        venueLabelId=None,
+        venueTypeCode=attachment_venue.venueTypeCode.name,
+        withdrawalDetails=None,
+        description=None,
+        contact=None,
+        audioDisabilityCompliant=None,
+        mentalDisabilityCompliant=None,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=None,
+        isOpenToPublic=False,
+    )
+    offerer_address = offerers_api.create_offerer_address(
+        attachment_venue.managingOffererId, attachment_venue.offererAddress.address.id
+    )
+    venue = offerers_api.create_venue(venue_creation_info, current_user, offerer_address=offerer_address)
+    venue.isPermanent = True
+    db.session.add(venue)
+    offerers_api.link_venue_to_pricing_point(venue, attachment_venue.id)
+
+    flash(Markup("Le partenaire culturel <b>{name}</b> a été créé").format(name=venue.common_name), "success")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 
 @offerer_blueprint.route("/addresses", methods=["GET"])

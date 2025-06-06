@@ -11,6 +11,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from math import ceil
+from typing import Optional
 
 import jwt
 import pytz
@@ -443,11 +444,17 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
     return venue
 
 
-def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
+def create_venue(
+    venue_data: venues_serialize.PostVenueBodyModel,
+    author: users_models.User,
+    offerer_address: Optional[models.OffererAddress] = None,
+) -> models.Venue:
     venue = models.Venue()
     address = venue_data.address
 
-    if utils_regions.NON_DIFFUSIBLE_TAG in address.street:
+    if offerer_address:
+        pass
+    elif utils_regions.NON_DIFFUSIBLE_TAG in address.street:
         address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
         address = get_or_create_address(
