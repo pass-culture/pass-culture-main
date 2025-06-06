@@ -25,6 +25,10 @@ from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
 from pcapi.core.bookings.repository import generate_booking_token
+from pcapi.core.categories.subcategories import HIDEABLE_QRCODE_SUBCATEGORIES
+from pcapi.core.categories.subcategories import NO_QRCODE_SUBCATEGORIES
+from pcapi.core.categories.subcategories import NUMBER_SECONDS_HIDE_QR_CODE
+from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.external import batch
@@ -1198,3 +1202,28 @@ def cancel_ems_external_bookings() -> None:
                 str(exc),
                 extra={"token": token, "cinema_id": cinema_id},
             )
+
+
+def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_models.Stock) -> bool:
+    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
+        if offer.subcategoryId in HIDEABLE_QRCODE_SUBCATEGORIES and stock.beginningDatetime:
+            delta = stock.beginningDatetime - datetime.datetime.utcnow()
+            return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
+    return True
+
+
+def is_voucher_displayed(offer: offers_models.Offer, isExternal: bool) -> bool:
+    if not offer.isDigital:
+        if offer.isEvent and not isExternal:
+            if offer.subcategoryId in NO_QRCODE_SUBCATEGORIES:
+                return False
+            return offer.subcategoryId == SEANCE_CINE.id
+        return not offer.isEvent
+    return False
+
+
+def has_email_been_sent(stock: offers_models.Stock, withdrawal_delay: int | None) -> bool:
+    if withdrawal_delay and stock.beginningDatetime:
+        delta = stock.beginningDatetime - datetime.datetime.utcnow()
+        return delta.total_seconds() < withdrawal_delay
+    return False
