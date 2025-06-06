@@ -268,7 +268,6 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
-    on_empty_status=204,
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -280,7 +279,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
         )
     ),
 )
-def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse | None:
+def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create Product Offer
 
@@ -288,9 +287,6 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     """
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
-
-    if body.stock and body.stock.quantity == 0:
-        return None
 
     try:
         with repository.transaction():
@@ -453,11 +449,6 @@ def _create_or_update_ean_offers(
                 try:
                     ean = offer.ean
                     stock_data = serialized_products_stocks[ean]
-
-                    # No need to create empty stock
-                    if stock_data["quantity"] == 0:
-                        continue
-
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
                     # It will be done before the release of this API
@@ -917,10 +908,6 @@ def _upsert_product_stock(
             offers_api.delete_stock(existing_stock)
         return
 
-    # no need to create an empty stock
-    if not existing_stock and stock_body.quantity == 0:
-        return
-
     if not existing_stock:
         if stock_body.price is None:
             raise api_errors.ApiErrors({"stock.price": ["Required"]})
@@ -935,18 +922,10 @@ def _upsert_product_stock(
 
     stock_update_body = stock_body.dict(exclude_unset=True)
     price = stock_update_body.get("price", offers_api.UNCHANGED)
-
     quantity = serialization.deserialize_quantity(stock_update_body.get("quantity", offers_api.UNCHANGED))
-    new_quantity = quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity
-
-    # do not keep empty stocks
-    if new_quantity == 0:
-        offers_api.delete_stock(existing_stock)
-        return
-
     offers_api.edit_stock(
         existing_stock,
-        quantity=new_quantity,
+        quantity=quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity,
         price=finance_utils.cents_to_full_unit(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
