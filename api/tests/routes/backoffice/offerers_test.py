@@ -5148,3 +5148,42 @@ class CloseOffererTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=1)
 
         assert response.status_code == 404
+
+
+class CreateVenueTest(PostEndpointHelper):
+    """
+    Create venue without siret based on existing venue with siret.
+    """
+
+    endpoint = "backoffice_web.offerer.create_venue"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
+
+    def test_create_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        form_data = {"public_name": "Public Name", "attachement_venue": venue.id}
+        response = self.post_to_endpoint(authenticated_client, offerer_id=venue.managingOffererId, form=form_data)
+        assert response.status_code == 303
+
+        new_venue: offerers_models.Venue = (
+            db.session.query(offerers_models.Venue).filter_by(publicName=form_data["public_name"]).one()
+        )
+        assert new_venue.name == form_data["public_name"]
+        assert new_venue.publicName == form_data["public_name"]
+        assert new_venue.venueTypeCode == venue.venueTypeCode
+        assert new_venue.street == venue.street
+        assert new_venue.departementCode == venue.departementCode
+        assert new_venue.postalCode == venue.postalCode
+        assert new_venue.city == venue.city
+        assert new_venue.latitude == venue.latitude
+        assert new_venue.longitude == venue.longitude
+        assert new_venue.isOpenToPublic is False
+        assert new_venue.isPermanent is True
+
+        assert new_venue.street == venue.street
+        assert new_venue.city.lower() == venue.city.lower()
+        assert new_venue.postalCode == venue.postalCode
+        assert new_venue.offererAddress.address == venue.offererAddress.address
+        assert new_venue.offererAddressId != venue.offererAddressId
+
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=new_venue.id, _external=True)

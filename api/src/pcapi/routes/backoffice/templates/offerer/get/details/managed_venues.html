@@ -1,7 +1,15 @@
 {% from "components/badges.html" import build_fraudulent_booking_badge %}
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 <turbo-frame id="offerer_venues_frame">
+{% if has_permission("CREATE_PRO_ENTITY") %}
+  <button class="btn btn-outline-primary-subtle-bg mt-2"
+          data-bs-toggle="modal"
+          data-bs-target="#create-venue-modal"
+          type="button">Ajouter un partenaire sans SIRET</button>
+  {{ build_lazy_modal(url_for('backoffice_web.offerer.get_create_venue_without_siret_form', offerer_id=offerer_id) , "create-venue-modal") }}
+{% endif %}
 <table class="table table-hover my-4">
   <thead>
     <tr>

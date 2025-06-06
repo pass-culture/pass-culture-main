@@ -75,6 +75,25 @@ class CompactProSearchForm(ProSearchForm):
     departments = fields.PCSelectMultipleField("Départements", choices=area_choices, search_inline=True)
 
 
+class CreateVenueWithoutSIRETForm(FlaskForm):
+    public_name = fields.PCStringField(
+        "Nom d'usage du partenaire culturel",
+        validators=(
+            wtforms.validators.DataRequired("Information obligatoire"),
+            wtforms.validators.Length(max=255, message="doit contenir au maximum %(max)d caractères"),
+        ),
+    )
+    attachement_venue = fields.PCSelectWithPlaceholderValueField("SIRET de rattachement", choices=[], coerce=int)
+
+    def __init__(self, offerer: offerers_models.Offerer, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.attachement_venue.choices = [
+            (offerer_venue.id, f"{offerer_venue.siret} ({offerer_venue.common_name})")
+            for offerer_venue in offerer.managedVenues
+            if offerer_venue.siret
+        ]
+
+
 class CreateOffererForm(FlaskForm):
     email = fields.PCEmailField("Adresse email du compte pro")
     siret = fields.PCSiretField("SIRET")
