@@ -174,7 +174,7 @@ jobs:
 
   dependabot-auto-merge:
     name: "Dependabot"
-    needs: test-pro
+    needs: [test-pro, test-pro-e2e]
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
