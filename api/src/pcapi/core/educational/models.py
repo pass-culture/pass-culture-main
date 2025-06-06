@@ -956,11 +956,19 @@ class CollectiveOffer(
 
     @displayedStatus.expression  # type: ignore[no-redef]
     def displayedStatus(cls):
-        aliased_booking = sa_orm.aliased(CollectiveBooking)
         last_booking_subquery = (
-            sa.select(aliased_booking.status)
-            .filter(aliased_booking.collectiveStockId == CollectiveStock.id)
-            .order_by(aliased_booking.dateCreated.desc())
+            sa.select(CollectiveBooking.status)
+            .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
+            .order_by(CollectiveBooking.dateCreated.desc())
+            .limit(1)
+            .correlate(CollectiveStock)
+            .scalar_subquery()
+        )
+
+        last_booking_subquery_reason = (
+            sa.select(CollectiveBooking.cancellationReason)
+            .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
+            .order_by(CollectiveBooking.dateCreated.desc())
             .limit(1)
             .correlate(CollectiveStock)
             .scalar_subquery()
@@ -1035,7 +1043,16 @@ class CollectiveOffer(
             ),
             (
                 last_booking_subquery == CollectiveBookingStatus.CANCELLED.name,
-                CollectiveOfferDisplayedStatus.CANCELLED.name,
+                sa.case(
+                    (
+                        sa.and_(
+                            last_booking_subquery_reason == CollectiveBookingCancellationReasons.EXPIRED.name,
+                            CollectiveStock.startDatetime >= sa.func.now(),
+                        ),
+                        CollectiveOfferDisplayedStatus.EXPIRED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.CANCELLED.name,
+                ),
             ),
             else_=CollectiveOfferDisplayedStatus.PUBLISHED.name,
         )
