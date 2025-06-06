@@ -8,5 +8,5 @@ export const getDepartmentCode = (
     | GetIndividualOfferWithAddressResponseModel
     | ListOffersOfferResponseModel
 ): string => {
-  return offer.address?.departmentCode ?? offer.venue.departementCode ?? ''
+  return offer.address?.departmentCode ?? ''
 }

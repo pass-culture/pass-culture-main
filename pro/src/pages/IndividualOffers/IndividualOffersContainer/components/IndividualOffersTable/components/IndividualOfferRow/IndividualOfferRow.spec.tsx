@@ -13,7 +13,6 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { listOffersVenueFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   listOffersOfferFactory,
@@ -658,7 +657,9 @@ describe('IndividualOfferRow', () => {
 
   describe('when offer is an event product', () => {
     it('should display the correct text "2 dates"', async () => {
-      props.offer.venue = listOffersVenueFactory({ departementCode: '973' })
+      props.offer.address = getAddressResponseIsLinkedToVenueModelFactory({
+        departmentCode: 'FR',
+      })
       props.offer.stocks = [
         listOffersStockFactory({
           beginningDatetime: '01-01-2001',
@@ -679,7 +680,9 @@ describe('IndividualOfferRow', () => {
     })
 
     it('should display the beginning date time when only one date', async () => {
-      props.offer.venue = listOffersVenueFactory({ departementCode: '973' })
+      props.offer.address = getAddressResponseIsLinkedToVenueModelFactory({
+        departmentCode: '973',
+      })
       props.offer.stocks = [
         listOffersStockFactory({
           beginningDatetime: '2021-05-27T20:00:00Z',
@@ -689,10 +692,8 @@ describe('IndividualOfferRow', () => {
 
       renderOfferItem({ props })
 
-      await waitFor(async () => {
-        const res = await screen.findByText('27/05/2021 17:00')
-        expect(res).toBeInTheDocument()
-      })
+      const res = await screen.findByText('27/05/2021 17:00')
+      expect(res).toBeInTheDocument()
     })
 
     it('should not display a warning when no stocks are sold out', async () => {
