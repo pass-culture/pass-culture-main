@@ -363,12 +363,10 @@ describe('Summary', () => {
         )
       )
 
-      await userEvent.click(
-        screen.getByLabelText('À une date et heure précise')
-      )
+      await userEvent.click(screen.getByLabelText(/Publier plus tard/))
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Publier l’offre' })
+        screen.getByRole('button', { name: 'Programmer l’offre' })
       )
 
       expect(
@@ -396,7 +394,7 @@ describe('Summary', () => {
       )
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Publier l’offre' })
+        screen.getByRole('button', { name: 'Programmer l’offre' })
       )
 
       expect(
