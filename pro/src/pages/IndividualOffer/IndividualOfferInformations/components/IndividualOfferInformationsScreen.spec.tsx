@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { SubcategoryIdEnum, WithdrawalTypeEnum } from 'apiClient/v1'
@@ -32,19 +33,34 @@ import {
   IndividualOfferInformationsScreenProps,
 } from './IndividualOfferInformationsScreen'
 
-const renderUsefulInformationScreen = (
-  props: IndividualOfferInformationsScreenProps,
+function renderUsefulInformationScreen(
+  defaultProps: IndividualOfferInformationsScreenProps,
   contextValue: IndividualOfferContextValues,
   options: RenderWithProvidersOptions = {}
-) => {
-  return renderWithProviders(
+) {
+  const Wrapper = () => {
+    const methods = useForm({
+      defaultValues: {},
+      mode: 'onBlur',
+    })
+
+    return (
+      <FormProvider {...methods}>
+        <IndividualOfferInformationsScreen {...defaultProps} />
+      </FormProvider>
+    )
+  }
+
+  options = {
+    user: sharedCurrentUserFactory(),
+    ...options,
+  }
+
+  renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferInformationsScreen {...props} />
+      <Wrapper />
     </IndividualOfferContext.Provider>,
-    {
-      user: sharedCurrentUserFactory(),
-      ...options,
-    }
+    options
   )
 }
 
@@ -226,7 +242,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
       address: {
         city: 'Paris',
-        isManualEdition: undefined,
+        isManualEdition: false,
         isVenueAddress: true,
         label: 'MINISTERE DE LA CULTURE',
         latitude: '48.87171',
