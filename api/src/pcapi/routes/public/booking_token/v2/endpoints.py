@@ -36,7 +36,7 @@ BASE_CODE_DESCRIPTIONS = {
 
 
 def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
-    booking = bookings_repository.get_booking_by_token(token, load_options=["offerer"])
+    booking = bookings_repository.get_booking_by_token(token, load_options=["offerer", "venue", "offer", "address"])
     if not booking:
         errors = api_errors.ResourceNotFoundError()
         errors.add_error("global", "Cette contremarque n'a pas été trouvée")
