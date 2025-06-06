@@ -363,12 +363,10 @@ describe('Summary', () => {
         )
       )
 
-      await userEvent.click(
-        screen.getByLabelText('À une date et heure précise')
-      )
+      await userEvent.click(screen.getByLabelText(/Publier plus tard/))
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Publier l’offre' })
+        screen.getByRole('button', { name: 'Programmer l’offre' })
       )
 
       expect(
@@ -386,17 +384,11 @@ describe('Summary', () => {
         FORMAT_ISO_DATE_ONLY
       )
 
-      await userEvent.type(
-        screen.getByLabelText('Date de publication *'),
-        publicationDate
-      )
-      await userEvent.selectOptions(
-        screen.getByLabelText('Heure de publication *'),
-        '11:00'
-      )
+      await userEvent.type(screen.getByLabelText('Date *'), publicationDate)
+      await userEvent.selectOptions(screen.getByLabelText('Heure *'), '11:00')
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Publier l’offre' })
+        screen.getByRole('button', { name: 'Programmer l’offre' })
       )
 
       expect(
