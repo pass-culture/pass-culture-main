@@ -650,4 +650,4 @@ CREDIT_V3_DECREE_DATETIME = datetime.fromisoformat(os.environ.get("CREDIT_V3_DEC
 PROXY_CERT_BUNDLE = os.environ.get("PROXY_CERT_BUNDLE", None)
 
 # Soft deletion
-SOFTDELETE_ENABLED = bool(int(os.environ.get("SOFTDELETE_ENABLED", 0)))
+SOFTDELETE_ENABLED = bool(int(os.environ.get("SOFTDELETE_ENABLED", 1)))
