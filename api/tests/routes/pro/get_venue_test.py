@@ -218,7 +218,6 @@ class Returns200Test:
                 "isLinkedToVenue": True,
                 "isManualEdition": False,
             },
-            "isVisibleInApp": True,
             "hasOffers": True,
             "isOpenToPublic": True,
         }

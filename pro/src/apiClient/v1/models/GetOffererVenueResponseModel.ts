@@ -22,7 +22,6 @@ export type GetOffererVenueResponseModel = {
   id: number;
   isPermanent: boolean;
   isVirtual: boolean;
-  isVisibleInApp?: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

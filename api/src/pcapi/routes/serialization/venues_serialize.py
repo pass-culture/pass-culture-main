@@ -235,7 +235,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     hasAdageId: bool
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
-    isVisibleInApp: bool = True
     hasOffers: bool
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     hasActiveIndividualOffer: bool
