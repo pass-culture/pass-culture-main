@@ -127,7 +127,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale de la structure"] == venue1.name
-    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["Adresse de l'offre"] == venue1.offererAddress.address.fullAddress
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
     assert row["Nom (offre collective)"] == ""
@@ -246,7 +246,7 @@ def test_with_reimbursement_period_filter_with_pricings_using_oa(client, cutoff,
         assert row["Intitulé du compte bancaire"] == bank_account.label
         assert row["IBAN"] == bank_account.iban
         assert row["Raison sociale de la structure"] == venue.name
-        assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
+        assert row["Adresse de l'offre"] == venue.offererAddress.address.fullAddress
         assert row["SIRET de la structure"] == venue.siret
         assert row["Nom de l'offre"] == offer.name
         assert row["N° de réservation (offre collective)"] == ""
@@ -348,14 +348,14 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale de la structure"] == venue1.name
-    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert row["Adresse de l'offre"] == venue1.offererAddress.address.fullAddress
     assert row["Nom de l'offre"] == collective_offer.name
     assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
     assert row["Nom (offre collective)"] == redactor.lastName
     assert row["Prénom (offre collective)"] == redactor.firstName
     assert row["Nom de l'établissement (offre collective)"] == institution.name
     assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
-        collective_booking.collectiveStock.startDatetime, venue1.departementCode
+        collective_booking.collectiveStock.startDatetime, venue1.offererAddress.address.departmentCode
     ).strftime("%d/%m/%Y %H:%M")
     assert row["Contremarque"] == ""
     assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
@@ -363,6 +363,140 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     assert row["Montant de la réservation"] == str(collective_booking.collectiveStock.price).replace(".", ",")
     assert row["Barème"].replace("\xa0", " ") == "100 %"
     assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
+
+
+@pytest.mark.usefixtures("db_session")
+def test_no_irrelevant_data_collective_offers_use_case(client):
+    # setup relevant date for filter
+    cutoff = datetime.date(year=2023, month=1, day=1)
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = datetime.date(year=2023, month=1, day=16).isoformat()
+    # create offerer with 3 venues
+    offerer = offerers_factories.OffererFactory()
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    venue2 = offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point="self", offererAddress__address__street="4 place du Selkirk Rex"
+    )
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point="self", offererAddress__address__street="4 avenue du bebe chat"
+    )
+    # create a bank account, link it to the first 2 venues and prepare invoice
+    bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue2, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+    )
+
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
+
+    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account_1, date=cutoff)
+    cashflow = finance_factories.CashflowFactory(
+        batch=batch, creationDate=cutoff, bankAccount=bank_account_1, invoices=[invoice]
+    )
+    # create one used booking for venue1 and one booking to be reimbursed later for venue2
+    finance_factories.CollectivePricingFactory(
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
+        status=finance_models.PricingStatus.INVOICED,
+        cashflows=[cashflow],
+    )
+    finance_factories.CollectivePricingFactory(
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue2,
+        status=finance_models.PricingStatus.VALIDATED,
+        cashflows=[cashflow],
+    )
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+    client = client.with_session_auth(pro.email)
+    bank_account_id = bank_account_1.id  # avoid extra SQL query below
+    queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # check user has access to offerer
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with testing.assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+        )
+        assert response.status_code == 200
+
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
+    rows = list(reader)
+    # We test that only the reimbursment for venue 1 is displayed and that it has the right address
+    assert len(rows) == 1
+    assert rows[0]["Adresse de l'offre"] == venue1.offererAddress.address.fullAddress
+
+
+@pytest.mark.usefixtures("db_session")
+def test_no_irrelevant_data_individual_offers_use_case(client):
+    # setup relevant date for filter
+    cutoff = datetime.date(year=2023, month=1, day=1)
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = datetime.date(year=2023, month=1, day=16).isoformat()
+    # create offerer with 3 venues
+    offerer = offerers_factories.OffererFactory()
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    venue2 = offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point="self", offererAddress__address__street="4 place du Selkirk Rex"
+    )
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point="self", offererAddress__address__street="4 avenue du bebe chat"
+    )
+    # create a bank account, link it to the first 2 venues and prepare invoice
+    bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue2, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+    )
+
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
+
+    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account_1, date=cutoff)
+    cashflow = finance_factories.CashflowFactory(
+        batch=batch, creationDate=cutoff, bankAccount=bank_account_1, invoices=[invoice]
+    )
+    # create one used booking for venue1 and one booking to be reimbursed later for venue2
+    finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue1,
+        status=finance_models.PricingStatus.INVOICED,
+        cashflows=[cashflow],
+    )
+    finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue2,
+        status=finance_models.PricingStatus.VALIDATED,
+        cashflows=[cashflow],
+    )
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+    client = client.with_session_auth(pro.email)
+    bank_account_id = bank_account_1.id  # avoid extra SQL query below
+    queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # check user has access to offerer
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with testing.assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+        )
+        assert response.status_code == 200
+
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
+    rows = list(reader)
+    # We test that only the reimbursment for venue 1 is displayed and that it has the right address
+    assert len(rows) == 1
+    assert rows[0]["Adresse de l'offre"] == venue1.offererAddress.address.fullAddress
 
 
 @pytest.mark.usefixtures("db_session")
@@ -470,14 +604,14 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["SIRET de la structure"] == venue.siret
         assert row["IBAN"] == bank_account.iban
         assert row["Raison sociale de la structure"] == venue.name
-        assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
+        assert row["Adresse de l'offre"] == venue.offererAddress.address.fullAddress
         assert row["Nom de l'offre"] == collective_offer.name
         assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
         assert row["Nom (offre collective)"] == redactor.lastName
         assert row["Prénom (offre collective)"] == redactor.firstName
         assert row["Nom de l'établissement (offre collective)"] == institution.name
         assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
-            collective_booking.collectiveStock.startDatetime, venue.departementCode
+            collective_booking.collectiveStock.startDatetime, venue.offererAddress.address.departmentCode
         ).strftime("%d/%m/%Y %H:%M")
         assert row["Contremarque"] == ""
         assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
