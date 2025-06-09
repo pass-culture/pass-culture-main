@@ -5,6 +5,7 @@ from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -24,21 +25,23 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
         client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
-        response = client.patch("/offers/all-active-status", json=data)
-
         now = datetime.now(timezone.utc)
+        now_without_tz = now.replace(tzinfo=None)
+
+        with time_machine.travel(now, tick=False):
+            response = client.patch("/offers/all-active-status", json=data)
 
         assert response.status_code == 202
         offer_1: Offer = db.session.query(Offer).get(offer1.id)
         offer_2: Offer = db.session.query(Offer).get(offer2.id)
 
         assert offer_1.isActive
-        assert offer_1.publicationDatetime.strftime("DD/MM/YYYY") == now.strftime("DD/MM/YYYY")
-        assert offer_1.bookingAllowedDatetime.strftime("DD/MM/YYYY") == now.strftime("DD/MM/YYYY")
+        assert offer_1.publicationDatetime == now_without_tz
+        assert offer_1.bookingAllowedDatetime == now_without_tz
 
         assert offer_2.isActive
-        assert offer_2.publicationDatetime.strftime("DD/MM/YYYY") == now.strftime("DD/MM/YYYY")
-        assert offer_2.bookingAllowedDatetime.strftime("DD/MM/YYYY") == now.strftime("DD/MM/YYYY")
+        assert offer_2.publicationDatetime == now_without_tz
+        assert offer_2.bookingAllowedDatetime == now_without_tz
 
     def when_deactivating_all_existing_offers(self, client):
         offer1 = offers_factories.OfferFactory()
@@ -149,17 +152,20 @@ class Returns204Test:
         pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
         rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-        now = datetime.now(timezone.utc)
 
-        client = client.with_session_auth("pro@example.com")
-        data = {"isActive": True, "page": 1, "venueId": venue.id}
-        response = client.patch("/offers/all-active-status", json=data)
+        now = datetime.now(timezone.utc)
+        now_without_tz = now.replace(tzinfo=None)
+
+        with time_machine.travel(now, tick=False):
+            offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+            response = client.with_session_auth("pro@example.com").patch(
+                "/offers/all-active-status", json={"isActive": True, "page": 1, "venueId": venue.id}
+            )
 
         assert response.status_code == 202
         assert approved_offer.isActive
-        assert approved_offer.publicationDatetime.strftime("DD/MM/YYYY") == now.strftime("DD/MM/YYYY")
-        assert approved_offer.bookingAllowedDatetime.strftime("DD/MM/YYYY") == now.strftime("DD/MM/YYYY")
+        assert approved_offer.publicationDatetime == now_without_tz
+        assert approved_offer.bookingAllowedDatetime == now_without_tz
 
         assert not pending_offer.isActive
         assert not pending_offer.publicationDatetime
