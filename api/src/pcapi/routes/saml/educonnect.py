@@ -125,7 +125,7 @@ def on_educonnect_authentication_response() -> Response:
         )
         return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
-    user = db.session.query(users_models.User).get(user_id)
+    user = db.session.get(users_models.User, user_id)
 
     logger.info(
         "Received educonnect authentication response",

@@ -321,7 +321,8 @@ def patch_draft_offer(
             sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
             sa_orm.joinedload(models.Offer.product),
         )
-        .get(offer_id)
+        .filter_by(id=offer_id)
+        .one_or_none()
     )
     if not offer:
         raise api_errors.ResourceNotFoundError

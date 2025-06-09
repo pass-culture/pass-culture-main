@@ -401,7 +401,7 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
 
 
 def get_venue_by_id(venue_id: int) -> models.Venue:
-    return db.session.query(models.Venue).get(venue_id)
+    return db.session.get(models.Venue, venue_id)
 
 
 def get_venues_by_ids(ids: typing.Collection[int]) -> typing.Collection[models.Venue]:

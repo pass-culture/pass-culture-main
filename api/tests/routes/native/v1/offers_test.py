@@ -134,7 +134,7 @@ class OffersTest:
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
 
-        offer = db.session.query(Offer).get(offer.id)
+        offer = db.session.get(Offer, offer.id)
         assert offer.ean == ean
         assert "ean" not in offer.extraData
         assert response.json["id"] == offer.id

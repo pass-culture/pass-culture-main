@@ -5243,7 +5243,7 @@ class DeleteAccountTagTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert set(db.session.query(users_models.UserTag).all()) == {tags[0], tags[2]}
-        assert db.session.query(users_models.User).get(user.id).tags == [tags[2]]
+        assert db.session.query(users_models.User).filter_by(id=user.id).one().tags == [tags[2]]
 
     def test_delete_non_existing_tag(self, authenticated_client):
         tag = users_factories.UserTagFactory()

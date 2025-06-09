@@ -147,7 +147,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
     token.expire()
-    user = db.session.query(User).get(token.user_id)
+    user = db.session.get(User, token.user_id)
 
     user.isEmailValidated = True
     repository.save(user)

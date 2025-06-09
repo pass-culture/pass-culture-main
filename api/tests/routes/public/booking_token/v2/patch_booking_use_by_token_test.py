@@ -99,7 +99,7 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            booking = db.session.query(Booking).get(booking.id)
+            booking = db.session.get(Booking, booking.id)
             assert booking.status == BookingStatus.CONFIRMED
 
         def test_when_offerer_is_closed(self, client):
@@ -112,7 +112,7 @@ class Returns403Test:
 
             assert response.status_code == 403
             assert response.json["booking"] == ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]
-            booking = db.session.query(Booking).get(booking.id)
+            booking = db.session.get(Booking, booking.id)
             assert booking.status == BookingStatus.CONFIRMED
 
 
@@ -142,7 +142,7 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
-        booking = db.session.query(Booking).get(booking.id)
+        booking = db.session.get(Booking, booking.id)
         assert booking.status == BookingStatus.CANCELLED
 
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
@@ -159,5 +159,5 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
-        booking = db.session.query(Booking).get(booking.id)
+        booking = db.session.get(Booking, booking.id)
         assert booking.status == BookingStatus.CANCELLED

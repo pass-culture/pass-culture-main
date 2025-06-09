@@ -22,7 +22,7 @@ class BaseQuery(sa_orm.Query):
         return self.filter_by(id=obj_id).one_or_none()
 
     def get_or_404(self, obj_id: int) -> typing.Any:
-        obj = self.get(obj_id)
+        obj = self.filter_by(id=obj_id).one_or_none()
         if not obj:
             raise NotFound()
         return obj

@@ -32,8 +32,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        offer_1 = db.session.query(Offer).get(offer1.id)
-        offer_2 = db.session.query(Offer).get(offer2.id)
+        offer_1 = db.session.get(Offer, offer1.id)
+        offer_2 = db.session.get(Offer, offer2.id)
         assert offer_1.isActive
         assert offer1.publicationDatetime
         assert offer1.publicationDatetime == offer1.bookingAllowedDatetime
@@ -64,12 +64,12 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        first_offer = db.session.query(Offer).get(offer.id)
+        first_offer = db.session.get(Offer, offer.id)
         assert first_offer.finalizationDatetime == finalization_datetime.replace(tzinfo=None)
         assert not first_offer.isActive
         assert not first_offer.publicationDatetime
         assert not first_offer.bookingAllowedDatetime
-        assert not db.session.query(Offer).get(synchronized_offer.id).isActive
+        assert not db.session.get(Offer, synchronized_offer.id).isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)
@@ -145,9 +145,9 @@ class ActivateFutureOffersTest:
             )
 
         assert response.status_code == 204
-        assert db.session.query(Offer).get(offer_to_publish_1.id).isActive
-        assert db.session.query(Offer).get(offer_to_publish_2.id).isActive
-        assert not db.session.query(Offer).get(offer_to_publish_3.id).isActive
+        assert db.session.get(Offer, offer_to_publish_1.id).isActive
+        assert db.session.get(Offer, offer_to_publish_2.id).isActive
+        assert not db.session.get(Offer, offer_to_publish_3.id).isActive
 
     def test_deactivate_future_offers(self, client):
         offer_published_1 = offers_factories.OfferFactory()
@@ -169,5 +169,5 @@ class ActivateFutureOffersTest:
             mock_notify_users_future_offer_activated.assert_not_called()
 
         assert response.status_code == 204
-        assert not db.session.query(Offer).get(offer_published_1.id).isActive
-        assert not db.session.query(Offer).get(offer_published_2.id).isActive
+        assert not db.session.get(Offer, offer_published_1.id).isActive
+        assert not db.session.get(Offer, offer_published_2.id).isActive

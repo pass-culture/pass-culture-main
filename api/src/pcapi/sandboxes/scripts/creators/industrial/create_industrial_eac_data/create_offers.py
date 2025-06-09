@@ -117,7 +117,7 @@ def _get_or_create_offerer_address(
 
     offer_venue = location_option["offerVenue"]
     if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
-        target_venue = db.session.query(offerers_models.Venue).get(offer_venue["venueId"])
+        target_venue = db.session.get(offerers_models.Venue, offer_venue["venueId"])
 
         if location_option["isLocatedAtVenue"]:
             return target_venue.offererAddress

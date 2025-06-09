@@ -159,7 +159,7 @@ class Returns410Test:
         response = client.with_session_auth(user.email).patch(url)
 
         # Then
-        booking = db.session.query(Booking).get(booking.id)
+        booking = db.session.get(Booking, booking.id)
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
         assert booking.status is BookingStatus.CANCELLED

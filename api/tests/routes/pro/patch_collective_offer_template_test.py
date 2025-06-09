@@ -108,7 +108,7 @@ class Returns200Test:
             "name": payload_ctx.national_program.name,
         }
 
-        updated_offer = db.session.query(models.CollectiveOfferTemplate).get(offer_id)
+        updated_offer = db.session.get(models.CollectiveOfferTemplate, offer_id)
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.priceDetail == "pouet"
@@ -1122,7 +1122,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert db.session.query(models.CollectiveOfferTemplate).get(offer.id).name == "Old name"
+        assert db.session.get(models.CollectiveOfferTemplate, offer.id).name == "Old name"
 
     def test_replacing_venue_with_different_offerer(self, client):
         offer_ctx = build_offer_context()

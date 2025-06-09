@@ -48,7 +48,7 @@ class Returns200Test:
         assert response.json["venue"]["id"] == offer.venue.id
         assert response.json["productId"] == None
 
-        updated_offer = db.session.query(Offer).get(offer.id)
+        updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert updated_offer.description == "New description"
@@ -73,7 +73,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = db.session.query(Offer).get(offer.id)
+        updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.ean == "2222222222222"
         assert updated_offer.extraData == {}
 
@@ -99,7 +99,7 @@ class Returns200Test:
         assert response.json["venue"]["id"] == offer.venue.id
         assert response.json["productId"] == None
 
-        updated_offer = db.session.query(Offer).get(offer.id)
+        updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert updated_offer.description == "New description"
@@ -127,7 +127,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = db.session.query(Offer).get(offer.id)
+        updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.extraData == {"stageDirector": "Greta Gerwig"}
 
     def test_patch_draft_offer_with_empty_extra_data(self, client):
@@ -165,7 +165,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = db.session.query(Offer).get(offer.id)
+        updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.extraData == {
             "author": "",
             "gtl_id": "",
@@ -247,7 +247,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
-        updated_offer = db.session.query(Offer).get(offer.id)
+        updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.extraData == {
             "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
             "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
@@ -513,7 +513,7 @@ class Returns403Test:
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         assert response.json["global"] == [msg]
-        assert db.session.query(Offer).get(offer.id).name == "Old name"
+        assert db.session.get(Offer, offer.id).name == "Old name"
 
 
 @pytest.mark.usefixtures("db_session")

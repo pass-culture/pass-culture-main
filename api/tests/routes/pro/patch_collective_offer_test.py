@@ -97,7 +97,7 @@ class Returns200Test:
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert not response.json["isTemplate"]
 
-        updated_offer = db.session.query(models.CollectiveOffer).get(offer.id)
+        updated_offer = db.session.get(models.CollectiveOffer, offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.contactEmail == "toto@example.com"
@@ -1038,7 +1038,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert db.session.query(models.CollectiveOffer).get(offer.id).name == "Old name"
+        assert db.session.get(models.CollectiveOffer, offer.id).name == "Old name"
 
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
         # Given

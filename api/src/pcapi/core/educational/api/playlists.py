@@ -129,7 +129,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
     for row in ctx.query().execute(page_size=BIGQUERY_PLAYLIST_BATCH_SIZE):
         current_institution_id = int(getattr(row, "institution_id"))
         if institution is None:
-            institution = db.session.query(educational_models.EducationalInstitution).get(current_institution_id)
+            institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
         if institution.id != current_institution_id:
             try:
                 with transaction():
@@ -137,7 +137,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
             except Exception:
                 logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
                 db.session.rollback()
-            institution = db.session.query(educational_models.EducationalInstitution).get(current_institution_id)
+            institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
             institution_rows = []
         institution_rows.append(row)
     # Don't forget to synchronize the latest institution

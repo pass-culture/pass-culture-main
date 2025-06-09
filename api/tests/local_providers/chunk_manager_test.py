@@ -67,8 +67,8 @@ def test_save_chunks_update_1_offer_in_chunk():
     db.session.expunge(offer)
     save_chunks(chunk_to_insert={}, chunk_to_update=chunk_to_update)
 
-    assert db.session.query(Offer).get(offer.id).isDuo
-    assert not db.session.query(Offer).get(other_offer.id).isDuo
+    assert db.session.get(Offer, offer.id).isDuo
+    assert not db.session.get(Offer, other_offer.id).isDuo
 
 
 def test_save_chunks_update_2_offers_and_1_stock_in_chunk():

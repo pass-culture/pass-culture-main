@@ -148,7 +148,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
         # Returning an error message might help the end client find
         # existing email addresses through user enumeration attacks.
         token = token_utils.Token.load_without_checking(body.token)
-        user = db.session.query(users_models.User).get(token.user_id)
+        user = db.session.get(users_models.User, token.user_id)
 
     if user.is_eligible and not user.is_beneficiary:
         try:

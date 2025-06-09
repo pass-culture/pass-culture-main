@@ -1135,7 +1135,7 @@ class CancelBookingTest:
 
         assert response.status_code == 204
 
-        booking = db.session.query(Booking).get(booking.id)
+        booking = db.session.get(Booking, booking.id)
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 1
@@ -1151,7 +1151,7 @@ class CancelBookingTest:
 
         assert response.status_code == 204
 
-        booking = db.session.query(Booking).get(booking.id)
+        booking = db.session.get(Booking, booking.id)
         assert len(push_testing.requests) == 3
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,

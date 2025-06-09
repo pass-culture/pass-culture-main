@@ -43,8 +43,8 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = db.session.query(CollectiveStock).get(response_dict["id"])
-        offer = db.session.query(CollectiveOffer).get(offer.id)
+        created_stock: CollectiveStock = db.session.get(CollectiveStock, response_dict["id"])
+        offer = db.session.get(CollectiveOffer, offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"
@@ -82,8 +82,8 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = db.session.query(CollectiveStock).get(response_dict["id"])
-        offer = db.session.query(CollectiveOffer).get(offer.id)
+        created_stock: CollectiveStock = db.session.get(CollectiveStock, response_dict["id"])
+        offer = db.session.get(CollectiveOffer, offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"

@@ -700,6 +700,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 204
 
-        updated_stock = db.session.query(offers_models.Stock).get(stock.id)
+        updated_stock = db.session.get(offers_models.Stock, stock.id)
         assert updated_stock.price == 0
         assert updated_stock.quantity == 3

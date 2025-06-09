@@ -30,7 +30,7 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         response_dict = response.json
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
@@ -65,7 +65,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.bookingContact == "offer@example.com"
         assert offer.bookingEmail == "offer@example.com"
         assert offer.publicationDate is None
@@ -135,7 +135,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.offererAddress.address == offerer_address.address
         assert offer.offererAddress.label == oa_label
         assert not offer.offererAddress.address.isManualEdition
@@ -177,7 +177,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.offererAddress.address != offerer_address.address
         assert offer.offererAddress.label == oa_label
         assert not offer.offererAddress.address.isManualEdition
@@ -219,7 +219,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.offererAddress.address.isManualEdition
         assert offer.offererAddress.label == oa_label
         assert not offer.offererAddress.address.banId
@@ -249,7 +249,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
         assert offer.venue == venue
@@ -287,7 +287,7 @@ class Returns200Test:
         assert "ean" not in response.json
 
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
         assert offer.ean == "1234567890112"
@@ -317,7 +317,7 @@ class Returns200Test:
 
         # Then
         offer_id = response.json["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 

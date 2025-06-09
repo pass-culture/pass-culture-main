@@ -110,7 +110,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = db.session.query(models.CollectiveOffer).get(offer_id)
+        offer = db.session.get(models.CollectiveOffer, offer_id)
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -132,7 +132,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = db.session.query(models.CollectiveOffer).get(offer_id)
+        offer = db.session.get(models.CollectiveOffer, offer_id)
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -169,7 +169,7 @@ class Returns200Test:
 
         assert response.status_code == 201
 
-        offer = db.session.query(models.CollectiveOffer).get(response.json["id"])
+        offer = db.session.get(models.CollectiveOffer, response.json["id"])
         assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
     @pytest.mark.features(ENABLE_MARSEILLE=False)
