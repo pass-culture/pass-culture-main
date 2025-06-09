@@ -86,6 +86,12 @@ def _get_status_date(offer: models.CollectiveOffer, status: CollectiveOfferHisto
         case models.CollectiveOfferDisplayedStatus.CANCELLED:
             return stock.startDatetime if booking is None else booking.cancellationDate
 
+        case models.CollectiveOfferDisplayedStatus.ARCHIVED:
+            return offer.dateArchived
+
+        case models.CollectiveOfferDisplayedStatus.HIDDEN:
+            return None
+
         case _:
             logger.error("Invalid collective offer history status %s for offer %s", status, offer.id)
             return None
@@ -93,9 +99,12 @@ def _get_status_date(offer: models.CollectiveOffer, status: CollectiveOfferHisto
 
 def _get_collective_offer_past_history(
     offer: models.CollectiveOffer,
-    from_status: models.CollectiveOfferDisplayedStatus,
-    to_status: models.CollectiveOfferDisplayedStatus,
+    from_status: models.CollectiveOfferDisplayedStatus | None,
+    to_status: models.CollectiveOfferDisplayedStatus | None,
 ) -> list[CollectiveOfferHistoryStep]:
+    if from_status is None or to_status is None:
+        return []
+
     steps = []
     next_status: models.CollectiveOfferDisplayedStatus | None = from_status
     while True:
@@ -132,148 +141,165 @@ def _get_collective_offer_future_history(
     return steps
 
 
-def get_collective_offer_history(offer: models.CollectiveOffer) -> list[CollectiveOfferHistoryStep]:
-    status = offer.displayedStatus
+@dataclasses.dataclass
+class HistoryStatusData:
+    past_from_status: models.CollectiveOfferDisplayedStatus | None
+    past_to_status: models.CollectiveOfferDisplayedStatus | None
+    current_status: CollectiveOfferHistoryStatus
+    future_from_status: models.CollectiveOfferDisplayedStatus
+
+
+def _get_history_status_data(
+    offer: models.CollectiveOffer, status: models.CollectiveOfferDisplayedStatus
+) -> HistoryStatusData:
+    """
+    For each status, determine:
+    - the first and last of the previous statuses (past_from_status and past_to_status)
+    - the current status (current_status)
+    - the status from which the future steps are computed (future_from_status)
+    """
     stock = offer.collectiveStock
     is_two_days_past_end = stock is not None and stock.is_two_days_past_end()
     booking = stock.lastBooking if stock is not None else None
     was_prebooked = booking is not None
     was_booked = booking is not None and booking.confirmationDate is not None
 
-    history: list[CollectiveOfferHistoryStep]
-    previous_status = status  # used to fill the history with future steps
+    past_to_status: models.CollectiveOfferDisplayedStatus
     match status:
         case (
             models.CollectiveOfferDisplayedStatus.DRAFT
             | models.CollectiveOfferDisplayedStatus.UNDER_REVIEW
             | models.CollectiveOfferDisplayedStatus.REJECTED
         ):
-            history = [
-                CollectiveOfferHistoryStep(
-                    offer_status=status,
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, status),
-                ),
-            ]
+            return HistoryStatusData(
+                past_from_status=None,
+                past_to_status=None,
+                current_status=status,
+                future_from_status=status,
+            )
 
         case models.CollectiveOfferDisplayedStatus.PUBLISHED:
-            history = [
-                *_get_collective_offer_past_history(
-                    offer=offer,
-                    from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                    to_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                ),
-                CollectiveOfferHistoryStep(
-                    offer_status="WAITING_FOR_PREBOOK",
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, "WAITING_FOR_PREBOOK"),
-                ),
-            ]
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                current_status="WAITING_FOR_PREBOOK",
+                future_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+            )
 
         case models.CollectiveOfferDisplayedStatus.EXPIRED:
-            previous_status = (
+            past_to_status = (
                 models.CollectiveOfferDisplayedStatus.PREBOOKED
                 if was_prebooked
                 else models.CollectiveOfferDisplayedStatus.PUBLISHED
             )
-            history = [
-                *_get_collective_offer_past_history(
-                    offer=offer,
-                    from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                    to_status=previous_status,
-                ),
-                CollectiveOfferHistoryStep(
-                    offer_status=status,
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, status),
-                ),
-            ]
+
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=past_to_status,
+                current_status=models.CollectiveOfferDisplayedStatus.EXPIRED,
+                future_from_status=past_to_status,
+            )
 
         case models.CollectiveOfferDisplayedStatus.PREBOOKED:
-            history = [
-                *_get_collective_offer_past_history(
-                    offer=offer,
-                    from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                    to_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                ),
-                CollectiveOfferHistoryStep(
-                    offer_status="WAITING_FOR_BOOK",
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, "WAITING_FOR_BOOK"),
-                ),
-            ]
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
+                current_status="WAITING_FOR_BOOK",
+                future_from_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
+            )
 
         case models.CollectiveOfferDisplayedStatus.BOOKED:
-            history = [
-                *_get_collective_offer_past_history(
-                    offer=offer,
-                    from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                    to_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                ),
-                CollectiveOfferHistoryStep(
-                    offer_status=status,
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, status),
-                ),
-            ]
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
+                current_status=models.CollectiveOfferDisplayedStatus.BOOKED,
+                future_from_status=models.CollectiveOfferDisplayedStatus.BOOKED,
+            )
 
         case models.CollectiveOfferDisplayedStatus.ENDED:
             current_status: CollectiveOfferHistoryStatus
             if is_two_days_past_end:
-                previous_status = models.CollectiveOfferDisplayedStatus.ENDED
+                past_to_status = models.CollectiveOfferDisplayedStatus.ENDED
                 current_status = "WAITING_FOR_REIMBURSEMENT"
             else:
-                previous_status = models.CollectiveOfferDisplayedStatus.BOOKED
+                past_to_status = models.CollectiveOfferDisplayedStatus.BOOKED
                 current_status = models.CollectiveOfferDisplayedStatus.ENDED
 
-            history = [
-                *_get_collective_offer_past_history(
-                    offer=offer, from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED, to_status=previous_status
-                ),
-                CollectiveOfferHistoryStep(
-                    offer_status=current_status,
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, current_status),
-                ),
-            ]
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=past_to_status,
+                current_status=current_status,
+                future_from_status=models.CollectiveOfferDisplayedStatus.ENDED,
+            )
 
         case models.CollectiveOfferDisplayedStatus.REIMBURSED:
-            history = _get_collective_offer_past_history(
-                offer=offer,
-                from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                to_status=models.CollectiveOfferDisplayedStatus.REIMBURSED,
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=models.CollectiveOfferDisplayedStatus.ENDED,
+                current_status=models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                future_from_status=models.CollectiveOfferDisplayedStatus.REIMBURSED,
             )
 
         case models.CollectiveOfferDisplayedStatus.CANCELLED:
-            past_status: models.CollectiveOfferDisplayedStatus
             if was_prebooked:
                 if was_booked:
-                    past_status = models.CollectiveOfferDisplayedStatus.BOOKED
+                    past_to_status = models.CollectiveOfferDisplayedStatus.BOOKED
                 else:
-                    past_status = models.CollectiveOfferDisplayedStatus.PREBOOKED
+                    past_to_status = models.CollectiveOfferDisplayedStatus.PREBOOKED
             else:
-                past_status = models.CollectiveOfferDisplayedStatus.PUBLISHED
+                past_to_status = models.CollectiveOfferDisplayedStatus.PUBLISHED
 
-            history = [
-                *_get_collective_offer_past_history(
-                    offer=offer,
-                    from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                    to_status=past_status,
-                ),
-                CollectiveOfferHistoryStep(
-                    offer_status=status,
-                    step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                    datetime=_get_status_date(offer, status),
-                ),
-            ]
-
-        case models.CollectiveOfferDisplayedStatus.ARCHIVED:
-            history = []
+            return HistoryStatusData(
+                past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                past_to_status=past_to_status,
+                current_status=models.CollectiveOfferDisplayedStatus.CANCELLED,
+                future_from_status=models.CollectiveOfferDisplayedStatus.CANCELLED,
+            )
 
         case _:
-            logger.error("Invalid collective offer status %s for offer %s", status, offer.id)
-            history = []
+            raise ValueError(f"Unexpected status {status}")
 
-    history.extend(_get_collective_offer_future_history(previous_status))
 
-    return history
+def get_collective_offer_history(offer: models.CollectiveOffer) -> list[CollectiveOfferHistoryStep]:
+    status = offer.displayedStatus
+
+    if status in {models.CollectiveOfferDisplayedStatus.ARCHIVED, models.CollectiveOfferDisplayedStatus.HIDDEN}:
+        # get the status when the offer is not archived / hidden and compute the history up to this status
+        base_status = offer.get_displayed_status(with_archived=False, with_hidden=False)
+        base_status_data = _get_history_status_data(offer=offer, status=base_status)
+        history = _get_collective_offer_past_history(
+            offer=offer, from_status=base_status_data.past_from_status, to_status=base_status_data.past_to_status
+        )
+
+        # add the status preceding ARCHIVED or HIDDEN, only if it is not a transitional step like "WAITING_FOR_BOOK"
+        if base_status_data.current_status in set(models.CollectiveOfferDisplayedStatus):
+            history.append(
+                CollectiveOfferHistoryStep(
+                    offer_status=base_status_data.current_status,
+                    step_status=CollectiveOfferHistoryStepStatus.PAST,
+                    datetime=_get_status_date(offer, base_status_data.current_status),
+                )
+            )
+
+        history.append(
+            CollectiveOfferHistoryStep(
+                offer_status=status,
+                step_status=CollectiveOfferHistoryStepStatus.CURRENT,
+                datetime=_get_status_date(offer, status),
+            )
+        )
+
+        return history
+
+    status_data = _get_history_status_data(offer=offer, status=status)
+    return [
+        *_get_collective_offer_past_history(
+            offer=offer, from_status=status_data.past_from_status, to_status=status_data.past_to_status
+        ),
+        CollectiveOfferHistoryStep(
+            offer_status=status_data.current_status,
+            step_status=CollectiveOfferHistoryStepStatus.CURRENT,
+            datetime=_get_status_date(offer, status_data.current_status),
+        ),
+        *_get_collective_offer_future_history(from_status=status_data.future_from_status),
+    ]

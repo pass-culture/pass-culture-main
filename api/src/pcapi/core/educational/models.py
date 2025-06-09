@@ -895,7 +895,10 @@ class CollectiveOffer(
 
     @property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
-        if self.isArchived:
+        return self.get_displayed_status(with_archived=True, with_hidden=True)
+
+    def get_displayed_status(self, with_archived: bool, with_hidden: bool) -> CollectiveOfferDisplayedStatus:
+        if with_archived and self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
         match self.validation:
@@ -906,7 +909,7 @@ class CollectiveOffer(
             case offer_mixin.OfferValidationStatus.REJECTED:
                 return CollectiveOfferDisplayedStatus.REJECTED
             case offer_mixin.OfferValidationStatus.APPROVED:
-                if not self.isActive:
+                if with_hidden and not self.isActive:
                     return CollectiveOfferDisplayedStatus.HIDDEN
 
                 last_booking = self.lastBooking
