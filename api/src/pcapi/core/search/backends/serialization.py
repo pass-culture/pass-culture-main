@@ -222,6 +222,10 @@ class AlgoliaSerializationMixin:
             (headline_offer for headline_offer in offer.headlineOffers if headline_offer.isActive), None
         )
 
+        chronicles_count = offer.product.chroniclesCount if offer.product and offer.product.chroniclesCount else None
+        headlines_count = offer.product.headlinesCount if offer.product and offer.product.headlinesCount else None
+        likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else None
+
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -230,6 +234,7 @@ class AlgoliaSerializationMixin:
             "offer": {
                 "allocineId": extra_data.get("allocineId"),
                 "artist": " ".join(extra_data_artists).strip() or None,
+                "chroniclesCount": chronicles_count,
                 "bookMacroSection": macro_section,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
@@ -239,6 +244,7 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel2": gtl_code_2,
                 "gtlCodeLevel3": gtl_code_3,
                 "gtlCodeLevel4": gtl_code_4,
+                "headlinesCount": headlines_count,
                 "indexedAt": datetime.datetime.utcnow().isoformat(),
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
@@ -249,7 +255,7 @@ class AlgoliaSerializationMixin:
                 "isThing": offer.isThing,
                 "last30DaysBookings": last_30_days_bookings,
                 "last30DaysBookingsRange": get_last_30_days_bookings_range(last_30_days_bookings),
-                "likes": offer.product.likesCount if offer.product else offer.likesCount,
+                "likes": likes_count,
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_labels,
                 "name": offer.name,
