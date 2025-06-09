@@ -1,5 +1,4 @@
-import { useFormikContext } from 'formik'
-import { useMemo } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
@@ -26,16 +25,19 @@ export const AccessibilityForm = ({
   externalAccessibilityData,
   isSubSubSection,
 }: AccessiblityFormProps) => {
-  const { values, setFieldValue, initialValues, getFieldMeta } =
-    useFormikContext<VenueEditionFormValues>()
+  const { watch, setValue, formState } =
+    useFormContext<VenueEditionFormValues>()
+
+  const values = watch()
+
   const checkboxGroup = useAccessibilityOptions(
-    setFieldValue,
+    (name, value) => setValue(name as keyof VenueEditionFormValues, value),
     values.accessibility
   )
 
-  const hasChangedSinceLastSubmit = useMemo(
-    () => !isEqual(values.accessibility, initialValues.accessibility),
-    [values.accessibility, initialValues.accessibility]
+  const hasChangedSinceLastSubmit = !isEqual(
+    values.accessibility,
+    formState.defaultValues?.accessibility
   )
 
   const isAccessibilityDefinedViaAccesLibre = !!externalAccessibilityData
@@ -58,11 +60,11 @@ export const AccessibilityForm = ({
         <>
           <FormLayout.Row>
             <CheckboxGroup
-              group={checkboxGroup}
               name="accessibility"
+              group={checkboxGroup}
               required
               legend="Votre établissement est accessible au public en situation de handicap :"
-              error={getFieldMeta('accessibility').error}
+              error={formState.errors.accessibility?.message}
             />
           </FormLayout.Row>
           {hasChangedSinceLastSubmit && (
@@ -71,12 +73,11 @@ export const AccessibilityForm = ({
                 label="Appliquer le changement à toutes les offres existantes"
                 checked={values.isAccessibilityAppliedOnAllOffers}
                 onChange={(e) =>
-                  setFieldValue(
+                  setValue(
                     'isAccessibilityAppliedOnAllOffers',
                     e.target.checked
                   )
                 }
-                name="isAccessibilityAppliedOnAllOffers"
                 className={styles['apply-on-all-offers-checkbox']}
               />
             </FormLayout.Row>

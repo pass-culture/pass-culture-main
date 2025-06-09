@@ -1,10 +1,5 @@
-import {
-  Form,
-  FormikConsumer,
-  FormikProps,
-  FormikProvider,
-  useFormik,
-} from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -20,11 +15,11 @@ import { getFormattedAddress } from 'commons/utils/getFormattedAddress'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { getPathToNavigateTo } from './context'
@@ -41,6 +36,16 @@ interface VenueFormProps {
   venue: GetVenueResponseModel
 }
 
+const apiFieldsMap: Record<string, string> = {
+  'contact.email': 'email',
+  'contact.phoneNumber': 'phoneNumber',
+  'contact.website': 'webSite',
+  visualDisabilityCompliant: 'accessibility.visual',
+  mentalDisabilityCompliant: 'accessibility.mental',
+  motorDisabilityCompliant: 'accessibility.motor',
+  audioDisabilityCompliant: 'accessibility.audio',
+}
+
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -51,9 +56,26 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const initialValues = setInitialFormValues(venue)
 
-  const resetOpeningHoursAndAccessibility = async (
-    formikProps: FormikProps<VenueEditionFormValues>
-  ) => {
+  const isAccessibilityDefinedViaAccesLibre = !!venue.externalAccessibilityData
+  const mandatoryFields = {
+    isOpenToPublic: isOpenToPublicEnabled,
+    // If FF is enabled, acccessibility is mandatory depending on
+    // isOpenToPublic value / toggle, which is managed within yup validation schema instead.
+    accessibility:
+      !isOpenToPublicEnabled &&
+      !venue.isVirtual &&
+      !isAccessibilityDefinedViaAccesLibre,
+  }
+  const hasMandatoryInfo =
+    mandatoryFields.accessibility || mandatoryFields.isOpenToPublic
+
+  const methods = useForm<VenueEditionFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(getValidationSchema({ mandatoryFields }) as any),
+    mode: 'onBlur',
+  })
+
+  const resetOpeningHoursAndAccessibility = () => {
     const fieldsToReset: (keyof VenueEditionFormValues)[] = [
       'days',
       'monday',
@@ -68,11 +90,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     ]
 
     for (const field of fieldsToReset) {
-      await formikProps.setFieldValue(field, initialValues[field])
+      methods.setValue(field, initialValues[field])
     }
   }
 
-  const onSubmit = async function (values: VenueEditionFormValues) {
+  const onSubmit = async (values: VenueEditionFormValues) => {
     try {
       await api.editVenue(
         venue.id,
@@ -99,15 +121,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       if (isErrorAPIError(error)) {
         formErrors = error.body
       }
-      const apiFieldsMap: Record<string, string> = {
-        'contact.email': 'email',
-        'contact.phoneNumber': 'phoneNumber',
-        'contact.website': 'webSite',
-        visualDisabilityCompliant: 'accessibility.visual',
-        mentalDisabilityCompliant: 'accessibility.mental',
-        motorDisabilityCompliant: 'accessibility.motor',
-        audioDisabilityCompliant: 'accessibility.audio',
-      }
 
       if (!formErrors || Object.keys(formErrors).length === 0) {
         notify.error('Erreur inconnue lors de la sauvegarde de la structure.')
@@ -115,8 +128,13 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
-        formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
-        formik.setStatus('apiError')
+        const error = serializeApiErrors(formErrors, apiFieldsMap)
+        const field = Object.keys(error)[0]
+
+        methods.setError(field as keyof VenueEditionFormValues, {
+          type: 'apiError',
+          message: error[field]?.toString(),
+        })
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
@@ -126,29 +144,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       })
     }
   }
-  const isAccessibilityDefinedViaAccesLibre = !!venue.externalAccessibilityData
-  const mandatoryFields = {
-    isOpenToPublic: isOpenToPublicEnabled,
-    // If FF is enabled, acccessibility is mandatory depending on
-    // isOpenToPublic value / toggle, which is managed within yup validation schema instead.
-    accessibility:
-      !isOpenToPublicEnabled &&
-      !venue.isVirtual &&
-      !isAccessibilityDefinedViaAccesLibre,
-  }
-  const hasMandatoryInfo =
-    mandatoryFields.accessibility || mandatoryFields.isOpenToPublic
-
-  const formik = useFormik({
-    initialValues: initialValues,
-    onSubmit: onSubmit,
-    validationSchema: getValidationSchema({ mandatoryFields }),
-  })
 
   return (
-    <FormikProvider value={formik}>
-      <Form>
-        <ScrollToFirstErrorAfterSubmit />
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations pour le grand public">
             {hasMandatoryInfo && <MandatoryInfo />}
@@ -162,11 +162,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             >
               <FormLayout.Row>
                 <TextArea
-                  name="description"
                   label="Description"
                   description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
                   maxLength={1000}
-                  isOptional
+                  {...methods.register('description')}
+                  error={methods.formState.errors.description?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
@@ -174,22 +174,22 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               <FormLayout.SubSection title="Accueil du public">
                 <FormLayout.Row>
                   <OpenToPublicToggle
-                    onChange={async (e) => {
-                      await formik.setFieldValue(
+                    onChange={(e) => {
+                      methods.setValue(
                         'isOpenToPublic',
-                        e.target.value
+                        e.target.value.toString()
                       )
-
                       if (e.target.value === 'false') {
-                        await resetOpeningHoursAndAccessibility(formik)
+                        resetOpeningHoursAndAccessibility()
                       }
                     }}
                     radioDescriptions={{
                       yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
                     }}
+                    isOpenToPublic={methods.watch('isOpenToPublic')}
                   />
                 </FormLayout.Row>
-                {formik.values.isOpenToPublic === 'true' && (
+                {methods.watch('isOpenToPublic') === 'true' && (
                   <>
                     <FormLayout.SubSubSection
                       title="Adresse et horaires"
@@ -203,7 +203,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                             styles['opening-hours-subsubsection-address-input']
                           }
                           disabled
-                          isOptional
                           value={getFormattedAddress(venue.address)}
                         />
                         <Callout
@@ -251,46 +250,41 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             >
               <FormLayout.Row>
                 <PhoneNumberInput
-                  name="phoneNumber"
+                  {...methods.register('phoneNumber')}
                   label="Téléphone"
-                  isOptional
+                  error={methods.formState.errors.phoneNumber?.message}
                 />
               </FormLayout.Row>
               <FormLayout.Row>
                 <TextInput
-                  name="email"
                   label="Adresse email"
                   description="Format : email@exemple.com"
-                  isOptional
+                  {...methods.register('email')}
+                  error={methods.formState.errors.email?.message}
                 />
               </FormLayout.Row>
               <FormLayout.Row>
                 <TextInput
-                  name="webSite"
                   label="URL de votre site web"
                   description="Format : https://exemple.com"
-                  isOptional
+                  {...methods.register('webSite')}
+                  error={methods.formState.errors.webSite?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
           </FormLayout.Section>
         </FormLayout>
 
-        <FormikConsumer>
-          {(formik) => (
-            <>
-              <VenueFormActionBar
-                venue={venue}
-                disableFormSubmission={!formik.dirty}
-                isSubmitting={formik.isSubmitting}
-              />
-              <RouteLeavingGuardVenueEdition
-                shouldBlock={formik.dirty && !formik.isSubmitting}
-              />
-            </>
-          )}
-        </FormikConsumer>
-      </Form>
-    </FormikProvider>
+        <VenueFormActionBar
+          venue={venue}
+          isSubmitting={methods.formState.isSubmitting}
+        />
+        <RouteLeavingGuardVenueEdition
+          shouldBlock={
+            methods.formState.isDirty && !methods.formState.isSubmitting
+          }
+        />
+      </form>
+    </FormProvider>
   )
 }

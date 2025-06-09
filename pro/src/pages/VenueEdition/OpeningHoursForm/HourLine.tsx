@@ -1,13 +1,13 @@
 import cn from 'classnames'
-import { useFormikContext } from 'formik'
 import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { mapDayToFrench } from 'commons/utils/date'
 import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 
 import { Day, VenueEditionFormValues } from '../types'
 
@@ -18,18 +18,24 @@ type HourLineProps = {
 }
 
 export function HourLine({ day }: HourLineProps) {
-  const { setFieldValue, values, setFieldTouched } =
-    useFormikContext<VenueEditionFormValues>()
+  const {
+    setValue,
+    watch,
+    register,
+    formState: { errors },
+  } = useFormContext<VenueEditionFormValues>()
+
+  const values = watch()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
     Boolean(values[day]?.afternoonStartingHour)
   )
 
-  async function removeAfternoon() {
+  function removeAfternoon() {
     setIsFullLineDisplayed(false)
 
-    await setFieldValue(`${day}.afternoonStartingHour`, '')
-    await setFieldValue(`${day}.afternoonEndingHour`, '')
-    await setFieldValue(`${day}.isAfternoonOpen`, false)
+    setValue(`${day}.afternoonStartingHour`, '')
+    setValue(`${day}.afternoonEndingHour`, '')
+    setValue(`${day}.isAfternoonOpen`, false)
   }
 
   return (
@@ -49,9 +55,10 @@ export function HourLine({ day }: HourLineProps) {
         >
           <TimePicker
             label="Horaire d’ouverture 1"
-            name={`${day}.morningStartingHour`}
-            isLabelHidden
+            {...register(`${day}.morningStartingHour`)}
             className={styles['time-picker']}
+            error={errors[`${day}`]?.morningStartingHour?.message}
+            isLabelHidden
           />
         </td>
         <td
@@ -63,10 +70,11 @@ export function HourLine({ day }: HourLineProps) {
             <span className={styles['top-aligned-content']}>-</span>
             <TimePicker
               label="Horaire de fermeture 1"
-              name={`${day}.morningEndingHour`}
-              isLabelHidden
+              {...register(`${day}.morningEndingHour`)}
               className={styles['time-picker']}
-              min={values[day]?.morningStartingHour}
+              suggestedTimeList={{ min: values[day]?.morningStartingHour }}
+              error={errors[`${day}`]?.morningEndingHour?.message}
+              isLabelHidden
             />
           </span>
         </td>
@@ -80,10 +88,8 @@ export function HourLine({ day }: HourLineProps) {
               variant={ButtonVariant.TERNARY}
               className={styles['top-aligned-button']}
               icon={fullMoreIcon}
-              onClick={async () => {
-                await setFieldValue(`${day}.isAfternoonOpen`, true)
-                await setFieldTouched(`${day}.afternoonStartingHour`, false)
-                await setFieldTouched(`${day}.afternoonEndingHour`, false)
+              onClick={() => {
+                setValue(`${day}.isAfternoonOpen`, true)
                 setIsFullLineDisplayed(true)
               }}
               tooltipContent="Ajouter une plage horaire"
@@ -96,10 +102,11 @@ export function HourLine({ day }: HourLineProps) {
           <td className={styles['hour-cell']}>
             <TimePicker
               label="Horaire d’ouverture 2"
-              name={`${day}.afternoonStartingHour`}
-              isLabelHidden
+              {...register(`${day}.afternoonStartingHour`)}
               className={styles['time-picker']}
-              min={values[day]?.morningEndingHour}
+              suggestedTimeList={{ min: values[day]?.morningEndingHour }}
+              error={errors[`${day}`]?.afternoonStartingHour?.message}
+              isLabelHidden
             />
           </td>
           <td className={styles['hour-cell']}>
@@ -107,10 +114,11 @@ export function HourLine({ day }: HourLineProps) {
               <span className={styles['top-aligned-content']}>-</span>
               <TimePicker
                 label="Horaire de fermeture 2"
-                name={`${day}.afternoonEndingHour`}
-                isLabelHidden
+                {...register(`${day}.afternoonEndingHour`)}
                 className={styles['time-picker']}
-                min={values[day]?.afternoonStartingHour}
+                suggestedTimeList={{ min: values[day]?.afternoonStartingHour }}
+                error={errors[`${day}`]?.afternoonEndingHour?.message}
+                isLabelHidden
               />
             </span>
           </td>

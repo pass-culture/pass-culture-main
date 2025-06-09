@@ -17,10 +17,11 @@ type TimePickerProps = {
   /** Name of the input. Used for identifying it in an uncontrolled form, and for referencing the error */
   name: string
   className?: string
-  label: string | React.ReactNode
+  label?: string | React.ReactNode
   required?: boolean
   error?: string
   suggestedTimeList?: SuggestedTimeList
+  isLabelHidden?: boolean
 }
 
 export const TimePicker = forwardRef(
@@ -37,6 +38,7 @@ export const TimePicker = forwardRef(
       onChange,
       onBlur,
       suggestedTimeList,
+      isLabelHidden = false,
     }: TimePickerProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -46,7 +48,12 @@ export const TimePicker = forwardRef(
     return (
       <div className={classNames(styles['time-picker'], className)}>
         <div className={styles['time-picker-field']}>
-          <label htmlFor={labelId} className={styles['label']}>
+          <label
+            htmlFor={labelId}
+            className={classNames(styles['label'], {
+              [styles['visually-hidden']]: isLabelHidden,
+            })}
+          >
             {label}
             {required && asterisk ? ' *' : ''}
           </label>

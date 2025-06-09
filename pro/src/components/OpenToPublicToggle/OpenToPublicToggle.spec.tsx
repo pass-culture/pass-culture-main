@@ -1,31 +1,26 @@
-import { screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik, useFormikContext } from 'formik'
-import { Form } from 'react-router'
-
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   OpenToPublicToggle,
   OpenToPublicToggleProps,
 } from './OpenToPublicToggle'
 
-function RenderToggle({ props }: { props: Partial<OpenToPublicToggleProps> }) {
-  const { handleChange } = useFormikContext()
-  return <OpenToPublicToggle {...{ onChange: handleChange, ...props }} />
-}
-
-const renderOpenToPublicToggle = (
+function renderOpenToPublicToggle(
   isOpenToPublic: 'true' | 'false' = 'true',
   props: Partial<OpenToPublicToggleProps> = {}
-) => {
-  return renderWithProviders(
-    <Formik initialValues={{ isOpenToPublic }} onSubmit={vi.fn()}>
-      <Form noValidate>
-        <RenderToggle props={props} />
-      </Form>
-    </Formik>
-  )
+) {
+  const Wrapper = () => {
+    const methods = useForm({ defaultValues: {} })
+    return (
+      <FormProvider {...methods}>
+        <OpenToPublicToggle {...props} isOpenToPublic={isOpenToPublic} />
+      </FormProvider>
+    )
+  }
+
+  render(<Wrapper />)
 }
 
 const LABELS = {
@@ -57,15 +52,11 @@ describe('OpenToPublicToggle', () => {
 
     const yesDescription = await screen.findByText(LABELS.yes.description)
     expect(yesDescription).toBeInTheDocument()
-
-    const noRadio = await screen.findByRole('radio', { name: LABELS.no.label })
-    await userEvent.click(noRadio)
-
-    const noDescription = await screen.findByText(LABELS.no.description)
-    expect(noDescription).toBeInTheDocument()
   })
 
-  it('should use custom radio descriptions', async () => {
+  it('should use custom radio descriptions for yes', async () => {
+    const onChange = vi.fn()
+
     const customRadioDescriptions = {
       yes: 'Custom yes description',
       no: 'Custom no description',
@@ -73,16 +64,28 @@ describe('OpenToPublicToggle', () => {
 
     renderOpenToPublicToggle('true', {
       radioDescriptions: customRadioDescriptions,
+      onChange,
     })
 
     const yesDescription = await screen.findByText(customRadioDescriptions.yes)
     expect(yesDescription).toBeInTheDocument()
+  })
 
-    const noRadio = await screen.findByRole('radio', { name: LABELS.no.label })
-    await userEvent.click(noRadio)
+  it('should use custom radio descriptions for no', async () => {
+    const onChange = vi.fn()
 
-    const noDescription = await screen.findByText(customRadioDescriptions.no)
-    expect(noDescription).toBeInTheDocument()
+    const customRadioDescriptions = {
+      yes: 'Custom yes description',
+      no: 'Custom no description',
+    }
+
+    renderOpenToPublicToggle('false', {
+      radioDescriptions: customRadioDescriptions,
+      onChange,
+    })
+
+    const yesDescription = await screen.findByText(customRadioDescriptions.no)
+    expect(yesDescription).toBeInTheDocument()
   })
 
   it('should call onChange when a radio button is clicked', async () => {
