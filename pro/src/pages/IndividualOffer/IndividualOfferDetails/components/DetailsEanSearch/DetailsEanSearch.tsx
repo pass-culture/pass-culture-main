@@ -1,10 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState, useEffect, useId } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError, getError } from 'apiClient/helpers'
+import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullCloseIcon from 'icons/full-close.svg'

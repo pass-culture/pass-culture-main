@@ -695,20 +695,16 @@ describe('VenueEditionFormScreen', () => {
               features: ['WIP_IS_OPEN_TO_PUBLIC'],
             }
           )
-
           expect(baseVenue.motorDisabilityCompliant).toBe(false)
           let visualAccessibilityCheckbox = screen.getByRole('checkbox', {
             name: 'Moteur',
           })
           await userEvent.click(visualAccessibilityCheckbox)
           expect(visualAccessibilityCheckbox).toBeChecked()
-
           const noRadio = await screen.findByRole('radio', { name: 'Non' })
           await userEvent.click(noRadio)
-
           const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
           await userEvent.click(yesRadio)
-
           visualAccessibilityCheckbox = screen.getByRole('checkbox', {
             name: 'Moteur',
           })

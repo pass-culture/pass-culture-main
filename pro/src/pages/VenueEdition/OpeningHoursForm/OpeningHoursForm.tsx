@@ -1,10 +1,10 @@
 import cn from 'classnames'
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { mapDayToFrench } from 'commons/utils/date'
 import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
 
-import { VenueEditionFormValues, Day } from '../types'
+import { Day, VenueEditionFormValues } from '../types'
 
 import { HourLine } from './HourLine'
 import styles from './OpeningHoursForm.module.scss'
@@ -21,10 +21,12 @@ export const daysOfWeek: Day[] = [
 
 export function OpeningHoursForm() {
   const {
-    values: { days },
-    setFieldValue,
-    setFieldTouched,
-  } = useFormikContext<VenueEditionFormValues>()
+    watch,
+    setValue: setFieldValue,
+    // setFieldTouched,
+  } = useFormContext<VenueEditionFormValues>()
+
+  const days = watch('days')
 
   return (
     <>
@@ -42,23 +44,19 @@ export function OpeningHoursForm() {
               className={styles['day-checkbox']}
               checked={days.includes(day)}
               tooltipContent={dayLabel}
-              onChange={async (e) => {
+              onChange={(e) => {
                 let newDays = new Set(days)
                 if (e.target.checked) {
                   newDays.add(day)
                 } else {
                   newDays.delete(day)
                 }
-                await setFieldValue('days', Array.from(newDays))
+                setFieldValue('days', Array.from(newDays))
                 if (!e.target.checked) {
-                  await setFieldValue(`${day}.morningStartingHour`, '')
-                  await setFieldValue(`${day}.morningEndingHour`, '')
-                  await setFieldValue(`${day}.afternoonStartingHour`, '')
-                  await setFieldValue(`${day}.afternoonEndingHour`, '')
-                  await setFieldTouched(`${day}.morningStartingHour`, false)
-                  await setFieldTouched(`${day}.morningEndingHour`, false)
-                  await setFieldTouched(`${day}.afternoonStartingHour`, false)
-                  await setFieldTouched(`${day}.afternoonEndingHour`, false)
+                  setFieldValue(`${day}.morningStartingHour`, '')
+                  setFieldValue(`${day}.morningEndingHour`, '')
+                  setFieldValue(`${day}.afternoonStartingHour`, '')
+                  setFieldValue(`${day}.afternoonEndingHour`, '')
                 }
               }}
             />

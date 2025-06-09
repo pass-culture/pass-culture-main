@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Form, Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { AccessibilityFormValues } from 'commons/core/shared/types'
 import {
@@ -13,24 +13,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { AccessibilityForm, AccessiblityFormProps } from './AccessibilityForm'
 
 const onSubmit = vi.fn()
-
-const renderAccessibility = (
-  initialValues: Partial<VenueEditionFormValues>,
-  props: AccessiblityFormProps,
-  overrides: RenderWithProvidersOptions = {}
-) => {
-  return renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      <Form>
-        <AccessibilityForm {...props} />
-        <Button type="submit" isLoading={false}>
-          Submit
-        </Button>
-      </Form>
-    </Formik>,
-    overrides
-  )
-}
 
 const MOCK_DATA = {
   externalAccessibilityId: '123',
@@ -82,6 +64,31 @@ const LABELS = {
       'Handicap visuel',
     ],
   },
+}
+
+function renderAccessibility(
+  initialValues: Partial<VenueEditionFormValues>,
+  props: AccessiblityFormProps,
+  overrides: RenderWithProvidersOptions = {}
+) {
+  const Wrapper = () => {
+    const methods = useForm({
+      defaultValues: initialValues,
+    })
+
+    return (
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <AccessibilityForm {...props} />
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
+        </form>
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<Wrapper />, overrides)
 }
 
 describe('Accessibility', () => {
