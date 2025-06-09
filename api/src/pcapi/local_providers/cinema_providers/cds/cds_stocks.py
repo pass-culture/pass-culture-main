@@ -59,6 +59,7 @@ class CDSStocks(LocalProvider):
             account_id=self.accountId,
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
+            request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
         self.movies: Iterator[MediaCDS] = iter(self.client_cds.get_venue_movies())
         self.media_options = self.client_cds.get_media_options()

@@ -11,6 +11,7 @@ import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
+from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
 from pcapi.connectors.serialization import cgr_serializers
@@ -43,7 +44,9 @@ class CGRStocks(LocalProvider):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
-        self.cgr_client_api = CGRClientAPI(self.cinema_id)
+        self.cgr_client_api = CGRClientAPI(
+            self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
+        )
         self.isDuo = bool(venue_provider.isDuoOffers)
         self.films: Iterator[cgr_serializers.Film] = iter(self.cgr_client_api.get_films())
         self.last_offer: offers_models.Offer | None = None
