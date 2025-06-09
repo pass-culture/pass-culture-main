@@ -93,22 +93,24 @@ export const RadioButton = forwardRef(
           })}
         >
           <label htmlFor={id} className={styles['radio-button-label']}>
-            <input
-              type="radio"
-              value={value}
-              className={styles[`radio-button-input`]}
-              id={id}
-              ref={ref}
-              onChange={onChange}
-              onBlur={onBlur}
-              disabled={disabled}
-              name={name}
-            />
-            <div>
-              {label}
-              {description && isVariantDetailed && (
-                <p className={styles['description']}>{description}</p>
-              )}
+            <div className={styles['radio-button-left']}>
+              <input
+                type="radio"
+                value={value}
+                className={styles[`radio-button-input`]}
+                id={id}
+                ref={ref}
+                onChange={onChange}
+                onBlur={onBlur}
+                disabled={disabled}
+                name={name}
+              />
+              <div>
+                {label}
+                {description && isVariantDetailed && (
+                  <p className={styles['description']}>{description}</p>
+                )}
+              </div>
             </div>
             {asset && (
               <RadioButtonAsset
