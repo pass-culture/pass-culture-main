@@ -72,8 +72,8 @@ export const OfferEducationalStock = <
 
   const preventPriceIncrease = Boolean(
     isCollectiveOffer(offer) &&
-      (offer.lastBookingStatus === CollectiveBookingStatus.CONFIRMED ||
-        (offer.lastBookingStatus === CollectiveBookingStatus.USED &&
+      (offer.booking?.status === CollectiveBookingStatus.CONFIRMED ||
+        (offer.booking?.status === CollectiveBookingStatus.USED &&
           startDatetime &&
           isBefore(new Date(), addDays(new Date(startDatetime), 2))))
   )

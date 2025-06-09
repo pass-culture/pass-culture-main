@@ -64,11 +64,10 @@ class Returns200Test:
         assert response_json["imageCredit"] is None
         assert response_json["imageUrl"] is None
         assert "dateCreated" in response_json
-        assert "institution" in response.json
-        assert response.json["isVisibilityEditable"] is True
+        assert "institution" in response_json
+        assert response_json["isVisibilityEditable"] is True
         assert response_json["id"] == offer.id
-        assert response_json["lastBookingStatus"] is None
-        assert response_json["lastBookingId"] is None
+        assert response_json["booking"] is None
         assert response_json["teacher"] == {
             "email": offer.teacher.email,
             "firstName": offer.teacher.firstName,
@@ -260,7 +259,6 @@ class Returns200Test:
                 client.get(f"/collective/offers/{offer_id}")
 
     def test_last_booking_fields(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -271,17 +269,14 @@ class Returns200Test:
             collectiveStock=stock, status=educational_models.CollectiveBookingStatus.REIMBURSED
         )
 
-        # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
-        assert response_json["lastBookingId"] == booking.id
-        assert response_json["lastBookingStatus"] == booking.status.value
+        assert response_json["booking"] == {"id": booking.id, "status": booking.status.value}
 
     def test_dates_on_offer(self, client):
         beginningDate = datetime.utcnow() + timedelta(days=100)

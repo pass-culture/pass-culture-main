@@ -381,6 +381,14 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class GetCollectiveOfferBookingResponseModel(BaseModel):
+    id: int
+    status: educational_models.CollectiveBookingStatus
+
+    class Config:
+        orm_mode = True
+
+
 def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> GetCollectiveOfferLocationModel | None:
@@ -497,11 +505,10 @@ class GetCollectiveOfferProviderResponseModel(BaseModel):
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
+    lastBooking: GetCollectiveOfferBookingResponseModel | None = Field(alias="booking")
     institution: EducationalInstitutionResponseModel | None
     isVisibilityEditable: bool
     templateId: int | None
-    lastBookingStatus: educational_models.CollectiveBookingStatus | None
-    lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
     provider: GetCollectiveOfferProviderResponseModel | None

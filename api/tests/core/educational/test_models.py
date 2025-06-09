@@ -687,7 +687,7 @@ class CollectiveOfferDisplayedStatusTest:
         )
         factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=datetime.datetime.utcnow())
 
-        assert offer.lastBookingStatus == CollectiveBookingStatus.REIMBURSED
+        assert offer.lastBooking.status == CollectiveBookingStatus.REIMBURSED
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
 
 

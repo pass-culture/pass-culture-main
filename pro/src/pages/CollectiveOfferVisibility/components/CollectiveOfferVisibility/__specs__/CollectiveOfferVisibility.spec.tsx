@@ -112,8 +112,10 @@ describe('CollectiveOfferVisibility', () => {
   it('should display booking link for sold out offer with pending booking', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.SOLD_OUT,
-      lastBookingStatus: CollectiveBookingStatus.PENDING,
-      lastBookingId: 76,
+      booking: {
+        id: 76,
+        status: CollectiveBookingStatus.PENDING
+      }
     })
 
     renderVisibilityStep({

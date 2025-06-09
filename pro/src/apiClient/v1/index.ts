@@ -105,6 +105,7 @@ export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAc
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
 export { GenderEnum } from './models/GenderEnum';
 export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferResponseModel';
+export type { GetCollectiveOfferBookingResponseModel } from './models/GetCollectiveOfferBookingResponseModel';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
 export type { GetCollectiveOfferLocationModel } from './models/GetCollectiveOfferLocationModel';
 export type { GetCollectiveOfferManagingOffererResponseModel } from './models/GetCollectiveOfferManagingOffererResponseModel';
