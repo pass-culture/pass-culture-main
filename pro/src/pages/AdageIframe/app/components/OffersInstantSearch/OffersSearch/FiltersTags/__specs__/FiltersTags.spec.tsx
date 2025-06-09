@@ -90,7 +90,6 @@ describe('FiltersTag', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
       eventAddressType: OfferAddressType.OFFERER_VENUE,
-      locationType: CollectiveLocationType.ADDRESS,
     })
     await userEvent.click(
       screen.getByText('Sortie chez un partenaire culturel')

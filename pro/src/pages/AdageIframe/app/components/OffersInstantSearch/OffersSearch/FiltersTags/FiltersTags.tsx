@@ -67,17 +67,13 @@ export const FiltersTags = ({
       return <></>
     }
 
-    const OaLabel =
+    const label =
+      values.eventAddressType === OfferAddressType.OFFERER_VENUE ||
       values.locationType === CollectiveLocationType.ADDRESS
         ? 'Sortie chez un partenaire culturel'
         : 'Intervention d’un partenaire culturel dans mon établissement'
 
-    const label =
-      values.eventAddressType === OfferAddressType.OFFERER_VENUE
-        ? 'Sortie chez un partenaire culturel'
-        : 'Intervention d’un partenaire culturel dans mon établissement'
-
-    return createTag(isCollectiveOaActive ? OaLabel : label, () => {
+    return createTag(label, () => {
       if (isCollectiveOaActive) {
         void setFieldValue('locationType', CollectiveLocationType.TO_BE_DEFINED)
       } else {
