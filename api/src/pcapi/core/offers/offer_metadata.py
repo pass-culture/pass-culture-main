@@ -113,7 +113,7 @@ def _get_book_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
         book_metadata["gtin13"] = ean
         work_example["isbn"] = ean
 
-    if extra_data.get("bookFormat") == providers_constants.BookFormat.POCHE.value:
+    if extra_data.get("bookFormat") == providers_constants.BookFormat.POCHE.name:
         work_example["bookFormat"] = "https://schema.org/Paperback"
     else:
         work_example["bookFormat"] = book_subcategories[offer.subcategoryId]

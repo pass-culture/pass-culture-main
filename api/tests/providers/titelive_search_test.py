@@ -468,7 +468,7 @@ class TiteliveBookSearchTest:
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
-        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
+        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.name
         assert product.ean == self.EAN_TEST
 
         assert product.extraData.get("gtl_id") == "03020300"
@@ -512,7 +512,7 @@ class TiteliveBookSearchTest:
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
-        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
+        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.name
         assert product.ean == self.EAN_TEST
 
         assert product.extraData.get("gtl_id") == "03020300"
@@ -875,7 +875,7 @@ class TiteliveBookSearchTest:
         product = db.session.query(offers_models.Product).one()
 
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
+        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.name
         assert product.ean == self.EAN_TEST
         assert product.ean == self.EAN_TEST
 

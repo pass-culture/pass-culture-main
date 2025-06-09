@@ -24,6 +24,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import get_offer_address
+from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.models import db
@@ -159,6 +160,11 @@ class AlgoliaSerializationMixin:
         )
         gtl_id = extra_data.get("gtl_id")
 
+        try:
+            book_format = provider_constants.BookFormat[extra_data.get("bookFormat") or ""].value
+        except KeyError:
+            book_format = None
+
         music_type_labels = []
         music_type = (extra_data.get("musicType") or "").strip()
         if music_type:
@@ -266,7 +272,7 @@ class AlgoliaSerializationMixin:
                 ),
                 "rankingWeight": offer.rankingWeight,
                 "releaseDate": release_date,
-                "bookFormat": extra_data.get("bookFormat"),
+                "bookFormat": book_format,
                 # TODO(thconte, 2025-12-23): keep searchGroups and remove
                 # remove searchGroupNamev2 once app minimal version has been bumped
                 "searchGroupNamev2": search_groups,

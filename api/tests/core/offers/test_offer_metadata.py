@@ -365,7 +365,7 @@ class OfferMetadataTest:
 
             def should_define_a_book_format_for_paperback_book(self):
                 offer = offers_factories.OfferFactory(
-                    subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"bookFormat": BookFormat.POCHE}
+                    subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"bookFormat": BookFormat.POCHE.name}
                 )
 
                 metadata = get_metadata_from_offer(offer)

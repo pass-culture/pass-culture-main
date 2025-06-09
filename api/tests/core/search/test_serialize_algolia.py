@@ -397,10 +397,10 @@ def test_serialize_offer_release_date():
 
 
 def test_serialize_offer_book_format():
-    product = offers_factories.ProductFactory(extraData={"bookFormat": BookFormat.BEAUX_LIVRES})
+    product = offers_factories.ProductFactory(extraData={"bookFormat": BookFormat.BEAUX_LIVRES.name})
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["bookFormat"] == "BEAUX LIVRES"
+    assert serialized["offer"]["bookFormat"] == "Beaux livres"
 
 
 def test_serialize_offer_forever_headline():
