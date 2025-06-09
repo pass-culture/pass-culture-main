@@ -1,3 +1,5 @@
+import datetime
+
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offers import api as offers_api
@@ -24,11 +26,28 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_ending_date=filters["period_ending_date"],
     )
     individual_offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(individual_offer_query)
+
+    publicationDatetime = None
+    bookingAllowedDatetime = None
+
     if is_active:
         individual_offer_future_query = individual_offer_query.join(models.Offer.futureOffer)
         for offer in individual_offer_future_query:
             reminders_notifications.notify_users_future_offer_activated(offer)
-    offers_api.batch_update_offers(individual_offer_query, {"isActive": is_active})
+
+        activation_datetime = datetime.datetime.now(datetime.timezone.utc)
+
+        publicationDatetime = activation_datetime
+        bookingAllowedDatetime = activation_datetime
+
+    offers_api.batch_update_offers(
+        individual_offer_query,
+        {
+            "isActive": is_active,
+            "bookingAllowedDatetime": bookingAllowedDatetime,
+            "publicationDatetime": publicationDatetime,
+        },
+    )
 
 
 @job(worker.low_queue)
