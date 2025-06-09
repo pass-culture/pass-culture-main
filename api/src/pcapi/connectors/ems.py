@@ -57,13 +57,18 @@ class EMSScheduleConnector(AbstractEMSConnector):
         return settings.EMS_API_URL
 
     def get_schedules(self, version: int = 0) -> ems_serializers.ScheduleResponse:
-        response = requests.get(url=self.build_url(), auth=self.build_auth(), params=self.build_query_params(version))
+        response = requests.get(
+            url=self.build_url(),
+            auth=self.build_auth(),
+            params=self.build_query_params(version),
+            timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+        )
 
         self._check_response_is_ok(response)
         return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
 
     def get_movie_poster_from_api(self, image_url: str) -> bytes:
-        api_response = requests.get(image_url)
+        api_response = requests.get(image_url, timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
 
         if api_response.status_code != 200:
             raise EMSAPIException(
@@ -78,7 +83,12 @@ class EMSSitesConnector(AbstractEMSConnector):
         return settings.EMS_SITES_API_URL
 
     def get_available_sites(self, version: int = 0) -> list[ems_serializers.Site]:
-        response = requests.get(url=self.build_url(), auth=self.build_auth(), params=self.build_query_params(version))
+        response = requests.get(
+            url=self.build_url(),
+            auth=self.build_auth(),
+            params=self.build_query_params(version),
+            timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+        )
 
         self._check_response_is_ok(response)
         serialized_site_response = pydantic_v1.parse_obj_as(ems_serializers.SitesResponse, response.json())

@@ -6,6 +6,7 @@ from typing import Iterator
 
 import PIL
 
+from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories
@@ -254,15 +255,15 @@ class BoostStocks(LocalProvider):
         return True
 
     def _get_showtimes(self) -> list[boost_serializers.ShowTime4]:
-        client_boost = BoostClientAPI(self.cinema_id)
+        client_boost = BoostClientAPI(self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         return client_boost.get_showtimes()
 
     def _get_boost_movie_poster(self, image_url: str) -> bytes:
-        client_boost = BoostClientAPI(self.cinema_id)
+        client_boost = BoostClientAPI(self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         return client_boost.get_movie_poster(image_url)
 
     def _get_cinema_attributs(self) -> list[boost_serializers.CinemaAttribut]:
-        client_boost = BoostClientAPI(self.cinema_id)
+        client_boost = BoostClientAPI(self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         return client_boost.get_cinemas_attributs()
 
 
