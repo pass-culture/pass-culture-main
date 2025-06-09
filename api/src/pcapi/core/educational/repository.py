@@ -1343,14 +1343,6 @@ def get_collective_offer_request_by_id(request_id: int) -> educational_models.Co
         raise educational_exceptions.CollectiveOfferRequestNotFound()
 
 
-def get_offerer_ids_from_collective_offers_ids(offers_ids: list[int]) -> set[int]:
-    query = db.session.query(offerers_models.Offerer.id)
-    query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-    query = query.join(educational_models.CollectiveOffer, offerers_models.Venue.collectiveOffers)
-    query = query.filter(educational_models.CollectiveOffer.id.in_(offers_ids))
-    return {result[0] for result in query.all()}
-
-
 def get_offerer_ids_from_collective_offers_template_ids(offers_ids: list[int]) -> set[int]:
     query = db.session.query(offerers_models.Offerer.id)
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
