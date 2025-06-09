@@ -4,9 +4,8 @@ import { useForm } from 'react-hook-form'
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
+import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -121,16 +120,9 @@ export const GenericCinemaProviderForm = ({
         )}
 
         <FormLayout.Row>
-          <Checkbox
+          <DuoCheckbox
             {...register('isDuo')}
             checked={Boolean(watch('isDuo'))}
-            label="Accepter les réservations duo"
-            description="Cette option permet au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur."
-            variant="detailed"
-            asset={{
-              variant: 'icon',
-              src: strokeDuoIcon,
-            }}
           />
         </FormLayout.Row>
 

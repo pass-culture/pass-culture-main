@@ -49,10 +49,12 @@ describe('GenericCinemaProviderEdit', () => {
     await renderComponent()
 
     expect(
-      screen.getByText('Accepter les réservations duo')
+      screen.getByText('Accepter les réservations “Duo“')
     ).toBeInTheDocument()
 
-    const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
+    const isDuoCheckbox = screen.getByLabelText(
+      /Accepter les réservations “Duo“/
+    )
     expect(isDuoCheckbox).toBeChecked()
   })
 
@@ -77,7 +79,9 @@ describe('GenericCinemaProviderEdit', () => {
   it('should allow toggling isDuo checkbox', async () => {
     await renderComponent()
 
-    const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
+    const isDuoCheckbox = screen.getByLabelText(
+      /Accepter les réservations “Duo“/
+    )
     expect(isDuoCheckbox).toBeChecked()
 
     await userEvent.click(isDuoCheckbox)

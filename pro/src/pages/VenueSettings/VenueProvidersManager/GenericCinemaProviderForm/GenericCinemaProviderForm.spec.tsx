@@ -25,7 +25,7 @@ const renderCinemaProviderForm = async (
     </Dialog.Root>
   )
 
-  await waitFor(() => screen.getByText('Accepter les réservations duo'))
+  await waitFor(() => screen.getByText('Accepter les réservations “Duo“'))
 }
 
 describe('GenericCinemaProviderForm', () => {
@@ -61,7 +61,7 @@ describe('GenericCinemaProviderForm', () => {
       await renderCinemaProviderForm(props)
 
       const isDuoCheckbox = screen.getByLabelText(
-        /Accepter les réservations duo/
+        /Accepter les réservations “Duo“/
       )
       expect(isDuoCheckbox).toBeInTheDocument()
       expect(isDuoCheckbox).toBeChecked()
@@ -129,7 +129,7 @@ describe('GenericCinemaProviderForm', () => {
       await renderCinemaProviderForm(props)
 
       const isDuoCheckbox = screen.getByLabelText(
-        /Accepter les réservations duo/
+        /Accepter les réservations “Duo“/
       )
       expect(isDuoCheckbox).not.toBeChecked()
     })

@@ -15,6 +15,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { isEqual } from 'commons/utils/isEqual'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   UNIQUE_PRICE,
@@ -25,7 +26,6 @@ import {
 } from 'components/IndividualOffer/PriceCategoriesScreen/form/constants'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -34,7 +34,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { PriceInput } from 'ui-kit/formV2/PriceInput/PriceInput'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
@@ -408,23 +407,11 @@ export const PriceCategoriesScreen = ({
                 className={styles['duo-section']}
                 title="Réservations “Duo”"
               >
-                <FormLayout.Row
-                  sideComponent={
-                    <InfoBox>
-                      Cette option permet au bénéficiaire de venir accompagné.
-                      La seconde place sera délivrée au même tarif que la
-                      première, quel que soit l’accompagnateur.
-                    </InfoBox>
-                  }
-                >
-                  <Checkbox
-                    {...register('isDuo')}
-                    checked={Boolean(watch('isDuo'))}
-                    label="Accepter les réservations “Duo“"
-                    disabled={isDisabled}
-                    variant="detailed"
-                  />
-                </FormLayout.Row>
+                <DuoCheckbox
+                  {...register('isDuo')}
+                  checked={Boolean(watch('isDuo'))}
+                  disabled={isDisabled}
+                />
               </FormLayout.Section>
             </FormLayout>
           )}
