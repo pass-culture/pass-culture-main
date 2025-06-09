@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from pcapi import settings
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -24,7 +25,10 @@ class PlaylistTest:
 
         criterion_name = criterion.name
         with assert_num_queries(1):
-            response = client.get(f"/institutional/playlist/{criterion_name}")
+            response = client.get(
+                f"/institutional/playlist/{criterion_name}",
+                headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
+            )
 
         assert response.status_code == 200, response.json
         assert sorted(response.json, key=lambda offer: offer["id"]) == [
@@ -54,7 +58,10 @@ class PlaylistTest:
         criteria_factories.OfferCriterionFactory(offerId=inactive_offer.id, criterionId=criterion.id)
         criteria_factories.OfferCriterionFactory(offerId=unvalidated_offer.id, criterionId=criterion.id)
 
-        response = client.get(f"/institutional/playlist/{criterion.name}")
+        response = client.get(
+            f"/institutional/playlist/{criterion.name}",
+            headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
+        )
 
         assert response.status_code == 200, response.json
         assert response.json == []
@@ -68,7 +75,10 @@ class PlaylistTest:
         criterion = criteria_factories.CriterionFactory()
         criteria_factories.OfferCriterionFactory(offerId=unbookable_offer.id, criterionId=criterion.id)
 
-        response = client.get(f"/institutional/playlist/{criterion.name}")
+        response = client.get(
+            f"/institutional/playlist/{criterion.name}",
+            headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
+        )
 
         assert response.status_code == 200, response.json
         assert response.json == []
@@ -83,7 +93,10 @@ class PlaylistTest:
         criterion = criteria_factories.CriterionFactory()
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criterion.id)
 
-        response = client.get(f"/institutional/playlist/{criterion.name}")
+        response = client.get(
+            f"/institutional/playlist/{criterion.name}",
+            headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
+        )
 
         assert response.status_code == 200, response.json
         assert response.json == [
@@ -95,3 +108,19 @@ class PlaylistTest:
                 "venue": {"id": offer.venue.id, "commonName": offer.venue.common_name},
             }
         ]
+
+    def test_playlist_requires_api_key(self, client):
+        criterion = criteria_factories.CriterionFactory()
+        response = client.get(f"/institutional/playlist/{criterion.name}")
+        assert response.status_code == 401
+        body = response.get_json()
+        assert "missing api key" in str(body).lower()
+
+    def test_playlist_wrong_api_key(self, client):
+        criterion = criteria_factories.CriterionFactory()
+        response = client.get(
+            f"/institutional/playlist/{criterion.name}", headers={"Authorization": "Bearer WRONG_KEY"}
+        )
+        assert response.status_code == 401
+        body = response.get_json()
+        assert "wrong api key" in str(body).lower()

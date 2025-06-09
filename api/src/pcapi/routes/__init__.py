@@ -11,6 +11,7 @@ class UrlPrefix(enum.Enum):
     ADAGE_IFRAME = "/adage-iframe"
     SAML = "/saml"
     AUTH = "/auth"
+    INSTITUTIONAL = "/institutional"
 
 
 def install_all_routes(app: Flask) -> None:
@@ -20,6 +21,7 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.apis import private_api
     from pcapi.routes.apis import public_api
     from pcapi.routes.auth.blueprint import auth_blueprint
+    from pcapi.routes.institutional.blueprint import institutional as institutional_blueprint
     from pcapi.routes.native.blueprint import native_blueprint
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.public import blueprints as public_blueprint
@@ -64,3 +66,4 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(private_api)
     app.register_blueprint(public_api)
     app.register_blueprint(auth_blueprint, url_prefix=UrlPrefix.AUTH.value)
+    app.register_blueprint(institutional_blueprint, url_prefix=UrlPrefix.INSTITUTIONAL.value)
