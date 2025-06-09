@@ -130,11 +130,13 @@ describe('ActionsBar', () => {
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+          isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+          isShowcase: true,
         }),
       ],
     })
@@ -152,7 +154,9 @@ describe('ActionsBar', () => {
         has_selected_all_offers: false,
       }
     )
-    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
+    expect(
+      api.patchCollectiveOffersTemplateActiveStatus
+    ).toHaveBeenLastCalledWith({
       ids: [1, 2],
       isActive: false,
     })
@@ -195,7 +199,7 @@ describe('ActionsBar', () => {
     )
   })
 
-  it('should only make one call if the ids all come from the bookable offer', async () => {
+  it('should show an error message when an error occurs after clicking on "Mettre en pause" button when a bookable offer is selected', async () => {
     renderActionsBar({
       ...props,
       areAllOffersSelected: false,
@@ -203,6 +207,7 @@ describe('ActionsBar', () => {
         collectiveOfferFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
@@ -215,14 +220,16 @@ describe('ActionsBar', () => {
     const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
-    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-      isActive: false,
-    })
+    expect(
+      screen.getByText(
+        'Une erreur est survenue'
+      )
+    )
 
     expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
       0
     )
+
   })
 
   it('should only make one call if the ids all come from template offer', async () => {
@@ -255,45 +262,6 @@ describe('ActionsBar', () => {
     })
 
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledTimes(0)
-  })
-
-  it('should make two calls if the ids come from template offer and bookable offer', async () => {
-    renderActionsBar({
-      ...props,
-      areAllOffersSelected: false,
-      selectedOffers: [
-        collectiveOfferFactory({
-          id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          isShowcase: true,
-        }),
-        collectiveOfferFactory({
-          id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          isShowcase: true,
-        }),
-        collectiveOfferFactory({
-          id: 3,
-          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        }),
-      ],
-    })
-
-    await userEvent.click(screen.getByText('Mettre en pause'))
-    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
-    await userEvent.click(confirmDeactivateButton)
-
-    expect(
-      api.patchCollectiveOffersTemplateActiveStatus
-    ).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-      isActive: false,
-    })
-
-    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: [3],
-      isActive: false,
-    })
   })
 
   it('should call tracker event when archiving an offer', async () => {
