@@ -12,6 +12,7 @@ from pcapi.core.educational import utils
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import db as db_utils
 
 
@@ -72,6 +73,10 @@ class CollectiveOfferFactory(BaseFactory):
     }
     interventionArea = ["93", "94", "95"]
     formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
+
+    validation: OfferValidationStatus
+    lastValidationDate: datetime.datetime
+    lastValidationType: OfferValidationType
 
     @classmethod
     def _create(
