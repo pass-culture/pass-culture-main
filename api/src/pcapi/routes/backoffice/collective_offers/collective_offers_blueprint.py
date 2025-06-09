@@ -345,7 +345,7 @@ def _get_collective_offers(
                 users_models.User.firstName,
                 users_models.User.lastName,
             ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.provider).load_only(
+            sa_orm.selectinload(educational_models.CollectiveOffer.provider).load_only(
                 providers_models.Provider.name,
             ),
         )
