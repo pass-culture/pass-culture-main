@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 import sqlalchemy as sqla
@@ -421,26 +420,13 @@ def patch_publish_offer(
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
 
-    publicationDatetime = None
-    bookingAllowedDatetime = None
-
     if body.is_active:
-        activation_datetime = datetime.datetime.now(datetime.timezone.utc)
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
         offers_future_query = query.join(models.Offer.futureOffer)
         for offer in offers_future_query:
             reminders_notifications.notify_users_future_offer_activated(offer)
-        publicationDatetime = activation_datetime
-        bookingAllowedDatetime = activation_datetime
 
-    offers_api.batch_update_offers(
-        query,
-        {
-            "isActive": body.is_active,
-            "bookingAllowedDatetime": bookingAllowedDatetime,
-            "publicationDatetime": publicationDatetime,
-        },
-    )
+    offers_api.batch_update_offers(query, {"isActive": body.is_active})
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])

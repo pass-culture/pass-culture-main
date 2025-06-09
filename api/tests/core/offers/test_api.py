@@ -7,6 +7,7 @@ import re
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
@@ -1926,22 +1927,34 @@ class BatchUpdateOffersTest:
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
 
         query = db.session.query(models.Offer).filter(models.Offer.id.in_({pending_offer.id}))
+        now = datetime.now(timezone.utc)
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": True})
+            with time_machine.travel(now, tick=False):
+                api.batch_update_offers(query, {"isActive": True})
 
-        assert not db.session.query(models.Offer).get(pending_offer.id).isActive
+        db.session.refresh(pending_offer)
+        assert not pending_offer.isActive
+        assert not pending_offer.publicationDatetime
+        assert not pending_offer.bookingAllowedDatetime
+
         mocked_async_index_offer_ids.assert_not_called()
 
         assert len(caplog.records) == 2
         first_record = caplog.records[0]
 
         assert first_record.message == "Batch update of offers: start"
-        assert first_record.extra == {"updated_fields": {"isActive": True}}
+        assert first_record.extra == {
+            "updated_fields": {"isActive": True, "publicationDatetime": now, "bookingAllowedDatetime": now}
+        }
 
         second_record = caplog.records[1]
 
         assert second_record.message == "Batch update of offers: end"
-        assert second_record.extra == {"updated_fields": {"isActive": True}, "nb_offers": 0, "nb_venues": 0}
+        assert second_record.extra == {
+            "updated_fields": {"isActive": True, "publicationDatetime": now, "bookingAllowedDatetime": now},
+            "nb_offers": 0,
+            "nb_venues": 0,
+        }
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate(self, mocked_async_index_offer_ids, caplog):
@@ -1954,14 +1967,38 @@ class BatchUpdateOffersTest:
         query = db.session.query(models.Offer).filter(
             models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
         )
+        now = datetime.now(timezone.utc)
+        now_without_tz = now.replace(tzinfo=None)
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": True})
+            with time_machine.travel(now, tick=False):
+                api.batch_update_offers(query, {"isActive": True})
 
-        assert db.session.query(models.Offer).get(offer1.id).isActive
-        assert db.session.query(models.Offer).get(offer2.id).isActive
-        assert not db.session.query(models.Offer).get(offer3.id).isActive
-        assert not db.session.query(models.Offer).get(rejected_offer.id).isActive
-        assert not db.session.query(models.Offer).get(pending_offer.id).isActive
+        db.session.refresh(offer1)
+        db.session.refresh(offer2)
+        db.session.refresh(offer3)
+        db.session.refresh(rejected_offer)
+        db.session.refresh(pending_offer)
+
+        assert offer1.isActive
+        assert offer1.publicationDatetime == now_without_tz
+        assert offer1.bookingAllowedDatetime == now_without_tz
+
+        assert offer2.isActive
+        assert offer2.publicationDatetime == now_without_tz
+        assert offer2.bookingAllowedDatetime == now_without_tz
+
+        assert not offer3.isActive
+        assert not offer3.publicationDatetime
+        assert not offer3.bookingAllowedDatetime
+
+        assert not rejected_offer.isActive
+        assert not rejected_offer.publicationDatetime
+        assert not rejected_offer.bookingAllowedDatetime
+
+        assert not pending_offer.isActive
+        assert not pending_offer.publicationDatetime
+        assert not pending_offer.bookingAllowedDatetime
+
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
@@ -1971,7 +2008,9 @@ class BatchUpdateOffersTest:
         third_record = caplog.records[2]
 
         assert first_record.message == "Batch update of offers: start"
-        assert first_record.extra == {"updated_fields": {"isActive": True}}
+        assert first_record.extra == {
+            "updated_fields": {"isActive": True, "publicationDatetime": now, "bookingAllowedDatetime": now}
+        }
 
         assert second_record.message == "Offers has been activated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
@@ -1979,20 +2018,37 @@ class BatchUpdateOffersTest:
         assert second_record.extra["venue_ids"] == {offer1.venueId, offer2.venueId}
 
         assert third_record.message == "Batch update of offers: end"
-        assert third_record.extra == {"updated_fields": {"isActive": True}, "nb_offers": 2, "nb_venues": 2}
+        assert third_record.extra == {
+            "updated_fields": {"isActive": True, "publicationDatetime": now, "bookingAllowedDatetime": now},
+            "nb_offers": 2,
+            "nb_venues": 2,
+        }
 
     def test_deactivate(self, caplog):
-        offer1 = factories.OfferFactory()
-        offer2 = factories.OfferFactory()
-        offer3 = factories.OfferFactory()
+        now = datetime.now(timezone.utc)
+        offer1 = factories.OfferFactory(publicationDatetime=now, bookingAllowedDatetime=now)
+        offer2 = factories.OfferFactory(publicationDatetime=now, bookingAllowedDatetime=now)
+        offer3 = factories.OfferFactory(publicationDatetime=now, bookingAllowedDatetime=now)
 
         query = db.session.query(models.Offer).filter(models.Offer.id.in_({offer1.id, offer2.id}))
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": False})
 
-        assert not db.session.query(models.Offer).get(offer1.id).isActive
-        assert not db.session.query(models.Offer).get(offer2.id).isActive
-        assert db.session.query(models.Offer).get(offer3.id).isActive
+        db.session.refresh(offer1)
+        db.session.refresh(offer2)
+        db.session.refresh(offer3)
+
+        assert not offer1.isActive
+        assert not offer1.publicationDatetime
+        assert not offer1.bookingAllowedDatetime
+
+        assert not offer2.isActive
+        assert not offer2.publicationDatetime
+        assert not offer2.bookingAllowedDatetime
+
+        assert offer3.isActive
+        assert offer3.publicationDatetime == now.replace(tzinfo=None)
+        assert offer3.bookingAllowedDatetime == now.replace(tzinfo=None)
 
         assert len(caplog.records) == 4
         first_record = caplog.records[0]
@@ -2000,7 +2056,9 @@ class BatchUpdateOffersTest:
         last_record = caplog.records[-1]
 
         assert first_record.message == "Batch update of offers: start"
-        assert first_record.extra == {"updated_fields": {"isActive": False}}
+        assert first_record.extra == {
+            "updated_fields": {"isActive": False, "publicationDatetime": None, "bookingAllowedDatetime": None}
+        }
 
         assert second_record.message == "Offers has been deactivated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
@@ -2008,7 +2066,11 @@ class BatchUpdateOffersTest:
         assert second_record.extra["venue_ids"] == {offer1.venueId, offer2.venueId}
 
         assert last_record.message == "Batch update of offers: end"
-        assert last_record.extra == {"updated_fields": {"isActive": False}, "nb_offers": 2, "nb_venues": 2}
+        assert last_record.extra == {
+            "updated_fields": {"isActive": False, "publicationDatetime": None, "bookingAllowedDatetime": None},
+            "nb_offers": 2,
+            "nb_venues": 2,
+        }
 
 
 _base_start_datetime = datetime.utcnow() + timedelta(days=4)
