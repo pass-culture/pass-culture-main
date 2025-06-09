@@ -125,6 +125,8 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
     expected_num_queries = 3
+    # - fetch providers (selectinload: 1 query)
+    expected_num_queries_with_provider = expected_num_queries + 1
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -160,7 +162,7 @@ class ListOffersTest(GetEndpointHelper):
         user = locals()[admin_user]
         client = client.with_bo_session_auth(user)
         query_args = self._get_query_args_by_id(offers[0].id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -210,7 +212,7 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_by_ids_list(self, authenticated_client, offers):
         query_args = self._get_query_args_by_id(f"{offers[0].id}, {offers[2].id}\n")
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -314,7 +316,7 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client, offers):
         query_args = self._get_query_args_by_id(offers[0].id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -323,7 +325,7 @@ class ListOffersTest(GetEndpointHelper):
     def test_list_offers_with_sort_should_have_created_date_sort_link(self, authenticated_client, offers):
         query_args = self._get_query_args_by_id(offers[0].id) | {"sort": "dateCreated", "order": "asc", "q": "e"}
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -424,18 +426,18 @@ class ListOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
     @pytest.mark.parametrize(
-        "operator,criteria_indexes,expected_offer_indexes",
+        "operator,criteria_indexes,expected_offer_indexes,has_provider",
         [
-            ("IN", [0], [0, 2]),
-            ("NOT_IN", [0], [1, 3]),
-            ("NOT_IN", [1], [0, 1, 3]),
-            ("NOT_IN", [2], [0, 1, 2, 3]),
-            ("NOT_IN", [0, 1], [1, 3]),
-            ("NOT_EXIST", [], [1]),
+            ("IN", [0], [0, 2], True),
+            ("NOT_IN", [0], [1, 3], False),
+            ("NOT_IN", [1], [0, 1, 3], True),
+            ("NOT_IN", [2], [0, 1, 2, 3], True),
+            ("NOT_IN", [0, 1], [1, 3], False),
+            ("NOT_EXIST", [], [1], False),
         ],
     )
     def test_list_offers_by_criterion(
-        self, authenticated_client, criteria, offers, operator, criteria_indexes, expected_offer_indexes
+        self, authenticated_client, criteria, offers, operator, criteria_indexes, expected_offer_indexes, has_provider
     ):
         query_args = {
             "search-3-search_field": "TAG",
@@ -443,7 +445,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-criteria": [criteria[criterion_index].id for criterion_index in criteria_indexes],
         }
         with assert_num_queries(
-            self.expected_num_queries + int(bool(criteria_indexes))
+            (self.expected_num_queries_with_provider if has_provider else self.expected_num_queries)
+            + int(bool(criteria_indexes))
         ):  # +1 because of reloading selected criterion in the form when criteria arg is set
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -461,7 +464,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-2-criteria": criteria[1].id,
         }
         with assert_num_queries(
-            self.expected_num_queries + 2
+            self.expected_num_queries_with_provider + 2
         ):  # +2 because of reloading selected criterion in the form, in both filters
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -501,7 +504,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
             "search-3-price": 12.20,
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -575,7 +578,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-department": ["74", "47", "971"],
         }
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -871,7 +874,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "NULLABLE",
             "search-0-boolean": "true",
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -910,7 +913,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-provider": str(provider.id),
         }
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected providers
+        with assert_num_queries(
+            self.expected_num_queries_with_provider + 1
+        ):  # +1 because of reloading selected providers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -932,7 +937,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "NOT_IN",
             "search-0-provider": str(provider2.id),
         }
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected providers
+        with assert_num_queries(
+            self.expected_num_queries_with_provider + 1
+        ):  # +1 because of reloading selected providers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 

@@ -115,6 +115,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch collective offers with joinedload including extra data (1 query)
     expected_num_queries = 3
+    # - fetch providers (selectinload)
+    expected_num_queries_with_provider = 4
 
     def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
         return {
@@ -132,7 +134,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
     def test_list_collective_offers_by_id(self, authenticated_client, collective_offers):
         query_args = self._get_query_args_by_id(collective_offers[0].id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -252,7 +254,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-2-date": (datetime.date.today() + datetime.timedelta(days=2)).isoformat(),
         }
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -263,7 +265,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         self, authenticated_client, collective_offers
     ):
         query_args = self._get_query_args_by_id(collective_offers[0].id)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -278,7 +280,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "q": "e",
         }
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -380,29 +382,17 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
 
     @pytest.mark.parametrize(
-        "operator,formats,expected_offer_indexes",
+        "operator,formats,expected_offer_indexes,has_provider",
         [
-            ("INTERSECTS", [EacFormat.ATELIER_DE_PRATIQUE], [0]),
-            (
-                "INTERSECTS",
-                [EacFormat.ATELIER_DE_PRATIQUE, EacFormat.PROJECTION_AUDIOVISUELLE],
-                [0, 1, 2],
-            ),
-            (
-                "INTERSECTS",
-                [EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.PROJECTION_AUDIOVISUELLE],
-                [1, 2],
-            ),
-            ("NOT_INTERSECTS", [EacFormat.PROJECTION_AUDIOVISUELLE], [0]),
-            (
-                "NOT_INTERSECTS",
-                [EacFormat.ATELIER_DE_PRATIQUE, EacFormat.PROJECTION_AUDIOVISUELLE],
-                [],
-            ),
+            ("INTERSECTS", [EacFormat.ATELIER_DE_PRATIQUE], [0], True),
+            ("INTERSECTS", [EacFormat.ATELIER_DE_PRATIQUE, EacFormat.PROJECTION_AUDIOVISUELLE], [0, 1, 2], True),
+            ("INTERSECTS", [EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.PROJECTION_AUDIOVISUELLE], [1, 2], False),
+            ("NOT_INTERSECTS", [EacFormat.PROJECTION_AUDIOVISUELLE], [0], True),
+            ("NOT_INTERSECTS", [EacFormat.ATELIER_DE_PRATIQUE, EacFormat.PROJECTION_AUDIOVISUELLE], [], False),
         ],
     )
     def test_list_collective_offers_by_formats(
-        self, authenticated_client, collective_offers, operator, formats, expected_offer_indexes
+        self, authenticated_client, collective_offers, operator, formats, expected_offer_indexes, has_provider
     ):
         query_args = {
             "search-3-search_field": "FORMATS",
@@ -410,7 +400,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-formats": [format.name for format in formats],
         }
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider if has_provider else self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -487,7 +477,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-institution": institution_id,
         }
         with assert_num_queries(
-            self.expected_num_queries + 1
+            self.expected_num_queries_with_provider + 1
         ):  # +1 because of reloading selected institution in the form
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -509,20 +499,22 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
 
     @pytest.mark.parametrize(
-        "ministry,expected_indexes",
+        "ministry,expected_indexes,has_provider",
         [
-            ("EDUCATION_NATIONALE", [0, 1]),
-            ("MER", [2]),
-            ("AGRICULTURE", []),
+            ("EDUCATION_NATIONALE", [0, 1], True),
+            ("MER", [2], False),
+            ("AGRICULTURE", [], False),
         ],
     )
-    def test_list_offers_by_ministry(self, authenticated_client, collective_offers, ministry, expected_indexes):
+    def test_list_offers_by_ministry(
+        self, authenticated_client, collective_offers, ministry, expected_indexes, has_provider
+    ):
         query_args = {
             "search-1-search_field": "MINISTRY",
             "search-1-operator": "IN",
             "search-1-ministry": ministry,
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider if has_provider else self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -532,13 +524,15 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         }
 
     @pytest.mark.parametrize(
-        "value,expected_indexes,check_ministry",
+        "value,expected_indexes,check_ministry,has_provider",
         [
-            ("false", [0, 1, 2, 4, 5], lambda ministry: "Marseille en grand" not in ministry),
-            ("true", [3], lambda ministry: ministry == "MENjs Marseille en grand"),
+            ("false", [0, 1, 2, 4, 5], lambda ministry: "Marseille en grand" not in ministry, True),
+            ("true", [3], lambda ministry: ministry == "MENjs Marseille en grand", False),
         ],
     )
-    def test_list_offers_by_meg(self, authenticated_client, collective_offers, value, expected_indexes, check_ministry):
+    def test_list_offers_by_meg(
+        self, authenticated_client, collective_offers, value, expected_indexes, check_ministry, has_provider
+    ):
         # MEG program created in schema_init.sql
         meg_program = (
             db.session.query(educational_models.EducationalInstitutionProgram)
@@ -600,7 +594,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-1-operator": "NULLABLE",
             "search-1-boolean": value,
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider if has_provider else self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -618,7 +612,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-department": ["74", "47", "971"],
         }
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -930,7 +924,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "NULLABLE",
             "search-0-boolean": "true",
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_provider):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
