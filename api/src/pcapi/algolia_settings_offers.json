@@ -7,8 +7,6 @@
     "searchableAttributes": [
         "offer.name",
         "unordered(offer.artist)",
-        "unordered(offer.subcategoryId)",
-        "unordered(offerer.name)",
         "unordered(distinct)"
     ],
     "attributesToRetrieve": null,
