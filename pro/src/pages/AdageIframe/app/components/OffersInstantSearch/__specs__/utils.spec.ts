@@ -51,6 +51,40 @@ describe('adageFiltersToFacetFilters', () => {
     })
   })
 
+  it('should return facet filter from form values with oa ff enabled', () => {
+    expect(
+      adageFiltersToFacetFilters({
+        domains,
+        students,
+        eventAddressType: 'SCHOOL',
+        locationType: 'SCHOOL',
+        departments,
+        academies,
+        formats,
+        venue: venueFilter,
+      }, true)
+    ).toStrictEqual({
+      queryFilters: [
+        ['offer.locationType:SCHOOL'],
+        ['offer.students:Collège - 4e'],
+        ['offer.domains:1'],
+        ['offer.schoolInterventionArea:01'],
+        ['venue.academy:Paris'],
+        ['formats:Concert'],
+        ['venue.id:123', 'venue.id:456'],
+      ],
+      filtersKeys: [
+        'locationType',
+        'students',
+        'domains',
+        'departments',
+        'academies',
+        'formats',
+        'venue',
+      ],
+    })
+  })
+
   it('should return other uai facet filter', () => {
     expect(
       adageFiltersToFacetFilters({
