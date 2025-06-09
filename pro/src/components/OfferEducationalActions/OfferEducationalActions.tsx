@@ -50,9 +50,9 @@ export const OfferEducationalActions = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
+  const lastBookingId = isCollectiveOffer(offer) ? offer.booking?.id : null
   const lastBookingStatus = isCollectiveOffer(offer)
-    ? offer.lastBookingStatus
+    ? offer.booking?.status
     : null
   const getBookingLink = () => {
     const offerEventDate =

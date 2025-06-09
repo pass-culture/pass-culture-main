@@ -121,7 +121,10 @@ describe('screens | OfferEducational : edition offerer step', () => {
           }),
           id: thirdVenueId,
         },
-        lastBookingStatus: CollectiveBookingStatus.USED,
+        booking: {
+          id: 1,
+          status: CollectiveBookingStatus.USED
+        },
       }),
     }
     renderComponent(props)

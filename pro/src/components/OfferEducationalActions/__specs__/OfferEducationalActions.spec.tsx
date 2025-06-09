@@ -148,8 +148,10 @@ describe('OfferEducationalActions', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.SOLD_OUT,
       displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-      lastBookingId: 1,
-      lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+      booking: {
+        id: 1,
+        status: CollectiveBookingStatus.CONFIRMED
+      }
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -168,8 +170,10 @@ describe('OfferEducationalActions', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.EXPIRED,
       displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
-      lastBookingId: 1,
-      lastBookingStatus: CollectiveBookingStatus.USED,
+      booking: {
+        id: 1,
+        status: CollectiveBookingStatus.USED
+      }
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -189,8 +193,10 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferFactory({
         status: CollectiveOfferStatus.ACTIVE,
-        lastBookingId: 1,
-        lastBookingStatus: CollectiveBookingStatus.CANCELLED,
+        booking: {
+          id: 1,
+          status: CollectiveBookingStatus.CANCELLED
+        }
       }),
     })
     expect(
@@ -210,8 +216,10 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferFactory({
         status: CollectiveOfferStatus.ACTIVE,
-        lastBookingId: 1,
-        lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+        booking: {
+          id: 1,
+          status: CollectiveBookingStatus.CONFIRMED
+        }
       }),
     })
     const bookingLink = screen.getByRole('link', {

@@ -40,7 +40,7 @@ export const FormVenue = ({
   venues,
 }: FormVenueProps): JSX.Element => {
   const lastBookingStatus = isCollectiveOffer(offer)
-    ? offer.lastBookingStatus
+    ? offer.booking?.status
     : null
   const disableOfferSelection = disableForm || isOfferCreated
   const disabledBookingStatus = [

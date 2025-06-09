@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
@@ -10,6 +9,7 @@ import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
+import type { GetCollectiveOfferBookingResponseModel } from './GetCollectiveOfferBookingResponseModel';
 import type { GetCollectiveOfferCollectiveStockResponseModel } from './GetCollectiveOfferCollectiveStockResponseModel';
 import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
 import type { GetCollectiveOfferProviderResponseModel } from './GetCollectiveOfferProviderResponseModel';
@@ -21,6 +21,7 @@ import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
   allowedActions: Array<CollectiveOfferAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
+  booking?: GetCollectiveOfferBookingResponseModel | null;
   bookingEmails: Array<string>;
   collectiveStock?: GetCollectiveOfferCollectiveStockResponseModel | null;
   contactEmail?: string | null;
@@ -46,8 +47,6 @@ export type GetCollectiveOfferResponseModel = {
   isPublicApi: boolean;
   isTemplate?: boolean;
   isVisibilityEditable: boolean;
-  lastBookingId?: number | null;
-  lastBookingStatus?: CollectiveBookingStatus | null;
   location?: GetCollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

@@ -909,7 +909,8 @@ class CollectiveOffer(
                 if not self.isActive:
                     return CollectiveOfferDisplayedStatus.HIDDEN
 
-                last_booking_status = self.lastBookingStatus
+                last_booking = self.lastBooking
+                last_booking_status = last_booking.status if last_booking else None
                 has_booking_limit_passed = self.hasBookingLimitDatetimesPassed
                 has_started = self.hasStartDatetimePassed
                 has_ended = self.hasEndDatetimePassed
@@ -1017,16 +1018,6 @@ class CollectiveOffer(
             return None
 
         return stock.lastBooking
-
-    @property
-    def lastBookingId(self) -> int | None:
-        booking = self.lastBooking
-        return booking.id if booking else None
-
-    @property
-    def lastBookingStatus(self) -> CollectiveBookingStatus | None:
-        booking = self.lastBooking
-        return booking.status if booking else None
 
     @property
     def lastBookingCancellationReason(self) -> CollectiveBookingCancellationReasons | None:
