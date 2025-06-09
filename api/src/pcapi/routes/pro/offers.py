@@ -1,5 +1,7 @@
 import datetime
+import json
 import logging
+from functools import partial
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
@@ -25,11 +27,13 @@ from pcapi.core.reminders.external import reminders_notifications
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import on_commit
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests
 from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -376,6 +380,29 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
+def serialize_offer_for_n8n(offer: models.Offer) -> dict:
+    return {
+        "offer": {
+            "id": offer.id,
+            "name": offer.name,
+            "description": offer.description,
+            "category": offer.category.pro_label,
+            "subcategoryLabel": offer.subcategory.pro_label,
+        },
+        "temps_fort": {
+            "name": "Journées Européennes du Patrimoine 2025",
+            "description": "Les Journées européennes du patrimoine sont de retour les 20 et 21 septembre 2025, avec pour thème : les patrimoines maritimes et des itinéraires, des réseaux et des connexions ! Au programme : des centaines d'événements gratuits dans toute la France, des visites insolites, des rencontres... dans des lieux vraiment exceptionnels. Ça n'arrive qu'une fois dans l'année, donc ne passe pas à côté ! Lieux iconiques, spectaculaires, insolites, ou minimalistes, en solo, entre potes ou en famille, viens te créer plein de souvenirs et en prendre plein les yeux !",
+        },
+    }
+
+
+def send_to_n8n(offer_data: dict) -> None:
+    url = "http://n8n:5678/webhook-test/2a91b65e-fadf-4e5c-934f-1ce8f0ff3df6"
+
+    json_data = json.dumps(offer_data)
+    requests.post(url=url, headers={"Content-Type": "application/json"}, data=json_data)
+
+
 @private_api.route("/offers/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
@@ -404,6 +431,13 @@ def patch_publish_offer(
     try:
         offers_api.update_offer_fraud_information(offer, user=current_user)
         offers_api.publish_offer(offer, publication_date=body.publicationDate)
+
+        on_commit(
+            partial(
+                send_to_n8n,
+                offer_data=serialize_offer_for_n8n(offer),
+            )
+        )
     except exceptions.OfferException as exc:
         raise api_errors.ApiErrors(exc.errors)
 
