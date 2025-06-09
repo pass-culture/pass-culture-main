@@ -136,7 +136,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert not user.is_beneficiary
         assert user.firstName == "John"
         assert user.lastName == "Doe"
@@ -344,7 +344,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.firstName == "Alexandra"
         assert user.lastName == "Stan"
         assert user.has_beneficiary_role

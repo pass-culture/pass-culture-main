@@ -1655,7 +1655,7 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
             if rule_reference == regular_rule.description:
                 return regular_rule
     # CustomReimbursementRule.id
-    return db.session.query(models.CustomReimbursementRule).get(rule_reference)
+    return db.session.get(models.CustomReimbursementRule, rule_reference)
 
 
 def _make_invoice_lines(

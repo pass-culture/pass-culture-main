@@ -582,7 +582,7 @@ def activate_future_offers_and_remind_users() -> None:
     offer_ids = activate_future_offers()
 
     for offer_id in offer_ids:
-        offer = db.session.query(models.Offer).get(offer_id)
+        offer = db.session.get(models.Offer, offer_id)
         reminders_notifications.notify_users_future_offer_activated(offer=offer)
 
 

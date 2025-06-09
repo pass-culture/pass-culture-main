@@ -145,7 +145,7 @@ def build_saml_request_id_key(saml_request_id: str) -> str:
 
 
 def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUser:
-    user = db.session.query(users_models.User).get(int(user_id))
+    user = db.session.get(users_models.User, int(user_id))
     mocked_saml_request_id = f"saml-request-id_perf-test_{user.id}"
     key = build_saml_request_id_key(mocked_saml_request_id)
     app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)

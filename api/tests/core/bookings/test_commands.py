@@ -32,8 +32,8 @@ class ArchiveOldBookingsTest:
         run_command(app, "archive_old_bookings")
 
         # then
-        old_booking = db.session.query(bookings_models.Booking).get(old_booking_id)
-        recent_booking = db.session.query(bookings_models.Booking).get(recent_booking_id)
+        old_booking = db.session.get(bookings_models.Booking, old_booking_id)
+        recent_booking = db.session.get(bookings_models.Booking, recent_booking_id)
         assert old_booking.displayAsEnded
         assert not recent_booking.displayAsEnded
 
@@ -65,9 +65,9 @@ class ArchiveOldBookingsTest:
 
         # then
 
-        old_booking = db.session.query(bookings_models.Booking).get(old_booking_id)
-        old_not_free_booking = db.session.query(bookings_models.Booking).get(old_not_free_booking_id)
-        recent_booking = db.session.query(bookings_models.Booking).get(recent_booking_id)
+        old_booking = db.session.get(bookings_models.Booking, old_booking_id)
+        old_not_free_booking = db.session.get(bookings_models.Booking, old_not_free_booking_id)
+        recent_booking = db.session.get(bookings_models.Booking, recent_booking_id)
         assert not recent_booking.displayAsEnded
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
@@ -102,7 +102,7 @@ class ArchiveOldBookingsTest:
         run_command(app, "archive_old_bookings")
 
         # then
-        recent_booking = db.session.query(bookings_models.Booking).get(recent_booking_id)
-        old_booking = db.session.query(bookings_models.Booking).get(old_booking_id)
+        recent_booking = db.session.get(bookings_models.Booking, recent_booking_id)
+        old_booking = db.session.get(bookings_models.Booking, old_booking_id)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded

@@ -12,7 +12,7 @@ from pcapi.workers.decorators import job
 
 @job(worker.default_queue)
 def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
-    user = db.session.query(User).get(user_id)
+    user = db.session.get(User, user_id)
     log_user_event(user, "af_complete_beneficiary")
 
     if 15 <= user.age <= 17:
@@ -24,7 +24,7 @@ def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
 
 @job(worker.default_queue)
 def log_user_registration_event_job(user_id: int) -> None:
-    user = db.session.query(User).get(user_id)
+    user = db.session.get(User, user_id)
     if 15 <= user.age <= 18:
         log_user_event(user, f"af_complete_registration_{user.age}")
     elif user.age >= 19:

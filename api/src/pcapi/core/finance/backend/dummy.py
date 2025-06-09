@@ -21,7 +21,7 @@ class DummyFinanceBackend(BaseFinanceBackend):
         return invoice.__dict__
 
     def get_bank_account(self, bank_account_id: int) -> dict:
-        bank_account = db.session.query(finance_models.BankAccount).get(bank_account_id)
+        bank_account = db.session.get(finance_models.BankAccount, bank_account_id)
         return bank_account.__dict__
 
     @property

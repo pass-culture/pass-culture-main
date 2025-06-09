@@ -84,7 +84,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        new_venue = db.session.query(offerers_models.Venue).get(venue_id)
+        new_venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert response.json["street"] == venue.street
@@ -203,7 +203,7 @@ class Returns200Test:
         offerer_address = (
             db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).first()
         )
-        old_oa = db.session.query(offerers_models.OffererAddress).get(venue_oa_id)
+        old_oa = db.session.get(offerers_models.OffererAddress, venue_oa_id)
         address = offerer_address.address
         assert old_oa.label == "old name"
         assert venue.offererAddressId == offerer_address.id
@@ -605,7 +605,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = db.session.query(offerers_models.Venue).get(venue_id)
+        venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.audioDisabilityCompliant == None
         assert venue.mentalDisabilityCompliant == None
@@ -899,7 +899,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        venue = db.session.query(offerers_models.Venue).get(venue.id)
+        venue = db.session.get(offerers_models.Venue, venue.id)
         assert venue.audioDisabilityCompliant
         assert venue.mentalDisabilityCompliant
         assert venue.motorDisabilityCompliant is False
@@ -943,7 +943,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user_offerer.user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        venue = db.session.query(offerers_models.Venue).get(venue.id)
+        venue = db.session.get(offerers_models.Venue, venue.id)
         assert venue.contact
         assert venue.contact.phone_number == "+33788888888"
         assert venue.contact.email == venue_data["contact"]["email"]
@@ -961,7 +961,7 @@ class Returns200Test:
         http_client = client.with_session_auth(email=user_offerer.user.email)
         http_client.patch(f"/venues/{venue.id}", json=venue_data)
 
-        venue = db.session.query(offerers_models.Venue).get(venue.id)
+        venue = db.session.get(offerers_models.Venue, venue.id)
         assert venue.contact.website == "https://new.website.com"
         mock_request_url_scan.assert_called_once_with(venue_data["contact"]["website"], skip_if_recent_scan=True)
 

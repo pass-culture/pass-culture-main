@@ -31,8 +31,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert db.session.query(CollectiveOfferTemplate).get(offer1.id).isActive
-        assert db.session.query(CollectiveOfferTemplate).get(offer2.id).isActive
+        assert db.session.get(CollectiveOfferTemplate, offer1.id).isActive
+        assert db.session.get(CollectiveOfferTemplate, offer2.id).isActive
 
     def when_deactivating_existing_offers(self, client):
         # Given
@@ -50,8 +50,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not db.session.query(CollectiveOfferTemplate).get(offer1.id).isActive
-        assert not db.session.query(CollectiveOfferTemplate).get(offer2.id).isActive
+        assert not db.session.get(CollectiveOfferTemplate, offer1.id).isActive
+        assert not db.session.get(CollectiveOfferTemplate, offer2.id).isActive
 
 
 @pytest.mark.usefixtures("db_session")

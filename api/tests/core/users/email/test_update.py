@@ -39,7 +39,7 @@ class RequestEmailUpdateTest:
 
         email_update.request_email_update_with_credentials(user, new_email, password)
 
-        reloaded_user = db.session.query(User).get(user.id)
+        reloaded_user = db.session.get(User, user.id)
         assert len(reloaded_user.email_history) == 1
 
         history = reloaded_user.email_history[0]
@@ -53,7 +53,7 @@ class RequestEmailUpdateTest:
 
         email_update.request_email_update(user)
 
-        reloaded_user = db.session.query(User).get(user.id)
+        reloaded_user = db.session.get(User, user.id)
         assert len(reloaded_user.email_history) == 1
 
         history = reloaded_user.email_history[0]

@@ -56,7 +56,7 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
         assert edited_stock.price == 1500
@@ -102,7 +102,7 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == datetime(2021, 12, 18, 00)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 18, 00)
 
@@ -142,7 +142,7 @@ class Return200Test:
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         assert response.status_code == 200
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
@@ -180,8 +180,8 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
-        edited_booking = db.session.query(CollectiveBooking).get(booking.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
+        edited_booking = db.session.get(CollectiveBooking, booking.id)
         assert edited_stock.startDatetime == datetime(2021, 12, 18)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
@@ -199,7 +199,8 @@ class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
-        # Given
+        # patch_offer_test
+
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -257,7 +258,7 @@ class Return200Test:
         client.patch(f"/collective/stocks/{collective_stock.id}", json=stock_edition_payload)
 
         # Then
-        edited_collective_booking = db.session.query(CollectiveBooking).get(collective_booking.id)
+        edited_collective_booking = db.session.get(CollectiveBooking, collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
@@ -357,7 +358,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.numberOfTickets == 32
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -385,7 +386,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.price == 1200
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -413,7 +414,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -562,7 +563,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == startDatetime
         assert edited_stock.endDatetime == endDatetime
 
@@ -616,7 +617,7 @@ class Return400Test:
             assert response.status_code == 400
             assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
 
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == startDatetime
         assert edited_stock.endDatetime == endDatetime
 
@@ -651,8 +652,8 @@ class Return400Test:
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
+            # query += 1 -> load existing offerer
             # query += 1 -> ensure the offerer is VALIDATED
-            # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> rollback
             # query += 1 -> load existing stock after rollback
@@ -662,7 +663,7 @@ class Return400Test:
             # Then
             assert response.status_code == 400
             assert response.json == {"code": "START_EDUCATIONAL_YEAR_MISSING"}
-            edited_stock = db.session.query(CollectiveStock).get(stock.id)
+            edited_stock = db.session.get(CollectiveStock, stock.id)
             assert edited_stock.startDatetime == startDatetime
             assert edited_stock.endDatetime == endDatetime
 
@@ -700,8 +701,8 @@ class Return400Test:
             # query += 1 -> load session
             # query += 1 -> load user
             # query += 1 -> load existing stock
+            # query += 1 -> load offerer
             # query += 1 -> ensure the offerer is VALIDATED
-            # query += 1 -> check the number of existing stock for the offer id
             # query += 1 -> find education year for start date
             # query += 1 -> find education year for end date
             # query += 1 -> rollback
@@ -712,7 +713,7 @@ class Return400Test:
             # Then
             assert response.status_code == 400
             assert response.json == {"code": "END_EDUCATIONAL_YEAR_MISSING"}
-            edited_stock = db.session.query(CollectiveStock).get(stock.id)
+            edited_stock = db.session.get(CollectiveStock, stock.id)
             assert edited_stock.startDatetime == startDatetime
             assert edited_stock.endDatetime == endDatetime
 
@@ -734,6 +735,6 @@ class Return400Test:
         assert response.json == {
             "educationalStock": ["La date de fin de l'évènement ne peut précéder la date de début."]
         }
-        edited_stock = db.session.query(CollectiveStock).get(stock.id)
+        edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == start.replace(tzinfo=None)
         assert edited_stock.endDatetime == start.replace(tzinfo=None)

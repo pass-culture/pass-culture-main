@@ -124,7 +124,7 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
     if already_linked_user:
         raise users_exceptions.DiscordUserAlreadyLinked()
 
-    user: user_models.User = db.session.query(user_models.User).get(user_id)
+    user: user_models.User = db.session.get(user_models.User, user_id)
     discord_user = user.discordUser
 
     if discord_user is None:

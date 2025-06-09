@@ -85,7 +85,7 @@ def generate_invoices(batch_id: int) -> None:
 
     This command can be run multiple times.
     """
-    batch = db.session.query(finance_models.CashflowBatch).get(batch_id)
+    batch = db.session.get(finance_models.CashflowBatch, batch_id)
     if not batch:
         print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
         return

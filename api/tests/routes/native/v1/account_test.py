@@ -1163,7 +1163,7 @@ class ValidateEmailTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.email == self.new_email
 
     @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
@@ -1209,7 +1209,7 @@ class ValidateEmailTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.email == self.old_email
 
     def test_expired_token(self, app, client):
@@ -1223,7 +1223,7 @@ class ValidateEmailTest:
                 assert response.status_code == 400
                 assert response.json["code"] == "INVALID_TOKEN"
 
-                user = db.session.query(users_models.User).get(user.id)
+                user = db.session.get(users_models.User, user.id)
                 assert user.email == self.old_email
 
 
@@ -1466,7 +1466,7 @@ class SendPhoneValidationCodeTest:
         response = client.post("/native/v1/validate_phone_number", json={"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.is_phone_validated
 
     @pytest.mark.settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
@@ -1679,7 +1679,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.is_phone_validated
         assert not user.has_beneficiary_role
 
@@ -1706,7 +1706,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": first_token.encoded_token})
 
         assert response.status_code == 400
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert not user.is_phone_validated
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
@@ -1732,7 +1732,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.is_phone_validated
         assert user.has_beneficiary_role
 
@@ -1825,7 +1825,7 @@ class ValidatePhoneNumberTest:
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
-        assert not db.session.query(users_models.User).get(user.id).is_phone_validated
+        assert not db.session.get(users_models.User, user.id).is_phone_validated
         assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_expired_code(self, client):
@@ -1840,7 +1840,7 @@ class ValidatePhoneNumberTest:
             assert response.status_code == 400
             assert response.json["code"] == "INVALID_VALIDATION_CODE"
 
-            assert not db.session.query(users_models.User).get(user.id).is_phone_validated
+            assert not db.session.get(users_models.User, user.id).is_phone_validated
             assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_validate_phone_number_with_already_validated_phone(self, client):
@@ -1857,7 +1857,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 400
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert not user.is_phone_validated
 
 

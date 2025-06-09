@@ -20,7 +20,7 @@ class OfferCommandsTest:
 
         run_command(app, "delete_unbookable_unbooked_old_offers")
 
-        assert db.session.query(offers_models.Offer).get(offer_id) is not None
+        assert db.session.get(offers_models.Offer, offer_id) is not None
 
     @pytest.mark.features(ENABLE_OFFERS_AUTO_CLEANUP=True)
     @pytest.mark.usefixtures("clean_database")

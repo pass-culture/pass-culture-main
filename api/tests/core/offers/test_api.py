@@ -975,16 +975,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = db.session.query(bookings_models.Booking).get(booking1.id)
+        booking1 = db.session.get(bookings_models.Booking, booking1.id)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.query(bookings_models.Booking).get(booking2.id)
+        booking2 = db.session.get(bookings_models.Booking, booking2.id)
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.query(bookings_models.Booking).get(booking3.id)
+        booking3 = db.session.get(bookings_models.Booking, booking3.id)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.query(bookings_models.Booking).get(booking4.id)
+        booking4 = db.session.get(bookings_models.Booking, booking4.id)
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -1036,16 +1036,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = db.session.query(models.Stock).one()
         assert stock.isSoftDeleted
-        booking1 = db.session.query(bookings_models.Booking).get(booking1.id)
+        booking1 = db.session.get(bookings_models.Booking, booking1.id)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.query(bookings_models.Booking).get(booking2.id)
+        booking2 = db.session.get(bookings_models.Booking, booking2.id)
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.query(bookings_models.Booking).get(booking3.id)
+        booking3 = db.session.get(bookings_models.Booking, booking3.id)
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.query(bookings_models.Booking).get(booking4.id)
+        booking4 = db.session.get(bookings_models.Booking, booking4.id)
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -2362,7 +2362,7 @@ class ActivateFutureOffersTest:
 
         offers_ids = api.activate_future_offers()
 
-        assert not db.session.query(models.Offer).get(offer.id).isActive
+        assert not db.session.get(models.Offer, offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
         assert offers_ids == []
 
@@ -2375,8 +2375,8 @@ class ActivateFutureOffersTest:
         offers_ids = api.activate_future_offers(publication_date=publication_date)
 
         assert offers_ids == [offer.id]
-        assert db.session.query(models.Offer).get(offer.id).isActive
-        assert db.session.query(models.FutureOffer).get(future_offer.id).isSoftDeleted
+        assert db.session.get(models.Offer, offer.id).isActive
+        assert db.session.get(models.FutureOffer, future_offer.id).isSoftDeleted
 
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
@@ -2409,13 +2409,13 @@ class ActivateFutureOffersAndRemindUsersTest:
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
 
-        assert db.session.query(models.Offer).get(offer_1.id).isActive
-        assert db.session.query(models.Offer).get(offer_2.id).isActive
-        assert not db.session.query(models.Offer).get(offer_3.id).isActive
+        assert db.session.get(models.Offer, offer_1.id).isActive
+        assert db.session.get(models.Offer, offer_2.id).isActive
+        assert not db.session.get(models.Offer, offer_3.id).isActive
 
-        assert db.session.query(models.FutureOffer).get(future_offer_1.id).isSoftDeleted
-        assert db.session.query(models.FutureOffer).get(future_offer_2.id).isSoftDeleted
-        assert not db.session.query(models.FutureOffer).get(future_offer_3.id).isSoftDeleted
+        assert db.session.get(models.FutureOffer, future_offer_1.id).isSoftDeleted
+        assert db.session.get(models.FutureOffer, future_offer_2.id).isSoftDeleted
+        assert not db.session.get(models.FutureOffer, future_offer_3.id).isSoftDeleted
 
 
 @pytest.mark.usefixtures("db_session")
@@ -5485,7 +5485,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
         api.delete_offers_and_all_related_objects(offer_ids)
         assert_offers_have_been_completely_cleaned(offer_ids)
 
-        assert db.session.query(models.Offer).get(other_offer_id) is not None
+        assert db.session.get(models.Offer, other_offer_id) is not None
         assert db.session.query(models.Stock).filter_by(offerId=other_offer_id).one()
         assert other_offer_id in search_testing.search_store["offers"]
 
@@ -5566,5 +5566,5 @@ class DeleteUnbookableUnusedOldOffersTest:
         api.delete_unbookable_unbooked_old_offers()
         assert_offers_have_been_completely_cleaned([offer_id])
 
-        assert db.session.query(models.Offer).get(old_bookable_offer.id) is not None
-        assert db.session.query(models.Offer).get(recent_offer.id) is not None
+        assert db.session.get(models.Offer, old_bookable_offer.id) is not None
+        assert db.session.get(models.Offer, recent_offer.id) is not None

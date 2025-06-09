@@ -2530,7 +2530,7 @@ class PrepareInvoiceContextTest:
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = db.session.query(models.CashflowBatch).get(batch.id)
+        batch = db.session.get(models.CashflowBatch, batch.id)
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -2597,7 +2597,7 @@ class PrepareInvoiceContextTest:
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = db.session.query(models.CashflowBatch).get(batch.id)
+        batch = db.session.get(models.CashflowBatch, batch.id)
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -2672,7 +2672,7 @@ class GenerateDebitNoteHtmlTest:
             cashflow_ids=cashflow_ids,
             is_debit_note=True,
         )
-        batch = db.session.query(models.CashflowBatch).get(batch.id)
+        batch = db.session.get(models.CashflowBatch, batch.id)
         invoice_html = api._generate_debit_note_html(invoice, batch)
 
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
@@ -2794,7 +2794,7 @@ class GenerateInvoiceHtmlTest:
             cashflow_ids=cashflow_ids,
         )
 
-        batch = db.session.query(models.CashflowBatch).get(batch.id)
+        batch = db.session.get(models.CashflowBatch, batch.id)
         invoice_html = api._generate_invoice_html(invoice, batch)
 
         expected_generated_file_name = "rendered_nc_invoice.html" if is_caledonian else "rendered_invoice.html"
@@ -2824,7 +2824,7 @@ class GenerateInvoiceHtmlTest:
 
     def test_basics(self, features, invoice_data):
         bank_account, stocks, venue = invoice_data
-        pricing_point = db.session.query(offerers_models.Venue).get(venue.current_pricing_point_id)
+        pricing_point = db.session.get(offerers_models.Venue, venue.current_pricing_point_id)
         only_educational_venue = offerers_factories.VenueFactory(
             name="Coiffeur collecTIF",
             pricing_point=pricing_point,

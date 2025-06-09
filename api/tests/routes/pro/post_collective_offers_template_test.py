@@ -117,7 +117,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = db.session.query(models.CollectiveOfferTemplate).get(offer_id)
+        offer = db.session.get(models.CollectiveOfferTemplate, offer_id)
 
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.venue == venue
@@ -157,7 +157,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = db.session.query(models.CollectiveOfferTemplate).get(offer_id)
+        offer = db.session.get(models.CollectiveOfferTemplate, offer_id)
 
         assert offer.contactEmail is None
         assert offer.contactPhone == "01 99 00 25 68"

@@ -2231,7 +2231,7 @@ class VenueBannerTest:
         settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
         offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-        updated_venue = db.session.query(Venue).get(venue.id)
+        updated_venue = db.session.get(Venue, venue.id)
         with open(updated_venue.bannerUrl, mode="rb") as f:
             # test that image size has been reduced
             assert len(f.read()) < len(image_content)
@@ -2261,7 +2261,7 @@ class VenueBannerTest:
         settings.LOCAL_STORAGE_DIR = pathlib.Path(tmpdir.dirname)
         offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-        updated_venue = db.session.query(Venue).get(venue.id)
+        updated_venue = db.session.get(Venue, venue.id)
         with open(updated_venue.bannerUrl, mode="rb") as f:
             # test that image size has been reduced
             assert len(f.read()) < len(image_content)

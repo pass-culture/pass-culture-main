@@ -28,7 +28,7 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
     data_score, data_reasons = compliance_backend.get_score_from_compliance_api(payload)
 
     if data_score:
-        offer = db.session.query(offers_models.Offer).with_for_update().get(payload.offer_id)
+        offer = db.session.query(offers_models.Offer).with_for_update().filter_by(id=payload.offer_id).one_or_none()
         if offer is None:  # if offer is deleted before the task is run
             return
         statement = insert(offers_models.OfferCompliance).values(

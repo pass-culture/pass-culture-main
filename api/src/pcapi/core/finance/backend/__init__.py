@@ -16,7 +16,7 @@ _backends = [
 
 def push_invoice(invoice_id: int) -> dict | None:
     backend = _get_backend()
-    invoice = db.session.query(finance_models.Invoice).get(invoice_id)
+    invoice = db.session.get(finance_models.Invoice, invoice_id)
     return backend.push_invoice(invoice)
 
 

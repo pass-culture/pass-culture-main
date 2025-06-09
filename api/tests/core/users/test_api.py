@@ -378,7 +378,7 @@ class ChangeUserEmailTest:
         returned_user = email_update.validate_email_update_request(token)
 
         # Then
-        reloaded_user = db.session.query(users_models.User).get(user.id)
+        reloaded_user = db.session.get(users_models.User, user.id)
         assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
         assert db.session.query(users_models.User).filter_by(email=self.old_email).first() is None
@@ -405,10 +405,10 @@ class ChangeUserEmailTest:
             email_update.validate_email_update_request(token)
 
         # Then
-        user = db.session.query(users_models.User).get(user.id)
+        user = db.session.get(users_models.User, user.id)
         assert user.email == "oldemail@mail.com"
 
-        other_user = db.session.query(users_models.User).get(other_user.id)
+        other_user = db.session.get(users_models.User, other_user.id)
         assert other_user.email == self.new_email
 
         single_sign_on = (
@@ -432,7 +432,7 @@ class ChangeUserEmailTest:
                     email_update.validate_email_update_request(token)
 
                 # Then
-                user = db.session.query(users_models.User).get(user.id)
+                user = db.session.get(users_models.User, user.id)
                 assert user.email == self.old_email
 
     def test_change_user_email_twice(self):
@@ -451,13 +451,13 @@ class ChangeUserEmailTest:
         # first call, email is updated as expected
         returned_user = email_update.validate_email_update_request(token)
 
-        reloaded_user = db.session.query(users_models.User).get(user.id)
+        reloaded_user = db.session.get(users_models.User, user.id)
         assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
 
         # second call, no error, no update
         returned_user = email_update.validate_email_update_request(token)
-        reloaded_user = db.session.query(users_models.User).get(user.id)
+        reloaded_user = db.session.get(users_models.User, user.id)
         assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
 
@@ -2032,7 +2032,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         users_api.notify_users_before_deletion_of_suspended_account()
 
         # then
-        user = db.session.query(users_models.User).get(suspension_to_be_detected.userId)
+        user = db.session.get(users_models.User, suspension_to_be_detected.userId)
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
         assert mails_testing.outbox[0]["To"] == user.email

@@ -32,8 +32,8 @@ class Returns204Test:
             response = client.patch("/offers/all-active-status", json=data)
 
         assert response.status_code == 202
-        offer_1: Offer = db.session.query(Offer).get(offer1.id)
-        offer_2: Offer = db.session.query(Offer).get(offer2.id)
+        offer_1: Offer = db.session.get(Offer, offer1.id)
+        offer_2: Offer = db.session.get(Offer, offer2.id)
 
         assert offer_1.isActive
         assert offer_1.publicationDatetime == now_without_tz
@@ -55,8 +55,8 @@ class Returns204Test:
         response = client.patch("/offers/all-active-status", json=data)
 
         assert response.status_code == 202
-        offer_1: Offer = db.session.query(Offer).get(offer1.id)
-        offer_2: Offer = db.session.query(Offer).get(offer2.id)
+        offer_1: Offer = db.session.get(Offer, offer1.id)
+        offer_2: Offer = db.session.get(Offer, offer2.id)
         assert not offer_1.isActive
         assert not offer_1.publicationDatetime
         assert not offer_1.bookingAllowedDatetime
@@ -120,11 +120,11 @@ class Returns204Test:
 
         assert response.status_code == 202
 
-        matching_offer_1 = db.session.query(Offer).get(matching_offer1.id)
-        matching_offer_2 = db.session.query(Offer).get(matching_offer2.id)
-        offer_out_of_date_range = db.session.query(Offer).get(offer_out_of_date_range.id)
-        offer_on_other_venue = db.session.query(Offer).get(offer_on_other_venue.id)
-        offer_with_not_matching_name = db.session.query(Offer).get(offer_with_not_matching_name.id)
+        matching_offer_1 = db.session.get(Offer, matching_offer1.id)
+        matching_offer_2 = db.session.get(Offer, matching_offer2.id)
+        offer_out_of_date_range = db.session.get(Offer, offer_out_of_date_range.id)
+        offer_on_other_venue = db.session.get(Offer, offer_on_other_venue.id)
+        offer_with_not_matching_name = db.session.get(Offer, offer_with_not_matching_name.id)
 
         assert not matching_offer_1.isActive
         assert not matching_offer_1.publicationDatetime
@@ -225,8 +225,8 @@ class Returns204Test:
         data = {"isActive": True, "offererAddressId": offerer_address.id}
         response = authentified_client.patch("/offers/all-active-status", json=data)
         assert response.status_code == 202
-        offer1 = db.session.query(Offer).get(offer1.id)
-        offer2 = db.session.query(Offer).get(offer2.id)
+        offer1 = db.session.get(Offer, offer1.id)
+        offer2 = db.session.get(Offer, offer2.id)
         assert offer1.isActive
         assert not offer2.isActive
 
@@ -254,9 +254,9 @@ class ActivateFutureOffersTest:
             mock_notify_users_future_offer_activated.assert_has_calls([call(offer_to_publish_2)])
 
         assert response.status_code == 202
-        assert db.session.query(Offer).get(offer_to_publish_1.id).isActive
-        assert db.session.query(Offer).get(offer_to_publish_2.id).isActive
-        assert not db.session.query(Offer).get(offer_to_publish_3.id).isActive
+        assert db.session.get(Offer, offer_to_publish_1.id).isActive
+        assert db.session.get(Offer, offer_to_publish_2.id).isActive
+        assert not db.session.get(Offer, offer_to_publish_3.id).isActive
 
     def test_deactivate_future_offers(self, client):
         offer_published_1 = offers_factories.OfferFactory()
@@ -277,5 +277,5 @@ class ActivateFutureOffersTest:
             mock_notify_users_future_offer_activated.assert_not_called()
 
         assert response.status_code == 202
-        assert not db.session.query(Offer).get(offer_published_1.id).isActive
-        assert not db.session.query(Offer).get(offer_published_2.id).isActive
+        assert not db.session.get(Offer, offer_published_1.id).isActive
+        assert not db.session.get(Offer, offer_published_2.id).isActive

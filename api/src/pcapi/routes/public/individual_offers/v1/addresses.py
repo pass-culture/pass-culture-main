@@ -47,7 +47,7 @@ def get_address(
 
     Return an address by id
     """
-    address = db.session.query(geography_models.Address).get(address_id)
+    address = db.session.get(geography_models.Address, address_id)
     if not address:
         raise api_errors.ResourceNotFoundError({"address": "We could not find any address for the given `id`"})
 

@@ -68,7 +68,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         content = response.json
-        offer: offers_models.Offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime
         assert offer.finalizationDatetime == offer.bookingAllowedDatetime
         assert offer.finalizationDatetime == offer.publicationDatetime
@@ -115,7 +115,7 @@ class Returns200Test:
         )
         assert response.status_code == 200
         content = response.json
-        offer: offers_models.Offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime
@@ -156,7 +156,7 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
             microsecond=0, tzinfo=None
         )
@@ -170,7 +170,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         content = response.json
-        offer = db.session.query(offers_models.Offer).get(stock.offer.id)
+        offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == first_finalization_datetime
         assert offer.finalizationDatetime <= offer.bookingAllowedDatetime
         assert offer.finalizationDatetime <= offer.publicationDatetime
@@ -197,7 +197,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
-        offer = db.session.query(offers_models.Offer).get(offer.id)
+        offer = db.session.get(offers_models.Offer, offer.id)
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_patch_publish_offer_with_non_bookable_stock(
@@ -219,7 +219,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
-        offer = db.session.query(offers_models.Offer).get(stock.offerId)
+        offer = db.session.get(offers_models.Offer, stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_patch_publish_future_offer(
@@ -248,7 +248,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]
-        offer = db.session.query(offers_models.Offer).get(stock.offerId)
+        offer = db.session.get(offers_models.Offer, stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_cannot_publish_offer_if_ean_is_already_used(

@@ -23,7 +23,7 @@ def import_dms_application(application_number: int) -> None:
 @blueprint.cli.command("activate_user")
 @click.argument("user_id", type=int, required=True)
 def activate_user(user_id: int) -> None:
-    user = db.session.query(users_models.User).get(user_id)
+    user = db.session.get(users_models.User, user_id)
     if user is None:
         raise ValueError(f"User {user_id} not found")
     subscription_api.activate_beneficiary_if_no_missing_step(user)

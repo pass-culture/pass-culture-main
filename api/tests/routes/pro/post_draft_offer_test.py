@@ -28,7 +28,7 @@ class Returns201Test:
 
         response_dict = response.json
         offer_id = response_dict["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
@@ -71,7 +71,7 @@ class Returns201Test:
 
         response_dict = response.json
         offer_id = response_dict["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert response_dict["isDuo"] == True
         assert not offer.product
 
@@ -97,7 +97,7 @@ class Returns201Test:
 
         response_dict = response.json
         offer_id = response_dict["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
@@ -126,7 +126,7 @@ class Returns201Test:
 
         response_dict = response.json
         offer_id = response_dict["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
@@ -150,7 +150,7 @@ class Returns201Test:
 
         response_dict = response.json
         offer_id = response_dict["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
@@ -181,7 +181,7 @@ class Returns201Test:
 
         response_dict = response.json
         offer_id = response_dict["id"]
-        offer = db.session.query(Offer).get(offer_id)
+        offer = db.session.get(Offer, offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
@@ -213,7 +213,7 @@ class Returns201Test:
 
         assert response.status_code == 201
 
-        offer = db.session.query(Offer).get(response.json["id"])
+        offer = db.session.get(Offer, response.json["id"])
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is True
         assert offer.motorDisabilityCompliant is False
@@ -238,7 +238,7 @@ class Returns201Test:
 
         assert response.status_code == 201
 
-        offer = db.session.query(Offer).get(response.json["id"])
+        offer = db.session.get(Offer, response.json["id"])
         assert offer.audioDisabilityCompliant is None
         assert offer.mentalDisabilityCompliant is None
         assert offer.motorDisabilityCompliant is None
@@ -264,7 +264,7 @@ class Returns201Test:
 
         assert response.status_code == 201
 
-        offer = db.session.query(Offer).get(response.json["id"])
+        offer = db.session.get(Offer, response.json["id"])
         assert offer.audioDisabilityCompliant == True
         assert offer.mentalDisabilityCompliant == False
         assert offer.motorDisabilityCompliant == True

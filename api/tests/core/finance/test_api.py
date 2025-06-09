@@ -3969,7 +3969,7 @@ class PrepareInvoiceContextTest:
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = db.session.query(models.CashflowBatch).get(batch.id)
+        batch = db.session.get(models.CashflowBatch, batch.id)
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -4036,7 +4036,7 @@ class PrepareInvoiceContextTest:
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = db.session.query(models.CashflowBatch).get(batch.id)
+        batch = db.session.get(models.CashflowBatch, batch.id)
 
         context = api._prepare_invoice_context(invoice, batch)
 

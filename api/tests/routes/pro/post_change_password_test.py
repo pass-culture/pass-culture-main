@@ -28,7 +28,7 @@ class Returns200Test:
         response = client.post("/users/password", json=data)
 
         # then
-        user = db.session.query(users_models.User).get(user_id)
+        user = db.session.get(users_models.User, user_id)
         assert user.checkPassword("N3W_p4ssw0rd") is True
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1

@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
-    stock = db.session.query(Stock).get(body.stock_id)
+    stock = db.session.get(Stock, body.stock_id)
     if not stock:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)

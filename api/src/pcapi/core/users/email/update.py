@@ -158,7 +158,7 @@ def request_email_update_with_credentials(user: models.User, new_email: str, pas
 def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
     """Confirm the email update request for the given user"""
     token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
-    user = db.session.query(models.User).get(token.user_id)
+    user = db.session.get(models.User, token.user_id)
     if not user:
         raise exceptions.InvalidToken()
     new_email = token.data["new_email"]
@@ -194,7 +194,7 @@ def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mai
 def confirm_email_update_request(encoded_token: str) -> models.User:
     """Confirm the email update request for the given user"""
     token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
-    user = db.session.query(models.User).get(token.user_id)
+    user = db.session.get(models.User, token.user_id)
     if not user:
         raise exceptions.InvalidToken()
 
@@ -209,7 +209,7 @@ def cancel_email_update_request(encoded_token: str) -> None:
     """Cancel the email update request for the given user"""
 
     token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
-    user = db.session.query(models.User).get(token.user_id)
+    user = db.session.get(models.User, token.user_id)
     if not user:
         raise exceptions.InvalidToken()
     new_email = token.data.get("new_email")
@@ -239,7 +239,7 @@ def validate_email_update_request(
     inputs safely.
     """
     email_update_validation_token = token_utils.Token.load_without_checking(encoded_email_validation_token)
-    user = db.session.query(models.User).get(email_update_validation_token.user_id)
+    user = db.session.get(models.User, email_update_validation_token.user_id)
     if not user:
         raise exceptions.UserDoesNotExist()
 
@@ -261,7 +261,7 @@ def validate_email_update_request(
     if recent_password_reset_token:
         recent_password_reset_token.expire()
 
-    return db.session.query(models.User).get(user.id)
+    return db.session.get(models.User, user.id)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
