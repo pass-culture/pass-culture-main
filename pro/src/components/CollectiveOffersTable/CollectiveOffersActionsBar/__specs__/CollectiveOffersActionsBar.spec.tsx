@@ -260,8 +260,6 @@ describe('ActionsBar', () => {
       ids: [1, 2],
       isActive: false,
     })
-
-    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledTimes(0)
   })
 
   it('should call tracker event when archiving an offer', async () => {

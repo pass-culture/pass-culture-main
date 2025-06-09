@@ -74,17 +74,10 @@ export const OfferEducationalActions = ({
 
   const setIsOfferActive = async (isActive: boolean) => {
     try {
-      if (offer.isTemplate) {
-        await api.patchCollectiveOffersTemplateActiveStatus({
-          ids: [offer.id],
-          isActive,
-        })
-      } else {
-        await api.patchCollectiveOffersActiveStatus({
-          ids: [offer.id],
-          isActive,
-        })
-      }
+      await api.patchCollectiveOffersTemplateActiveStatus({
+        ids: [offer.id],
+        isActive,
+      })
       notify.success(
         isActive
           ? 'Votre offre est maintenant active et visible dans ADAGE'

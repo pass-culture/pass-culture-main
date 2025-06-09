@@ -785,26 +785,6 @@ export class DefaultService {
     });
   }
   /**
-   * patch_collective_offers_active_status <PATCH>
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public patchCollectiveOffersActiveStatus(
-    requestBody?: PatchCollectiveOfferActiveStatusBodyModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/collective/offers/active-status',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * patch_collective_offers_archive <PATCH>
    * @param requestBody
    * @returns void

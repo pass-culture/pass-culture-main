@@ -359,30 +359,6 @@ def edit_collective_offer_template(
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers/active-status", methods=["PATCH"])
-@atomic()
-@login_required
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.pro_private_schema,
-)
-def patch_collective_offers_active_status(
-    body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
-) -> None:
-    # TODO: this route can be deleted once there is no frontend usage, for now we just return 403
-    if body:
-        raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
-
-    if body.is_active:
-        offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
-        for offerer_id in offerers_ids:
-            if not offerers_api.can_offerer_create_educational_offer(offerer_id):
-                raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
-
-    collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
-    educational_api_offer.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
-
-
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
 @atomic()
 @login_required
