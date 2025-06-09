@@ -16,7 +16,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
-from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.titelive_book_search import TiteliveBookSearch
@@ -622,7 +621,9 @@ class TiteliveBookSearchTest:
             ),
         )
 
-        ProductWhitelistFactory(ean=whitelisted_ean)
+        offers_factories.ProductFactory(
+            ean=whitelisted_ean, gcuCompatibilityType=offers_models.GcuCompatibilityType.WHITELISTED
+        )
 
         # When
         sync_date = datetime.date(2022, 12, 1)
