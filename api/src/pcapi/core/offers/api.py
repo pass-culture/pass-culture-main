@@ -476,6 +476,15 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     query = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500)
 
+    if "isActive" in update_fields:
+        update_fields["publicationDatetime"] = None
+        update_fields["bookingAllowedDatetime"] = None
+
+        if update_fields["isActive"]:
+            activation_datetime = datetime.datetime.now(datetime.timezone.utc)
+            update_fields["publicationDatetime"] = activation_datetime
+            update_fields["bookingAllowedDatetime"] = activation_datetime
+
     offers_count = 0
     found_venue_ids = set()
 
