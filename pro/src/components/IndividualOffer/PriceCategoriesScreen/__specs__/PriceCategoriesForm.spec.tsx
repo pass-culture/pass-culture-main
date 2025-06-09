@@ -167,13 +167,13 @@ describe('PriceCategories', () => {
     renderPriceCategoriesForm(true, values)
 
     expect(
-      screen.getByLabelText('Accepter les réservations “Duo“')
+      screen.getByLabelText(/Accepter les réservations “Duo“/)
     ).toBeChecked()
     await userEvent.click(
-      screen.getByLabelText('Accepter les réservations “Duo“')
+      screen.getByLabelText(/Accepter les réservations “Duo“/)
     )
     expect(
-      screen.getByLabelText('Accepter les réservations “Duo“')
+      screen.getByLabelText(/Accepter les réservations “Duo“/)
     ).not.toBeChecked()
 
     await userEvent.click(
@@ -184,7 +184,7 @@ describe('PriceCategories', () => {
       priceCategories: [{ id: 2, label: 'Tarif unique' }],
     })
     expect(
-      screen.getByLabelText('Accepter les réservations “Duo“')
+      screen.getByLabelText(/Accepter les réservations “Duo“/)
     ).not.toBeChecked()
   })
 

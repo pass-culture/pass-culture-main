@@ -213,10 +213,10 @@ describe('screens:StocksThing', () => {
 
     await waitFor(() => {
       expect(api.createThingStock).toHaveBeenCalledWith({
-          offerId: offer.id,
-          bookingLimitDatetime: null,
-          price: 20,
-          quantity: null,
+        offerId: offer.id,
+        bookingLimitDatetime: null,
+        price: 20,
+        quantity: null,
       })
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
@@ -233,7 +233,7 @@ describe('screens:StocksThing', () => {
     })
     await userEvent.type(screen.getByLabelText('Prix *'), '20')
     await userEvent.click(
-      screen.getByLabelText('Accepter les réservations “Duo“')
+      screen.getByLabelText(/Accepter les réservations “Duo“/)
     )
     await userEvent.click(nextButton)
 
@@ -378,14 +378,15 @@ describe('screens:StocksThing', () => {
       await userEvent.click(screen.getByText('Enregistrer et continuer'))
       expect(api.createThingStock).toHaveBeenCalledWith({
         offerId: offer.id,
-  
+
         bookingLimitDatetime: null,
         price: 14.01,
         quantity: 5,
         activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
-        activationCodesExpirationDatetime:
-          serializeThingBookingLimitDatetime(date, '75'),
-
+        activationCodesExpirationDatetime: serializeThingBookingLimitDatetime(
+          date,
+          '75'
+        ),
       })
     })
 

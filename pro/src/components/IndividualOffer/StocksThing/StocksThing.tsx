@@ -20,11 +20,11 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getToday, getYearMonthDay, isDateValid } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -35,7 +35,6 @@ import {
   QuantityInput,
 } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
@@ -481,25 +480,13 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               className={styles['duo-section']}
               title="Réservations “Duo”"
             >
-              <FormLayout.Row
-                sideComponent={
-                  <InfoBox>
-                    Cette option permet au bénéficiaire de venir accompagné. La
-                    seconde place sera délivrée au même tarif que la première,
-                    quel que soit l’accompagnateur.
-                  </InfoBox>
+              <DuoCheckbox
+                checked={Boolean(formik.getFieldProps('isDuo').value)}
+                onChange={(e) =>
+                  formik.setFieldValue('isDuo', e.target.checked)
                 }
-              >
-                <Checkbox
-                  label="Accepter les réservations “Duo“"
-                  disabled={isDisabled}
-                  variant="detailed"
-                  checked={Boolean(formik.getFieldProps('isDuo').value)}
-                  onChange={(e) =>
-                    formik.setFieldValue('isDuo', e.target.checked)
-                  }
-                />
-              </FormLayout.Row>
+                disabled={isDisabled}
+              />
             </FormLayout.Section>
           </FormLayout>
         )}

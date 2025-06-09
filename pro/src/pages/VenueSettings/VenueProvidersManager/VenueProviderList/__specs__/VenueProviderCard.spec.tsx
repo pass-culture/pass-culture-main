@@ -56,7 +56,7 @@ describe('VenueProviderCard', () => {
         screen.getByText('Modifier les paramètres de vos offres')
       ).toBeInTheDocument()
       expect(
-        screen.getByText('Accepter les réservations duo')
+        screen.getByText('Accepter les réservations “Duo“')
       ).toBeInTheDocument()
     })
 
