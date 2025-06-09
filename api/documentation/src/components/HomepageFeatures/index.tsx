@@ -45,7 +45,7 @@ const FeatureList: FeatureItem[] = [
     imageUrl: '/img/integration_access.jpg',
     description: (
       <>
-        <a href="https://passculture.typeform.com/to/JHmbK9Hg">
+        <a href="https://pass-culture.eu.typeform.com/to/uLq5Bdsc">
           Fill this form
         </a>{' '}
         to obtain your access. You will receive your dedicated API key and an

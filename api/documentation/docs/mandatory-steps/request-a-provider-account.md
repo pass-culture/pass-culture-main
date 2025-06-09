@@ -21,7 +21,7 @@ For more information on **how authentication and authorization work on our API**
 
 Getting your provider account in production is a **4 steps process**:
 
-1. First, you need to **[fill this form](https://passculture.typeform.com/to/JHmbK9Hg)**.
+1. First, you need to **[fill this form](https://pass-culture.eu.typeform.com/to/uLq5Bdsc)**.
 2. Then, our support team **creates your provider account on our _integration test environment_** and **provides you with the API key** to authenticate yourself on this environment.
 3. You develop your integration using this **integration test environment**. At this step you need to **[create test accounts](/docs/mandatory-steps/create-test-accounts)** to be able to test that your integration is properly working.
 4. Once your integration is working properly on the integration test environment, our support team **creates your provider account on our production environment** and **gives you your production API key**. You will then be **ready to deploy your integration in production 🚀**.
