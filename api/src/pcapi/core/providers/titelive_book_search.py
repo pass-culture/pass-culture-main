@@ -232,7 +232,7 @@ def get_book_format(codesupport: str | None) -> str | None:
     if codesupport is None:
         return None
     book_format = constants.TITELIVE_BOOK_SUPPORTS_BY_CODE[codesupport]["book_format"]
-    return book_format.value if book_format else None
+    return book_format.name if book_format else None
 
 
 def build_book_extra_data(article: TiteLiveBookArticle, authors: list) -> offers_models.OfferExtraData:

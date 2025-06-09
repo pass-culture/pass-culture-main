@@ -1756,7 +1756,7 @@ class OffersV2Test:
         with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
-        assert response.json["extraData"]["bookFormat"] == "POCHE"
+        assert response.json["extraData"]["bookFormat"] == "Poche"
 
     def test_offer_extra_data_book_format(self, client):
         extra_data = {"bookFormat": BookFormat.MOYEN_FORMAT}
@@ -1766,7 +1766,7 @@ class OffersV2Test:
         with assert_num_queries(self.base_num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
-        assert response.json["extraData"]["bookFormat"] == "MOYEN FORMAT"
+        assert response.json["extraData"]["bookFormat"] == "Moyen format"
 
     def test_offer_with_chronicles(self, client):
         product = offers_factories.ProductFactory()

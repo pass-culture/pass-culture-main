@@ -6,14 +6,14 @@ from pcapi.models.feature import FeatureToggle
 
 
 class BookFormat(enum.Enum):
-    BANDE_DESSINEE = "BANDE DESSINEE "  # TODO: remove trailing whitespace
-    BEAUX_LIVRES = "BEAUX LIVRES"
-    LIVRE_AUDIO = "LIVRE + CD AUDIO"
-    LIVRE_CASSETTE = "LIVRE + CASSETTE"
-    MOOK = "MOOK"
-    MOYEN_FORMAT = "MOYEN FORMAT"
-    POCHE = "POCHE"
-    REVUE = "REVUE"
+    BANDE_DESSINEE = "Bande dessinée"
+    BEAUX_LIVRES = "Beaux livres"
+    LIVRE_AUDIO = "Livre + CD audio"
+    LIVRE_CASSETTE = "Livre + Cassette"
+    MOOK = "Mook"
+    MOYEN_FORMAT = "Moyen format"
+    POCHE = "Poche"
+    REVUE = "Revue"
 
 
 CINEMA_PROVIDER_NAMES = [
