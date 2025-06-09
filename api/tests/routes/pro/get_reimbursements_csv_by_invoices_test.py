@@ -96,7 +96,10 @@ def test_with_pricings(client):
     assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale de la structure"] == venue1.name
-    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert (
+        row["Adresse de l'offre"]
+        == f"{venue1.offererAddress.address.street} {venue1.offererAddress.address.postalCode} {venue1.offererAddress.address.city}"
+    )
     assert row["SIRET de la structure"] == venue1.siret
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
@@ -191,7 +194,10 @@ def test_with_pricings_collective_use_case(client):
     assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale de la structure"] == venue1.name
-    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert (
+        row["Adresse de l'offre"]
+        == f"{venue1.offererAddress.address.street} {venue1.offererAddress.address.postalCode} {venue1.offererAddress.address.city}"
+    )
     assert row["SIRET de la structure"] == venue1.siret
     assert row["Nom de l'offre"] == collective_offer.name
     assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
@@ -199,7 +205,7 @@ def test_with_pricings_collective_use_case(client):
     assert row["Prénom (offre collective)"] == redactor.firstName
     assert row["Nom de l'établissement (offre collective)"] == institution.name
     assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
-        collective_booking.collectiveStock.startDatetime, venue1.departementCode
+        collective_booking.collectiveStock.startDatetime, venue1.offererAddress.address.departmentCode
     ).strftime("%d/%m/%Y %H:%M")
     assert row["Contremarque"] == ""
     assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
