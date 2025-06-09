@@ -124,7 +124,10 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale de la structure"] == venue1.name
-    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert (
+        row["Adresse de l'offre"]
+        == f"{venue1.offererAddress.address.street} {venue1.offererAddress.address.postalCode} {venue1.offererAddress.address.city}"
+    )
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
     assert row["Nom (offre collective)"] == ""
@@ -243,7 +246,10 @@ def test_with_reimbursement_period_filter_with_pricings_using_oa(client, cutoff,
         assert row["Intitulé du compte bancaire"] == bank_account.label
         assert row["IBAN"] == bank_account.iban
         assert row["Raison sociale de la structure"] == venue.name
-        assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
+        assert (
+            row["Adresse de l'offre"]
+            == f"{venue.offererAddress.address.street} {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+        )
         assert row["SIRET de la structure"] == venue.siret
         assert row["Nom de l'offre"] == offer.name
         assert row["N° de réservation (offre collective)"] == ""
@@ -345,14 +351,17 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     assert row["SIRET de la structure"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale de la structure"] == venue1.name
-    assert row["Adresse de l'offre"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
+    assert (
+        row["Adresse de l'offre"]
+        == f"{venue1.offererAddress.address.street} {venue1.offererAddress.address.postalCode} {venue1.offererAddress.address.city}"
+    )
     assert row["Nom de l'offre"] == collective_offer.name
     assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
     assert row["Nom (offre collective)"] == redactor.lastName
     assert row["Prénom (offre collective)"] == redactor.firstName
     assert row["Nom de l'établissement (offre collective)"] == institution.name
     assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
-        collective_booking.collectiveStock.startDatetime, venue1.departementCode
+        collective_booking.collectiveStock.startDatetime, venue1.offererAddress.address.departmentCode
     ).strftime("%d/%m/%Y %H:%M")
     assert row["Contremarque"] == ""
     assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
@@ -467,14 +476,17 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["SIRET de la structure"] == venue.siret
         assert row["IBAN"] == bank_account.iban
         assert row["Raison sociale de la structure"] == venue.name
-        assert row["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
+        assert (
+            row["Adresse de l'offre"]
+            == f"{venue.offererAddress.address.street} {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+        )
         assert row["Nom de l'offre"] == collective_offer.name
         assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
         assert row["Nom (offre collective)"] == redactor.lastName
         assert row["Prénom (offre collective)"] == redactor.firstName
         assert row["Nom de l'établissement (offre collective)"] == institution.name
         assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
-            collective_booking.collectiveStock.startDatetime, venue.departementCode
+            collective_booking.collectiveStock.startDatetime, venue.offererAddress.address.departmentCode
         ).strftime("%d/%m/%Y %H:%M")
         assert row["Contremarque"] == ""
         assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
