@@ -604,7 +604,7 @@ def _get_offers_by_ids(
                 users_models.User.lastName,
             ),
             sa_orm.joinedload(offers_models.Offer.compliance),
-            sa_orm.joinedload(offers_models.Offer.lastProvider).load_only(
+            sa_orm.selectinload(offers_models.Offer.lastProvider).load_only(
                 providers_models.Provider.name,
             ),
         )
