@@ -203,10 +203,10 @@ jobs:
       - name: "Generate pcapi secrets list"
         id: generate-pcapi-secrets-list
         run: |
-          #Retrieve pcapi secrets list from source code
-          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
-          PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
-          #Sort list
+          # Retrieve pcapi secrets list from source code
+          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | sed -n 's/.*secrets_utils.get("\([^"]*\)".*/\1/p' | grep -v '^GOOGLE_CLIENT_ID$' | grep -v 'GOOGLE_CLIENT_SECRET$')
+          echo $PCAPI_SECRETS
+          # Sort list
           PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
           #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
@@ -365,4 +365,15 @@ jobs:
           duration=`date -d@$(bc <<< "$end - $start") -u +%H:%M:%S`
           {
             echo "| flask sandbox -n industrial    |  $duration |"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: "Publish Summary"
+        run: |
+          {
+            echo "### :rocket: Deploy PRO summary"
+            echo "| Results                              | Value |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
+            echo "| [Back] url                           |  https://backend-${{ needs.deploy-preview-env-init.outputs.resource_label }}.testing.passculture.team/ |"
+            echo "| [BO] url                             |  https://backoffice-${{ needs.deploy-preview-env-init.outputs.resource_label }}.testing.passculture.team/ |"
           } >> $GITHUB_STEP_SUMMARY
