@@ -52,35 +52,20 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
   notify: ReturnType<typeof useNotification>
 ) => {
   //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
-  const collectiveOfferIds = []
-  const collectiveOfferTemplateIds = []
 
   if (
     selectedOffers.some(
       (offer) =>
-        offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED
+        offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED ||
+        !offer.isShowcase
     )
   ) {
-    notify.error(
-      `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.PUBLISHED ? 'la publication' : 'la désactivation'} des offres sélectionnées`
-    )
-    return
+    const msg = `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.PUBLISHED ? 'la publication' : 'la désactivation'} des offres sélectionnées`
+    notify.error(msg)
+    throw new Error(msg)
   }
 
-  for (const offer of selectedOffers) {
-    if (offer.isShowcase) {
-      collectiveOfferTemplateIds.push(offer.id)
-    } else {
-      collectiveOfferIds.push(offer.id)
-    }
-  }
-
-  if (collectiveOfferIds.length > 0) {
-    await api.patchCollectiveOffersActiveStatus({
-      ids: collectiveOfferIds.map((id) => Number(id)),
-      isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
-    })
-  }
+  const collectiveOfferTemplateIds = selectedOffers.map((offer) => offer.id)
 
   if (collectiveOfferTemplateIds.length > 0) {
     await api.patchCollectiveOffersTemplateActiveStatus({
