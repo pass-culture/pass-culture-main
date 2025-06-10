@@ -18,22 +18,6 @@
     {{ title }}
   </button>
 {% endmacro %}
-{% macro description_detail_vertical(title) %}
-  <dl>
-    <dt>{{ title }}</dt>
-    <dd>
-      {{ caller() }}
-    </dd>
-  </dl>
-{% endmacro %}
-{% macro description_detail_horizontal(title) %}
-  <dl class="row">
-    <dt class="col-sm-3">{{ title }}</dt>
-    <dd class="col-sm-9">
-      {{ caller() }}
-    </dd>
-  </dl>
-{% endmacro %}
 {% macro content_navbar(navbar_name) %}
   <nav id="{{ navbar_name }}-navbar"
        class="navbar p-0">

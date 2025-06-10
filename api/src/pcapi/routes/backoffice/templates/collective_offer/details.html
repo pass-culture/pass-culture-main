@@ -4,6 +4,8 @@
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as %}
+{% from "components/description.html" import description_detail_horizontal %}
+{% from "components/description.html" import description_detail_vertical %}
 {% block title %}{{ collective_offer.name }}{% endblock %}
 {% block header_extra %}
   <div>
