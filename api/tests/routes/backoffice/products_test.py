@@ -44,7 +44,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory.create(
             description="Une offre pour tester",
             ean="1234567891234",
-            extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
+            extraData={"author": "Jean-Christophe Rufin", "editeur": "Editor", "gtl_id": "08010000"},
             lastProvider=allocine_provider,
         )
 
@@ -70,7 +70,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert descriptions["En attente"] == "0"
         assert descriptions["Rejetées"] == "0"
         assert descriptions["Offres non liées"] == "1"
-        assert descriptions["Auteur"] == "Author"
+        assert descriptions["Auteur"] == "Jean-Christophe Rufin"
         assert descriptions["EAN"] == "1234567891234"
         assert descriptions["Éditeur"] == "Editor"
         assert descriptions["Description"] == "Une offre pour tester"
@@ -86,17 +86,17 @@ class GetProductDetailsTest(GetEndpointHelper):
             f'div.pc-ean-result img[src="{fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]["imagesUrl"]["recto"]}"]'
         )
         assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
-        assert "EAN-13 : " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
-        assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+        assert "EAN-13 " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
+        assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
 
-        assert "Prix HT : 8,30 €" in card_text[0]
-        assert "Taux TVA : 5,50 %" in card_text[0]
-        assert "Code CLIL : " + article["code_clil"] in card_text[0]
-        assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
-        assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
+        assert "Prix HT 8,30 €" in card_text[0]
+        assert "Taux TVA 5,50 %" in card_text[0]
+        assert "Code CLIL " + article["code_clil"] in card_text[0]
+        assert "Code support " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
+        assert "Code GTL Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
         assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
-        assert "Inéligible pass Culture :" not in card_text[0]
-        assert "EAN whitelisté : Non" in card_text[0]
+        assert "Inéligible pass Culture " not in card_text[0]
+        assert "EAN whitelisté Non" in card_text[0]
 
         buttons = html_parser.extract(response.data, "button")
         assert "Offres liées" in buttons
@@ -184,17 +184,17 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
             f'div.pc-ean-result img[src="{fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]["imagesUrl"]["recto"]}"]'
         )
         assert fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
-        assert "EAN-13 : " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
-        assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
+        assert "EAN-13 " + fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
+        assert "Lectorat " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
 
-        assert "Prix HT : 8,30 €" in card_text[0]
-        assert "Taux TVA : 5,50 %" in card_text[0]
-        assert "Code CLIL : " + article["code_clil"] in card_text[0]
-        assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
-        assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
+        assert "Prix HT 8,30 €" in card_text[0]
+        assert "Taux TVA 5,50 %" in card_text[0]
+        assert "Code CLIL " + article["code_clil"] in card_text[0]
+        assert "Code support " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
+        assert "Code GTL Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
         assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
-        assert "Inéligible pass Culture :" not in card_text[0]
-        assert "EAN whitelisté : Non" in card_text[0]
+        assert "Inéligible pass Culture " not in card_text[0]
+        assert "EAN whitelisté Non" in card_text[0]
 
         buttons = html_parser.extract(response.data, "button")
         assert "Annuler" in buttons

@@ -5,6 +5,8 @@
 {% import "components/logo.html" as logo %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% from "components/description.html" import description_detail_vertical %}
+{% from "components/description.html" import description_detail_horizontal %}
 {% from "products/titelive_information.html" import render_titelive_information %}
 {% block title %}{{ product.name }}{% endblock %}
 {% block header_extra %}

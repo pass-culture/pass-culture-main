@@ -6,6 +6,8 @@
 {% from "components/connect_as.html" import build_connect_as %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% from "components/description.html" import description_detail_horizontal %}
+{% from "components/description.html" import description_detail_vertical %}
 {% macro accessibility_indicator(icon, value, title) %}
   <figure class="figure p-2 accessibility-logo-container d-flex flex-column align-items-center gap-3">
     <div class="accessibility-logo d-flex justify-content-center align-items-center position-relative border rounded-xs">
