@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
@@ -463,12 +467,14 @@ describe('VenueEdition', () => {
       })
       rerender(<VenueEdition />)
 
-      expect(mockUseNavigate).toHaveBeenCalled()
-      expect(mockDispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          payload: fallbackVenue.id.toString(),
-        })
-      )
+      await waitFor(() => {
+        expect(mockUseNavigate).toHaveBeenCalled()
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            payload: fallbackVenue.id.toString(),
+          })
+        )
+      })
     })
 
     it('should navigate back home page if selected venue is deprecated & there is no venues left', async () => {
@@ -520,9 +526,12 @@ describe('VenueEdition', () => {
         mutate: vi.fn(),
         isValidating: false,
       })
+
       rerender(<VenueEdition />)
 
-      expect(mockUseNavigate).toHaveBeenLastCalledWith('/accueil')
+      await waitFor(() => {
+        expect(mockUseNavigate).toHaveBeenLastCalledWith('/accueil')
+      })
     })
   })
 })

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetOffererResponseModel,
   GetVenueResponseModel,
@@ -61,8 +61,6 @@ export const VenueSettingsScreen = ({
     mode: 'onBlur',
   })
 
-  const { setError } = methods
-
   const onSubmit = async (values: VenueSettingsFormValues) => {
     try {
       await api.editVenue(
@@ -79,31 +77,33 @@ export const VenueSettingsScreen = ({
         saved: true,
         isEdition: true,
       })
+
+      notify.success('Vos modifications ont été sauvegardées')
     } catch (error) {
       let formErrors
       if (isErrorAPIError(error)) {
         formErrors = error.body
       }
-      const apiFieldsMap: Record<string, string> = {
-        venue: 'venueId',
-        venueTypeCode: 'venueType',
-        'contact.email': 'email',
-        'contact.phoneNumber': 'phoneNumber',
-        'contact.website': 'webSite',
-        address: 'search-addressAutocomplete',
-        visualDisabilityCompliant: 'accessibility.visual',
-        mentalDisabilityCompliant: 'accessibility.mental',
-        motorDisabilityCompliant: 'accessibility.motor',
-        audioDisabilityCompliant: 'accessibility.audio',
-      }
 
-      if (!formErrors || Object.keys(formErrors).length === 0) {
-        notify.error('Erreur inconnue lors de la sauvegarde de la structure.')
+      const errorsKeys = Object.keys(formErrors)
+
+      if (
+        !formErrors ||
+        errorsKeys.length === 0 ||
+        errorsKeys.includes('global')
+      ) {
+        notify.error('Erreur lors de la sauvegarde de la structure.')
       } else {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
-        setError('root', serializeApiErrors(formErrors, apiFieldsMap))
+
+        for (const field of errorsKeys) {
+          methods.setError(field as keyof VenueSettingsFormValues, {
+            type: field,
+            message: formErrors[field]?.toString(),
+          })
+        }
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {

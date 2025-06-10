@@ -75,7 +75,7 @@ export const PartnerPage = ({
 
       await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
 
-      notify.success('Vos modifications ont bien été prises en compte')
+      notify.success('Vos modifications ont bien été enregistrées')
     } catch {
       notify.error(
         'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'

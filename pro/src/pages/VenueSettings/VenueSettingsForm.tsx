@@ -103,7 +103,12 @@ export const VenueSettingsForm = ({
           )}
 
           <FormLayout.Row mdSpaceAfter>
-            <TextInput {...register('name')} label="Raison sociale" disabled />
+            <TextInput
+              label="Raison sociale"
+              {...register('name')}
+              disabled
+              error={errors.name?.message}
+            />
           </FormLayout.Row>
 
           {!venue.isVirtual && (
@@ -212,11 +217,7 @@ export const VenueSettingsForm = ({
         )}
       </FormLayout>
 
-      <VenueFormActionBar
-        venue={venue}
-        disableFormSubmission={!isDirty}
-        isSubmitting={isSubmitting}
-      />
+      <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />
       <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
     </>
   )
