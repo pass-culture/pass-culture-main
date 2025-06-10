@@ -2386,15 +2386,13 @@ class ActivateFutureOffersTest:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
-        offer = factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        future_offer = factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+        offer = factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
 
         offers_ids = api.activate_future_offers(publication_date=publication_date)
 
         assert offers_ids == [offer.id]
         assert db.session.get(models.Offer, offer.id).isActive
-        assert db.session.get(models.FutureOffer, future_offer.id).isSoftDeleted
 
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
@@ -2407,17 +2405,14 @@ class ActivateFutureOffersAndRemindUsersTest:
     def test_activate_future_offers_and_remind_users(
         self, notify_users_offer_is_bookable_mock, mocked_async_index_offer_ids
     ):
-        offer_1 = factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow() - timedelta(minutes=14)
-        future_offer_1 = factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
+        offer_1 = factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
 
-        offer_2 = factories.OfferFactory(isActive=False)
         publication_date_2 = datetime.utcnow() - timedelta(minutes=10)
-        future_offer_2 = factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date_2)
+        offer_2 = factories.OfferFactory(isActive=False, publicationDatetime=publication_date_2)
 
-        offer_3 = factories.OfferFactory(isActive=False)
         publication_date_3 = datetime.utcnow() - timedelta(minutes=15)
-        future_offer_3 = factories.FutureOfferFactory(offer=offer_3, publicationDate=publication_date_3)
+        offer_3 = factories.OfferFactory(isActive=False, publicationDatetime=publication_date_3)
 
         api.activate_future_offers_and_remind_users()
         notify_users_offer_is_bookable_mock.assert_has_calls(
@@ -2430,10 +2425,6 @@ class ActivateFutureOffersAndRemindUsersTest:
         assert db.session.get(models.Offer, offer_1.id).isActive
         assert db.session.get(models.Offer, offer_2.id).isActive
         assert not db.session.get(models.Offer, offer_3.id).isActive
-
-        assert db.session.get(models.FutureOffer, future_offer_1.id).isSoftDeleted
-        assert db.session.get(models.FutureOffer, future_offer_2.id).isSoftDeleted
-        assert not db.session.get(models.FutureOffer, future_offer_3.id).isSoftDeleted
 
 
 @pytest.mark.usefixtures("db_session")
@@ -5244,9 +5235,6 @@ class MoveOfferTest:
             offer = factories.OfferFactory(venue=venue, validation=OfferValidationStatus.DRAFT)
         if state == OfferStatus.ACTIVE:
             offer = factories.OfferFactory(venue=venue)
-        if state == "planned":
-            offer = factories.OfferFactory(venue=venue)
-            factories.FutureOfferFactory(offer=offer)
         if state == OfferValidationStatus.PENDING:
             offer = factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
         if state == OfferValidationStatus.REJECTED:
@@ -5286,7 +5274,6 @@ class MoveOfferTest:
         [
             OfferValidationStatus.DRAFT,
             OfferStatus.ACTIVE,
-            "planned",
             OfferValidationStatus.PENDING,
             OfferValidationStatus.REJECTED,
             OfferStatus.INACTIVE,

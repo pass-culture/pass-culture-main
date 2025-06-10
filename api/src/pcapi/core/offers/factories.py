@@ -571,11 +571,3 @@ class OfferComplianceFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     compliance_score = 12
     compliance_reasons = ["stock_price", "offer_description"]
-
-
-class FutureOfferFactory(BaseFactory):
-    class Meta:
-        model = models.FutureOffer
-
-    offer = factory.SubFactory(OfferFactory)
-    publicationDate = datetime.datetime.utcnow() + datetime.timedelta(days=30)

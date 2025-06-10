@@ -21,6 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendinblueSendOfferValidationTest:
+    @time_machine.travel("2032-10-15 12:48:00")
     @pytest.mark.parametrize("factory_class", [offers_factories.DigitalOfferFactory, offers_factories.OfferFactory])
     def test_get_validation_approval_correct_email_metadata(self, factory_class):
         # Given
@@ -32,7 +33,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
-            "PUBLICATION_DATE": None,
+            "PUBLICATION_DATE": "vendredi 15 octobre 2032",
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "OFFER_ADDRESS": offer.fullAddress,
@@ -41,9 +42,10 @@ class SendinblueSendOfferValidationTest:
     @time_machine.travel("2032-10-15 12:48:00")
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
         # Given
-        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
         publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+        offer = offers_factories.OfferFactory(
+            name="Ma petite offre", venue__name="Mon stade", publicationDatetime=publication_date
+        )
 
         # When
         new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)
@@ -58,6 +60,7 @@ class SendinblueSendOfferValidationTest:
             "OFFER_ADDRESS": offer.fullAddress,
         }
 
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_send_offer_approval_email(
         self,
     ):
@@ -77,7 +80,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0]["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
-            "PUBLICATION_DATE": None,
+            "PUBLICATION_DATE": "vendredi 15 octobre 2032",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
             "OFFER_ADDRESS": offer.fullAddress,

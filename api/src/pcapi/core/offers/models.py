@@ -589,7 +589,6 @@ class FutureOffer(PcObject, Base, Model, SoftDeletableMixin):
     offerId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="futureOffer")
     publicationDate = sa.Column(sa.DateTime, index=True, nullable=False)
 
     @hybrid_property
@@ -767,9 +766,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
-    futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(
-        "FutureOffer", back_populates="offer", uselist=False
-    )
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship(
         "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
     )
@@ -890,11 +886,20 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def _released(self) -> bool:
-        return self.isActive and self.validation == OfferValidationStatus.APPROVED
+        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        return (
+            self.isActive
+            and self.validation == OfferValidationStatus.APPROVED
+            and (self.publicationDatetime is not None and self.publicationDatetime <= now)
+        )
 
     @_released.expression  # type: ignore[no-redef]
     def _released(cls) -> BooleanClauseList:
-        return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
+        return sa.and_(
+            cls.isActive,
+            cls.validation == OfferValidationStatus.APPROVED,
+            sa.or_(cls.publicationDatetime != None, cls.publicationDatetime <= sa.func.now()),
+        )
 
     @hybrid_property
     def isPermanent(self) -> bool:
@@ -960,22 +965,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def is_eligible_for_search(self) -> bool:
-        if self.futureOffer and not self.isActive:
-            offerer = self.venue.managingOfferer
-            return (
-                offerer.isActive
-                and offerer.isValidated
-                and self.validation == OfferValidationStatus.APPROVED
-                and self.futureOffer.isWaitingForPublication
-            )
         return self.is_released_and_bookable
 
     @is_eligible_for_search.expression  # type: ignore[no-redef]
     def is_eligible_for_search(cls) -> BooleanClauseList:
-        return sa.or_(
-            sa.and_(cls._released, Stock._bookable),
-            sa.and_(cls.validation == OfferValidationStatus.APPROVED, FutureOffer.isWaitingForPublication),
-        )
+        return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
     def is_released_and_bookable(self) -> bool:
@@ -1043,7 +1037,13 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def searchableStocks(self) -> list[Stock]:
-        if self.futureOffer and not self.isActive:
+        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        if (
+            self.publicationDatetime
+            and self.publicationDatetime <= now
+            and self.bookingAllowedDatetime
+            and self.bookingAllowedDatetime > now
+        ):
             return self.stocks
         return self.bookableStocks
 
@@ -1210,9 +1210,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def publicationDate(self) -> datetime.datetime | None:
-        if not self.futureOffer:
-            return None
-        return self.futureOffer.publicationDate
+        # TODO(jbaudet) 2025-05: remove this property. which used the now
+        # deleted future offer table. Use `publicationDatetime` instead.
+        return self.publicationDatetime
 
     @property
     def fullAddress(self) -> str | None:

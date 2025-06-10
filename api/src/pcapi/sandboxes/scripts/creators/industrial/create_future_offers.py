@@ -11,19 +11,22 @@ logger = logging.getLogger(__name__)
 
 def _create_future_offer_factory(
     is_active: bool,
-    publication_date: datetime.datetime,
+    publication_datetime: datetime.datetime,
     subcategory: Subcategory = subcategories.FESTIVAL_MUSIQUE,
     name: str = "Offre Coming Soon",
     description: str | None = None,
 ) -> None:
     offer = offer_factories.OfferFactory.create(
-        isActive=is_active, isDuo=True, subcategoryId=subcategory.id, name=name, description=description
+        isActive=is_active,
+        isDuo=True,
+        subcategoryId=subcategory.id,
+        name=name,
+        description=description,
+        publicationDatetime=publication_datetime,
     )
     offer_factories.EventStockFactory.create(
-        offer=offer, beginningDatetime=publication_date - datetime.timedelta(days=1), price=12.25
+        offer=offer, beginningDatetime=publication_datetime - datetime.timedelta(days=1), price=12.25
     )
-
-    offer_factories.FutureOfferFactory.create(offer=offer, publicationDate=publication_date)
 
 
 def create_future_offers() -> None:
@@ -32,7 +35,7 @@ def create_future_offers() -> None:
         publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=(i + 1) * 5)
         _create_future_offer_factory(
             is_active=False,
-            publication_date=publication_date,
+            publication_datetime=publication_date,
             name=f"Offre Coming Soon - planifiée n°{i + 1}",
             description="Une offre coming soon pour tester la planification",
         )
@@ -40,7 +43,7 @@ def create_future_offers() -> None:
     # Create future Offer activated, i.e offer manually activated before planned publication_date
     _create_future_offer_factory(
         is_active=True,
-        publication_date=publication_date,
+        publication_datetime=publication_date,
         subcategory=subcategories.EVENEMENT_CINE,
         name="Offre Coming Soon - activée manuellement",
         description="Une offre coming soon pour tester l'activation manuelle",
@@ -50,7 +53,7 @@ def create_future_offers() -> None:
     publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=-30)
     _create_future_offer_factory(
         is_active=True,
-        publication_date=publication_date,
+        publication_datetime=publication_date,
         subcategory=subcategories.CONCERT,
         name="Offre Coming Soon - activée automatiquement",
         description="Une offre coming soon pour tester l'activation automatique",
@@ -59,7 +62,7 @@ def create_future_offers() -> None:
     # Create future Offer in the past not activated, i.e. stale offer
     _create_future_offer_factory(
         is_active=False,
-        publication_date=publication_date,
+        publication_datetime=publication_date,
         subcategory=subcategories.FESTIVAL_CINE,
         name="Offre Coming Soon - non activée",
     )

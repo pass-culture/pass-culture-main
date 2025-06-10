@@ -561,28 +561,23 @@ def test_serialize_venue_with_one_bookable_offer():
 
 
 def test_serialize_future_offer():
-    offer_1 = offers_factories.OfferFactory(isActive=False, subcategoryId=subcategories.FESTIVAL_MUSIQUE.id)
-    offer_2 = offers_factories.OfferFactory(isActive=True)
-    publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-    offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
-    offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date)
+    publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+    booking_allowed_dt = publication_date + datetime.timedelta(days=30)
     beginning_date = datetime.datetime(2032, 1, 4, 12, 15)
+
+    offer_1 = offers_factories.OfferFactory(
+        isActive=False,
+        subcategoryId=subcategories.FESTIVAL_MUSIQUE.id,
+        publicationDatetime=publication_date,
+        bookingAllowedDatetime=booking_allowed_dt,
+    )
     offers_factories.EventStockFactory(offer=offer_1, price=10, beginningDatetime=beginning_date)
-    offers_factories.StockFactory(offer=offer_2, price=8.50)
 
     serialized = algolia.AlgoliaBackend().serialize_offer(offer_1, 0)
-    assert serialized["offer"]["publicationDate"] == publication_date.timestamp()
     assert serialized["offer"]["prices"] == [decimal.Decimal("10.00")]
     assert serialized["offer"]["dates"] == [beginning_date.timestamp()]
     assert serialized["offer"]["times"] == [12 * 60 * 60 + 15 * 60]
     assert serialized["_tags"] == ["is_future"]
-
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer_2, 0)
-    assert "publicationDate" not in serialized["offer"]
-    assert serialized["offer"]["prices"] == [decimal.Decimal("8.50")]
-    assert serialized["offer"]["dates"] == []
-    assert serialized["offer"]["times"] == []
-    assert "_tags" not in serialized
 
 
 def test_serialize_collective_offer_template_offerer_venue():

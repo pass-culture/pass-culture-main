@@ -1,16 +1,17 @@
+from datetime import datetime
+from datetime import timezone
+
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offers import api as offers_api
-from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.reminders.external import reminders_notifications
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
 
 @job(worker.low_queue)
 def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
-    individual_offer_query = offers_repository.get_offers_by_filters(
+    query = offers_repository.get_offers_by_filters(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
@@ -23,14 +24,9 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
-    individual_offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(individual_offer_query)
-
-    if is_active:
-        individual_offer_future_query = individual_offer_query.join(models.Offer.futureOffer)
-        for offer in individual_offer_future_query:
-            reminders_notifications.notify_users_offer_is_bookable(offer)
-
-    offers_api.batch_update_offers(individual_offer_query, {"isActive": is_active})
+    query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
+    now = datetime.now(timezone.utc)
+    offers_api.batch_update_offers(query, {"isActive": is_active, "publicationDatetime": now if is_active else None})
 
 
 @job(worker.low_queue)

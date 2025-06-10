@@ -41,17 +41,16 @@ now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)
 class Returns200Test:
     num_queries = 1  # 1 session
     num_queries += 1  # 2 user
-    num_queries += 1  # 3 offer
+    num_queries += 1  # 3 offerer
     num_queries += 1  # 4 user_offerer
     num_queries += 1  # 5 offer+stock+offererAddress+Address+mediaton+venue
     num_queries += 1  # 6 available stock (date comparison)
-    num_queries += 1  # 7 validation status
+    num_queries += 1  # 7 select offer
     num_queries += 1  # 8 offerer_confidence
-    num_queries += 1  # 9 offerer_confidenc
+    num_queries += 1  # 9 offerer_confidence
     num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 11 future_offer
+    num_queries += 1  # 11 select feature
     num_queries += 1  # 12 update offer
-    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     @time_machine.travel(now_datetime_with_tz, tick=False)
@@ -85,8 +84,11 @@ class Returns200Test:
         assert not offer.bookingAllowedDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
-        assert offer.publicationDate is None
-        assert not offer.futureOffer
+        # TODO(jbaudet, 2025-06): remove check once publicationDate is
+        # replaced by publicationDatetime
+        assert offer.publicationDate is not None
+        assert response.json["isActive"] is True
+        assert response.json["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -113,8 +115,7 @@ class Returns200Test:
         client = client.with_session_auth("user@example.com")
         publication_date = now_datetime_with_tz.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(days=30)
         offer_id = stock.offerId
-        # +1 insert into future_offer
-        with assert_num_queries(self.num_queries + 1):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={
@@ -135,7 +136,6 @@ class Returns200Test:
         assert offer.publicationDatetime == publication_date.replace(tzinfo=None)
         assert offer.publicationDate == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
-        assert offer.futureOffer.isWaitingForPublication
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -166,8 +166,7 @@ class Returns200Test:
         ) + datetime.timedelta(days=30)
         offer_id = stock.offerId
 
-        # +1 insert into future_offer
-        with assert_num_queries(self.num_queries + 1):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={
@@ -189,7 +188,8 @@ class Returns200Test:
         assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert offer.publicationDatetime == expected_publication_date
         assert not offer.bookingAllowedDatetime
-
+        assert response.json["isActive"] is False
+        assert response.json["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -272,8 +272,7 @@ class Returns200Test:
         ) + datetime.timedelta(days=31)
         offer_id = stock.offerId
 
-        # +1 insert into future_offer
-        with assert_num_queries(self.num_queries + 1):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={
@@ -295,7 +294,6 @@ class Returns200Test:
         first_finalization_datetime = offer.finalizationDatetime
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
-        assert db.session.query(offers_models.FutureOffer).count() == 1
 
         response = client.patch("/offers/publish", json={"id": stock.offerId})
 
@@ -305,9 +303,8 @@ class Returns200Test:
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == first_finalization_datetime
         assert offer.finalizationDatetime <= offer.publicationDatetime
-        assert offer.publicationDate is None
+        assert response.json["isActive"] is True
         mock_async_index_offer_ids.assert_called_once()
-        assert db.session.query(offers_models.FutureOffer).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")

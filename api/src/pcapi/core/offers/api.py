@@ -570,16 +570,17 @@ def create_event_opening_hours(
 
 
 def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
-    offer_query, future_offer_query = offers_repository.get_offers_by_publication_date(
-        publication_date=publication_date
-    )
+    offer_query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
+
+    # get offers before their update, otherwise the query might return
+    # an empty list (since `publicationDatetime` might be updated)
+    offer_ids = [offer.id for offer in offer_query]
 
     with transaction():
         batch_update_offers(offer_query, {"isActive": True})
-        future_offer_query.update({"isSoftDeleted": True}, synchronize_session="fetch")
 
-    return [offer.id for offer in offer_query]
+    return offer_ids
 
 
 def activate_future_offers_and_remind_users() -> None:
@@ -918,17 +919,9 @@ def publish_offer(
     if publication_datetime is not None:  # i.e. pro user schedules the publication in the future
         offer.isActive = False
         offer.publicationDatetime = publication_datetime
-
-        # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
-        future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_datetime)
-        db.session.add(future_offer)
     else:  # i.e. pro user publishes the offer right away
         offer.isActive = True
         offer.publicationDatetime = finalization_date
-
-        # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
-        if offer.publicationDate:
-            offers_repository.delete_future_offer(offer.id)
 
         on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
         logger.info(
