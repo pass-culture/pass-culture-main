@@ -53,10 +53,48 @@ describe('getOfferTags', () => {
       ])
     )
 
-    expect(tagsReduced).toEqual(
-      expect.arrayContaining(['Dans l’établissement scolaire'])
+    expect(tagsReduced).toEqual(['Dans l’établissement scolaire'])
+  })
+
+  it('should return the list of tags when the offer happens at school when ff oa is enabled', () => {
+    const offer: CollectiveOfferTemplateResponseModel = {
+      ...templateOffer,
+      dates: { start: '2023-10-23T22:00:00Z', end: '2023-10-24T21:59:00Z' },
+      location: {
+        locationType: CollectiveLocationType.SCHOOL,
+      },
+      venue: {
+        ...templateOffer.venue,
+        coordinates: {
+          latitude: 1,
+          longitude: 1,
+        },
+      },
+      students: [StudentLevels.COLL_GE_3E],
+    }
+    const tags = getOfferTags(
+      offer,
+      { ...adageUser, lat: 0, lon: 0 },
+      true,
+      true
+    ).map((tag) => tag.text)
+    const tagsReduced = getOfferTags(
+      offer,
+      { ...adageUser, lat: 0, lon: 0 },
+      false,
+      true
+    ).map((tag) => tag.text)
+
+    expect(tags).toEqual(
+      expect.arrayContaining([
+        'Dans l’établissement scolaire',
+        'Partenaire situé à 157 km',
+        'Du 23 octobre au 24 octobre 2023 à 22h',
+        'Collège - 3e',
+      ])
     )
-    expect(tagsReduced).toHaveLength(1)
+
+    expect(tagsReduced).toEqual(['Dans l’établissement scolaire'])
   })
 
   it('should return the list of tags when the offer happens at the offerers location', () => {
@@ -82,8 +120,49 @@ describe('getOfferTags', () => {
       expect.arrayContaining(['Sortie', 'À 100 km', 'Disponible toute l’année'])
     )
 
-    expect(tagsReduced).toEqual(expect.arrayContaining(['Sortie', 'À 100 km']))
-    expect(tagsReduced).toHaveLength(2)
+    expect(tagsReduced).toEqual(['Sortie', 'À 100 km'])
+  })
+
+  it('should return the list of tags when the offer happens at the offerers location when ff oa is enabled', () => {
+    const offer: CollectiveOfferTemplateResponseModel = {
+      ...templateOffer,
+      location: {
+        locationType: CollectiveLocationType.ADDRESS,
+        address: {
+          isManualEdition: false,
+          id_oa: 1,
+          id: 1,
+          label: 'Le nom du lieu 1',
+          city: 'Paris',
+          postalCode: '75001',
+          latitude: 1,
+          longitude: 1,
+        },
+      },
+      dates: undefined,
+    }
+    const tags = getOfferTags(
+      offer,
+      { ...adageUser, lat: 0, lon: 0 },
+      true,
+      true
+    ).map((tag) => tag.text)
+    const tagsReduced = getOfferTags(
+      offer,
+      { ...adageUser, lat: 0, lon: 0 },
+      false,
+      true
+    ).map((tag) => tag.text)
+
+    expect(tags).toEqual(
+      expect.arrayContaining([
+        'Sortie à 157 km',
+        'Partenaire situé à 900+ km',
+        'Disponible toute l’année',
+      ])
+    )
+
+    expect(tagsReduced).toEqual(['Sortie à 157 km'])
   })
 
   it('should return the list of tags when the offer happens at another location', () => {

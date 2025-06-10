@@ -3,6 +3,7 @@ import { addDays } from 'date-fns'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
+  CollectiveLocationType,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   EacFormat,
@@ -30,6 +31,19 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
       venueId: 1,
       otherAddress: '',
       addressType: OfferAddressType.OFFERER_VENUE,
+    },
+    location: {
+      locationType: CollectiveLocationType.ADDRESS,
+      address: {
+        isManualEdition: false,
+        id_oa: 1,
+        id: 1,
+        label: 'Le nom du lieu 1',
+        city: 'Paris',
+        postalCode: '75001',
+        latitude: 48.87004,
+        longitude: 2.3785,
+      },
     },
     students: [],
     venue: {
