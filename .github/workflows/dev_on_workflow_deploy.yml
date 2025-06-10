@@ -334,6 +334,7 @@ jobs:
           command: |
             export POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api --field-selector=status.phase==Running -o json |jq -r '.items[] | "\(.metadata.name)"'|head -n 1)
             echo "flask commands runs on ${POD_NAME}"
+            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings artists --not-dry
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --not-dry
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --not-dry
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --not-dry
