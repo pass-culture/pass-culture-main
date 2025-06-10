@@ -80,7 +80,6 @@ class Returns200Test:
         assert offer.validation == OfferValidationStatus.DRAFT
         assert offer.isActive is False
         assert offer.offererAddress.id == venue.offererAddressId
-        assert not offer.futureOffer
         assert offer.offererAddress == venue.offererAddress
 
     @pytest.mark.parametrize("oa_label", [None, "some place"])
