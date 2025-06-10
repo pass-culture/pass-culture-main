@@ -269,7 +269,10 @@ export const SelectAutocomplete = forwardRef(
     // When the inputRef's value changes externally
     useEffect(() => {
       // get the value from either the "value" prop or via the inputRef
-      const externalValue = (inputValue || inputRef.current?.value) ?? ''
+      // not sure about this, according to chatgpt it let the compenent
+      // be controlled by an external component
+      // see in CollectiveOfferVisibility
+      const externalValue = inputValue ?? ''
 
       // associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
       // fallback to the external value if the inputRef's value is not in the options

@@ -1,10 +1,10 @@
 import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
+import { VisibilityFormValues } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 import {
   EducationalOfferType,
   OfferEducationalFormValues,
   OfferEducationalStockFormValues,
-  VisibilityFormValues,
 } from './types'
 import { buildStudentLevelsMapWithDefaultValue } from './utils/buildStudentLevelsMapWithDefaultValue'
 
@@ -90,9 +90,7 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
 export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
   visibility: 'one',
   institution: '',
-  'search-institution': '',
-  'search-teacher': '',
-  teacher: null,
+  teacher: '',
 }
 
 export const MAX_DESCRIPTION_LENGTH = 1500
