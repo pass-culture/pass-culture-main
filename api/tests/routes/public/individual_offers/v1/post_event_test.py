@@ -15,8 +15,8 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
-from pcapi.utils.date import local_datetime_to_default_timezone
 
 from tests.conftest import TestClient
 from tests.routes import image_data
@@ -86,9 +86,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.extraData == {}
         assert created_offer.bookingEmail is None
 
-        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
-        assert created_offer.publicationDate is None
-
         assert created_offer.description is None
         assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
@@ -97,7 +94,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
-        assert not created_offer.futureOffer
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, client, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
@@ -140,17 +136,12 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
-        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
-        assert created_offer.publicationDate == local_datetime_to_default_timezone(
-            publication_date, "Europe/Paris"
-        ).replace(microsecond=0, tzinfo=None)
 
-        assert created_offer.publicationDatetime == local_datetime_to_default_timezone(
+        assert created_offer.publicationDatetime == date_utils.local_datetime_to_default_timezone(
             publication_date, "Europe/Paris"
         ).replace(microsecond=0, tzinfo=None)
         assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert not created_offer.bookingAllowedDatetime
-        assert created_offer.futureOffer.isWaitingForPublication
 
     @time_machine.travel(datetime(2025, 6, 26, tzinfo=timezone.utc), tick=False)
     @pytest.mark.parametrize(
@@ -191,14 +182,11 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert response.json["publicationDate"] == response_publication_date
         created_offer = db.session.query(offers_models.Offer).one()
-        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
-        assert created_offer.publicationDate == expected_publication_date
 
         assert created_offer.publicationDatetime == expected_publication_date
         assert created_offer.finalizationDatetime == datetime(2025, 6, 26)
 
         assert not created_offer.bookingAllowedDatetime
-        assert created_offer.futureOffer.isWaitingForPublication
 
     def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
@@ -290,9 +278,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
 
-        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
-        assert created_offer.publicationDate is None
-
         assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert not created_offer.bookingAllowedDatetime
@@ -332,7 +317,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "musicType": "ELECTRO-HOUSE",
                 "performer": "Nicolas Jaar",
             },
-            "publicationDate": None,
+            "publicationDate": date_utils.format_into_utc_date(now_datetime_with_tz),
             "description": "Space is only noise if you can see",
             "enableDoubleBookings": True,
             "eventDuration": 120,

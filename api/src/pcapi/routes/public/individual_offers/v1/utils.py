@@ -47,7 +47,6 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
-        .options(sa_orm.joinedload(offers_models.Offer.futureOffer))
     )
 
 
@@ -99,14 +98,12 @@ def get_filtered_offers_linked_to_provider(
 ) -> sa_orm.Query:
     offers_query = (
         db.session.query(offers_models.Offer)
-        .outerjoin(offers_models.Offer.futureOffer)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(offers_models.Offer.isEvent == is_event)
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
-        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
         .options(
             sa_orm.joinedload(offers_models.Offer.venue).load_only(
                 offerers_models.Venue.id, offerers_models.Venue.offererAddressId

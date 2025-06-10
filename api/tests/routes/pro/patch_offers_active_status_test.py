@@ -1,7 +1,7 @@
+import math
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -124,45 +124,61 @@ class Returns204Test:
         assert offer.publicationDatetime == now_datetime_without_tz
 
 
+def is_around_now(dt: datetime) -> bool:
+    """Check whether `dt` is now (more or less a couple of seconds)
+
+    Note: should be used with data extracted from the database because
+    on insert/update an automatic offset might have been added if the
+    local timezone is not UTC.
+    """
+    utc_now = datetime.now(timezone.utc)
+
+    local_utc_offset = datetime.now().astimezone().utcoffset()
+    abs_tol = local_utc_offset.seconds + 5
+
+    return math.isclose(utc_now.timestamp(), dt.timestamp(), rel_tol=abs_tol)
+
+
 @pytest.mark.usefixtures("db_session")
 class ActivateFutureOffersTest:
     def test_activate_future_offers_and_notify_users_with_reminders(self, client):
-        offer_to_publish_1 = offers_factories.OfferFactory(isActive=False)
+        publication_date = datetime.utcnow() + timedelta(days=30)
+
+        offer_to_publish_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
         venue = offer_to_publish_1.venue
-        offer_to_publish_2 = offers_factories.OfferFactory(isActive=False, venue=venue)
+        offer_to_publish_2 = offers_factories.OfferFactory(
+            isActive=False, venue=venue, publicationDatetime=publication_date
+        )
         offer_to_publish_3 = offers_factories.OfferFactory(isActive=False, venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offer=offer_to_publish_1, publicationDate=publication_date)
-        offers_factories.FutureOfferFactory(offer=offer_to_publish_2, publicationDate=publication_date)
-
-        with patch(
-            "pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable"
-        ) as mock_notify_users_offer_is_bookable:
-            client = client.with_session_auth("pro@example.com")
-            data = {"ids": [offer_to_publish_1.id, offer_to_publish_2.id], "isActive": True}
-            response = client.patch("/offers/active-status", json=data)
-            mock_notify_users_offer_is_bookable.assert_has_calls(
-                [call(offer_to_publish_1), call(offer_to_publish_2)], any_order=True
-            )
+        client = client.with_session_auth("pro@example.com")
+        data = {"ids": [offer_to_publish_1.id, offer_to_publish_2.id], "isActive": True}
+        response = client.patch("/offers/active-status", json=data)
 
         assert response.status_code == 204
-        assert db.session.get(Offer, offer_to_publish_1.id).isActive
-        assert db.session.get(Offer, offer_to_publish_2.id).isActive
-        assert not db.session.get(Offer, offer_to_publish_3.id).isActive
+
+        offer1 = db.session.get(Offer, offer_to_publish_1.id)
+        assert offer1.isActive
+        assert is_around_now(offer1.publicationDatetime)
+
+        offer2 = db.session.get(Offer, offer_to_publish_2.id)
+        assert offer2.isActive
+        assert is_around_now(offer2.publicationDatetime)
+
+        offer3 = db.session.get(Offer, offer_to_publish_3.id)
+        assert not offer3.isActive
+        assert not offer3.publicationDatetime
 
     def test_deactivate_future_offers(self, client):
-        offer_published_1 = offers_factories.OfferFactory()
+        publication_date = datetime.utcnow() + timedelta(days=30)
+
+        offer_published_1 = offers_factories.OfferFactory(publicationDatetime=publication_date)
         venue = offer_published_1.venue
-        offer_published_2 = offers_factories.OfferFactory(venue=venue)
+        offer_published_2 = offers_factories.OfferFactory(venue=venue, publicationDatetime=publication_date)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offer=offer_published_1, publicationDate=publication_date)
-        offers_factories.FutureOfferFactory(offer=offer_published_2, publicationDate=publication_date)
 
         with patch(
             "pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable"

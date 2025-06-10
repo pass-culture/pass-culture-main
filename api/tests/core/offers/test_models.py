@@ -1089,32 +1089,75 @@ class OfferIsHeadlineTest:
 
 class OfferIsSearchableTest:
     def test_offer_is_future(self):
-        offer_1 = factories.OfferFactory(isActive=False)
-        offer_2 = factories.OfferFactory(isActive=False)
-        offer_3 = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer_3)
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
         past_publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
-        factories.FutureOfferFactory(offer=offer_2, publicationDate=past_publication_date)
-        factories.FutureOfferFactory(offer=offer_3, publicationDate=future_publication_date)
 
-        assert offer_1.is_eligible_for_search
+        future_booking_allowed_dt = datetime.datetime.utcnow() + datetime.timedelta(days=50)
+        past_booking_allowed_dt = datetime.datetime.utcnow() - datetime.timedelta(days=50)
+
+        offer_1 = factories.OfferFactory(
+            isActive=False,
+            publicationDatetime=future_publication_date,
+            bookingAllowedDatetime=future_booking_allowed_dt,
+        )
+
+        offer_2 = factories.OfferFactory(
+            isActive=False,
+            publicationDatetime=past_publication_date,
+            bookingAllowedDatetime=future_booking_allowed_dt,
+        )
+
+        offer_3 = factories.OfferFactory(
+            isActive=True,
+            publicationDatetime=None,
+            bookingAllowedDatetime=None,
+        )
+
+        offer_4 = factories.OfferFactory(
+            isActive=True,
+            publicationDatetime=past_publication_date,
+            bookingAllowedDatetime=future_booking_allowed_dt,
+        )
+
+        offer_5 = factories.OfferFactory(
+            isActive=True,
+            publicationDatetime=past_publication_date,
+            bookingAllowedDatetime=past_booking_allowed_dt,
+        )
+
+        factories.StockFactory(offer=offer_4)
+        factories.StockFactory(offer=offer_5)
+
+        # inactive, not published nor bookable yet
+        # -> uneligible for search
+        assert not offer_1.is_eligible_for_search
+
+        # inactive and published but not bookable yet
+        # -> uneligible for search
         assert not offer_2.is_eligible_for_search
-        assert offer_3.is_eligible_for_search
+
+        # draft offer (no publication date set)
+        # -> uneligible for search
+        assert not offer_3.is_eligible_for_search
+
+        # active, published, bookable date not past yest and bookable (has stock)
+        # -> eligible for search
+        assert offer_4.is_eligible_for_search
+
+        # active, published, bookable date passed and bookable (has stock)
+        # eligible for search
+        assert offer_5.is_eligible_for_search
 
         # hybrid property: also check SQL expression
         results = (
-            db.session.query(models.Offer.id)
+            db.session.query(models.Offer)
             .outerjoin(models.Stock)
-            .outerjoin(models.FutureOffer)
             .filter(models.Offer.is_eligible_for_search)
             .order_by(models.Offer.id)
             .all()
         )
         assert len(results) == 2
-        assert results[0].id == offer_1.id
-        assert results[1].id == offer_3.id
+        assert {res.id for res in results} == {offer_4.id, offer_5.id}
 
     def test_offer_is_bookable(self):
         offer_1 = factories.OfferFactory(isActive=True)
@@ -1126,12 +1169,9 @@ class OfferIsSearchableTest:
 
         # hybrid property: also check SQL expression
         results = (
-            db.session.query(models.Offer.id)
-            .outerjoin(models.Stock)
-            .outerjoin(models.FutureOffer)
-            .filter(models.Offer.is_eligible_for_search)
-            .all()
+            db.session.query(models.Offer).outerjoin(models.Stock).filter(models.Offer.is_eligible_for_search).all()
         )
+
         assert len(results) == 1
         assert results[0].id == offer_1.id
 

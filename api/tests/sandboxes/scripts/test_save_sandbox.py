@@ -11,17 +11,33 @@ from pcapi.sandboxes.scripts.save_sandbox import _index_all_offers
 @pytest.mark.usefixtures("db_session")
 class IndexAllOffersTest:
     def test_index_all_offers(self):
-        offer_1 = offers_factories.OfferFactory(isActive=False)
-        publication_date = datetime.utcnow() + timedelta(days=14)
-        offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
-        offer_2 = offers_factories.OfferFactory(isActive=True)
-        offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date)
-        offer_3 = offers_factories.OfferFactory()
-        offers_factories.StockFactory(offer=offer_3)
-        offer_4 = offers_factories.OfferFactory(isActive=False)
-        offers_factories.StockFactory(offer=offer_4)
+        publication_date = datetime.utcnow() - timedelta(days=3)
+        booking_allowed_date = datetime.utcnow() + timedelta(days=14)
+
+        # active, published, booking date in the future and active -> should be indexed
+        offer_1 = offers_factories.StockFactory(
+            offer__isActive=True,
+            offer__publicationDatetime=publication_date,
+            offer__bookingAllowedDatetime=booking_allowed_date,
+        ).offer
+
+        # active with bookable stock -> should be indexed
+        offer_2 = offers_factories.StockFactory().offer
+
+        # published with a booking date in the future, but inactive
+        # -> should not be indexed
+        offers_factories.StockFactory(
+            offer__isActive=False,
+            offer__publicationDatetime=publication_date,
+            offer__bookingAllowedDatetime=booking_allowed_date,
+        ).offer
+
+        # inactive or without any bookable stock -> should not indexed
+        offers_factories.StockFactory(offer__isActive=False).offer
+        offers_factories.OfferFactory(isActive=False)
+        offers_factories.OfferFactory(isActive=True)
 
         with patch("pcapi.core.search.reindex_offer_ids") as mock_reindex_offer_ids:
             _index_all_offers()
             mock_reindex_offer_ids.assert_called_once()
-            assert set(mock_reindex_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id, offer_3.id])
+            assert set(mock_reindex_offer_ids.call_args[0][0]) == {offer_1.id, offer_2.id}

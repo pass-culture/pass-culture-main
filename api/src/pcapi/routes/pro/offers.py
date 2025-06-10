@@ -20,7 +20,6 @@ from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
-from pcapi.core.reminders.external import reminders_notifications
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
@@ -424,9 +423,6 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
 
     if body.is_active:
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
-        offers_future_query = query.join(models.Offer.futureOffer)
-        for offer in offers_future_query:
-            reminders_notifications.notify_users_offer_is_bookable(offer)
 
     offers_api.batch_update_offers(query, {"isActive": body.is_active})
 

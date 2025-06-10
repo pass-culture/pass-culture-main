@@ -31,7 +31,6 @@ def get_offers_for_each_subcategory(size_per_subcategory: int) -> set[int]:
         query = (
             db.session.query(offers_models.Offer)
             .outerjoin(offers_models.Stock)
-            .outerjoin(offers_models.FutureOffer)
             .join(offerer_models.Venue)
             .join(offerer_models.Offerer)
             .filter(
@@ -50,7 +49,6 @@ def get_offers_with_gtl(size: int) -> set[int]:
     query = (
         db.session.query(offers_models.Offer)
         .outerjoin(offers_models.Stock)
-        .outerjoin(offers_models.FutureOffer)
         .outerjoin(offers_models.Product)
         .filter(
             offers_models.Product.extraData["gtl_id"].is_not(None),
@@ -70,7 +68,6 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
         query = (
             db.session.query(offers_models.Offer)
             .outerjoin(offers_models.Stock)
-            .outerjoin(offers_models.FutureOffer)
             .outerjoin(offers_models.Product)
             .filter(
                 offers_models.Product.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
@@ -88,7 +85,6 @@ def get_random_offers(size: int, excluded_offer_ids: set[int]) -> set[int]:
     query = (
         db.session.query(offers_models.Offer)
         .outerjoin(offers_models.Stock)
-        .outerjoin(offers_models.FutureOffer)
         .filter(
             offers_models.Offer.is_eligible_for_search,
             offers_models.Offer.id.not_in(excluded_offer_ids),

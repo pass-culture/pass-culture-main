@@ -468,12 +468,6 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         # clause through `filter()`.
         db.session.query(offers_models.Offer)
         .outerjoin(
-            offers_models.FutureOffer,
-            (offers_models.FutureOffer.offerId == offers_models.Offer.id)
-            & offers_models.FutureOffer.isWaitingForPublication,
-        )
-        .options(sa_orm.contains_eager(offers_models.Offer.futureOffer))
-        .outerjoin(
             offers_models.Stock, (offers_models.Stock.offerId == offers_models.Offer.id) & offers_models.Stock._bookable
         )
         .options(

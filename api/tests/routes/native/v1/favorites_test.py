@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 
 import pytest
@@ -43,9 +44,11 @@ class GetTest:
 
         def when_user_is_logged_in_and_has_favorite_offers(self, client):
             # Given
-            today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
-            yesterday = today - timedelta(days=1)
-            tomorow = today + timedelta(days=1)
+            # 13h time delta should make this runnable everywhere on earth: it
+            # should always be > now()
+            start = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=13)
+            day_before_start = start - timedelta(days=1)
+            day_after_start = start + timedelta(days=1)
             user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Le Petit Rintintin")
@@ -55,17 +58,17 @@ class GetTest:
             offers_factories.MediationFactory(offer=offer1, thumbCount=1, credit="Pour hurlevent !")
             favorite1 = users_factories.FavoriteFactory(offer=offer1, user=user)
             # should be ignored because of the date in the past
-            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=yesterday, price=10)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=day_before_start, price=10)
             # 2 valid stocks (different dates and prices)
-            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=today, price=30)
-            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=20)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=start, price=30)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=day_after_start, price=20)
 
             # Event offer with soft deleted stock and product's image
             offer2 = offers_factories.EventOfferFactory(venue=venue)
             mediation = offers_factories.MediationFactory(offer=offer2, thumbCount=666)
             favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
-            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
-            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
+            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=start, price=20, isSoftDeleted=True)
+            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=day_after_start, price=50)
 
             # Thing offer with no date
             offer3 = offers_factories.ThingOfferFactory(
@@ -87,18 +90,17 @@ class GetTest:
             offer5 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer5)
             favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
-            offers_factories.EventStockFactory(offer=offer5, beginningDatetime=yesterday, price=50)
+            offers_factories.EventStockFactory(offer=offer5, beginningDatetime=day_before_start, price=50)
 
             # Event offer with two times the same date / price
             offer6 = offers_factories.EventOfferFactory(venue=venue)
             favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
-            offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
-            offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
+            offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
+            offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
 
             client.with_token(user.email)
 
             # When
-            # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
             with assert_num_queries(2):
@@ -114,7 +116,7 @@ class GetTest:
             assert favorites[5]["offer"]["price"] is None
             assert favorites[5]["offer"]["startPrice"] == 2000
             assert favorites[5]["offer"]["date"] is None
-            assert favorites[5]["offer"]["startDate"] == today.isoformat() + "Z"
+            assert favorites[5]["offer"]["startDate"] == start.isoformat() + "Z"
             assert favorites[5]["offer"]["image"]["credit"] == "Pour hurlevent !"
             assert favorites[5]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
                 humanize(offer1.activeMediation.id)
@@ -127,7 +129,7 @@ class GetTest:
             assert favorites[4]["id"] == favorite2.id
             assert favorites[4]["offer"]["price"] == 5000
             assert favorites[4]["offer"]["startPrice"] is None
-            assert favorites[4]["offer"]["date"] == tomorow.isoformat() + "Z"
+            assert favorites[4]["offer"]["date"] == day_after_start.isoformat() + "Z"
             assert favorites[4]["offer"]["startDate"] is None
             assert favorites[4]["offer"]["image"]["credit"] is None
             assert (
@@ -181,7 +183,7 @@ class GetTest:
             assert favorites[0]["id"] == favorite6.id
             assert favorites[0]["offer"]["price"] == 3000
             assert favorites[0]["offer"]["startPrice"] is None
-            assert favorites[0]["offer"]["date"] == tomorow.isoformat() + "Z"
+            assert favorites[0]["offer"]["date"] == day_after_start.isoformat() + "Z"
             assert favorites[0]["offer"]["startDate"] is None
             assert favorites[0]["offer"]["image"] is None
             assert favorites[0]["offer"]["expenseDomains"] == ["all"]

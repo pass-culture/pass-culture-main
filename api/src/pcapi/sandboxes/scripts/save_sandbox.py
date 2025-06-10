@@ -36,7 +36,6 @@ def _index_all_offers() -> None:
     query = (
         db.session.query(offers_models.Offer)
         .outerjoin(offers_models.Stock)
-        .outerjoin(offers_models.FutureOffer)
         .join(offerer_models.Venue)
         .join(offerer_models.Offerer)
         .filter(offers_models.Offer.is_eligible_for_search)

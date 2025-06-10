@@ -95,7 +95,7 @@ class Returns200Test:
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
         ean = "1111111111111"
-        now = datetime.utcnow()
+        now = datetime(2020, 10, 15)
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
             offerer__siren="123456789",
@@ -150,7 +150,7 @@ class Returns200Test:
             "bookingEmail": "offer.booking.email@example.com",
             "dateCreated": "2020-10-15T00:00:00Z",
             "productId": None,
-            "publicationDate": None,
+            "publicationDate": "2020-11-15T00:00:00Z",
             "publicationDatetime": "2020-11-15T00:00:00Z",
             "bookingAllowedDatetime": "2020-12-15T00:00:00Z",
             "description": "Tatort, but slower",
@@ -444,12 +444,9 @@ class Returns200Test:
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
             offererAddress=None,
+            publicationDatetime=publication_date,
         )
         offer_id = offer.id
-        offers_factories.FutureOfferFactory(
-            offer=offer,
-            publicationDate=publication_date,
-        )
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):

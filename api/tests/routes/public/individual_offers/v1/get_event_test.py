@@ -7,6 +7,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 from tests.conftest import TestClient
@@ -32,7 +33,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     num_queries_full = num_queries + 1  # fetch product
 
-    def setup_base_resource(self, venue=None) -> offers_models.Offer:
+    def setup_base_resource(self, venue=None, **offer_kwargs) -> offers_models.Offer:
         venue = venue or self.setup_venue()
         product = offers_factories.ProductFactory(
             thumbCount=1,
@@ -41,10 +42,10 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             extraData=None,
         )
+
+        offer_kwargs = offer_kwargs if offer_kwargs else {}
         return offers_factories.EventOfferFactory(
-            venue=venue,
-            product=product,
-            idAtProvider="Oh le bel id <3",
+            venue=venue, product=product, idAtProvider="Oh le bel id <3", **offer_kwargs
         )
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
@@ -88,7 +89,6 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
-            "publicationDate": None,
             "description": "Un livre de contrepèterie",
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
@@ -105,18 +105,15 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             "hasTicket": False,
             "priceCategories": [],
             "idAtProvider": "Oh le bel id <3",
+            "publicationDate": date_utils.format_into_utc_date(event_offer.publicationDatetime),
         }
 
     def test_get_future_event(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event_offer = self.setup_base_resource(venue=venue_provider.venue)
-        event_offer_id = event_offer.id
 
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        offers_factories.FutureOfferFactory(
-            offer=event_offer,
-            publicationDate=publication_date,
-        )
+        event_offer = self.setup_base_resource(venue=venue_provider.venue, publicationDatetime=publication_date)
+        event_offer_id = event_offer.id
 
         with testing.assert_num_queries(self.num_queries_full):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))

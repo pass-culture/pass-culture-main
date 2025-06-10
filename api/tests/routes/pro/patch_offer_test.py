@@ -631,11 +631,10 @@ class Returns200Test:
         # select user + session + user_offerer (3 queries)
         # select offer (1 query)
         # select mediation (1 query)
-        # select future_offer
+        # select feature
         # select price category
         # update offer
-        # FF WIP_REFACTO_FUTURE_OFFER
-        with assert_num_queries(9):
+        with assert_num_queries(8):
             response = http_client.patch(f"/offers/{offer_id}", json=data)
         get_address_mock.assert_not_called()
 
