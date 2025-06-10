@@ -76,7 +76,8 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         # fetch playlist data (1 query)
         # fetch playlist data if below 10 items (1 query)
         # fetch redactor's favorites (1 query)
-        with assert_num_queries(5):
+        # fetch venues (1 query)
+        with assert_num_queries(6):
             response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
@@ -212,7 +213,8 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         # fetch playlist data (1 query)
         # fetch playlist data if below 10 items (1 query)
         # fetch redactor's favorites (1 query)
-        with assert_num_queries(5):
+        # fetch venues (1 query)
+        with assert_num_queries(6):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200

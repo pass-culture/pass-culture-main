@@ -1,12 +1,13 @@
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.repository import find_redactor_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization import favorites as serialize_favorites
+from pcapi.routes.adage_iframe.serialization import offers as serialize_offers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.favorites import FavoritesResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -65,9 +66,13 @@ def get_collective_favorites(authenticated_information: AuthenticatedInformation
     if authenticated_information.uai is None:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    serialized_favorite_templates = [
-        serialize_favorites.serialize_collective_offer_template(offer_template=offer_template, is_favorite=True)
-        for offer_template in offer_templates
-    ]
+    offer_venue_by_offer_id = educational_api_offer.get_collective_offer_venue_by_offer_id(offer_templates)
 
-    return FavoritesResponseModel(favoritesTemplate=serialized_favorite_templates)
+    return FavoritesResponseModel(
+        favoritesTemplate=[
+            serialize_offers.CollectiveOfferTemplateResponseModel.build(
+                offer=offer, is_favorite=True, offerVenue=offer_venue_by_offer_id[offer.id]
+            )
+            for offer in offer_templates
+        ]
+    )

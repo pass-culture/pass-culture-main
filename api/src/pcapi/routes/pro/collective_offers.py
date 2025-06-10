@@ -118,7 +118,7 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
 )
 def get_collective_offer_request(request_id: int) -> collective_offers_serialize.GetCollectiveOfferRequestResponseModel:
     try:
-        collective_offer_request = educational_api_offer.get_collective_offer_request_by_id(request_id)
+        collective_offer_request = educational_repository.get_collective_offer_request_by_id(request_id)
     except educational_exceptions.CollectiveOfferRequestNotFound:
         raise ApiErrors(errors={"global": ["Le formulaire demandé n'existe pas"]}, status_code=404)
 
@@ -355,7 +355,7 @@ def edit_collective_offer_template(
     except offers_exceptions.CollectiveOfferContactRequestError as err:
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
-    offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
+    offer = educational_repository.get_collective_offer_template_by_id(offer_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 
@@ -369,7 +369,7 @@ def edit_collective_offer_template(
 def patch_collective_offers_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
 ) -> None:
-    collective_offers = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(
+    collective_offers = educational_repository.get_query_for_collective_offers_by_ids_for_user(
         current_user, body.ids
     ).all()
 
@@ -395,7 +395,7 @@ def patch_collective_offers_template_active_status(
             if not offerers_api.can_offerer_create_educational_offer(offerer_id):
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
-    collective_offer_templates = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
+    collective_offer_templates = educational_repository.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     ).all()
 
@@ -417,7 +417,7 @@ def patch_collective_offers_template_active_status(
 def patch_collective_offers_template_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
 ) -> None:
-    collective_offer_templates = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(
+    collective_offer_templates = educational_repository.get_query_for_collective_offers_template_by_ids_for_user(
         current_user, body.ids
     ).all()
 
@@ -501,7 +501,7 @@ def patch_collective_offer_template_publication(
     offer_id: int,
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
+        offer = educational_repository.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
@@ -656,7 +656,7 @@ def attach_offer_template_image(
     offer_id: int, form: collective_offers_serialize.AttachImageFormModel
 ) -> collective_offers_serialize.AttachImageResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
+        offer = educational_repository.get_collective_offer_template_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -711,7 +711,7 @@ def delete_offer_image(offer_id: int) -> None:
 )
 def delete_offer_template_image(offer_id: int) -> None:
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
+        offer = educational_repository.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 

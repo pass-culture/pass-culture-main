@@ -13,9 +13,9 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api import stock as educational_api_stock
-from pcapi.core.educational.api.offer import PATCH_DETAILS_FIELDS_PUBLIC
-from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -143,7 +143,7 @@ class UnindexExpiredOffersTest:
             ),
         )
         # When
-        unindex_expired_or_archived_collective_offers_template()
+        educational_api_offer.unindex_expired_or_archived_collective_offers_template()
 
         # Then
         assert mock_unindex_collective_offer_template_ids.mock_calls == [
@@ -758,5 +758,34 @@ class CheckAllowedActionTest:
             "imageFile",
             "nationalProgramId",
         }
-        assert len(PATCH_DETAILS_FIELDS_PUBLIC) == len(expected)
-        assert set(PATCH_DETAILS_FIELDS_PUBLIC) == expected
+        assert len(educational_api_offer.PATCH_DETAILS_FIELDS_PUBLIC) == len(expected)
+        assert set(educational_api_offer.PATCH_DETAILS_FIELDS_PUBLIC) == expected
+
+
+@pytest.mark.usefixtures("db_session")
+class OfferVenueByOfferIdTest:
+    def test_get_collective_offer_venue_by_offer_id(self):
+        venue_1 = offerers_factories.VenueFactory()
+        venue_2 = offerers_factories.VenueFactory()
+        offer_1 = educational_factories.CollectiveOfferFactory(
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_1.id}
+        )
+        offer_2 = educational_factories.CollectiveOfferFactory(
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_1.id}
+        )
+        offer_3 = educational_factories.CollectiveOfferFactory(
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_2.id}
+        )
+        offer_4 = educational_factories.CollectiveOfferFactory(
+            offerVenue={"addressType": "other", "otherAddress": "here", "venueId": None}
+        )
+
+        result = educational_api_offer.get_collective_offer_venue_by_offer_id(
+            offers=[offer_1, offer_2, offer_3, offer_4]
+        )
+        assert result == {
+            offer_1.id: venue_1,
+            offer_2.id: venue_1,
+            offer_3.id: venue_2,
+            offer_4.id: None,
+        }
