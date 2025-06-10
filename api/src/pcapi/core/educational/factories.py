@@ -74,10 +74,6 @@ class CollectiveOfferFactory(BaseFactory):
     interventionArea = ["93", "94", "95"]
     formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
 
-    validation: OfferValidationStatus
-    lastValidationDate: datetime.datetime
-    lastValidationType: OfferValidationType
-
     @classmethod
     def _create(
         cls,
@@ -92,9 +88,12 @@ class CollectiveOfferFactory(BaseFactory):
             )
 
         if kwargs.get("validation") in {OfferValidationStatus.APPROVED, OfferValidationStatus.REJECTED, None}:
-            stock_date_created = datetime.datetime.utcnow() - datetime.timedelta(days=3)
-            kwargs["lastValidationDate"] = stock_date_created + datetime.timedelta(minutes=10)
-            kwargs["lastValidationType"] = OfferValidationType.AUTO
+            if "lastValidationType" not in kwargs:
+                kwargs["lastValidationType"] = OfferValidationType.AUTO
+
+            if "lastValidationDate" not in kwargs:
+                stock_date_created = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+                kwargs["lastValidationDate"] = stock_date_created + datetime.timedelta(minutes=10)
 
         return super()._create(model_class, *args, **kwargs)
 
