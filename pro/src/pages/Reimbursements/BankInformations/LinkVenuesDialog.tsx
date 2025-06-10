@@ -1,6 +1,6 @@
 import cn from 'classnames'
-import { FormikProvider, useFormik } from 'formik'
 import { useRef, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -81,7 +81,6 @@ export const LinkVenuesDialog = ({
         })
         notification.success('Vos modifications ont bien été prises en compte.')
         closeDialog(true)
-        formik.setSubmitting(false)
       } catch {
         notification.error(
           'Une erreur est survenue. Vos modifications n’ont pas été prises en compte.'
@@ -90,18 +89,20 @@ export const LinkVenuesDialog = ({
     }
   }
 
-  const formik = useFormik({
-    initialValues: {},
-    onSubmit: async () => {
-      if (
-        initialVenuesIds.every((venueId) => selectedVenuesIds.includes(venueId))
-      ) {
-        await submitForm()
-      } else {
-        setShowUnlinkVenuesDialog(true)
-      }
-    },
+  const onSubmit = async () => {
+    if (
+      initialVenuesIds.every((venueId) => selectedVenuesIds.includes(venueId))
+    ) {
+      await submitForm()
+    } else {
+      setShowUnlinkVenuesDialog(true)
+    }
+  }
+
+  const methods = useForm({
+    defaultValues: {},
   })
+
   const hasVenuesWithoutPricingPoint = managedVenues.some(
     (venue) => !venue.hasPricingPoint
   )
@@ -140,9 +141,9 @@ export const LinkVenuesDialog = ({
             Sélectionnez les structures dont les offres seront remboursées sur
             ce compte bancaire.
           </div>
-          <FormikProvider value={formik}>
+          <FormProvider {...methods}>
             <form
-              onSubmit={formik.handleSubmit}
+              onSubmit={methods.handleSubmit(onSubmit)}
               className={styles['dialog-form']}
             >
               <div className={styles['dialog-checkboxes']}>
@@ -201,7 +202,7 @@ export const LinkVenuesDialog = ({
 
                   <Button
                     type="submit"
-                    isLoading={formik.isSubmitting}
+                    isLoading={methods.formState.isSubmitting}
                     ref={saveButtonRef}
                   >
                     Enregistrer
@@ -209,7 +210,7 @@ export const LinkVenuesDialog = ({
                 </div>
               </DialogBuilder.Footer>
             </form>
-          </FormikProvider>
+          </FormProvider>
         </div>
       </DialogBuilder>
 
