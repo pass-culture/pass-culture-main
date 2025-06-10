@@ -203,13 +203,20 @@ describe('CollectiveOfferVisibility', () => {
 
     const institutionSelect = screen.getAllByTestId('select')[0]
     await userEvent.selectOptions(institutionSelect, '12')
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/enseignant/i)).not.toBeDisabled()
+    })
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
-    await userEvent.selectOptions(
-      screen.getAllByTestId('select')[1],
-      'compte.test@education.gouv.fr'
-    )
+    // await userEvent.selectOptions(
+    //   screen.getAllByTestId('select')[1],
+    //   'compte.test@education.gouv.fr'
+    // )
+
+    const option = await screen.findByText('KHTEUR REDA')
+    await userEvent.click(option)
 
     await userEvent.click(
       screen.getByRole('button', { name: /Enregistrer et continuer/ })
@@ -393,8 +400,6 @@ describe('CollectiveOfferVisibility', () => {
         initialValues: {
           visibility: 'one',
           institution: '24',
-          'search-institution': 'Institution 2',
-          'search-teacher': 'Teacher 1',
           teacher: 'teacher.teach@example.com',
         },
       })

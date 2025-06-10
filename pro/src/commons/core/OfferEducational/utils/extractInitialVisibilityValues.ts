@@ -4,8 +4,7 @@ import {
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from 'apiClient/v1'
-
-import { VisibilityFormValues } from '../types'
+import { VisibilityFormValues } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 export const formatInstitutionDisplayName = (
   institution:
@@ -23,20 +22,10 @@ export const extractInitialVisibilityValues = (
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
 ): VisibilityFormValues => ({
   institution: institution?.id.toString() ?? '',
-  'search-institution': institution
-    ? formatInstitutionDisplayName(institution)
-    : requestInformations
-      ? formatInstitutionDisplayName(requestInformations.institution)
-      : '',
   teacher: teacher
     ? `${teacher.email}`
     : requestInformations
       ? `${requestInformations.redactor.email}`
-      : null,
+      : undefined,
   visibility: institution || requestInformations ? 'one' : 'all',
-  'search-teacher': teacher
-    ? `${teacher.firstName} ${teacher.lastName}`
-    : requestInformations
-      ? `${requestInformations.redactor.firstName} ${requestInformations.redactor.lastName}`
-      : '',
 })
