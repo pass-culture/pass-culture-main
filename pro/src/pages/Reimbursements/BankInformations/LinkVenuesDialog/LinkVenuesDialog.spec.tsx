@@ -13,7 +13,7 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { LinkVenuesDialog } from '../LinkVenuesDialog'
+import { LinkVenuesDialog } from './LinkVenuesDialog'
 
 const mockUpdateVenuePricingPoint = vi.fn()
 const renderLinkVenuesDialog = (
