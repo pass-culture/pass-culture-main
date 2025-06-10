@@ -2,14 +2,21 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { AuthenticatedResponse, OfferAddressType } from 'apiClient/adage'
+import {
+  AuthenticatedResponse,
+  CollectiveLocationType,
+  OfferAddressType,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
 } from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { CardComponentProps, OfferCardComponent } from '../OfferCard'
@@ -44,14 +51,15 @@ const adageUser: AuthenticatedResponse = {
   lon: 2.321135886028998,
 }
 
-const renderOfferCardComponent = ({
-  offer,
-  onCardClicked,
-}: CardComponentProps) => {
+const renderOfferCardComponent = (
+  { offer, onCardClicked }: CardComponentProps,
+  options?: RenderWithProvidersOptions
+) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <OfferCardComponent offer={offer} onCardClicked={onCardClicked} />
-    </AdageUserContextProvider>
+    </AdageUserContextProvider>,
+    options
   )
 }
 
@@ -189,5 +197,22 @@ describe('OfferCard component', () => {
     await userEvent.click(offerElement)
 
     expect(mockHandleTracking).toHaveBeenCalledTimes(1)
+  })
+
+  it('should render offer venue tag when offer will happens in school and oa ff is enabled', () => {
+    const offer = {
+      ...mockOffer,
+      location: {
+        locationType: CollectiveLocationType.SCHOOL,
+      },
+    }
+    renderOfferCardComponent(
+      { offer, onCardClicked: vi.fn() },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
+    )
+
+    expect(
+      screen.getByText(/Dans l’établissement scolaire/)
+    ).toBeInTheDocument()
   })
 })
