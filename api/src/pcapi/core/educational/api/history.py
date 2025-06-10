@@ -16,23 +16,23 @@ class HistoryTransitionalStatus(enum.Enum):
     WAITING_FOR_REIMBURSEMENT = "WAITING_FOR_REIMBURSEMENT"
 
 
-CollectiveOfferHistoryStatus = models.CollectiveOfferDisplayedStatus | HistoryTransitionalStatus
+HistoryStatus = models.CollectiveOfferDisplayedStatus | HistoryTransitionalStatus
 
 
-class CollectiveOfferHistoryStepStatus(enum.Enum):
+class HistoryTime(enum.Enum):
     PAST = "PAST"
     CURRENT = "CURRENT"
     FUTURE = "FUTURE"
 
 
 @dataclasses.dataclass
-class CollectiveOfferHistoryStep:
-    offer_status: CollectiveOfferHistoryStatus
-    step_status: CollectiveOfferHistoryStepStatus
+class HistoryStep:
+    status: HistoryStatus
+    time: HistoryTime
     datetime: datetime.datetime | None
 
 
-COLLECTIVE_OFFER_NEXT_STATUS_BY_STATUS: typing.Final[
+NEXT_STATUS_BY_STATUS: typing.Final[
     dict[models.CollectiveOfferDisplayedStatus, models.CollectiveOfferDisplayedStatus | None]
 ] = {
     models.CollectiveOfferDisplayedStatus.DRAFT: models.CollectiveOfferDisplayedStatus.PUBLISHED,
@@ -49,7 +49,7 @@ COLLECTIVE_OFFER_NEXT_STATUS_BY_STATUS: typing.Final[
 }
 
 
-def _get_status_date(offer: models.CollectiveOffer, status: CollectiveOfferHistoryStatus) -> datetime.datetime | None:
+def _get_status_date(offer: models.CollectiveOffer, status: HistoryStatus) -> datetime.datetime | None:
     stock = offer.collectiveStock
     booking = stock.lastBooking if stock is not None else None
 
@@ -100,7 +100,7 @@ def _get_collective_offer_past_history(
     offer: models.CollectiveOffer,
     from_status: models.CollectiveOfferDisplayedStatus | None,
     to_status: models.CollectiveOfferDisplayedStatus | None,
-) -> list[CollectiveOfferHistoryStep]:
+) -> list[HistoryStep]:
     if from_status is None or to_status is None:
         return []
 
@@ -109,33 +109,27 @@ def _get_collective_offer_past_history(
     while True:
         assert next_status is not None
         steps.append(
-            CollectiveOfferHistoryStep(
-                offer_status=next_status,
-                step_status=CollectiveOfferHistoryStepStatus.PAST,
-                datetime=_get_status_date(offer=offer, status=next_status),
+            HistoryStep(
+                status=next_status, time=HistoryTime.PAST, datetime=_get_status_date(offer=offer, status=next_status)
             )
         )
 
         if next_status is None or next_status == to_status:
             break
 
-        next_status = COLLECTIVE_OFFER_NEXT_STATUS_BY_STATUS[next_status]
+        next_status = NEXT_STATUS_BY_STATUS[next_status]
 
     return steps
 
 
 def _get_collective_offer_future_history(
     from_status: models.CollectiveOfferDisplayedStatus,
-) -> list[CollectiveOfferHistoryStep]:
+) -> list[HistoryStep]:
     steps = []
-    next_status = COLLECTIVE_OFFER_NEXT_STATUS_BY_STATUS[from_status]
+    next_status = NEXT_STATUS_BY_STATUS[from_status]
     while next_status is not None:
-        steps.append(
-            CollectiveOfferHistoryStep(
-                offer_status=next_status, step_status=CollectiveOfferHistoryStepStatus.FUTURE, datetime=None
-            )
-        )
-        next_status = COLLECTIVE_OFFER_NEXT_STATUS_BY_STATUS[next_status]
+        steps.append(HistoryStep(status=next_status, time=HistoryTime.FUTURE, datetime=None))
+        next_status = NEXT_STATUS_BY_STATUS[next_status]
 
     return steps
 
@@ -144,7 +138,7 @@ def _get_collective_offer_future_history(
 class HistoryStatusData:
     past_from_status: models.CollectiveOfferDisplayedStatus | None
     past_to_status: models.CollectiveOfferDisplayedStatus | None
-    current_status: CollectiveOfferHistoryStatus
+    current_status: HistoryStatus
     future_from_status: models.CollectiveOfferDisplayedStatus
 
 
@@ -216,7 +210,7 @@ def _get_history_status_data(
             )
 
         case models.CollectiveOfferDisplayedStatus.ENDED:
-            current_status: CollectiveOfferHistoryStatus
+            current_status: HistoryStatus
             if is_two_days_past_end:
                 past_to_status = models.CollectiveOfferDisplayedStatus.ENDED
                 current_status = HistoryTransitionalStatus.WAITING_FOR_REIMBURSEMENT
@@ -259,7 +253,7 @@ def _get_history_status_data(
             raise ValueError(f"Unexpected status {status}")
 
 
-def get_collective_offer_history(offer: models.CollectiveOffer) -> list[CollectiveOfferHistoryStep]:
+def get_collective_offer_history(offer: models.CollectiveOffer) -> list[HistoryStep]:
     status = offer.displayedStatus
 
     if status in {models.CollectiveOfferDisplayedStatus.ARCHIVED, models.CollectiveOfferDisplayedStatus.HIDDEN}:
@@ -273,20 +267,14 @@ def get_collective_offer_history(offer: models.CollectiveOffer) -> list[Collecti
         # add the status preceding ARCHIVED or HIDDEN, only if it is not a transitional status
         if base_status_data.current_status not in set(HistoryTransitionalStatus):
             history.append(
-                CollectiveOfferHistoryStep(
-                    offer_status=base_status_data.current_status,
-                    step_status=CollectiveOfferHistoryStepStatus.PAST,
+                HistoryStep(
+                    status=base_status_data.current_status,
+                    time=HistoryTime.PAST,
                     datetime=_get_status_date(offer, base_status_data.current_status),
                 )
             )
 
-        history.append(
-            CollectiveOfferHistoryStep(
-                offer_status=status,
-                step_status=CollectiveOfferHistoryStepStatus.CURRENT,
-                datetime=_get_status_date(offer, status),
-            )
-        )
+        history.append(HistoryStep(status=status, time=HistoryTime.CURRENT, datetime=_get_status_date(offer, status)))
 
         return history
 
@@ -295,9 +283,9 @@ def get_collective_offer_history(offer: models.CollectiveOffer) -> list[Collecti
         *_get_collective_offer_past_history(
             offer=offer, from_status=status_data.past_from_status, to_status=status_data.past_to_status
         ),
-        CollectiveOfferHistoryStep(
-            offer_status=status_data.current_status,
-            step_status=CollectiveOfferHistoryStepStatus.CURRENT,
+        HistoryStep(
+            status=status_data.current_status,
+            time=HistoryTime.CURRENT,
             datetime=_get_status_date(offer, status_data.current_status),
         ),
         *_get_collective_offer_future_history(from_status=status_data.future_from_status),

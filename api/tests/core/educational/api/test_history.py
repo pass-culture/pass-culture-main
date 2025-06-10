@@ -7,9 +7,11 @@ from pcapi.core.educational.api import history as api
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-PAST = api.CollectiveOfferHistoryStepStatus.PAST
-CURRENT = api.CollectiveOfferHistoryStepStatus.CURRENT
-FUTURE = api.CollectiveOfferHistoryStepStatus.FUTURE
+PAST = api.HistoryTime.PAST
+CURRENT = api.HistoryTime.CURRENT
+FUTURE = api.HistoryTime.FUTURE
+
+OfferStatus = models.CollectiveOfferDisplayedStatus
 
 
 class HistoryTest:
@@ -18,17 +20,15 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.UNDER_REVIEW, step_status=CURRENT, datetime=None
-            ),
+            api.HistoryStep(status=OfferStatus.UNDER_REVIEW, time=CURRENT, datetime=None),
             *(
-                api.CollectiveOfferHistoryStep(offer_status=status, step_status=FUTURE, datetime=None)
+                api.HistoryStep(status=status, time=FUTURE, datetime=None)
                 for status in (
-                    models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                    models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                    models.CollectiveOfferDisplayedStatus.BOOKED,
-                    models.CollectiveOfferDisplayedStatus.ENDED,
-                    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                    OfferStatus.PUBLISHED,
+                    OfferStatus.PREBOOKED,
+                    OfferStatus.BOOKED,
+                    OfferStatus.ENDED,
+                    OfferStatus.REIMBURSED,
                 )
             ),
         ]
@@ -38,23 +38,23 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=api.HistoryTransitionalStatus.WAITING_FOR_PREBOOK,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=api.HistoryTransitionalStatus.WAITING_FOR_PREBOOK,
+                time=CURRENT,
                 datetime=None,
             ),
             *(
-                api.CollectiveOfferHistoryStep(offer_status=status, step_status=FUTURE, datetime=None)
+                api.HistoryStep(status=status, time=FUTURE, datetime=None)
                 for status in (
-                    models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                    models.CollectiveOfferDisplayedStatus.BOOKED,
-                    models.CollectiveOfferDisplayedStatus.ENDED,
-                    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                    OfferStatus.PREBOOKED,
+                    OfferStatus.BOOKED,
+                    OfferStatus.ENDED,
+                    OfferStatus.REIMBURSED,
                 )
             ),
         ]
@@ -65,27 +65,27 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=api.HistoryTransitionalStatus.WAITING_FOR_BOOK,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=api.HistoryTransitionalStatus.WAITING_FOR_BOOK,
+                time=CURRENT,
                 datetime=None,
             ),
             *(
-                api.CollectiveOfferHistoryStep(offer_status=status, step_status=FUTURE, datetime=None)
+                api.HistoryStep(status=status, time=FUTURE, datetime=None)
                 for status in (
-                    models.CollectiveOfferDisplayedStatus.BOOKED,
-                    models.CollectiveOfferDisplayedStatus.ENDED,
-                    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                    OfferStatus.BOOKED,
+                    OfferStatus.ENDED,
+                    OfferStatus.REIMBURSED,
                 )
             ),
         ]
@@ -96,26 +96,26 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.BOOKED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.BOOKED,
+                time=CURRENT,
                 datetime=booking.confirmationDate,
             ),
             *(
-                api.CollectiveOfferHistoryStep(offer_status=status, step_status=FUTURE, datetime=None)
+                api.HistoryStep(status=status, time=FUTURE, datetime=None)
                 for status in (
-                    models.CollectiveOfferDisplayedStatus.ENDED,
-                    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                    OfferStatus.ENDED,
+                    OfferStatus.REIMBURSED,
                 )
             ),
         ]
@@ -126,29 +126,27 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.BOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.BOOKED,
+                time=PAST,
                 datetime=booking.confirmationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.ENDED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.ENDED,
+                time=CURRENT,
                 datetime=offer.collectiveStock.endDatetime,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.REIMBURSED, step_status=FUTURE, datetime=None
-            ),
+            api.HistoryStep(status=OfferStatus.REIMBURSED, time=FUTURE, datetime=None),
         ]
 
     def test_ended_more_than_two_days_ago(self):
@@ -157,34 +155,32 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.BOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.BOOKED,
+                time=PAST,
                 datetime=booking.confirmationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.ENDED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.ENDED,
+                time=PAST,
                 datetime=offer.collectiveStock.endDatetime,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=api.HistoryTransitionalStatus.WAITING_FOR_REIMBURSEMENT,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=api.HistoryTransitionalStatus.WAITING_FOR_REIMBURSEMENT,
+                time=CURRENT,
                 datetime=None,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.REIMBURSED, step_status=FUTURE, datetime=None
-            ),
+            api.HistoryStep(status=OfferStatus.REIMBURSED, time=FUTURE, datetime=None),
         ]
 
     def test_reimbursed(self):
@@ -193,29 +189,29 @@ class HistoryTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.BOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.BOOKED,
+                time=PAST,
                 datetime=booking.confirmationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.ENDED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.ENDED,
+                time=PAST,
                 datetime=offer.collectiveStock.endDatetime,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.REIMBURSED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.REIMBURSED,
+                time=CURRENT,
                 datetime=booking.reimbursementDate,
             ),
         ]
@@ -227,23 +223,23 @@ class HistoryExpiredTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.EXPIRED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.EXPIRED,
+                time=CURRENT,
                 datetime=offer.collectiveStock.bookingLimitDatetime,
             ),
             *(
-                api.CollectiveOfferHistoryStep(offer_status=status, step_status=FUTURE, datetime=None)
+                api.HistoryStep(status=status, time=FUTURE, datetime=None)
                 for status in (
-                    models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                    models.CollectiveOfferDisplayedStatus.BOOKED,
-                    models.CollectiveOfferDisplayedStatus.ENDED,
-                    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                    OfferStatus.PREBOOKED,
+                    OfferStatus.BOOKED,
+                    OfferStatus.ENDED,
+                    OfferStatus.REIMBURSED,
                 )
             ),
         ]
@@ -254,27 +250,27 @@ class HistoryExpiredTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.EXPIRED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.EXPIRED,
+                time=CURRENT,
                 datetime=offer.collectiveStock.bookingLimitDatetime,
             ),
             *(
-                api.CollectiveOfferHistoryStep(offer_status=status, step_status=FUTURE, datetime=None)
+                api.HistoryStep(status=status, time=FUTURE, datetime=None)
                 for status in (
-                    models.CollectiveOfferDisplayedStatus.BOOKED,
-                    models.CollectiveOfferDisplayedStatus.ENDED,
-                    models.CollectiveOfferDisplayedStatus.REIMBURSED,
+                    OfferStatus.BOOKED,
+                    OfferStatus.ENDED,
+                    OfferStatus.REIMBURSED,
                 )
             ),
         ]
@@ -286,14 +282,14 @@ class HistoryCancelledTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.CANCELLED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.CANCELLED,
+                time=CURRENT,
                 datetime=offer.collectiveStock.startDatetime,
             ),
         ]
@@ -304,19 +300,19 @@ class HistoryCancelledTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.CANCELLED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.CANCELLED,
+                time=CURRENT,
                 datetime=booking.cancellationDate,
             ),
         ]
@@ -327,24 +323,24 @@ class HistoryCancelledTest:
         [booking] = offer.collectiveStock.collectiveBookings
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
                 datetime=booking.dateCreated,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.BOOKED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.BOOKED,
+                time=PAST,
                 datetime=booking.confirmationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.CANCELLED,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.CANCELLED,
+                time=CURRENT,
                 datetime=booking.cancellationDate,
             ),
         ]
@@ -358,14 +354,14 @@ class HistoryHiddenTest:
         history = api.get_collective_offer_history(offer)
 
         assert history == [
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                step_status=PAST,
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
                 datetime=offer.lastValidationDate,
             ),
-            api.CollectiveOfferHistoryStep(
-                offer_status=models.CollectiveOfferDisplayedStatus.HIDDEN,
-                step_status=CURRENT,
+            api.HistoryStep(
+                status=OfferStatus.HIDDEN,
+                time=CURRENT,
                 datetime=None,
             ),
         ]
