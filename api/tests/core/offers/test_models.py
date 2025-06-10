@@ -858,32 +858,39 @@ class OfferIsHeadlineTest:
 
 class OfferIsSearchableTest:
     def test_offer_is_future(self):
-        offer_1 = factories.OfferFactory(isActive=False)
-        offer_2 = factories.OfferFactory(isActive=False)
-        offer_3 = factories.OfferFactory(isActive=True)
-        factories.StockFactory(offer=offer_3)
         future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
         past_publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        factories.FutureOfferFactory(offer=offer_1, publicationDate=future_publication_date)
-        factories.FutureOfferFactory(offer=offer_2, publicationDate=past_publication_date)
-        factories.FutureOfferFactory(offer=offer_3, publicationDate=future_publication_date)
 
-        assert offer_1.is_eligible_for_search
+        offer_1 = factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
+        offer_2 = factories.OfferFactory(isActive=False, publicationDatetime=past_publication_date)
+        offer_3 = factories.OfferFactory(isActive=True, publicationDatetime=future_publication_date)
+        offer_4 = factories.OfferFactory(isActive=True, publicationDatetime=past_publication_date)
+
+        factories.StockFactory(offer=offer_3)
+        factories.StockFactory(offer=offer_4)
+
+        # inactive, not published yet and without stock (not bookable) -> uneligible for search
+        assert not offer_1.is_eligible_for_search
+
+        # inactive -> uneligible for search
         assert not offer_2.is_eligible_for_search
-        assert offer_3.is_eligible_for_search
+
+        # active but not published yet -> uneligible for search
+        assert not offer_3.is_eligible_for_search
+
+        # active and published and has at least one bookable stock -> eligible for search
+        assert offer_4.is_eligible_for_search
 
         # hybrid property: also check SQL expression
         results = (
-            db.session.query(models.Offer.id)
+            db.session.query(models.Offer)
             .outerjoin(models.Stock)
-            .outerjoin(models.FutureOffer)
             .filter(models.Offer.is_eligible_for_search)
             .order_by(models.Offer.id)
             .all()
         )
-        assert len(results) == 2
-        assert results[0].id == offer_1.id
-        assert results[1].id == offer_3.id
+        assert len(results) == 1
+        assert results[0].id == offer_4.id
 
     def test_offer_is_bookable(self):
         offer_1 = factories.OfferFactory(isActive=True)
@@ -895,12 +902,9 @@ class OfferIsSearchableTest:
 
         # hybrid property: also check SQL expression
         results = (
-            db.session.query(models.Offer.id)
-            .outerjoin(models.Stock)
-            .outerjoin(models.FutureOffer)
-            .filter(models.Offer.is_eligible_for_search)
-            .all()
+            db.session.query(models.Offer).outerjoin(models.Stock).filter(models.Offer.is_eligible_for_search).all()
         )
+
         assert len(results) == 1
         assert results[0].id == offer_1.id
 

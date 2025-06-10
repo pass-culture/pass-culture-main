@@ -41,9 +41,10 @@ class SendinblueSendOfferValidationTest:
     @time_machine.travel("2032-10-15 12:48:00")
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
         # Given
-        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
         publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+        offer = offers_factories.OfferFactory(
+            name="Ma petite offre", venue__name="Mon stade", publicationDatetime=publication_date
+        )
 
         # When
         new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)

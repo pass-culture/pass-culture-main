@@ -111,9 +111,9 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         event_offer_id = event_offer.id
 
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        offers_factories.FutureOfferFactory(
+        offers_factories.OfferFactory(
             offer=event_offer,
-            publicationDate=publication_date,
+            publicationDatetime=publication_date,
         )
 
         with testing.assert_num_queries(self.num_queries_full):

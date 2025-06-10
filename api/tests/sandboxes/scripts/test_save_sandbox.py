@@ -11,11 +11,9 @@ from pcapi.sandboxes.scripts.save_sandbox import _index_all_offers
 @pytest.mark.usefixtures("db_session")
 class IndexAllOffersTest:
     def test_index_all_offers(self):
-        offer_1 = offers_factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow() + timedelta(days=14)
-        offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
-        offer_2 = offers_factories.OfferFactory(isActive=True)
-        offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date)
+        offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
+        offer_2 = offers_factories.OfferFactory(isActive=True, publicationDatetime=publication_date)
         offer_3 = offers_factories.OfferFactory()
         offers_factories.StockFactory(offer=offer_3)
         offer_4 = offers_factories.OfferFactory(isActive=False)
