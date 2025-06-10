@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from pcapi.core.educational import factories
@@ -342,6 +344,158 @@ class HistoryCancelledTest:
                 status=OfferStatus.CANCELLED,
                 time=CURRENT,
                 datetime=booking.cancellationDate,
+            ),
+        ]
+
+
+def _archive_offer(offer: models.CollectiveOffer):
+    offer.isActive = False
+    offer.dateArchived = datetime.datetime.utcnow()
+
+
+class HistoryArchivedTest:
+    def test_draft_archived(self):
+        offer = factories.DraftCollectiveOfferFactory()
+        _archive_offer(offer)
+        history = api.get_collective_offer_history(offer)
+
+        assert history == [
+            api.HistoryStep(
+                status=OfferStatus.DRAFT,
+                time=PAST,
+                datetime=None,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ARCHIVED,
+                time=CURRENT,
+                datetime=offer.dateArchived,
+            ),
+        ]
+
+    def test_rejected_archived(self):
+        offer = factories.RejectedCollectiveOfferFactory()
+        _archive_offer(offer)
+        history = api.get_collective_offer_history(offer)
+
+        assert history == [
+            api.HistoryStep(
+                status=OfferStatus.REJECTED,
+                time=PAST,
+                datetime=offer.lastValidationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ARCHIVED,
+                time=CURRENT,
+                datetime=offer.dateArchived,
+            ),
+        ]
+
+    def test_published_archived(self):
+        offer = factories.PublishedCollectiveOfferFactory()
+        _archive_offer(offer)
+        history = api.get_collective_offer_history(offer)
+
+        assert history == [
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
+                datetime=offer.lastValidationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ARCHIVED,
+                time=CURRENT,
+                datetime=offer.dateArchived,
+            ),
+        ]
+
+    def test_reimbursed_archived(self):
+        offer = factories.ReimbursedCollectiveOfferFactory()
+        [booking] = offer.collectiveStock.collectiveBookings
+        _archive_offer(offer)
+        history = api.get_collective_offer_history(offer)
+
+        assert history == [
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
+                datetime=offer.lastValidationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
+                datetime=booking.dateCreated,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.BOOKED,
+                time=PAST,
+                datetime=booking.confirmationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ENDED,
+                time=PAST,
+                datetime=offer.collectiveStock.endDatetime,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.REIMBURSED,
+                time=PAST,
+                datetime=booking.reimbursementDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ARCHIVED,
+                time=CURRENT,
+                datetime=offer.dateArchived,
+            ),
+        ]
+
+    def test_expired_archived(self):
+        offer = factories.ExpiredWithoutBookingCollectiveOfferFactory()
+        _archive_offer(offer)
+        history = api.get_collective_offer_history(offer)
+
+        assert history == [
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
+                datetime=offer.lastValidationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.EXPIRED,
+                time=PAST,
+                datetime=offer.collectiveStock.bookingLimitDatetime,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ARCHIVED,
+                time=CURRENT,
+                datetime=offer.dateArchived,
+            ),
+        ]
+
+    def test_cancelled_archived(self):
+        offer = factories.CancelledWithPendingBookingCollectiveOfferFactory()
+        [booking] = offer.collectiveStock.collectiveBookings
+        _archive_offer(offer)
+        history = api.get_collective_offer_history(offer)
+
+        assert history == [
+            api.HistoryStep(
+                status=OfferStatus.PUBLISHED,
+                time=PAST,
+                datetime=offer.lastValidationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.PREBOOKED,
+                time=PAST,
+                datetime=booking.dateCreated,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.CANCELLED,
+                time=PAST,
+                datetime=booking.cancellationDate,
+            ),
+            api.HistoryStep(
+                status=OfferStatus.ARCHIVED,
+                time=CURRENT,
+                datetime=offer.dateArchived,
             ),
         ]
 
