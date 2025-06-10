@@ -1448,7 +1448,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
             *_get_collective_offer_address_joinedload_with_expression(),
         )
     )
-    return query.filter(educational_models.CollectiveOffer.id == offer_id).one()
+    return query.filter(educational_models.CollectiveOffer.id == offer_id).populate_existing().one()
 
 
 def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
@@ -1478,7 +1478,7 @@ def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
 
 def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
     query = _get_collective_offer_template_by_id_for_adage_base_query()
-    return query.filter(educational_models.CollectiveOfferTemplate.id == offer_id).one()
+    return query.filter(educational_models.CollectiveOfferTemplate.id == offer_id).populate_existing().one()
 
 
 def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> BaseQuery:
@@ -1491,7 +1491,7 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
         educational_models.CollectiveOfferTemplate.hasEndDatePassed == False,
     )
 
-    return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
+    return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids)).populate_existing()
 
 
 def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
@@ -1829,6 +1829,7 @@ def get_offers_for_my_institution(uai: str) -> "sa_orm.Query[educational_models.
             educational_models.EducationalInstitution.institutionId == uai,
             educational_models.CollectiveOffer.isArchived == False,
         )
+        .populate_existing()
     )
 
 

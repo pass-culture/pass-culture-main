@@ -454,7 +454,7 @@ def get_venue_and_check_access_for_offer_creation(
     user: User,
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:
-        template = get_collective_offer_template_by_id(offer_data.template_id)
+        template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
     venue: offerers_models.Venue = db.session.query(offerers_models.Venue).get_or_404(offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
@@ -462,34 +462,6 @@ def get_venue_and_check_access_for_offer_creation(
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
     return venue
-
-
-def get_collective_offer_request_by_id(request_id: int) -> educational_models.CollectiveOfferRequest:
-    return educational_repository.get_collective_offer_request_by_id(request_id)
-
-
-def get_collective_offer_template_by_id(
-    offer_id: int,
-) -> educational_models.CollectiveOffer:
-    return educational_repository.get_collective_offer_template_by_id(offer_id)
-
-
-def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
-    return educational_repository.get_collective_offer_by_id_for_adage(offer_id)
-
-
-def get_collective_offer_template_by_id_for_adage(
-    offer_id: int,
-) -> educational_models.CollectiveOfferTemplate:
-    return educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
-
-
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
-    return educational_repository.get_query_for_collective_offers_by_ids_for_user(user=user, ids=ids)
-
-
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
-    return educational_repository.get_query_for_collective_offers_template_by_ids_for_user(user=user, ids=ids)
 
 
 def update_collective_offer_educational_institution(
@@ -1592,3 +1564,19 @@ def toggle_publish_collective_offers_template(
             log_extra={"changes": {"isActive"}},
         )
     )
+
+
+def get_collective_offer_venue_by_offer_id(
+    offers: typing.Collection[educational_models.CollectiveOffer]
+    | typing.Collection[educational_models.CollectiveOfferTemplate],
+) -> dict[int, offerers_models.Venue | None]:
+    venue_ids = {offer.offerVenue.get("venueId") for offer in offers}
+    venues = offerers_repository.get_venues_by_ids([venue_id for venue_id in venue_ids if venue_id is not None])
+    venue_by_id = {venue.id: venue for venue in venues}
+
+    result = {}
+    for offer in offers:
+        venue_id = offer.offerVenue.get("venueId")
+        result[offer.id] = None if venue_id is None else venue_by_id.get(venue_id)
+
+    return result

@@ -114,7 +114,7 @@ class CollectiveOfferTest:
             "publicName": venue.publicName,
         }
 
-    def test_location_address_venue(self, eac_client):
+    def test_location_address_venue(self, eac_client, redactor):
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
         venue = offerers_factories.VenueFactory()
         educational_factories.PublishedCollectiveOfferFactory(
@@ -127,9 +127,7 @@ class CollectiveOfferTest:
         )
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
-        num_queries = 1  # fetch collective offer and related data
-        num_queries += 1  # fetch redactor
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
         assert response.status_code == 200

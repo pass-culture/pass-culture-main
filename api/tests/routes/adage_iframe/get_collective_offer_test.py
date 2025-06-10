@@ -135,7 +135,7 @@ class CollectiveOfferTest:
             "isTemplate": False,
         }
 
-    def test_location_address_venue(self, eac_client):
+    def test_location_address_venue(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue,
@@ -146,7 +146,6 @@ class CollectiveOfferTest:
         )
 
         dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
-
         with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 

@@ -108,6 +108,11 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
 
 
 class CollectiveOfferTemplateTest:
+    num_queries = 1  # fetch collective offer and related data
+    num_queries += 1  # fetch redactor
+    num_queries += 1  # check if offer is favorite
+    num_queries_with_venue = num_queries + 1  # fetch venue details
+
     def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -126,11 +131,7 @@ class CollectiveOfferTemplateTest:
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        # 1. fetch redactor
-        # 2. fetch collective offer and related data
-        # 3. fetch the offerVenue's details (Venue)
-        # 4. find out if its a redactor's favorite
-        with assert_num_queries(4):
+        with assert_num_queries(self.num_queries_with_venue):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -159,11 +160,7 @@ class CollectiveOfferTemplateTest:
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        # 1. fetch collective offer and related data
-        # 2. fetch redactor
-        # 3. find out if its a redactor's favorite
-        # 4. fetch the venue
-        with assert_num_queries(4):
+        with assert_num_queries(self.num_queries_with_venue):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -188,11 +185,7 @@ class CollectiveOfferTemplateTest:
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        # 1. fetch collective offer and related data
-        # 2. fetch redactor
-        # 4. find out if its a redactor's favorite
-        # 4. fetch the venue
-        with assert_num_queries(4):
+        with assert_num_queries(self.num_queries_with_venue):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -216,7 +209,7 @@ class CollectiveOfferTemplateTest:
         assert response.status_code == 200
         assert response.json["isFavorite"]
 
-    def test_location_address_venue(self, eac_client):
+    def test_location_address_venue(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
@@ -227,9 +220,7 @@ class CollectiveOfferTemplateTest:
         )
 
         dst = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
-        num_queries = 1  # fetch collective offer template and related data
-        num_queries += 1  # fetch redactor
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
         assert response.status_code == 200
@@ -276,10 +267,10 @@ class CollectiveOfferTemplateTest:
 class GetCollectiveOfferTemplatesTest:
     endpoint = "adage_iframe.get_collective_offer_templates"
 
-    # 1. fetch redactor
-    # 2. fetch collective offer and related data
-    # 3. fetch the venue
-    # 4. fetch the venue's images
+    # 1. fetch collective offer and related data
+    # 2. fetch redactor
+    # 3. check if offer is favorite
+    # 4. fetch venue details
     expected_num_queries = 4
 
     def test_one_template_id(self, eac_client, redactor):
