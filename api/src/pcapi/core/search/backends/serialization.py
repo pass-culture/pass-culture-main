@@ -9,6 +9,7 @@ import urllib.parse
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.artist import models as artists_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
 from pcapi.core.categories.app_search_tree import SEARCH_GROUPS
@@ -109,6 +110,15 @@ def url_path(url: str) -> str | None:
 
 
 class AlgoliaSerializationMixin:
+    @classmethod
+    def serialize_artist(cls, artist: artists_models.Artist) -> dict:
+        return {
+            "objectID": artist.id,
+            "description": artist.description,
+            "image": artist.image,
+            "name": artist.name,
+        }
+
     @classmethod
     def serialize_offer(cls, offer: offers_models.Offer, last_30_days_bookings: int) -> dict:
         venue = offer.venue

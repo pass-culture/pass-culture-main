@@ -6,6 +6,7 @@ import pytest
 import requests_mock
 import time_machine
 
+import pcapi.core.artist.factories as artists_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -135,6 +136,18 @@ def test_check_offer_id_is_indexed(app):
     app.redis_client.hset("indexed_offers", "1", "")
     assert backend.check_offer_id_is_indexed(1)
     assert not backend.check_offer_id_is_indexed(2)
+
+
+@pytest.mark.usefixtures("db_session")
+def test_index_artists(app):
+    backend = get_backend()
+    artist = artists_factories.ArtistFactory()
+    with requests_mock.Mocker() as mocker:
+        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/artists/batch", json={})
+        backend.index_artists([artist])
+        posted_json = posted.last_request.json()
+        assert posted_json["requests"][0]["action"] == "updateObject"
+        assert posted_json["requests"][0]["body"]["objectID"] == artist.id
 
 
 @pytest.mark.usefixtures("db_session")
