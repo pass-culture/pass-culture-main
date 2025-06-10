@@ -86,7 +86,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
-        assert not created_offer.futureOffer
 
     def test_event_with_depreacted_music_type_triggers_warning_log(self, client, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
@@ -131,7 +130,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.publicationDate == local_datetime_to_default_timezone(
             publication_date, "Europe/Paris"
         ).replace(microsecond=0, tzinfo=None)
-        assert created_offer.futureOffer.isWaitingForPublication
 
     def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)

@@ -1101,45 +1101,30 @@ class GetCappedOffersForFiltersTest:
 @pytest.mark.usefixtures("db_session")
 class GetOffersByPublicationDateTest:
     def test_get_offers_by_publication_date(self):
-        factories.OfferFactory()  # Offer not in the future, i.e. no publication_date
-
         publication_date = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0) + datetime.timedelta(
             days=30
         )
 
-        offer_before = factories.OfferFactory()
-        publication_date_before = publication_date - datetime.timedelta(hours=1)
-        factories.FutureOfferFactory(offer=offer_before, publicationDate=publication_date_before)
+        # no publication date -> should be ignored ignored
+        factories.OfferFactory(publicationDatetime=None)
 
-        offer_to_publish_1 = factories.OfferFactory()
-        future_offer_to_publish_1 = factories.FutureOfferFactory(
-            offer=offer_to_publish_1, publicationDate=publication_date
-        )
-        offer_to_publish_2 = factories.OfferFactory()
-        future_offer_to_publish_2 = factories.FutureOfferFactory(
-            offer=offer_to_publish_2,
-            publicationDate=publication_date - datetime.timedelta(minutes=13),
-        )
-        # Simulates an Offer manually published then unpublished with a publicationDate within the range of 15 minutes considered, should not be returned by the function
-        offer_manually_published = factories.OfferFactory()
-        factories.FutureOfferFactory(
-            offer=offer_manually_published,
-            publicationDate=publication_date - datetime.timedelta(minutes=13),
-            isSoftDeleted=True,
-        )
+        # publication date outside of N minutes range -> should be ignored
+        publication_date_before = publication_date - datetime.timedelta(minutes=25)
+        factories.OfferFactory(publicationDatetime=publication_date_before)
 
-        offer_after = factories.OfferFactory()
+        # publication date within N minutes range -> both should be returned
+        offer_to_publish_1 = factories.OfferFactory(publicationDatetime=publication_date)
+
+        publication_date_within_range = publication_date - datetime.timedelta(minutes=13)
+        offer_to_publish_2 = factories.OfferFactory(publicationDatetime=publication_date_within_range)
+
+        # publication date outside of N minutes range -> should be ignored
         publication_date_after = publication_date + datetime.timedelta(minutes=17)
-        factories.FutureOfferFactory(offer=offer_after, publicationDate=publication_date_after)
+        factories.OfferFactory(publicationDatetime=publication_date_after)
 
-        offers_query, future_offers_query = repository.get_offers_by_publication_date(publication_date=publication_date)
+        offers_query = repository.get_offers_by_publication_date(publication_date=publication_date)
         assert offers_query.count() == 2
-        assert offers_query.all() == [offer_to_publish_1, offer_to_publish_2]
-        assert future_offers_query.count() == 2
-        assert future_offers_query.all() == [
-            future_offer_to_publish_1,
-            future_offer_to_publish_2,
-        ]
+        assert {o.id for o in offers_query.all()} == {offer_to_publish_1.id, offer_to_publish_2.id}
 
 
 @pytest.mark.usefixtures("db_session")

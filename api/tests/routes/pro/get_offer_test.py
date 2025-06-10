@@ -440,12 +440,9 @@ class Returns200Test:
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
             offererAddress=None,
+            publicationDatetime=publication_date,
         )
         offer_id = offer.id
-        offers_factories.FutureOfferFactory(
-            offer=offer,
-            publicationDate=publication_date,
-        )
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
