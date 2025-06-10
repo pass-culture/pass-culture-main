@@ -8,8 +8,8 @@ import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import {

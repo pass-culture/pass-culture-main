@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -34,16 +34,6 @@ import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
-}
-
-const apiFieldsMap: Record<string, string> = {
-  'contact.email': 'email',
-  'contact.phoneNumber': 'phoneNumber',
-  'contact.website': 'webSite',
-  visualDisabilityCompliant: 'accessibility.visual',
-  mentalDisabilityCompliant: 'accessibility.mental',
-  motorDisabilityCompliant: 'accessibility.motor',
-  audioDisabilityCompliant: 'accessibility.audio',
 }
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
@@ -116,25 +106,33 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         saved: true,
         isEdition: true,
       })
+
+      notify.success('Vos modifications ont été sauvegardées')
     } catch (error) {
       let formErrors
       if (isErrorAPIError(error)) {
         formErrors = error.body
       }
 
-      if (!formErrors || Object.keys(formErrors).length === 0) {
+      const errorsKeys = Object.keys(formErrors)
+
+      if (
+        !formErrors ||
+        errorsKeys.length === 0 ||
+        errorsKeys.includes('global')
+      ) {
         notify.error('Erreur inconnue lors de la sauvegarde de la structure.')
       } else {
         notify.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
-        const error = serializeApiErrors(formErrors, apiFieldsMap)
-        const field = Object.keys(error)[0]
 
-        methods.setError(field as keyof VenueEditionFormValues, {
-          type: 'apiError',
-          message: error[field]?.toString(),
-        })
+        for (const field of errorsKeys) {
+          methods.setError(field as keyof VenueEditionFormValues, {
+            type: field,
+            message: formErrors[field]?.toString(),
+          })
+        }
       }
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
@@ -255,7 +253,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   error={methods.formState.errors.phoneNumber?.message}
                 />
               </FormLayout.Row>
-              <FormLayout.Row>
+              <FormLayout.Row mdSpaceAfter>
                 <TextInput
                   label="Adresse email"
                   description="Format : email@exemple.com"

@@ -134,41 +134,4 @@ describe('OpeningHoursForm', () => {
       '10:02'
     )
   })
-
-  // it('should set min value for ending hours', async () => {
-  //   renderOpeningHoursForm({})
-
-  //   const checkbox = screen.getByRole('checkbox', { name: 'Lundi' })
-  //   await userEvent.click(checkbox)
-  //   await userEvent.click(
-  //     screen.getByRole('button', { name: 'Ajouter une plage horaire' })
-  //   )
-
-  //   await userEvent.type(
-  //     screen.getByLabelText(/Horaire d’ouverture 1/),
-  //     '10:00'
-  //   )
-  //   expect(screen.getByLabelText(/Horaire de fermeture 1/)).toHaveAttribute(
-  //     'min',
-  //     '10:00'
-  //   )
-
-  //   await userEvent.type(
-  //     screen.getByLabelText(/Horaire de fermeture 1/),
-  //     '12:00'
-  //   )
-  //   expect(screen.getByLabelText(/Horaire d’ouverture 2/)).toHaveAttribute(
-  //     'min',
-  //     '12:00'
-  //   )
-
-  //   await userEvent.type(
-  //     screen.getByLabelText(/Horaire d’ouverture 2/),
-  //     '18:00'
-  //   )
-  //   expect(screen.getByLabelText(/Horaire de fermeture 2/)).toHaveAttribute(
-  //     'min',
-  //     '18:00'
-  //   )
-  // })
 })

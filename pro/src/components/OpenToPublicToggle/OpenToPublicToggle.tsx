@@ -10,7 +10,7 @@ export interface OpenToPublicToggleProps {
     no?: string
   }
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  isOpenToPublic: string | null
+  isOpenToPublic?: string | null
 }
 
 const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
