@@ -21,7 +21,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_collective_api_provider import (
     create_collective_api_provider,
 )
@@ -782,11 +781,6 @@ def create_collective_offers_with_different_displayed_status(
             bookingLimitDatetime=booking_limit_datetime,
             priceDetail="Some details",
         )
-
-        offer = stock.collectiveOffer
-        if offer.validation in {OfferValidationStatus.APPROVED, OfferValidationStatus.REJECTED}:
-            offer.lastValidationDate = offer.dateCreated + timedelta(minutes=60)
-            offer.lastValidationType = OfferValidationType.AUTO
 
         if booking_factory:
             booking_attributes = {

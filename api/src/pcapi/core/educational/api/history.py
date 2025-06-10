@@ -10,12 +10,13 @@ from pcapi.core.educational import models
 logger = logging.getLogger(__name__)
 
 
-CollectiveOfferHistoryStatus = (
-    models.CollectiveOfferDisplayedStatus
-    | typing.Literal["WAITING_FOR_PREBOOK"]
-    | typing.Literal["WAITING_FOR_BOOK"]
-    | typing.Literal["WAITING_FOR_REIMBURSEMENT"]
-)
+class HistoryTransitionalStatus(enum.Enum):
+    WAITING_FOR_PREBOOK = "WAITING_FOR_PREBOOK"
+    WAITING_FOR_BOOK = "WAITING_FOR_BOOK"
+    WAITING_FOR_REIMBURSEMENT = "WAITING_FOR_REIMBURSEMENT"
+
+
+CollectiveOfferHistoryStatus = models.CollectiveOfferDisplayedStatus | HistoryTransitionalStatus
 
 
 class CollectiveOfferHistoryStepStatus(enum.Enum):
@@ -56,9 +57,7 @@ def _get_status_date(offer: models.CollectiveOffer, status: CollectiveOfferHisto
         case (
             models.CollectiveOfferDisplayedStatus.DRAFT
             | models.CollectiveOfferDisplayedStatus.UNDER_REVIEW
-            | "WAITING_FOR_PREBOOK"
-            | "WAITING_FOR_BOOK"
-            | "WAITING_FOR_REIMBURSEMENT"
+            | HistoryTransitionalStatus()
         ):
             return None
 
@@ -182,7 +181,7 @@ def _get_history_status_data(
             return HistoryStatusData(
                 past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
                 past_to_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                current_status="WAITING_FOR_PREBOOK",
+                current_status=HistoryTransitionalStatus.WAITING_FOR_PREBOOK,
                 future_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
             )
 
@@ -204,7 +203,7 @@ def _get_history_status_data(
             return HistoryStatusData(
                 past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
                 past_to_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                current_status="WAITING_FOR_BOOK",
+                current_status=HistoryTransitionalStatus.WAITING_FOR_BOOK,
                 future_from_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
             )
 
@@ -220,7 +219,7 @@ def _get_history_status_data(
             current_status: CollectiveOfferHistoryStatus
             if is_two_days_past_end:
                 past_to_status = models.CollectiveOfferDisplayedStatus.ENDED
-                current_status = "WAITING_FOR_REIMBURSEMENT"
+                current_status = HistoryTransitionalStatus.WAITING_FOR_REIMBURSEMENT
             else:
                 past_to_status = models.CollectiveOfferDisplayedStatus.BOOKED
                 current_status = models.CollectiveOfferDisplayedStatus.ENDED
@@ -271,8 +270,8 @@ def get_collective_offer_history(offer: models.CollectiveOffer) -> list[Collecti
             offer=offer, from_status=base_status_data.past_from_status, to_status=base_status_data.past_to_status
         )
 
-        # add the status preceding ARCHIVED or HIDDEN, only if it is not a transitional step like "WAITING_FOR_BOOK"
-        if base_status_data.current_status in set(models.CollectiveOfferDisplayedStatus):
+        # add the status preceding ARCHIVED or HIDDEN, only if it is not a transitional status
+        if base_status_data.current_status not in set(HistoryTransitionalStatus):
             history.append(
                 CollectiveOfferHistoryStep(
                     offer_status=base_status_data.current_status,

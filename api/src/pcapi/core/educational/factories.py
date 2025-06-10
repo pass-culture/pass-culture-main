@@ -91,6 +91,11 @@ class CollectiveOfferFactory(BaseFactory):
                 OfferValidationStatus.PENDING,
             )
 
+        if kwargs.get("validation") in {OfferValidationStatus.APPROVED, OfferValidationStatus.REJECTED, None}:
+            stock_date_created = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+            kwargs["lastValidationDate"] = stock_date_created + datetime.timedelta(minutes=10)
+            kwargs["lastValidationType"] = OfferValidationType.AUTO
+
         return super()._create(model_class, *args, **kwargs)
 
     @factory.post_generation
@@ -504,6 +509,14 @@ class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
         CollectiveStockFactory.create(startDatetime=in_past, collectiveOffer=self)
+
+
+class CancelledWithPendingBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_cancelled_booking(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        stock = CollectiveStockFactory.create(startDatetime=in_past, collectiveOffer=self)
+        CancelledCollectiveBookingFactory.create(collectiveStock=stock, confirmationDate=None)
 
 
 class CancelledWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
