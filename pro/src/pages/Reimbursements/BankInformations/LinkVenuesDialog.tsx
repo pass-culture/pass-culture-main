@@ -38,10 +38,8 @@ export const LinkVenuesDialog = ({
   updateBankAccountVenuePricingPoint,
   editBankAccountDialogTriggerRef,
 }: LinkVenuesDialogProps) => {
-  const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
-    useState<boolean>(false)
-  const [showUnlinkVenuesDialog, setShowUnlinkVenuesDialog] =
-    useState<boolean>(false)
+  const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
+  const [showUnlinkDialog, setShowUnlinkDialog] = useState<boolean>(false)
 
   const availableManagedVenuesIds = managedVenues
     .filter((venue) => venue.hasPricingPoint)
@@ -52,51 +50,53 @@ export const LinkVenuesDialog = ({
   const initialVenuesIds = selectedBankAccount.linkedVenues.map(
     (venue) => venue.id
   )
+
   const [selectedVenuesIds, setSelectedVenuesIds] = useState(initialVenuesIds)
+
   const allVenuesSelected = availableManagedVenuesIds.every((venueId) =>
     selectedVenuesIds.includes(venueId)
   )
 
   const saveButtonRef = useRef<HTMLButtonElement>(null)
 
-  function onCancel() {
+  const handleCancel = () => {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
       closeDialog()
     } else {
-      setShowDiscardChangesDialog(true)
+      setShowDiscardDialog(true)
     }
   }
 
-  async function submitForm(hasUncheckedVenue = false) {
+  const handleSubmit = async (hasUnchecked = false) => {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
       closeDialog(false)
-    } else {
-      try {
-        await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
-          venues_ids: selectedVenuesIds,
-        })
-        logEvent(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
-          id: offererId,
-          HasUncheckedVenue: hasUncheckedVenue,
-        })
-        notification.success('Vos modifications ont bien été prises en compte.')
-        closeDialog(true)
-      } catch {
-        notification.error(
-          'Une erreur est survenue. Vos modifications n’ont pas été prises en compte.'
-        )
-      }
+      return
+    }
+
+    try {
+      await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
+        venues_ids: selectedVenuesIds,
+      })
+
+      logEvent(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
+        id: offererId,
+        HasUncheckedVenue: hasUnchecked,
+      })
+
+      notification.success('Vos modifications ont bien été prises en compte.')
+      closeDialog(true)
+    } catch {
+      notification.error(
+        'Une erreur est survenue. Vos modifications n’ont pas été prises en compte'
+      )
     }
   }
 
   const onSubmit = async () => {
-    if (
-      initialVenuesIds.every((venueId) => selectedVenuesIds.includes(venueId))
-    ) {
-      await submitForm()
-    } else {
-      setShowUnlinkVenuesDialog(true)
-    }
+    const hasUnlinked = !initialVenuesIds.every((id) =>
+      selectedVenuesIds.includes(id)
+    )
+    hasUnlinked ? setShowUnlinkDialog(true) : await handleSubmit()
   }
 
   const methods = useForm({
@@ -154,14 +154,16 @@ export const LinkVenuesDialog = ({
                       selectedVenuesIds.length >= 1 && !allVenuesSelected
                     }
                     onChange={() => {
-                      if (allVenuesSelected) {
-                        setSelectedVenuesIds([])
-                      } else {
-                        setSelectedVenuesIds([
-                          ...availableManagedVenuesIds,
-                          ...initialVenuesIds,
-                        ])
-                      }
+                      setSelectedVenuesIds(
+                        allVenuesSelected
+                          ? []
+                          : [
+                              ...new Set([
+                                ...availableManagedVenuesIds,
+                                ...initialVenuesIds,
+                              ]),
+                            ]
+                      )
                     }}
                     label={
                       allVenuesSelected
@@ -196,7 +198,10 @@ export const LinkVenuesDialog = ({
               </div>
               <DialogBuilder.Footer>
                 <div className={styles['dialog-actions']}>
-                  <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    onClick={handleCancel}
+                  >
                     Annuler
                   </Button>
 
@@ -219,15 +224,15 @@ export const LinkVenuesDialog = ({
           [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
         })}
         icon={strokeWarningIcon}
-        onCancel={() => setShowDiscardChangesDialog(false)}
+        onCancel={() => setShowDiscardDialog(false)}
         title="Les informations non sauvegardées ne seront pas prises en compte"
         onConfirm={() => {
-          setShowDiscardChangesDialog(false)
+          setShowDiscardDialog(false)
           closeDialog()
         }}
         confirmText="Quitter sans enregistrer"
         cancelText="Annuler"
-        open={showDiscardChangesDialog}
+        open={showDiscardDialog}
         refToFocusOnClose={saveButtonRef}
       />
       <ConfirmDialog
@@ -235,16 +240,15 @@ export const LinkVenuesDialog = ({
           [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
         })}
         icon={strokeWarningIcon}
-        onCancel={() => setShowUnlinkVenuesDialog(false)}
+        onCancel={() => setShowUnlinkDialog(false)}
         title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"
         onConfirm={() => {
-          setShowUnlinkVenuesDialog(false)
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          submitForm(true)
+          setShowUnlinkDialog(false)
+          void handleSubmit(true)
         }}
         confirmText="Confirmer"
         cancelText="Retour"
-        open={showUnlinkVenuesDialog}
+        open={showUnlinkDialog}
         refToFocusOnClose={saveButtonRef}
       />
     </>
