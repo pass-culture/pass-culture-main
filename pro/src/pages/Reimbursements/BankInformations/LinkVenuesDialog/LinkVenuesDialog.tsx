@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { useRef, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -18,8 +18,9 @@ import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
+import { ManadgedVenueItem } from '../ManagedVenueItem/ManagedVenueItem'
+
 import styles from './LinkVenuesDialog.module.scss'
-import { ManadgedVenueItem } from './ManagedVenueItem/ManagedVenueItem'
 
 interface LinkVenuesDialogProps {
   offererId: number
@@ -141,81 +142,79 @@ export const LinkVenuesDialog = ({
             Sélectionnez les structures dont les offres seront remboursées sur
             ce compte bancaire.
           </div>
-          <FormProvider {...methods}>
-            <form
-              onSubmit={methods.handleSubmit(onSubmit)}
-              className={styles['dialog-form']}
-            >
-              <div className={styles['dialog-checkboxes']}>
-                <div className={styles['dialog-select-all']}>
-                  <Checkbox
-                    checked={allVenuesSelected}
-                    indeterminate={
-                      selectedVenuesIds.length >= 1 && !allVenuesSelected
-                    }
-                    onChange={() => {
-                      setSelectedVenuesIds(
-                        allVenuesSelected
-                          ? []
-                          : [
-                              ...new Set([
-                                ...availableManagedVenuesIds,
-                                ...initialVenuesIds,
-                              ]),
-                            ]
-                      )
-                    }}
-                    label={
+          <form
+            onSubmit={methods.handleSubmit(onSubmit)}
+            className={styles['dialog-form']}
+          >
+            <div className={styles['dialog-checkboxes']}>
+              <div className={styles['dialog-select-all']}>
+                <Checkbox
+                  checked={allVenuesSelected}
+                  indeterminate={
+                    selectedVenuesIds.length >= 1 && !allVenuesSelected
+                  }
+                  onChange={() => {
+                    setSelectedVenuesIds(
                       allVenuesSelected
-                        ? 'Tout désélectionner'
-                        : 'Tout sélectionner'
-                    }
-                  />
-                  <span className={styles['dialog-select-all-count']}>
-                    {selectedVenuesIds.length}{' '}
-                    {pluralizeString(
-                      'structure sélectionnée',
-                      selectedVenuesIds.length
-                    )}
-                  </span>
-                </div>
-
-                {managedVenues.map((venue) => {
-                  return (
-                    <ManadgedVenueItem
-                      venue={venue}
-                      key={venue.id}
-                      updateBankAccountVenuePricingPoint={
-                        updateBankAccountVenuePricingPoint
-                      }
-                      selectedBankAccount={selectedBankAccount}
-                      selectedVenuesIds={selectedVenuesIds}
-                      setSelectedVenuesIds={setSelectedVenuesIds}
-                      venuesForPricingPoint={venuesForPricingPoint}
-                    />
-                  )
-                })}
+                        ? []
+                        : [
+                            ...new Set([
+                              ...availableManagedVenuesIds,
+                              ...initialVenuesIds,
+                            ]),
+                          ]
+                    )
+                  }}
+                  label={
+                    allVenuesSelected
+                      ? 'Tout désélectionner'
+                      : 'Tout sélectionner'
+                  }
+                />
+                <span className={styles['dialog-select-all-count']}>
+                  {selectedVenuesIds.length}{' '}
+                  {pluralizeString(
+                    'structure sélectionnée',
+                    selectedVenuesIds.length
+                  )}
+                </span>
               </div>
-              <DialogBuilder.Footer>
-                <div className={styles['dialog-actions']}>
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    onClick={handleCancel}
-                  >
-                    Annuler
-                  </Button>
 
-                  <Button
-                    type="submit"
-                    isLoading={methods.formState.isSubmitting}
-                    ref={saveButtonRef}
-                  >
-                    Enregistrer
-                  </Button>
-                </div>
-              </DialogBuilder.Footer>
-            </form>
-          </FormProvider>
+              {managedVenues.map((venue) => {
+                return (
+                  <ManadgedVenueItem
+                    venue={venue}
+                    key={venue.id}
+                    updateBankAccountVenuePricingPoint={
+                      updateBankAccountVenuePricingPoint
+                    }
+                    selectedBankAccount={selectedBankAccount}
+                    selectedVenuesIds={selectedVenuesIds}
+                    setSelectedVenuesIds={setSelectedVenuesIds}
+                    venuesForPricingPoint={venuesForPricingPoint}
+                  />
+                )
+              })}
+            </div>
+            <DialogBuilder.Footer>
+              <div className={styles['dialog-actions']}>
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={handleCancel}
+                >
+                  Annuler
+                </Button>
+
+                <Button
+                  type="submit"
+                  isLoading={methods.formState.isSubmitting}
+                  ref={saveButtonRef}
+                >
+                  Enregistrer
+                </Button>
+              </div>
+            </DialogBuilder.Footer>
+          </form>
         </div>
       </DialogBuilder>
 

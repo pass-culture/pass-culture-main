@@ -15,7 +15,6 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import fullMoreIcon from 'icons/full-more.svg'
-import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -24,6 +23,7 @@ import { ReimbursementsContextProps } from '../Reimbursements'
 
 import { AddBankInformationsDialog } from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
+import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
 
 export const BankInformations = (): JSX.Element => {
   const notify = useNotification()
