@@ -1,5 +1,4 @@
 import type { StoryObj } from '@storybook/react'
-import { Formik } from 'formik'
 
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -72,47 +71,45 @@ const DemoInformationBox = () => (
 
 const DesignedFormLayout = (args: FormLayoutProps) => (
   <div style={{ width: 850 }}>
-    <Formik initialValues={{}} onSubmit={() => alert('Form submit !')}>
-      <FormLayout {...args}>
-        <FormLayout.Section
-          description="Lorem ipsum dolor sit amet"
-          title="Lorem ipsum dolor sit amet"
-        >
-          <FormLayout.Row sideComponent={<DemoInformationBox />}>
-            <TextInput label="Nom" name="lastname" />
+    <FormLayout {...args}>
+      <FormLayout.Section
+        description="Lorem ipsum dolor sit amet"
+        title="Lorem ipsum dolor sit amet"
+      >
+        <FormLayout.Row sideComponent={<DemoInformationBox />}>
+          <TextInput label="Nom" name="lastname" />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <TextInput label="Tel" name="Tel" />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <TextInput label="Mail" name="mail" />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <TextInput label="Jambon" name="ham" />
+        </FormLayout.Row>
+      </FormLayout.Section>
+      <FormLayout.Section
+        description="Lorem ipsum dolor sit amet"
+        title="Lorem ipsum dolor sit amet"
+      >
+        <FormLayout.Row sideComponent={null}>
+          <TextInput label="Prénom" name="firstname" />
+        </FormLayout.Row>
+        <FormLayout.SubSection title="Sub section title">
+          <FormLayout.Row inline sideComponent={<DemoInformationBox />}>
+            <>
+              <TextInput label="Prénom" name="firstname" />
+              <TextInput label="Nom" name="lastname" />
+            </>
           </FormLayout.Row>
-          <FormLayout.Row>
-            <TextInput label="Tel" name="Tel" />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <TextInput label="Mail" name="mail" />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <TextInput label="Jambon" name="ham" />
-          </FormLayout.Row>
-        </FormLayout.Section>
-        <FormLayout.Section
-          description="Lorem ipsum dolor sit amet"
-          title="Lorem ipsum dolor sit amet"
-        >
-          <FormLayout.Row sideComponent={null}>
-            <TextInput label="Prénom" name="firstname" />
-          </FormLayout.Row>
-          <FormLayout.SubSection title="Sub section title">
-            <FormLayout.Row inline sideComponent={<DemoInformationBox />}>
-              <>
-                <TextInput label="Prénom" name="firstname" />
-                <TextInput label="Nom" name="lastname" />
-              </>
-            </FormLayout.Row>
-          </FormLayout.SubSection>
-        </FormLayout.Section>
-        <FormLayout.Actions>
-          <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-          <Button>Envoyer</Button>
-        </FormLayout.Actions>
-      </FormLayout>
-    </Formik>
+        </FormLayout.SubSection>
+      </FormLayout.Section>
+      <FormLayout.Actions>
+        <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+        <Button>Envoyer</Button>
+      </FormLayout.Actions>
+    </FormLayout>
   </div>
 )
 
