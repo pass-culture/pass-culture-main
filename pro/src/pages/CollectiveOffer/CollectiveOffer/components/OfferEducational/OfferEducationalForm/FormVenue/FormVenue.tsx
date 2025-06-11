@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import {
   CollectiveBookingStatus,
@@ -14,7 +14,7 @@ import {
 import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Select } from 'ui-kit/form/Select/Select'
+import { Select } from 'ui-kit/formV2/Select/Select'
 
 import { STRUCTURE_LABEL } from '../../constants/labels'
 
@@ -55,7 +55,8 @@ export const FormVenue = ({
       disableOfferSelection &&
       disabledBookingStatus.includes(lastBookingStatus))
 
-  const { values, setValues } = useFormikContext<OfferEducationalFormValues>()
+  const { watch, setValue, register, formState } =
+    useFormContext<OfferEducationalFormValues>()
 
   return (
     <FormLayout.Section title="Qui propose l’offre ?">
@@ -64,18 +65,22 @@ export const FormVenue = ({
           <Select
             disabled={venuesOptions.length === 1 || disableVenueSelection}
             label={STRUCTURE_LABEL}
-            name="venueId"
+            {...register('venueId')}
             options={venuesOptions}
-            onChange={async (event) => {
+            required
+            error={formState.errors.venueId?.message}
+            onChange={(event) => {
               if (!disableForm) {
-                await setValues(
+                Object.entries(
                   applyVenueDefaultsToFormValues(
-                    { ...values, venueId: event.target.value },
+                    { ...watch(), venueId: event.target.value },
                     userOfferer,
                     isOfferCreated,
                     venues
                   )
-                )
+                ).map(([key, val]) => {
+                  setValue(key as keyof OfferEducationalFormValues, val)
+                })
               }
             }}
           />

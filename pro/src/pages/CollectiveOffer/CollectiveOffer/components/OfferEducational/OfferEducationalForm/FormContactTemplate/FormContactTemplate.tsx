@@ -1,9 +1,9 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
+import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './FormContactTemplate.module.scss'
 import { FormContactTemplateCustomForm } from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'
@@ -15,47 +15,56 @@ interface FormContactTemplateProps {
 export const FormContactTemplate = ({
   disableForm,
 }: FormContactTemplateProps): JSX.Element => {
-  const { values, setFieldValue, getFieldMeta } =
-    useFormikContext<OfferEducationalFormValues>()
+  const { watch, setValue, getFieldState, register, trigger } =
+    useFormContext<OfferEducationalFormValues>()
 
   const contactOptions = [
     {
       label: 'Par email',
-      checked: Boolean(values.contactOptions?.email),
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setFieldValue('contactOptions.email', e.target.checked),
+      checked: Boolean(watch('contactOptions')?.email),
+      onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue('contactOptions.email', e.target.checked)
+
+        await trigger('contactOptions')
+      },
       collapsed: (
         <div className={styles['contact-checkbox-inner-control']}>
           <TextInput
             label="Adresse email"
-            isOptional
-            name="email"
+            {...register('email')}
             disabled={disableForm}
             description="Format : email@exemple.com"
+            required
+            error={getFieldState('email').error?.message}
           />
         </div>
       ),
     },
     {
       label: 'Par téléphone',
-      checked: Boolean(values.contactOptions?.phone),
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setFieldValue('contactOptions.phone', e.target.checked),
+      checked: Boolean(watch('contactOptions')?.phone),
+      onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue('contactOptions.phone', e.target.checked)
+        await trigger('contactOptions')
+      },
       collapsed: (
         <div className={styles['contact-checkbox-inner-control']}>
           <PhoneNumberInput
-            name="phone"
+            {...register('phone')}
             label="Numéro de téléphone"
+            required
             disabled={disableForm}
-            isOptional
+            error={getFieldState('phone').error?.message}
           />
         </div>
       ),
     },
     {
-      checked: Boolean(values.contactOptions?.form),
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setFieldValue('contactOptions.form', e.target.checked),
+      checked: Boolean(watch('contactOptions')?.form),
+      onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue('contactOptions.form', e.target.checked)
+        await trigger('contactOptions')
+      },
       label: 'Via un formulaire',
       collapsed: <FormContactTemplateCustomForm disableForm={disableForm} />,
     },
@@ -74,7 +83,7 @@ export const FormContactTemplate = ({
         asterisk={false}
         group={contactOptions}
         disabled={disableForm}
-        error={getFieldMeta('contactOptions').error}
+        error={getFieldState('contactOptions').error?.message}
       />
     </div>
   )

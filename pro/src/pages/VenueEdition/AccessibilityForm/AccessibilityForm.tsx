@@ -31,7 +31,8 @@ export const AccessibilityForm = ({
   const values = watch()
 
   const checkboxGroup = useAccessibilityOptions(
-    (name, value) => setValue(name as keyof VenueEditionFormValues, value),
+    (name: string, value: boolean) =>
+      setValue(name as keyof VenueEditionFormValues, value),
     values.accessibility
   )
 

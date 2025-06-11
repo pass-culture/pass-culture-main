@@ -7,7 +7,11 @@ describe('EmailInputRow', () => {
   it('should render trash icon by default', () => {
     render(
       <Formik initialValues={{}} onSubmit={vi.fn()}>
-        <EmailInputRow disableForm={false} name={`email`} key={`email`} />
+        <EmailInputRow
+          disableForm={false}
+          email="test@test.co"
+          onChange={() => {}}
+        />
       </Formik>
     )
     const removeInputIcon = screen.getByRole('button', {

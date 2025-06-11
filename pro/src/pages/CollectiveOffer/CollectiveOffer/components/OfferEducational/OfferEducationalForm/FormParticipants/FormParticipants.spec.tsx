@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { StudentLevels } from 'apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from 'commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
@@ -12,16 +12,23 @@ import {
 import { studentLevelsLabels } from './constants'
 import { FormParticipants } from './FormParticipants'
 
-const renderFormParticipants = (
+function renderFormParticipants(
   participants: Record<string, boolean>,
   options?: RenderWithProvidersOptions
-) => {
-  return renderWithProviders(
-    <Formik initialValues={{ participants }} onSubmit={() => {}}>
-      <FormParticipants disableForm={false} />
-    </Formik>,
-    options
-  )
+) {
+  function FormParticipantsWrapper() {
+    const form = useForm({
+      defaultValues: { participants },
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FormParticipants disableForm={false} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormParticipantsWrapper />, options)
 }
 
 const featureOverrides = {

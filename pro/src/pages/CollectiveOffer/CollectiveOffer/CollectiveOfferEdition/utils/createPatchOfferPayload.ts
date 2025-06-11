@@ -25,7 +25,7 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   }),
   duration: (payload, offer) => ({
     ...payload,
-    durationMinutes: parseDuration(offer.duration),
+    durationMinutes: offer.duration ? parseDuration(offer.duration) : null,
   }),
   accessibility: (payload, offer) => ({
     ...payload,
@@ -37,7 +37,7 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   notificationEmails: (payload, offer) => {
     return {
       ...payload,
-      bookingEmails: offer.notificationEmails,
+      bookingEmails: offer.notificationEmails?.map((email) => email.email),
     }
   },
   offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
@@ -50,10 +50,12 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
       ...offer.eventAddress,
       venueId: offer.eventAddress.venueId,
     }
-    return {
-      ...payload,
-      offerVenue: eventAddressPayload,
-    }
+    return offer.eventAddress.addressType
+      ? {
+          ...payload,
+          offerVenue: eventAddressPayload,
+        }
+      : {}
   },
   participants: (payload, offer) => ({
     ...payload,
@@ -69,7 +71,9 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   }),
   domains: (payload, offer) => ({
     ...payload,
-    domains: offer.domains.map((domainIdString) => Number(domainIdString)),
+    domains: (offer.domains || []).map((domainIdString) =>
+      Number(domainIdString)
+    ),
   }),
   interventionArea: (payload, offer) => ({
     ...payload,
@@ -91,7 +95,7 @@ const offerLocationSerializer = (
   payload: PatchCollectiveOfferBodyModel,
   offer: OfferEducationalFormValues
 ) => {
-  if (offer.location.locationType === CollectiveLocationType.ADDRESS) {
+  if (offer.location?.locationType === CollectiveLocationType.ADDRESS) {
     const newLocationPayload = {
       ...payload,
       location: {
@@ -114,7 +118,7 @@ const offerLocationSerializer = (
     return newLocationPayload
   }
 
-  if (offer.location.locationType === CollectiveLocationType.TO_BE_DEFINED) {
+  if (offer.location?.locationType === CollectiveLocationType.TO_BE_DEFINED) {
     return {
       ...payload,
       location: {
@@ -173,7 +177,7 @@ export const createPatchOfferPayload = (
     ) {
       changedValues = {
         ...changedValues,
-        ...serializer[key]?.(changedValues, offer) ?? {},
+        ...(serializer[key]?.(changedValues, offer) ?? {}),
       }
     }
   })

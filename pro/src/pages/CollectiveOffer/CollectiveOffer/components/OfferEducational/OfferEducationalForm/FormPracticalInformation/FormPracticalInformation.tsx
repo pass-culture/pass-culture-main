@@ -1,23 +1,21 @@
-import { useFormikContext } from 'formik'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import {
   GetEducationalOffererResponseModel,
-  GetEducationalOffererVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
 import { SelectOption } from 'commons/custom_types/form'
 import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import {
   RadioGroup,
   RadioGroupProps,
 } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 
@@ -41,11 +39,10 @@ export const FormPracticalInformation = ({
   currentOfferer,
   disableForm,
 }: FormPracticalInformationProps): JSX.Element => {
-  const { values, setFieldValue, touched, errors, setFieldTouched } =
-    useFormikContext<OfferEducationalFormValues>()
+  const { watch, setValue, getFieldState, register } =
+    useFormContext<OfferEducationalFormValues>()
 
-  const [currentVenue, setCurrentVenue] =
-    useState<GetEducationalOffererVenueResponseModel | null>(null)
+  const eventAddressValue = watch('eventAddress')
 
   const handleMultiSelectChange = useCallback(
     (
@@ -58,10 +55,10 @@ export const FormPracticalInformation = ({
         addedOptions,
         removedOptions,
       })
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      setFieldValue('interventionArea', Array.from(newSelectedOptions))
+
+      setValue('interventionArea', Array.from(newSelectedOptions))
     },
-    [setFieldValue]
+    [setValue]
   )
 
   const MultiSelectComponent = (
@@ -69,26 +66,27 @@ export const FormPracticalInformation = ({
       label="Département(s)"
       name="interventionArea"
       buttonLabel="Département(s)"
+      required
       options={offerInterventionOptions}
       selectedOptions={offerInterventionOptions.filter((op) =>
-        values.interventionArea.includes(op.id)
+        watch('interventionArea')?.includes(op.id)
       )}
       defaultOptions={offerInterventionOptions.filter((option) =>
-        values.interventionArea.includes(option.id)
+        watch('interventionArea')?.includes(option.id)
       )}
       disabled={disableForm}
       hasSearch
       searchLabel="Rechercher"
       hasSelectAllOptions
       onSelectedOptionsChanged={handleMultiSelectChange}
-      onBlur={() => setFieldTouched('interventionArea', true)}
-      error={
-        touched.interventionArea && errors.interventionArea
-          ? String(errors.interventionArea)
-          : undefined
-      }
+      error={getFieldState('interventionArea').error?.message}
     />
   )
+
+  const currentVenue =
+    currentOfferer?.managedVenues.find(
+      (venue) => venue.id === Number(eventAddressValue.venueId)
+    ) || null
 
   const adressTypeRadios: RadioGroupProps['group'] = [
     {
@@ -100,8 +98,10 @@ export const FormPracticalInformation = ({
           <Select
             disabled={venuesOptions.length === 1 || disableForm}
             label={EVENT_ADDRESS_VENUE_SELECT_LABEL}
-            name="eventAddress.venueId"
+            {...register('eventAddress.venueId')}
             options={venuesOptions}
+            required
+            error={getFieldState('eventAddress.venueId').error?.message}
           />
           {currentVenue && (
             <div className={styles['educational-form-adress-banner']}>
@@ -146,9 +146,11 @@ export const FormPracticalInformation = ({
         >
           {MultiSelectComponent}
           <TextArea
+            required
+            {...register('eventAddress.otherAddress')}
             label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
             maxLength={200}
-            name="eventAddress.otherAddress"
+            error={getFieldState('eventAddress.otherAddress').error?.message}
             disabled={disableForm}
             className={styles['event-other-address']}
           />
@@ -157,80 +159,16 @@ export const FormPracticalInformation = ({
     },
   ]
 
-  useEffect(() => {
-    async function setAddressField() {
-      if (
-        values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
-        values.eventAddress.venueId
-      ) {
-        await setFieldValue(
-          'eventAddress.venueId',
-          getDefaultEducationalValues().eventAddress.venueId
-        )
-        setCurrentVenue(null)
-      }
-
-      if (
-        values.eventAddress.addressType !== OfferAddressType.OTHER &&
-        values.eventAddress.otherAddress
-      ) {
-        await setFieldValue(
-          'eventAddress.otherAddress',
-          getDefaultEducationalValues().eventAddress.otherAddress
-        )
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    setAddressField()
-  }, [values.eventAddress, setFieldValue])
-
-  useEffect(() => {
-    async function setVenue() {
-      if (
-        values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
-        values.eventAddress.venueId
-      ) {
-        if (currentOfferer) {
-          const selectedVenue = currentOfferer.managedVenues.find(
-            (venue) => venue.id === values.eventAddress.venueId
-          )
-          return setCurrentVenue(selectedVenue ?? null)
-        }
-        return setCurrentVenue(null)
-      }
-
-      if (
-        values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
-        !values.eventAddress.venueId &&
-        values.venueId
-      ) {
-        if (currentOfferer) {
-          const selectedVenue = currentOfferer.managedVenues.find(
-            (venue) => venue.id === Number(values.venueId)
-          )
-          if (selectedVenue) {
-            await setFieldValue('eventAddress.venueId', values.venueId)
-            return setCurrentVenue(selectedVenue)
-          }
-        }
-        return setCurrentVenue(null)
-      }
-
-      if (!values.eventAddress.venueId) {
-        return setCurrentVenue(null)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    setVenue()
-  }, [currentOfferer, values.eventAddress])
-
   return (
     <FormLayout.Row>
       <RadioGroup
         variant="detailed"
-        checkedOption={values.eventAddress.addressType}
+        checkedOption={watch('eventAddress.addressType')}
         onChange={(e) =>
-          setFieldValue('eventAddress.addressType', e.target.value)
+          setValue(
+            'eventAddress.addressType',
+            e.target.value as OfferAddressType
+          )
         }
         group={adressTypeRadios}
         legend={

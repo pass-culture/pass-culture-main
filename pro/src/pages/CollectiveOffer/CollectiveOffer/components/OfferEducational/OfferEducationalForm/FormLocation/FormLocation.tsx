@@ -1,25 +1,25 @@
-import { useFormikContext } from 'formik'
 import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { resetAddressFields } from 'commons/utils/resetAddressFields'
-import { AddressSelect } from 'components/Address/Address'
-import { AddressManual } from 'components/AddressManual/AddressManual'
+import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { AddressManual } from 'ui-kit/formV2/AddressManual/AddressManual'
+import { AddressSelect } from 'ui-kit/formV2/AddressSelect/AddressSelect'
 import {
   RadioGroup,
   RadioGroupProps,
 } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -33,60 +33,56 @@ export const FormLocation = ({
   venues,
   disableForm,
 }: FormLocationProps): JSX.Element => {
-  const formik = useFormikContext<OfferEducationalFormValues>()
-  const setFieldValue = formik.setFieldValue
+  const { watch, setValue, resetField, register, getFieldState } =
+    useFormContext<OfferEducationalFormValues>()
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
-    useState(formik.values.location.address?.isManualEdition)
+    useState(watch('location.address')?.isManualEdition)
 
-  const selectedVenue = venues.find(
-    (v) => v.id.toString() === formik.values.venueId.toString()
-  )
+  const selectedVenue = venues.find((v) => v.id.toString() === watch('venueId'))
 
-  const toggleManualAddressForm = async () => {
+  const toggleManualAddressForm = () => {
     setShouldShowManualAddressForm(!shouldShowManualAddressForm)
     if (!shouldShowManualAddressForm) {
-      await setFieldValue('location.address.isVenueAddress', false)
-      await setFieldValue('location.address.isManualEdition', true)
-      await resetAddressFields({ formik })
+      setValue('location.address.isVenueAddress', false)
+      setValue('location.address.isManualEdition', true)
+      resetReactHookFormAddressFields({ resetField })
     }
   }
 
-  const setVenueAddressFields = async () => {
+  const setVenueAddressFields = () => {
     const { address } = selectedVenue || {}
-    await Promise.all([
-      setFieldValue('banId', address?.banId),
-      setFieldValue('city', address?.city),
-      setFieldValue('longitude', address?.longitude),
-      setFieldValue('latitude', address?.latitude),
-      setFieldValue('postalCode', address?.postalCode),
-      setFieldValue('street', address?.street),
-      setFieldValue('location.address.inseeCode', address?.inseeCode),
-      setFieldValue('location.address.label', address?.label),
-      setFieldValue('location.address.isVenueAddress', true),
-      setFieldValue('location.address.isManualEdition', false),
-      setFieldValue('coords', `${address?.latitude}, ${address?.longitude}`),
-    ])
+    setValue('banId', address?.banId)
+    setValue('city', address?.city)
+    setValue('longitude', (address?.longitude || '').toString())
+    setValue('latitude', (address?.latitude || '').toString())
+    setValue('postalCode', address?.postalCode)
+    setValue('street', address?.street)
+    setValue('inseeCode', address?.inseeCode)
+    setValue('location.address.label', address?.label || undefined)
+    setValue('location.address.isVenueAddress', true)
+    setValue('location.address.isManualEdition', false)
+    setValue('coords', `${address?.latitude}, ${address?.longitude}`)
   }
 
-  const handleAddressLocationChange = async (
+  const handleAddressLocationChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    await setFieldValue('location.address.id_oa', event.target.value)
+    setValue('location.address.id_oa', event.target.value)
 
     const isSpecificAddress = event.target.value === 'SPECIFIC_ADDRESS'
 
     if (isSpecificAddress) {
-      await setFieldValue('location.address.label', '')
-      await resetAddressFields({ formik })
+      setValue('location.address.label', '')
+      resetReactHookFormAddressFields({ resetField })
     } else {
       // If here, the user chose to use the venue address
-      await setVenueAddressFields()
+      setVenueAddressFields()
     }
   }
 
-  const onAddressSelect = async () => {
-    await setFieldValue('location.address.isVenueAddress', false)
-    await setFieldValue('location.address.isManualEdition', false)
+  const onAddressSelect = () => {
+    setValue('location.address.isVenueAddress', false)
+    setValue('location.address.isManualEdition', false)
   }
 
   const locationTypeRadios: RadioGroupProps['group'] = [
@@ -98,9 +94,9 @@ export const FormLocation = ({
         <RadioGroup
           onChange={handleAddressLocationChange}
           disabled={disableForm}
-          legend="Type d'adresse"
+          legend="Type d'adresse *"
           variant="detailed"
-          checkedOption={formik.getFieldProps('location.address.id_oa').value}
+          checkedOption={watch('location.address.id_oa')}
           name="location.address.id_oa"
           group={[
             {
@@ -116,16 +112,22 @@ export const FormLocation = ({
               value: 'SPECIFIC_ADDRESS',
               sizing: 'fill',
               collapsed: (
-                <>
+                <div className={styles['specific-address']}>
                   <TextInput
                     label="Intitulé de la localisation"
-                    name="location.address.label"
-                    isOptional
+                    {...register('location.address.label')}
+                    error={
+                      getFieldState('location.address.label').error?.message
+                    }
                     disabled={disableForm}
                   />
                   <AddressSelect
                     disabled={disableForm || shouldShowManualAddressForm}
-                    onAddressSelect={onAddressSelect}
+                    onAddressChosen={onAddressSelect}
+                    label="Adresse postale"
+                    {...register('addressAutocomplete')}
+                    className={styles['specific-address-search']}
+                    error={getFieldState('addressAutocomplete').error?.message}
                   />
                   <Button
                     variant={ButtonVariant.QUATERNARY}
@@ -153,7 +155,7 @@ export const FormLocation = ({
                       }
                     />
                   )}
-                </>
+                </div>
               ),
             },
           ]}
@@ -184,31 +186,32 @@ export const FormLocation = ({
           />
           <TextArea
             label="Commentaire"
-            name="location.locationComment"
             maxLength={200}
-            isOptional
+            {...register('location.locationComment')}
+            error={getFieldState('location.locationComment').error?.message}
           />
         </>
       ),
     },
   ]
 
-  const handleLocationTypeChange = async (
+  const handleLocationTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    await setFieldValue('location.locationType', event.target.value)
+    setValue(
+      'location.locationType',
+      event.target.value as CollectiveLocationType
+    )
     if (event.target.value === CollectiveLocationType.ADDRESS) {
       const { address } = selectedVenue || {}
       // If here, the user chose to use the venue address
-      await setVenueAddressFields()
-      await Promise.all([
-        setFieldValue('location.address.id_oa', address?.id_oa.toString()),
-        setFieldValue('location.locationType', CollectiveLocationType.ADDRESS),
-        setFieldValue('locationComment', ''),
-        setFieldValue('interventionArea', []),
-      ])
+      setVenueAddressFields()
+      setValue('location.address.id_oa', address?.id_oa.toString())
+      setValue('location.locationType', CollectiveLocationType.ADDRESS)
+      setValue('location.locationComment', '')
+      setValue('interventionArea', [])
     } else {
-      await resetAddressFields({ formik })
+      resetReactHookFormAddressFields({ resetField })
     }
   }
 
@@ -223,7 +226,7 @@ export const FormLocation = ({
         }
         name="location.locationType"
         disabled={disableForm}
-        checkedOption={formik.getFieldProps('location.locationType').value}
+        checkedOption={watch('location.locationType')}
       />
     </FormLayout.Row>
   )

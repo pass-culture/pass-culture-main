@@ -12,7 +12,7 @@ import { getOfferEducationalValidationSchema } from '../validationSchema'
 const defaultValues: OfferEducationalFormValues = {
   title: 'offer title',
   email: 'test@test.co',
-  notificationEmails: ['test@test.co'],
+  notificationEmails: [{ email: 'test@test.co' }],
   accessibility: {
     audio: false,
     mental: false,
@@ -143,7 +143,7 @@ describe('validationSchema OfferEducational', () => {
         description: 'valid form without notification email',
         formValues: {
           ...defaultValues,
-          notificationEmails: [''],
+          notificationEmails: [{ email: '' }],
         },
         expectedErrors: ['Veuillez renseigner une adresse email'],
       },

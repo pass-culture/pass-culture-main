@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import {
   CollectiveBookingStatus,
@@ -136,12 +136,14 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(venueSelect).toBeDisabled()
   })
 
-  it('should show banner if generate from publicApi', () => {
+  it('should show banner if generate from publicApi', async () => {
     props.mode = Mode.EDITION
     props.offer = getCollectiveOfferFactory({ isPublicApi: true })
     renderComponent(props)
-    expect(
-      screen.getByText('Offre importée automatiquement')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByText('Offre importée automatiquement')
+      ).toBeInTheDocument()
+    })
   })
 })

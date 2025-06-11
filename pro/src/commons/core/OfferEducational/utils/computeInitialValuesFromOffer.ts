@@ -20,7 +20,7 @@ import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWi
 
 const computeDurationString = (
   durationMinutes: number | undefined | null
-): string => {
+): string | undefined => {
   if (!durationMinutes) {
     return getDefaultEducationalValues().duration
   }
@@ -145,7 +145,7 @@ export const computeInitialValuesFromOffer = (
   const offerLocationFromOffer = {
     locationType:
       offer.location?.locationType ??
-      defaultEducationalFormValues.location.locationType,
+      defaultEducationalFormValues.location?.locationType,
     address: {
       isVenueAddress,
       label: offer.location?.address?.label ?? '',
@@ -173,7 +173,6 @@ export const computeInitialValuesFromOffer = (
     title: offer.name,
     description: offer.description,
     duration: computeDurationString(offer.durationMinutes),
-    // @ts-expect-error This is because we store a dehumanizedId in database.
     eventAddress: offer.offerVenue,
     participants: participants,
     accessibility: {
@@ -189,7 +188,9 @@ export const computeInitialValuesFromOffer = (
     },
     email: email ?? defaultEducationalFormValues.email,
     phone: phone ?? defaultEducationalFormValues.phone,
-    notificationEmails: offer.bookingEmails,
+    notificationEmails: offer.bookingEmails.map((email) => ({
+      email: email,
+    })),
     domains,
     interventionArea: offer.interventionArea,
     venueId: initialVenueId,
@@ -249,7 +250,11 @@ export const computeInitialValuesFromOffer = (
           phone: Boolean(offer.contactPhone),
           form: Boolean(offer.contactForm || offer.contactUrl),
         }
-      : undefined,
+      : {
+          email: false,
+          phone: false,
+          form: false,
+        },
     contactFormType: isCollectiveOfferTemplate(offer)
       ? offer.contactUrl
         ? 'url'

@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect } from 'vitest'
 
 import { CollectiveOfferTemplateAllowedAction } from 'apiClient/v1'
@@ -29,25 +29,30 @@ import {
   OfferEducationalFormProps,
 } from '../OfferEducationalForm'
 
-const renderOfferEducationalForm = (
+function renderOfferEducationalForm(
   props: OfferEducationalFormProps,
   options?: RenderWithProvidersOptions,
   initialValues?: Partial<OfferEducationalFormValues>
-) => {
-  renderWithProviders(
-    <Formik
-      initialValues={{
+) {
+  function OfferEducationalFormWrapper() {
+    const form = useForm({
+      defaultValues: {
         ...getDefaultEducationalValues(),
         venueId: '1',
         offererId: '1',
         ...initialValues,
-      }}
-      onSubmit={() => {}}
-    >
-      <OfferEducationalForm {...props} />
-    </Formik>,
-    options
-  )
+      },
+      mode: 'onTouched',
+    })
+
+    return (
+      <FormProvider {...form}>
+        <OfferEducationalForm {...props} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<OfferEducationalFormWrapper />, options)
 }
 
 const mockLogEvent = vi.fn()

@@ -1,13 +1,16 @@
-import { useFormikContext } from 'formik'
 import { ChangeEvent, useId } from 'react'
+import { useFormContext } from 'react-hook-form'
 
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import {
+  OfferDatesType,
+  OfferEducationalFormValues,
+} from 'commons/core/OfferEducational/types'
 import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 
 import styles from './FormDates.module.scss'
 
@@ -20,20 +23,25 @@ export const FormDates = ({
   disableForm,
   dateCreated,
 }: FormDatesProps): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<OfferEducationalFormValues>()
+  const { watch, setValue, register, getFieldState } =
+    useFormContext<OfferEducationalFormValues>()
+
+  const beginningDateValue = watch('beginningDate')
 
   const subtitleId = useId()
 
   const minBeginningDate = dateCreated ? new Date(dateCreated) : new Date()
-  const minDateForEndingDate = isDateValid(values.beginningDate)
-    ? new Date(values.beginningDate)
+  const minDateForEndingDate = isDateValid(beginningDateValue)
+    ? new Date(beginningDateValue)
     : new Date()
 
-  async function handleBeginningDateChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleBeginningDateChange(e: ChangeEvent<HTMLInputElement>) {
     const newBeginningDate = e.target.value
+
+    setValue('beginningDate', newBeginningDate)
+
     if (newBeginningDate) {
-      await setFieldValue('endingDate', newBeginningDate)
+      setValue('endingDate', newBeginningDate)
     }
   }
 
@@ -44,9 +52,11 @@ export const FormDates = ({
       </h2>
       <RadioGroup
         disabled={disableForm}
+        checkedOption={watch('datesType')}
         variant="detailed"
-        checkedOption={values.datesType}
-        onChange={(e) => setFieldValue('datesType', e.target.value)}
+        onChange={(e) => {
+          setValue('datesType', e.target.value as OfferDatesType)
+        }}
         group={[
           {
             label: 'Tout au long de l’année scolaire, l’offre est permanente',
@@ -63,23 +73,27 @@ export const FormDates = ({
                 </Callout>
                 <FormLayout.Row className={styles['row-container']}>
                   <DatePicker
-                    name="beginningDate"
                     label="Date de début"
+                    {...register('beginningDate')}
+                    error={getFieldState('beginningDate').error?.message}
                     disabled={disableForm}
                     minDate={minBeginningDate}
                     onChange={handleBeginningDateChange}
+                    required
                   />
                   <DatePicker
-                    name="endingDate"
+                    {...register('endingDate')}
+                    error={getFieldState('endingDate').error?.message}
                     label="Date de fin"
                     disabled={disableForm}
                     minDate={minDateForEndingDate}
+                    required
                   />
                   <TimePicker
-                    name="hour"
+                    {...register('hour')}
+                    error={getFieldState('hour').error?.message}
                     label="Horaire"
                     disabled={disableForm}
-                    isOptional
                   />
                 </FormLayout.Row>
               </>

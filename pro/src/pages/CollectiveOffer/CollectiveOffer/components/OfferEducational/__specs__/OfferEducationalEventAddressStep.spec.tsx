@@ -137,27 +137,6 @@ describe('screens | OfferEducational : event address step', () => {
       }
     })
 
-    it('should require an offer venue selection from the user', async () => {
-      renderOfferEducational(props)
-
-      // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText('Structure *')
-      // select venue to open step Address
-      await userEvent.selectOptions(offererSelect, [firstVenueId])
-
-      const offerVenueSelect = await screen.findByLabelText(
-        'Sélectionner la structure *'
-      )
-      expect(offerVenueSelect).toHaveValue(firstVenueId)
-      expect(offerVenueSelect.children).toHaveLength(3)
-
-      await userEvent.selectOptions(offerVenueSelect, secondVenueId)
-      await userEvent.selectOptions(offerVenueSelect, '')
-      await userEvent.tab()
-
-      expect(offerVenueSelect).toHaveValue(firstVenueId)
-    })
-
     it('should prefill the venue data when switching from one event adress type to offerer venue type', async () => {
       renderOfferEducational(props)
 

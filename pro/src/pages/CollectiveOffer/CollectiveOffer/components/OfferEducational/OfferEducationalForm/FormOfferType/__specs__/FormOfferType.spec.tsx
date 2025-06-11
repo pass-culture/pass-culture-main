@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
@@ -12,22 +12,26 @@ import { FormOfferType, FormTypeProps } from '../FormOfferType'
 
 const mockLogEvent = vi.fn()
 
-const renderFormOfferType = ({
+function renderFormOfferType({
   initialValues,
   props,
 }: {
   initialValues: OfferEducationalFormValues
   props: FormTypeProps
-}) => {
-  return renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={vi.fn()}>
-      {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
-          <FormOfferType {...props} />
-        </form>
-      )}
-    </Formik>
-  )
+}) {
+  function FormOfferTypeWrapper() {
+    const form = useForm({
+      defaultValues: initialValues,
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FormOfferType {...props} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormOfferTypeWrapper />)
 }
 
 describe('FormOfferType', () => {

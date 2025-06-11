@@ -28,7 +28,10 @@ describe('createPatchOfferPayload', () => {
       visual: false,
       none: false,
     },
-    notificationEmails: ['test1@email.com', 'test2@email.com'],
+    notificationEmails: [
+      { email: 'test1@email.com' },
+      { email: 'test2@email.com' },
+    ],
     venueId: 'KM',
     eventAddress: {
       addressType: OfferAddressType.OFFERER_VENUE,
@@ -76,7 +79,10 @@ describe('createPatchOfferPayload', () => {
       visual: true,
       none: true,
     },
-    notificationEmails: ['test3@email.com', 'test4@email.com'],
+    notificationEmails: [
+      { email: 'test3@email.com' },
+      { email: 'test4@email.com' },
+    ],
     venueId: venueId.toString(),
     eventAddress: {
       addressType: OfferAddressType.SCHOOL,

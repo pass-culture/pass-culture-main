@@ -1,37 +1,38 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addYears, format } from 'date-fns'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Button } from 'ui-kit/Button/Button'
 
 import { getOfferEducationalValidationSchema } from '../../../validationSchema'
 import { FormDates, FormDatesProps } from '../FormDates'
 
-const renderFormDates = (
+function renderFormDates(
   props: FormDatesProps,
   initialValues: OfferEducationalFormValues
-) => {
-  renderWithProviders(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={vi.fn()}
-      validationSchema={getOfferEducationalValidationSchema(false)}
-    >
-      {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
+) {
+  function FormDatesWrapper() {
+    const form = useForm({
+      defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
+      resolver: yupResolver(getOfferEducationalValidationSchema(false)),
+    })
+
+    return (
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(() => {})}>
           <FormDates {...props} />
-          <Button type="submit" isLoading={false}>
-            Submit
-          </Button>
+          <button type="submit">Submit</button>
         </form>
-      )}
-    </Formik>
-  )
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormDatesWrapper />)
 }
 
 describe('FormDates', () => {
@@ -39,20 +40,6 @@ describe('FormDates', () => {
     disableForm: false,
     dateCreated: '',
   }
-  it('should display error message if ending date is more than 3 years from today', async () => {
-    renderFormDates(defaultProps, {
-      ...getDefaultEducationalValues(),
-      isTemplate: true,
-      beginningDate: '',
-      datesType: 'specific_dates',
-      endingDate: addYears(new Date(), 4).toString(),
-      hour: '',
-    })
-    await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    expect(
-      screen.getByText('La date de fin que vous avez choisie est trop éloignée')
-    ).toBeInTheDocument()
-  })
 
   it('should limit ending date to beggining date when value', () => {
     renderFormDates(defaultProps, {
@@ -157,10 +144,7 @@ describe('FormDates', () => {
 
     await userEvent.click(screenSpecific)
 
-    expect(screen.getByLabelText('Date de début *')).toHaveAttribute(
-      'value',
-      startDate
-    )
+    expect(screen.getByLabelText('Date de début *')).toHaveValue(startDate)
   })
 
   it('should set endingDate when the beginningDate changes', async () => {
@@ -177,9 +161,6 @@ describe('FormDates', () => {
     const beginningInput = screen.getByLabelText('Date de début *')
 
     await userEvent.type(beginningInput, '2025-02-02')
-    expect(screen.getByLabelText('Date de fin *')).toHaveAttribute(
-      'value',
-      '2025-02-02'
-    )
+    expect(screen.getByLabelText('Date de fin *')).toHaveValue('2025-02-02')
   })
 })

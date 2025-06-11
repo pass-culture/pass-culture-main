@@ -1,5 +1,5 @@
-import { useFormikContext } from 'formik'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
@@ -17,8 +17,8 @@ export const InterventionAreaMultiSelect = ({
   label,
   disabled,
 }: InterventionAreaMultiSelectProps): JSX.Element => {
-  const { setFieldValue, values, setFieldTouched, errors, touched } =
-    useFormikContext<OfferEducationalFormValues>()
+  const { setValue, watch, getFieldState } =
+    useFormContext<OfferEducationalFormValues>()
 
   const handleInterventionAreaChange = useCallback(
     (
@@ -31,10 +31,11 @@ export const InterventionAreaMultiSelect = ({
         addedOptions,
         removedOptions,
       })
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      setFieldValue('interventionArea', Array.from(newSelectedOptions))
+      setValue('interventionArea', Array.from(newSelectedOptions), {
+        shouldValidate: true,
+      })
     },
-    [setFieldValue]
+    [setValue]
   )
 
   return (
@@ -45,22 +46,17 @@ export const InterventionAreaMultiSelect = ({
       buttonLabel="Département(s)"
       options={offerInterventionOptions}
       selectedOptions={offerInterventionOptions.filter((op) =>
-        values.interventionArea.includes(op.id)
+        watch('interventionArea')?.includes(op.id)
       )}
       defaultOptions={offerInterventionOptions.filter((option) =>
-        values.interventionArea.includes(option.id)
+        watch('interventionArea')?.includes(option.id)
       )}
       disabled={disabled}
       hasSearch
       searchLabel="Rechercher un département"
       hasSelectAllOptions
       onSelectedOptionsChanged={handleInterventionAreaChange}
-      onBlur={() => setFieldTouched('interventionArea', true)}
-      error={
-        touched.interventionArea && errors.interventionArea
-          ? String(errors.interventionArea)
-          : undefined
-      }
+      error={getFieldState('interventionArea').error?.message}
       className={styles['intervention-area']}
     />
   )
