@@ -104,6 +104,7 @@ export const RadioButton = forwardRef(
                 onBlur={onBlur}
                 disabled={disabled}
                 name={name}
+                checked={checked}
               />
               <div>
                 {label}
