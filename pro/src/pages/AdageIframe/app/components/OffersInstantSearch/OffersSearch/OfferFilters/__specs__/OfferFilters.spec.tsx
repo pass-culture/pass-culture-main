@@ -2,9 +2,16 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
-import { EacFormat } from 'apiClient/adage'
+import {
+  CollectiveLocationType,
+  EacFormat,
+  OfferAddressType,
+} from 'apiClient/adage'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
@@ -23,7 +30,8 @@ vi.mock('apiClient/api', () => ({
 const renderOfferFilters = (
   initialValues: SearchFormValues,
   localisationFilterState = LocalisationFilterStates.NONE,
-  adageUser = defaultAdageUser
+  adageUser = defaultAdageUser,
+  options?: RenderWithProvidersOptions
 ) =>
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
@@ -39,7 +47,8 @@ const renderOfferFilters = (
           shouldDisplayMarseilleStudentOptions={true}
         />
       </Formik>
-    </AdageUserContextProvider>
+    </AdageUserContextProvider>,
+    options
   )
 
 const initialValues = {
@@ -303,5 +312,111 @@ describe('OfferFilters', () => {
     //  Verify that non-selected options aren't sorted alphabetically
     expect(options[1]).toHaveAccessibleName('Écoles Marseille - Maternelle')
     expect(options[options.length - 1]).toHaveAccessibleName('CAP - 2e année')
+  })
+
+  it('should display all intervention type options', async () => {
+    renderOfferFilters(initialValues)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Type d’intervention' })
+    )
+
+    expect(
+      screen.getByRole('radio', {
+        name: 'Je n’ai pas de préférence (Voir tout)',
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: 'Sortie chez un partenaire culturel' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', {
+        name: 'Intervention d’un partenaire culturel dans mon établissement',
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('should verify radio filter value "Sortie chez un partenaire culturel"', async () => {
+    renderOfferFilters(initialValues)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Type d’intervention' })
+    )
+
+    const radioButton = screen.getByRole('radio', {
+      name: 'Sortie chez un partenaire culturel',
+    })
+
+    expect(radioButton).toHaveAttribute('value', OfferAddressType.OFFERER_VENUE)
+  })
+
+  it('should verify radio filter value is OFFERER_VENUE for "Sortie chez un partenaire culturel"', async () => {
+    renderOfferFilters(initialValues)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Type d’intervention' })
+    )
+
+    const radioButton = screen.getByRole('radio', {
+      name: 'Sortie chez un partenaire culturel',
+    })
+
+    expect(radioButton).toHaveAttribute('value', OfferAddressType.OFFERER_VENUE)
+  })
+
+  it('should verify radio filter value is ADDRESS for "Sortie chez un partenaire culturel" when FF OA is enabled', async () => {
+    renderOfferFilters(
+      initialValues,
+      LocalisationFilterStates.NONE,
+      defaultAdageUser,
+      {
+        features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
+      }
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Type d’intervention' })
+    )
+
+    const radioButton = screen.getByRole('radio', {
+      name: 'Sortie chez un partenaire culturel',
+    })
+
+    expect(radioButton).toHaveAttribute('value', CollectiveLocationType.ADDRESS)
+  })
+
+  it('should verify radio filter value is SCHOOL for "Intervention d’un partenaire culturel dans mon établissement"', async () => {
+    renderOfferFilters(initialValues)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Type d’intervention' })
+    )
+
+    const radioButton = screen.getByRole('radio', {
+      name: 'Intervention d’un partenaire culturel dans mon établissement',
+    })
+
+    expect(radioButton).toHaveAttribute('value', OfferAddressType.SCHOOL)
+  })
+
+  it('should verify radio filter value is SCHOOL for "Intervention d’un partenaire culturel dans mon établissement" when FF OA is enabled', async () => {
+    renderOfferFilters(
+      initialValues,
+      LocalisationFilterStates.NONE,
+      defaultAdageUser,
+      {
+        features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
+      }
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Type d’intervention' })
+    )
+
+    const radioButton = screen.getByRole('radio', {
+      name: 'Intervention d’un partenaire culturel dans mon établissement',
+    })
+
+    expect(radioButton).toHaveAttribute('value', CollectiveLocationType.SCHOOL)
   })
 })

@@ -51,7 +51,7 @@ describe('adageFiltersToFacetFilters', () => {
     })
   })
 
-  it('should return facet filter from form values with oa ff enabled', () => {
+  it('should return locationType in facet filter when oa ff  is enabled', () => {
     expect(
       adageFiltersToFacetFilters({
         domains,
