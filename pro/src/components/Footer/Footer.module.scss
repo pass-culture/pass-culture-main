@@ -50,17 +50,10 @@
 
   .footer-list {
     display: flex;
-    flex-direction: column;
-    white-space: nowrap;
+    flex-flow: row wrap;
     margin: rem.torem(24px);
     gap: 0 rem.torem(16px);
-    justify-content: center;
-    align-items: flex-start;
-
-    @media (min-width: size.$laptop) {
-      flex-flow: row wrap;
-      align-items: center;
-    }
+    justify-content: flex-start;
   }
 
   .footer-list-item {
