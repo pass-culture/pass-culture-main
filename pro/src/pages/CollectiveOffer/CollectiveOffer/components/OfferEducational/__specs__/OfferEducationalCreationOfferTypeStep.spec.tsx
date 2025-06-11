@@ -107,7 +107,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
         await screen.findByLabelText('Domaines artistiques')
       )
 
-      await userEvent.click(await screen.findByLabelText('Formats'))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Enregistrer et continuer' })
+      )
 
       expect(
         screen.getByText('Veuillez renseigner un domaine')
@@ -201,7 +203,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         `${titleMaxLength}/${titleMaxLength}`
       )
 
-      expect(titleInput.getAttribute('value')).toHaveLength(titleMaxLength)
+      expect(titleInput).toHaveValue(title.slice(0, titleMaxLength))
     })
 
     it('should require a description with less than 1500 chars (and truncate longer strings)', async () => {

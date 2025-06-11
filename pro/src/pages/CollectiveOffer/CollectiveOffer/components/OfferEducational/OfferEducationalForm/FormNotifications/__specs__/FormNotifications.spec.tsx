@@ -1,95 +1,71 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
-import * as yup from 'yup'
+import { FormProvider, useForm } from 'react-hook-form'
 
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { emailSchema } from 'commons/utils/isValidEmail'
-import { Button } from 'ui-kit/Button/Button'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormNotifications } from '../FormNotifications'
 
-const renderFormNotifications = (
-  initialValues: Partial<OfferEducationalFormValues>,
-  onSubmit: () => void
-) => {
-  const validationSchema = yup.object().shape({
-    notifications: yup.boolean(),
-    notificationEmail: yup.string().when('notifications', {
-      is: true,
-      then: (schema) =>
-        schema
-          .required('Veuillez renseigner une adresse email')
-          .test(emailSchema),
-    }),
-  })
+function renderFormNotifications(
+  initialValues: Partial<OfferEducationalFormValues> = getDefaultEducationalValues()
+) {
+  function FormNotificationsWrapper() {
+    const form = useForm({
+      defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
+    })
 
-  render(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={validationSchema}
-    >
-      {({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
-          <FormNotifications disableForm={false} />
-          <Button type="submit" isLoading={false}>
-            Submit
-          </Button>
-        </form>
-      )}
-    </Formik>
-  )
+    return (
+      <FormProvider {...form}>
+        <FormNotifications disableForm={false} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormNotificationsWrapper />)
 }
 
 describe('FormNotifications', () => {
   let initialValues: Partial<OfferEducationalFormValues>
-  const onSubmit = vi.fn()
-  beforeEach(() => {
-    initialValues = {
-      notificationEmails: [''],
-    }
-  })
 
   it('should add notification mail input when button is clicked', async () => {
     initialValues = {
-      notificationEmails: ['test@example.com'],
+      notificationEmails: [{ email: 'test@example.com' }],
     }
-    renderFormNotifications(initialValues, onSubmit)
-    const mailInputs = screen.getAllByRole('textbox', {
-      name: 'Email auquel envoyer les notifications *',
-    })
-    const addInputButton = screen.getByRole('button', {
-      name: 'Ajouter un email de notification',
-    })
-    expect(mailInputs.length).toEqual(1)
-    await userEvent.click(addInputButton)
+    renderFormNotifications(initialValues)
 
-    await waitFor(() => {
-      expect(
-        screen.getAllByRole('textbox', {
-          name: 'Email auquel envoyer les notifications *',
-        }).length
-      ).toEqual(2)
-    })
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Ajouter un email de notification',
+      })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Ajouter un email de notification',
+      })
+    )
+
+    expect(screen.getAllByRole('textbox')).toHaveLength(3)
   })
 
   it('should remove notification mail input when trash icon is clicked', async () => {
     initialValues = {
-      notificationEmails: ['test@example.com', 'test2@example.com'],
+      notificationEmails: [
+        { email: 'test@example.com' },
+        { email: 'test2@example.com' },
+      ],
     }
-    renderFormNotifications(initialValues, onSubmit)
-    let mailInputs = screen.getAllByRole('textbox', {
-      name: 'Email auquel envoyer les notifications *',
-    })
+    renderFormNotifications(initialValues)
+
     const removeInputIcon = screen.getByRole('button', {
       name: 'Supprimer l’email',
     })
-    expect(mailInputs.length).toEqual(2)
+    expect(screen.getAllByRole('textbox')).toHaveLength(2)
     await userEvent.click(removeInputIcon)
-    mailInputs = screen.getAllByRole('textbox', {
-      name: 'Email auquel envoyer les notifications *',
-    })
-    expect(mailInputs.length).toEqual(1)
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
   })
 })

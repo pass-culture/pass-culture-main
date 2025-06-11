@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import {
@@ -70,18 +70,26 @@ const initialValues: Pick<
   interventionArea: [],
 }
 
-const renderFormLocation = (
+function renderFormLocation(
   props: FormLocationProps,
   initialValues: Pick<
     OfferEducationalFormValues,
     'location' | 'venueId' | 'interventionArea'
   >
-) => {
-  renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
-      <FormLocation {...props} />
-    </Formik>
-  )
+) {
+  function FormLocationWrapper() {
+    const form = useForm({
+      defaultValues: initialValues,
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FormLocation {...props} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormLocationWrapper />)
 }
 
 describe('FormLocation', () => {
@@ -176,7 +184,7 @@ describe('FormLocation', () => {
       location: {
         ...initialValues.location,
         address: {
-          ...initialValues.location.address,
+          ...initialValues.location?.address,
           id_oa: 'SPECIFIC_ADDRESS',
           isManualEdition: true,
           isVenueAddress: false,
@@ -186,9 +194,7 @@ describe('FormLocation', () => {
     })
 
     const labelInput = screen.getByLabelText('Intitulé de la localisation')
-    const addressAutocompleteInput = screen.getByLabelText(/Adresse postale/, {
-      selector: '#search-addressAutocomplete',
-    })
+
     const addressInput = screen.getByLabelText(/Adresse postale/, {
       selector: '#street',
     })
@@ -196,7 +202,6 @@ describe('FormLocation', () => {
     const postalCodeInput = screen.getByLabelText(/Code postal/)
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
 
-    expect(addressAutocompleteInput).toBeDisabled()
     expect(labelInput).toHaveValue('mon adresse manuelle')
     expect(addressInput).toHaveValue('1 Rue de Paris')
     expect(cityInput).toHaveValue('Paris')
@@ -212,7 +217,7 @@ describe('FormLocation', () => {
         location: {
           ...initialValues.location,
           address: {
-            ...initialValues.location.address,
+            ...initialValues.location?.address,
             id_oa: 'SPECIFIC_ADDRESS',
             isManualEdition: true,
           },
@@ -245,7 +250,7 @@ describe('FormLocation', () => {
       location: {
         ...initialValues.location,
         address: {
-          ...initialValues.location.address,
+          ...initialValues.location?.address,
           id_oa: 'SPECIFIC_ADDRESS',
         },
       },
@@ -257,9 +262,6 @@ describe('FormLocation', () => {
 
     await userEvent.click(showManualAddressFormButton)
 
-    const addressAutocompleteInput = screen.getByLabelText(/Adresse postale/, {
-      selector: '#search-addressAutocomplete',
-    })
     const addressInput = screen.getByLabelText(/Adresse postale/, {
       selector: '#street',
     })
@@ -267,7 +269,6 @@ describe('FormLocation', () => {
     const postalCodeInput = screen.getByLabelText(/Code postal/)
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
 
-    expect(addressAutocompleteInput).toBeDisabled()
     expect(addressInput).toBeInTheDocument()
     expect(cityInput).toBeInTheDocument()
     expect(postalCodeInput).toBeInTheDocument()
@@ -321,9 +322,27 @@ describe('FormLocation', () => {
       interventionArea: ['44'],
     })
 
-    const departmentTag = screen.getByText('44 - Loire-Atlantique')
-    expect(departmentTag).toBeInTheDocument()
+    expect(screen.getByText('44 - Loire-Atlantique')).toBeInTheDocument()
 
-    expect(screen.getByText('quelque part')).toBeInTheDocument()
+    expect(screen.getByLabelText('Commentaire')).toHaveValue('quelque part')
+  })
+
+  it('should set the venue address fields when the type of location is address', async () => {
+    renderFormLocation(props, initialValues)
+
+    await userEvent.click(screen.getByLabelText('En établissement scolaire'))
+
+    await userEvent.click(screen.getByText('À une adresse précise'))
+
+    await userEvent.click(screen.getByText('Autre adresse'))
+
+    await userEvent.click(
+      screen.getByText('Vous ne trouvez pas votre adresse ?')
+    )
+
+    expect(screen.getByLabelText('Ville *')).toHaveValue(
+      props.venues.find((v) => v.id === Number(initialValues.venueId))?.address
+        ?.city
+    )
   })
 })

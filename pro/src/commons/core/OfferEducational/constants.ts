@@ -52,7 +52,7 @@ export function getDefaultEducationalValues(
       mental: false,
       none: false,
     },
-    notificationEmails: [''],
+    notificationEmails: [{ email: '' }],
     domains: [],
     'search-domains': '',
     'search-formats': '',

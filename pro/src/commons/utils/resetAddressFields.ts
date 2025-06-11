@@ -1,5 +1,7 @@
 import { type FormikContextType } from 'formik'
+import { UseFormResetField } from 'react-hook-form'
 
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { AddressFormValues } from 'commons/core/shared/types'
 
 const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
@@ -32,5 +34,15 @@ export const resetAddressFields = async <FormValues>({
     [...fieldsNames.keys()].map((fieldName) =>
       formik.setFieldTouched(fieldName, false)
     )
+  )
+}
+
+export function resetReactHookFormAddressFields({
+  resetField,
+}: {
+  resetField: UseFormResetField<OfferEducationalFormValues>
+}) {
+  ;[...fieldsNames.entries()].map(([fieldName, defaultValue]) =>
+    resetField(fieldName, { defaultValue: defaultValue })
   )
 }

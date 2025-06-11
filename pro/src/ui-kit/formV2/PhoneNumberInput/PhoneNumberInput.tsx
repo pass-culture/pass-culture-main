@@ -200,7 +200,7 @@ PhoneNumberInput.displayName = 'PhoneNumberInput'
  * // returns { prefix: "+33", phoneNumber: "612345678" }
  * extractPhoneParts("+33612345678")
  */
-const extractPhoneParts = (fullNumber: string) => {
+export const extractPhoneParts = (fullNumber: string) => {
   const prefixes = PHONE_CODE_COUNTRY_CODE_OPTIONS.map((o) => o.value)
   const foundPrefix = prefixes.find((p) => fullNumber.startsWith(p))
 

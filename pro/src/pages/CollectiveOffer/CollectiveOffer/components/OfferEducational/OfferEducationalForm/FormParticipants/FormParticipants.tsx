@@ -1,5 +1,5 @@
-import { useFormikContext } from 'formik'
 import { ChangeEvent, useRef } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { StudentLevels } from 'apiClient/adage'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
@@ -17,17 +17,17 @@ export const FormParticipants = ({
   disableForm: boolean
 }): JSX.Element => {
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
-  const { setFieldValue, values, getFieldProps, getFieldMeta } =
-    useFormikContext<OfferEducationalFormValues>()
+  const { setValue, watch, getFieldState, trigger } =
+    useFormContext<OfferEducationalFormValues>()
 
   const collegeRef = useRef<HTMLInputElement>(null)
   const lyceeRef = useRef<HTMLInputElement>(null)
   const marseilleRef = useRef<HTMLInputElement>(null)
 
-  const defaultPartipantsOptions = Object.values(StudentLevels).map(
-    (studentLevel) => ({
+  const defaultPartipantsOptions = Object.entries(StudentLevels).map(
+    ([, studentLevel]) => ({
       label: studentLevelsLabels[studentLevel],
-      name: `participants.${studentLevel}`,
+      name: studentLevel,
     })
   )
 
@@ -39,7 +39,7 @@ export const FormParticipants = ({
   ) => {
     const levelValues = Object.keys(values.participants).filter((v) =>
       levelPrefixes.some((prefix) => v.startsWith(prefix))
-    )
+    ) as (keyof OfferEducationalFormValues['participants'])[]
 
     const levelCheckedValues = Object.entries(values.participants)
       .filter(([key]) => levelPrefixes.some((prefix) => key.startsWith(prefix)))
@@ -55,11 +55,15 @@ export const FormParticipants = ({
       checked: levelCheckedValues.length > 0,
       indeterminate: partiallyChecked,
       ref: ref,
-      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      onChange: async (event: ChangeEvent<HTMLInputElement>) => {
         for (const level of levelValues) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          setFieldValue(`participants.${level}`, event.target.checked)
+          setValue(
+            `participants.${level}` as keyof OfferEducationalFormValues,
+            event.target.checked
+          )
         }
+
+        await trigger('participants')
       },
       collapsed: (
         <CheckboxGroup
@@ -67,17 +71,18 @@ export const FormParticipants = ({
           legend="Choisissez des niveaux scolaires"
           group={defaultPartipantsOptions
             .filter((option) =>
-              levelPrefixes.some((prefix) =>
-                option.name.startsWith(`participants.${prefix}`)
-              )
+              levelPrefixes.some((prefix) => option.name.startsWith(prefix))
             )
             .map((option) => {
+              const name = option.name as StudentLevels
               return {
                 ...option,
-                checked: getFieldProps(option.name).value,
+                checked: Boolean(watch('participants')[name]),
                 onChange: (e) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  setFieldValue(option.name, e.target.checked)
+                  setValue(
+                    `participants.${name}` as keyof OfferEducationalFormValues,
+                    e.target.checked
+                  )
 
                   if (!e.target.checked && levelCheckedValues.length === 1) {
                     //  Refocus the parent checkbox when the last checkbox of the group is unchecked
@@ -94,19 +99,19 @@ export const FormParticipants = ({
   }
 
   const collegeGroup = getCheckboxroupForLevel(
-    values,
+    watch(),
     ['Collège'],
     'Collège',
     collegeRef
   )
   const lyceeGroup = getCheckboxroupForLevel(
-    values,
+    watch(),
     ['Lycée', 'CAP'],
     'Lycée',
     lyceeRef
   )
   const marseilleGroup = getCheckboxroupForLevel(
-    values,
+    watch(),
     ['Écoles Marseille'],
     'Projet Marseille en Grand - École innovante',
     marseilleRef
@@ -138,11 +143,7 @@ export const FormParticipants = ({
           name="participants"
           disabled={disableForm}
           group={studentLevelsOptions}
-          error={
-            getFieldMeta('participants').touched
-              ? getFieldMeta('participants').error
-              : undefined
-          }
+          error={getFieldState('participants').error?.message}
         />
       </FormLayout.Row>
     </div>

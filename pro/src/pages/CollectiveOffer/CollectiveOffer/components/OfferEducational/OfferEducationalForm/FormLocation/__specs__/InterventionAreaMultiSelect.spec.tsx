@@ -1,24 +1,38 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { mainlandOptions } from 'commons/core/shared/interventionOptions'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { InterventionAreaMultiSelect } from '../InterventionAreaMultiSelect'
 
+function renderInterventionAreaMultiSelect(
+  initialValues: Partial<OfferEducationalFormValues> = getDefaultEducationalValues()
+) {
+  function InterventionAreaMultiSelectWrapper() {
+    const form = useForm({
+      defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
+    })
+
+    return (
+      <FormProvider {...form}>
+        <InterventionAreaMultiSelect
+          disabled={false}
+          label="sélectionnez des départements"
+        />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<InterventionAreaMultiSelectWrapper />)
+}
+
 describe('InterventionAreaMultiSelect', () => {
   it('should render correctly', () => {
-    render(
-      <Formik
-        initialValues={{ interventionArea: ['75', '44'] }}
-        onSubmit={() => {}}
-      >
-        <InterventionAreaMultiSelect
-          label="sélectionnez des départements"
-          disabled={false}
-        />
-      </Formik>
-    )
+    renderInterventionAreaMultiSelect({ interventionArea: ['75', '44'] })
 
     expect(screen.getByText('sélectionnez des départements *'))
     expect(screen.getByText('2'))
@@ -28,14 +42,7 @@ describe('InterventionAreaMultiSelect', () => {
   })
 
   it('should check all mainland departments when checking mainland', async () => {
-    render(
-      <Formik initialValues={{ interventionArea: [] }} onSubmit={() => {}}>
-        <InterventionAreaMultiSelect
-          label="sélectionnez des départements"
-          disabled={false}
-        />
-      </Formik>
-    )
+    renderInterventionAreaMultiSelect({ interventionArea: [] })
 
     const departmentButton = screen.getByLabelText('Département(s)')
     await userEvent.click(departmentButton)
@@ -52,23 +59,12 @@ describe('InterventionAreaMultiSelect', () => {
   })
 
   it('should uncheck mainland option when a department is unchecked', async () => {
-    render(
-      <Formik
-        initialValues={{
-          interventionArea: [
-            ...mainlandOptions.map((value) => value.id),
-            'mainland',
-          ],
-        }}
-        onSubmit={() => {}}
-      >
-        <InterventionAreaMultiSelect
-          label="sélectionnez des départements"
-          disabled={false}
-        />
-      </Formik>
-    )
-
+    renderInterventionAreaMultiSelect({
+      interventionArea: [
+        ...mainlandOptions.map((value) => value.id),
+        'mainland',
+      ],
+    })
     const departmentButton = screen.getByLabelText('Département(s)')
     await userEvent.click(departmentButton)
 

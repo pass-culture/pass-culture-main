@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import classNames from 'classnames'
 import React, {
   ForwardedRef,
   forwardRef,
@@ -176,15 +177,20 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     return (
       <div className={className}>
-        <div className={styles['input-layout-label-container']}>
-          <label className={styles['input-layout-label']} htmlFor={fieldId}>
+        <div>
+          <label
+            className={classNames(styles['label'], {
+              [styles['has-description']]: Boolean(description),
+            })}
+            htmlFor={fieldId}
+          >
             {label} {required && asterisk && '*'}
           </label>
           {description && (
             <span
               id={descriptionId}
               data-testid={`description-${name}`}
-              className={styles['input-layout-input-description']}
+              className={styles['description']}
             >
               {description}
             </span>
@@ -234,7 +240,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             </Button>
           )}
         </div>
-        <div className={styles['input-layout-footer']}>
+        <div className={styles['footer']}>
           <div role="alert" className={styles['error']} id={errorId}>
             {error && <FieldError name={name}>{error}</FieldError>}
           </div>

@@ -93,8 +93,10 @@ describe('<MultiSelect />', () => {
 
     await userEvent.click(selectAllCheckbox)
 
-     options.forEach(async (option) => {
-      await waitFor(() => expect(screen.getByLabelText(option.label)).toBeChecked())
+    options.forEach(async (option) => {
+      await waitFor(() =>
+        expect(screen.getByLabelText(option.label)).toBeChecked()
+      )
     })
   })
 

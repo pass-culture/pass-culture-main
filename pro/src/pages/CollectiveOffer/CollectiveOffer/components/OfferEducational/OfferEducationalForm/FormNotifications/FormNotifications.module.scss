@@ -3,3 +3,9 @@
 .add-notification-button {
   margin-bottom: rem.torem(24px);
 }
+
+.emails {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+}

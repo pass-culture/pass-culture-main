@@ -1,5 +1,5 @@
-import { useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import {
   CollectiveOfferAllowedAction,
@@ -26,7 +26,7 @@ import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -86,8 +86,8 @@ export const OfferEducationalForm = ({
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
 
-  const { setFieldValue, initialValues, dirty, values } =
-    useFormikContext<OfferEducationalFormValues>()
+  const { setValue, formState, watch } =
+    useFormContext<OfferEducationalFormValues>()
 
   const { data: selectedOfferer } = useOfferer(userOfferer?.id)
 
@@ -101,7 +101,7 @@ export const OfferEducationalForm = ({
     )
 
   useEffect(() => {
-    async function handleOffererValues() {
+    function handleOffererValues() {
       if (userOfferer) {
         if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
           setIsEligible(true)
@@ -124,9 +124,9 @@ export const OfferEducationalForm = ({
         }
         setVenuesOptions(newVenuesOptions)
         if (newVenuesOptions.length === 1) {
-          await setFieldValue('venueId', newVenuesOptions[0].value)
+          setValue('venueId', newVenuesOptions[0].value)
         } else {
-          await setFieldValue('venueId', initialValues.venueId)
+          setValue('venueId', formState.defaultValues?.venueId || '')
         }
       } else {
         setIsEligible(false)
@@ -151,7 +151,8 @@ export const OfferEducationalForm = ({
 
   return (
     <>
-      <ScrollToFirstErrorAfterSubmit />
+      <ScrollToFirstHookFormErrorAfterSubmit />
+
       <FormLayout className={styles['educational-form']} fullWidthActions>
         {isCollectiveOffer(offer) && offer.isPublicApi && (
           <BannerPublicApi className={styles['banner-space']}>
@@ -177,7 +178,7 @@ export const OfferEducationalForm = ({
                 venues={venues}
               />
             )}
-            {values.offererId && values.venueId && isEligible ? (
+            {watch('offererId') && watch('venueId') && isEligible ? (
               <>
                 <FormOfferType
                   domainsOptions={domainsOptions}
@@ -234,7 +235,10 @@ export const OfferEducationalForm = ({
             Annuler et quitter
           </ButtonLink>
         </ActionsBarSticky.Left>
-        <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>
+        <ActionsBarSticky.Right
+          dirtyForm={formState.isDirty || !offer}
+          mode={mode}
+        >
           <Button
             type="submit"
             disabled={!isEligible || !canEditDetails || isSubmitting}

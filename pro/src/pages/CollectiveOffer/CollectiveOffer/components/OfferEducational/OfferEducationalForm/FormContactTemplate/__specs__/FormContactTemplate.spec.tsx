@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
@@ -8,22 +8,27 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormContactTemplate } from '../FormContactTemplate'
 
-function renderFormContact(
+function renderFormContactTemplate(
   initialValues: Partial<OfferEducationalFormValues> = getDefaultEducationalValues()
 ) {
-  return renderWithProviders(
-    <Formik
-      initialValues={{ ...getDefaultEducationalValues(), ...initialValues }}
-      onSubmit={() => {}}
-    >
-      <FormContactTemplate disableForm={false} />
-    </Formik>
-  )
+  function FormContactTemplateWrapper() {
+    const form = useForm({
+      defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FormContactTemplate disableForm={false} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormContactTemplateWrapper />)
 }
 
 describe('FormContactTemplate', () => {
   it('should show the email form when the contact email checkbox is checked', async () => {
-    renderFormContact({ isTemplate: true })
+    renderFormContactTemplate({ isTemplate: true })
     expect(
       screen.queryByRole('textbox', {
         name: 'Email de contact',
@@ -35,13 +40,13 @@ describe('FormContactTemplate', () => {
 
     expect(
       screen.getByRole('textbox', {
-        name: 'Adresse email',
+        name: 'Adresse email *',
       })
     ).toBeInTheDocument()
   })
 
   it('should show the phone form when the contact phone checkbox is checked', async () => {
-    renderFormContact({ isTemplate: true })
+    renderFormContactTemplate({ isTemplate: true })
     expect(screen.queryByText('Numéro de téléphone')).not.toBeInTheDocument()
 
     const phoneCheckbox = screen.getByRole('checkbox', {
@@ -55,7 +60,7 @@ describe('FormContactTemplate', () => {
   })
 
   it('should show the custom contact form when the custom contact checkbox is checked', async () => {
-    renderFormContact({ isTemplate: true })
+    renderFormContactTemplate({ isTemplate: true })
     expect(screen.queryByText('mon propre formulaire')).not.toBeInTheDocument()
 
     const customContactCheckbox = screen.getByRole('checkbox', {

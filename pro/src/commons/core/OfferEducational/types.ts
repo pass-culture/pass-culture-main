@@ -18,16 +18,16 @@ export type OfferDatesType = 'permanent' | 'specific_dates'
 export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   title: string
   description: string
-  duration: string
+  duration?: string
   offererId: string
   venueId: string
   eventAddress: {
-    addressType: OfferAddressType
-    otherAddress: string
-    venueId: number | null
+    addressType?: OfferAddressType
+    otherAddress?: string
+    venueId?: number | null
   }
-  location: {
-    locationType: CollectiveLocationType
+  location?: {
+    locationType?: CollectiveLocationType
     address?: {
       id_oa?: string
       isManualEdition?: boolean
@@ -36,9 +36,9 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
     }
     locationComment?: string | null
   }
-  interventionArea: string[]
+  interventionArea?: string[]
   participants: {
-    [K in StudentLevels]: boolean
+    [K in StudentLevels]?: boolean
   }
   accessibility: AccessibilityFormValues
   phone?: string
@@ -46,8 +46,8 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   contactFormType?: 'form' | 'url'
   contactUrl?: string | null
   contactOptions?: { phone: boolean; email: boolean; form: boolean }
-  notificationEmails?: string[]
-  domains: string[]
+  notificationEmails?: { email: string }[]
+  domains?: string[]
   'search-domains'?: string
   'search-interventionArea'?: string
   'search-formats'?: string

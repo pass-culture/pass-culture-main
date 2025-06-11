@@ -8,13 +8,12 @@
 }
 
 .educational-form .educational-form-adress-banner {
-  margin: 0 0 rem.torem(8px) 0;
+  margin-top: rem.torem(8px);
 }
 
 .educational-form-adress-banner {
   padding: rem.torem(16px);
   background: var(--color-background-subtle);
-  color: var(--color-text-subtle);
   border-radius: rem.torem(8px);
   word-break: break-word;
 }
@@ -38,6 +37,12 @@
   gap: rem.torem(36px);
 }
 
+.title,
+.description,
+.price-detail {
+  margin-bottom: rem.torem(16px);
+}
+
 .info-box-children {
   margin-left: 16px;
 }
@@ -56,6 +61,12 @@
   @include fonts.body;
 }
 
-.intervention-area {
-  margin-top: rem.torem(16px);
+.specific-address {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+
+  &-search {
+    margin-bottom: 0;
+  }
 }

@@ -1,9 +1,9 @@
-import { useField, useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 
@@ -14,17 +14,15 @@ type FormContactTemplateCustomFormProps = {
 export const FormContactTemplateCustomForm = ({
   disableForm,
 }: FormContactTemplateCustomFormProps) => {
-  const [formType] = useField('contactFormType')
-  const { handleChange } = useFormikContext()
+  const { watch, setValue, register, getFieldState } = useFormContext()
   return (
     <div className={styles['contact-checkbox-inner-control']}>
       <RadioGroup
         name="contactFormType"
-        legend="Choisissez un type de formulaire"
+        legend="Choisissez un type de formulaire *"
         disabled={disableForm}
-        checkedOption={formType.value}
-        variant="detailed"
-        onChange={handleChange}
+        checkedOption={watch('contactFormType')}
+        onChange={(e) => setValue('contactFormType', e.target.value)}
         group={[
           {
             label: 'le formulaire standard',
@@ -47,8 +45,9 @@ export const FormContactTemplateCustomForm = ({
             collapsed: (
               <TextInput
                 label="URL de mon formulaire de contact"
-                isOptional
-                name="contactUrl"
+                required
+                {...register('contactUrl')}
+                error={getFieldState('contactUrl').error?.message}
                 disabled={disableForm}
                 description="Format : https://exemple.com"
                 className={styles['custom-form-radio-input-control']}

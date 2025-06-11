@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
@@ -10,14 +10,19 @@ import { FormContact } from '../FormContact'
 function renderFormContact(
   initialValues: Partial<OfferEducationalFormValues> = getDefaultEducationalValues()
 ) {
-  return renderWithProviders(
-    <Formik
-      initialValues={{ ...getDefaultEducationalValues(), ...initialValues }}
-      onSubmit={() => {}}
-    >
-      <FormContact disableForm={false} />
-    </Formik>
-  )
+  function FormContactWrapper() {
+    const form = useForm({
+      defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FormContact disableForm={false} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormContactWrapper />)
 }
 
 describe('FormContact', () => {

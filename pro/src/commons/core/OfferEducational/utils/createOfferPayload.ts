@@ -58,7 +58,7 @@ const getCommonOfferPayload = (
   isCollectiveOaActive: boolean
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel => {
   // remove id_oa key from location object as it useful only on a form matter
-  delete offer.location.address?.id_oa
+  delete offer.location?.address?.id_oa
 
   const getLocationPayload = () => {
     if (!isCollectiveOaActive) {
@@ -70,7 +70,7 @@ const getCommonOfferPayload = (
       }
     }
 
-    if (offer.location.locationType === CollectiveLocationType.ADDRESS) {
+    if (offer.location?.locationType === CollectiveLocationType.ADDRESS) {
       return {
         location: {
           locationType: CollectiveLocationType.ADDRESS,
@@ -88,7 +88,7 @@ const getCommonOfferPayload = (
       }
     }
 
-    if (offer.location.locationType === CollectiveLocationType.TO_BE_DEFINED) {
+    if (offer.location?.locationType === CollectiveLocationType.TO_BE_DEFINED) {
       return {
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
@@ -109,7 +109,7 @@ const getCommonOfferPayload = (
         : offer.interventionArea
     }
 
-    return offer.location.locationType !== CollectiveLocationType.ADDRESS
+    return offer.location?.locationType !== CollectiveLocationType.ADDRESS
       ? offer.interventionArea
       : []
   }
@@ -117,19 +117,23 @@ const getCommonOfferPayload = (
   return {
     venueId: Number(offer.venueId),
     name: offer.title,
-    bookingEmails: offer.notificationEmails ?? [''],
+    bookingEmails: offer.notificationEmails?.map((email) => email.email) ?? [
+      '',
+    ],
     description: offer.description,
-    durationMinutes: parseDuration(offer.duration),
+    durationMinutes: offer.duration ? parseDuration(offer.duration) : undefined,
     ...disabilityCompliances(offer.accessibility),
     students: serializeParticipants(offer.participants),
     ...getLocationPayload(),
-    domains: offer.domains.map((domainIdString) => Number(domainIdString)),
+    domains: (offer.domains || []).map((domainIdString) =>
+      Number(domainIdString)
+    ),
     interventionArea: getInterventionArea(),
     nationalProgramId: offer.nationalProgramId
       ? Number(offer.nationalProgramId)
       : null,
     formats: offer.formats,
-  }
+  } as PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel
 }
 
 export const createCollectiveOfferTemplatePayload = (

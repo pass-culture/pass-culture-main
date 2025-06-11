@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/react'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { OfferAddressType } from 'apiClient/v1'
+import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import {
   getOfferManagingOffererFactory,
@@ -18,18 +19,26 @@ import {
   FormPracticalInformationProps,
 } from '../FormPracticalInformation'
 
-const renderFormPracticalInformation = (
+function renderFormPracticalInformation(
   props: FormPracticalInformationProps,
   initialValues: Pick<
     OfferEducationalFormValues,
     'eventAddress' | 'priceDetail' | 'interventionArea'
   >
-) => {
-  renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
-      <FormPracticalInformation {...props} />
-    </Formik>
-  )
+) {
+  function FormPracticalInformationWrapper() {
+    const form = useForm({
+      defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FormPracticalInformation {...props} />
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormPracticalInformationWrapper />)
 }
 
 describe('FormPracticalInformation', () => {
@@ -112,9 +121,7 @@ describe('FormPracticalInformation', () => {
       })
       expect(textarea).toBeInTheDocument()
       expect(textarea).toHaveValue('A la mairie')
-      expect(
-        screen.queryByLabelText('Département(s)')
-      ).toBeInTheDocument()
+      expect(screen.queryByLabelText('Département(s)')).toBeInTheDocument()
     })
 
     it('should render only mobility zone when school is selected', () => {
@@ -131,9 +138,7 @@ describe('FormPracticalInformation', () => {
         name: 'Adresse de l’évènement *',
       })
       expect(textarea).not.toBeInTheDocument()
-      expect(
-        screen.queryByLabelText('Département(s)')
-      ).toBeInTheDocument()
+      expect(screen.queryByLabelText('Département(s)')).toBeInTheDocument()
     })
   })
 })

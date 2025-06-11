@@ -2,7 +2,11 @@ import { addYears, isBefore } from 'date-fns'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
+import {
+  CollectiveLocationType,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/v1'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
@@ -14,6 +18,7 @@ import {
 import { checkCoords } from 'commons/utils/coords'
 import { toDateStrippedOfTimezone } from 'commons/utils/date'
 import { emailSchema } from 'commons/utils/isValidEmail'
+import { extractPhoneParts } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
 
 const threeYearsFromNow = addYears(new Date(), 3)
 
@@ -21,7 +26,7 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
 const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone) {
+  if (!phone || !extractPhoneParts(phone).phoneNumber) {
     return true
   }
 
@@ -36,10 +41,11 @@ const isNotEmpty = (description: string | undefined): boolean =>
 export function getOfferEducationalValidationSchema(
   isCollectiveOaActive: boolean
 ) {
-  return yup.object().shape({
+  return yup.object<OfferEducationalFormValues>().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
       .string()
+      .required('Veuillez renseigner une description')
       .test({
         name: 'is-not-empty',
         message: 'Veuillez renseigner une description',
@@ -49,8 +55,8 @@ export function getOfferEducationalValidationSchema(
     duration: yup
       .string()
       .matches(
-        /[0-9]{1,2}:[0-5][0-9]/,
-        'Veuillez renseigner une durée en heures au format hh:mm. Exemple: 1:30'
+        /^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$/,
+        'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
       ),
     offererId: yup
       .string()
@@ -93,49 +99,46 @@ export function getOfferEducationalValidationSchema(
             }
           )
       : yup.mixed(),
-    ...(isCollectiveOaActive && addressValidationSchema),
     eventAddress: isCollectiveOaActive
-      ? yup.mixed()
-      : yup.object().shape({
-          addressType: yup
-            .string()
-            .oneOf([
-              OfferAddressType.OFFERER_VENUE,
-              OfferAddressType.OTHER,
-              OfferAddressType.SCHOOL,
-            ]),
-          otherAddress: yup.string().when('addressType', {
-            is: OfferAddressType.OTHER,
-            then: (schema) =>
-              schema.required('Veuillez renseigner une adresse'),
-          }),
-          venueId: yup
-            .number()
-            .nullable()
-            .when('addressType', {
-              is: OfferAddressType.OFFERER_VENUE,
+      ? yup.mixed().required()
+      : yup
+          .object()
+          .required()
+          .shape({
+            addressType: yup.string<OfferAddressType>().required(),
+            otherAddress: yup.string().when('addressType', {
+              is: OfferAddressType.OTHER,
               then: (schema) =>
-                schema.required('Veuillez sélectionner un lieu'),
+                schema.required('Veuillez renseigner une adresse'),
             }),
-        }),
-    participants: yup.object().test({
+            venueId: yup
+              .number()
+              .nullable()
+              .when('addressType', {
+                is: OfferAddressType.OFFERER_VENUE,
+                then: (schema) =>
+                  schema.required('Veuillez sélectionner un lieu'),
+              }),
+          }),
+    participants: yup.object<{ [key in StudentLevels]: boolean }>().test({
       name: 'is-one-true',
       message: 'Veuillez sélectionner au moins un niveau scolaire',
       test: isOneTrue,
     }),
     accessibility: yup
       .object()
+      .required('Veuillez sélectionner au moins un critère d’accessibilité')
       .test({
         name: 'is-one-true',
         message: 'Veuillez sélectionner au moins un critère d’accessibilité',
         test: isOneTrue,
       })
       .shape({
-        mental: yup.boolean(),
-        audio: yup.boolean(),
-        visual: yup.boolean(),
-        motor: yup.boolean(),
-        none: yup.boolean(),
+        mental: yup.boolean().required(),
+        audio: yup.boolean().required(),
+        visual: yup.boolean().required(),
+        motor: yup.boolean().required(),
+        none: yup.boolean().required(),
       }),
     phone: yup
       .string()
@@ -163,35 +166,54 @@ export function getOfferEducationalValidationSchema(
           .required('Veuillez renseigner une adresse email')
           .test(emailSchema),
     }),
-    contactUrl: yup.string().when(['contactOptions', 'contactFormType'], {
-      is: (
-        contactOptions: OfferEducationalFormValues['contactOptions'],
-        contactFormType: OfferEducationalFormValues['contactFormType']
-      ) => contactOptions?.form && contactFormType === 'url',
-      then: (schema) =>
-        schema
-          .required('Veuillez renseigner une URL de contact')
-          .url(
-            'Veuillez renseigner une URL valide, exemple : https://mon-formulaire.fr'
-          ),
-    }),
-    contactOptions: yup.object().when('isTemplate', {
-      is: (isTemplate: boolean) => isTemplate,
-      then: (schema) =>
-        schema.required().test({
-          name: 'is-one-true',
-          message: 'Veuillez sélectionner au moins un moyen de contact',
-          test: isOneTrue,
-        }),
-    }),
-    notificationEmails: yup
-      .array()
-      .of(
-        yup
+    contactUrl: yup
+      .string()
+      .nullable()
+      .when(['contactOptions', 'contactFormType'], {
+        is: (
+          contactOptions: OfferEducationalFormValues['contactOptions'],
+          contactFormType: OfferEducationalFormValues['contactFormType']
+        ) => contactOptions?.form && contactFormType === 'url',
+        then: (schema) =>
+          schema
+            .required('Veuillez renseigner une URL de contact')
+            .url(
+              'Veuillez renseigner une URL valide, exemple : https://mon-formulaire.fr'
+            ),
+      }),
+    contactFormType: yup.string<'form' | 'url'>(),
+    imageUrl: yup.string(),
+    imageCredit: yup.string(),
+    nationalProgramId: yup.string(),
+    isTemplate: yup.boolean().required(),
+    datesType: yup.string<OfferDatesType>(),
+    hour: yup.string(),
+    contactOptions: yup
+      .object()
+      .notRequired()
+      .nonNullable()
+      .shape({
+        email: yup.boolean().required(),
+        phone: yup.boolean().required(),
+        form: yup.boolean().required(),
+      })
+      .when('isTemplate', {
+        is: (isTemplate: boolean) => isTemplate,
+        then: (schema) =>
+          schema.required().test({
+            name: 'is-one-true',
+            message: 'Veuillez sélectionner au moins un moyen de contact',
+            test: isOneTrue,
+          }),
+      }),
+    notificationEmails: yup.array().of(
+      yup.object().shape({
+        email: yup
           .string()
           .required('Veuillez renseigner une adresse email')
-          .test(emailSchema)
-      ),
+          .test(emailSchema),
+      })
+    ),
     domains: yup.array().test({
       message: 'Veuillez renseigner un domaine',
       test: (domains) => Boolean(domains?.length && domains.length > 0),
@@ -203,10 +225,13 @@ export function getOfferEducationalValidationSchema(
         test: () => domains.length > 0,
       })
     ),
-    formats: yup.array().test({
-      message: 'Veuillez renseigner un format',
-      test: (format) => Boolean(format?.length && format.length > 0),
-    }),
+    formats: yup
+      .array()
+      .required()
+      .test({
+        message: 'Veuillez renseigner un format',
+        test: (format) => format.length > 0,
+      }),
     'search-formats': yup.string().when('formats', (format, schema) =>
       schema.test({
         name: 'search-formats-invalid',
@@ -265,48 +290,51 @@ export function getOfferEducationalValidationSchema(
             }
           ),
     }),
+    'search-addressAutocomplete': yup.string(),
+    street: yup
+      .string()
+      .nullable()
+      .trim()
+      .when(['location.locationType', 'location.address.isManualEdition'], {
+        is: (locationType: string, isManualEdition: boolean) =>
+          locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+        then: (schema) =>
+          schema.required('Veuillez renseigner une adresse postale'),
+      }),
+    postalCode: yup
+      .string()
+      .trim()
+      .when(['location.locationType', 'location.address.isManualEdition'], {
+        is: (locationType: string, isManualEdition: boolean) =>
+          locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+        then: (schema) => schema.required('Veuillez renseigner un code postal'),
+      })
+      .min(5, 'Veuillez renseigner un code postal valide')
+      .max(5, 'Veuillez renseigner un code postal valide'),
+    city: yup
+      .string()
+      .trim()
+      .when(['location.locationType', 'location.address.isManualEdition'], {
+        is: (locationType: string, isManualEdition: boolean) =>
+          locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+        then: (schema) => schema.required('Veuillez renseigner une ville'),
+      }),
+    coords: yup
+      .string()
+      .trim()
+      .when(['location.locationType', 'location.address.isManualEdition'], {
+        is: (locationType: string, isManualEdition: boolean) =>
+          locationType === CollectiveLocationType.ADDRESS && isManualEdition,
+        then: (schema) =>
+          schema
+            .required('Veuillez renseigner les coordonnées GPS')
+            .test('coords', 'Veuillez respecter le format attendu', (value) =>
+              checkCoords(value)
+            ),
+      }),
+    banId: yup.string().nullable(),
+    inseeCode: yup.string().nullable(),
+    latitude: yup.string(),
+    longitude: yup.string(),
   })
-}
-
-const addressValidationSchema = {
-  street: yup
-    .string()
-    .trim()
-    .when(['location.locationType', 'location.address.isManualEdition'], {
-      is: (locationType: string, isManualEdition: boolean) =>
-        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
-      then: (schema) =>
-        schema.required('Veuillez renseigner une adresse postale'),
-    }),
-  postalCode: yup
-    .string()
-    .trim()
-    .when(['location.locationType', 'location.address.isManualEdition'], {
-      is: (locationType: string, isManualEdition: boolean) =>
-        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
-      then: (schema) => schema.required('Veuillez renseigner un code postal'),
-    })
-    .min(5, 'Veuillez renseigner un code postal valide')
-    .max(5, 'Veuillez renseigner un code postal valide'),
-  city: yup
-    .string()
-    .trim()
-    .when(['location.locationType', 'location.address.isManualEdition'], {
-      is: (locationType: string, isManualEdition: boolean) =>
-        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
-      then: (schema) => schema.required('Veuillez renseigner une ville'),
-    }),
-  coords: yup
-    .string()
-    .trim()
-    .when(['location.locationType', 'location.address.isManualEdition'], {
-      is: (locationType: string, isManualEdition: boolean) =>
-        locationType === CollectiveLocationType.ADDRESS && isManualEdition,
-      then: (schema) =>
-        schema
-          .required('Veuillez renseigner les coordonnées GPS')
-          .test('coords', 'Veuillez respecter le format attendu', (value) =>
-            checkCoords(value)
-          ),
-    }),
 }
