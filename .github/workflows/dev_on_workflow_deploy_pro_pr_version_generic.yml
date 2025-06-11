@@ -43,7 +43,7 @@ defaults:
 jobs:
   deploy_on_firebase:
     runs-on: ubuntu-22.04
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
     outputs:
       description: "The pro (firebase) preview URL"
       pro_url: ${{ steps.firebase-deploy.outputs.details_url }}

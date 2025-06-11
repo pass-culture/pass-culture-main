@@ -175,7 +175,7 @@ jobs:
   dependabot-auto-merge:
     name: "Dependabot"
     needs: [test-pro, test-pro-e2e]
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
   deploy-pro-on-firebase-testing:
