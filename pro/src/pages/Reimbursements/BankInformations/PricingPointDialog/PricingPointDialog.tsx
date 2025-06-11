@@ -1,5 +1,6 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import { FormikProvider, useFormik } from 'formik'
+import { useForm } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { ManagedVenues } from 'apiClient/v1'
@@ -8,13 +9,13 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { Select } from 'ui-kit/form/Select/Select'
+import { Select } from 'ui-kit/formV2/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
 import { validationSchema } from './validationSchema'
 
 type PricingPointFormValues = {
-  pricingPointId?: string
+  pricingPointId: string
 }
 
 type PricingPointDialogProps = {
@@ -31,28 +32,30 @@ export const PricingPointDialog = ({
   updateVenuePricingPoint,
 }: PricingPointDialogProps) => {
   const notification = useNotification()
-  const formik = useFormik<PricingPointFormValues>({
-    initialValues: {
+
+  const methods = useForm<PricingPointFormValues>({
+    defaultValues: {
       pricingPointId: undefined,
     },
-    onSubmit: async ({ pricingPointId }) => {
-      if (!selectedVenue) {
-        return
-      }
-      try {
-        await api.linkVenueToPricingPoint(selectedVenue.id, {
-          pricingPointId: Number(pricingPointId),
-        })
-        updateVenuePricingPoint(selectedVenue.id)
-        closeDialog()
-      } catch {
-        notification.error(
-          'Une erreur est survenue. Merci de réessayer plus tard'
-        )
-      }
-    },
-    validationSchema: validationSchema,
+    resolver: yupResolver(validationSchema),
   })
+
+  const onSubmit = async ({ pricingPointId }: PricingPointFormValues) => {
+    if (!selectedVenue) {
+      return
+    }
+    try {
+      await api.linkVenueToPricingPoint(selectedVenue.id, {
+        pricingPointId: Number(pricingPointId),
+      })
+      updateVenuePricingPoint(selectedVenue.id)
+      closeDialog()
+    } catch {
+      notification.error(
+        'Une erreur est survenue. Merci de réessayer plus tard'
+      )
+    }
+  }
 
   if (!selectedVenue) {
     return
@@ -79,26 +82,26 @@ export const PricingPointDialog = ({
         Attention, vous ne pourrez plus modifier votre choix après
         validation.{' '}
       </Callout>
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} className={styles['dialog-form']}>
-          <Select
-            id="pricingPointId"
-            name="pricingPointId"
-            label="Structure avec SIRET utilisée pour le calcul du barème de remboursement"
-            options={venuesOptions}
-            className={styles['venues-select']}
-            hideAsterisk
-          />
-          <DialogBuilder.Footer>
-            <div className={styles['dialog-actions']}>
-              <Dialog.Close asChild>
-                <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-              </Dialog.Close>
-              <Button type="submit">Valider la sélection</Button>
-            </div>
-          </DialogBuilder.Footer>
-        </form>
-      </FormikProvider>
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className={styles['dialog-form']}
+      >
+        <Select
+          {...methods.register('pricingPointId')}
+          name="pricingPointId"
+          label="Structure avec SIRET utilisée pour le calcul du barème de remboursement"
+          options={venuesOptions}
+          className={styles['venues-select']}
+        />
+        <DialogBuilder.Footer>
+          <div className={styles['dialog-actions']}>
+            <Dialog.Close asChild>
+              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            </Dialog.Close>
+            <Button type="submit">Valider la sélection</Button>
+          </div>
+        </DialogBuilder.Footer>
+      </form>
     </div>
   )
 }
