@@ -19,16 +19,19 @@ describe('adageFiltersToFacetFilters', () => {
 
   it('should return facet filter from form values', () => {
     expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        eventAddressType: 'school',
-        locationType: 'SCHOOL',
-        departments,
-        academies,
-        formats,
-        venue: venueFilter,
-      }, false)
+      adageFiltersToFacetFilters(
+        {
+          domains,
+          students,
+          eventAddressType: 'school',
+          locationType: 'SCHOOL',
+          departments,
+          academies,
+          formats,
+          venue: venueFilter,
+        },
+        false
+      )
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:school'],
@@ -51,18 +54,21 @@ describe('adageFiltersToFacetFilters', () => {
     })
   })
 
-  it('should return locationType in facet filter when oa ff  is enabled', () => {
+  it('should return locationType SCHOOL in facet filter when oa ff is enabled', () => {
     expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        eventAddressType: 'SCHOOL',
-        locationType: 'SCHOOL',
-        departments,
-        academies,
-        formats,
-        venue: venueFilter,
-      }, true)
+      adageFiltersToFacetFilters(
+        {
+          domains,
+          students,
+          eventAddressType: 'SCHOOL',
+          locationType: 'SCHOOL',
+          departments,
+          academies,
+          formats,
+          venue: venueFilter,
+        },
+        true
+      )
     ).toStrictEqual({
       queryFilters: [
         ['offer.locationType:SCHOOL'],
@@ -85,18 +91,58 @@ describe('adageFiltersToFacetFilters', () => {
     })
   })
 
+  it('should return locationType ADDRESS and TO_BE_DEFINED when value is ADDRESS in facet filter when oa ff is enabled', () => {
+    expect(
+      adageFiltersToFacetFilters(
+        {
+          domains,
+          students,
+          eventAddressType: 'OFFERER_VENUE',
+          locationType: 'ADDRESS',
+          departments,
+          academies,
+          formats,
+          venue: venueFilter,
+        },
+        true
+      )
+    ).toStrictEqual({
+      queryFilters: [
+        ['offer.locationType:ADDRESS', 'offer.locationType:TO_BE_DEFINED'],
+        ['offer.students:Collège - 4e'],
+        ['offer.domains:1'],
+        ['venue.departmentCode:01', 'offer.interventionArea:01'],
+        ['venue.academy:Paris'],
+        ['formats:Concert'],
+        ['venue.id:123', 'venue.id:456'],
+      ],
+      filtersKeys: [
+        'locationType',
+        'students',
+        'domains',
+        'departments',
+        'academies',
+        'formats',
+        'venue',
+      ],
+    })
+  })
+
   it('should return other uai facet filter', () => {
     expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        eventAddressType: 'school',
-        locationType: 'SCHOOL',
-        departments,
-        academies,
-        formats,
-        venue: null,
-      }, false)
+      adageFiltersToFacetFilters(
+        {
+          domains,
+          students,
+          eventAddressType: 'school',
+          locationType: 'SCHOOL',
+          departments,
+          academies,
+          formats,
+          venue: null,
+        },
+        false
+      )
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:school'],
@@ -119,16 +165,19 @@ describe('adageFiltersToFacetFilters', () => {
 
   it('should not return uai facet filter', () => {
     expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        eventAddressType: 'school',
-        locationType: 'SCHOOL',
-        departments,
-        academies,
-        formats,
-        venue: null,
-      }, false)
+      adageFiltersToFacetFilters(
+        {
+          domains,
+          students,
+          eventAddressType: 'school',
+          locationType: 'SCHOOL',
+          departments,
+          academies,
+          formats,
+          venue: null,
+        },
+        false
+      )
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:school'],
@@ -151,16 +200,19 @@ describe('adageFiltersToFacetFilters', () => {
 
   it('should return offererVenue event type facet filter', () => {
     expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        eventAddressType: 'offererVenue',
-        locationType: 'SCHOOL',
-        departments,
-        academies,
-        formats,
-        venue: null,
-      }, false)
+      adageFiltersToFacetFilters(
+        {
+          domains,
+          students,
+          eventAddressType: 'offererVenue',
+          locationType: 'SCHOOL',
+          departments,
+          academies,
+          formats,
+          venue: null,
+        },
+        false
+      )
     ).toStrictEqual({
       queryFilters: [
         ['offer.eventAddressType:offererVenue', 'offer.eventAddressType:other'],

@@ -7,6 +7,8 @@ import {
   OpenToPublicToggleProps,
 } from './OpenToPublicToggle'
 
+const onChange = vi.fn()
+
 function renderOpenToPublicToggle(
   isOpenToPublic: 'true' | 'false' = 'true',
   props: Partial<OpenToPublicToggleProps> = {}
@@ -15,7 +17,11 @@ function renderOpenToPublicToggle(
     const methods = useForm({ defaultValues: {} })
     return (
       <FormProvider {...methods}>
-        <OpenToPublicToggle {...props} isOpenToPublic={isOpenToPublic} />
+        <OpenToPublicToggle
+          {...props}
+          isOpenToPublic={isOpenToPublic}
+          onChange={onChange}
+        />
       </FormProvider>
     )
   }
@@ -89,8 +95,7 @@ describe('OpenToPublicToggle', () => {
   })
 
   it('should call onChange when a radio button is clicked', async () => {
-    const onChange = vi.fn()
-    renderOpenToPublicToggle('true', { onChange })
+    renderOpenToPublicToggle('true')
 
     const noRadio = await screen.findByRole('radio', { name: LABELS.no.label })
     await userEvent.click(noRadio)
