@@ -135,7 +135,7 @@ export const OfferFilters = ({
     fieldName: string,
     value: string | string[] | number
   ) => {
-    await formik.setFieldValue(fieldName, value)
+    await formik.setFieldValue(fieldName, value, true)
     formik.handleSubmit()
   }
 
@@ -237,14 +237,28 @@ export const OfferFilters = ({
                   }
                 >
                   <RadioGroup
+                    key={
+                      formik.values[
+                        isCollectiveOaActive
+                          ? 'locationType'
+                          : 'eventAddressType'
+                      ]
+                    }
                     group={adressTypeRadios}
                     className={styles['filter-container-evenement']}
                     name={
                       isCollectiveOaActive ? 'locationType' : 'eventAddressType'
                     }
                     legend="Choisir un type d'intervention"
-                    checkedOption={formik.values.eventAddressType}
+                    checkedOption={
+                      formik.values[
+                        isCollectiveOaActive
+                          ? 'locationType'
+                          : 'eventAddressType'
+                      ]
+                    }
                     onChange={formik.handleChange}
+                    variant={'default'}
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
