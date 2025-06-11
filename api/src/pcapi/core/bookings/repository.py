@@ -69,7 +69,7 @@ BOOKING_EXPORT_HEADER = [
     "Duo",
 ]
 
-BOOKING_LOAD_OPTIONS = Sequence[typing.Literal["offerer",]]
+BOOKING_LOAD_OPTIONS = Sequence[typing.Literal["offerer", "venue", "offer", "address"]]
 
 
 def booking_export_header() -> list[str]:
@@ -145,6 +145,15 @@ def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) ->
     query = db.session.query(models.Booking).filter_by(token=token.upper())
     if "offerer" in load_options:
         query = query.options(sa_orm.joinedload(models.Booking.offerer))
+    if "venue" in load_options:
+        query = query.options(sa_orm.joinedload(models.Booking.venue))
+    if "offer" in load_options or "address" in load_options:
+        query_options = sa_orm.joinedload(models.Booking.stock).joinedload(offers_models.Stock.offer)
+        if "address" in load_options:
+            query_options = query_options.joinedload(offers_models.Offer.offererAddress).joinedload(
+                offerers_models.OffererAddress.address
+            )
+        query = query.options(query_options)
     return query.one_or_none()
 
 

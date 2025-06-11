@@ -47,8 +47,8 @@ class GetBookingResponse(BaseModel):
     userName: str
     firstName: str | None
     lastName: str | None
-    venueAddress: str | None
-    venueDepartmentCode: str | None
+    offerAddress: str | None
+    offerDepartmentCode: str | None
     venueName: str
 
 
@@ -86,8 +86,11 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         userName=booking.userName,
         firstName=booking.user.firstName,
         lastName=booking.user.lastName,
-        venueAddress=booking.venue.street,
-        venueDepartmentCode=booking.venue.departementCode,
+        # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
+        offerAddress=booking.stock.offer.offererAddress.address.street if booking.stock.offer.offererAddress else None,
+        offerDepartmentCode=booking.stock.offer.offererAddress.address.departmentCode
+        if booking.stock.offer.offererAddress
+        else None,
         venueName=booking.venue.name,
     )
 
