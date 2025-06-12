@@ -388,7 +388,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 name="price"
                 label="Prix"
                 required
-                /*classNameFooter={styles['field-layout-footer']}*/
                 disabled={readOnlyFields.includes('price')}
                 type="number"
                 data-testid="input-price"
@@ -440,7 +439,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   {...register('activationCodesExpirationDatetime')}
                   name="activationCodesExpirationDatetime"
                   label="Date d'expiration"
-                  /*classNameFooter={styles['field-layout-footer']}*/
                   className={styles['field-layout-input']}
                   disabled={true}
                 />
@@ -458,7 +456,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 onChange={onQuantityChange}
                 onBlur={onQuantityChange}
                 className={styles['field-layout-input']}
-                /*classNameFooter={styles['field-layout-footer']}*/
                 minimum={minQuantity}
               />
             </div>
@@ -473,7 +470,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     hasLabelLineBreak={false}
                     isOptional
                     className={styles['field-layout-shrink']}
-                    /*classNameFooter={styles['field-layout-footer']}*/
                   />
                   <TextInput
                     {...register('bookingsQuantity')}
@@ -483,7 +479,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     label="Réservations"
                     isOptional
                     className={styles['field-layout-shrink']}
-                    /*classNameFooter={styles['field-layout-footer']}*/
                   />
                 </>
               )}

@@ -15,7 +15,6 @@ import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmen
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
-
 export const buildInitialValues = (
   offer: GetIndividualOfferWithAddressResponseModel,
   stocks: GetOfferStockResponseModel[]
@@ -28,7 +27,7 @@ export const buildInitialValues = (
     stockId: stocks.length > 0 ? stocks[0].id : undefined,
     remainingQuantity: stocks[0].remainingQuantity?.toString() || 'unlimited',
     bookingsQuantity: stocks[0].bookingsQuantity.toString(),
-    quantity: stocks[0].quantity ?? '',
+    quantity: stocks[0].quantity ?? null,
     bookingLimitDatetime: isDateValid(stocks[0].bookingLimitDatetime)
       ? format(
           getLocalDepartementDateTimeFromUtc(

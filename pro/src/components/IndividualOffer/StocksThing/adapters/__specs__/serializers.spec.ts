@@ -83,7 +83,7 @@ describe('serializeCreateThingStock', () => {
       {
         stockId: 1,
         ...formValues,
-        quantity: '',
+        quantity: null,
       },
       offerId,
       departementCode
@@ -97,7 +97,7 @@ describe('serializeCreateThingStock', () => {
       {
         stockId: 1,
         ...formValues,
-        quantity: '',
+        quantity: null,
       },
       offerId,
       departementCode
@@ -174,7 +174,7 @@ describe('serializeUpdateThingStock', () => {
       {
         stockId: 1,
         ...formValues,
-        quantity: '',
+        quantity: null,
       },
       departementCode
     )
@@ -187,7 +187,7 @@ describe('serializeUpdateThingStock', () => {
       {
         stockId: 1,
         ...formValues,
-        quantity: '',
+        quantity: null,
       },
       departementCode
     )

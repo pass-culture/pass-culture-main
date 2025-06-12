@@ -1,10 +1,8 @@
-import { Quantity } from 'ui-kit/form/QuantityInput/QuantityInput'
-
 export interface StockThingFormValues {
   stockId?: number
   remainingQuantity?: string
   bookingsQuantity?: string
-  quantity?: Quantity
+  quantity?: number | null
   bookingLimitDatetime?: string | null
   price?: number | undefined
   activationCodes?: string[]

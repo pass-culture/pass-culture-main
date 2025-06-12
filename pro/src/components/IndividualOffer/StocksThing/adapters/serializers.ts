@@ -32,7 +32,7 @@ export const serializeUpdateThingStock = (
     : null
 
   const price = formValues.price ? formValues.price : 0
-  const quantity = formValues.quantity || null
+  const quantity = formValues.quantity ?? null
 
   return { price, bookingLimitDatetime, quantity }
 }
