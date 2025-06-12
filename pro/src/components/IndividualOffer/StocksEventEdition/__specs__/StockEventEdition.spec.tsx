@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Routes, Route } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
