@@ -920,7 +920,6 @@ def publish_offer(
     if publication_date is not None:  # i.e. pro user schedules the publication in the future
         offer.isActive = False
         offer.publicationDatetime = publication_date
-        offer.bookingAllowedDatetime = publication_date
 
         # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
         future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_date)
@@ -928,7 +927,6 @@ def publish_offer(
     else:  # i.e. pro user publishes the offer right away
         offer.isActive = True
         offer.publicationDatetime = finalization_date
-        offer.bookingAllowedDatetime = finalization_date
 
         # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
         if offer.publicationDate:
