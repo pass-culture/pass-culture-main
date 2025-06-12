@@ -144,6 +144,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 class PatchOfferPublishBodyModel(BaseModel):
     id: int
     publicationDate: datetime.datetime | None
+    bookingAllowedDatetime: datetime.datetime | None
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):

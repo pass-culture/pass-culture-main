@@ -134,6 +134,7 @@ class Returns200Test:
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_patch_publish_future_offer_early_publish(
         self,
@@ -153,20 +154,32 @@ class Returns200Test:
 
         client = client.with_session_auth("user@example.com")
         publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        booking_allowed_datetime = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=31)
         offer_id = stock.offerId
+
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={"id": offer_id, "publicationDate": publication_date.isoformat()},
+                json={
+                    "id": offer_id,
+                    "publicationDate": publication_date.isoformat(),
+                    "bookingAllowedDatetime": booking_allowed_datetime.isoformat(),
+                },
             )
+
+        expected_publication_datetime = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
+            microsecond=0, tzinfo=None
+        )
 
         assert response.status_code == 200
         offer = db.session.get(offers_models.Offer, stock.offer.id)
-        assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
-            microsecond=0, tzinfo=None
-        )
-        assert offer.finalizationDatetime
+        assert offer.publicationDate == expected_publication_datetime
+        assert offer.publicationDatetime == expected_publication_datetime
+        assert offer.bookingAllowedDatetime == local_datetime_to_default_timezone(
+            booking_allowed_datetime, "Europe/Paris"
+        ).replace(tzinfo=None)
+        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         first_finalization_datetime = offer.finalizationDatetime
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
