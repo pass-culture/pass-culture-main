@@ -135,7 +135,7 @@ class Returns200Test:
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Somewhere in Paris"}],
         }
 
-    def test_get_educational_institution_num_queries(self, client):
+    def test_get_educational_institution_num_queries(self, client, features):
         redactor = EducationalRedactorFactory()
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -177,7 +177,6 @@ class Returns200Test:
         num_queries = 1  # fetch the institution
         num_queries += 1  # fetch the prebookings
         num_queries += 1  # fetch the deposit
-        num_queries += 1  # fetch FF (WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE)
         with assert_num_queries(num_queries):
             client.with_eac_token().get(dst)
 

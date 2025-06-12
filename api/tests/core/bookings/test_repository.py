@@ -770,7 +770,6 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id
@@ -825,7 +824,6 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         queries = 0
-        # queries += 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         queries += 1  # Get bookings
 
         offer_id = offer.id

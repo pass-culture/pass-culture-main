@@ -358,10 +358,10 @@ class UpdateProfileTest:
 
 class ActivityTypesTest:
     @pytest.mark.parametrize("age", (17, 18))
-    def test_get_activity_types(self, client, age):
+    def test_get_activity_types(self, client, features, age):
         user = users_factories.BaseUserFactory(age=age)
         client.with_token(user.email)
-        with assert_num_queries(2):  # user + free eligibility FF
+        with assert_num_queries(1):  # user
             response = client.get("/native/v1/subscription/activity_types")
             assert response.status_code == 200
 

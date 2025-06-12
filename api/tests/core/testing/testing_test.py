@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.bookings.models as bookings_models
 from pcapi import settings as pcapi_settings
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
@@ -67,3 +68,15 @@ def test_override_features_as_context_manager(features):
 class OverrideFeaturesOnClassTest:
     def test_method_level_override(self):
         assert not FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
+
+
+def test_features_cached(features):
+    with assert_num_queries(0):
+        first_ff = list(FeatureToggle)[0].name
+        getattr(FeatureToggle, first_ff).is_active()
+
+
+def test_features_not_cached():
+    with assert_num_queries(1):
+        first_ff = list(FeatureToggle)[0].name
+        getattr(FeatureToggle, first_ff).is_active()

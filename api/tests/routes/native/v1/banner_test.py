@@ -12,7 +12,7 @@ from pcapi.core.users import models as users_models
 from pcapi.utils.string import u_nbsp
 
 
-@pytest.mark.usefixtures("db_session")
+@pytest.mark.usefixtures("db_session", "features")
 class BannerTest:
     # - authenticated user
     # - user
@@ -20,8 +20,6 @@ class BannerTest:
     # - beneficiary fraud reviews
     # - deposits
     expected_num_queries_without_subscription_check = 5
-    # - all feature flags checked
-    expected_num_queries_with_subscription_check = expected_num_queries_without_subscription_check + 1
 
     def setup_method(self):
         self.geolocation_banner = {
@@ -72,7 +70,7 @@ class BannerTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # 1 FF checked
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -85,7 +83,7 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -102,13 +100,13 @@ class BannerTest:
 
         client.with_token(email=user.email)
         expected_num_queries = self.expected_num_queries_without_subscription_check + 1  # action_history
-        with assert_num_queries(expected_num_queries + 1):  # credit v3 FF
+        with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
         assert response.json == self.activation_banner
 
-    def should_return_activation_banner_when_user_has_honor_statement_to_complete(self, client):
+    def should_return_activation_banner_when_user_has_honor_statement_to_complete(self, client, features):
         dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
@@ -121,7 +119,9 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_with_subscription_check + 2):  # action_history ; credit v3 FF
+        with assert_num_queries(
+            self.expected_num_queries_without_subscription_check + 2
+        ):  # beneficiary_fraud_check + action_history
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -131,7 +131,7 @@ class BannerTest:
         user = users_factories.BeneficiaryGrant18Factory()
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner?isGeolocated=true")
             assert response.status_code == 200
 
@@ -141,7 +141,7 @@ class BannerTest:
         user = users_factories.UserFactory(age=17)
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -153,7 +153,7 @@ class BannerTest:
             }
         }
 
-    def should_return_retry_banner_on_ubble_retry(self, client):
+    def should_return_retry_banner_on_ubble_retry(self, client, features):
         user = users_factories.EligibleGrant18Factory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -161,7 +161,7 @@ class BannerTest:
         fraud_factories.UbbleRetryFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_with_subscription_check + 1):  # action_history
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # action_history
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 
@@ -177,9 +177,7 @@ class BannerTest:
         user = users_factories.ExUnderageBeneficiaryFactory()
 
         client.with_token(email=user.email)
-        with assert_num_queries(
-            self.expected_num_queries_without_subscription_check + 1
-        ):  # FF ENABLE_PHONE_VALIDATION checked
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 
@@ -199,9 +197,7 @@ class BannerTest:
         assert user.age == 18
 
         client.with_token(email=user.email)
-        with assert_num_queries(
-            self.expected_num_queries_without_subscription_check + 1
-        ):  # FF ENABLE_PHONE_VALIDATION checked
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 
@@ -217,7 +213,7 @@ class BannerTest:
         user = users_factories.EmailValidatedUserFactory(age=16)
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # credit v3 FF
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner?isGeolocated=true")
 
         assert response.status_code == 200

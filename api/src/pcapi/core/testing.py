@@ -4,6 +4,7 @@ import functools
 import math
 import types
 import typing
+from collections import UserDict
 
 import flask
 import pytest
@@ -207,35 +208,33 @@ class SettingsContext:
             setattr(settings, attr_name, value)
 
 
+class FeaturesCache(UserDict):
+    def refresh(self) -> None:
+        self.data = {f.name: f.isActive for f in db.session.query(Feature.name, Feature.isActive)}
+
+
 class FeaturesContext:
-    def __init__(self) -> None:
+    def __init__(self, cached_features: FeaturesCache) -> None:
         # Use `object.__setattr__` because `__setattr__` method is overriden
         object.__setattr__(self, "_initial_features", {})
+        object.__setattr__(self, "_cached_features", cached_features)
+        object.__setattr__(self, "_default_features", FeaturesCache(cached_features))
 
     def __setattr__(self, attr_name: str, value: typing.Any) -> None:
-        self._initial_features[attr_name] = (
-            db.session.query(Feature).filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
-        )
+        self._initial_features[attr_name] = self._cached_features[attr_name]
         db.session.query(Feature).filter(Feature.name == attr_name).update({"isActive": value})
         db.session.commit()
-        # Clear the feature cache on request if any
-        if flask.has_request_context():
-            if hasattr(flask.request, "_cached_features"):
-                del flask.request._cached_features
+        self._cached_features.refresh()
 
     def __getattr__(self, attr_name: str) -> typing.Any:
-        return (
-            db.session.query(Feature).filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
-        )
+        return self._cached_features[attr_name]
 
     def reset(self) -> None:
         for name, status in self._initial_features.items():
             db.session.query(Feature).filter_by(name=name).update({"isActive": status})
+        if self._initial_features:
             db.session.commit()
-        # Clear the feature cache on request if any
-        if flask.has_request_context():
-            if hasattr(flask.request, "_cached_features"):
-                del flask.request._cached_features
+        object.__setattr__(self, "_cached_features", FeaturesCache(self._default_features))
 
 
 @contextlib.contextmanager

@@ -138,9 +138,10 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     @time_machine.travel(time_travel_str)
-    def test_post_offers(self, public_client, payload, venue_provider, domain, institution, national_program, venue):
+    def test_post_offers(
+        self, features, public_client, payload, venue_provider, domain, institution, national_program, venue
+    ):
         num_queries = 1  # fetch api key
-        num_queries += 1  # fetch feature flag
         num_queries += 1  # fetch venue
         num_queries += 1  # check if offerer has at least one venue with an adage id
         num_queries += 1  # fetch venue's managing offerer's siren

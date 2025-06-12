@@ -658,7 +658,6 @@ class GetPublicAccountTest(GetEndpointHelper):
     # bookings
     # user tags (for tag account form display)
     expected_num_queries = 6
-    expected_num_queries_with_ff = expected_num_queries + 1
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
@@ -715,12 +714,12 @@ class GetPublicAccountTest(GetEndpointHelper):
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
     @pytest.mark.parametrize("index,expected_badge", [(0, "Pass 17"), (1, "Ancien Pass 18"), (2, "Pass 18"), (3, None)])
-    def test_get_public_account(self, authenticated_client, index, expected_badge):
+    def test_get_public_account(self, authenticated_client, index, expected_badge, features):
         users = create_bunch_of_accounts()
         user = users[index]
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -753,7 +752,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             assert expected_badge in badges
         assert "Suspendu" not in badges
 
-    def test_get_suspended_public_account(self, legit_user, authenticated_client):
+    def test_get_suspended_public_account(self, legit_user, authenticated_client, features):
         user = users_factories.UserFactory(isActive=False)
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
@@ -764,7 +763,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -774,21 +773,21 @@ class GetPublicAccountTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "Date de suspension : 03/11/2023" in content
 
-    def test_get_public_account_with_unconfirmed_modified_email(self, authenticated_client):
+    def test_get_public_account_with_unconfirmed_modified_email(self, authenticated_client, features):
         user = users_factories.UserFactory()
         users_factories.EmailUpdateEntryFactory(user=user)
         users_factories.EmailConfirmationEntryFactory(user=user)
         users_factories.NewEmailSelectionEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
         parsed_html = html_parser.get_soup(response.data)
         assert parsed_html.find("i", class_="pc-email-changed-icon") is None
 
-    def test_get_public_account_with_confirmed_modified_email(self, authenticated_client):
+    def test_get_public_account_with_confirmed_modified_email(self, authenticated_client, features):
         user = users_factories.UserFactory()
         users_factories.EmailUpdateEntryFactory(user=user)
         users_factories.EmailConfirmationEntryFactory(user=user)
@@ -796,19 +795,19 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.EmailValidationEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
         parsed_html = html_parser.get_soup(response.data)
         assert parsed_html.find("i", class_="pc-email-changed-icon") is not None
 
-    def test_get_public_account_with_admin_modified_email(self, authenticated_client):
+    def test_get_public_account_with_admin_modified_email(self, authenticated_client, features):
         user = users_factories.UserFactory()
         users_factories.EmailAdminUpdateEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -825,7 +824,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             ([fraud_models.FraudReasonCode.DUPLICATE_USER], "Duplicat de l'utilisateur {original_user_id}"),
         ),
     )
-    def test_get_public_account_with_resolved_duplicate(self, authenticated_client, reasonCodes, reason):
+    def test_get_public_account_with_resolved_duplicate(self, authenticated_client, reasonCodes, reason, features):
         first_name = "Jack"
         last_name = "Sparrow"
         email = "jsparrow@pirate.mail"
@@ -885,21 +884,21 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         duplicate_user_id = duplicate_user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user_id))
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
         assert f"User ID doublon : {original_user.id}" in content
 
-    def test_get_public_account_birth_dates(self, authenticated_client):
+    def test_get_public_account_birth_dates(self, authenticated_client, features):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, days=15),
             validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=17, days=15),
         )
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -923,7 +922,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         ],
     )
     def test_get_beneficiary_credit(
-        self, authenticated_client, user_factory, expected_remaining_text, expected_digital_remaining_text
+        self, authenticated_client, user_factory, expected_remaining_text, expected_digital_remaining_text, features
     ):
         beneficiary = user_factory()
 
@@ -936,7 +935,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = beneficiary.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -945,24 +944,24 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert expected_remaining_text in cards_text
         assert expected_digital_remaining_text in cards_text
 
-    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client):
+    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client, features):
         free_beneficiary = users_factories.UserFactory(roles=[users_models.UserRole.FREE_BENEFICIARY])
         users_factories.DepositGrantFactory(
             user=free_beneficiary, type=finance_models.DepositType.GRANT_FREE, amount=decimal.Decimal("0")
         )
 
         user_id = free_beneficiary.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         assert response.status_code == 200
         assert "0,00 € Crédit restant 0,00 €" in html_parser.extract_cards_text(response.data)
 
-    def test_get_non_beneficiary_credit(self, authenticated_client):
+    def test_get_non_beneficiary_credit(self, authenticated_client, features):
         _, _, _, _, random, _ = create_bunch_of_accounts()
         user_id = random.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -975,7 +974,9 @@ class GetPublicAccountTest(GetEndpointHelper):
             (users_factories.CaledonianBeneficiaryFactory, "20,00 € (2387 CFP)", "12,50 € (1492 CFP)"),
         ],
     )
-    def test_get_beneficiary_bookings(self, authenticated_client, user_factory, expected_price_1, expected_price_2):
+    def test_get_beneficiary_bookings(
+        self, authenticated_client, user_factory, expected_price_1, expected_price_2, features
+    ):
         user = user_factory()
         b1 = bookings_factories.CancelledBookingFactory(
             user=user,
@@ -989,7 +990,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1031,19 +1032,19 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert f"Notification du partenaire culturel : {b1.venue.bookingEmail}" in extra_rows[1]
         assert "Notification pour cette offre : booking.offer@example.com" in extra_rows[1]
 
-    def test_get_beneficiary_bookings_empty(self, authenticated_client):
+    def test_get_beneficiary_bookings_empty(self, authenticated_client, features):
         user = users_factories.BeneficiaryFactory()
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
-    def test_fraud_check_link(self, authenticated_client):
+    def test_fraud_check_link(self, authenticated_client, features):
         user = users_factories.BeneficiaryFactory()
         # modifiy the date for clearer tests
         old_dms = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1053,7 +1054,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1084,7 +1085,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             in main_dossier_card
         )
 
-    def test_get_public_account_history(self, legit_user, authenticated_client):
+    def test_get_public_account_history(self, legit_user, authenticated_client, features):
         # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
         # -30 days and -1 day in BeneficiaryImportStatusFactory
         user = users_factories.BeneficiaryFactory(dateCreated=datetime.datetime.utcnow() - relativedelta(days=40))
@@ -1123,7 +1124,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         repository.save(no_date_action)
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1192,11 +1193,11 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert history_rows[9]["Commentaire"].startswith("Fraude suspicion")
         assert history_rows[9]["Auteur"] == legit_user.full_name
 
-    def test_get_public_account_anonymized_user(self, authenticated_client):
+    def test_get_public_account_anonymized_user(self, authenticated_client, features):
         user = users_factories.UserFactory(roles=[users_models.UserRole.ANONYMIZED])
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1206,12 +1207,12 @@ class GetPublicAccountTest(GetEndpointHelper):
         available_button = html_parser.extract(response.data, tag="button")
         assert "Anonymiser" not in available_button
 
-    def test_get_pulic_account_tags(self, authenticated_client):
+    def test_get_pulic_account_tags(self, authenticated_client, features):
         tag1 = users_factories.UserTagFactory(label="Ambassadeur A")
         tag2 = users_factories.UserTagFactory(label="Ambassadeur B")
         user = users_factories.UserFactory(tags=[tag1, tag2])
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
