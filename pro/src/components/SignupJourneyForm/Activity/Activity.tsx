@@ -1,4 +1,5 @@
-import { FormikProvider, useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
@@ -6,8 +7,8 @@ import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
-  useSignupJourneyContext,
   ActivityContext,
+  useSignupJourneyContext,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -28,16 +29,20 @@ export const Activity = (): JSX.Element => {
   const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const { activity, setActivity, offerer } = useSignupJourneyContext()
 
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
+  const { data: venueTypes, isLoading } = useSWR(
+    [GET_VENUE_TYPES_QUERY_KEY],
+    () => api.getVenueTypes()
   )
-  const venueTypes = venueTypesQuery.data
 
   const serializeActivityContext = (
     activity: ActivityContext
   ): ActivityFormValues => {
     return {
       ...activity,
+      socialUrls:
+        activity.socialUrls.length === 0
+          ? [{ url: '' }]
+          : activity.socialUrls.map((urlString) => ({ url: urlString })),
       targetCustomer: {
         individual: Boolean(
           activity.targetCustomer === Target.INDIVIDUAL_AND_EDUCATIONAL ||
@@ -51,56 +56,49 @@ export const Activity = (): JSX.Element => {
     }
   }
 
+  const methods = useForm({
+    defaultValues: activity
+      ? serializeActivityContext(activity)
+      : defaultActivityFormValues(isNewSignupEnabled),
+    resolver: yupResolver(validationSchema(isNewSignupEnabled)),
+  })
+
   const serializeActivityFormToSubmit = (
     activityForm: ActivityFormValues
   ): ActivityContext => {
     const { individual, educational } = activityForm.targetCustomer
-    let serializedTargetCustomer
-
-    if (individual && educational) {
-      serializedTargetCustomer = Target.INDIVIDUAL_AND_EDUCATIONAL
-    } else if (individual) {
-      serializedTargetCustomer = Target.INDIVIDUAL
-    } else {
-      serializedTargetCustomer = Target.EDUCATIONAL
-    }
-
     return {
       ...activityForm,
-      targetCustomer: serializedTargetCustomer,
+      socialUrls: activityForm.socialUrls
+        .filter(({ url }) => url.trim() !== '') // garder que ceux où url n'est pas vide
+        .map(({ url }) => url),
+      targetCustomer: individual
+        ? educational
+          ? Target.INDIVIDUAL_AND_EDUCATIONAL
+          : Target.INDIVIDUAL
+        : Target.EDUCATIONAL,
     }
   }
 
-  const initialValues: ActivityFormValues = activity
-    ? serializeActivityContext(activity)
-    : defaultActivityFormValues(isNewSignupEnabled)
-
   const handleNextStep = () => {
-    if (Object.keys(formik.errors).length !== 0) {
+    if (!methods.formState.isValid) {
       notify.error(FORM_ERROR_MESSAGE)
       return
     }
   }
 
-  const onSubmitActivity = (formValues: ActivityFormValues) => {
+  const onSubmit = (formValues: any) => {
     setActivity(serializeActivityFormToSubmit(formValues))
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/validation')
   }
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit: onSubmitActivity,
-    validationSchema: validationSchema(isNewSignupEnabled),
-    enableReinitialize: true,
-  })
 
   const handlePreviousStep = () => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/identification')
   }
 
-  if (venueTypesQuery.isLoading) {
+  if (isLoading) {
     return <Spinner />
   }
 
@@ -110,20 +108,23 @@ export const Activity = (): JSX.Element => {
 
   return (
     <FormLayout>
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} data-testid="signup-activity-form">
+      <FormProvider {...methods}>
+        <form
+          onSubmit={methods.handleSubmit(onSubmit)}
+          data-testid="signup-activity-form"
+        >
           <FormLayout.MandatoryInfo />
           <ActivityForm venueTypes={venueTypes} />
           <ActionBar
             onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep}
-            isDisabled={formik.isSubmitting}
+            isDisabled={methods.formState.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
             legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>
-      </FormikProvider>
+      </FormProvider>
     </FormLayout>
   )
 }

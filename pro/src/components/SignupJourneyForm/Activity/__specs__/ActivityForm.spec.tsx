@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Form, Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { VenueTypeResponseModel } from 'apiClient/v1'
@@ -10,7 +11,6 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { defaultActivityFormValues } from 'components/SignupJourneyForm/Activity/constants'
 import { Button } from 'ui-kit/Button/Button'
@@ -20,7 +20,6 @@ import {
   ActivityFormProps,
   ActivityFormValues,
 } from '../ActivityForm'
-import { validationSchema } from '../validationSchema'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -33,36 +32,33 @@ const venueTypes: VenueTypeResponseModel[] = [
   { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
-const renderActivityForm = ({
-  initialValues,
-  onSubmit = vi.fn(),
-  props = { venueTypes: venueTypes },
-  contextValue,
-}: {
-  initialValues: Partial<ActivityFormValues>
-  onSubmit?: () => void
-  props: ActivityFormProps
+const onSubmit = vi.fn()
+
+function renderActivityForm(
+  initialValues: Partial<ActivityFormValues>,
+  props: ActivityFormProps,
   contextValue: SignupJourneyContextValues
-}) => {
-  return renderWithProviders(
-    <SignupJourneyContext.Provider value={contextValue}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-      >
-        <Form noValidate>
+) {
+  const Wrapper = () => {
+    const methods = useForm({
+      defaultValues: initialValues,
+    })
+    return (
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
           <ActivityForm {...props} />
           <Button type="submit" isLoading={false}>
-            Submit
+            Étape suivante
           </Button>
-        </Form>
-      </Formik>
-    </SignupJourneyContext.Provider>,
-    {
-      user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/activite'],
-    }
+        </form>
+      </FormProvider>
+    )
+  }
+
+  renderWithProviders(
+    <SignupJourneyContext.Provider value={contextValue}>
+      <Wrapper />
+    </SignupJourneyContext.Provider>
   )
 }
 
@@ -87,11 +83,8 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should render activity form', async () => {
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+    renderActivityForm(initialValues, props, contextValue)
+
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getByLabelText('Activité principale *')).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
@@ -113,14 +106,15 @@ describe('screens:SignupJourney::ActivityForm', () => {
   it('should render activity form with initialValues', () => {
     initialValues = {
       venueTypeCode: 'MUSEUM',
-      socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
+      socialUrls: [
+        { url: 'https://example.com' },
+        { url: 'https://exampleTwo.fr' },
+      ],
       targetCustomer: { individual: false, educational: false },
     }
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+
+    renderActivityForm(initialValues, props, contextValue)
+
     expect(
       screen.getByText('Cours et pratique artistiques')
     ).toBeInTheDocument()
@@ -137,42 +131,21 @@ describe('screens:SignupJourney::ActivityForm', () => {
     ).not.toBeChecked()
   })
 
-  it('should render errors', async () => {
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+  it('should not navigate to the next step if activity form is not valid', async () => {
+    renderActivityForm(initialValues, props, contextValue)
 
     expect(await screen.findByText('Activité')).toBeInTheDocument()
-    await userEvent.type(
-      screen.getByRole('textbox', {
-        name: 'Site internet, réseau social',
-      }),
-      'qsdsqd'
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
     )
-    await userEvent.click(screen.getByText('Submit'))
-    expect(
-      await screen.findByText(
-        'Veuillez sélectionner une des réponses ci-dessus'
-      )
-    ).toBeInTheDocument()
-    expect(
-      await screen.findByText('Veuillez sélectionner une activité principale')
-    ).toBeInTheDocument()
-    expect(
-      await screen.findByText(
-        'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-      )
-    ).toBeInTheDocument()
+
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
   })
 
   it('should add social url input on click add url button', async () => {
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+    renderActivityForm(initialValues, props, contextValue)
 
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
@@ -181,12 +154,11 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should remove social url input on click remove url button', async () => {
-    initialValues.socialUrls = ['https://example.com', 'https://exampleTwo.fr']
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+    initialValues.socialUrls = [
+      { url: 'https://example.com' },
+      { url: 'https://exampleTwo.fr' },
+    ]
+    renderActivityForm(initialValues, props, contextValue)
 
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
 
@@ -203,11 +175,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should change targetCustomer value on click', async () => {
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+    renderActivityForm(initialValues, props, contextValue)
 
     const publicTarget = screen.getByLabelText('Au grand public')
     const schoolTarget = screen.getByLabelText('À des groupes scolaires')
@@ -228,11 +196,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should change venueType', async () => {
-    renderActivityForm({
-      initialValues: initialValues,
-      props: props,
-      contextValue,
-    })
+    renderActivityForm(initialValues, props, contextValue)
 
     const venueTypeSelect = screen.getByLabelText('Activité principale *')
     expect(venueTypeSelect).toHaveValue('')

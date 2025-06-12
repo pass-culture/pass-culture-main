@@ -63,7 +63,9 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should render component', async () => {
     contextValue.activity = null
+
     renderActivityScreen(contextValue)
+
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(
       screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
@@ -93,7 +95,9 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should not render component on getVenueTypes error', async () => {
     vi.spyOn(api, 'getVenueTypes').mockRejectedValue([])
+
     renderActivityScreen(contextValue)
+
     await waitFor(() => {
       expect(screen.queryByText('Activité')).not.toBeInTheDocument()
     })
@@ -106,12 +110,15 @@ describe('screens:SignupJourney::Activity', () => {
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
       phoneNumber: undefined,
     }
+
     renderActivityScreen(contextValue)
+
     expect(await screen.findByText('Activité')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
+
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
@@ -122,15 +129,17 @@ describe('screens:SignupJourney::Activity', () => {
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: undefined,
     }
-    renderActivityScreen(contextValue)
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
 
+    renderActivityScreen(contextValue)
+
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getByLabelText('Au grand public')).toBeChecked()
     expect(screen.getByLabelText('À des groupes scolaires')).not.toBeChecked()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
+
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
@@ -141,34 +150,42 @@ describe('screens:SignupJourney::Activity', () => {
       targetCustomer: Target.EDUCATIONAL,
       phoneNumber: undefined,
     }
-    renderActivityScreen(contextValue)
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
 
+    renderActivityScreen(contextValue)
+
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getByLabelText('Au grand public')).not.toBeChecked()
     expect(screen.getByLabelText('À des groupes scolaires')).toBeChecked()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
+
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
   it('should display authentification screen on click previous step button', async () => {
     renderActivityScreen(contextValue)
+
     expect(await screen.findByText('Activité')).toBeInTheDocument()
+
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
     )
+
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
   it('should display error notification', async () => {
     renderActivityScreen(contextValue)
+
     expect(await screen.findByText('Activité')).toBeInTheDocument()
+
     await userEvent.click(screen.getByText('Au grand public'))
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
+
     expect(
       screen.getByText(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
