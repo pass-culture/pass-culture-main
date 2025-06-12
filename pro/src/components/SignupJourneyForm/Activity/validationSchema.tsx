@@ -10,9 +10,12 @@ export const validationSchema = (newSignup: boolean) => {
     socialUrls: yup
       .array()
       .of(
-        yup
-          .string()
-          .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+        yup.object().shape({
+          url: yup
+            .string()
+            .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+            .nullable(),
+        })
       )
       .nullable(),
     targetCustomer: yup
