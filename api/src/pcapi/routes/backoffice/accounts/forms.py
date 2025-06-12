@@ -34,17 +34,22 @@ def _get_tags_query() -> sa_orm.Query:
 
 
 class AccountSearchForm(search.SearchForm):
-    filter = fields.PCSelectMultipleField("Filtres", choices=utils.choices_from_enum(search.AccountSearchFilter))
+    q = fields.PCOptSearchField(label="")
+    filter = fields.PCSelectMultipleField("Crédits", choices=utils.choices_from_enum(search.AccountSearchFilter))
+    # choices added later so as to query the tags only once
+    tag = fields.PCSelectMultipleField("Tags", coerce=int)
 
-    def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
-        q = super().validate_q(q)
-        data = q.data.strip(" \t,;")
-        if len(data) < 3 and not string_utils.is_numeric(data):
-            raise wtforms.validators.ValidationError("Attention, la recherche doit contenir au moins 3 lettres.")
-        split_data = data.split()
+    def validate(self) -> bool:
+        if not super().validate():
+            return False
+        query_str = self.q.data.strip(" \t,;") if self.q.data else ""
+        if not self.tag.data and not self.filter.data and len(query_str) < 3 and not string_utils.is_numeric(query_str):
+            self.q.errors += ("Attention, la recherche doit contenir au moins 3 lettres.",)
+            return False
+        split_data = query_str.split()
         if len(split_data) > 1 and all(len(item) <= 3 for item in split_data):
             flash("Les termes étant très courts, la recherche n'a porté que sur le nom complet exact.", "info")
-        return q
+        return True
 
 
 class EditAccountForm(utils.PCForm):
@@ -187,5 +192,5 @@ class TagAccountForm(FlaskForm):
         "Tags",
         query_factory=_get_tags_query,
         get_pk=lambda tag: tag.id,
-        get_label=lambda tag: tag.label or tag.name,
+        get_label=lambda tag: str(tag),
     )
