@@ -5,7 +5,6 @@ import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -146,12 +145,11 @@ describe('OfferEducationalActions', () => {
 
   it('should display booking link for booked offer', () => {
     const offer = getCollectiveOfferFactory({
-      status: CollectiveOfferStatus.SOLD_OUT,
       displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
       booking: {
         id: 1,
-        status: CollectiveBookingStatus.CONFIRMED
-      }
+        status: CollectiveBookingStatus.CONFIRMED,
+      },
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -168,12 +166,11 @@ describe('OfferEducationalActions', () => {
 
   it('should display booking link for used booking', () => {
     const offer = getCollectiveOfferFactory({
-      status: CollectiveOfferStatus.EXPIRED,
       displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
       booking: {
         id: 1,
-        status: CollectiveBookingStatus.USED
-      }
+        status: CollectiveBookingStatus.USED,
+      },
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -192,11 +189,10 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.ACTIVE,
         booking: {
           id: 1,
-          status: CollectiveBookingStatus.CANCELLED
-        }
+          status: CollectiveBookingStatus.CANCELLED,
+        },
       }),
     })
     expect(
@@ -215,11 +211,10 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.ACTIVE,
         booking: {
           id: 1,
-          status: CollectiveBookingStatus.CONFIRMED
-        }
+          status: CollectiveBookingStatus.CONFIRMED,
+        },
       }),
     })
     const bookingLink = screen.getByRole('link', {
@@ -244,7 +239,6 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferFactory({
         isTemplate: true,
-        status: CollectiveOfferStatus.PENDING,
       }),
     })
 
@@ -260,7 +254,6 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferFactory({
         isTemplate: true,
-        status: CollectiveOfferStatus.PENDING,
       }),
     })
 
@@ -276,7 +269,6 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
         isTemplate: true,
-        status: CollectiveOfferStatus.INACTIVE,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
       }),
     })
@@ -297,7 +289,6 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
         isTemplate: true,
-        status: CollectiveOfferStatus.ACTIVE,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
       }),
     })

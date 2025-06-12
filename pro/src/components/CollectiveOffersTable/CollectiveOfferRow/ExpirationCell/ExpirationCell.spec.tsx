@@ -3,16 +3,13 @@ import { render, screen } from '@testing-library/react'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 
 import { ExpirationCell } from './ExpirationCell'
 
 describe('ExpirationCell', () => {
-  const offer: CollectiveOfferResponseModel = collectiveOfferFactory({
-    status: CollectiveOfferStatus.ACTIVE,
-  })
+  const offer: CollectiveOfferResponseModel = collectiveOfferFactory()
 
   function renderExpirationCell(offerParam = offer, bookingLimitDate: string) {
     return render(
