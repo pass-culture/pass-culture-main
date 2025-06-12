@@ -2,8 +2,10 @@ import decimal
 import logging
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.core.geography import factories as geography_factories
@@ -27,6 +29,8 @@ ACCESSIBILITY_FIELDS = {
     "motorDisabilityCompliant": True,
     "visualDisabilityCompliant": True,
 }
+
+now_datetime_with_tz = datetime.now(timezone.utc)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -59,6 +63,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 404
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     def test_event_minimal_body(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -80,15 +85,21 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.isDuo
         assert created_offer.extraData == {}
         assert created_offer.bookingEmail is None
+
+        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
         assert created_offer.publicationDate is None
+
         assert created_offer.description is None
+        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert not created_offer.bookingAllowedDatetime
         assert created_offer.status == offer_mixin.OfferStatus.DRAFT
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
         assert not created_offer.futureOffer
 
-    def test_event_with_depreacted_music_type_triggers_warning_log(self, client, caplog):
+    def test_event_with_deprecated_music_type_triggers_warning_log(self, client, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
         # music type is not allowed anymore
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -118,6 +129,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert not [rec for rec in caplog.records if rec.msg == "offer: using old music type"]
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     def test_future_event(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -128,9 +140,16 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
+        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
         assert created_offer.publicationDate == local_datetime_to_default_timezone(
             publication_date, "Europe/Paris"
         ).replace(microsecond=0, tzinfo=None)
+
+        assert created_offer.publicationDatetime == local_datetime_to_default_timezone(
+            publication_date, "Europe/Paris"
+        ).replace(microsecond=0, tzinfo=None)
+        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert not created_offer.bookingAllowedDatetime
         assert created_offer.futureOffer.isWaitingForPublication
 
     def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
@@ -164,6 +183,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
@@ -221,7 +241,13 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "performer": "Nicolas Jaar",
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
+
+        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
         assert created_offer.publicationDate is None
+
+        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert not created_offer.bookingAllowedDatetime
         assert created_offer.description == "Space is only noise if you can see"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.DRAFT

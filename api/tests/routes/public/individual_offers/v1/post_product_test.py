@@ -6,6 +6,7 @@ from unittest import mock
 
 import pytest
 import sqlalchemy.exc as sa_exc
+import time_machine
 
 from pcapi import settings
 from pcapi.core.geography import factories as geography_factories
@@ -30,7 +31,10 @@ ACCESSIBILITY_FIELDS = {
     "visualDisabilityCompliant": True,
 }
 
+now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)
 
+
+@pytest.mark.usefixtures("db_session")
 class PostProductTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products"
     endpoint_method = "post"
@@ -47,12 +51,10 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "name": "Le champ des possibles",
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_raise_401_because_not_authenticated(self, client):
         response = client.post(self.endpoint_url, json={})
         assert response.status_code == 401
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
@@ -61,7 +63,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 404
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_raise_404_because_venue_provider_is_inactive(self, client):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         response = client.with_explicit_token(plain_api_key).post(
@@ -69,7 +70,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 404
 
-    @pytest.mark.usefixtures("db_session")
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     def test_physical_product_minimal_body(self, update_sib_pro_task_mock, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -88,6 +89,9 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
+        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert not created_offer.bookingAllowedDatetime
         assert not created_offer.isDuo
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
@@ -120,7 +124,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "idAtProvider": None,
         }
 
-    @pytest.mark.usefixtures("db_session")
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -171,6 +175,9 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
+        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert not created_offer.bookingAllowedDatetime
         assert created_offer.isDuo is False
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
@@ -228,7 +235,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             },
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_unlimited_quantity(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -274,7 +280,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             ),
         ],
     )
-    @pytest.mark.usefixtures("db_session")
     def test_should_raise_400_because_of_incorrect_price_value(self, client, stock, expected_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venueId)
@@ -285,7 +290,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == expected_json
 
-    @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -306,7 +310,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert db.session.query(offers_models.Offer).one_or_none() is None
         assert response.json == {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
 
-    @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -329,7 +332,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.ean == "1234567891234"
         assert "ean" not in created_offer.extraData
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_with_custom_address(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venueId)
@@ -353,7 +355,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_with_custom_address_should_create_offerer_address(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venueId)
@@ -404,7 +405,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "location.AddressLocation.addressId": [f"There is no address with id {not_existing_address_id}"]
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -422,7 +422,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert "categoryRelatedFields.category" in response.json
         assert db.session.query(offers_models.Offer).first() is None
 
-    @pytest.mark.usefixtures("db_session")
     def test_offer_with_ean_in_name_is_not_accepted(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -443,7 +442,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_offer_with_description_more_than_10000_characters_long_is_not_accepted(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -465,7 +463,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json["description"] == ["ensure this value has at most 10000 characters"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_venue_allowed(self, client):
         not_allowed_venue = offerers_factories.VenueFactory()
         plain_api_key, _ = self.setup_active_venue_provider()
@@ -567,7 +564,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert db.session.query(offers_models.Offer).first() is None
         assert db.session.query(offers_models.Stock).first() is None
 
-    @pytest.mark.usefixtures("db_session")
     def test_stock_booking_limit_without_timezone(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -591,7 +587,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "stock.bookingLimitDatetime": ["The datetime must be timezone-aware."],
         }
 
-    @pytest.mark.usefixtures("db_session")
     def test_not_allowed_categories(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -651,7 +646,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         }
         assert db.session.query(offers_models.Offer).first() is None
 
-    @pytest.mark.usefixtures("db_session")
     def test_books_are_not_allowed(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -672,7 +666,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert db.session.query(offers_models.Offer).count() == 0
 
-    @pytest.mark.usefixtures("db_session")
     def test_create_allowed_product(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -693,7 +686,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         assert db.session.query(offers_models.Offer).count() == 1
 
-    @pytest.mark.usefixtures("db_session")
     def test_unique_venue_and_id_at_provider_violation(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
@@ -705,7 +697,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
 
-    @pytest.mark.usefixtures("db_session")
     def test_db_error(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)

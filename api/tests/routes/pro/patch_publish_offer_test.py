@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -30,6 +31,9 @@ class Returns404Test:
         assert response.status_code == 403
 
 
+now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)
+
+
 @patch("pcapi.core.search.async_index_offer_ids")
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
@@ -46,6 +50,7 @@ class Returns200Test:
     num_queries += 1  # 11 future_offer
     num_queries += 1  # 12 update offer
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
     def test_patch_publish_offer(
@@ -69,9 +74,9 @@ class Returns200Test:
         assert response.status_code == 200
         content = response.json
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
-        assert offer.finalizationDatetime
-        assert offer.finalizationDatetime == offer.bookingAllowedDatetime
+        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert offer.finalizationDatetime == offer.publicationDatetime
+        assert not offer.bookingAllowedDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
         assert offer.publicationDate is None
@@ -81,6 +86,7 @@ class Returns200Test:
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
     def test_patch_publish_future_offer(
@@ -118,10 +124,10 @@ class Returns200Test:
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
-        assert offer.finalizationDatetime
-        assert offer.bookingAllowedDatetime == expected_publication_date
+        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert offer.publicationDatetime == expected_publication_date
         assert offer.publicationDate == expected_publication_date
+        assert not offer.bookingAllowedDatetime
         assert offer.futureOffer.isWaitingForPublication
         assert content["isActive"] is False
         assert content["isNonFreeOffer"] is True
@@ -172,7 +178,6 @@ class Returns200Test:
         content = response.json
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == first_finalization_datetime
-        assert offer.finalizationDatetime <= offer.bookingAllowedDatetime
         assert offer.finalizationDatetime <= offer.publicationDatetime
         assert offer.publicationDate is None
         assert content["isActive"] is True
