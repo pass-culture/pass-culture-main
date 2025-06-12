@@ -1,0 +1,15 @@
+{
+    "hitsPerPage": 20,
+    "version": 2,
+    "searchableAttributes": [
+        "name"
+    ],
+    "attributesToRetrieve": null,
+    "distinct": true,
+    "attributesForFaceting": [
+        "filterOnly(id)",
+        "searchable(name)"
+    ],
+    "attributesToSnippet": null,
+    "attributesToHighlight": null
+}
