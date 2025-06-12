@@ -383,7 +383,11 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
 
 class GetCollectiveOfferBookingResponseModel(BaseModel):
     id: int
+    dateCreated: datetime
     status: educational_models.CollectiveBookingStatus
+    cancellationLimitDate: datetime
+    cancellationReason: educational_models.CollectiveBookingCancellationReasons | None
+    confirmationLimitDate: datetime
 
     class Config:
         orm_mode = True

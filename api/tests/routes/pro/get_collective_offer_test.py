@@ -12,6 +12,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils.date import format_into_utc_date
 
 
 @pytest.mark.usefixtures("db_session")
@@ -258,7 +259,7 @@ class Returns200Test:
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers/{offer_id}")
 
-    def test_last_booking_fields(self, client):
+    def test_booking_field(self, client):
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -275,8 +276,34 @@ class Returns200Test:
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
-        response_json = response.json
-        assert response_json["booking"] == {"id": booking.id, "status": booking.status.value}
+        assert response.json["booking"] == {
+            "id": booking.id,
+            "status": educational_models.CollectiveBookingStatus.REIMBURSED.value,
+            "dateCreated": format_into_utc_date(booking.dateCreated),
+            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
+            "cancellationReason": None,
+            "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+        }
+
+    def test_booking_field_cancelled(self, client):
+        offer = educational_factories.CancelledWithBookingCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        client = client.with_session_auth(email="user@example.com")
+        offer_id = offer.id
+        with assert_num_queries(self.num_queries):
+            response = client.get(f"/collective/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["booking"] == {
+            "id": booking.id,
+            "status": educational_models.CollectiveBookingStatus.CANCELLED.value,
+            "dateCreated": format_into_utc_date(booking.dateCreated),
+            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
+            "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER.value,
+            "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+        }
 
     def test_dates_on_offer(self, client):
         beginningDate = datetime.utcnow() + timedelta(days=100)
