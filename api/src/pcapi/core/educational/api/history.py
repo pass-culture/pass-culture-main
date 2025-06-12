@@ -99,9 +99,11 @@ def _get_collective_offer_past_history(
     offer: models.CollectiveOffer,
     from_status: models.CollectiveOfferDisplayedStatus | None,
     to_status: models.CollectiveOfferDisplayedStatus | None,
+    current_status: HistoryStatus,
 ) -> list[HistoryStep]:
+    current_step = HistoryStep(status=current_status, datetime=_get_status_date(offer=offer, status=current_status))
     if from_status is None or to_status is None:
-        return []
+        return [current_step]
 
     steps = []
     next_status: models.CollectiveOfferDisplayedStatus | None = from_status
@@ -114,6 +116,7 @@ def _get_collective_offer_past_history(
 
         next_status = NEXT_STATUS_BY_STATUS[next_status]
 
+    steps.append(current_step)
     return steps
 
 
@@ -257,30 +260,28 @@ def get_collective_offer_history(offer: models.CollectiveOffer) -> CollectiveOff
         base_status = offer.get_displayed_status(with_archived=False, with_hidden=False)
         base_status_data = _get_history_status_data(offer=offer, status=base_status)
         past_history = _get_collective_offer_past_history(
-            offer=offer, from_status=base_status_data.past_from_status, to_status=base_status_data.past_to_status
+            offer=offer,
+            from_status=base_status_data.past_from_status,
+            to_status=base_status_data.past_to_status,
+            current_status=base_status_data.current_status,
         )
 
-        # add the status preceding ARCHIVED or HIDDEN, only if it is not a transitional status
-        if base_status_data.current_status not in set(HistoryTransitionalStatus):
-            past_history.append(
-                HistoryStep(
-                    status=base_status_data.current_status,
-                    datetime=_get_status_date(offer, base_status_data.current_status),
-                )
-            )
+        # dot not include the step preceding archived / hidden if it is a transitional status
+        if base_status_data.current_status in set(HistoryTransitionalStatus):
+            past_history.pop()
 
+        # add the archived / hidden step
         past_history.append(HistoryStep(status=status, datetime=_get_status_date(offer, status)))
 
         return CollectiveOfferHistory(past=past_history, future=[])
 
     status_data = _get_history_status_data(offer=offer, status=status)
-    past_history = [
-        *_get_collective_offer_past_history(
-            offer=offer, from_status=status_data.past_from_status, to_status=status_data.past_to_status
-        ),
-        HistoryStep(status=status_data.current_status, datetime=_get_status_date(offer, status_data.current_status)),
-    ]
     return CollectiveOfferHistory(
-        past=past_history,
+        past=_get_collective_offer_past_history(
+            offer=offer,
+            from_status=status_data.past_from_status,
+            to_status=status_data.past_to_status,
+            current_status=status_data.current_status,
+        ),
         future=_get_collective_offer_future_history(from_status=status_data.future_from_status),
     )
