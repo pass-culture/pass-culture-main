@@ -5,6 +5,7 @@ import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
 import fullBookIcon from 'icons/full-book.svg'
 import fullBoostedIcon from 'icons/full-boosted.svg'
+import fullBulbIcon from 'icons/full-bulb.svg'
 import fullBurgerIcon from 'icons/full-burger.svg'
 import fullCheckIcon from 'icons/full-check.svg'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -188,6 +189,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullArchiveIcon },
   { src: fullBoostedIcon },
   { src: fullSmsIcon },
+  { src: fullBulbIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [
