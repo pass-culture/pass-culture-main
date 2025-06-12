@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PatchOfferPublishBodyModel = {
+  bookingAllowedDatetime?: string | null;
   id: number;
   publicationDate?: string | null;
 };

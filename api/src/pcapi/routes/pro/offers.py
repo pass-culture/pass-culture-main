@@ -403,7 +403,11 @@ def patch_publish_offer(
 
     try:
         offers_api.update_offer_fraud_information(offer, user=current_user)
-        offers_api.publish_offer(offer, publication_date=body.publicationDate)
+        offers_api.publish_offer(
+            offer,
+            publication_date=body.publicationDate,
+            booking_allowed_datetime=body.bookingAllowedDatetime,
+        )
     except exceptions.OfferException as exc:
         raise api_errors.ApiErrors(exc.errors)
 

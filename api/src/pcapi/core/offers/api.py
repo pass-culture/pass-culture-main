@@ -902,6 +902,7 @@ def _format_publication_date(publication_date: datetime.datetime | None, timezon
 def publish_offer(
     offer: models.Offer,
     publication_date: datetime.datetime | None = None,
+    booking_allowed_datetime: datetime.datetime | None = None,
 ) -> models.Offer:
     finalization_date = datetime.datetime.now(datetime.timezone.utc)
 
@@ -910,6 +911,11 @@ def publish_offer(
 
     publication_date = _format_publication_date(publication_date, offer.venue.timezone)
     validation.check_publication_date(offer, publication_date)
+
+    if booking_allowed_datetime:
+        booking_allowed_datetime = local_datetime_to_default_timezone(booking_allowed_datetime, offer.venue.timezone)
+
+    offer.bookingAllowedDatetime = booking_allowed_datetime
 
     if ean := offer.ean:
         validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
