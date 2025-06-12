@@ -25,7 +25,3 @@ def get_offer_withdrawal_type(booking: Booking) -> str | None:
 
 def get_offerer_name(booking: Booking) -> str:
     return booking.stock.offer.venue.managingOfferer.name
-
-
-def get_venue_street(booking: Booking) -> str:
-    return booking.stock.offer.venue.street
