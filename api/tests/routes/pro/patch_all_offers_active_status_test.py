@@ -15,8 +15,13 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 
 
+now_datetime_with_tz = datetime.now(timezone.utc)
+now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
+
+
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     def when_activating_all_existing_offers(self, client):
         offer1 = offers_factories.OfferFactory(isActive=False)
         venue = offer1.venue
@@ -25,23 +30,20 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
         client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
-        now = datetime.now(timezone.utc)
-        now_without_tz = now.replace(tzinfo=None)
 
-        with time_machine.travel(now, tick=False):
-            response = client.patch("/offers/all-active-status", json=data)
+        response = client.patch("/offers/all-active-status", json=data)
 
         assert response.status_code == 202
         offer_1: Offer = db.session.get(Offer, offer1.id)
         offer_2: Offer = db.session.get(Offer, offer2.id)
 
         assert offer_1.isActive
-        assert offer_1.publicationDatetime == now_without_tz
-        assert offer_1.bookingAllowedDatetime == now_without_tz
+        assert offer_1.publicationDatetime == now_datetime_without_tz
+        assert not offer_1.bookingAllowedDatetime
 
         assert offer_2.isActive
-        assert offer_2.publicationDatetime == now_without_tz
-        assert offer_2.bookingAllowedDatetime == now_without_tz
+        assert offer_2.publicationDatetime == now_datetime_without_tz
+        assert not offer_2.bookingAllowedDatetime
 
     def when_deactivating_all_existing_offers(self, client):
         offer1 = offers_factories.OfferFactory()
@@ -128,11 +130,11 @@ class Returns204Test:
 
         assert not matching_offer_1.isActive
         assert not matching_offer_1.publicationDatetime
-        assert not matching_offer_1.bookingAllowedDatetime
+        assert matching_offer_1.bookingAllowedDatetime
 
         assert not matching_offer_2.isActive
         assert not matching_offer_2.publicationDatetime
-        assert not matching_offer_2.bookingAllowedDatetime
+        assert matching_offer_2.bookingAllowedDatetime
 
         assert offer_out_of_date_range.isActive
         assert offer_out_of_date_range.publicationDatetime == publication_datetime
@@ -146,6 +148,7 @@ class Returns204Test:
         assert offer_with_not_matching_name.publicationDatetime == publication_datetime
         assert offer_with_not_matching_name.bookingAllowedDatetime == publication_datetime
 
+    @time_machine.travel(now_datetime_with_tz, tick=False)
     def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)
         venue = approved_offer.venue
@@ -153,19 +156,15 @@ class Returns204Test:
         rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         offerer = venue.managingOfferer
 
-        now = datetime.now(timezone.utc)
-        now_without_tz = now.replace(tzinfo=None)
-
-        with time_machine.travel(now, tick=False):
-            offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-            response = client.with_session_auth("pro@example.com").patch(
-                "/offers/all-active-status", json={"isActive": True, "page": 1, "venueId": venue.id}
-            )
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        response = client.with_session_auth("pro@example.com").patch(
+            "/offers/all-active-status", json={"isActive": True, "page": 1, "venueId": venue.id}
+        )
 
         assert response.status_code == 202
         assert approved_offer.isActive
-        assert approved_offer.publicationDatetime == now_without_tz
-        assert approved_offer.bookingAllowedDatetime == now_without_tz
+        assert approved_offer.publicationDatetime == now_datetime_without_tz
+        assert not approved_offer.bookingAllowedDatetime
 
         assert not pending_offer.isActive
         assert not pending_offer.publicationDatetime
@@ -200,11 +199,11 @@ class Returns204Test:
 
         assert offer_from_active_venue_provider.isActive
         assert offer_from_active_venue_provider.publicationDatetime
-        assert offer_from_active_venue_provider.bookingAllowedDatetime
+        assert not offer_from_active_venue_provider.bookingAllowedDatetime
 
         assert offer_not_from_provider.isActive
         assert offer_not_from_provider.publicationDatetime
-        assert offer_not_from_provider.bookingAllowedDatetime
+        assert not offer_not_from_provider.bookingAllowedDatetime
 
         assert not offer_from_inactive_venue_provider.isActive
         assert not offer_from_inactive_venue_provider.publicationDatetime

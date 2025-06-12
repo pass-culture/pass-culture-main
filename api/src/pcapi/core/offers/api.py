@@ -480,12 +480,9 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
     if "isActive" in update_fields:
         update_fields["publicationDatetime"] = None
-        update_fields["bookingAllowedDatetime"] = None
 
         if update_fields["isActive"]:
-            activation_datetime = datetime.datetime.now(datetime.timezone.utc)
-            update_fields["publicationDatetime"] = activation_datetime
-            update_fields["bookingAllowedDatetime"] = activation_datetime
+            update_fields["publicationDatetime"] = datetime.datetime.now(datetime.timezone.utc)
 
     offers_count = 0
     found_venue_ids = set()
