@@ -36,15 +36,10 @@ NEXT_STATUS_BY_STATUS: typing.Final[
 ] = {
     models.CollectiveOfferDisplayedStatus.DRAFT: models.CollectiveOfferDisplayedStatus.PUBLISHED,
     models.CollectiveOfferDisplayedStatus.UNDER_REVIEW: models.CollectiveOfferDisplayedStatus.PUBLISHED,
-    models.CollectiveOfferDisplayedStatus.REJECTED: None,
     models.CollectiveOfferDisplayedStatus.PUBLISHED: models.CollectiveOfferDisplayedStatus.PREBOOKED,
     models.CollectiveOfferDisplayedStatus.PREBOOKED: models.CollectiveOfferDisplayedStatus.BOOKED,
     models.CollectiveOfferDisplayedStatus.BOOKED: models.CollectiveOfferDisplayedStatus.ENDED,
     models.CollectiveOfferDisplayedStatus.ENDED: models.CollectiveOfferDisplayedStatus.REIMBURSED,
-    models.CollectiveOfferDisplayedStatus.REIMBURSED: None,
-    models.CollectiveOfferDisplayedStatus.CANCELLED: None,
-    models.CollectiveOfferDisplayedStatus.ARCHIVED: None,
-    models.CollectiveOfferDisplayedStatus.HIDDEN: None,
 }
 
 
@@ -107,14 +102,13 @@ def _get_collective_offer_past_history(
 
     steps = []
     next_status: models.CollectiveOfferDisplayedStatus | None = from_status
-    while True:
-        assert next_status is not None
+    while next_status is not None:
         steps.append(HistoryStep(status=next_status, datetime=_get_status_date(offer=offer, status=next_status)))
 
-        if next_status is None or next_status == to_status:
+        if next_status == to_status:
             break
 
-        next_status = NEXT_STATUS_BY_STATUS[next_status]
+        next_status = NEXT_STATUS_BY_STATUS.get(next_status)
 
     steps.append(current_step)
     return steps
@@ -124,11 +118,11 @@ def _get_collective_offer_future_history(
     from_status: models.CollectiveOfferDisplayedStatus,
 ) -> list[models.CollectiveOfferDisplayedStatus]:
     steps = []
+    next_status = NEXT_STATUS_BY_STATUS.get(from_status)
 
-    next_status = NEXT_STATUS_BY_STATUS[from_status]
     while next_status is not None:
         steps.append(next_status)
-        next_status = NEXT_STATUS_BY_STATUS[next_status]
+        next_status = NEXT_STATUS_BY_STATUS.get(next_status)
 
     return steps
 
