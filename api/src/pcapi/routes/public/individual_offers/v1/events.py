@@ -131,7 +131,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             if body.image:
                 utils.save_image(body.image, created_offer)
 
-            offers_api.publish_offer(created_offer, publication_date=body.publication_date)
+            offers_api.publish_offer(created_offer, publication_datetime=body.publication_date)
 
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)

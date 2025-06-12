@@ -396,7 +396,7 @@ describe('Summary', () => {
       ).toBeInTheDocument()
       expect(api.patchPublishOffer).toHaveBeenCalledWith({
         id: customContext.offer.id,
-        publicationDate: `${publicationDate}T10:00:00Z`,
+        publicationDatetime: `${publicationDate}T10:00:00Z`,
       })
 
       // Clean up the mocked time
