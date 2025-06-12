@@ -561,11 +561,12 @@ def test_serialize_venue_with_one_bookable_offer():
 
 
 def test_serialize_future_offer():
-    offer_1 = offers_factories.OfferFactory(isActive=False, subcategoryId=subcategories.FESTIVAL_MUSIQUE.id)
-    offer_2 = offers_factories.OfferFactory(isActive=True)
     publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-    offers_factories.FutureOfferFactory(offer=offer_1, publicationDate=publication_date)
-    offers_factories.FutureOfferFactory(offer=offer_2, publicationDate=publication_date)
+
+    offer_1 = offers_factories.OfferFactory(
+        isActive=False, subcategoryId=subcategories.FESTIVAL_MUSIQUE.id, publicationDatetime=publication_date
+    )
+    offer_2 = offers_factories.OfferFactory(isActive=True, publicationDatetime=publication_date)
     beginning_date = datetime.datetime(2032, 1, 4, 12, 15)
     offers_factories.EventStockFactory(offer=offer_1, price=10, beginningDatetime=beginning_date)
     offers_factories.StockFactory(offer=offer_2, price=8.50)

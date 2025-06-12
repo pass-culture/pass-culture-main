@@ -568,14 +568,11 @@ def create_event_opening_hours(
 
 
 def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
-    offer_query, future_offer_query = offers_repository.get_offers_by_publication_date(
-        publication_date=publication_date
-    )
+    offer_query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
 
     with transaction():
         batch_update_offers(offer_query, {"isActive": True})
-        future_offer_query.update({"isSoftDeleted": True}, synchronize_session="fetch")
 
     return [offer.id for offer in offer_query]
 
@@ -917,29 +914,12 @@ def publish_offer(
     if ean := offer.ean:
         validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
-    if publication_date is not None:  # i.e. pro user schedules the publication in the future
-        offer.isActive = False
-        offer.publicationDatetime = publication_date
-        offer.bookingAllowedDatetime = publication_date
-
-        # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
-        future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_date)
-        db.session.add(future_offer)
-    else:  # i.e. pro user publishes the offer right away
-        offer.isActive = True
-        offer.publicationDatetime = finalization_date
-        offer.bookingAllowedDatetime = finalization_date
-
-        # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
-        if offer.publicationDate:
-            offers_repository.delete_future_offer(offer.id)
-
-        on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
-        logger.info(
-            "Offer has been published",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
-            technical_message_id="offer.published",
-        )
+    on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
+    logger.info(
+        "Offer has been published",
+        extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+        technical_message_id="offer.published",
+    )
     return offer
 
 

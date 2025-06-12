@@ -75,7 +75,6 @@ class Returns200Test:
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
         assert offer.publicationDate is None
-        assert not offer.futureOffer
         assert content["isActive"] is True
         assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
@@ -122,7 +121,6 @@ class Returns200Test:
         assert offer.bookingAllowedDatetime == expected_publication_date
         assert offer.publicationDatetime == expected_publication_date
         assert offer.publicationDate == expected_publication_date
-        assert offer.futureOffer.isWaitingForPublication
         assert content["isActive"] is False
         assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_not_called()
@@ -148,8 +146,7 @@ class Returns200Test:
         client = client.with_session_auth("user@example.com")
         publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
         offer_id = stock.offerId
-        # +1 insert into future_offer
-        with assert_num_queries(self.num_queries + 1):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={"id": offer_id, "publicationDate": publication_date.isoformat()},
@@ -164,7 +161,6 @@ class Returns200Test:
         first_finalization_datetime = offer.finalizationDatetime
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
-        assert db.session.query(offers_models.FutureOffer).count() == 1
 
         response = client.patch("/offers/publish", json={"id": stock.offerId})
 
@@ -177,7 +173,6 @@ class Returns200Test:
         assert offer.publicationDate is None
         assert content["isActive"] is True
         mock_async_index_offer_ids.assert_called_once()
-        assert db.session.query(offers_models.FutureOffer).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")

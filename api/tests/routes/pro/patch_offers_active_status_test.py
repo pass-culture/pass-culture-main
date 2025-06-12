@@ -123,16 +123,16 @@ class Returns204Test:
 @pytest.mark.usefixtures("db_session")
 class ActivateFutureOffersTest:
     def test_activate_future_offers_and_notify_users_with_reminders(self, client):
-        offer_to_publish_1 = offers_factories.OfferFactory(isActive=False)
+        publication_date = datetime.utcnow() + timedelta(days=30)
+
+        offer_to_publish_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
         venue = offer_to_publish_1.venue
-        offer_to_publish_2 = offers_factories.OfferFactory(isActive=False, venue=venue)
+        offer_to_publish_2 = offers_factories.OfferFactory(
+            isActive=False, venue=venue, publicationDatetime=publication_date
+        )
         offer_to_publish_3 = offers_factories.OfferFactory(isActive=False, venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offer=offer_to_publish_1, publicationDate=publication_date)
-        offers_factories.FutureOfferFactory(offer=offer_to_publish_2, publicationDate=publication_date)
 
         with patch(
             "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
@@ -150,15 +150,13 @@ class ActivateFutureOffersTest:
         assert not db.session.get(Offer, offer_to_publish_3.id).isActive
 
     def test_deactivate_future_offers(self, client):
-        offer_published_1 = offers_factories.OfferFactory()
+        publication_date = datetime.utcnow() + timedelta(days=30)
+
+        offer_published_1 = offers_factories.OfferFactory(publicationDatetime=publication_date)
         venue = offer_published_1.venue
-        offer_published_2 = offers_factories.OfferFactory(venue=venue)
+        offer_published_2 = offers_factories.OfferFactory(venue=venue, publicationDatetime=publication_date)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        publication_date = datetime.utcnow() + timedelta(days=30)
-        offers_factories.FutureOfferFactory(offer=offer_published_1, publicationDate=publication_date)
-        offers_factories.FutureOfferFactory(offer=offer_published_2, publicationDate=publication_date)
 
         with patch(
             "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"

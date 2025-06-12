@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
 
 import pytest
@@ -43,7 +44,7 @@ class GetTest:
 
         def when_user_is_logged_in_and_has_favorite_offers(self, client):
             # Given
-            today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
+            today = datetime.now(timezone.utc) + timedelta(hours=3)  # offset a bit to make sure it's > now()
             yesterday = today - timedelta(days=1)
             tomorow = today + timedelta(days=1)
             user = users_factories.UserFactory()
@@ -98,7 +99,6 @@ class GetTest:
             client.with_token(user.email)
 
             # When
-            # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
             with assert_num_queries(2):

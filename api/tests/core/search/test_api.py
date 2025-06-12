@@ -35,9 +35,8 @@ def make_fully_featured_offer(venue: offerers_models.Venue | None = None) -> off
 
 
 def make_future_offer() -> offers_models.Offer:
-    offer = offers_factories.OfferFactory(isActive=False)
     publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-    offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
+    offer = offers_factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
     return offer
 
 
