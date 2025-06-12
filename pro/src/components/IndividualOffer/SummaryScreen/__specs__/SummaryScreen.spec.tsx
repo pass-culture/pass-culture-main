@@ -403,6 +403,71 @@ describe('Summary', () => {
       vi.useRealTimers()
     })
 
+    it('should allow to maker offer bookable later if the offer is an event', async () => {
+      // Mock current date to avoid DST issues
+      vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
+
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+      customContext.offer = getIndividualOfferFactory({ isEvent: true })
+
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        { features: ['WIP_REFACTO_FUTURE_OFFER'] }
+      )
+
+      await userEvent.click(
+        screen.getByLabelText(/Rendre réservable plus tard/)
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Publier l’offre' })
+      )
+
+      expect(
+        await screen.findByText(
+          'Veuillez sélectionner une date de réservabilité'
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Veuillez sélectionner une heure de réservabilité')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(/Confirmation page: creation/)
+      ).not.toBeInTheDocument()
+
+      const bookingAllowedDate = format(
+        addDays(new Date(), 1),
+        FORMAT_ISO_DATE_ONLY
+      )
+
+      await userEvent.type(screen.getByLabelText('Date *'), bookingAllowedDate)
+      await userEvent.selectOptions(screen.getByLabelText('Heure *'), '11:00')
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Publier l’offre' })
+      )
+
+      expect(
+        await screen.findByText(/Confirmation page: creation/)
+      ).toBeInTheDocument()
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
+        id: customContext.offer.id,
+        bookingAllowedDatetime: `${bookingAllowedDate}T10:00:00Z`,
+      })
+
+      // Clean up the mocked time
+      vi.useRealTimers()
+    })
+
     it('should display notification on api error', async () => {
       renderSummary(
         customContext,
