@@ -51,6 +51,7 @@ class UserAttributes:
     subscribed_themes: list[str]
     suspension_date: datetime.datetime | None  # Added for Zendesk
     suspension_reason: users_constants.SuspensionReason | None  # Added for Zendesk
+    achievements: list[str]  # Added for Brevo and Batch
 
 
 @dataclass
