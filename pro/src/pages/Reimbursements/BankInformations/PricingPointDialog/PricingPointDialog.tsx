@@ -50,6 +50,8 @@ export const PricingPointDialog = ({
       })
       updateVenuePricingPoint(selectedVenue.id)
       closeDialog()
+
+      notification.success('Vos modifications ont bien été prises en compte.')
     } catch {
       notification.error(
         'Une erreur est survenue. Merci de réessayer plus tard'
@@ -92,13 +94,16 @@ export const PricingPointDialog = ({
           label="Structure avec SIRET utilisée pour le calcul du barème de remboursement"
           options={venuesOptions}
           className={styles['venues-select']}
+          error={methods.formState.errors.pricingPointId?.message}
         />
         <DialogBuilder.Footer>
           <div className={styles['dialog-actions']}>
             <Dialog.Close asChild>
               <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
             </Dialog.Close>
-            <Button type="submit">Valider la sélection</Button>
+            <Button type="submit" disabled={methods.formState.isSubmitting}>
+              Valider la sélection
+            </Button>
           </div>
         </DialogBuilder.Footer>
       </form>
