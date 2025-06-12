@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models import offer_mixin
 
 
@@ -145,7 +146,10 @@ class CollectiveOfferTest:
             interventionArea=None,
         )
 
+        ban_id = venue.offererAddress.address.banId
+        offer_address_id = venue.offererAddressId
         dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
+        db.session.expunge_all()
 
         with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
@@ -155,9 +159,9 @@ class CollectiveOfferTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == offer_address_id
         assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["address"]["banId"] == ban_id
 
     def test_should_return_404_when_no_collective_offer(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers/0")

@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -126,6 +127,10 @@ class CollectiveOfferTest:
             institution=institution,
         )
 
+        ban_id = venue.offererAddress.address.banId
+        offer_address_id = venue.offererAddressId
+        db.session.expunge_all()
+
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
         num_queries = 1  # fetch collective offer and related data
         num_queries += 1  # fetch redactor
@@ -138,6 +143,6 @@ class CollectiveOfferTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == offer_address_id
         assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["address"]["banId"] == ban_id

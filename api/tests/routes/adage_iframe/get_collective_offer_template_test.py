@@ -10,6 +10,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import db as db_utils
 from pcapi.utils.date import format_into_utc_date
@@ -225,8 +226,11 @@ class CollectiveOfferTemplateTest:
             offererAddressId=venue.offererAddressId,
             interventionArea=None,
         )
-
+        offer_address_id = venue.offererAddressId
+        ban_id = venue.offererAddress.address.banId
         dst = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+        db.session.expunge_all()
+
         num_queries = 1  # fetch collective offer template and related data
         num_queries += 1  # fetch redactor
         with assert_num_queries(num_queries):
@@ -237,9 +241,9 @@ class CollectiveOfferTemplateTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == offer_address_id
         assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["address"]["banId"] == ban_id
 
     def test_should_return_404_when_no_collective_offer_template(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers-template/0")
@@ -402,7 +406,12 @@ class GetCollectiveOfferTemplatesTest:
             interventionArea=None,
         )
 
-        url = url_for(self.endpoint, ids=offer.id)
+        offer_address_id = venue.offererAddressId
+        offer_id = offer.id
+        ban_id = venue.offererAddress.address.banId
+        db.session.expunge_all()
+
+        url = url_for(self.endpoint, ids=offer_id)
         with assert_num_queries(self.expected_num_queries):
             response = eac_client.get(url)
 
@@ -412,9 +421,9 @@ class GetCollectiveOfferTemplatesTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == offer_address_id
         assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["address"]["banId"] == ban_id
 
     def test_location_school(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -446,7 +455,12 @@ class GetCollectiveOfferTemplatesTest:
             venue=venue,
         )
 
-        url = url_for(self.endpoint, ids=offer.id)
+        offer_address_id = oa.id
+        offer_id = offer.id
+        ban_id = oa.address.banId
+        db.session.expunge_all()
+
+        url = url_for(self.endpoint, ids=offer_id)
         with assert_num_queries(self.expected_num_queries):
             response = eac_client.get(url)
 
@@ -456,9 +470,9 @@ class GetCollectiveOfferTemplatesTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == oa.id
+        assert response_location["address"]["id_oa"] == offer_address_id
         assert response_location["address"]["isLinkedToVenue"] is False
-        assert response_location["address"]["banId"] == oa.address.banId
+        assert response_location["address"]["banId"] == ban_id
 
     def test_location_to_be_defined(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
