@@ -901,7 +901,7 @@ def _format_publication_date(publication_date: datetime.datetime | None, timezon
 
 def publish_offer(
     offer: models.Offer,
-    publication_date: datetime.datetime | None = None,
+    publication_datetime: datetime.datetime | None = None,
     booking_allowed_datetime: datetime.datetime | None = None,
 ) -> models.Offer:
     finalization_date = datetime.datetime.now(datetime.timezone.utc)
@@ -909,8 +909,8 @@ def publish_offer(
     if not offer.finalizationDatetime:
         offer.finalizationDatetime = finalization_date
 
-    publication_date = _format_publication_date(publication_date, offer.venue.timezone)
-    validation.check_publication_date(offer, publication_date)
+    publication_datetime = _format_publication_date(publication_datetime, offer.venue.timezone)
+    validation.check_publication_date(offer, publication_datetime)
 
     if booking_allowed_datetime:
         booking_allowed_datetime = local_datetime_to_default_timezone(booking_allowed_datetime, offer.venue.timezone)
@@ -920,12 +920,12 @@ def publish_offer(
     if ean := offer.ean:
         validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
-    if publication_date is not None:  # i.e. pro user schedules the publication in the future
+    if publication_datetime is not None:  # i.e. pro user schedules the publication in the future
         offer.isActive = False
-        offer.publicationDatetime = publication_date
+        offer.publicationDatetime = publication_datetime
 
         # (tcoudray-pass, 23/05/2025) Remove when publicationDatetime is used instead of future_offer
-        future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_date)
+        future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_datetime)
         db.session.add(future_offer)
     else:  # i.e. pro user publishes the offer right away
         offer.isActive = True

@@ -113,7 +113,7 @@ class Returns200Test:
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={"id": offer_id, "publicationDate": publication_date.isoformat()},
+                json={"id": offer_id, "publicationDatetime": publication_date.isoformat()},
             )
 
         expected_publication_date = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
@@ -163,7 +163,7 @@ class Returns200Test:
                 "/offers/publish",
                 json={
                     "id": offer_id,
-                    "publicationDate": publication_date.isoformat(),
+                    "publicationDatetime": publication_date.isoformat(),
                     "bookingAllowedDatetime": booking_allowed_datetime.isoformat(),
                 },
             )
@@ -260,7 +260,7 @@ class Returns400Test:
             "/offers/publish",
             json={
                 "id": stock.offerId,
-                "publicationDate": publication_date.isoformat(),
+                "publicationDatetime": publication_date.isoformat(),
             },
         )
 

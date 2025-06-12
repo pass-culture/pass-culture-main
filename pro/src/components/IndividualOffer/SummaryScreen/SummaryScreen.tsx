@@ -61,7 +61,7 @@ export const SummaryScreen = () => {
       )
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
-        publicationDate:
+        publicationDatetime:
           values.publicationMode === 'later'
             ? serializeDateTimeToUTCFromLocalDepartment(
                 values.publicationDate,

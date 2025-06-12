@@ -5,6 +5,6 @@
 export type PatchOfferPublishBodyModel = {
   bookingAllowedDatetime?: string | null;
   id: number;
-  publicationDate?: string | null;
+  publicationDatetime?: string | null;
 };
 
