@@ -4,7 +4,6 @@ import { expect } from 'vitest'
 
 import {
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
   SharedCurrentUserResponseModel,
   UserRole,
 } from 'apiClient/v1'
@@ -272,7 +271,6 @@ describe('CollectiveOffersScreen', () => {
     const offers = [
       collectiveOfferFactory({
         isActive: false,
-        status: CollectiveOfferStatus.PENDING,
       }),
     ]
 
@@ -301,19 +299,11 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should check all validated offers checkboxes', async () => {
-    // Given
     const offers = [
       collectiveOfferFactory({ name: 'offer 1' }),
       collectiveOfferFactory({ name: 'offer 2' }),
-      collectiveOfferFactory({
-        isActive: false,
-        status: CollectiveOfferStatus.REJECTED,
-        name: 'offer 3',
-      }),
-      collectiveOfferFactory({
-        status: CollectiveOfferStatus.PENDING,
-        name: 'offer 4',
-      }),
+      collectiveOfferFactory({ name: 'offer 3' }),
+      collectiveOfferFactory({ name: 'offer 4' }),
     ]
 
     renderOffers({

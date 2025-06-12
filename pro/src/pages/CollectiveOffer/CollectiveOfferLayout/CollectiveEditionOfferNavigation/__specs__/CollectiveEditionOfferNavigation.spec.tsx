@@ -10,7 +10,6 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseIdModel,
-  CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -80,7 +79,6 @@ describe('CollectiveEditionOfferNavigation', () => {
   beforeEach(async () => {
     offer = getCollectiveOfferTemplateFactory({
       isTemplate: true,
-      status: CollectiveOfferStatus.ACTIVE,
     })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

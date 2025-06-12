@@ -11,7 +11,6 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import {
   ALL_OFFERERS_OPTION,
@@ -579,8 +578,12 @@ describe('route CollectiveOffers', () => {
 
   it('should show draft offers ', async () => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-      collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
-      collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
+      collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+      }),
+      collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
+      }),
     ])
     await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
 

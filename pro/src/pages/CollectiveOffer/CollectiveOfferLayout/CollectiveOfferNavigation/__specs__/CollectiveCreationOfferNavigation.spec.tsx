@@ -5,7 +5,6 @@ import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseIdModel,
-  CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -66,7 +65,6 @@ describe('CollectiveCreationOfferNavigation', () => {
   beforeEach(async () => {
     offer = getCollectiveOfferTemplateFactory({
       isTemplate: true,
-      status: CollectiveOfferStatus.ACTIVE,
     })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

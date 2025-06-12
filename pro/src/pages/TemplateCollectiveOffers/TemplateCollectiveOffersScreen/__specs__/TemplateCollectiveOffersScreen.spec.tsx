@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
   SharedCurrentUserResponseModel,
   UserRole,
 } from 'apiClient/v1'
@@ -245,13 +245,12 @@ describe('TemplateCollectiveOffersScreen', () => {
     const offers = [
       collectiveOfferFactory({
         isActive: false,
-        status: CollectiveOfferStatus.PENDING,
       }),
     ]
 
     renderOffers({
       ...props,
-      offers: offers,
+      offers,
     })
 
     expect(await screen.findByLabelText('Tout sélectionner')).not.toBeChecked()
@@ -275,24 +274,21 @@ describe('TemplateCollectiveOffersScreen', () => {
 
   describe('on click on select all offers checkbox', () => {
     it('should check all validated offers checkboxes', async () => {
-      // Given
       const offers = [
         collectiveOfferFactory({ name: 'offer 1' }),
         collectiveOfferFactory({ name: 'offer 2' }),
         collectiveOfferFactory({
-          isActive: false,
-          status: CollectiveOfferStatus.REJECTED,
+          displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
           name: 'offer 3',
         }),
         collectiveOfferFactory({
-          status: CollectiveOfferStatus.PENDING,
           name: 'offer 4',
         }),
       ]
 
       renderOffers({
         ...props,
-        offers: offers,
+        offers,
       })
 
       const firstOfferCheckbox = screen.getByRole('checkbox', {
