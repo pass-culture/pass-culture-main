@@ -96,7 +96,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             offers_models.Offer.isActive,
             offers_models.Offer.validation,
         ),
-        sa_orm.joinedload(offers_models.Offer.stocks).options(
+        sa_orm.selectinload(offers_models.Offer.stocks).options(
             sa_orm.load_only(
                 offers_models.Stock.bookingLimitDatetime,
                 offers_models.Stock.beginningDatetime,
@@ -118,8 +118,8 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         db.session.query(offers_models.Product)
         .filter(offers_models.Product.id == product_id)
         .options(
-            sa_orm.joinedload(offers_models.Product.offers).options(*common_options),
-            sa_orm.joinedload(offers_models.Product.productMediations),
+            sa_orm.selectinload(offers_models.Product.offers).options(*common_options),
+            sa_orm.selectinload(offers_models.Product.productMediations),
             sa_orm.joinedload(offers_models.Product.lastProvider),
         )
         .one_or_none()

@@ -32,8 +32,25 @@ class GetProductDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + product + unlinked offers + whitelist product
-    expected_num_queries = 5
+    # Expected SQL queries:
+    # 1) Session
+    # 2) User
+
+    # Product and related data
+    # 3) Product
+    # 4) ProductMediation (via selectinload)
+
+    # Linked offers and stock
+    # 5) Linked Offer
+    # 6) Linked Offer -> Stock (via selectinload)
+
+    # Unlinked offers and stock
+    # 7) Unlinked Offer
+    # 8) Unlinked Offer -> Stock (via selectinload)
+
+    # Whitelist
+    # 9) Whitelisted Product
+    expected_num_queries = 9
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product(self, mock_get_by_ean13, authenticated_client):
@@ -120,7 +137,12 @@ class GetProductDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
-        with assert_num_queries(self.expected_num_queries - 2):  # remove query unlinked offers and whitelist product
+        # The following 4 queries are not executed in this case:
+        # 1) No Stock associated with the linked Offer
+        # 2) No Unlinked Offer
+        # 3) No Stock associated with Unlinked Offer
+        # 4) No Whitelisted Product (missing EAN)
+        with assert_num_queries(self.expected_num_queries - 4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
