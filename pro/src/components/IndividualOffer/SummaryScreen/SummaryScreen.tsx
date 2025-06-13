@@ -61,11 +61,19 @@ export const SummaryScreen = () => {
       )
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
-        publicationDate:
+        publicationDatetime:
           values.publicationMode === 'later'
             ? serializeDateTimeToUTCFromLocalDepartment(
                 values.publicationDate,
                 values.publicationTime,
+                offer.venue.departementCode
+              )
+            : undefined,
+        bookingAllowedDatetime:
+          values.bookingAllowedMode === 'later'
+            ? serializeDateTimeToUTCFromLocalDepartment(
+                values.bookingAllowedDate,
+                values.bookingAllowedTime,
                 offer.venue.departementCode
               )
             : undefined,
@@ -99,6 +107,9 @@ export const SummaryScreen = () => {
       publicationMode: 'now',
       publicationDate: '',
       publicationTime: '',
+      bookingAllowedMode: 'now',
+      bookingAllowedDate: '',
+      bookingAllowedTime: '',
     },
     onSubmit: onPublish,
     validationSchema: showEventPublicationForm ? validationSchema : undefined,

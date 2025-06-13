@@ -1,7 +1,9 @@
 import { useFormikContext } from 'formik'
 
 import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -58,28 +60,25 @@ export const EventPublicationForm = () => {
   const { values, handleChange } =
     useFormikContext<EventPublicationFormValues>()
 
-  const PublicationDatePicker = values.publicationMode === 'later' && (
-    <FormLayout.Row inline className={styles['publish-later']}>
-      <DatePicker
-        label="Date"
-        name="publicationDate"
-        minDate={today}
-        className={styles['date-picker']}
-      />
-      <Select
-        label="Heure"
-        name="publicationTime"
-        options={getPublicationHoursOptions()}
-        defaultOption={{ label: 'HH:MM', value: '' }}
-        className={styles['time-picker']}
-      />
-    </FormLayout.Row>
+  const isNewPublicationDatetimeEnabled = useActiveFeature(
+    'WIP_REFACTO_FUTURE_OFFER'
+  )
+
+  const sectionTitle = isNewPublicationDatetimeEnabled ? (
+    <div className={styles['title-container']}>
+      <span className={styles['title']}>Publication et réservation</span>
+      <div className={styles['tag']}>
+        <Tag label="Nouveau" variant={TagVariant.NEW} />
+      </div>
+    </div>
+  ) : (
+    'Date de publication'
   )
 
   return (
     <>
       <FormLayout fullWidthActions className={styles['form']}>
-        <FormLayout.Section title="Date de publication">
+        <FormLayout.Section title={sectionTitle}>
           <FormLayout.Row
             sideComponent={
               <InfoBox>
@@ -102,7 +101,23 @@ export const EventPublicationForm = () => {
                     'L’offre restera secrète pour le public jusqu’à sa publication.',
                   value: 'later',
                   sizing: 'fill',
-                  collapsed: PublicationDatePicker,
+                  collapsed: values.publicationMode === 'later' && (
+                    <FormLayout.Row inline className={styles['publish-later']}>
+                      <DatePicker
+                        label="Date"
+                        name="publicationDate"
+                        minDate={today}
+                        className={styles['date-picker']}
+                      />
+                      <Select
+                        label="Heure"
+                        name="publicationTime"
+                        options={getPublicationHoursOptions()}
+                        defaultOption={{ label: 'HH:MM', value: '' }}
+                        className={styles['time-picker']}
+                      />
+                    </FormLayout.Row>
+                  ),
                 },
               ]}
               checkedOption={values.publicationMode}
@@ -110,6 +125,48 @@ export const EventPublicationForm = () => {
             />
           </FormLayout.Row>
         </FormLayout.Section>
+        {isNewPublicationDatetimeEnabled && (
+          <FormLayout.Section>
+            <RadioGroup
+              legend="Quand votre offre pourra être réservable ?"
+              name="bookingAllowedMode"
+              variant="detailed"
+              group={[
+                {
+                  label: 'Rendre réservable dès la publication',
+                  value: 'now',
+                  sizing: 'fill',
+                },
+                {
+                  label: 'Rendre réservable plus tard',
+                  description:
+                    'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
+                  value: 'later',
+                  sizing: 'fill',
+                  collapsed: values.bookingAllowedMode === 'later' && (
+                    <FormLayout.Row inline className={styles['publish-later']}>
+                      <DatePicker
+                        label="Date"
+                        name="bookingAllowedDate"
+                        minDate={today}
+                        className={styles['date-picker']}
+                      />
+                      <Select
+                        label="Heure"
+                        name="bookingAllowedTime"
+                        options={getPublicationHoursOptions()}
+                        defaultOption={{ label: 'HH:MM', value: '' }}
+                        className={styles['time-picker']}
+                      />
+                    </FormLayout.Row>
+                  ),
+                },
+              ]}
+              checkedOption={values.bookingAllowedMode}
+              onChange={handleChange}
+            />
+          </FormLayout.Section>
+        )}
       </FormLayout>
 
       <Divider />
