@@ -20,7 +20,8 @@ export interface Offerer extends OffererFormValues, Address {
 }
 
 export interface ActivityContext
-  extends Omit<ActivityFormValues, 'targetCustomer'> {
+  extends Omit<ActivityFormValues, 'targetCustomer' | 'socialUrls'> {
+  socialUrls: string[]
   targetCustomer: Target | undefined | null
 }
 
