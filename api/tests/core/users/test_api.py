@@ -2410,9 +2410,7 @@ class AnonymizeProUserTest:
         user_to_keep1 = users_factories.ProFactory(
             lastConnectionDate=datetime.datetime.utcnow(), roles=[users_models.UserRole.NON_ATTACHED_PRO]
         )
-        user_to_keep2 = users_factories.ProFactory(
-            roles=[users_models.UserRole.NON_ATTACHED_PRO],
-        )
+        user_to_keep2 = users_factories.NonAttachedProFactory()
         user_id = user_to_delete.id
         users_api.anonymize_pro_users()
 

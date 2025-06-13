@@ -71,7 +71,7 @@ class GetInvoicesTest:
         bank_account2 = finance_factories.BankAccountFactory(offerer=offerer2)
         _other_invoice = finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-15000000)
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
+        offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer2)
 
         client = client.with_session_auth(pro.email)
         queries = testing.AUTHENTICATION_QUERIES

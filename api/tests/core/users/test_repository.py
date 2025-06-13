@@ -141,9 +141,9 @@ class GetApplicantOfOffererUnderValidationTest:
         # Given
         applicant = users_factories.UserFactory()
         user_who_asked_for_attachment = users_factories.UserFactory()
-        applied_offerer = offerers_factories.NotValidatedOffererFactory()
+        applied_offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(offerer=applied_offerer, user=applicant)
-        offerers_factories.NotValidatedUserOffererFactory(offerer=applied_offerer, user=user_who_asked_for_attachment)
+        offerers_factories.NewUserOffererFactory(offerer=applied_offerer, user=user_who_asked_for_attachment)
 
         # When
         applicants_found = get_users_with_validated_attachment_by_offerer(applied_offerer)

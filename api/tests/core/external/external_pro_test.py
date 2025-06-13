@@ -338,7 +338,7 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
 
 
 @pytest.mark.parametrize(
-    "offerer_factory", [offerers_factories.NotValidatedOffererFactory, offerers_factories.ClosedOffererFactory]
+    "offerer_factory", [offerers_factories.NewOffererFactory, offerers_factories.ClosedOffererFactory]
 )
 def test_update_external_non_attached_pro_user_attributes(offerer_factory):
     user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer_factory())

@@ -44,7 +44,7 @@ class Returns200Test:
     def test_current_user_has_rights_to_impersonate_a_non_attached_pro(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
-        target = users_factories.ProFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        target = users_factories.NonAttachedProFactory()
 
         expected_redirect_link = "https://example.com"
         secure_token = SecureToken(

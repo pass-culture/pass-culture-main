@@ -296,17 +296,17 @@ class UserTest:
         user = users_factories.UserFactory()
         assert user.proValidationStatus is None
 
-        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.NEW)
+        offerers_factories.NewUserOffererFactory(user=user)
         assert user.proValidationStatus == ValidationStatus.NEW
 
-        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.PENDING)
+        offerers_factories.PendingUserOffererFactory(user=user)
         assert user.proValidationStatus == ValidationStatus.PENDING
 
-        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.VALIDATED)
+        offerers_factories.UserOffererFactory(user=user)
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
-        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.NEW)
-        offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.PENDING)
+        offerers_factories.NewUserOffererFactory(user=user)
+        offerers_factories.PendingUserOffererFactory(user=user)
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
 
@@ -319,7 +319,7 @@ class HasAccessTest:
         assert not users_repository.has_access(user, offerer.id)
 
     def test_does_not_have_access_if_not_validated(self):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
         offerer = user_offerer.offerer
         user = user_offerer.user
 

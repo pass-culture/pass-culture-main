@@ -10,7 +10,7 @@ class Returns200ForProUserTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
+        offerer_not_validated = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer_not_validated)
 
         offerer_validated_for_user = offerers_factories.OffererFactory()
@@ -19,12 +19,12 @@ class Returns200ForProUserTest:
 
         offerer_not_validated_for_user = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer_not_validated_for_user)
-        offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer_not_validated_for_user)
+        offerers_factories.NewUserOffererFactory(user=user, offerer=offerer_not_validated_for_user)
 
         other_offerer = offerers_factories.OffererFactory()
         other_user_offerer = offerers_factories.UserOffererFactory(offerer=other_offerer)
 
-        other_offerer_not_validated = offerers_factories.NotValidatedOffererFactory()
+        other_offerer_not_validated = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
 
         return {

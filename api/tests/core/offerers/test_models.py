@@ -348,11 +348,11 @@ def test_save_user_offerer_raise_api_error_when_not_unique(app):
 class IsValidatedTest:
     def test_is_validated_property(self):
         offerer = factories.OffererFactory()
-        factories.NotValidatedUserOffererFactory(offerer=offerer)
+        factories.NewUserOffererFactory(offerer=offerer)
         assert offerer.isValidated
 
     def test_is_validated_property_when_still_offerer_has_validation_token(self):
-        offerer = factories.NotValidatedOffererFactory()
+        offerer = factories.NewOffererFactory()
         factories.UserOffererFactory(offerer=offerer)
         assert not offerer.isValidated
 
