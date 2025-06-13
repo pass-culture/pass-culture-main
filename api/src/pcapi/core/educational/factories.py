@@ -18,7 +18,7 @@ from pcapi.utils import db as db_utils
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
 
 
-class EducationalDomainFactory(BaseFactory):
+class EducationalDomainFactory(BaseFactory[models.EducationalDomain]):
     class Meta:
         model = models.EducationalDomain
 
@@ -34,7 +34,7 @@ def _institution_email_builder(institution: models.EducationalInstitution) -> st
     return f"{name}@{city}.fr"
 
 
-class EducationalInstitutionFactory(BaseFactory):
+class EducationalInstitutionFactory(BaseFactory[models.EducationalInstitution]):
     class Meta:
         model = models.EducationalInstitution
 
@@ -49,7 +49,7 @@ class EducationalInstitutionFactory(BaseFactory):
     longitude = 2.3522
 
 
-class CollectiveOfferFactory(BaseFactory):
+class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
     class Meta:
         model = models.CollectiveOffer
 
@@ -104,7 +104,7 @@ class CollectiveOfferFactory(BaseFactory):
             self.domains = domains
 
 
-class CollectiveOfferTemplateFactory(BaseFactory):
+class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]):
     class Meta:
         model = models.CollectiveOfferTemplate
 
@@ -177,7 +177,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
         return CollectiveOfferTemplateFactory.create()
 
 
-class CollectiveStockFactory(BaseFactory):
+class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):
     class Meta:
         model = models.CollectiveStock
 
@@ -192,7 +192,7 @@ class CollectiveStockFactory(BaseFactory):
     priceDetail = factory.LazyAttribute(lambda stock: f"Prix: {stock.price}€ pour {stock.numberOfTickets} tickets")
 
 
-class EducationalYearFactory(BaseFactory):
+class EducationalYearFactory(BaseFactory[models.EducationalYear]):
     class Meta:
         model = models.EducationalYear
 
@@ -244,7 +244,7 @@ class EducationalCurrentYearFactory(EducationalYearFactory):
     adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
 
 
-class EducationalDepositFactory(BaseFactory):
+class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
     class Meta:
         model = models.EducationalDeposit
 
@@ -255,7 +255,7 @@ class EducationalDepositFactory(BaseFactory):
     ministry = models.Ministry.EDUCATION_NATIONALE.name
 
 
-class EducationalRedactorFactory(BaseFactory):
+class EducationalRedactorFactory(BaseFactory[models.EducationalRedactor]):
     class Meta:
         model = models.EducationalRedactor
 
@@ -265,7 +265,7 @@ class EducationalRedactorFactory(BaseFactory):
     civility = "M."
 
 
-class CollectiveBookingFactory(BaseFactory):
+class CollectiveBookingFactory(BaseFactory[models.CollectiveBooking]):
     class Meta:
         model = models.CollectiveBooking
 
@@ -322,7 +322,7 @@ class ConfirmedCollectiveBookingFactory(CollectiveBookingFactory):
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
 
 
-class CollectiveDmsApplicationWithNoVenueFactory(BaseFactory):
+class CollectiveDmsApplicationWithNoVenueFactory(BaseFactory[models.CollectiveDmsApplication]):
     class Meta:
         model = models.CollectiveDmsApplication
 
@@ -344,7 +344,7 @@ class CollectiveDmsApplicationFactory(CollectiveDmsApplicationWithNoVenueFactory
     siret = factory.SelfAttribute("venue.siret")
 
 
-class CollectiveOfferRequestFactory(BaseFactory):
+class CollectiveOfferRequestFactory(BaseFactory[models.CollectiveOfferRequest]):
     class Meta:
         model = models.CollectiveOfferRequest
 
@@ -354,14 +354,14 @@ class CollectiveOfferRequestFactory(BaseFactory):
     collectiveOfferTemplate = factory.SubFactory(CollectiveOfferTemplateFactory)
 
 
-class NationalProgramFactory(BaseFactory):
+class NationalProgramFactory(BaseFactory[models.NationalProgram]):
     class Meta:
         model = models.NationalProgram
 
     name = factory.Sequence("Dispositif national {}".format)
 
 
-class DomainToNationalProgramFactory(BaseFactory):
+class DomainToNationalProgramFactory(BaseFactory[models.DomainToNationalProgram]):
     class Meta:
         model = models.DomainToNationalProgram
 
@@ -370,7 +370,7 @@ class EducationalRedactorWithFavoriteCollectiveOfferTemplateFactory(EducationalR
     favoriteCollectiveOfferTemplates = factory.List([factory.SubFactory(CollectiveOfferTemplateFactory)])
 
 
-class EducationalInstitutionProgramFactory(BaseFactory):
+class EducationalInstitutionProgramFactory(BaseFactory[models.EducationalInstitutionProgram]):
     class Meta:
         model = models.EducationalInstitutionProgram
         sqlalchemy_get_or_create = ["name"]
@@ -382,7 +382,7 @@ class EducationalInstitutionProgramFactory(BaseFactory):
     name = factory.Sequence("Program {}".format)
 
 
-class EducationalInstitutionProgramAssociationFactory(BaseFactory):
+class EducationalInstitutionProgramAssociationFactory(BaseFactory[models.EducationalInstitutionProgramAssociation]):
     class Meta:
         model = models.EducationalInstitutionProgramAssociation
         sqlalchemy_get_or_create = ["institution", "program"]
@@ -392,7 +392,7 @@ class EducationalInstitutionProgramAssociationFactory(BaseFactory):
     timespan = db_utils.make_timerange(start=constants.MEG_BEGINNING_DATE, end=None)
 
 
-class PlaylistFactory(BaseFactory):
+class PlaylistFactory(BaseFactory[models.CollectivePlaylist]):
     class Meta:
         model = models.CollectivePlaylist
 
@@ -402,7 +402,7 @@ class PlaylistFactory(BaseFactory):
     venue = factory.SubFactory(offerers_factories.VenueFactory)
 
 
-class AdageVenueAddressFactory(BaseFactory):
+class AdageVenueAddressFactory(BaseFactory[models.AdageVenueAddress]):
     class Meta:
         model = models.AdageVenueAddress
 
