@@ -466,10 +466,6 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     contactForm: educational_models.OfferContactFormEnum | None
     allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
 
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-
 
 class CollectiveOfferRedactorModel(BaseModel):
     firstName: str | None
@@ -506,6 +502,29 @@ class GetCollectiveOfferProviderResponseModel(BaseModel):
         orm_mode = True
 
 
+class HistoryTransitionalStatus(enum.Enum):
+    WAITING_FOR_PREBOOK = "WAITING_FOR_PREBOOK"
+    WAITING_FOR_BOOK = "WAITING_FOR_BOOK"
+    WAITING_FOR_REIMBURSEMENT = "WAITING_FOR_REIMBURSEMENT"
+
+
+HistoryStatus = educational_models.CollectiveOfferDisplayedStatus | HistoryTransitionalStatus
+
+
+class HistoryStep(BaseModel):
+    status: HistoryStatus
+    datetime: datetime | None
+
+
+class CollectiveOfferHistory(BaseModel):
+    past: list[HistoryStep]
+    future: list[educational_models.CollectiveOfferDisplayedStatus]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
+
+
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
@@ -519,6 +538,15 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isTemplate: bool = False
     dates: TemplateDatesModel | None
     allowedActions: list[educational_models.CollectiveOfferAllowedAction]
+    history: CollectiveOfferHistory = Field(default_factory=lambda: CollectiveOfferHistory(past=[], future=[]))
+
+    @classmethod
+    def build(
+        cls, offer: educational_models.CollectiveOffer, history: CollectiveOfferHistory
+    ) -> "GetCollectiveOfferResponseModel":
+        result = super().from_orm(offer)
+        result.history = history
+        return result
 
 
 class CollectiveOfferResponseIdModel(BaseModel):

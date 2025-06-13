@@ -1,34 +1,13 @@
 import dataclasses
 import datetime
-import enum
 import logging
 import typing
 
 from pcapi.core.educational import models
+from pcapi.routes.serialization import collective_offers_serialize as serialize  # TODO: move in schemas?
 
 
 logger = logging.getLogger(__name__)
-
-
-class HistoryTransitionalStatus(enum.Enum):
-    WAITING_FOR_PREBOOK = "WAITING_FOR_PREBOOK"
-    WAITING_FOR_BOOK = "WAITING_FOR_BOOK"
-    WAITING_FOR_REIMBURSEMENT = "WAITING_FOR_REIMBURSEMENT"
-
-
-HistoryStatus = models.CollectiveOfferDisplayedStatus | HistoryTransitionalStatus
-
-
-@dataclasses.dataclass
-class HistoryStep:
-    status: HistoryStatus
-    datetime: datetime.datetime | None
-
-
-@dataclasses.dataclass
-class CollectiveOfferHistory:
-    past: list[HistoryStep]
-    future: list[models.CollectiveOfferDisplayedStatus]
 
 
 NEXT_STATUS_BY_STATUS: typing.Final[
@@ -43,7 +22,7 @@ NEXT_STATUS_BY_STATUS: typing.Final[
 }
 
 
-def _get_status_date(offer: models.CollectiveOffer, status: HistoryStatus) -> datetime.datetime | None:
+def _get_status_date(offer: models.CollectiveOffer, status: serialize.HistoryStatus) -> datetime.datetime | None:
     stock = offer.collectiveStock
     booking = stock.lastBooking if stock is not None else None
 
@@ -51,7 +30,7 @@ def _get_status_date(offer: models.CollectiveOffer, status: HistoryStatus) -> da
         case (
             models.CollectiveOfferDisplayedStatus.DRAFT
             | models.CollectiveOfferDisplayedStatus.UNDER_REVIEW
-            | HistoryTransitionalStatus()
+            | serialize.HistoryTransitionalStatus()
         ):
             return None
 
@@ -94,16 +73,20 @@ def _get_collective_offer_past_history(
     offer: models.CollectiveOffer,
     from_status: models.CollectiveOfferDisplayedStatus | None,
     to_status: models.CollectiveOfferDisplayedStatus | None,
-    current_status: HistoryStatus,
-) -> list[HistoryStep]:
-    current_step = HistoryStep(status=current_status, datetime=_get_status_date(offer=offer, status=current_status))
+    current_status: serialize.HistoryStatus,
+) -> list[serialize.HistoryStep]:
+    current_step = serialize.HistoryStep(
+        status=current_status, datetime=_get_status_date(offer=offer, status=current_status)
+    )
     if from_status is None or to_status is None:
         return [current_step]
 
     steps = []
     next_status: models.CollectiveOfferDisplayedStatus | None = from_status
     while next_status is not None:
-        steps.append(HistoryStep(status=next_status, datetime=_get_status_date(offer=offer, status=next_status)))
+        steps.append(
+            serialize.HistoryStep(status=next_status, datetime=_get_status_date(offer=offer, status=next_status))
+        )
 
         if next_status == to_status:
             break
@@ -131,7 +114,7 @@ def _get_collective_offer_future_history(
 class HistoryStatusData:
     past_from_status: models.CollectiveOfferDisplayedStatus | None
     past_to_status: models.CollectiveOfferDisplayedStatus | None
-    current_status: HistoryStatus
+    current_status: serialize.HistoryStatus
     future_from_status: models.CollectiveOfferDisplayedStatus
 
 
@@ -168,7 +151,7 @@ def _get_history_status_data(
             return HistoryStatusData(
                 past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
                 past_to_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
-                current_status=HistoryTransitionalStatus.WAITING_FOR_PREBOOK,
+                current_status=serialize.HistoryTransitionalStatus.WAITING_FOR_PREBOOK,
                 future_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
             )
 
@@ -190,7 +173,7 @@ def _get_history_status_data(
             return HistoryStatusData(
                 past_from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
                 past_to_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
-                current_status=HistoryTransitionalStatus.WAITING_FOR_BOOK,
+                current_status=serialize.HistoryTransitionalStatus.WAITING_FOR_BOOK,
                 future_from_status=models.CollectiveOfferDisplayedStatus.PREBOOKED,
             )
 
@@ -203,10 +186,10 @@ def _get_history_status_data(
             )
 
         case models.CollectiveOfferDisplayedStatus.ENDED:
-            current_status: HistoryStatus
+            current_status: serialize.HistoryStatus
             if is_two_days_past_end:
                 past_to_status = models.CollectiveOfferDisplayedStatus.ENDED
-                current_status = HistoryTransitionalStatus.WAITING_FOR_REIMBURSEMENT
+                current_status = serialize.HistoryTransitionalStatus.WAITING_FOR_REIMBURSEMENT
             else:
                 past_to_status = models.CollectiveOfferDisplayedStatus.BOOKED
                 current_status = models.CollectiveOfferDisplayedStatus.ENDED
@@ -246,7 +229,7 @@ def _get_history_status_data(
             raise ValueError(f"Unexpected status {status}")
 
 
-def get_collective_offer_history(offer: models.CollectiveOffer) -> CollectiveOfferHistory:
+def get_collective_offer_history(offer: models.CollectiveOffer) -> serialize.CollectiveOfferHistory:
     status = offer.displayedStatus
 
     if status in {models.CollectiveOfferDisplayedStatus.ARCHIVED, models.CollectiveOfferDisplayedStatus.HIDDEN}:
@@ -261,16 +244,16 @@ def get_collective_offer_history(offer: models.CollectiveOffer) -> CollectiveOff
         )
 
         # dot not include the step preceding archived / hidden if it is a transitional status
-        if base_status_data.current_status in set(HistoryTransitionalStatus):
+        if base_status_data.current_status in set(serialize.HistoryTransitionalStatus):
             past_history.pop()
 
         # add the archived / hidden step
-        past_history.append(HistoryStep(status=status, datetime=_get_status_date(offer, status)))
+        past_history.append(serialize.HistoryStep(status=status, datetime=_get_status_date(offer, status)))
 
-        return CollectiveOfferHistory(past=past_history, future=[])
+        return serialize.CollectiveOfferHistory(past=past_history, future=[])
 
     status_data = _get_history_status_data(offer=offer, status=status)
-    return CollectiveOfferHistory(
+    return serialize.CollectiveOfferHistory(
         past=_get_collective_offer_past_history(
             offer=offer,
             from_status=status_data.past_from_status,
