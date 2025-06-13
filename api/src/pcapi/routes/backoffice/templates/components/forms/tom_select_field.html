@@ -13,11 +13,9 @@
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
           size="2"></select>
-  {% if not(field.tomselect_items and field.tomselect_items[0]) %}
-    <label class="pc-select-label label-element-form"
-           data-original-name="{{ field.name }}"
-           for="{{ tom_select_field_id }}">{{ field.label.text }}</label>
-  {% endif %}
+  <label class="pc-select-label label-element-form"
+         data-original-name="{{ field.name }}"
+         for="{{ tom_select_field_id }}">{{ field.label.text }}</label>
 </div>
 {% if field.field_list_compatibility %}
   <!-- (Almost) duplicated html for field list field widget -->
