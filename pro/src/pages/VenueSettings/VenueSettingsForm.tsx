@@ -22,7 +22,7 @@ import { AddressManual } from 'ui-kit/formV2/AddressManual/AddressManual'
 import { AddressSelect } from 'ui-kit/formV2/AddressSelect/AddressSelect'
 import { Select } from 'ui-kit/formV2/Select/Select'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueSettingsFormValues } from './types'
@@ -104,10 +104,10 @@ export const VenueSettingsForm = ({
               <FormLayout.Row
                 mdSpaceAfter
                 sideComponent={
-                  <InfoBox>
+                  <TipsBanner>
                     À remplir si différent de la raison sociale. En le
                     remplissant, c’est ce dernier qui sera visible du public.
-                  </InfoBox>
+                  </TipsBanner>
                 }
               >
                 <TextInput {...register('publicName')} label="Nom public" />
@@ -176,10 +176,10 @@ export const VenueSettingsForm = ({
           <FormLayout.Row
             sideComponent={
               venue.isVirtual ? null : (
-                <InfoBox>
+                <TipsBanner>
                   Cette adresse s’appliquera par défaut à toutes vos offres,
                   vous pourrez la modifier à l’échelle de chaque offre.
-                </InfoBox>
+                </TipsBanner>
               )
             }
           >

@@ -8,7 +8,7 @@ import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/formV2/Select/Select'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import styles from './EventPublicationForm.module.scss'
 import { EventPublicationFormValues } from './types'
@@ -83,12 +83,12 @@ export const EventPublicationForm = () => {
           <FormLayout.MandatoryInfo />
           <FormLayout.Row
             sideComponent={
-              <InfoBox>
+              <TipsBanner>
                 Dans le cas où votre offre est en instruction par l’équipe
                 Conformité, sa validation peut prendre jusqu’à 72h. <br />
                 Après validation elle sera automatiquement publiée ou programmée
                 comme vous l’avez choisi.
-              </InfoBox>
+              </TipsBanner>
             }
           >
             <RadioGroup

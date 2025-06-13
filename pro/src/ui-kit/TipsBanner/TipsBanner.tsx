@@ -1,6 +1,8 @@
+import cn from 'classnames'
+
 import fullBulbIcon from 'icons/full-bulb.svg'
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, ButtonLinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -14,7 +16,7 @@ export interface TipsBannerProps {
   /**
    * An optional link to include in the TipsBanner.
    */
-  link?: LinkProps & {
+  link?: ButtonLinkProps & {
     /**
      * The text to display for the link.
      */
@@ -24,15 +26,20 @@ export interface TipsBannerProps {
    * An optional decorative image.
    */
   decorativeImage?: string
+  /**
+   * Extra classnames to apply to the TipsBanner.
+   */
+  className?: string
 }
 
 export const TipsBanner = ({
   link,
   decorativeImage,
   children,
+  className,
 }: TipsBannerProps): JSX.Element => {
   return (
-    <div className={styles['tips-banner']}>
+    <div className={cn(className, styles['tips-banner'])}>
       <div className={styles['tips-banner-text']}>
         <div className={styles['tips-banner-header']}>
           <SvgIcon src={fullBulbIcon} className={styles['tips-banner-icon']} />À

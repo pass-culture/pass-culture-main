@@ -14,13 +14,11 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useFunctionOnce } from 'commons/hooks/useFunctionOnce'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/formV2/Select/Select'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { DomainOption } from '../../useOfferEducationalFormData'
 import styles from '../OfferEducationalForm.module.scss'
@@ -169,11 +167,11 @@ export const FormOfferType = ({
         {programsOptions.length > 0 && (
           <FormLayout.Row
             sideComponent={
-              <InfoBox>
+              <TipsBanner>
                 Un dispositif national est un type de programme d’éducation
                 artistique et culturelle auquel sont rattachées certaines
                 offres. Si c’est le cas de cette offre, merci de le renseigner.
-              </InfoBox>
+              </TipsBanner>
             }
           >
             <Select
@@ -209,24 +207,19 @@ export const FormOfferType = ({
           sideComponent={
             <div className={styles['description-info-boxes']}>
               {isTemplate && (
-                <InfoBox>
-                  Vous avez du mal a rédiger votre offre ?
-                  <br />
-                  Nous vous proposons des exemples d’offres vitrines réalisées
-                  par d’autres acteurs culturels.
-                  <br />
-                  <ButtonLink
-                    isExternal
-                    opensInNewTab
-                    variant={ButtonVariant.QUATERNARY}
-                    to={
-                      'https://aide.passculture.app/hc/fr/articles/17467449038876--Acteurs-Culturels-Consulter-des-exemples-d-offres-vitrine'
-                    }
-                    onClick={logHasClickedSeeTemplateOfferExample}
-                  >
-                    Voir des exemples d’offres vitrines
-                  </ButtonLink>
-                </InfoBox>
+                <TipsBanner
+                  link={{
+                    text: 'Voir des exemples d’offres vitrines',
+                    to: 'https://aide.passculture.app/hc/fr/articles/17467449038876--Acteurs-Culturels-Consulter-des-exemples-d-offres-vitrine',
+                    isExternal: true,
+                    opensInNewTab: true,
+                    onClick: logHasClickedSeeTemplateOfferExample,
+                  }}
+                >
+                  Vous avez du mal a rédiger votre offre ? Nous vous proposons
+                  des exemples d’offres vitrines réalisées par d’autres acteurs
+                  culturels.
+                </TipsBanner>
               )}
               <MarkdownInfoBox />
             </div>

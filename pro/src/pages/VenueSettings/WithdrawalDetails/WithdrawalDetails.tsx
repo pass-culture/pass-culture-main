@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { VenueSettingsFormValues } from '../types'
 
@@ -14,7 +14,7 @@ export const WithdrawalDetails = () => {
     <FormLayout.Section title="Informations de retrait de vos offres">
       <FormLayout.Row
         sideComponent={
-          <InfoBox
+          <TipsBanner
             link={{
               text: 'En savoir plus',
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
@@ -26,7 +26,7 @@ export const WithdrawalDetails = () => {
             l’offre. Ces indications s’appliqueront par défaut à toutes vos
             prochaines offres. Pour les offres actuelles, vous devez les
             modifier individuellement.
-          </InfoBox>
+          </TipsBanner>
         }
       >
         <TextArea

@@ -16,8 +16,8 @@ import {
 } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/formV2/Select/Select'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
@@ -121,10 +121,10 @@ export const FormPracticalInformation = ({
       collapsed: (
         <FormLayout.Row
           sideComponent={
-            <InfoBox className={styles['info-box-children']}>
+            <TipsBanner className={styles['info-box-children']}>
               La zone de mobilité permet d’indiquer aux enseignants sur ADAGE où
               vous pouvez vous déplacer en France.
-            </InfoBox>
+            </TipsBanner>
           }
         >
           {MultiSelectComponent}
@@ -138,10 +138,10 @@ export const FormPracticalInformation = ({
       collapsed: (
         <FormLayout.Row
           sideComponent={
-            <InfoBox className={styles['info-box-children']}>
+            <TipsBanner className={styles['info-box-children']}>
               La zone de mobilité permet d’indiquer aux enseignants sur ADAGE où
               vous pouvez vous déplacer en France.
-            </InfoBox>
+            </TipsBanner>
           }
         >
           {MultiSelectComponent}
