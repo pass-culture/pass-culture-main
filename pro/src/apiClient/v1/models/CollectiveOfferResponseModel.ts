@@ -26,7 +26,6 @@ export type CollectiveOfferResponseModel = {
   imageUrl?: string | null;
   interventionArea: Array<string>;
   isActive: boolean;
-  isEditable: boolean;
   isEducational: boolean;
   isPublicApi: boolean;
   isShowcase: boolean;

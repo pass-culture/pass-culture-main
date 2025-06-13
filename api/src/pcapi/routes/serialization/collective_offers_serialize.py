@@ -134,7 +134,6 @@ class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: int
     isActive: bool
-    isEditable: bool
     isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]

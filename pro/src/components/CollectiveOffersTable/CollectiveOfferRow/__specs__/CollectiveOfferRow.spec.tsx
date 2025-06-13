@@ -207,14 +207,14 @@ describe('ollectiveOfferRow', () => {
   })
 
   it('should display inactive thumb when offer is not editable', () => {
-    props.offer.isEditable = false
+    props.offer.allowedActions = [ ]
     renderOfferItem(props)
 
     expect(screen.getByRole('img')).toHaveClass('thumb-column-inactive')
   })
 
-  it('should display disabled checkbox when offer is not editable', () => {
-    props.offer.isEditable = false
+  it('should display disabled checkbox when offer is the offer cannot be archived', () => {
+    props.offer.allowedActions = [ ]
     renderOfferItem(props)
 
     expect(screen.getByRole('checkbox')).toBeDisabled()
