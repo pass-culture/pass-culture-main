@@ -720,9 +720,7 @@ class CreateOffererTest:
             postalCode="93100",
             city="Montreuil",
         )
-        offerer = offerers_factories.NotValidatedOffererFactory(
-            siren=offerer_informations.siren, validationStatus=ValidationStatus.PENDING
-        )
+        offerer = offerers_factories.PendingOffererFactory(siren=offerer_informations.siren)
 
         # When
         created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
@@ -1422,7 +1420,7 @@ class ValidateOffererAttachmentTest:
         # Given
         admin = users_factories.AdminFactory()
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_attachment(user_offerer, admin)
@@ -1434,7 +1432,7 @@ class ValidateOffererAttachmentTest:
         # Given
         admin = users_factories.AdminFactory()
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_attachment(user_offerer, admin)
@@ -1448,7 +1446,7 @@ class ValidateOffererAttachmentTest:
         # Given
         admin = users_factories.AdminFactory()
         applicant = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=applicant)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=applicant)
 
         # When
         offerers_api.validate_offerer_attachment(user_offerer, admin)
@@ -1462,7 +1460,7 @@ class ValidateOffererAttachmentTest:
     ):
         admin = users_factories.AdminFactory()
         invited_user = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=invited_user)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=invited_user)
         offerer_invitation = offerers_factories.OffererInvitationFactory(
             offerer=user_offerer.offerer, email=invited_user.email
         )
@@ -1478,7 +1476,7 @@ class RejectOffererAttachementTest:
     def test_offerer_attachement_is_not_validated(self):
         # Given
         admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         # When
         offerers_api.reject_offerer_attachment(user_offerer, admin)
@@ -1492,7 +1490,7 @@ class RejectOffererAttachementTest:
         # Given
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=user)
 
         # When
         offerers_api.reject_offerer_attachment(user_offerer, admin)
@@ -1505,7 +1503,7 @@ class RejectOffererAttachementTest:
         # Given
         admin = users_factories.AdminFactory()
         validated_user_offerer = offerers_factories.UserOffererFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=validated_user_offerer.user)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=validated_user_offerer.user)
 
         # When
         offerers_api.reject_offerer_attachment(user_offerer, admin)
@@ -1517,7 +1515,7 @@ class RejectOffererAttachementTest:
     def test_send_rejection_confirmation_email(self, send_offerer_attachment_rejection_email_to_pro):
         # Given
         admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         # When
         offerers_api.reject_offerer_attachment(user_offerer, admin)
@@ -1530,7 +1528,7 @@ class RejectOffererAttachementTest:
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=user, offerer=offerer)
 
         # When
         offerers_api.reject_offerer_attachment(user_offerer, admin)
@@ -1549,7 +1547,7 @@ class DeleteOffererAttachementTest:
     def test_offerer_attachement_is_not_validated(self):
         # Given
         admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         # When
         offerers_api.delete_offerer_attachment(user_offerer, admin)
@@ -1563,7 +1561,7 @@ class DeleteOffererAttachementTest:
         # Given
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=user)
 
         # When
         offerers_api.delete_offerer_attachment(user_offerer, admin)
@@ -1576,7 +1574,7 @@ class DeleteOffererAttachementTest:
         # Given
         admin = users_factories.AdminFactory()
         validated_user_offerer = offerers_factories.UserOffererFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=validated_user_offerer.user)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=validated_user_offerer.user)
 
         # When
         offerers_api.delete_offerer_attachment(user_offerer, admin)
@@ -1589,7 +1587,7 @@ class DeleteOffererAttachementTest:
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=user, offerer=offerer)
 
         # When
         offerers_api.delete_offerer_attachment(user_offerer, admin)
@@ -1640,7 +1638,7 @@ class ValidateOffererTest:
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
         another_applicant = users_factories.UserFactory()
-        another_user_on_same_offerer = offerers_factories.NotValidatedUserOffererFactory(user=another_applicant)
+        another_user_on_same_offerer = offerers_factories.NewUserOffererFactory(user=another_applicant)
 
         # When
         offerers_api.validate_offerer(user_offerer.offerer, admin)
@@ -1705,7 +1703,7 @@ class RejectOffererTest:
     def test_offerer_is_not_validated(self):
         # Given
         admin = users_factories.AdminFactory()
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
@@ -1785,7 +1783,7 @@ class RejectOffererTest:
     ):
         # Given
         admin = users_factories.AdminFactory()
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
@@ -1801,11 +1799,9 @@ class RejectOffererTest:
         # Given
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        offerers_factories.UserOffererFactory(
-            offerer=offerer, validationStatus=ValidationStatus.NEW
-        )  # another applicant
+        offerers_factories.NewUserOffererFactory(offerer=offerer)  # another applicant
 
         # When
         offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
@@ -1838,7 +1834,7 @@ class RejectOffererTest:
 class CloseOffererTest:
     def test_offerer_was_not_validated(self):
         admin = users_factories.AdminFactory()
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
 
         offerers_api.close_offerer(offerer, closure_date=datetime.date(2025, 3, 7), author_user=admin)
@@ -2190,7 +2186,7 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
     def test_mutiple_users_on_the_same_offerer(self):
         offerer = offerers_factories.ClosedOffererFactory()
         user_offerer_list = offerers_factories.UserOffererFactory.create_batch(3, offerer=offerer)
-        pending_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        pending_user_offerer = offerers_factories.NewUserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=91),
             actionType=history_models.ActionType.OFFERER_CLOSED,
@@ -2424,7 +2420,7 @@ class HasVenueAtLeastOneBookableOfferTest:
     @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_managing_offerer_not_validated(self):
         venue = offerers_factories.VenueFactory(
-            isPermanent=True, managingOfferer=offerers_factories.NotValidatedOffererFactory()
+            isPermanent=True, managingOfferer=offerers_factories.NewOffererFactory()
         )
         offers_factories.EventStockFactory(offer__venue=venue)
 

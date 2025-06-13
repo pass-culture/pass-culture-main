@@ -747,7 +747,7 @@ class Returns200Test:
     def should_return_no_offers_when_user_offerer_is_not_validated(self, client, db_session):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
-        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.ThingOfferFactory(venue=venue)
 

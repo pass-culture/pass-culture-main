@@ -744,7 +744,7 @@ class ListOffersTest(GetEndpointHelper):
         # test results when clicking on pending offers link (home page)
         offers_factories.OfferFactory(
             validation=offers_models.OfferValidationStatus.PENDING,
-            venue__managingOfferer=offerers_factories.NotValidatedOffererFactory(),
+            venue__managingOfferer=offerers_factories.NewOffererFactory(),
         )
 
         validated_venue = offerers_factories.VenueFactory()
@@ -1176,7 +1176,7 @@ class ListOffersTest(GetEndpointHelper):
         for status in offers_models.OfferValidationStatus:
             if status != offers_models.OfferValidationStatus.APPROVED:
                 offers_factories.StockFactory(offer__validation=status)
-        offers_factories.StockFactory(offer__venue__managingOfferer=offerers_factories.NotValidatedOffererFactory())
+        offers_factories.StockFactory(offer__venue__managingOfferer=offerers_factories.NewOffererFactory())
         offers_factories.StockFactory(offer__venue__managingOfferer__isActive=False)
 
         query_args = {

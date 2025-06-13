@@ -175,7 +175,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         # test results when clicking on pending collective offers link (home page)
         educational_factories.CollectiveOfferTemplateFactory(
             validation=offers_models.OfferValidationStatus.PENDING,
-            venue__managingOfferer=offerers_factories.NotValidatedOffererFactory(),
+            venue__managingOfferer=offerers_factories.NewOffererFactory(),
         )
 
         validated_venue = offerers_factories.VenueFactory()
