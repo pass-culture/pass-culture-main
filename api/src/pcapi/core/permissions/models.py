@@ -70,6 +70,9 @@ class Permissions(enum.Enum):
     MANAGE_TAGS_N2 = "supprimer un tag (entité juridique, offre, partenaire culturel) et créer des catégories"
     MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et partenaires culturels"
 
+    READ_NON_PAYMENT_NOTICES = "visualiser les avis d'impayés"
+    MANAGE_NON_PAYMENT_NOTICES = "gérer les avis d'impayés"
+
     READ_REIMBURSEMENT_RULES = "visualiser les tarifs dérogatoires"
     CREATE_REIMBURSEMENT_RULES = "créer un tarif dérogatoire"
 

@@ -30,6 +30,7 @@ def install_routes(app: Flask) -> None:
     from .fraud import blueprint as fraud_blueprint
     from .gdpr_user_extract import blueprint as gdpr_extract_blueprint
     from .multiple_offers import blueprint as multiple_offers_blueprint
+    from .non_payment_notices import non_payment_notices_blueprint
     from .offer_price_limitation_rules import blueprint as offer_price_limitation_rule_blueprint
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
     from .offerers import offerer_blueprint

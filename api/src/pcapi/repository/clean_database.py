@@ -44,6 +44,7 @@ tables_to_clean: list[type[Model]] = [
     offers_models.ActivationCode,
     providers_models.AllocineVenueProvider,
     providers_models.VenueProvider,
+    offerers_models.NonPaymentNotice,
     finance_models.PaymentStatus,
     finance_models.Payment,
     finance_models.PaymentMessage,

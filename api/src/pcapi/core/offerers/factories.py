@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import typing
 
 import factory
@@ -521,3 +522,15 @@ class ManualReviewVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
 class WhitelistedVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
     venue = factory.SubFactory(VenueFactory)
     confidenceLevel = models.OffererConfidenceLevel.WHITELIST
+
+
+class NonPaymentNoticeFactory(BaseFactory):
+    class Meta:
+        model = models.NonPaymentNotice
+
+    amount = decimal.Decimal("199.99")
+    emitterName = "Guy Ssier de Justice"
+    emitterEmail = "plus.dargent@example.com"
+    dateReceived = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))
+    noticeType = models.NoticeType.UNPAID_AMOUNT_NOTICE
+    reference = "ABC123"

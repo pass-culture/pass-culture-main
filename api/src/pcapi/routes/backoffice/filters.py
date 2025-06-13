@@ -1701,6 +1701,50 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
+def format_notice_type(notice_type: offerers_models.NoticeType) -> str:
+    match notice_type:
+        case offerers_models.NoticeType.UNPAID_AMOUNT_NOTICE:
+            return "Avis d'impayé"
+        case offerers_models.NoticeType.REMINDER_LETTER:
+            return "Lettre de relance"
+        case offerers_models.NoticeType.BAILIFF:
+            return "Huissier de justice"
+        case _:
+            return notice_type.value
+
+
+def format_notice_status_motivation(notice_motivation_type: offerers_models.NoticeStatusMotivation | None) -> str:
+    match notice_motivation_type:
+        case offerers_models.NoticeStatusMotivation.ALREADY_PAID:
+            return "Déjà payé"
+        case offerers_models.NoticeStatusMotivation.REJECTED:
+            return "Paiement rejeté"
+        case offerers_models.NoticeStatusMotivation.NO_LINKED_BANK_ACCOUNT:
+            return "Pas de compte bancaire rattaché"
+        case offerers_models.NoticeStatusMotivation.OFFERER_NOT_FOUND:
+            return "Acteur culturel introuvable"
+        case offerers_models.NoticeStatusMotivation.PRICE_NOT_FOUND:
+            return "Tarif introuvable"
+        case None:
+            return ""
+        case _:
+            return notice_motivation_type.value
+
+
+def format_notice_status(notice_status: offerers_models.NoticeStatus) -> str:
+    match notice_status:
+        case offerers_models.NoticeStatus.CREATED:
+            return "Nouveau"
+        case offerers_models.NoticeStatus.PENDING:
+            return "En attente de retour"
+        case offerers_models.NoticeStatus.WITHOUT_CONTINUATION:
+            return "Classé sans suite"
+        case offerers_models.NoticeStatus.CLOSED:
+            return "Terminé"
+        case _:
+            return notice_status.value
+
+
 def format_special_event_response_status_str(response_status: operations_models.SpecialEventResponseStatus) -> str:
     match response_status:
         case operations_models.SpecialEventResponseStatus.NEW:
@@ -1902,6 +1946,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
+    app.jinja_env.filters["format_notice_type"] = format_notice_type
+    app.jinja_env.filters["format_notice_status_motivation"] = format_notice_status_motivation
+    app.jinja_env.filters["format_notice_status"] = format_notice_status
     app.jinja_env.filters["format_special_event_response_status"] = format_special_event_response_status
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
     app.jinja_env.filters["build_pro_link"] = build_pro_link

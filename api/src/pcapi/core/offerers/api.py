@@ -2470,6 +2470,10 @@ def delete_offerer(offerer_id: int) -> None:
         synchronize_session=False
     )
 
+    db.session.query(offerers_models.NonPaymentNotice).filter(
+        offerers_models.NonPaymentNotice.offererId == offerer_id
+    ).delete(synchronize_session=False)
+
     db.session.query(offerers_models.UserOfferer).filter(offerers_models.UserOfferer.offererId == offerer_id).delete(
         synchronize_session=False
     )

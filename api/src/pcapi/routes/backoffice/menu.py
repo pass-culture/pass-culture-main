@@ -206,6 +206,11 @@ MENU_SECTIONS = [
                 url_name="backoffice_web.finance_incidents.list_incidents",
                 permissions=["READ_INCIDENTS"],
             ),
+            MenuItem(
+                label="Gestion des avis d'impayé",
+                url_name="backoffice_web.non_payment_notices.list_notices",
+                permissions=["READ_NON_PAYMENT_NOTICES"],
+            ),
         ],
     ),
     MenuSection(

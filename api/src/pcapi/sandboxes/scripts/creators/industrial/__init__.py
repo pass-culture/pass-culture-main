@@ -44,6 +44,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices impo
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_industrial_invoices
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import create_iris
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import create_industrial_mediations
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_non_payment_notices import (
+    create_industrial_non_payment_notices,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import (
     create_industrial_offer_price_limitation_rules,
 )
@@ -210,3 +213,5 @@ def save_industrial_sandbox() -> None:
     create_user_offerers()
 
     create_industrial_products()
+
+    create_industrial_non_payment_notices()
