@@ -39,7 +39,7 @@ export type LinkProps = {
 /**
  * Props for the ButtonLink component that extends LinkProps and SharedButtonProps.
  */
-type ButtonLinkProps = LinkProps &
+export type ButtonLinkProps = LinkProps &
   SharedButtonProps &
   Omit<React.HTMLProps<HTMLAnchorElement>, 'title'>
 

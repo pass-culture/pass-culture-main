@@ -120,6 +120,7 @@ $info-box-margin-left: rem.torem(24px);
     }
 
     &-info {
+      margin: rem.torem(8px) 0 rem.torem(16px) 0;
       width: 100%;
     }
   }
@@ -139,6 +140,7 @@ $info-box-margin-left: rem.torem(24px);
     }
 
     &-row-info-info {
+      margin: 0;
       width: $info-box-width;
       position: absolute;
       top: 0;
