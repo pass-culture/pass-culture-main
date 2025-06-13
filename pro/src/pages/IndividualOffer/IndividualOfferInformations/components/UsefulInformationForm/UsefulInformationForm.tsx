@@ -18,8 +18,8 @@ import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/formV2/Select/Select'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import {
   DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES,
@@ -187,17 +187,17 @@ export const UsefulInformationForm = ({
         <FormLayout.Row
           mdSpaceAfter
           sideComponent={
-            <InfoBox
+            <TipsBanner
               link={{
+                text: 'Quelles modalités de retrait choisir ?',
                 isExternal: true,
                 to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
-                text: 'Quelles modalités de retrait choisir ?',
               }}
             >
               {offer.isDigital
                 ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
                 : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis les paramètres généraux de votre page partenaire, elles s’appliqueront par défaut à toutes vos offres.'}
-            </InfoBox>
+            </TipsBanner>
           }
         >
           <TextArea

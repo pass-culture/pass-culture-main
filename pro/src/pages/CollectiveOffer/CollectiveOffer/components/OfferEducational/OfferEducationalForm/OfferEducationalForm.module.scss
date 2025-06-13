@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .educational-form {
   &-banner {
@@ -44,7 +45,7 @@
 }
 
 .info-box-children {
-  margin-left: 16px;
+  margin-left: 0;
 }
 
 .event-other-address {
@@ -68,5 +69,11 @@
 
   &-search {
     margin-bottom: 0;
+  }
+}
+
+@media (min-width: size.$laptop) {
+  .info-box-children {
+    margin-left: 16px;
   }
 }

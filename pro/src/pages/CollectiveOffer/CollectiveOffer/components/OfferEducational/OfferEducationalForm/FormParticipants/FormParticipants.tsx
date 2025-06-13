@@ -6,7 +6,7 @@ import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { studentLevelsLabels } from './constants'
 import styles from './FormParticipants.module.scss'
@@ -125,13 +125,13 @@ export const FormParticipants = ({
     <div className={styles['container']}>
       <FormLayout.Row
         sideComponent={
-          <InfoBox>
+          <TipsBanner>
             {isMarseilleEnabled
               ? `Dans le cadre du plan Marseille en Grand et du Conseil national de la refondation dans son volet éducation "Notre école, faisons-la ensemble", les écoles primaires innovantes du territoire marseillais bénéficient d’un budget pour financer des projets d’EAC avec leurs élèves.`
               : `Le pass Culture à destination du public scolaire s’adresse aux
             élèves de la sixième à la terminale des établissements publics et
             privés sous contrat.`}
-          </InfoBox>
+          </TipsBanner>
         }
       >
         <CheckboxGroup
