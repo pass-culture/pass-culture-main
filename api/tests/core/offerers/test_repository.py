@@ -69,7 +69,7 @@ class GetAllOfferersForUserTest:
 
     def should_not_return_offerers_with_non_validated_attachment_to_given_pro(self) -> None:
         pro = users_factories.ProFactory()
-        offerers_factories.NotValidatedUserOffererFactory(user=pro)
+        offerers_factories.NewUserOffererFactory(user=pro)
         assert repository.get_all_offerers_for_user(user=pro).all() == []
 
     def should_not_return_deactivated_offerers(self) -> None:

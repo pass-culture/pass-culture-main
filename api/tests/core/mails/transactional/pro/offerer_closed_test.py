@@ -19,7 +19,7 @@ class SendOffererClosedEmailTest:
         offerer = offerers_factories.OffererFactory()
         user_offerer_1 = offerers_factories.UserOffererFactory(offerer=offerer)
         user_offerer_2 = offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        offerers_factories.NewUserOffererFactory(offerer=offerer)
         offerers_factories.RejectedUserOffererFactory(offerer=offerer)
 
         bookings_factories.CancelledBookingFactory(stock__offer__venue__managingOfferer=offerer)
@@ -119,7 +119,7 @@ class SendOffererClosedEmailTest:
         offerer = offerers_factories.OffererFactory()
         user_offerer_1 = offerers_factories.UserOffererFactory(offerer=offerer)
         user_offerer_2 = offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        offerers_factories.NewUserOffererFactory(offerer=offerer)
         offerers_factories.RejectedUserOffererFactory(offerer=offerer)
 
         bookings_factories.CancelledBookingFactory(stock__offer__venue__managingOfferer=offerer)

@@ -29,7 +29,7 @@ class GetInvoicesQueryTest:
         bank_account3 = factories.BankAccountFactory()
         factories.InvoiceFactory(bankAccount=bank_account3, amount=-15000000)
         offerer2 = bank_account3.offerer
-        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
+        offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer2)
 
         invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]

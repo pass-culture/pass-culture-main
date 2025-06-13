@@ -5,7 +5,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.models import db
-from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")
@@ -15,15 +14,9 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="member.pro@example.com")
-        offerers_factories.NotValidatedUserOffererFactory(
-            offerer=offerer, validationStatus=ValidationStatus.PENDING, user__email="pending.pro@example.com"
-        )
-        offerers_factories.NotValidatedUserOffererFactory(
-            offerer=offerer, validationStatus=ValidationStatus.REJECTED, user__email="rejected.pro@example.com"
-        )
-        offerers_factories.NotValidatedUserOffererFactory(
-            offerer=offerer, validationStatus=ValidationStatus.DELETED, user__email="deleted.pro@example.com"
-        )
+        offerers_factories.PendingUserOffererFactory(offerer=offerer, user__email="pending.pro@example.com")
+        offerers_factories.RejectedUserOffererFactory(offerer=offerer, user__email="rejected.pro@example.com")
+        offerers_factories.DeletedUserOffererFactory(offerer=offerer, user__email="deleted.pro@example.com")
         offerers_factories.OffererInvitationFactory(email="invited.pro@example.com", user=pro, offerer=offerer)
         offerers_factories.OffererInvitationFactory(
             email="member.pro@example.com", user=pro, offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED

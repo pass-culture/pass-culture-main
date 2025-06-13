@@ -206,7 +206,7 @@ class GetOffererTest(GetEndpointHelper):
 
     def test_offerer_with_individual_subscription_tab_no_data(self, authenticated_client):
         tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
-        offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
+        offerer = offerers_factories.NewOffererFactory(tags=[tag])
         offerer_id = offerer.id
 
         with assert_num_queries(self.expected_num_queries):
@@ -217,7 +217,7 @@ class GetOffererTest(GetEndpointHelper):
 
     def test_offerer_with_individual_subscription_data(self, authenticated_client):
         tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
-        offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
+        offerer = offerers_factories.NewOffererFactory(tags=[tag])
         offerers_factories.IndividualOffererSubscriptionFactory(offerer=offerer)
         offerer_id = offerer.id
 
@@ -337,7 +337,7 @@ class GetOffererTest(GetEndpointHelper):
 
         @property
         def path(self):
-            offerer = offerers_factories.NotValidatedOffererFactory()
+            offerer = offerers_factories.NewOffererFactory()
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
     class PendingButtonTest(button_helpers.ButtonHelper):
@@ -346,7 +346,7 @@ class GetOffererTest(GetEndpointHelper):
 
         @property
         def path(self):
-            offerer = offerers_factories.NotValidatedOffererFactory()
+            offerer = offerers_factories.NewOffererFactory()
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
     class RejectButtonTest(button_helpers.ButtonHelper):
@@ -355,7 +355,7 @@ class GetOffererTest(GetEndpointHelper):
 
         @property
         def path(self):
-            offerer = offerers_factories.NotValidatedOffererFactory()
+            offerer = offerers_factories.NewOffererFactory()
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
     class CloseButtonTest(button_helpers.ButtonHelper):
@@ -607,7 +607,7 @@ class DeleteOffererTest(PostEndpointHelper):
         )
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
-        offerer_id = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>").id
+        offerer_id = offerers_factories.NewOffererFactory(name="<script>alert('coucou')</script>").id
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_id)
         assert response.status_code == 303
@@ -1491,7 +1491,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         uo2 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
-        uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        uo3 = offerers_factories.NewUserOffererFactory(offerer=offerer)
         uo4 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName="Hang", lastName="Man", isActive=False)
         )
@@ -1708,7 +1708,7 @@ class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_get_delete_offerer_attachment_form(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id)
         with assert_num_queries(3):
@@ -1723,7 +1723,7 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_delete_offerer_attachment(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         response = self.post_to_endpoint(
             authenticated_client, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id
@@ -2552,7 +2552,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 "Cinéma du Centre",
                 "Cinéma de la Plage",
             ):
-                offerers_factories.NotValidatedOffererFactory(name=name)
+                offerers_factories.NewOffererFactory(name=name)
 
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
@@ -2792,7 +2792,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_form(self, legit_user, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire(offerer)
@@ -2806,7 +2806,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
         assert "coordonnées bancaires" not in content
 
     def test_get_form_with_bank_account(self, legit_user, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         finance_factories.BankAccountFactory.create(
             offerer=offerer, status=finance_models.BankAccountApplicationStatus.REFUSED
         )
@@ -2829,7 +2829,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
         )
 
     def test_get_form_with_several_bank_accounts(self, legit_user, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         for status in list(finance_models.BankAccountApplicationStatus):
             finance_factories.BankAccountFactory.create(offerer=offerer, status=status)
 
@@ -3004,7 +3004,7 @@ class RejectOffererTest(DeactivateOffererHelper):
 
     def test_reject_offerer(self, legit_user, authenticated_client):
         user = users_factories.NonAttachedProFactory()
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         form = {"rejection_reason": "ELIGIBILITY"}
 
@@ -3048,7 +3048,7 @@ class RejectOffererTest(DeactivateOffererHelper):
     def test_reject_offerer_keep_pro_role(self, authenticated_client):
         user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user)  # already validated
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
         form = {"rejection_reason": "ELIGIBILITY"}
 
@@ -3080,7 +3080,7 @@ class RejectOffererTest(DeactivateOffererHelper):
         )
 
     def test_cannot_reject_offerer_without_reason(self, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         form = {"rejection_reason": ""}
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
@@ -3092,7 +3092,7 @@ class RejectOffererTest(DeactivateOffererHelper):
         )
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>")
+        offerer = offerers_factories.NewOffererFactory(name="<script>alert('coucou')</script>")
         form = {"rejection_reason": "ELIGIBILITY"}
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
@@ -3114,7 +3114,7 @@ class GetOffererPendingFormTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_offerer_pending_form(self, legit_user, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire(offerer)
@@ -3132,9 +3132,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
 
     def test_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
-        offerer = offerers_factories.NotValidatedOffererFactory(
-            tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]]
-        )
+        offerer = offerers_factories.NewOffererFactory(tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]])
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -3167,7 +3165,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
     def test_set_offerer_pending_keep_pro_role(self, authenticated_client):
         user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user)  # already validated
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
@@ -3185,7 +3183,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
         offerer = offerers_factories.OffererFactory()  # validated offerer
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # with validated attachment
         offerers_factories.UserNotValidatedOffererFactory(user=user)  # other pending offerer validation
-        offerers_factories.NotValidatedUserOffererFactory(user=user)  # other pending attachment
+        offerers_factories.NewUserOffererFactory(user=user)  # other pending attachment
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
@@ -3227,7 +3225,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         to_be_validated = []
         for _ in range(2):
             validated_user_offerer = offerers_factories.UserOffererFactory()
-            new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=validated_user_offerer.offerer)
+            new_user_offerer = offerers_factories.NewUserOffererFactory(offerer=validated_user_offerer.offerer)
             to_be_validated.append(new_user_offerer)
 
         with assert_num_queries(self.expected_num_queries):
@@ -3250,7 +3248,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             offerer__tags=[offerer_tags[1]],
             dateCreated=datetime.datetime(2022, 11, 2, 11, 59),
         )
-        new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
+        new_user_offerer = offerers_factories.NewUserOffererFactory(
             offerer=owner_user_offerer.offerer,
             validationStatus=ValidationStatus.NEW,
             dateCreated=datetime.datetime(2022, 11, 3, 11, 59),
@@ -3305,7 +3303,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             dateCreated=datetime.datetime(2022, 11, 24),
         )
         offerers_factories.UserOffererFactory(offerer=owner_user_offerer.offerer)  # other validated, not owner
-        new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
+        new_user_offerer = offerers_factories.NewUserOffererFactory(
             offerer=owner_user_offerer.offerer, dateCreated=datetime.datetime(2022, 11, 25)
         )
 
@@ -3343,7 +3341,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         self, authenticated_client, total_items, pagination_config, expected_total_pages, expected_page, expected_items
     ):
         for _ in range(total_items):
-            offerers_factories.NotValidatedUserOffererFactory()
+            offerers_factories.NewUserOffererFactory()
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **pagination_config))
@@ -3531,17 +3529,13 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     def test_list_filtering_by_date(self, authenticated_client):
         # Created before requested range, excluded from results:
-        offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 24, 22, 30))
+        offerers_factories.NewUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 24, 22, 30))
         # Created within requested range: Nov 24 23:45 UTC is Nov 25 00:45 CET
-        user_offerer_2 = offerers_factories.NotValidatedUserOffererFactory(
-            dateCreated=datetime.datetime(2022, 11, 24, 23, 45)
-        )
+        user_offerer_2 = offerers_factories.NewUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 24, 23, 45))
         # Within requested range:
-        user_offerer_3 = offerers_factories.NotValidatedUserOffererFactory(
-            dateCreated=datetime.datetime(2022, 11, 25, 9, 15)
-        )
+        user_offerer_3 = offerers_factories.NewUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 25, 9, 15))
         # Excluded from results because on the day after, Metropolitan French time:
-        offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 25, 23, 30))
+        offerers_factories.NewUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 25, 23, 30))
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
@@ -3596,7 +3590,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_validate_offerer_attachment(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
@@ -3648,7 +3642,7 @@ class GetRejectOffererAttachmentFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_reject_offerer_attachment_form(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -3663,7 +3657,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_reject_offerer_attachment(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
@@ -3699,7 +3693,7 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_set_offerer_attachment_pending(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         response = self.post_to_endpoint(
             authenticated_client, user_offerer_id=user_offerer.id, form={"comment": "En attente de documents"}
@@ -3721,7 +3715,7 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
 
     def test_set_offerer_attachment_pending_keep_pro_role(self, authenticated_client):
         user = offerers_factories.UserOffererFactory().user  # already validated
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
+        user_offerer = offerers_factories.NewUserOffererFactory(user=user)
 
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
@@ -3736,7 +3730,7 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
     def test_set_offerer_attachment_pending_remove_pro_role(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserNotValidatedOffererFactory(user=user_offerer.user)  # other pending offerer validation
-        offerers_factories.NotValidatedUserOffererFactory(user=user_offerer.user)  # other pending attachment
+        offerers_factories.NewUserOffererFactory(user=user_offerer.user)  # other pending attachment
 
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
@@ -3798,7 +3792,7 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         )
 
     def test_add_existing_user_offerer(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -3929,7 +3923,7 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_get_form(self, legit_user, authenticated_client):
-        offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.NewOffererFactory()
 
         url = url_for(self.endpoint)
         with assert_num_queries(2):  # session + current user
@@ -3938,7 +3932,7 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
             assert response.status_code == 200
 
     def test_post_form(self, legit_user, authenticated_client):
-        offerers = offerers_factories.NotValidatedOffererFactory.create_batch(3)
+        offerers = offerers_factories.NewOffererFactory.create_batch(3)
         parameter_ids = ",".join(str(offerer.id) for offerer in offerers)
 
         bank_account_1 = finance_factories.BankAccountFactory.create(
@@ -3975,7 +3969,7 @@ class BatchOffererValidateTest(PostEndpointHelper):
         "review_all_offers,confidence_level", [("", None), ("on", offerers_models.OffererConfidenceLevel.MANUAL_REVIEW)]
     )
     def test_batch_set_offerer_validate(self, legit_user, authenticated_client, review_all_offers, confidence_level):
-        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(3)
+        _offerers = offerers_factories.NewOffererFactory.create_batch(3)
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
 
         response = self.post_to_endpoint(
@@ -4020,7 +4014,7 @@ class GetBatchOffererPendingFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_batch_offerer_pending_form(self, legit_user, authenticated_client):
-        offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.NewOffererFactory()
 
         url = url_for(self.endpoint)
         with assert_num_queries(self.expected_num_queries):
@@ -4034,9 +4028,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
-        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(
-            3, tags=[offerer_tags[0], offerer_tags[1]]
-        )
+        _offerers = offerers_factories.NewOffererFactory.create_batch(3, tags=[offerer_tags[0], offerer_tags[1]])
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test pending comment"
         response = self.post_to_endpoint(
@@ -4096,7 +4088,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
         ),
     )
     def test_batch_set_offerer_reject(self, legit_user, authenticated_client, rejection_reason):
-        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(3)
+        _offerers = offerers_factories.NewOffererFactory.create_batch(3)
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test comment"
 
@@ -4131,7 +4123,7 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_attachment_validate(self, legit_user, authenticated_client):
-        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        user_offerers = offerers_factories.NewUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
         response = self.post_to_endpoint(
             authenticated_client, form={"object_ids": parameter_ids, "comment": "test comment"}
@@ -4180,7 +4172,7 @@ class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -4194,7 +4186,7 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
-        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        user_offerers = offerers_factories.NewUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
         response = self.post_to_endpoint(
             authenticated_client,
@@ -4230,7 +4222,7 @@ class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_get_batch_reject_user_offerer_form(self, legit_user, authenticated_client):
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
 
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
         with assert_num_queries(2):  # session + current user
@@ -4244,7 +4236,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_batch_set_offerer_attachment_reject(self, legit_user, authenticated_client):
-        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        user_offerers = offerers_factories.NewUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
         response = self.post_to_endpoint(
             authenticated_client, form={"object_ids": parameter_ids, "comment": "test comment"}
@@ -4579,7 +4571,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         assert classes_by_step == expected
 
     def test_without_subscription_data(self, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerer = offerers_factories.NewOffererFactory()
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         with assert_num_queries(self.expected_num_queries):

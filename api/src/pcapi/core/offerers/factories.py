@@ -40,11 +40,12 @@ class OffererFactory(BaseFactory):
     allowedOnAdage = True
 
 
-class NotValidatedOffererFactory(OffererFactory):
+class NewOffererFactory(OffererFactory):
     validationStatus = ValidationStatus.NEW
+    allowedOnAdage = False
 
 
-class PendingOffererFactory(OffererFactory):
+class PendingOffererFactory(NewOffererFactory):
     validationStatus = ValidationStatus.PENDING
 
 
@@ -310,16 +311,23 @@ class UserOffererFactory(BaseFactory):
     validationStatus = ValidationStatus.VALIDATED
 
 
-class NotValidatedUserOffererFactory(UserOffererFactory):
+class NonAttachedUserOffererFactory(UserOffererFactory):
     user = factory.SubFactory(users_factories.NonAttachedProFactory)
+
+
+class NewUserOffererFactory(NonAttachedUserOffererFactory):
     validationStatus = ValidationStatus.NEW
 
 
-class RejectedUserOffererFactory(UserOffererFactory):
+class PendingUserOffererFactory(NonAttachedUserOffererFactory):
+    validationStatus = ValidationStatus.PENDING
+
+
+class RejectedUserOffererFactory(NonAttachedUserOffererFactory):
     validationStatus = ValidationStatus.REJECTED
 
 
-class DeletedUserOffererFactory(UserOffererFactory):
+class DeletedUserOffererFactory(NonAttachedUserOffererFactory):
     validationStatus = ValidationStatus.DELETED
 
 
@@ -328,7 +336,7 @@ class UserNotValidatedOffererFactory(BaseFactory):
         model = models.UserOfferer
 
     user = factory.SubFactory(users_factories.NonAttachedProFactory)
-    offerer = factory.SubFactory(NotValidatedOffererFactory)
+    offerer = factory.SubFactory(NewOffererFactory)
     validationStatus = ValidationStatus.VALIDATED
 
 
@@ -436,7 +444,7 @@ class IndividualOffererSubscriptionFactory(BaseFactory):
     class Meta:
         model = models.IndividualOffererSubscription
 
-    offerer = factory.SubFactory(NotValidatedOffererFactory)
+    offerer = factory.SubFactory(NewOffererFactory)
     isEmailSent = True
     dateEmailSent = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))
     dateReminderEmailSent: datetime.datetime | None = None

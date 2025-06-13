@@ -258,7 +258,7 @@ class FindByProUserTest:
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+        user_offerer = offerers_factories.NewUserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
