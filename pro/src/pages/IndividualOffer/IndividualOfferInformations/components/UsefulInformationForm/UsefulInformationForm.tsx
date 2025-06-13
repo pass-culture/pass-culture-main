@@ -212,20 +212,11 @@ export const UsefulInformationForm = ({
             }
           />
         </FormLayout.Row>
-
         {conditionalFields.includes('bookingContact') && (
-          <FormLayout.Row
-            mdSpaceAfter
-            sideComponent={
-              <InfoBox>
-                Cette adresse email sera communiquée aux bénéficiaires ayant
-                réservé votre offre.
-              </InfoBox>
-            }
-          >
+          <FormLayout.Row mdSpaceAfter>
             <TextInput
               {...register('bookingContact')}
-              label="Email de contact"
+              label="Email de contact communiqué aux bénéficiaires"
               maxLength={90}
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
