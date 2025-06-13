@@ -51,7 +51,7 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
     """,
     required=True,
 )
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def anonymize_inactive_users(category: str) -> None:
     if category in ("beneficiary", "all"):
         print("Anonymize beneficiary users after 5 years")
@@ -61,8 +61,11 @@ def anonymize_inactive_users(category: str) -> None:
     if category in ("neither", "all"):
         print("Anonymizing users that are neither beneficiaries nor pro 3 years after their last connection")
         users_api.anonymize_non_pro_non_beneficiary_users()
+    if category in ("notify_pro", "all"):
+        print("Notify pro users 30 days before anonymization")
+        users_api.notify_pro_users_before_anonymization()
     if category in ("pro", "all"):
-        print("Anonymizing pro users X years after their last connection")
+        print("Anonymizing pro users 3 years after their last connection")
         users_api.anonymize_pro_users()
 
 
