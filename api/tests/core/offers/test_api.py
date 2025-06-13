@@ -371,15 +371,13 @@ class CreateStockTest:
         assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
 
     @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
+    def test_create_stock_for_rejected_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
+        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.REJECTED)
 
         with pytest.raises(exceptions.OfferException) as error:
             api.create_stock(offer=offer, price=10, quantity=7)
 
-        assert error.value.errors == {
-            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
-        }
+        assert error.value.errors == {"global": ["Les offres refusées ne sont pas modifiables"]}
         assert db.session.query(models.Stock).count() == 0
 
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
@@ -783,19 +781,17 @@ class EditStockTest:
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
     @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    def test_edit_stock_of_non_approved_offer_fails(
+    def test_edit_stock_of_rejected_offer_fails(
         self,
         mocked_send_first_venue_approved_offer_email_to_pro,
     ):
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
+        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.REJECTED)
         existing_stock = factories.StockFactory(offer=offer, price=10)
 
         with pytest.raises(exceptions.OfferException) as error:
             api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
-        assert error.value.errors == {
-            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
-        }
+        assert error.value.errors == {"global": ["Les offres refusées ne sont pas modifiables"]}
         existing_stock = db.session.query(models.Stock).one()
         assert existing_stock.price == 10
 
@@ -1739,15 +1735,13 @@ class UpdateOfferTest:
         assert offer.isDuo is False
         assert offer.audioDisabilityCompliant is True
 
-    def test_update_non_approved_offer_fails(self):
-        pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.PENDING)
+    def test_update_rejected_offer_fails(self):
+        pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.REJECTED)
         body = offers_schemas.UpdateOffer(name="Monologue")
         with pytest.raises(exceptions.OfferException) as error:
             api.update_offer(pending_offer, body)
 
-        assert error.value.errors == {
-            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
-        }
+        assert error.value.errors == {"global": ["Les offres refusées ne sont pas modifiables"]}
         pending_offer = db.session.query(models.Offer).one()
         assert pending_offer.name == "Soliloquy"
 

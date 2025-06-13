@@ -42,7 +42,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
     )
 
     validation.check_collective_offer_number_of_collective_stocks(collective_offer)
-    offer_validation.check_validation_status(collective_offer)
+    validation.check_validation_status(collective_offer)
     if booking_limit_datetime is None:
         booking_limit_datetime = start
 

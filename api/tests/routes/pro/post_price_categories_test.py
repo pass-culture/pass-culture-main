@@ -273,11 +273,8 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["ensure this value has at most 50 items"]}
 
-    @pytest.mark.parametrize(
-        "status", [offers_models.OfferValidationStatus.PENDING, offers_models.OfferValidationStatus.REJECTED]
-    )
-    def test_cant_update_price_when_offer_is_pending_or_rejected(self, client, status):
-        offer = offers_factories.EventOfferFactory(validation=status)
+    def test_cant_update_price_when_offer_is_rejected(self, client):
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
@@ -293,4 +290,4 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+        assert response.json == {"global": ["Les offres refusées ne sont pas modifiables"]}

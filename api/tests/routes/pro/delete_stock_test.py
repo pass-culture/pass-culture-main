@@ -98,8 +98,8 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def test_delete_non_approved_offer_fails(self, client, db_session):
-        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+    def test_delete_rejected_offer_fails(self, client, db_session):
+        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="pro@example.com",
             offerer=pending_validation_offer.venue.managingOfferer,
@@ -109,7 +109,7 @@ class Returns400Test:
         response = client.with_session_auth(user_offerer.user.email).delete(f"/stocks/{stock.id}")
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        assert response.json["global"] == ["Les offres refusées ne sont pas modifiables"]
 
 
 class Returns403Test:

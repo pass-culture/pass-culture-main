@@ -1007,9 +1007,9 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
-    def test_patch_non_approved_offer_fails(self, app, client):
+    def test_patch_rejected_offer_fails(self, app, client):
         offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING,
+            validation=OfferValidationStatus.REJECTED,
             name="New name",
             subcategoryId=subcategories.CARTE_MUSEE.id,
             url="test@test.com",
@@ -1026,7 +1026,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        assert response.json["global"] == ["Les offres refusées ne sont pas modifiables"]
 
     def test_reuse_unchanged_withdrawal(self, client):
         offer = offers_factories.OfferFactory(
