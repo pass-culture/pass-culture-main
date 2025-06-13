@@ -925,7 +925,7 @@ class ListPublicCollectiveOffersTest:
         assert len(offers) == 2
 
 
-@pytest.fixture(name="admin_user", scope="class")
+@pytest.fixture(name="admin_user", scope="function")
 def admin_user_fixture():
     return users_factories.AdminFactory()
 
@@ -1106,7 +1106,9 @@ class GetFilteredCollectiveOffersTest:
         offer = educational_factories.create_collective_offer_by_status(offer_status)
 
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
+            user_id=admin_user.id,
+            user_is_admin=True,
+            statuses=[offer_status],
         )
         assert result.one() == offer
 

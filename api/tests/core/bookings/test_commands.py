@@ -27,7 +27,8 @@ class ArchiveOldBookingsTest:
         offers_factories.ActivationCodeFactory(booking=old_booking, stock=stock)
         recent_booking_id = recent_booking.id
         old_booking_id = old_booking.id
-
+        db.session.commit()
+        db.session.close()
         # when
         run_command(app, "archive_old_bookings")
 
@@ -59,6 +60,8 @@ class ArchiveOldBookingsTest:
         recent_booking_id = recent_booking.id
         old_booking_id = old_booking.id
         old_not_free_booking_id = old_not_free_booking.id
+        db.session.commit()
+        db.session.close()
 
         # when
         run_command(app, "archive_old_bookings")
@@ -97,6 +100,8 @@ class ArchiveOldBookingsTest:
             "price": 10,
         }
         client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        db.session.commit()
+        db.session.close()
 
         # when
         run_command(app, "archive_old_bookings")
