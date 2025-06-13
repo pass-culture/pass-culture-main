@@ -6,17 +6,16 @@ import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query
 import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import { liteClient } from 'algoliasearch/lite'
-import { FormikContext } from 'formik'
 import {
   BaseSyntheticEvent,
   KeyboardEvent,
   MouseEvent,
-  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useInstantSearch, useSearchBox } from 'react-instantsearch'
 import { useDispatch } from 'react-redux'
 
@@ -47,6 +46,7 @@ import { Highlight } from './Highlight'
 
 type AutocompleteProps = {
   initialQuery: string
+  handleSubmit: () => void
 }
 
 export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
@@ -85,7 +85,10 @@ const addSuggestionToHistory = (suggestion: string) => {
   )
 }
 
-export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
+export const Autocomplete = ({
+  initialQuery,
+  handleSubmit,
+}: AutocompleteProps) => {
   const dispatch = useDispatch()
 
   const { refine } = useSearchBox()
@@ -105,7 +108,7 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
   const formRef = useRef<HTMLFormElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
-  const formik = useContext(FormikContext)
+  const form = useFormContext()
 
   const RECENT_SEARCH_SOURCE_ID = 'RecentSearchSource'
   const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
@@ -173,8 +176,8 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
           autocomplete.setQuery('')
           refine('')
           dispatch(setAdageQuery(''))
-          await formik.setFieldValue('venue', { ...item.venue, relative: [] })
-          await formik.submitForm()
+          form.setValue('venue', { ...item.venue, relative: [] })
+          handleSubmit()
 
           if (isLocalStorageEnabled) {
             addSuggestionToHistory(venueDisplayName)
@@ -234,13 +237,13 @@ export const Autocomplete = ({ initialQuery }: AutocompleteProps) => {
 
           if (itemId >= 0 && itemId < 3) {
             if (item.formats) {
-              await formik.setFieldValue('formats', [item.formats[0]])
+              form.setValue('formats', [item.formats[0]])
             }
           } else {
-            await formik.setFieldValue('formats', [])
+            form.setValue('formats', [])
           }
           refine(item.query)
-          await formik.submitForm()
+          handleSubmit()
 
           if (isLocalStorageEnabled) {
             addSuggestionToHistory(item.query)

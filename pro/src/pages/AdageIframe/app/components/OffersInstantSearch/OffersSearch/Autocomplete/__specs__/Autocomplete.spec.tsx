@@ -121,7 +121,7 @@ const renderAutocomplete = (
       <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
         <div>
           <a href="#">First element</a>
-          <Autocomplete initialQuery={initialQuery} />
+          <Autocomplete initialQuery={initialQuery} handleSubmit={() => {}} />
           <a href="#">Second element</a>
         </div>
       </AdageUserContext.Provider>
