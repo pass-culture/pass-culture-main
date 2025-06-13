@@ -384,7 +384,7 @@ class FindByProUserTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
-        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 

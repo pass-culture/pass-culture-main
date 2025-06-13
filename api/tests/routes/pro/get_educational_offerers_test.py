@@ -12,7 +12,7 @@ class GetEducationalOfferersTest:
         pro_user = users_factories.ProFactory()
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
-        not_validated_offerer = offerers_factories.NotValidatedOffererFactory()
+        not_validated_offerer = offerers_factories.NewOffererFactory()
         venue_offerer_1 = offerers_factories.VenueFactory(
             managingOfferer=offerer_1,
             collectiveInterventionArea=None,

@@ -270,7 +270,7 @@ class ListVenuesTest(GetEndpointHelper):
 
     def test_list_venues_by_only_validated_offerer(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
-        not_validated_offerer = offerers_factories.NotValidatedOffererFactory()
+        not_validated_offerer = offerers_factories.NewOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, postalCode="62000", departementCode="62")
         offerers_factories.VenueFactory(managingOfferer=not_validated_offerer, postalCode="62000", departementCode="62")
 

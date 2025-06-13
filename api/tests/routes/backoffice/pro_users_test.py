@@ -73,11 +73,11 @@ class GetProUserTest(GetEndpointHelper):
 
         @property
         def path(self):
-            user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+            user = users_factories.NonAttachedProFactory()
             return url_for("backoffice_web.pro_user.get", user_id=user.id)
 
         def test_button_when_can_be_deleted(self, authenticated_client):
-            user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+            user = users_factories.NonAttachedProFactory()
             url = url_for("backoffice_web.pro_user.delete", user_id=user.id)
 
             response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
@@ -97,7 +97,7 @@ class GetProUserTest(GetEndpointHelper):
             assert url not in response.data.decode("utf-8")
 
         def test_button_when_cannot_be_deleted_user_offerer(self, authenticated_client):
-            user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+            user = users_factories.NonAttachedProFactory()
             offerers_factories.UserOffererFactory(user=user)
             url = url_for("backoffice_web.pro_user.delete", user_id=user.id)
 
@@ -385,7 +385,7 @@ class GetProUserOfferersTest(GetEndpointHelper):
         offerer_1 = offerers_factories.UserOffererFactory(
             user=pro_user, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
         ).offerer
-        offerer_2 = offerers_factories.NotValidatedUserOffererFactory(user=pro_user).offerer
+        offerer_2 = offerers_factories.NewUserOffererFactory(user=pro_user).offerer
         url = url_for(self.endpoint, user_id=pro_user.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -456,7 +456,7 @@ class ValidateProEmailTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_validate_pro_user_email_ff_on(self, authenticated_client):
-        pro_user = offerers_factories.NotValidatedUserOffererFactory(user__isEmailValidated=False).user
+        pro_user = offerers_factories.NewUserOffererFactory(user__isEmailValidated=False).user
         assert not pro_user.isEmailValidated
 
         response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id)
@@ -487,7 +487,7 @@ class DeleteProUserTest(PostEndpointHelper):
     def test_delete_pro_user(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        user = users_factories.NonAttachedProFactory()
         history_factories.SuspendedUserActionHistoryFactory(user=user)
         user_id = user.id
         user_email = user.email
@@ -515,7 +515,7 @@ class DeleteProUserTest(PostEndpointHelper):
     def test_delete_pro_user_and_keep_email_in_mailing_List(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        user = users_factories.NonAttachedProFactory()
         offerers_factories.VenueFactory(bookingEmail=user.email)
         history_factories.SuspendedUserActionHistoryFactory(user=user)
         user_id = user.id
@@ -543,7 +543,7 @@ class DeleteProUserTest(PostEndpointHelper):
     def test_delete_pro_user_mismatch_email(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        user = users_factories.NonAttachedProFactory()
         user_id = user.id
         history_factories.SuspendedUserActionHistoryFactory(user=user)
 
@@ -575,7 +575,7 @@ class DeleteProUserTest(PostEndpointHelper):
     def test_delete_pro_user_with_user_offerer(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        user = users_factories.NonAttachedProFactory()
         offerers_factories.UserOffererFactory(user=user)
         user_id = user.id
         history_factories.SuspendedUserActionHistoryFactory(user=user)
