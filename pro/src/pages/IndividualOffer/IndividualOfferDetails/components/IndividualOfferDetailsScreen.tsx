@@ -5,7 +5,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { VenueListItemResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -117,28 +120,35 @@ export const IndividualOfferDetailsScreen = ({
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     try {
+      const isSynchronized = isOfferSynchronized(offer)
+      const isProductBased = isOfferProductBased(offer)
       // Draft offer PATCH requests are useless for product-based offers
       // and synchronized / provider offers since neither of the inputs displayed in
       // DetailsScreen can be edited at all
-      const shouldNotPatchData =
-        isOfferSynchronized(offer) || isOfferProductBased(offer)
-      let receivedOfferId = offer?.id
-      let response
+      const shouldNotPatchData = isSynchronized || isProductBased
+      const initialOfferId = offer?.id
+
+      let response: GetIndividualOfferResponseModel | undefined
+      let offerId = initialOfferId
+
       if (isDirtyDraftOffer) {
         response = await api.postDraftOffer(
           serializeDetailsPostData(formValues)
         )
-      } else if (!shouldNotPatchData) {
+      } else if (!shouldNotPatchData && initialOfferId) {
         response = await api.patchDraftOffer(
-          offer.id,
+          initialOfferId,
           serializeDetailsPatchData(formValues)
         )
       }
 
-      if (response) {
-        receivedOfferId = response.id
-        await handleImageOnSubmit(receivedOfferId)
-        await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+      offerId = response?.id ?? initialOfferId
+
+      const shouldSubmitImages = !!offerId && !isProductBased
+
+      if (shouldSubmitImages && offerId !== undefined) {
+        await handleImageOnSubmit(offerId)
+        await mutate([GET_OFFER_QUERY_KEY, offerId])
       }
 
       // replace url to fix back button
@@ -146,7 +156,7 @@ export const IndividualOfferDetailsScreen = ({
       navigate(
         getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
-          offerId: receivedOfferId,
+          offerId,
           mode,
           isOnboarding: pathname.indexOf('onboarding') !== -1,
         }),
@@ -159,7 +169,7 @@ export const IndividualOfferDetailsScreen = ({
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.DETAILS,
-        offerId: receivedOfferId,
+        offerId,
         venueId: form.getValues('venueId'),
         offerType: 'individual',
         subcategoryId: form.getValues('subcategoryId'),
@@ -167,7 +177,7 @@ export const IndividualOfferDetailsScreen = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
-          offerId: receivedOfferId,
+          offerId,
           step: nextStep,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION
