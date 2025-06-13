@@ -101,16 +101,13 @@ export const VenueSettingsForm = ({
 
           {!venue.isVirtual && (
             <>
-              <FormLayout.Row
-                mdSpaceAfter
-                sideComponent={
-                  <TipsBanner>
-                    À remplir si différent de la raison sociale. En le
-                    remplissant, c’est ce dernier qui sera visible du public.
-                  </TipsBanner>
-                }
-              >
-                <TextInput {...register('publicName')} label="Nom public" />
+              <FormLayout.Row mdSpaceAfter>
+                <TextInput
+                  {...register('publicName')}
+                  label="Nom public"
+                  description="À remplir si différent de la raison sociale. En le
+                    remplissant, c’est ce dernier qui sera visible du public."
+                />
               </FormLayout.Row>
 
               <FormLayout.Row>
