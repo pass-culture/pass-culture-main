@@ -1,4 +1,11 @@
 {% import "components/links.html" as links %}
+{% macro warn_when_empty(value) %}
+  {% if value %}
+    {{ value }}
+  {% else %}
+    {{ "Vide" | format_badge('danger', 'exclamation-triangle') }}
+  {% endif %}
+{% endmacro %}
 <turbo-frame id="turbo-accept-{{ ds_application_id }}">{# must be consistent with parameter passed to build_lazy_modal #}
 {% if can_be_accepted %}
   <form action="{{ dst }}"
@@ -16,7 +23,7 @@
             data-bs-dismiss="modal"
             aria-label="Fermer"></button>
   </div>
-  <div class="modal-body row">
+  <div class="modal-body row text-start">
     <div class="d-flex flex-column">
       {% set user = update_request.user %}
       {% if alert %}
@@ -71,7 +78,7 @@
               <span class="fw-bold">Ancien email :</span> {{ user.email }}
             </div>
             <div class="col-6 block">
-              <span class="fw-bold">Nouvel email :</span> {{ update_request.newEmail }}
+              <span class="fw-bold">Nouvel email :</span> {{ warn_when_empty(update_request.newEmail) }}
             </div>
           {% endif %}
           {% if update_request.has_phone_number_update %}
@@ -79,23 +86,23 @@
               <span class="fw-bold">Ancien numéro :</span> {{ user.phoneNumber or "(aucun)" }}
             </div>
             <div class="col-6 block">
-              <span class="fw-bold">Nouveau numéro :</span> {{ update_request.newPhoneNumber }}
+              <span class="fw-bold">Nouveau numéro :</span> {{ warn_when_empty(update_request.newPhoneNumber) }}
             </div>
           {% endif %}
           {% if update_request.has_first_name_update %}
             <div class="col-6 block">
-              <span class="fw-bold">Ancien prénom :</span> {{ user.firstName }}
+              <span class="fw-bold">Ancien prénom :</span> {{ warn_when_empty(user.firstName) }}
             </div>
             <div class="col-6 block">
-              <span class="fw-bold">Nouveau prénom :</span> {{ update_request.newFirstName }}
+              <span class="fw-bold">Nouveau prénom :</span> {{ warn_when_empty(update_request.newFirstName) }}
             </div>
           {% endif %}
           {% if update_request.has_last_name_update %}
             <div class="col-6 block">
-              <span class="fw-bold">Ancien nom :</span> {{ user.lastName }}
+              <span class="fw-bold">Ancien nom :</span> {{ warn_when_empty(user.lastName) }}
             </div>
             <div class="col-6 block">
-              <span class="fw-bold">Nouveau nom :</span> {{ update_request.newLastName }}
+              <span class="fw-bold">Nouveau nom :</span> {{ warn_when_empty(update_request.newLastName) }}
             </div>
           {% endif %}
         </div>
