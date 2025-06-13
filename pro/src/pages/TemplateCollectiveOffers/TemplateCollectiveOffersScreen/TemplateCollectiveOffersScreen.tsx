@@ -17,6 +17,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
+import { isCollectiveOfferSelectable } from 'commons/utils/isCollectiveOfferSelectable'
 import { isSameOffer } from 'commons/utils/isSameOffer'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
@@ -78,17 +79,19 @@ export const TemplateCollectiveOffersScreen = ({
     !hasOffers &&
     !hasFiltersOrNameSearch
 
+
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
-    selectedOffers.length === offers.filter((offer) => offer.isEditable).length
+    selectedOffers.length === offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
 
   function clearSelectedOfferIds() {
     setSelectedOffers([])
   }
 
+
   function toggleSelectAllCheckboxes() {
     setSelectedOffers(
-      areAllOffersSelected ? [] : offers.filter((offer) => offer.isEditable)
+      areAllOffersSelected ? [] : offers.filter((offer) => isCollectiveOfferSelectable(offer))
     )
   }
 

@@ -18,6 +18,7 @@ import {
   PATCH_SUCCESS_MESSAGE,
 } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
+import { isCollectiveStockEditable } from 'commons/utils/isCollectiveStockEditable'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {
@@ -26,7 +27,7 @@ import {
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
-const CollectiveOfferStockEdition = ({
+export const CollectiveOfferStockEdition = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
@@ -75,13 +76,14 @@ const CollectiveOfferStockEdition = ({
     )
     notify.success(PATCH_SUCCESS_MESSAGE)
   }
+  const stockCanBeEdited = isCollectiveStockEditable(offer)
 
   return (
     <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
       <OfferEducationalStock
         initialValues={initialValues}
         mode={
-          offer.collectiveStock?.isEducationalStockEditable
+          stockCanBeEdited
             ? Mode.EDITION
             : Mode.READ_ONLY
         }

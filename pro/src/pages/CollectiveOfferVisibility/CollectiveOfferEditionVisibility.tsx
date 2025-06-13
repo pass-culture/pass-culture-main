@@ -13,6 +13,7 @@ import {
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useNotification } from 'commons/hooks/useNotification'
+import { isCollectiveInstitutionEditable } from 'commons/utils/isCollectiveInstitutionEditable'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
@@ -23,7 +24,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 
-const CollectiveOfferVisibility = ({
+export const CollectiveOfferEditionVisibility = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
@@ -65,10 +66,12 @@ const CollectiveOfferVisibility = ({
     return <Spinner />
   }
 
+  const isVisibilityEditable = isCollectiveInstitutionEditable(offer)
+
   return (
     <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
       <CollectiveOfferVisibilityScreen
-        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+        mode={isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
         initialValues={extractInitialVisibilityValues(
           offer.institution,
           offer.teacher
@@ -85,5 +88,5 @@ const CollectiveOfferVisibility = ({
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
-  CollectiveOfferVisibility
+  CollectiveOfferEditionVisibility
 )

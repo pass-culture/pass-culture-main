@@ -98,9 +98,9 @@ describe('Create collective offers', () => {
     cy.get('#list-institution')
       .findByText(/COLLEGE 123/)
       .click()
-    cy.findByText("Renseignez l'établissement scolaire et l’enseignant").click()
+    cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
 
-    cy.findByText("Renseignez l'établissement scolaire et l’enseignant").click()
+    cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
 
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Enregistrer et continuer').click()
@@ -268,9 +268,9 @@ describe('Create collective offers', () => {
     cy.get('#list-institution')
       .findByText(/COLLEGE 123/)
       .click()
-    cy.findByText("Renseignez l'établissement scolaire et l’enseignant").click()
+    cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
 
-    cy.findByText("Renseignez l'établissement scolaire et l’enseignant").click()
+    cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
 
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Enregistrer et continuer').click()

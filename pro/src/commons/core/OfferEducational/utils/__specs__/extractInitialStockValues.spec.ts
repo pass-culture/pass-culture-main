@@ -29,7 +29,6 @@ describe('extractInitialVisibilityValues', () => {
       id: 1,
       isBooked: false,
       isCancellable: false,
-      isEducationalStockEditable: true,
       numberOfTickets: 20,
       price: 1200,
     }

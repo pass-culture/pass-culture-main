@@ -171,7 +171,6 @@ class CollectiveStockResponseModel(BaseModel):
     price: float
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
-    isEditable: bool = Field(alias="isEducationalStockEditable")
 
     class Config:
         allow_population_by_field_name = True

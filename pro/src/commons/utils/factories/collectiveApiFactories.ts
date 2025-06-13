@@ -25,8 +25,10 @@ import {
   ListOffersVenueResponseModel,
   CollectiveOfferDisplayedStatus,
   CollectiveLocationType,
-  CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferBookingResponseModel,
+  CollectiveBookingStatus
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 
@@ -59,11 +61,10 @@ export const collectiveOfferFactory = (
         startDatetime: new Date().toISOString(),
       },
     ],
-    isEditable: true,
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,
-    allowedActions: [],
+    allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE,],
     ...customCollectiveOffer,
     formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
@@ -83,6 +84,7 @@ const sharedCollectiveOfferData = {
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
   isCancellable: true,
   isTemplate: true,
+  allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
   name: 'Offre de test',
   bookingEmails: ['toto@example.com'],
   contactEmail: 'toto@example.com',
@@ -121,10 +123,9 @@ export const getCollectiveOfferFactory = (
     id: currentOfferId,
     venue: getCollectiveOfferVenueFactory(),
     isBookable: true,
-    isVisibilityEditable: true,
     isTemplate: false,
+    allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
-    allowedActions: [],
     location: {
       locationType: CollectiveLocationType.ADDRESS,
     },
@@ -148,7 +149,6 @@ export const getCollectiveOfferCollectiveStockFactory = (
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
     isBooked: false,
     isCancellable: false,
-    isEducationalStockEditable: true,
     ...customGetCollectiveOfferCollectiveStock,
   }
 }
@@ -178,7 +178,6 @@ export const getCollectiveOfferTemplateFactory = (
     start: new Date().toISOString(),
     end: addDays(new Date(), 1).toISOString(),
   },
-  allowedActions: [],
   ...customCollectiveOfferTemplate,
 })
 
@@ -297,15 +296,15 @@ export const collectiveBookingByIdFactory = (
 }
 
 export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
-  {
-    city: 'Paris',
-    id: institutionId++,
-    institutionId: 'ABC123',
-    institutionType: 'LYCEE',
-    name: 'Sacré coeur',
-    phoneNumber: '0601020304',
-    postalCode: '75000',
-  }
+{
+  city: 'Paris',
+  id: institutionId++,
+  institutionId: 'ABC123',
+  institutionType: 'LYCEE',
+  name: 'Sacré coeur',
+  phoneNumber: '0601020304',
+  postalCode: '75000',
+}
 
 export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   civility: 'Mr',
@@ -355,18 +354,18 @@ export const defaultGetVenue: GetVenueResponseModel = {
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
-  {
-    comment: 'comment',
-    institution: {
-      city: 'Paris',
-      institutionId: 'ABC123',
-      institutionType: 'LYCEE',
-      name: 'Sacré coeur',
-      postalCode: '75000',
-    },
-    redactor: {
-      email: 'Jean.Dupont@example.com',
-      firstName: 'Jean',
-      lastName: 'Dupont',
-    },
-  }
+{
+  comment: 'comment',
+  institution: {
+    city: 'Paris',
+    institutionId: 'ABC123',
+    institutionType: 'LYCEE',
+    name: 'Sacré coeur',
+    postalCode: '75000',
+  },
+  redactor: {
+    email: 'Jean.Dupont@example.com',
+    firstName: 'Jean',
+    lastName: 'Dupont',
+  },
+}
