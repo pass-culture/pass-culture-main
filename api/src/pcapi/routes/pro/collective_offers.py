@@ -12,6 +12,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.educational.api.history import get_collective_offer_history
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -83,7 +84,10 @@ def get_collective_offer(offer_id: int) -> collective_offers_serialize.GetCollec
             errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
             status_code=404,
         )
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(
+        offer, history=get_collective_offer_history(offer=offer)
+    )
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
@@ -290,7 +294,9 @@ def edit_collective_offer(
         raise ApiErrors(error.errors)
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(
+        offer, history=get_collective_offer_history(offer=offer)
+    )
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
@@ -462,7 +468,9 @@ def patch_collective_offers_educational_institution(
     except educational_exceptions.EducationalRedactorNotFound:
         raise ApiErrors({"teacherEmail": ["L'enseignant n'à pas été trouvé dans cet établissement."]}, status_code=404)
 
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(
+        offer, history=get_collective_offer_history(offer=offer)
+    )
 
 
 @private_api.route("/collective/offers/<int:offer_id>/publish", methods=["PATCH"])
@@ -485,7 +493,9 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
 
             offer = educational_api_offer.publish_collective_offer(offer=offer, user=current_user)
 
-            return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+            return collective_offers_serialize.GetCollectiveOfferResponseModel.build(
+                offer, history=get_collective_offer_history(offer=offer)
+            )
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
@@ -781,4 +791,6 @@ def duplicate_collective_offer(
     except educational_exceptions.CantGetImageFromUrl:
         raise ApiErrors({"image": ["l'image ne peut etre trouvé"]}, status_code=404)
 
-    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.build(
+        offer, history=get_collective_offer_history(offer=offer)
+    )

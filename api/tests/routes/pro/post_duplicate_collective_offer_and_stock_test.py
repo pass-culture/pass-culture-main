@@ -171,6 +171,18 @@ class Returns200Test:
                 "CAN_ARCHIVE",
             ],
             "location": None,
+            "history": {
+                "future": [
+                    "PUBLISHED",
+                    "PREBOOKED",
+                    "BOOKED",
+                    "ENDED",
+                    "REIMBURSED",
+                ],
+                "past": [
+                    {"datetime": None, "status": "DRAFT"},
+                ],
+            },
         }
 
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLICATE)
