@@ -1,8 +1,9 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OffersTable } from 'components/OffersTable/OffersTable'
 import { OffersTableHead } from 'components/OffersTable/OffersTableHead/OffersTableHead'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import { IndividualOffersTableBody } from './components/IndividualOffersTableBody/IndividualOffersTableBody'
@@ -45,6 +46,10 @@ export const IndividualOffersTable = ({
   isAtLeastOneOfferChecked,
   selectedFilters,
 }: IndividualOffersTableProps) => {
+  const isRefactoFutureOfferEnabled = useActiveFeature(
+    'WIP_REFACTO_FUTURE_OFFER'
+  )
+
   const onPreviousPageClick = () =>
     applySelectedFiltersAndRedirect(
       { ...selectedFilters, page: currentPageNumber - 1 },
@@ -80,10 +85,10 @@ export const IndividualOffersTable = ({
     >
       <OffersTableHead
         columns={[
-          CELLS_DEFINITIONS.NAME,
-          CELLS_DEFINITIONS.ADDRESS,
-          CELLS_DEFINITIONS.STOCKS,
-          CELLS_DEFINITIONS.STATUS,
+          getCellsDefinition().NAME,
+          getCellsDefinition().ADDRESS,
+          getCellsDefinition().STOCKS,
+          getCellsDefinition(isRefactoFutureOfferEnabled).INDIVIDUAL_STATUS,
         ]}
       />
       <IndividualOffersTableBody

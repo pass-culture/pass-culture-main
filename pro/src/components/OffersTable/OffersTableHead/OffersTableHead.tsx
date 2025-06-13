@@ -4,7 +4,7 @@ import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/typ
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 
-import { CellDefinition, CELLS_DEFINITIONS } from '../utils/cellDefinitions'
+import { CellDefinition, getCellsDefinition } from '../utils/cellDefinitions'
 
 import styles from './OffersTableHead.module.scss'
 
@@ -75,14 +75,14 @@ export const OffersTableHead = ({
           )
         )}
         <th
-          id={CELLS_DEFINITIONS.ACTIONS.id}
+          id={getCellsDefinition().ACTIONS.id}
           role="columnheader"
           className={classNames(
             styles['offers-thead-th'],
             styles['offers-thead-th-actions']
           )}
         >
-          {CELLS_DEFINITIONS.ACTIONS.title}
+          {getCellsDefinition().ACTIONS.title}
         </th>
       </tr>
     </thead>

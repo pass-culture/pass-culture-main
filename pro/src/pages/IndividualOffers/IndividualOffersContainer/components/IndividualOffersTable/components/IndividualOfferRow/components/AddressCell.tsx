@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 
 import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
@@ -24,15 +24,16 @@ export function AddressCell({
         styles['venue-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.ADDRESS.id}`}
+      headers={`${rowId} ${getCellsDefinition().ADDRESS.id}`}
     >
-      {displayLabel &&
+      {displayLabel && (
         <span
           className={styles['offers-table-cell-mobile-label']}
           aria-hidden={true}
         >
-          {`${CELLS_DEFINITIONS.ADDRESS.title} :`}
-        </span>}
+          {`${getCellsDefinition().ADDRESS.title} :`}
+        </span>
+      )}
       {address ? computeAddressDisplayName(address) : '-'}
     </td>
   )

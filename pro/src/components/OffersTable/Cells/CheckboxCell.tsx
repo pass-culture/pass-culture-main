@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import styles from 'styles/components/Cells.module.scss'
 
-import { CELLS_DEFINITIONS } from '../utils/cellDefinitions'
+import { getCellsDefinition } from '../utils/cellDefinitions'
 
 interface CheckboxCellProps {
   offerName: string
@@ -30,7 +30,7 @@ export const CheckboxCell = ({
         styles['checkbox-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.CHECKBOX.id}`}
+      headers={`${rowId} ${getCellsDefinition().CHECKBOX.id}`}
     >
       <Checkbox
         checked={isSelected}
