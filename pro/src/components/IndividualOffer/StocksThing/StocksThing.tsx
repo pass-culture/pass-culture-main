@@ -1,5 +1,6 @@
-import { FormikProvider, useFormik } from 'formik'
-import { useEffect, useRef, useState } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { ChangeEvent, useEffect, useState, useRef } from 'react'
+import { useForm } from 'react-hook-form'
 import { useNavigate, useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -18,10 +19,12 @@ import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOf
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { getToday, getYearMonthDay, isDateValid } from 'commons/utils/date'
+import { getToday, isDateValid } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { isNumber } from 'commons/utils/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
+import { serializeThingBookingLimitDatetime } from 'components/IndividualOffer/StocksThing/adapters/serializers'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
@@ -29,12 +32,9 @@ import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import {
-  Quantity,
-  QuantityInput,
-} from 'ui-kit/form/QuantityInput/QuantityInput'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
@@ -45,7 +45,7 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
-import styles from './StockThing.module.scss'
+import styles from './StocksThing.module.scss'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
@@ -78,9 +78,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     async function loadStocks() {
       const response = await api.getStocks(offer.id)
       setStocks(response.stocks)
-      formik.resetForm({
-        values: buildInitialValues(offer, response.stocks),
-      })
+      // Amine RESET avant la déclaration
+      reset(buildInitialValues(offer, response.stocks))
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -107,7 +106,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const onSubmit = async (values: StockThingFormValues) => {
+  const onSubmit = async (values: StockThingFormValues): Promise<void> => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -120,7 +119,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     })
 
     // Return when saving in edition with an empty form
-    const isFormEmpty = formik.values === STOCK_THING_FORM_DEFAULT_VALUES
+    const isFormEmpty = getValues() === STOCK_THING_FORM_DEFAULT_VALUES
     if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
@@ -129,8 +128,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
 
     // Return when there is nothing to save
-    const isStockAlreadySaved = formik.values.stockId !== undefined
-    if (isStockAlreadySaved && !formik.dirty) {
+    const isStockAlreadySaved = watch('stockId') !== undefined
+    if (isStockAlreadySaved && !isDirty) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
@@ -139,7 +138,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(values, offer, formik.resetForm, formik.setErrors)
+      await submitToApi(values, offer, reset, setError)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -155,20 +154,30 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
   }
 
-  // TODO: for some reasons we cant use yup to make validation
-  // happen or not - see conditions to support stock deletion.
-  // No matter what, yup.when() always returns stockId as undefined
-  // so this is a workaround to pass its value.
   const stockId = stocks.length > 0 ? stocks[0].id : undefined
-  const formik = useFormik({
-    initialValues: buildInitialValues(offer, []),
-    onSubmit,
-    validationSchema: getValidationSchema(mode, bookingsQuantity, stockId),
+
+  const hookForm = useForm<StockThingFormValues, any, StockThingFormValues>({
+    resolver: yupResolver<StockThingFormValues>(
+      getValidationSchema(mode, bookingsQuantity, stockId)
+    ),
+    defaultValues: buildInitialValues(offer, stocks),
+    mode: 'onBlur',
   })
 
+  const {
+    register,
+    setValue,
+    getValues,
+    handleSubmit,
+    setError,
+    reset,
+    watch,
+    formState: { errors, isSubmitting, isDirty, defaultValues },
+  } = hookForm
+
   useNotifyFormError({
-    isSubmitting: formik.isSubmitting,
-    errors: formik.errors,
+    isSubmitting: isSubmitting,
+    errors,
   })
 
   const handlePreviousStepOrBackToReadOnly = () => {
@@ -197,14 +206,14 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const onConfirmDeleteStock = async () => {
-    if (formik.values.stockId === undefined) {
-      formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
+    if (watch('stockId') === undefined) {
+      reset(STOCK_THING_FORM_DEFAULT_VALUES)
       return
     }
     try {
-      await api.deleteStock(formik.values.stockId)
+      await api.deleteStock(watch('stockId')!)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
-      formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
+      reset(STOCK_THING_FORM_DEFAULT_VALUES)
       setStocks([])
       notify.success('Le stock a été supprimé.')
     } catch {
@@ -213,18 +222,25 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsDeleteConfirmVisible(false)
   }
 
-  const onQuantityChange = async (newQuantity: Quantity) => {
-    let remainingQuantity: number | string =
+  const onQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newQuantity = event.target.value
+    if (newQuantity === '') {
+      setValue('remainingQuantity', 'Illimité')
+    } else {
       // No need to test
       /* istanbul ignore next */
-      Number(newQuantity || 0) - Number(formik.values.bookingsQuantity || 0)
-
-    if (newQuantity === '') {
-      remainingQuantity = 'unlimited'
+      setValue(
+        'remainingQuantity',
+        (
+          Number(newQuantity || 0) - Number(watch('bookingsQuantity') || 0)
+        ).toString(10)
+      )
     }
-
-    await formik.setFieldValue(`remainingQuantity`, remainingQuantity)
-    await formik.setFieldValue(`quantity`, newQuantity)
+    setValue('quantity', parseInt(newQuantity), {
+      shouldDirty: true,
+      shouldValidate: true,
+      shouldTouch: true,
+    })
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {
@@ -250,8 +266,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               // tested but coverage don't see it.
               /* istanbul ignore next */
               mode === OFFER_WIZARD_MODE.EDITION &&
-              formik.values.stockId !== undefined &&
-              parseInt(formik.values.bookingsQuantity) > 0
+              watch('stockId') !== undefined &&
+              parseInt(watch('bookingsQuantity') ?? '0') > 0
             ) {
               setIsDeleteConfirmVisible(true)
             } else {
@@ -314,34 +330,23 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     ]
   }
 
-  const submitActivationCodes = async (activationCodes: string[]) => {
-    await formik.setFieldValue('quantity', activationCodes.length, true)
-    await formik.setFieldValue('activationCodes', activationCodes)
+  const submitActivationCodes = (activationCodes: string[]) => {
+    setValue('quantity', activationCodes.length)
+    setValue('activationCodes', activationCodes)
     setIsActivationCodeFormVisible(false)
   }
 
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
-    : setFormReadOnlyFields(offer, stocks, formik.values)
-  const showExpirationDate =
-    formik.values.activationCodesExpirationDatetime !== ''
+    : setFormReadOnlyFields(offer, stocks, watch())
+  const showExpirationDate = watch('activationCodesExpirationDatetime') !== null
 
-  const [minExpirationYear, minExpirationMonth, minExpirationDay] =
-    getYearMonthDay(formik.values.bookingLimitDatetime)
-  const [maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay] = getYearMonthDay(
-    formik.values.activationCodesExpirationDatetime
-  )
-  const minExpirationDate = isDateValid(formik.values.bookingLimitDatetime)
-    ? new Date(minExpirationYear, minExpirationMonth, minExpirationDay)
-    : null
-  const maxDateTime = isDateValid(
-    formik.values.activationCodesExpirationDatetime
-  )
-    ? new Date(maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay)
-    : undefined
+  const minExpirationDate = watch('bookingLimitDatetime') ?? null
+
+  const maxDateTime = watch('activationCodesExpirationDatetime')
 
   return (
-    <FormikProvider value={formik}>
+    <>
       <DialogStockThingDeleteConfirm
         onConfirm={onConfirmDeleteStock}
         onCancel={() => setIsDeleteConfirmVisible(false)}
@@ -352,12 +357,20 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         onSubmit={submitActivationCodes}
         onCancel={() => setIsActivationCodeFormVisible(false)}
         today={today}
-        minExpirationDate={minExpirationDate}
+        minExpirationDate={
+          minExpirationDate
+            ? getLocalDepartementDateTimeFromUtc(
+                minExpirationDate,
+                getDepartmentCode(offer)
+              )
+            : null
+        }
         isDialogOpen={isActivationCodeFormVisible}
         activationCodeButtonRef={activationCodeButtonRef}
+        setValue={setValue}
       />
 
-      <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
+      <form onSubmit={handleSubmit(onSubmit)} data-testid="stock-thing-form">
         <FormLayout>
           <div aria-current="page">
             <div className={styles['mandatory']}>
@@ -371,37 +384,51 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             />
             <div className={styles['row']}>
               <TextInput
-                smallLabel
+                {...register('price')}
                 name="price"
                 label="Prix"
-                classNameFooter={styles['field-layout-footer']}
+                required
                 disabled={readOnlyFields.includes('price')}
                 type="number"
                 data-testid="input-price"
                 rightIcon={strokeEuroIcon}
                 step="0.01"
                 min={0}
-                className={styles['field-layout-xsmall']}
+                className={styles['field-layout-input']}
               />
+            </div>
+            <div className={styles['row']}>
               <DatePicker
-                smallLabel
                 name="bookingLimitDatetime"
                 label="Date limite de réservation"
-                isOptional
-                hasLabelLineBreak={false}
-                classNameFooter={styles['field-layout-footer']}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  if (isDateValid(event.target.value)) {
+                    setValue('bookingLimitDatetime', event.target.value)
+                  }
+                }}
                 minDate={today}
-                maxDate={getMaximumBookingDatetime(maxDateTime)}
+                maxDate={getMaximumBookingDatetime(
+                  maxDateTime ? new Date(maxDateTime) : undefined
+                )}
                 disabled={readOnlyFields.includes('bookingLimitDatetime')}
-                className={styles['field-layout-small']}
+                className={styles['field-layout-input']}
                 onBlur={() => {
                   if (
-                    formik.initialValues.bookingLimitDatetime !==
-                    formik.values.bookingLimitDatetime
+                    watch('bookingLimitDatetime') !== null &&
+                    defaultValues?.bookingLimitDatetime !==
+                      watch('bookingLimitDatetime')
                   ) {
                     logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
                       from: location.pathname,
-                      bookingLimitDatetime: formik.values.bookingLimitDatetime,
+                      bookingLimitDatetime: isDateValid(
+                        watch('bookingLimitDatetime')
+                      )
+                        ? serializeThingBookingLimitDatetime(
+                            // @ts-expect-error
+                            new Date(watch('bookingLimitDatetime')),
+                            getDepartmentCode(offer)
+                          )
+                        : undefined,
                     })
                   }
                 }}
@@ -409,49 +436,49 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
               {showExpirationDate && (
                 <DatePicker
-                  smallLabel
+                  {...register('activationCodesExpirationDatetime')}
                   name="activationCodesExpirationDatetime"
                   label="Date d'expiration"
-                  classNameFooter={styles['field-layout-footer']}
+                  className={styles['field-layout-input']}
                   disabled={true}
-                  className={styles['field-layout-small']}
                 />
               )}
+            </div>
+            <div className={styles['row']}>
               <QuantityInput
-                smallLabel
+                value={
+                  watch('quantity') && isNumber(watch('quantity'))
+                    ? Number(watch('quantity'))
+                    : undefined
+                }
+                label="Quantité"
                 disabled={readOnlyFields.includes('quantity')}
                 onChange={onQuantityChange}
-                className={styles['field-layout-small']}
-                classNameFooter={styles['field-layout-footer']}
-                isOptional
-                min={minQuantity}
+                onBlur={onQuantityChange}
+                className={styles['field-layout-input']}
+                minimum={minQuantity}
               />
+            </div>
+            <div className={styles['row']}>
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
                   <TextInput
-                    name="availableStock"
-                    value={
-                      formik.values.remainingQuantity === 'unlimited'
-                        ? 'Illimité'
-                        : formik.values.remainingQuantity
-                    }
+                    {...register('remainingQuantity')}
+                    name="remainingQuantity"
                     readOnly
                     label="Stock restant"
                     hasLabelLineBreak={false}
                     isOptional
-                    smallLabel
                     className={styles['field-layout-shrink']}
-                    classNameFooter={styles['field-layout-footer']}
                   />
                   <TextInput
+                    {...register('bookingsQuantity')}
                     name="bookingsQuantity"
-                    value={formik.values.bookingsQuantity || 0}
+                    value={watch('bookingsQuantity') || 0}
                     readOnly
                     label="Réservations"
                     isOptional
-                    smallLabel
                     className={styles['field-layout-shrink']}
-                    classNameFooter={styles['field-layout-footer']}
                   />
                 </>
               )}
@@ -477,10 +504,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         </FormLayout>
         {canBeDuo && (
           <FormLayout fullWidthActions>
-            <FormLayout.Section
-              className={styles['duo-section']}
-              title="Réservations “Duo”"
-            >
+            <FormLayout.Section title="Réservations “Duo”">
               <FormLayout.Row
                 sideComponent={
                   <InfoBox>
@@ -491,13 +515,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 }
               >
                 <Checkbox
+                  {...register('isDuo')}
                   label="Accepter les réservations “Duo“"
                   disabled={isDisabled}
                   variant="detailed"
-                  checked={Boolean(formik.getFieldProps('isDuo').value)}
-                  onChange={(e) =>
-                    formik.setFieldValue('isDuo', e.target.checked)
-                  }
+                  checked={Boolean(getValues('isDuo'))}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -507,16 +529,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.STOCKS}
           isDisabled={
-            formik.isSubmitting ||
-            isDisabled ||
-            Boolean(publishedOfferWithSameEAN)
+            isSubmitting || isDisabled || Boolean(publishedOfferWithSameEAN)
           }
-          dirtyForm={formik.dirty}
+          dirtyForm={isDirty}
         />
       </form>
-      <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !formik.isSubmitting}
-      />
-    </FormikProvider>
+      <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
+    </>
   )
 }

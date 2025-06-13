@@ -50,18 +50,28 @@ describe('validationSchema', () => {
       mode: OFFER_WIZARD_MODE.EDITION,
       description: 'in edition, quantity below bookings number',
       formValues: { stockId: 1, quantity: 1, price: 0 },
-      expectedErrors: ['Veuillez indiquer un nombre supérieur ou égal au nombre de réservations'],
+      expectedErrors: [
+        'Veuillez indiquer un nombre supérieur ou égal au nombre de réservations',
+      ],
       bookingsQuantity: 2,
-    }
+    },
   ]
 
-  cases.forEach(({ mode = OFFER_WIZARD_MODE.CREATION, description, formValues, expectedErrors, bookingsQuantity }) => {
-    it(`should validate the form for case: ${description}`, async () => {
-      const errors = await getYupValidationSchemaErrors(
-        getValidationSchema(mode, bookingsQuantity, formValues.stockId),
-        formValues
-      )
-      expect(errors).toEqual(expectedErrors)
-    })
-  })
+  cases.forEach(
+    ({
+      mode = OFFER_WIZARD_MODE.CREATION,
+      description,
+      formValues,
+      expectedErrors,
+      bookingsQuantity,
+    }) => {
+      it(`should validate the form for case: ${description}`, async () => {
+        const errors = await getYupValidationSchemaErrors(
+          getValidationSchema(mode, bookingsQuantity, formValues.stockId),
+          formValues
+        )
+        expect(errors).toEqual(expectedErrors)
+      })
+    }
+  )
 })

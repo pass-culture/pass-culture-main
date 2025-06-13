@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 
 import { Dialog } from 'components/Dialog/Dialog'
 import strokeCodeIcon from 'icons/stroke-code.svg'
@@ -18,6 +19,7 @@ interface ActivationCodeFormProps {
   minExpirationDate: Date | null
   isDialogOpen: boolean
   activationCodeButtonRef: React.RefObject<HTMLButtonElement>
+  setValue: UseFormSetValue<any>
 }
 
 export const ActivationCodeFormDialog = ({
@@ -27,6 +29,7 @@ export const ActivationCodeFormDialog = ({
   minExpirationDate,
   isDialogOpen,
   activationCodeButtonRef,
+  setValue,
 }: ActivationCodeFormProps) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [unsavedActivationCodes, setUnsavedActivationCodes] =
@@ -100,6 +103,7 @@ export const ActivationCodeFormDialog = ({
           submitActivationCodes={() => onSubmit(unsavedActivationCodes)}
           today={today}
           minExpirationDate={minExpirationDate}
+          setValue={setValue}
         />
       )}
     </Dialog>

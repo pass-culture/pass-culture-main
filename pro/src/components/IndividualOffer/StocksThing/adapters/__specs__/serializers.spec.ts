@@ -1,8 +1,14 @@
-import { ThingStockCreateBodyModel, ThingStockUpdateBodyModel } from 'apiClient/v1'
+import {
+  ThingStockCreateBodyModel,
+  ThingStockUpdateBodyModel,
+} from 'apiClient/v1'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import { StockThingFormValues } from '../../types'
-import { serializeCreateThingStock, serializeUpdateThingStock } from '../serializers'
+import {
+  serializeCreateThingStock,
+  serializeUpdateThingStock,
+} from '../serializers'
 
 describe('serializeCreateThingStock', () => {
   let formValues: StockThingFormValues
@@ -16,7 +22,7 @@ describe('serializeCreateThingStock', () => {
       quantity: 12,
       bookingLimitDatetime: '2022-10-26',
       price: 10,
-      activationCodesExpirationDatetime: '',
+      activationCodesExpirationDatetime: undefined,
       activationCodes: [],
       isDuo: undefined,
     }
@@ -25,14 +31,18 @@ describe('serializeCreateThingStock', () => {
   })
 
   it('should serialize data for stock thing creation', () => {
-    const expectedCreateThingStock: ThingStockCreateBodyModel  = {
+    const expectedCreateThingStock: ThingStockCreateBodyModel = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
       offerId: 12,
     }
 
-    const serializedData = serializeCreateThingStock(formValues, offerId, departementCode)
+    const serializedData = serializeCreateThingStock(
+      formValues,
+      offerId,
+      departementCode
+    )
     expect(serializedData).toStrictEqual(expectedCreateThingStock)
   })
 
@@ -47,7 +57,7 @@ describe('serializeCreateThingStock', () => {
     const serializedData = serializeCreateThingStock(
       {
         ...formValues,
-        bookingLimitDatetime: '',
+        bookingLimitDatetime: undefined,
       },
       offerId,
       departementCode
@@ -87,7 +97,7 @@ describe('serializeCreateThingStock', () => {
       {
         stockId: 1,
         ...formValues,
-        quantity: '',
+        quantity: null,
       },
       offerId,
       departementCode
@@ -109,7 +119,7 @@ describe('serializeUpdateThingStock', () => {
       quantity: 12,
       bookingLimitDatetime: '2022-10-26',
       price: 10,
-      activationCodesExpirationDatetime: '',
+      activationCodesExpirationDatetime: undefined,
       activationCodes: [],
       isDuo: undefined,
     }
@@ -117,13 +127,16 @@ describe('serializeUpdateThingStock', () => {
   })
 
   it('should serialize data for stock thing creation', () => {
-    const expectedUpdateThingStock: ThingStockUpdateBodyModel  = {
+    const expectedUpdateThingStock: ThingStockUpdateBodyModel = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
     }
 
-    const serializedData = serializeUpdateThingStock(formValues, departementCode)
+    const serializedData = serializeUpdateThingStock(
+      formValues,
+      departementCode
+    )
     expect(serializedData).toStrictEqual(expectedUpdateThingStock)
   })
 
@@ -137,7 +150,7 @@ describe('serializeUpdateThingStock', () => {
     const serializedData = serializeUpdateThingStock(
       {
         ...formValues,
-        bookingLimitDatetime: '',
+        bookingLimitDatetime: undefined,
       },
       departementCode
     )
@@ -174,7 +187,7 @@ describe('serializeUpdateThingStock', () => {
       {
         stockId: 1,
         ...formValues,
-        quantity: '',
+        quantity: null,
       },
       departementCode
     )

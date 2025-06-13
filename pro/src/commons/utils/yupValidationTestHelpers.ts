@@ -7,7 +7,9 @@ export const getYupValidationSchemaErrors = async <T extends yup.AnyObject>(
   testInput: any
 ): Promise<string[]> => {
   try {
-    await validationSchema.validate(testInput, { abortEarly: false })
+    await validationSchema.validate(testInput, {
+      abortEarly: false,
+    })
   } catch (error) {
     /* istanbul ignore next this condition should never been evaluated to false */
     if (error instanceof yup.ValidationError) {

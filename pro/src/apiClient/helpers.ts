@@ -4,7 +4,7 @@ export const serializeApiErrors = (
   errors: Record<string, string[]>,
   apiFieldsMap: Record<string, string> = {},
   apiArrayFieldsMap: Record<string, string> = {}
-): Record<string, string[] | undefined> => {
+): Record<string, string[] | string | undefined> => {
   Object.entries(apiFieldsMap).forEach(([key, value]) => {
     if (errors[key]) {
       errors[value] = errors[key]
