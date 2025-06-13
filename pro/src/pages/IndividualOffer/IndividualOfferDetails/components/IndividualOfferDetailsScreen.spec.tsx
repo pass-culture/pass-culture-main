@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
+import { vi } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -38,6 +39,7 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import * as imageUploadModule from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
   IndividualOfferDetailsScreen,
@@ -859,6 +861,39 @@ describe('IndividualOfferDetails', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should let update an image even for provided offers', async () => {
+      const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
+      vi.spyOn(
+        imageUploadModule,
+        'useIndividualOfferImageUpload'
+      ).mockReturnValue({
+        displayedImage: { url: 'my url', credit: null },
+        hasUpsertedImage: false,
+        onImageDelete: vi.fn(),
+        onImageUpload: vi.fn(),
+        handleEanImage: vi.fn(),
+        handleImageOnSubmit: mockHandleImageOnSubmit,
+      })
+
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          productId: null,
+          lastProvider: { name: 'My awesome api' },
+          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+      expect(api.patchDraftOffer).not.toHaveBeenCalledOnce()
+      expect(mockHandleImageOnSubmit).toHaveBeenCalled()
+    })
     it('should display categories and subcategories as disabled', () => {
       const context = individualOfferContextValuesFactory({
         categories: MOCK_DATA.categories,
