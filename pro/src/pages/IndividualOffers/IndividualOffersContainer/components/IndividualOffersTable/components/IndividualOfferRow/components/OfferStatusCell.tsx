@@ -1,7 +1,8 @@
 import classNames from 'classnames'
 
 import { OfferStatus } from 'apiClient/v1'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 import fullBoostedIcon from 'icons/full-boosted.svg'
 import styles from 'styles/components/Cells.module.scss'
@@ -23,6 +24,10 @@ export const OfferStatusCell = ({
   isHeadline,
   className,
 }: OfferStatusCellProps) => {
+  const isRefactoFutureOfferEnabled = useActiveFeature(
+    'WIP_REFACTO_FUTURE_OFFER'
+  )
+
   return (
     <td
       role="cell"
@@ -31,14 +36,14 @@ export const OfferStatusCell = ({
         styles['status-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.STATUS.id}`}
+      headers={`${rowId} ${getCellsDefinition(isRefactoFutureOfferEnabled).INDIVIDUAL_STATUS.id}`}
     >
       {displayLabel && (
         <span
           className={styles['offers-table-cell-mobile-label']}
           aria-hidden={true}
         >
-          {`${CELLS_DEFINITIONS.STATUS.title} :`}
+          {`${getCellsDefinition(isRefactoFutureOfferEnabled).INDIVIDUAL_STATUS.title} :`}
         </span>
       )}
       <div className={styles['status-column-content']}>
