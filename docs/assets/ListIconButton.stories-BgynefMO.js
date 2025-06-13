@@ -1,0 +1,19 @@
+import{j as t}from"./jsx-runtime-BYYWji4R.js";import{f as x}from"./full-trash-CEfIUI4M.js";import{c as o}from"./index-DeARc5FM.js";import{r as w}from"./index-ClcD9ViR.js";import{L as E}from"./chunk-NL6KNZEE-BZw6og_i.js";import{S as V}from"./SvgIcon-CyWUmZpn.js";import{T as q}from"./Tooltip-BpKRYYrm.js";import"./_commonjsHelpers-Cpj98o6Y.js";const B="_button_1jh0n_1",N="_tooltip_1jh0n_36",e={button:B,"button-icon":"_button-icon_1jh0n_24",tooltip:N,"variant-primary":"_variant-primary_1jh0n_40"},S="16",i=w.forwardRef(({className:n,variant:s="default",tooltipContent:d,icon:v,onClick:l,url:u,isExternal:I=!0,dataTestid:L,target:p,...k},j)=>{const c=t.jsx(V,{src:v,alt:"",className:o(e["button-icon"]),width:S}),T=t.jsx("button",{className:o(e.button,e[`variant-${s}`],n),ref:j,...k,onClick:l,type:"button","data-testid":L,children:c}),C=I?t.jsx("a",{className:o(e.button,e[`variant-${s}`],n),href:u,onClick:l,target:p,rel:p==="_blank"?"noreferrer":void 0,children:c}):t.jsx(E,{className:o(e.button,e[`variant-${s}`],n),onClick:l,to:`${u}`,children:c}),m=u?C:T;return d?t.jsx(q,{content:d,children:m}):m});i.displayName="ListIconButton";try{i.displayName="ListIconButton",i.__docgenInfo={description:`The ListIconButton component is used to render an icon button that can be used as a link or a button.
+It supports tooltips, external/internal links, and different button variants.
+
+---
+**Important: Use the \`url\` prop to create a link button, and the \`onClick\` prop to handle button actions.**
+---`,displayName:"ListIconButton",props:{className:{defaultValue:null,description:"Custom CSS class for additional styling of the button.",name:"className",required:!1,type:{name:"string"}},onClick:{defaultValue:null,description:"Callback function triggered when the button is clicked.",name:"onClick",required:!1,type:{name:"((event: MouseEvent<Element, MouseEvent>) => void)"}},icon:{defaultValue:null,description:"The icon to display inside the button.",name:"icon",required:!0,type:{name:"string"}},variant:{defaultValue:{value:"ListIconButtonVariant.DEFAULT"},description:"The variant of the button.",name:"variant",required:!1,type:{name:"enum",value:[{value:'"default"'},{value:'"primary"'}]}},tooltipContent:{defaultValue:null,description:"",name:"tooltipContent",required:!1,type:{name:"ReactNode"}},url:{defaultValue:null,description:"The URL to navigate to when the button is clicked.",name:"url",required:!1,type:{name:"string"}},target:{defaultValue:null,description:"Target attribute for the <a> tag",name:"target",required:!1,type:{name:"string"}},isExternal:{defaultValue:{value:"true"},description:"Indicates if the link is external.",name:"isExternal",required:!1,type:{name:"boolean"}},dataTestid:{defaultValue:null,description:"Custom test ID for targeting the component in tests.",name:"dataTestid",required:!1,type:{name:"string"}}}}}catch{}const Q={title:"ui-kit/ListIconButton",component:i,decorators:[n=>t.jsx("div",{style:{margin:"50px",display:"flex"},children:t.jsx(n,{})})]},a={args:{icon:x,tooltipContent:t.jsx(t.Fragment,{children:"Duplicate"})}},r={args:{icon:x,tooltipContent:t.jsx(t.Fragment,{children:"Lire la FAQ"}),url:"http://wwww.test.com",onClick:()=>{},isExternal:!0}};var f,h,b;a.parameters={...a.parameters,docs:{...(f=a.parameters)==null?void 0:f.docs,source:{originalSource:`{
+  args: {
+    icon: fullTrashIcon,
+    tooltipContent: <>Duplicate</>
+  }
+}`,...(b=(h=a.parameters)==null?void 0:h.docs)==null?void 0:b.source}}};var g,_,y;r.parameters={...r.parameters,docs:{...(g=r.parameters)==null?void 0:g.docs,source:{originalSource:`{
+  args: {
+    icon: fullTrashIcon,
+    tooltipContent: <>Lire la FAQ</>,
+    url: 'http://wwww.test.com',
+    onClick: () => {},
+    isExternal: true
+  }
+}`,...(y=(_=r.parameters)==null?void 0:_.docs)==null?void 0:y.source}}};const Z=["Default","Link"];export{a as Default,r as Link,Z as __namedExportsOrder,Q as default};
