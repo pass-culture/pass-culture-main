@@ -43,11 +43,9 @@ export type GetCollectiveOfferResponseModel = {
   isActive: boolean;
   isBookable: boolean;
   isCancellable: boolean;
-  isEditable: boolean;
   isNonFreeOffer?: boolean | null;
   isPublicApi: boolean;
   isTemplate?: boolean;
-  isVisibilityEditable: boolean;
   location?: GetCollectiveOfferLocationModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

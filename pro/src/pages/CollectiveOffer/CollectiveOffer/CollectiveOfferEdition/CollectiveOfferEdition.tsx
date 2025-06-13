@@ -3,6 +3,7 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from 'commons/core/OfferEducational/types'
+import { isCollectiveOfferEditable } from 'commons/utils/isCollectiveOfferEditable'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -13,7 +14,7 @@ import {
 } from '../components/OfferEducational/useCollectiveOfferFromParams'
 import { useOfferEducationalFormData } from '../components/OfferEducational/useOfferEducationalFormData'
 
-const CollectiveOfferEdition = ({
+export const CollectiveOfferEdition = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
@@ -32,6 +33,7 @@ const CollectiveOfferEdition = ({
     )
   }
 
+
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
@@ -47,7 +49,7 @@ const CollectiveOfferEdition = ({
         isOfferBooked={
           isOfferTemplate ? false : offer.collectiveStock?.isBooked
         }
-        mode={offer.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+        mode={isCollectiveOfferEditable(offer) ? Mode.EDITION : Mode.READ_ONLY}
         isTemplate={isOfferTemplate}
       />
     </CollectiveOfferLayout>

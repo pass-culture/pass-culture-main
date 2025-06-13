@@ -70,7 +70,6 @@ class Return200Test:
             "id": stock.id,
             "price": 1500.0,
             "numberOfTickets": 38,
-            "isEducationalStockEditable": True,
             "educationalPriceDetail": "Nouvelle description du prix",
         }
 
@@ -113,7 +112,6 @@ class Return200Test:
             "id": stock.id,
             "price": 1200.0,
             "numberOfTickets": 32,
-            "isEducationalStockEditable": True,
             "educationalPriceDetail": "Détail du prix",
         }
 
