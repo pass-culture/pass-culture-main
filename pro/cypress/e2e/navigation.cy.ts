@@ -24,13 +24,8 @@ describe('Navigation', () => {
     cy.wait('@getVenue')
 
     cy.stepLog({ message: 'I scroll to my venue' })
-    cy.contains(
-      'h3',
-      /Votre page partenaire|Vos pages partenaire/
-    ).scrollIntoView()
-    cy.contains('h3', /Votre page partenaire|Vos pages partenaire/).should(
-      'be.visible'
-    )
+    cy.contains('h3', 'Prochaines étapes').scrollIntoView()
+    cy.contains('h3', 'Prochaines étapes').should('be.visible')
     cy.get('[id=content-wrapper]').then((el) => {
       expect(el.get(0).scrollTop).to.be.greaterThan(0)
     })
