@@ -35,8 +35,8 @@ import {
   QuantityInput,
 } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import { useNotifyFormError } from '../hooks/useNotifyFormError'
@@ -483,11 +483,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             >
               <FormLayout.Row
                 sideComponent={
-                  <InfoBox>
+                  <TipsBanner>
                     Cette option permet au bénéficiaire de venir accompagné. La
                     seconde place sera délivrée au même tarif que la première,
                     quel que soit l’accompagnateur.
-                  </InfoBox>
+                  </TipsBanner>
                 }
               >
                 <Checkbox

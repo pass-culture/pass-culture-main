@@ -34,7 +34,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { PriceInput } from 'ui-kit/formV2/PriceInput/PriceInput'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
@@ -410,11 +410,11 @@ export const PriceCategoriesScreen = ({
               >
                 <FormLayout.Row
                   sideComponent={
-                    <InfoBox>
+                    <TipsBanner>
                       Cette option permet au bénéficiaire de venir accompagné.
                       La seconde place sera délivrée au même tarif que la
                       première, quel que soit l’accompagnateur.
-                    </InfoBox>
+                    </TipsBanner>
                   }
                 >
                   <Checkbox

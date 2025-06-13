@@ -9,7 +9,7 @@ import { serializeAdressData } from 'components/Address/serializer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 import { Toggle } from 'ui-kit/Toggle/Toggle'
 
 import { VenueSettingsFormValues } from '../types'
@@ -98,11 +98,11 @@ export const SiretOrCommentFields = ({
           mdSpaceAfter
           sideComponent={
             isSiretSelected ? (
-              <InfoBox>
+              <TipsBanner>
                 Le SIRET de la structure doit être lié au SIREN de votre entitée
                 juridique. Attention, ce SIRET ne sera plus modifiable et ne
                 pourra plus être utilisé pour une autre structure.
-              </InfoBox>
+              </TipsBanner>
             ) : (
               <></>
             )
