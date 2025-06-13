@@ -19,7 +19,6 @@ import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/formV2/Select/Select'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
@@ -148,15 +147,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
             {(categoryStatus === CATEGORY_STATUS.ONLINE ||
               offer?.isDigital) && (
-              <FormLayout.Row
-                sideComponent={
-                  <InfoBox>
-                    Lien vers lequel seront renvoyés les bénéficiaires ayant
-                    réservé votre offre sur l’application pass Culture.
-                  </InfoBox>
-                }
-                className={styles['row']}
-              >
+              <FormLayout.Row className={styles['row']}>
                 <TextInput
                   label="URL d’accès à l’offre"
                   type="text"
