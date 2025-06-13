@@ -328,7 +328,6 @@ export const PriceCategoriesScreen = ({
                   </legend>
                   <FormLayout.Row
                     inline
-                    smSpaceAfter
                     className={styles['form-layout-row-price-category']}
                   >
                     <TextInput
@@ -339,7 +338,6 @@ export const PriceCategoriesScreen = ({
                       maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                       count={field.price.toString().length}
                       className={styles['label-input']}
-                      labelClassName={styles['label-input-label']}
                       disabled={priceCategories.length <= 1 || isDisabled}
                     />
                     <PriceInput
@@ -352,7 +350,6 @@ export const PriceCategoriesScreen = ({
                       disabled={isDisabled}
                       showFreeCheckbox
                       hideAsterisk={true}
-                      smallLabel
                       updatePriceValue={(value) =>
                         setValue(
                           `priceCategories.${index}.price`,

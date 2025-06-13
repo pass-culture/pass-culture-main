@@ -50,10 +50,6 @@ type TextAreaProps = FieldLayoutBaseProps &
      */
     className?: string
     /**
-     * Whether to display a smaller version of the label.
-     */
-    smallLabel?: boolean
-    /**
      * Whether the textarea is disabled.
      */
     disabled?: boolean
@@ -102,7 +98,6 @@ export const TextArea = ({
   label,
   maxLength = 1000,
   isOptional,
-  smallLabel,
   rows = 7,
   hasTemplateButton = false,
   wordingTemplate,
@@ -158,7 +153,6 @@ export const TextArea = ({
       maxLength={maxLength}
       name={name}
       showError={meta.touched && !!meta.error}
-      smallLabel={smallLabel}
       description={description}
       hideAsterisk={props.hideAsterisk}
     >

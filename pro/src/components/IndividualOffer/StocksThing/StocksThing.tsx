@@ -45,7 +45,7 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
-import styles from './StockThing.module.scss'
+import styles from './StocksThing.module.scss'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
@@ -371,7 +371,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             />
             <div className={styles['row']}>
               <TextInput
-                smallLabel
                 name="price"
                 label="Prix"
                 classNameFooter={styles['field-layout-footer']}
@@ -381,10 +380,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 rightIcon={strokeEuroIcon}
                 step="0.01"
                 min={0}
-                className={styles['field-layout-xsmall']}
+                className={styles['field-layout-input']}
               />
+            </div>
+            <div className={styles['row']}>
               <DatePicker
-                smallLabel
                 name="bookingLimitDatetime"
                 label="Date limite de réservation"
                 isOptional
@@ -393,7 +393,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 minDate={today}
                 maxDate={getMaximumBookingDatetime(maxDateTime)}
                 disabled={readOnlyFields.includes('bookingLimitDatetime')}
-                className={styles['field-layout-small']}
+                className={styles['field-layout-input']}
                 onBlur={() => {
                   if (
                     formik.initialValues.bookingLimitDatetime !==
@@ -409,23 +409,25 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
               {showExpirationDate && (
                 <DatePicker
-                  smallLabel
                   name="activationCodesExpirationDatetime"
                   label="Date d'expiration"
                   classNameFooter={styles['field-layout-footer']}
                   disabled={true}
-                  className={styles['field-layout-small']}
+                  className={styles['field-layout-input']}
                 />
               )}
+            </div>
+            <div className={styles['row']}>
               <QuantityInput
-                smallLabel
                 disabled={readOnlyFields.includes('quantity')}
                 onChange={onQuantityChange}
-                className={styles['field-layout-small']}
+                className={styles['field-layout-input']}
                 classNameFooter={styles['field-layout-footer']}
                 isOptional
                 min={minQuantity}
               />
+            </div>
+            <div className={styles['row']}>
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
                   <TextInput
@@ -439,7 +441,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     label="Stock restant"
                     hasLabelLineBreak={false}
                     isOptional
-                    smallLabel
                     className={styles['field-layout-shrink']}
                     classNameFooter={styles['field-layout-footer']}
                   />
@@ -449,7 +450,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     readOnly
                     label="Réservations"
                     isOptional
-                    smallLabel
                     className={styles['field-layout-shrink']}
                     classNameFooter={styles['field-layout-footer']}
                   />
@@ -477,10 +477,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         </FormLayout>
         {canBeDuo && (
           <FormLayout fullWidthActions>
-            <FormLayout.Section
-              className={styles['duo-section']}
-              title="Réservations “Duo”"
-            >
+            <FormLayout.Section title="Réservations “Duo”">
               <FormLayout.Row
                 sideComponent={
                   <InfoBox>
