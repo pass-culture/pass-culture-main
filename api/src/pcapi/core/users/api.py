@@ -752,7 +752,10 @@ def _get_booking_credit(booking: bookings_models.Booking) -> Decimal:
     # Get only partial incidents
     for booking_finance_incident in booking.incidents:
         if booking_finance_incident.is_partial:
-            if booking_finance_incident.incident.status == finance_models.IncidentStatus.VALIDATED:
+            if booking_finance_incident.incident.status in (
+                finance_models.IncidentStatus.VALIDATED,
+                finance_models.IncidentStatus.INVOICED,
+            ):
                 return Decimal(booking_finance_incident.newTotalAmount) / Decimal("100")
     return booking.total_amount
 
