@@ -2,7 +2,7 @@ import cn from 'classnames'
 
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 
 interface CollectiveOfferStatusCellProps {
@@ -18,8 +18,12 @@ export const CollectiveOfferStatusCell = ({
 }: CollectiveOfferStatusCellProps) => (
   <td
     role="cell"
-    className={cn(styles['offers-table-cell'], styles['status-column'], className)}
-    headers={`${rowId} ${CELLS_DEFINITIONS.STATUS.id}`}
+    className={cn(
+      styles['offers-table-cell'],
+      styles['status-column'],
+      className
+    )}
+    headers={`${rowId} ${getCellsDefinition().COLLECTIVE_STATUS.id}`}
   >
     <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
   </td>

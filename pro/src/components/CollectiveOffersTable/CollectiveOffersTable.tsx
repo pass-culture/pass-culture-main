@@ -7,7 +7,7 @@ import {
   Columns,
   OffersTableHead,
 } from 'components/OffersTable/OffersTableHead/OffersTableHead'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 
 import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
 
@@ -49,20 +49,20 @@ export const CollectiveOffersTable = ({
   currentPageItems,
 }: CollectiveOffersTableProps) => {
   const columns: Columns[] = [
-    { ...CELLS_DEFINITIONS.INFO_ON_EXPIRATION, isVisuallyHidden: true },
-    { ...CELLS_DEFINITIONS.THUMB, isVisuallyHidden: true },
-    { ...CELLS_DEFINITIONS.NAME, isVisuallyHidden: true },
+    { ...getCellsDefinition().INFO_ON_EXPIRATION, isVisuallyHidden: true },
+    { ...getCellsDefinition().THUMB, isVisuallyHidden: true },
+    { ...getCellsDefinition().NAME, isVisuallyHidden: true },
     {
-      ...CELLS_DEFINITIONS.EVENT_DATE,
+      ...getCellsDefinition().EVENT_DATE,
       sortableProps: {
         onColumnHeaderClick,
         currentSortingColumn,
         currentSortingMode,
       },
     },
-    CELLS_DEFINITIONS.STRUCTURE,
-    CELLS_DEFINITIONS.INSTITUTION,
-    CELLS_DEFINITIONS.STATUS,
+    getCellsDefinition().STRUCTURE,
+    getCellsDefinition().INSTITUTION,
+    getCellsDefinition().COLLECTIVE_STATUS,
   ]
 
   return (

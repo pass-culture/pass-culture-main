@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 
 import { ListOffersVenueResponseModel } from 'apiClient/v1'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
@@ -12,7 +12,12 @@ interface OfferVenueCellProps {
   displayLabel?: boolean
 }
 
-export const OfferVenueCell = ({ venue, rowId, className, displayLabel }: OfferVenueCellProps) => {
+export const OfferVenueCell = ({
+  venue,
+  rowId,
+  className,
+  displayLabel,
+}: OfferVenueCellProps) => {
   return (
     <td
       role="cell"
@@ -21,15 +26,16 @@ export const OfferVenueCell = ({ venue, rowId, className, displayLabel }: OfferV
         styles['venue-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.VENUE.id}`}
+      headers={`${rowId} ${getCellsDefinition().VENUE.id}`}
     >
-      {displayLabel &&
+      {displayLabel && (
         <span
           className={styles['offers-table-cell-mobile-label']}
           aria-hidden={true}
         >
-          {`${CELLS_DEFINITIONS.VENUE.title} :`}
-        </span>}
+          {`${getCellsDefinition().VENUE.title} :`}
+        </span>
+      )}
       {computeVenueDisplayName(venue)}
     </td>
   )
