@@ -9,7 +9,31 @@ from pcapi import models
 from pcapi.models import db
 
 
-class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
+T = typing.TypeVar("T")
+
+
+class BaseFactory(factory.alchemy.SQLAlchemyModelFactory, typing.Generic[T]):
+    """
+    When defining a factory, you can write
+
+    class MyFactory(BaseFactory[MyModel]):
+        class Meta:
+            model = MyModel
+
+    This way, MyFactory(), MyFactory.build() and MyFactory.create() will return instances of MyModel
+    """
+
+    def __new__(cls, *args: typing.Any, **kwargs: typing.Any) -> T:  # type: ignore[misc]
+        return super().__new__(*args, **kwargs)
+
+    @classmethod
+    def create(cls, **kwargs: typing.Any) -> T:
+        return super().create(**kwargs)
+
+    @classmethod
+    def build(cls, **kwargs: typing.Any) -> T:
+        return super().build(**kwargs)
+
     class Meta:
         abstract = True
         # See comment in _save()
