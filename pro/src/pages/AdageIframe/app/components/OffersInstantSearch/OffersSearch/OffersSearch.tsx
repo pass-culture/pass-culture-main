@@ -113,7 +113,7 @@ export const OffersSearch = ({
     label: name,
   }))
 
-  function handleSubmit() {
+  function onSubmit() {
     resetUrlSearchFilterParams()
     dispatch(setAdageFilter(formik.values))
     dispatch(setAdagePageSaved(0))
@@ -184,7 +184,10 @@ export const OffersSearch = ({
   return (
     <>
       <FormikContext.Provider value={formik}>
-        <Autocomplete initialQuery={adageQueryFromSelector ?? ''} />
+        <Autocomplete
+          initialQuery={adageQueryFromSelector ?? ''}
+          handleSubmit={onSubmit}
+        />
         <div className={styles['separator']} />
         <div ref={offerFilterRef}>
           <OfferFilters
