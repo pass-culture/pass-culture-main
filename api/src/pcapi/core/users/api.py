@@ -993,7 +993,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     name_term = None
 
     if not search_term:
-        return accounts.filter(False)
+        return accounts
 
     term_filters: list[sa.sql.ColumnElement] = []
 
@@ -2230,3 +2230,7 @@ def extract_beneficiary_data_command() -> bool:
         _release_extract_beneficiary_data_lock()
     counter += 1  # type: ignore [misc]
     return True
+
+
+def apply_filter_on_beneficiary_tag(query: BaseQuery, tag_ids: list[int]) -> BaseQuery:
+    return query.join(models.User.tags).filter(models.UserTag.id.in_(tag_ids)) if tag_ids else query

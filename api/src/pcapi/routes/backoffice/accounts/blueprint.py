@@ -59,7 +59,6 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
@@ -224,14 +223,17 @@ def search_public_accounts() -> utils.BackofficeResponse:
         return render_search_template()
 
     form = account_forms.AccountSearchForm(request.args)
+    form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
     if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
         return render_search_template(form), 400
 
     users_query = users_api.search_public_account(form.q.data)
     users_query = search_utils.apply_filter_on_beneficiary_status(users_query, form.filter.data)
+    users_query = users_api.apply_filter_on_beneficiary_tag(users_query, form.tag.data)
     users_query = _load_suspension_info(users_query)
     users_query = _load_current_deposit_data(users_query, join_needed=False)
-    paginated_rows = paginate(
+    paginated_rows = search_utils.paginate(
         query=users_query,
         page=form.page.data,
         per_page=form.per_page.data,
@@ -239,11 +241,16 @@ def search_public_accounts() -> utils.BackofficeResponse:
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
     # (so it would select count twice: in users.count() and in users.paginate)
-    if paginated_rows.total == 0 and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data)):
+    if (
+        paginated_rows.total == 0
+        and form.q.data
+        and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data))
+    ):
         users_query = users_api.search_public_account_in_history_email(form.q.data)
+        users_query = users_api.apply_filter_on_beneficiary_tag(users_query, form.tag.data)
         users_query = _load_suspension_info(users_query)
         users_query = _load_current_deposit_data(users_query)
-        paginated_rows = paginate(
+        paginated_rows = search_utils.paginate(
             users_query,
             page=form.page.data,
             per_page=form.per_page.data,
@@ -256,6 +263,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
                 user_id=paginated_rows.items[0].id,
                 q=form.q.data,
                 filter=form.filter.data,
+                tag=form.tag.data,
                 search_rank=1,
                 total_items=1,
             ),
@@ -280,6 +288,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
 def render_search_template(form: account_forms.AccountSearchForm | None = None) -> str:
     if not form:
         form = account_forms.AccountSearchForm()
+        form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
 
     return render_template(
         "accounts/search.html",
@@ -312,6 +321,10 @@ def _convert_check_item_to_fraud_action_dict(id_check_item: serialization.IdChec
         "errorCode": id_check_item.reasonCodes,
         "technicalDetails": id_check_item.technicalDetails,
     }
+
+
+def get_user_tags() -> list[users_models.UserTag]:
+    return db.session.query(users_models.UserTag).order_by(users_models.UserTag.label, users_models.UserTag.name).all()
 
 
 def render_public_account_details(
@@ -464,14 +477,19 @@ def render_public_account_details(
         reverse=True,
     )
 
+    search_form = account_forms.AccountSearchForm()  # values taken from request
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
-        kwargs["tag_public_account_form"] = account_forms.TagAccountForm(tags=user.tags)
+        tag_account_form = account_forms.TagAccountForm(tags=user.tags)
+        kwargs["tag_public_account_form"] = tag_account_form
         kwargs["tag_public_account_dst"] = url_for(".tag_public_account", user_id=user.id)
+        search_form.tag.choices = list(tag_account_form.tags.iter_choices())
+    else:
+        search_form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
 
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
     return render_template(
         "accounts/get.html",
-        search_form=account_forms.AccountSearchForm(),  # values taken from request
+        search_form=search_form,
         search_dst=url_for(".search_public_accounts"),
         user=user,
         has_changed_email=has_changed_email,

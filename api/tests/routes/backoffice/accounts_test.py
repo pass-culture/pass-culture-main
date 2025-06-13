@@ -176,12 +176,17 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
             )
 
 
+def user_id_from_card(card_text: str) -> int | None:
+    match = re.search("User ID : (?P<user_id>\d+)", card_text)
+    return match.groupdict().get("user_id") if match else None
+
+
 class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.search_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # session + current user
-    expected_num_queries_when_no_query = 2
+    # session + current user + user tags
+    expected_num_queries_when_no_query = 3
 
     # + results + count
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -486,6 +491,99 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             search_rank=1,
             total_items=1,
         )
+
+    def test_can_search_public_account_by_credit_type_only(self, authenticated_client, settings):
+        users_factories.BeneficiaryGrant18Factory(
+            deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1),
+        )
+        new_grant_18 = users_factories.BeneficiaryFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, filter="PASS_18_V3"))
+            assert response.status_code == 303
+
+        assert_response_location(
+            response,
+            "backoffice_web.public_accounts.get_public_account",
+            user_id=new_grant_18.id,
+            filter="PASS_18_V3",
+            search_rank=1,
+            total_items=1,
+        )
+
+    def test_can_search_public_account_by_tag(self, authenticated_client):
+        tag = users_factories.UserTagFactory(name="ambassador")
+        tag_id = tag.id
+        user_with_tag = users_factories.BeneficiaryGrant18Factory(tags=[tag])
+        users_factories.BeneficiaryFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, tag=tag_id))
+            assert response.status_code == 303
+
+        assert_response_location(
+            response,
+            "backoffice_web.public_accounts.get_public_account",
+            user_id=user_with_tag.id,
+            tag=tag_id,
+            search_rank=1,
+            total_items=1,
+        )
+
+    def test_can_search_public_account_by_mulitple_tags(self, authenticated_client):
+        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
+        tag1_id = tag1.id
+        tag2_id = tag2.id
+        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
+        user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
+        user_with_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag2])
+        users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
+        users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, tag=[tag1_id, tag2_id]))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 3
+        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id), str(user_with_tag2.id)}
+
+    def test_can_search_public_account_having_mulitple_tags(self, authenticated_client):
+        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
+        tag1_id = tag1.id
+        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
+        user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
+        users_factories.BeneficiaryGrant18Factory(tags=[tag2])  # user with tag2
+        users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
+        users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, tag=tag1_id))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id)}
+
+    def test_can_search_public_account_by_tags_and_query(self, authenticated_client):
+        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
+        tag2_id = tag2.id
+        users_factories.BeneficiaryGrant18Factory(tags=[tag1], firstName="jean")  # user1
+        user2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2], firstName="jean")
+        users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jacques")  # user3
+        user4 = users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jean")
+        users_factories.BeneficiaryGrant18Factory(tags=[], firstName="jean")  # user5
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, tag=tag2_id, q="jean"))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        assert user_ids == {str(user2.id), str(user4.id)}
 
     def test_search_suspended_public_account_data(self, authenticated_client):
         underage, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
