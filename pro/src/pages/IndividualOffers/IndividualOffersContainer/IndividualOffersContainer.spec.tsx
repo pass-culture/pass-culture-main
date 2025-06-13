@@ -147,6 +147,22 @@ describe('IndividualOffersScreen', () => {
     expect(headers[5].textContent).toEqual('Actions')
   })
 
+  it('should display the Publication column if FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
+    renderOffers(props, { features: ['WIP_REFACTO_FUTURE_OFFER'] })
+
+    expect(
+      screen.getByRole('columnheader', { name: 'Publication' })
+    ).toBeInTheDocument()
+  })
+
+  it('should not display the Publication column if FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
+    renderOffers(props)
+
+    expect(
+      screen.queryByRole('columnheader', { name: 'Publication' })
+    ).not.toBeInTheDocument()
+  })
+
   it('should render as much offers as returned by the api', () => {
     const firstOffer = listOffersOfferFactory()
     const secondOffer = listOffersOfferFactory()

@@ -9,7 +9,7 @@ import {
   toDateStrippedOfTimezone,
 } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 
 export interface OfferEventDateCellProps {
@@ -96,7 +96,7 @@ export const OfferEventDateCell = ({
         styles['event-date-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.EVENT_DATE.id}`}
+      headers={`${rowId} ${getCellsDefinition().EVENT_DATE.id}`}
     >
       <div className={styles['offer-event']}>
         {getFormattedDatesForOffer(offer).map((date) => (

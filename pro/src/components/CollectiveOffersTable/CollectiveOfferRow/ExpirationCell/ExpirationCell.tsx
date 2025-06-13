@@ -7,7 +7,7 @@ import {
 } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -36,7 +36,7 @@ export function ExpirationCell({
     <td
       role="cell"
       colSpan={8}
-      headers={`${rowId} ${CELLS_DEFINITIONS.INFO_ON_EXPIRATION.id}`}
+      headers={`${rowId} ${getCellsDefinition().INFO_ON_EXPIRATION.id}`}
       className={classNames(styles['expiration-cell'], className)}
     >
       <div
