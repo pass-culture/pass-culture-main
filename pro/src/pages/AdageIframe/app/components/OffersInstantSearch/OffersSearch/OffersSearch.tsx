@@ -1,5 +1,5 @@
-import { FormikContext, useFormik } from 'formik'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router'
@@ -85,10 +85,8 @@ export const OffersSearch = ({
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )
 
-  const formik = useFormik<SearchFormValues>({
-    initialValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, ...initialFilters },
-    enableReinitialize: true,
-    onSubmit: handleSubmit,
+  const form = useForm<SearchFormValues>({
+    defaultValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, ...initialFilters },
   })
 
   const { trigger: logTrackingFilter } = useSWRMutation(
@@ -115,9 +113,9 @@ export const OffersSearch = ({
 
   function onSubmit() {
     resetUrlSearchFilterParams()
-    dispatch(setAdageFilter(formik.values))
+    dispatch(setAdageFilter(form.watch()))
     dispatch(setAdagePageSaved(0))
-    setFilters(formik.values)
+    setFilters(form.watch())
 
     const adageUserHasValidGeoloc =
       (adageUser.lat || adageUser.lat === 0) &&
@@ -125,7 +123,7 @@ export const OffersSearch = ({
     if (adageUserHasValidGeoloc) {
       setGeoRadius(
         localisationFilterState === LocalisationFilterStates.GEOLOCATION
-          ? formik.values.geolocRadius * 1000
+          ? form.watch('geolocRadius') * 1000
           : DEFAULT_GEO_RADIUS
       )
     }
@@ -140,21 +138,23 @@ export const OffersSearch = ({
     setSearchParams(searchParams)
   }
 
-  const resetForm = async () => {
+  const resetForm = () => {
     setlocalisationFilterState(LocalisationFilterStates.NONE)
-    await formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
-    formik.handleSubmit()
+    Object.entries(ADAGE_FILTERS_DEFAULT_VALUES).map(([key, value]) => {
+      form.setValue(key as keyof SearchFormValues, value)
+    })
+    onSubmit()
   }
 
   async function logFiltersOnSearch(nbHits: number, queryId?: string) {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
-    if (formik.submitCount > 0 || adageQueryFromSelector !== null) {
+    if (form.formState.submitCount > 0 || adageQueryFromSelector !== null) {
       await logTrackingFilter({
         iframeFrom: location.pathname,
         resultNumber: nbHits,
         queryId: queryId ?? null,
         filterValues: serializeFiltersForData(
-          formik.values,
+          form.watch(),
           adageQueryFromSelector,
           domainsOptions
         ),
@@ -163,14 +163,14 @@ export const OffersSearch = ({
   }
 
   const getActiveLocalisationFilter = () => {
-    if (formik.values.departments.length > 0) {
+    if (form.watch('departments').length > 0) {
       return LocalisationFilterStates.DEPARTMENTS
     }
-    if (formik.values.academies.length > 0) {
+    if (form.watch('academies').length > 0) {
       return LocalisationFilterStates.ACADEMIES
     }
     if (
-      formik.values.geolocRadius !== ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
+      form.watch('geolocRadius') !== ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
     ) {
       return LocalisationFilterStates.GEOLOCATION
     }
@@ -183,7 +183,7 @@ export const OffersSearch = ({
   const [isOfferFiltersVisible] = useIsElementVisible(offerFilterRef)
   return (
     <>
-      <FormikContext.Provider value={formik}>
+      <FormProvider {...form}>
         <Autocomplete
           initialQuery={adageQueryFromSelector ?? ''}
           handleSubmit={onSubmit}
@@ -207,16 +207,16 @@ export const OffersSearch = ({
           setLocalisationFilterState={setlocalisationFilterState}
           resetForm={resetForm}
         />
-      </FormikContext.Provider>
+      </FormProvider>
       <div className="search-results">
         <Offers
-          submitCount={formik.submitCount}
+          submitCount={form.formState.submitCount}
           isBackToTopVisibile={!isOfferFiltersVisible}
           indexId={MAIN_INDEX_ID}
-          venue={formik.values.venue}
+          venue={form.watch('venue')}
         />
         {nbHits === 0 && !isUserAdmin && (
-          <OffersSuggestions formValues={formik.values} />
+          <OffersSuggestions formValues={form.watch()} />
         )}
       </div>
     </>
