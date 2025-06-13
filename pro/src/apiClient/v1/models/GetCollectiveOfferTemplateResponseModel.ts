@@ -4,7 +4,6 @@
 /* eslint-disable */
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
-import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
 import type { EacFormat } from './EacFormat';
 import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
@@ -46,7 +45,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   name: string;
   nationalProgram?: NationalProgramModel | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
-  status: CollectiveOfferStatus;
   students: Array<StudentLevels>;
   venue: GetCollectiveOfferVenueResponseModel;
   visualDisabilityCompliant?: boolean | null;

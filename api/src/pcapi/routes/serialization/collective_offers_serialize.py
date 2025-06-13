@@ -20,7 +20,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models import feature
-from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
@@ -141,7 +140,6 @@ class CollectiveOfferResponseModel(BaseModel):
     booking: CollectiveOffersBookingResponseModel | None
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
-    status: CollectiveOfferStatus
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
     allowedActions: (
         list[educational_models.CollectiveOfferAllowedAction]
@@ -433,7 +431,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     id: int
     name: str
     venue: GetCollectiveOfferVenueResponseModel
-    status: CollectiveOfferStatus
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
     domains: list[OfferDomain]
     interventionArea: list[str]

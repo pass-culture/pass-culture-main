@@ -74,7 +74,7 @@ export const OfferNameCell = ({
     offer.stocks.filter((stock) => stock.remainingQuantity === 0).length
 
   const shouldShowIndividualWarning =
-    !offer.isEducational &&
+    !isOfferEducational(offer) &&
     computeNumberOfSoldOutStocks() > 0 &&
     offer.status !== OFFER_STATUS_SOLD_OUT
 
