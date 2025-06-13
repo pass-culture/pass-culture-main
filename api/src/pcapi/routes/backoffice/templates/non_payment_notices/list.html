@@ -1,0 +1,69 @@
+{% extends "layouts/list.html" %}
+{% import "components/links.html" as links with context %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% set rows_count = rows|length %}
+{% block title %}Liste des avis d'impayé{% endblock %}
+{% block search_block %}
+{% endblock search_block %}
+{% block before_table %}
+  <div class="col-3 mt-4">
+    <button class="btn btn-outline-primary-subtle-bg"
+            data-bs-toggle="modal"
+            data-bs-target="#create-non-payment-notice"
+            type="button">Saisir un avis d'impayé</button>
+    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_create_non_payment_notice_form") , "create-non-payment-notice", "lazy") }}
+  </div>
+{% endblock before_table %}
+{% block table_header %}
+  <th data-pc-column-name="Checkbox">
+    <input type="checkbox"
+           class="form-check-input fs-6 mt-0"
+           name="pc-table-multi-select-check-all" />
+  </th>
+  <th>ID</th>
+  <th>Date de création</th>
+  <th>Date de réception</th>
+  <th>État</th>
+  <th>Type d'avis</th>
+  <th>Référence</th>
+  <th>Nom de l'émetteur</th>
+  <th>Email de l'émetteur</th>
+  <th>Montant</th>
+  <th>Entité juridique</th>
+  <th>Partenaire culturel</th>
+  <th>Motif</th>
+  <th>N° de virement</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for notice in rows %}
+    <tr>
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ notice.id }}"
+               data-id="{{ notice.id }}" />
+      </td>
+      <td>{{ notice.id }}</td>
+      <td>{{ notice.dateCreated | format_date }}</td>
+      <td>{{ notice.dateReceived | format_date }}</td>
+      <td>{{ notice.status | format_notice_status }}</td>
+      <td>{{ notice.noticeType | format_notice_type }}</td>
+      <td>{{ notice.reference }}</td>
+      <td>{{ notice.emitterName }}</td>
+      <td>{{ notice.emitterEmail }}</td>
+      <td>{{ notice.amount | format_amount(target=notice.offerer) }}</td>
+      <td>
+        {% if notice.offerer %}{{ links.build_offerer_name_to_details_link(notice.offerer) }}{% endif %}
+      </td>
+      <td>
+        {% if notice.venue %}{{ links.build_venue_name_to_details_link(notice.venue) }}{% endif %}
+      </td>
+      <td>{{ notice.motivation | format_notice_status_motivation }}</td>
+      <td>
+        {% if notice.batch %}{{ notice.batch.label }}{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+{% endblock table_body %}
+{% block after_table %}
+{% endblock after_table %}

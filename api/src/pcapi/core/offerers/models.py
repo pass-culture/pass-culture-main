@@ -1385,3 +1385,51 @@ class OffererConfidenceRule(PcObject, Base, Model):
     confidenceLevel: OffererConfidenceLevel = sa.Column(db_utils.MagicEnum(OffererConfidenceLevel), nullable=False)
 
     __table_args__ = (sa.CheckConstraint('num_nonnulls("offererId", "venueId") = 1'),)
+
+
+class NoticeType(enum.Enum):
+    UNPAID_AMOUNT_NOTICE = "UNPAID_AMOUNT_NOTICE"
+    REMINDER_LETTER = "REMINDER_LETTER"
+    BAILIFF = "BAILIFF"
+
+
+class NoticeStatus(enum.Enum):
+    CREATED = "CREATED"
+    PENDING = "PENDING"
+    WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
+    CLOSED = "CLOSED"
+
+
+class NoticeStatusMotivation(enum.Enum):
+    # status = PENDING
+    OFFERER_NOT_FOUND = "OFFERER_NOT_FOUND"
+    PRICE_NOT_FOUND = "PRICE_NOT_FOUND"
+    # status = CLOSED
+    ALREADY_PAID = "ALREADY_PAID"
+    REJECTED = "REJECTED"
+    NO_LINKED_BANK_ACCOUNT = "NO_LINKED_BANK_ACCOUNT"
+
+
+class NonPaymentNotice(PcObject, Base, Model):
+    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
+    batchId = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True)
+    batch: sa_orm.Mapped["finance_models.CashflowBatch"] = sa_orm.relationship("CashflowBatch", foreign_keys=[batchId])
+    dateReceived = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    emitterName = sa.Column(sa.Text(), nullable=False)
+    emitterEmail = sa.Column(sa.Text(), nullable=False)
+    reference: str = sa.Column(sa.Text(), nullable=False)
+    noticeType: NoticeType = sa.Column(db_utils.MagicEnum(NoticeType), nullable=False)
+    status: NoticeStatus = sa.Column(
+        db_utils.MagicEnum(NoticeStatus),
+        nullable=False,
+        server_default=NoticeStatus.CREATED.value,
+        default=NoticeStatus.CREATED,
+    )
+    motivation: NoticeStatusMotivation = sa.Column(db_utils.MagicEnum(NoticeStatusMotivation), nullable=True)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True, index=True)
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="nonPaymentNotices")
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True)
+    offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
+        "Offerer", foreign_keys=[offererId], backref="nonPaymentNotices"
+    )
