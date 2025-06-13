@@ -34,9 +34,7 @@ class HomePageTest:
 
     def test_view_home_page_pending_offers(self, authenticated_client):
         validated_venue = offerers_factories.VenueFactory()
-        not_validated_venue = offerers_factories.VenueFactory(
-            managingOfferer=offerers_factories.NotValidatedOffererFactory()
-        )
+        not_validated_venue = offerers_factories.VenueFactory(managingOfferer=offerers_factories.NewOffererFactory())
 
         # pending offers from validated offerers
         offers_factories.OfferFactory.create_batch(
@@ -82,9 +80,9 @@ class HomePageTest:
         offerers_factories.PendingOffererFactory(tags=[tag, other_tag])
 
         # others should not be counted
-        offerers_factories.NotValidatedOffererFactory(tags=[tag])
+        offerers_factories.NewOffererFactory(tags=[tag])
         offerers_factories.OffererFactory(tags=[tag])
-        offerers_factories.NotValidatedOffererFactory(tags=[other_tag])
+        offerers_factories.NewOffererFactory(tags=[other_tag])
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for("backoffice_web.home"))

@@ -326,7 +326,7 @@ def codir_admin(roles_with_permissions):
 
 @pytest.fixture(name="offerer")
 def offerer_fixture():
-    offerer = offerers_factories.OffererFactory(postalCode="46150", validationStatus=ValidationStatus.VALIDATED)
+    offerer = offerers_factories.OffererFactory(postalCode="46150")
     return offerer
 
 
@@ -632,23 +632,19 @@ def offerer_tags_fixture():
 def offerers_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag, festival_tag = offerer_tags
 
-    no_tag = offerers_factories.NotValidatedOffererFactory(
+    no_tag = offerers_factories.NewOffererFactory(
         name="A", siren="123001000", street=None, postalCode="35000", city="Rennes"
     )
-    top = offerers_factories.NotValidatedOffererFactory(
-        name="B", siren="123002008", validationStatus=ValidationStatus.PENDING, postalCode="29000", city="Quimper"
-    )
-    collec = offerers_factories.NotValidatedOffererFactory(
+    top = offerers_factories.PendingOffererFactory(name="B", siren="123002008", postalCode="29000", city="Quimper")
+    collec = offerers_factories.NewOffererFactory(
         name="C", siren="123003006", postalCode="50170", city="Le Mont-Saint-Michel"
     )
-    public = offerers_factories.NotValidatedOffererFactory(
-        name="D", siren="123004004", validationStatus=ValidationStatus.PENDING, postalCode="29300", city="Quimperlé"
-    )
-    top_collec = offerers_factories.NotValidatedOffererFactory(
+    public = offerers_factories.PendingOffererFactory(name="D", siren="123004004", postalCode="29300", city="Quimperlé")
+    top_collec = offerers_factories.NewOffererFactory(
         name="E", siren="123005001", postalCode="35400", city="Saint-Malo"
     )
-    top_public = offerers_factories.NotValidatedOffererFactory(
-        name="F", siren="123006009", validationStatus=ValidationStatus.PENDING, postalCode="44000", city="Nantes"
+    top_public = offerers_factories.PendingOffererFactory(
+        name="F", siren="123006009", postalCode="44000", city="Nantes"
     )
 
     for offerer in (top, top_collec, top_public):
@@ -688,38 +684,35 @@ def offerers_to_be_validated_fixture(offerer_tags):
 def user_offerer_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag, _ = offerer_tags
 
-    no_tag = offerers_factories.NotValidatedUserOffererFactory(
+    no_tag = offerers_factories.NewUserOffererFactory(
         user__email="a@example.com",
         offerer__validationStatus=ValidationStatus.NEW,
         offerer__postalCode="97200",
         offerer__city="Fort-de-France",
     )
-    top = offerers_factories.NotValidatedUserOffererFactory(
+    top = offerers_factories.PendingUserOffererFactory(
         user__email="b@example.com",
         offerer__validationStatus=ValidationStatus.NEW,
-        validationStatus=ValidationStatus.PENDING,
         offerer__postalCode="97100",
         offerer__city="Basse-Terre",
     )
-    collec = offerers_factories.NotValidatedUserOffererFactory(
+    collec = offerers_factories.NewUserOffererFactory(
         user__email="c@example.com", offerer__postalCode="29200", offerer__city="Brest"
     )
-    public = offerers_factories.NotValidatedUserOffererFactory(
+    public = offerers_factories.PendingUserOffererFactory(
         user__email="d@example.com",
         offerer__validationStatus=ValidationStatus.PENDING,
-        validationStatus=ValidationStatus.PENDING,
         offerer__postalCode="97290",
         offerer__city="Le Marin",
     )
-    top_collec = offerers_factories.NotValidatedUserOffererFactory(
+    top_collec = offerers_factories.NewUserOffererFactory(
         user__email="e@example.com",
         offerer__validationStatus=ValidationStatus.PENDING,
         offerer__postalCode="06400",
         offerer__city="Cannes",
     )
-    top_public = offerers_factories.NotValidatedUserOffererFactory(
+    top_public = offerers_factories.PendingUserOffererFactory(
         user__email="f@example.com",
-        validationStatus=ValidationStatus.PENDING,
         offerer__postalCode="97400",
         offerer__city="Saint-Denis",
     )

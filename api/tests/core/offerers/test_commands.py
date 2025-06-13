@@ -50,7 +50,7 @@ class CheckClosedOfferersTest:
         offerers_factories.OffererFactory(siren="222222226")
         offerers_factories.OffererFactory(siren="333333334", isActive=False)
         offerers_factories.RejectedOffererFactory(siren="555555556")
-        offerers_factories.NotValidatedOffererFactory(siren="666666664")
+        offerers_factories.NewOffererFactory(siren="666666664")
 
         run_command(app, "check_closed_offerers")
 

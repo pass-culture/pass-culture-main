@@ -138,7 +138,7 @@ class SearchProUserTest:
                     lastName=last_name,
                     email=f"{first_name.lower()}.{last_name.lower()}@example.com",
                 )
-                offerers_factories.NotValidatedUserOffererFactory(user=user)
+                offerers_factories.NewUserOffererFactory(user=user)
 
             self.pro_accounts.append(user)
 
