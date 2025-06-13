@@ -368,8 +368,8 @@ class Returns400Test:
             "stocks.0.quantity": ["Saisissez un nombre supérieur ou égal à 0"],
         }
 
-    def test_patch_non_approved_offer_fails(self, client):
-        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
+    def test_patch_rejected_offer_fails(self, client):
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
         stock = offers_factories.EventStockFactory(offer=offer)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -389,7 +389,7 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        assert response.json["global"] == ["Les offres refusées ne sont pas modifiables"]
 
     def test_when_stock_does_not_belong_to_offer(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)

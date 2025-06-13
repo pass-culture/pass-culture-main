@@ -386,13 +386,9 @@ def check_image(
         raise exceptions.ImageTooLarge(max_width, max_height)
 
 
-def check_validation_status(
-    offer: models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-) -> None:
-    if offer.validation in (models.OfferValidationStatus.REJECTED, models.OfferValidationStatus.PENDING):
-        raise exceptions.OfferException(
-            {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
-        )
+def check_validation_status(offer: models.Offer) -> None:
+    if offer.validation == models.OfferValidationStatus.REJECTED:
+        raise exceptions.OfferException({"global": ["Les offres refusées ne sont pas modifiables"]})
 
 
 def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
