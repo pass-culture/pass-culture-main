@@ -6,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { isCollectiveOfferSelectable } from 'commons/utils/isCollectiveOfferSelectable'
 import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
@@ -60,6 +61,8 @@ export const CollectiveOfferRow = ({
     isCollectiveOfferPublishedOrPreBooked(offer) &&
     !!bookingLimitDate
 
+  const isSelectable = isCollectiveOfferSelectable(offer)
+
   return (
     <>
       <tr
@@ -73,7 +76,7 @@ export const CollectiveOfferRow = ({
           rowId={rowId}
           offerName={offer.name}
           isSelected={isSelected}
-          disabled={!offer.isEditable}
+          disabled={!isSelectable}
           selectOffer={() => selectOffer(offer)}
           className={styles['collective-cell-checkbox']}
         />
@@ -82,7 +85,7 @@ export const CollectiveOfferRow = ({
           rowId={rowId}
           offer={offer}
           offerLink={offerLink}
-          inactive={!offer.isEditable}
+          inactive={!isSelectable}
           className={styles['collective-cell-thumb']}
         />
         <OfferNameCell

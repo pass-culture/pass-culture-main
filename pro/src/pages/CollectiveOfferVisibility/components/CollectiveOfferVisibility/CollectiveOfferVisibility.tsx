@@ -159,16 +159,16 @@ export const CollectiveOfferVisibilityScreen = ({
 
   initialValues = requestInformations
     ? {
-        ...extractInitialVisibilityValues(null, null, requestInformations),
-        institution:
-          institutionsOptions
-            .find(
-              (option) =>
-                option.institutionId ===
-                requestInformations.institution.institutionId
-            )
-            ?.value.toString() || '',
-      }
+      ...extractInitialVisibilityValues(null, null, requestInformations),
+      institution:
+        institutionsOptions
+          .find(
+            (option) =>
+              option.institutionId ===
+              requestInformations.institution.institutionId
+          )
+          ?.value.toString() || '',
+    }
     : initialValues
 
   const formik = useFormik<VisibilityFormValues>({
@@ -181,18 +181,18 @@ export const CollectiveOfferVisibilityScreen = ({
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
     : (teachersOptions.find(
-        (teacher) => teacher.value === formik.values.teacher
-      ) ?? null)
+      (teacher) => teacher.value === formik.values.teacher
+    ) ?? null)
 
   const selectedInstitution: InstitutionOption | null = requestId
     ? institutionsOptions.filter(({ label }) =>
-        label
-          .toLowerCase()
-          .includes(formik.values['search-institution'].trim().toLowerCase())
-      )[0]
+      label
+        .toLowerCase()
+        .includes(formik.values['search-institution'].trim().toLowerCase())
+    )[0]
     : (institutionsOptions.find(
-        (institution) => institution.value === formik.values.institution
-      ) ?? null)
+      (institution) => institution.value === formik.values.institution
+    ) ?? null)
 
   const onChangeTeacher = async () => {
     const searchTeacherValue = formik.values['search-teacher']?.trim()
@@ -251,7 +251,7 @@ export const CollectiveOfferVisibilityScreen = ({
                 Offre importée automatiquement
               </BannerPublicApi>
             )}
-            <FormLayout.Section title="Renseignez l'établissement scolaire et l’enseignant">
+            <FormLayout.Section title="Renseignez l'établissement scolaire et l'enseignant">
               <p className={styles['description-text']}>
                 L’établissement et l’enseignant renseignés sont les seuls à
                 pouvoir visualiser et préréserver votre offre sur ADAGE.
@@ -310,9 +310,8 @@ export const CollectiveOfferVisibilityScreen = ({
                   variant={ButtonVariant.SECONDARY}
                   to={
                     mode === Mode.CREATION
-                      ? `/offre/${offer.id}/collectif/stocks${
-                          requestId ? `?requete=${requestId}` : ''
-                        }`
+                      ? `/offre/${offer.id}/collectif/stocks${requestId ? `?requete=${requestId}` : ''
+                      }`
                       : '/offres/collectives'
                   }
                 >

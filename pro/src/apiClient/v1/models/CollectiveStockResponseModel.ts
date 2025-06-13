@@ -7,7 +7,6 @@ export type CollectiveStockResponseModel = {
   educationalPriceDetail?: string | null;
   endDatetime?: string | null;
   id: number;
-  isEducationalStockEditable: boolean;
   numberOfTickets?: number | null;
   price: number;
   startDatetime?: string | null;

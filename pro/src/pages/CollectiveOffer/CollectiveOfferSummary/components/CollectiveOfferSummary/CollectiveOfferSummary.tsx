@@ -1,6 +1,4 @@
 import {
-  CollectiveOfferAllowedAction,
-  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -9,7 +7,9 @@ import {
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
+import { isCollectiveInstitutionEditable } from 'commons/utils/isCollectiveInstitutionEditable'
+import { isCollectiveOfferEditable } from 'commons/utils/isCollectiveOfferEditable'
+import { isCollectiveStockEditable } from 'commons/utils/isCollectiveStockEditable'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -32,8 +32,8 @@ import { OldCollectiveOfferLocationSection } from './components/OldCollectiveOff
 
 export interface CollectiveOfferSummaryProps {
   offer:
-    | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
+  | GetCollectiveOfferTemplateResponseModel
+  | GetCollectiveOfferResponseModel
   offerEditLink?: string
   stockEditLink?: string
   visibilityEditLink?: string
@@ -51,22 +51,11 @@ export const CollectiveOfferSummary = ({
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
-  const canEditDetails = isActionAllowedOnCollectiveOffer(
-    offer,
-    offer.isTemplate
-      ? CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
-      : CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-  )
+  const canEditDetails = isCollectiveOfferEditable(offer)
 
-  const canEditDatesAndPrice = [
-    CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-  ].some((action) => isActionAllowedOnCollectiveOffer(offer, action))
+  const canEditDatesAndPrice = isCollectiveStockEditable(offer)
 
-  const canEditInstitution = isActionAllowedOnCollectiveOffer(
-    offer,
-    CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
-  )
+  const canEditInstitution = isCollectiveInstitutionEditable(offer)
 
   return (
     <>
