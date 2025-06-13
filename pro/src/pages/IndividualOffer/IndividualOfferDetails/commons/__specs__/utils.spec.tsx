@@ -18,6 +18,7 @@ import {
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
   serializeDetailsPostData,
+  serializeDurationMinutes,
 } from '../utils'
 
 describe('hasMusicType', () => {
@@ -410,5 +411,18 @@ describe('serializeDetailsPostData', () => {
       url: undefined,
       productId: undefined,
     })
+  })
+})
+
+describe('serializeDurationMinutes', () => {
+  it('should return undefined when durationHour is empty', () => {
+    expect(serializeDurationMinutes('')).toStrictEqual(undefined)
+  })
+
+  it('should transform string duration into int minutes', () => {
+    expect(serializeDurationMinutes('0:00')).toStrictEqual(0)
+    expect(serializeDurationMinutes('0:21')).toStrictEqual(21)
+    expect(serializeDurationMinutes('3:03')).toStrictEqual(183)
+    expect(serializeDurationMinutes('30:38')).toStrictEqual(1838)
   })
 })

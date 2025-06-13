@@ -53,6 +53,7 @@ export const AddressManual = ({
           maxLength={200}
           {...methods.register('street')}
           error={methods.formState.errors.street?.message}
+          required
         />
       </FormLayout.Row>
       <FormLayout.Row inline className={styles['inline-fields']} mdSpaceAfter>
@@ -63,6 +64,7 @@ export const AddressManual = ({
           disabled={readOnlyFields.includes('postalCode')}
           {...methods.register('postalCode')}
           error={methods.formState.errors.postalCode?.message}
+          required
         />
         <TextInput
           label="Ville"
@@ -71,6 +73,7 @@ export const AddressManual = ({
           maxLength={50}
           {...methods.register('city')}
           error={methods.formState.errors.city?.message}
+          required
         />
       </FormLayout.Row>
       <FormLayout.Row mdSpaceAfter>
@@ -82,6 +85,7 @@ export const AddressManual = ({
           {...methods.register('coords')}
           onBlur={onCoordsBlur}
           error={methods.formState.errors.coords?.message}
+          required
         />
       </FormLayout.Row>
 

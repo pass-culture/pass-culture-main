@@ -12,11 +12,26 @@ import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { SelectOption } from 'commons/custom_types/form'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
-import { serializeDurationMinutes } from 'pages/IndividualOffer/commons/serializers'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
+
+export const serializeDurationMinutes = (
+  durationHour: string
+): number | undefined => {
+  /* istanbul ignore next: DEBT, TO FIX */
+  if (durationHour.trim().length === 0) {
+    return undefined
+  }
+
+  /* istanbul ignore next: DEBT, TO FIX */
+  const [hours, minutes] = durationHour
+    .split(':')
+    .map((s: string) => parseInt(s, 10))
+
+  return minutes + hours * 60
+}
 
 export const isSubCategoryCD = (subcategoryId: string): boolean => {
   return subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD

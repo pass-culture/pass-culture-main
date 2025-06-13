@@ -176,20 +176,18 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     return (
       <div className={className}>
-        <div className={styles['input-layout-label-container']}>
-          <label className={styles['input-layout-label']} htmlFor={fieldId}>
-            {label} {required && asterisk && '*'}
-          </label>
-          {description && (
-            <span
-              id={descriptionId}
-              data-testid={`description-${name}`}
-              className={styles['input-layout-input-description']}
-            >
-              {description}
-            </span>
-          )}
-        </div>
+        <label htmlFor={fieldId}>
+          {label} {required && asterisk && '*'}
+        </label>
+        {description && (
+          <span
+            id={descriptionId}
+            data-testid={`description-${name}`}
+            className={styles['description']}
+          >
+            {description}
+          </span>
+        )}
         <div className={styles['wrapper']}>
           <textarea
             ref={textAreaRef}
