@@ -20,22 +20,37 @@ def content_as_text(html_content: str, from_encoding: str = "utf-8") -> str:
     return _filter_whitespaces(soup.text)
 
 
-def extract_table_rows(html_content: str, parent_class: str | None = None) -> list[dict[str, str]]:
+def extract_table_rows(
+    html_content: str, parent_class: str | None = None, table_id: str | None = None
+) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
     Every row is a dictionary, in which keys are column headers.
     Note that all data is returned as a string.
 
-    Use `parent_class` parameter to filter inside an html container using a unique class name when several tables may be printed in the page.
+    Parameters:
+    - parent_class: (optional) HTML class name to filter the container that includes the table.
+    - table_id: (optional) ID of the table to extract.
+
+    Returns:
+    - List of dictionaries representing rows.
     """
     soup = get_soup(html_content)
 
     if parent_class:
         soup = soup.find(class_=parent_class)
-        assert soup is not None
+        assert soup is not None, f"Aucun élément avec la classe '{parent_class}' trouvé."
 
-    thead = soup.find("thead")
-    tbody = soup.find("tbody")
+    if table_id:
+        table = soup.find("table", id=table_id)
+    else:
+        table = soup.find("table")
+
+    if table is None:
+        return []
+
+    thead = table.find("thead")
+    tbody = table.find("tbody")
     if thead is None or tbody is None:
         return []
 
@@ -64,14 +79,22 @@ def extract_table_rows(html_content: str, parent_class: str | None = None) -> li
     return rows
 
 
-def count_table_rows(html_content: str, parent_class: str | None = None) -> int:
+def count_table_rows(html_content: str, parent_class: str | None = None, table_id: str | None = None) -> int:
     soup = get_soup(html_content)
 
     if parent_class:
         soup = soup.find(class_=parent_class)
         assert soup is not None
 
-    tbody = soup.find("tbody")
+    if table_id:
+        table = soup.find("table", id=table_id)
+    else:
+        table = soup.find("table")
+
+    if table is None:
+        return 0
+
+    tbody = table.find("tbody")
     if tbody is None:
         return 0
 

@@ -5,8 +5,8 @@
           {% if modal_id %}data-bs-toggle="modal" data-bs-target="{{ modal_id }}"{% endif %}
           {% if submit_form %}href="#" data-submit-form="{{ submit_form }}"{% endif %}
           type="button">
-    {{ title }}
     <i class="bi bi-{{ icon }}"></i>
+    {{ title }}
   </button>
 {% endmacro %}
 {% macro action_bar_additional_button(icon, title, modal_id=none, submit_form=none) %}
@@ -17,22 +17,6 @@
     <i class="bi bi-{{ icon }}"></i>
     {{ title }}
   </button>
-{% endmacro %}
-{% macro description_detail_vertical(title) %}
-  <dl>
-    <dt>{{ title }}</dt>
-    <dd>
-      {{ caller() }}
-    </dd>
-  </dl>
-{% endmacro %}
-{% macro description_detail_horizontal(title) %}
-  <dl class="row">
-    <dt class="col-sm-3">{{ title }}</dt>
-    <dd class="col-sm-9">
-      {{ caller() }}
-    </dd>
-  </dl>
 {% endmacro %}
 {% macro content_navbar(navbar_name) %}
   <nav id="{{ navbar_name }}-navbar"
@@ -47,6 +31,16 @@
   <li class="nav-item">
     <a class="nav-link px-3 py-2"
        href="#{{ section_name }}-section">{{ section_title }}</a>
+  </li>
+{% endmacro %}
+{% macro content_navbar_button(section_name, section_title, default=False) %}
+  <li class="nav-item">
+    <button class="nav-link px-3 py-2 {% if default %}active{% endif %}"
+            id="{{ section_name }}-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#{{ section_name }}-data"
+            type="button"
+            role="tab">{{ section_title }}</button>
   </li>
 {% endmacro %}
 {% macro details_content_wrapper(navbar_name) %}

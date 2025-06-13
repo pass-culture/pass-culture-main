@@ -3,6 +3,7 @@
 {% import "components/links.html" as links %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/description.html" import description_detail_vertical %}
 {% macro change_response_status_action_form(response_id, status, text) %}
   <li class="dropdown-item p-0">
     <form action="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"

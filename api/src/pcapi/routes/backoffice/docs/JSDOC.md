@@ -63,35 +63,49 @@
     *   [unbindEvents][59]
         *   [Examples][60]
 *   [Add Ons features][61]
-*   [BsTooltips][62]
-*   [PcTableMultiSelect][63]
-    *   [Examples][64]
-    *   [ID][65]
-*   [PcTomSelectField][66]
-    *   [Examples][67]
-    *   [ID][68]
-*   [PcBatchActionForm][69]
-    *   [Examples][70]
-*   [PcClipBoard][71]
-*   [PcConfirmModal][72]
+*   [applyConfigurationOnTable][62]
+*   [BsTooltips][63]
+*   [getValidTarget][64]
+*   [PcTableMultiSelect][65]
+    *   [Examples][66]
+    *   [ID][67]
+*   [PcTomSelectField][68]
+    *   [Examples][69]
+    *   [ID][70]
+*   [initializeMenu][71]
+*   [PcBatchActionForm][72]
     *   [Examples][73]
-*   [PcDateRangeField][74]
-    *   [Examples][75]
-*   [PcFieldList][76]
-*   [PcFilterDataset][77]
+*   [PcClipBoard][74]
+*   [PcConfirmModal][75]
+    *   [Examples][76]
+*   [PcDateRangeField][77]
     *   [Examples][78]
-*   [PcForm][79]
-*   [PcFormField][80]
-*   [PcFormsCheckValidity][81]
-*   [PcOverrideCustomTextareaEnter][82]
-    *   [Examples][83]
-*   [PcPostalAddressAutocomplete][84]
-    *   [Examples][85]
-*   [PcRegistrationSteps][86]
-*   [PcResetModalTurboSrc][87]
-    *   [Examples][88]
-*   [PcValidationFilters][89]
-    *   [Examples][90]
+*   [PcFieldList][79]
+*   [PcFilterDataset][80]
+    *   [Examples][81]
+*   [PcForm][82]
+*   [PcFormField][83]
+*   [PcFormsCheckValidity][84]
+*   [PcHideOnClick][85]
+*   [PcOverrideCustomTextareaEnter][86]
+    *   [Examples][87]
+*   [PcPostalAddressAutocomplete][88]
+    *   [Examples][89]
+*   [PcProSearchForm][90]
+*   [PcRegistrationSteps][91]
+*   [PcResetModalTurboSrc][92]
+    *   [Examples][93]
+*   [PcSectionFocusOnload][94]
+*   [PcStripQueryString][95]
+*   [PcSubmitFormButton][96]
+*   [PcTableManager][97]
+*   [PcTablePaginator][98]
+    *   [HTML Configuration][99]
+    *   [Data Attributes for `<table>`][100]
+    *   [Data Attributes for `<td>`][101]
+    *   [Examples][102]
+*   [PcValidationFilters][103]
+    *   [Examples][104]
 
 ## PcBackofficeApp
 
@@ -102,7 +116,7 @@ See below for how to regenerate the documentation or initialize the application.
 
 ### Parameters
 
-*   `config` **{addOns: [Array][91]<[PcAddOn][44]>}** the application configuration.
+*   `config` **{addOns: [Array][105]<[PcAddOn][44]>}** the application configuration.
 
     *   `config.addOns` &#x20;
 
@@ -163,7 +177,7 @@ We have 3 turbo events binding at the moments:
 4.  `turbo:load`: trigger `app.initialize` and `app.bindEvents` on XHR visit navigation load,
 5.  `turbo:frame-missing`: trigger `app.onTurboFrameMissing` on XHR response if the `id` of the turbo frame doesn't exist.
 
-Read more: [https://turbo.hotwired.dev/reference/events][92]
+Read more: [https://turbo.hotwired.dev/reference/events][106]
 
 ### csrfTokenInput
 
@@ -199,7 +213,7 @@ the whole page will be replaced by a generic 504 error message, which is not gre
 
 #### Parameters
 
-*   `event` **[Event][93]**&#x20;
+*   `event` **[Event][107]**&#x20;
 
 #### Examples
 
@@ -245,11 +259,11 @@ This class is used to store transversal application utilities.
 
 ### addLoadEvent
 
-Push a callback function to window.onload
+Push a callback function to window\.onload
 
 #### Parameters
 
-*   `callback` **[function][94]** the function to be called on `window.onload`
+*   `callback` **[function][108]** the function to be called on `window.onload`
 
 ### debounce
 
@@ -257,10 +271,10 @@ Debounce a function (prevents function to be called until a certain delay. Can b
 
 #### Parameters
 
-*   `callback` **[function][94]** the function to debounce
-*   `ms` **[number][95]** the debounce delay in milliseconds
+*   `callback` **[function][108]** the function to debounce
+*   `ms` **[number][109]** the debounce delay in milliseconds
 
-Returns **[function][94]** the debounced function
+Returns **[function][108]** the debounced function
 
 ## KeyboardKeyCode
 
@@ -304,7 +318,7 @@ This singleton utility class can be used to bind/unbind event in the style of `j
 
 It is heavily inspired from Bootstrap (v5.3.0-alpha1): `dom/event-handler.js`
 
-Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][96]
+Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][110]
 
 As the original source, this addon is licensed as MIT.
 
@@ -339,14 +353,14 @@ class PcLoggingOnImage extend PcAddOn {
 
 ### off
 
-Read more: [https://api.jquery.com/off/#off-events-selector-data][97]
+Read more: [https://api.jquery.com/off/#off-events-selector-data][111]
 
 #### Parameters
 
-*   `element` **[element][98]** the parent element to unbind from
-*   `originalTypeEvent` **[string][99]** the event name to unbind
-*   `handler` **[string][99]** the selector for element bind apply
-*   `delegationFunction` **[function][94]** the event method to unbind
+*   `element` **[element][112]** the parent element to unbind from
+*   `originalTypeEvent` **[string][113]** the event name to unbind
+*   `handler` **[string][113]** the selector for element bind apply
+*   `delegationFunction` **[function][108]** the event method to unbind
 
 #### Examples
 
@@ -356,14 +370,14 @@ EventHandler.off(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### on
 
-Read more: [https://api.jquery.com/on/#on-events-selector-data][100]
+Read more: [https://api.jquery.com/on/#on-events-selector-data][114]
 
 #### Parameters
 
-*   `element` **[element][98]** the parent element to apply bind
-*   `event` **[string][99]** the event name to bind
-*   `handler` **[string][99]** the selector for elements bind apply
-*   `delegationFunction` **[function][94]** the event method to bind
+*   `element` **[element][112]** the parent element to apply bind
+*   `event` **[string][113]** the event name to bind
+*   `handler` **[string][113]** the selector for elements bind apply
+*   `delegationFunction` **[function][108]** the event method to bind
 
 #### Examples
 
@@ -373,14 +387,14 @@ EventHandler.on(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### one
 
-Read more: [https://api.jquery.com/one/#one-events-selector-data][101]
+Read more: [https://api.jquery.com/one/#one-events-selector-data][115]
 
 #### Parameters
 
-*   `element` **[element][98]** the parent element to apply bind
-*   `event` **[string][99]** the event name to bind
-*   `handler` **[string][99]** the selector for element bind apply
-*   `delegationFunction` **[function][94]** the event method to bind
+*   `element` **[element][112]** the parent element to apply bind
+*   `event` **[string][113]** the event name to bind
+*   `handler` **[string][113]** the selector for element bind apply
+*   `delegationFunction` **[function][108]** the event method to bind
 
 #### Examples
 
@@ -390,12 +404,12 @@ EventHandler.one(document.body, 'click', '.nav-link#something', onNavLinkClick)
 
 ### trigger
 
-Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][102]
+Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][116]
 
 #### Parameters
 
-*   `element` **[element][98]** DOM element to trigger event on
-*   `event` **[string][99]** The event to trigger
+*   `element` **[element][112]** DOM element to trigger event on
+*   `event` **[string][113]** The event to trigger
 *   `args` **any** Arguments to be passed to the event
 
 #### Examples
@@ -404,7 +418,7 @@ Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][102]
 EventHandler.trigger(document.querySelectorAll('.nav-link')[2], 'click')
 ```
 
-Returns **(null | [Event][93])** null if element is undefined or event is not a string, the triggered event otherwise
+Returns **(null | [Event][107])** null if element is undefined or event is not a string, the triggered event otherwise
 
 ## PcAddOn
 
@@ -414,7 +428,7 @@ This abstract class can be extended to create new addon for new JavaScript featu
 
 ### Parameters
 
-*   `config` **{name: [string][99], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
+*   `config` **{name: [string][113], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
 
     *   `config.name` &#x20;
     *   `config.app` &#x20;
@@ -459,7 +473,7 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][93]** the event
+*   `event` **[event][107]** the event
 
 ### \_preventSubmitOnEnter
 
@@ -468,7 +482,7 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][93]** the event
+*   `event` **[event][107]** the event
 
 ### bindEvents
 
@@ -532,13 +546,21 @@ app.addons.bsTooltips.unbindEvents()
 
 Below addons are created using PcAddOn class.
 
+## applyConfigurationOnTable
+
+END DRAG AND DROP \*
+
 ## BsTooltips
 
 **Extends PcAddOn**
 
 This adds PcAddOn support for bootstrap 5 tooltips.
 It works using bootstrap 5 html markup.
-Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][103]
+Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][117]
+
+## getValidTarget
+
+DRAG AND DROP \*
 
 ## PcTableMultiSelect
 
@@ -629,11 +651,15 @@ We have two types of tom select instances:
 
 Unique identifier of this addon, in order to reference it from another add on
 
+## initializeMenu
+
+MENU \*
+
 ## PcBatchActionForm
 
 **Extends PcAddOn**
 
-Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][63].
+Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][65].
 
 Form is renderer through a turbo frame which must be loaded with `loading="true"`.
 
@@ -693,8 +719,8 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
   </button>
 </div>
 
- {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "true") }}
- {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "true") }}
+ {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "eager") }}
+ {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "eager") }}
 ```
 
 ## PcClipBoard
@@ -732,7 +758,7 @@ Add `data-confirm-modal=".my-modal-123"` on your input with `.my-modal-123` bein
 Display a date range picker.
 
 We have a minimal set of options, to add more options, you should interface using data attributes
-To read all options : [https://github.com/alumuko/vanilla-datetimerange-picker/][104]
+To read all options : [https://github.com/alumuko/vanilla-datetimerange-picker/][118]
 
 Implemented:
 
@@ -837,6 +863,12 @@ The add on also include a fix for tom select js to support `readonly` attribute.
 
 > There is no markup necessary as this selects all `<form />`
 
+## PcHideOnClick
+
+**Extends PcAddOn**
+
+Hides a link on click and shows a sibling block instead
+
 ## PcOverrideCustomTextareaEnter
 
 **Extends PcAddOn**
@@ -868,7 +900,9 @@ It can be used when declaring form fields in the backend using `fields.PcPostalA
 
 postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
   "Adresse",
-  address="address", // the name of your address field within your form, for its autocomplete to work
+  street="street", // the name of your address field within your form, for its autocomplete to work
+  banId="banId" // the unique id in the National Address Database (Base d'Adresses Nationale)
+  inseeCode="inseeCode" // the code of the city (or code INSEE) in the National Address Database (Base d'Adresses Nationale)
   city="city", // the name of your city field within your form, for its autocomplete to work
   postalCode="postalCode", // the name of your postalCode field within your form, for its autocomplete to work
   latitude="latitude", // the name of your latitude field within your form, for its autocomplete to work
@@ -879,12 +913,18 @@ postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
   limit=10, // limit of autocomplete choices (default: 10)
 )
 // Below are the hidden fields, you can decide to add form validators to them.
-address = fields.PCOptHiddenField("address") // if selected in the autocomplete, it will be filled in the form
+street = fields.PCOptHiddenField("street") // if selected in the autocomplete, it will be filled in the form
 city = fields.PCOptHiddenField("Ville") // if selected in the autocomplete, it will be filled in the form
 postalCode = fields.PCOptPostalCodeHiddenField("Code postal") // if selected in the autocomplete, it will be filled in the form
 latitude = fields.PCOptHiddenField("Latitude") // if selected in the autocomplete, it will be filled in the form
 longitude = fields.PCOptHiddenField("Longitude") // if selected in the autocomplete, it will be filled in the form
 ```
+
+## PcProSearchForm
+
+**Extends PcAddOn**
+
+Enables or disables departments filter depending on selected pro type.
 
 ## PcRegistrationSteps
 
@@ -916,6 +956,109 @@ as turbo frame will update its src attribute.
             data-bs-target="#batch-suspend-users-form"
             type="button">Suspendre des utilisateurs en masse via leur ID</button>
 {{ build_lazy_modal(turbo_src, "batch-suspend-users-form") }}
+```
+
+## PcSectionFocusOnload
+
+**Extends PcAddOn**
+
+Set focus on designated section on page load when having scrollspy navbars (details pages)
+
+## PcStripQueryString
+
+**Extends PcAddOn**
+
+Strips query string from the location bar when the page is displayed.
+This is useful for the end-user to copy a clean string without form parameter and without data used to log
+backoffice analytics about search performance.
+
+## PcSubmitFormButton
+
+**Extends PcAddOn**
+
+This add-on allows to a designated button to submit a form given its name
+It's generally used to submit hidden forms
+
+## PcTableManager
+
+**Extends PcAddOn**
+
+Manage tables to make them dynamic
+
+## PcTablePaginator
+
+**Extends PcAddOn**
+
+Adds client-side pagination, search, and filtering capabilities to an HTML table.
+The addon automatically scans the table rows, generates pagination controls, and
+handles row visibility based on the current page and active search criteria.
+
+It is configured using data attributes on the table and its cells.
+
+***
+
+### HTML Configuration
+
+*   **`.pc-table-paginator`**: The required class to activate the addon on a `<table>`.
+*   **`id`**: The table must have a unique `id`.
+
+### Data Attributes for `<table>`
+
+*   `data-pc-items-per-page`: (Optional) Number of rows to display per page. **Default: `20`**.
+*   `data-pc-max-visible-pages`: (Optional) The maximum number of page links to display in the pagination control. **Default: `20`**.
+*   `data-pc-show-total-count`: (Optional) If set to `"true"`, displays a "X résultats" count above the table.
+*   `data-pc-search-container-id`: (Optional) The `id` of an element that contains search controls (`input[type="text"]` and `select`).
+
+### Data Attributes for `<td>`
+
+*   `data-search-key`: To make a column searchable, add this attribute to its `<td>` elements.
+    The value must match an `<option>` value in the filter `select`.
+
+***
+
+### Examples
+
+```javascript
+<div id="linked-offer-search-controls">
+  <input type="text"
+         class="form-control"
+         id="search-linked-offers"
+         placeholder="Rechercher dans les offres liées..." />
+  <select class="form-select form-control value-element-form" id="filter-select-linked-offer">
+    <option value="all">Filtrer sur tous les champs</option>
+    <option value="id">ID</option>
+    <option value="name">Nom</option>
+    <option value="venue">Partenaire culturel</option>
+    <option value="status">Statut</option>
+    <option value="dateCreated">Date de création</option>
+  </select>
+</div>
+
+<table id="offers-table"
+       class="table table-borderless table-hover pc-table-paginator d-none"
+       data-pc-items-per-page="20"
+       data-pc-max-visible-pages="20"
+       data-pc-show-total-count="true"
+       data-pc-search-container-id="linked-offer-search-controls">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Nom</th>
+      <th>Partenaire culturel</th>
+      <th>Statut</th>
+      <th>Date de création</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-search-key="id">1</td>
+      <td data-search-key="name">Offre 1</td>
+      <td data-search-key="venue">Partenaire culturel</td>
+      <td data-search-key="status">Épuisée</td>
+      <td data-search-key="dateCreated">2025/06/12</td>
+    </tr>
+  </tbody>
+</table>
 ```
 
 ## PcValidationFilters
@@ -1057,88 +1200,116 @@ Addon to add filters toggling using a button and make their state persistent.
 
 [61]: #add-ons-features
 
-[62]: #bstooltips
+[62]: #applyconfigurationontable
 
-[63]: #pctablemultiselect
+[63]: #bstooltips
 
-[64]: #examples-17
+[64]: #getvalidtarget
 
-[65]: #id
+[65]: #pctablemultiselect
 
-[66]: #pctomselectfield
+[66]: #examples-17
 
-[67]: #examples-18
+[67]: #id
 
-[68]: #id-1
+[68]: #pctomselectfield
 
-[69]: #pcbatchactionform
+[69]: #examples-18
 
-[70]: #examples-19
+[70]: #id-1
 
-[71]: #pcclipboard
+[71]: #initializemenu
 
-[72]: #pcconfirmmodal
+[72]: #pcbatchactionform
 
-[73]: #examples-20
+[73]: #examples-19
 
-[74]: #pcdaterangefield
+[74]: #pcclipboard
 
-[75]: #examples-21
+[75]: #pcconfirmmodal
 
-[76]: #pcfieldlist
+[76]: #examples-20
 
-[77]: #pcfilterdataset
+[77]: #pcdaterangefield
 
-[78]: #examples-22
+[78]: #examples-21
 
-[79]: #pcform
+[79]: #pcfieldlist
 
-[80]: #pcformfield
+[80]: #pcfilterdataset
 
-[81]: #pcformscheckvalidity
+[81]: #examples-22
 
-[82]: #pcoverridecustomtextareaenter
+[82]: #pcform
 
-[83]: #examples-23
+[83]: #pcformfield
 
-[84]: #pcpostaladdressautocomplete
+[84]: #pcformscheckvalidity
 
-[85]: #examples-24
+[85]: #pchideonclick
 
-[86]: #pcregistrationsteps
+[86]: #pcoverridecustomtextareaenter
 
-[87]: #pcresetmodalturbosrc
+[87]: #examples-23
 
-[88]: #examples-25
+[88]: #pcpostaladdressautocomplete
 
-[89]: #pcvalidationfilters
+[89]: #examples-24
 
-[90]: #examples-26
+[90]: #pcprosearchform
 
-[91]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[91]: #pcregistrationsteps
 
-[92]: https://turbo.hotwired.dev/reference/events
+[92]: #pcresetmodalturbosrc
 
-[93]: https://developer.mozilla.org/docs/Web/API/Event
+[93]: #examples-25
 
-[94]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[94]: #pcsectionfocusonload
 
-[95]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[95]: #pcstripquerystring
 
-[96]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
+[96]: #pcsubmitformbutton
 
-[97]: https://api.jquery.com/off/#off-events-selector-data
+[97]: #pctablemanager
 
-[98]: https://developer.mozilla.org/docs/Web/API/Element
+[98]: #pctablepaginator
 
-[99]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[99]: #html-configuration
 
-[100]: https://api.jquery.com/on/#on-events-selector-data
+[100]: #data-attributes-for-table
 
-[101]: https://api.jquery.com/one/#one-events-selector-data
+[101]: #data-attributes-for-td
 
-[102]: https://api.jquery.com/trigger/#trigger-events-selector-data
+[102]: #examples-26
 
-[103]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+[103]: #pcvalidationfilters
 
-[104]: https://github.com/alumuko/vanilla-datetimerange-picker/
+[104]: #examples-27
+
+[105]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[106]: https://turbo.hotwired.dev/reference/events
+
+[107]: https://developer.mozilla.org/docs/Web/API/Event
+
+[108]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[109]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[110]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
+
+[111]: https://api.jquery.com/off/#off-events-selector-data
+
+[112]: https://developer.mozilla.org/docs/Web/API/Element
+
+[113]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[114]: https://api.jquery.com/on/#on-events-selector-data
+
+[115]: https://api.jquery.com/one/#one-events-selector-data
+
+[116]: https://api.jquery.com/trigger/#trigger-events-selector-data
+
+[117]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+
+[118]: https://github.com/alumuko/vanilla-datetimerange-picker/
