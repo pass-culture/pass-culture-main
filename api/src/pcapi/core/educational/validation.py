@@ -6,6 +6,7 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.offers import models as offers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 
@@ -201,3 +202,12 @@ def validate_national_program(national_program_id: int | None, domains: list[mod
     valid_national_program_ids = {np.id for domain in domains for np in domain.nationalPrograms}
     if national_program_id not in valid_national_program_ids:
         raise exceptions.IllegalNationalProgram()
+
+
+def check_validation_status(
+    offer: models.CollectiveOffer | models.CollectiveOfferTemplate,
+) -> None:
+    if offer.validation in (offers_models.OfferValidationStatus.REJECTED, offers_models.OfferValidationStatus.PENDING):
+        raise exceptions.EducationalException(
+            {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+        )

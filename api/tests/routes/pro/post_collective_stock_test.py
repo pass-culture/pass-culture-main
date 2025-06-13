@@ -422,3 +422,27 @@ class Return400Test:
                 "endDatetime": ["L'évènement ne peut se terminer dans le passé."],
                 "startDatetime": ["L'évènement ne peut commencer dans le passé."],
             }
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    @pytest.mark.parametrize("status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
+    def should_bot_accept_stock_creation_for_pending_and_rejected_offer(self, status, client):
+        offer = educational_factories.CollectiveOfferFactory(validation=status)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        response = client.with_session_auth("user@example.com").post(
+            "/collective/stocks/",
+            json={
+                "offerId": offer.id,
+                "startDatetime": "2022-01-17T22:00:00Z",
+                "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+                "totalPrice": 1500.12,
+                "numberOfTickets": 38,
+                "educationalPriceDetail": "Détail du prix",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}

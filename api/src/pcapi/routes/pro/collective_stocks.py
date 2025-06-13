@@ -41,13 +41,15 @@ def create_collective_stock(
     try:
         collective_stock = educational_api_stock.create_collective_stock(body)
     except educational_exceptions.CollectiveStockAlreadyExists:
-        raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=400)
+        raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"})
     except educational_exceptions.StartAndEndEducationalYearDifferent:
-        raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}, status_code=400)
+        raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"})
     except educational_exceptions.StartEducationalYearMissing:
-        raise ApiErrors({"code": "START_EDUCATIONAL_YEAR_MISSING"}, status_code=400)
+        raise ApiErrors({"code": "START_EDUCATIONAL_YEAR_MISSING"})
     except educational_exceptions.EndEducationalYearMissing:
-        raise ApiErrors({"code": "END_EDUCATIONAL_YEAR_MISSING"}, status_code=400)
+        raise ApiErrors({"code": "END_EDUCATIONAL_YEAR_MISSING"})
+    except educational_exceptions.EducationalException as exc:
+        raise ApiErrors(exc.errors)
 
     return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
 

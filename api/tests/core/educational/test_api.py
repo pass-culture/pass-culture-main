@@ -9,6 +9,7 @@ import time_machine
 from flask import current_app
 
 import pcapi.core.educational.api.institution as institution_api
+import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.api import adage as educational_api_adage
@@ -16,7 +17,6 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
@@ -74,13 +74,14 @@ class CreateCollectiveOfferStocksTest:
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def test_create_stock_for_non_approved_offer_fails(self) -> None:
+    @pytest.mark.parametrize("status", [OfferValidationStatus.REJECTED, OfferValidationStatus.PENDING])
+    def test_create_stock_for_rejected_or_pending_offer_fails(self, status) -> None:
         start_date = dateutil.parser.parse("2022-01-17T22:00:00Z")
         educational_factories.EducationalYearFactory(
             beginningDate=start_date - datetime.timedelta(days=100),
             expirationDate=start_date + datetime.timedelta(days=100),
         )
-        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        offer = educational_factories.CollectiveOfferFactory(validation=status)
         created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             startDatetime=start_date,
@@ -91,7 +92,7 @@ class CreateCollectiveOfferStocksTest:
             educationalPriceDetail="hello",
         )
 
-        with pytest.raises(offers_exceptions.OfferException) as error:
+        with pytest.raises(educational_exceptions.EducationalException) as error:
             educational_api_stock.create_collective_stock(stock_data=created_stock_data)
 
         assert error.value.errors == {
