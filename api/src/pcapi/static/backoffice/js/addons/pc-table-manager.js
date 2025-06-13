@@ -323,30 +323,33 @@ class PcTableManager extends PcAddOn {
     const oldConfigurationMap = {}
 
     $table.querySelectorAll("tr").forEach(($line) => {
-      configuration.columns.forEach((columnConfiguration) => {
-        // retrieve cell to move/update
-        let $cell
-        if (oldConfigurationMap[columnConfiguration.id] === undefined) {
-          for(let i=0; i < $line.children.length; i++){
-            if ($line.children[i].classList.contains(columnConfiguration.id)){
-              $cell = $line.children[i]
-              oldConfigurationMap[columnConfiguration.id] = i
-              break
+      // ignore lines with too few colonnes for pages like bookings
+      if($line.children.length >= (configuration.columns.length * 0.5)) {
+        configuration.columns.forEach((columnConfiguration) => {
+          // retrieve cell to move/update
+          let $cell
+          if (oldConfigurationMap[columnConfiguration.id] === undefined) {
+            for(let i=0; i < $line.children.length; i++){
+              if ($line.children[i].classList.contains(columnConfiguration.id)){
+                $cell = $line.children[i]
+                oldConfigurationMap[columnConfiguration.id] = i
+                break
+              }
+            }
+          } else {
+            $cell = $line.children[oldConfigurationMap[columnConfiguration.id]]
+          }
+          if ($cell){
+            // apply configuration
+            if(columnConfiguration.display){
+              $cell.classList.remove('d-none')
+              $line.appendChild($cell)
+            } else {
+              $cell.classList.add('d-none')
             }
           }
-        } else {
-          $cell = $line.children[oldConfigurationMap[columnConfiguration.id]]
-        }
-        if ($cell){
-          // apply configuration
-          if(columnConfiguration.display){
-            $cell.classList.remove('d-none')
-            $line.appendChild($cell)
-          } else {
-            $cell.classList.add('d-none')
-          }
-        }
-      })
+        })
+      }
     })
     $table.classList.remove('d-none')
   }
