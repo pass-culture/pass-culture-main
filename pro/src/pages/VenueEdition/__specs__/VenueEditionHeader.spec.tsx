@@ -33,6 +33,7 @@ const renderPartnerPages = (
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
       venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
+      context="partnerPage"
       {...props}
     />,
     {
@@ -159,5 +160,16 @@ describe('VenueEditionHeader', () => {
     )
 
     expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
+  })
+
+  it('should not display "Visualiser votre page" for adage venues', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetVenue,
+      },
+      context: 'collective',
+    })
+
+    expect(screen.queryByText('Visualiser votre page')).not.toBeInTheDocument()
   })
 })
