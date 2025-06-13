@@ -55,7 +55,6 @@ export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferRes
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOffersBookingResponseModel';
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
-export { CollectiveOfferStatus } from './models/CollectiveOfferStatus';
 export { CollectiveOfferTemplateAllowedAction } from './models/CollectiveOfferTemplateAllowedAction';
 export { CollectiveOfferType } from './models/CollectiveOfferType';
 export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenueBodyModel';

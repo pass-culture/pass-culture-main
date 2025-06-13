@@ -23,7 +23,6 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
-  CollectiveOfferStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveLocationType,
 } from 'apiClient/v1'
@@ -44,7 +43,6 @@ export const collectiveOfferFactory = (
 
   return {
     id: currentId,
-    status: CollectiveOfferStatus.ACTIVE,
     displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
     isActive: true,
     hasBookingLimitDatetimesPassed: true,
@@ -79,7 +77,6 @@ export const listOffersVenueFactory = (
 
 const sharedCollectiveOfferData = {
   isActive: true,
-  status: CollectiveOfferStatus.ACTIVE,
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
   isCancellable: true,
   isTemplate: true,

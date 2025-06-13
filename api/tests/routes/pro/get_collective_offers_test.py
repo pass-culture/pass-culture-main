@@ -126,7 +126,6 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["isActive"] is False
-        assert response_json[0]["status"] == "INACTIVE"
 
     def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, client):
         # Given
@@ -149,7 +148,6 @@ class Returns200Test:
         # Then
         response_json = response.json
         assert len(response_json) == 1
-        assert response_json[0]["status"] == "INACTIVE"
         assert response_json[0]["displayedStatus"] == "EXPIRED"
         assert response_json[0]["id"] == stock.collectiveOffer.id
 

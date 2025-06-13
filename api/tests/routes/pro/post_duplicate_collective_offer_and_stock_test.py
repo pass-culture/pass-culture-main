@@ -123,7 +123,6 @@ class Returns200Test:
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
-            "status": "DRAFT",
             "displayedStatus": "DRAFT",
             "domains": [{"id": domain.id, "name": domain.name}],
             "interventionArea": ["93", "94", "95"],

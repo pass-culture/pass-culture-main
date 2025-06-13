@@ -5,7 +5,6 @@
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
-import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
@@ -54,7 +53,6 @@ export type GetCollectiveOfferResponseModel = {
   nationalProgram?: NationalProgramModel | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   provider?: GetCollectiveOfferProviderResponseModel | null;
-  status: CollectiveOfferStatus;
   students: Array<StudentLevels>;
   teacher?: EducationalRedactorResponseModel | null;
   templateId?: number | null;
