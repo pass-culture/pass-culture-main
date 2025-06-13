@@ -32,13 +32,19 @@ UPDATE_STATE_TIMEOUT = 30
 
 
 class DsUserAccountUpdateProcredureField(enum.Enum):
+    """
+    All IDs are the same in testing and production procedures, except "Quel est ton nouveau nom ?".
+    Let's keep both here instead of a more complex configuration by environment.
+    """
+
     CHOICES = "Q2hhbXAtMzM0NjEyMA=="
     BIRTH_DATE = "Q2hhbXAtMzM0NjAwOQ=="
     OLD_EMAIL = "Q2hhbXAtMzM0NjE0NA=="
     NEW_EMAIL = "Q2hhbXAtMzM0NjE2MA=="
     NEW_PHONE_NUMBER = "Q2hhbXAtMzM2MDE5OQ=="
     NEW_FIRST_NAME = "Q2hhbXAtMzM2MDIwNA=="
-    NEW_LAST_NAME = "Q2hhbXAtNDU2NjE2NQ=="
+    NEW_LAST_NAME = "Q2hhbXAtNDU2NzkwOQ=="
+    NEW_LAST_NAME_TESTING = "Q2hhbXAtNDU2NjE2NQ=="
 
 
 DS_CHOICE_TO_UPDATE_TYPE = {
@@ -286,7 +292,10 @@ def _sync_ds_application(
                     else:
                         data["flags"].add(users_models.UserAccountUpdateFlag.MISSING_VALUE)
 
-                case DsUserAccountUpdateProcredureField.NEW_LAST_NAME.value:
+                case (
+                    DsUserAccountUpdateProcredureField.NEW_LAST_NAME.value
+                    | DsUserAccountUpdateProcredureField.NEW_LAST_NAME_TESTING.value
+                ):
                     value = field["value"].strip() if field["value"] else None
                     if field["value"]:
                         data["newLastName"] = value
