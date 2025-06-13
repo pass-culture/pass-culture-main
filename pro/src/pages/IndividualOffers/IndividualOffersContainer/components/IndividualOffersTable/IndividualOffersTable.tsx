@@ -89,7 +89,12 @@ export const IndividualOffersTable = ({
           getCellsDefinition().ADDRESS,
           getCellsDefinition().STOCKS,
           getCellsDefinition(isRefactoFutureOfferEnabled).INDIVIDUAL_STATUS,
-        ]}
+        ].concat(
+          isRefactoFutureOfferEnabled
+            ? getCellsDefinition(isRefactoFutureOfferEnabled)
+                .INDIVIDUAL_BOOKINGS
+            : []
+        )}
       />
       <IndividualOffersTableBody
         offers={currentPageOffersSubset}

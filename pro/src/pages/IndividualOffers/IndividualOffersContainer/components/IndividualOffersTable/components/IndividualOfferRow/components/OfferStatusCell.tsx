@@ -1,17 +1,19 @@
 import classNames from 'classnames'
 
-import { OfferStatus } from 'apiClient/v1'
+import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
+import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullBoostedIcon from 'icons/full-boosted.svg'
+import waitFullIcon from 'icons/full-wait.svg'
 import styles from 'styles/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 interface OfferStatusCellProps {
   rowId: string
-  status: OfferStatus
+  offer: ListOffersOfferResponseModel
   displayLabel?: boolean
   isHeadline?: boolean
   className?: string
@@ -19,7 +21,7 @@ interface OfferStatusCellProps {
 
 export const OfferStatusCell = ({
   rowId,
-  status,
+  offer,
   displayLabel,
   isHeadline,
   className,
@@ -27,6 +29,9 @@ export const OfferStatusCell = ({
   const isRefactoFutureOfferEnabled = useActiveFeature(
     'WIP_REFACTO_FUTURE_OFFER'
   )
+
+  const publicationDate =
+    offer.status === OfferStatus.ACTIVE ? '21/07/2025 10:00' : null
 
   return (
     <td
@@ -47,7 +52,15 @@ export const OfferStatusCell = ({
         </span>
       )}
       <div className={styles['status-column-content']}>
-        <StatusLabel status={status} />
+        {publicationDate ? (
+          <Tag
+            label={publicationDate}
+            icon={waitFullIcon}
+            variant={TagVariant.WARNING}
+          />
+        ) : (
+          <StatusLabel status={offer.status} />
+        )}
         {isHeadline && (
           <div className={styles['status-column-headline-offer-star']}>
             <Tooltip content="Offre à la une">
