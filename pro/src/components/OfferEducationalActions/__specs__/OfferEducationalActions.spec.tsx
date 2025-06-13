@@ -14,6 +14,7 @@ import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
+  getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
@@ -148,10 +149,10 @@ describe('OfferEducationalActions', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.SOLD_OUT,
       displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-      booking: {
+      booking: getCollectiveOfferBookingFactory({
         id: 1,
-        status: CollectiveBookingStatus.CONFIRMED
-      }
+        status: CollectiveBookingStatus.CONFIRMED,
+      }),
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -170,10 +171,10 @@ describe('OfferEducationalActions', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.EXPIRED,
       displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
-      booking: {
+      booking: getCollectiveOfferBookingFactory({
         id: 1,
-        status: CollectiveBookingStatus.USED
-      }
+        status: CollectiveBookingStatus.USED,
+      }),
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -193,10 +194,10 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferFactory({
         status: CollectiveOfferStatus.ACTIVE,
-        booking: {
+        booking: getCollectiveOfferBookingFactory({
           id: 1,
-          status: CollectiveBookingStatus.CANCELLED
-        }
+          status: CollectiveBookingStatus.CANCELLED,
+        }),
       }),
     })
     expect(
@@ -216,10 +217,10 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: getCollectiveOfferFactory({
         status: CollectiveOfferStatus.ACTIVE,
-        booking: {
+        booking: getCollectiveOfferBookingFactory({
           id: 1,
-          status: CollectiveBookingStatus.CONFIRMED
-        }
+          status: CollectiveBookingStatus.CONFIRMED,
+        }),
       }),
     })
     const bookingLink = screen.getByRole('link', {

@@ -4,7 +4,7 @@ import logging
 import typing
 
 from pcapi.core.educational import models
-from pcapi.routes.serialization import collective_offers_serialize as serialize  # TODO: move in schemas?
+from pcapi.routes.serialization import collective_offers_serialize as serialize
 
 
 logger = logging.getLogger(__name__)
