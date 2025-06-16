@@ -309,7 +309,7 @@ def cancel_event_ticket(
             if is_booking_saved:
                 new_quantity -= len(barcodes)
             stock.quantity = new_quantity
-    except (ValueError, pydantic_v1.ValidationError):
+    except (ValueError, json.JSONDecodeError, pydantic_v1.ValidationError):
         logger.exception(
             "Could not parse external booking cancel response",
             extra={"status_code": response.status_code, "response": response.text},
