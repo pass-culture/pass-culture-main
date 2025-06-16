@@ -142,6 +142,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
+    WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE = "Activer la nouvelle page détail de l'offre réservable"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
     WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API = (
@@ -229,6 +230,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
     FeatureToggle.WIP_ENABLE_EVENT_WITH_OPENING_HOUR,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
+    FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API,
