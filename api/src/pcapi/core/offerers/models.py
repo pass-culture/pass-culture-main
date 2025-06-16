@@ -666,8 +666,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
 
     @property
     def current_bank_account(self) -> "finance_models.BankAccount | None":
-        if self.current_bank_account_link:
-            return self.current_bank_account_link.bankAccount
+        if current_bank_account_link := self.current_bank_account_link:
+            return current_bank_account_link.bankAccount
         return None
 
     @hybrid_property

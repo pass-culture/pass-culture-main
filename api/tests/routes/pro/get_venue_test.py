@@ -64,9 +64,29 @@ class Returns200Test:
                 "transport_modality": [acceslibre_enum.PARKING_NEARBY],
             },
         )
+        offerers_factories.VenueBankAccountLinkFactory(  # former bank account link
+            venue=venue,
+            timespan=[now - datetime.timedelta(days=21), now - datetime.timedelta(days=14)],
+        )
         bank_account_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=venue,
             timespan=[now - datetime.timedelta(days=14), None],
+        )
+
+        other_venue = offerers_factories.VenueWithoutSiretFactory(
+            publicName="Autre partenaire relié au même compte bancaire",
+            managingOfferer=user_offerer.offerer,
+            pricing_point=venue_currently_used_for_pricing,
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=other_venue,
+            bankAccount=bank_account_link.bankAccount,
+            timespan=[now - datetime.timedelta(days=12), now - datetime.timedelta(days=7)],
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=other_venue,
+            bankAccount=bank_account_link.bankAccount,
+            timespan=[now - datetime.timedelta(days=7), None],
         )
 
         venue_id = venue.id
@@ -199,7 +219,10 @@ class Returns200Test:
                 "id": bank_account_link.bankAccount.id,
                 "isActive": bank_account_link.bankAccount.isActive,
                 "label": bank_account_link.bankAccount.label,
-                "linkedVenues": [{"commonName": venue.common_name, "id": venue.id}],
+                "linkedVenues": [
+                    {"commonName": venue.common_name, "id": venue.id},
+                    {"commonName": other_venue.publicName, "id": other_venue.id},
+                ],
                 "obfuscatedIban": f"""XXXX XXXX XXXX {bank_account_link.bankAccount.iban[-4:]}""",
                 "status": bank_account_link.bankAccount.status.value,
             },
@@ -225,13 +248,15 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
+        # select venue, offerer, venue_contact, educational_domain_venue, educational_domain,
+        # collective_dms_application, offerer_address, address
+        num_queries += 1
+        num_queries += 1  # select venue_bank_account_link, bank_account, venue (selectinload)
+        num_queries += 1  # select venue_pricing_point_link, venue (selectinload)
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select opening_hours
-        num_queries += 1  # select venue_bank_account_link
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):

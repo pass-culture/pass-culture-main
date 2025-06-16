@@ -132,8 +132,14 @@ class BankAccountResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, bank_account: finance_models.BankAccount) -> "BankAccountResponseModel":
+        now = datetime.datetime.utcnow()
         bank_account.linkedVenues = pydantic_v1.parse_obj_as(
-            list[LinkedVenues], [link.venue for link in bank_account.venueLinks]
+            list[LinkedVenues],
+            [
+                link.venue
+                for link in bank_account.venueLinks
+                if link.timespan.lower <= now and (not link.timespan.upper or now <= link.timespan.upper)
+            ],
         )
         bank_account.obfuscatedIban = cls._obfuscate_iban(bank_account.iban)
 

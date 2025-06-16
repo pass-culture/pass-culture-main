@@ -171,9 +171,7 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         venue: offerers_models.Venue = self._obj
         if key == "bankAccount":
-            if venue.current_bank_account_link:
-                return venue.current_bank_account_link.bankAccount
-            return None
+            return venue.current_bank_account
         if key == "collectiveLegalStatus":
             return venue.venueEducationalStatus
         if key == "dmsToken":
