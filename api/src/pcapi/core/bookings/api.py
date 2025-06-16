@@ -25,7 +25,6 @@ from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
 from pcapi.core.bookings.repository import generate_booking_token
-from pcapi.core.categories.subcategories import HIDEABLE_QRCODE_SUBCATEGORIES
 from pcapi.core.categories.subcategories import NUMBER_SECONDS_HIDE_QR_CODE
 from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.educational import models as educational_models
@@ -1205,7 +1204,7 @@ def cancel_ems_external_bookings() -> None:
 
 def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_models.Stock) -> bool:
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        if offer.subcategoryId in HIDEABLE_QRCODE_SUBCATEGORIES and stock.beginningDatetime:
+        if stock.beginningDatetime:
             delta = stock.beginningDatetime - datetime.datetime.utcnow()
             return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
     return True
