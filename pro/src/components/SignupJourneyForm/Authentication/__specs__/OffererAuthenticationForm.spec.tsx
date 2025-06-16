@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Form, Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from 'apiClient/adresse/apiAdresse'
@@ -21,7 +21,6 @@ import {
   OffererAuthenticationForm,
   OffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
-import { validationSchema } from '../validationSchema'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -90,20 +89,25 @@ const renderOffererAuthenticationForm = (
   },
   options: RenderWithProvidersOptions = {}
 ) => {
-  return renderWithProviders(
-    <SignupJourneyContext.Provider value={contextValue}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-      >
-        <Form>
+  const Wrapper = () => {
+    const methods = useForm({
+      defaultValues: initialValues,
+    })
+    return (
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
           <OffererAuthenticationForm />
           <Button type="submit" isLoading={false}>
             Submit
           </Button>
-        </Form>
-      </Formik>
+        </form>
+      </FormProvider>
+    )
+  }
+
+  renderWithProviders(
+    <SignupJourneyContext.Provider value={contextValue}>
+      <Wrapper />
     </SignupJourneyContext.Provider>,
     {
       user: sharedCurrentUserFactory(),
