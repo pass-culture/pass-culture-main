@@ -6,3 +6,11 @@
 
   margin-bottom: rem.torem(24px);
 }
+
+.open-to-public-toggle {
+  margin-top: rem.torem(16px);
+
+  &-address-manual-open {
+    margin-top: rem.torem(24px);
+  }
+}

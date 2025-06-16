@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useField, useFormikContext } from 'formik'
 
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -75,6 +76,11 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         {manuallySetAddress.value && <AddressManual />}
         {isOpenToPublicEnabled && (
           <OpenToPublicToggle
+            className={cn(styles['open-to-public-toggle'], {
+              [styles['open-to-public-toggle-address-manual-open']]:
+                manuallySetAddress.value,
+            })}
+            isOpenToPublic={formik.values.isOpenToPublic}
             onChange={async (e) => {
               await formik.setFieldValue('isOpenToPublic', e.target.value)
             }}
