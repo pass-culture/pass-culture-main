@@ -10,6 +10,7 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
   address?: AddressResponseIsLinkedToVenueModel | null;
   bookingAllowedDatetime?: string | null;
+  bookingsCount?: number | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   isActive: boolean;

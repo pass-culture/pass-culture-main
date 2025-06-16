@@ -294,7 +294,9 @@ class Returns200Test:
             bookingAllowedDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
         event_stock = offers_factories.EventStockFactory(
-            offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
+            offer=event_offer,
+            beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19),
+            dnBookedQuantity=50,
         )
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
@@ -317,9 +319,9 @@ class Returns200Test:
                     {
                         "id": event_stock.id,
                         "hasBookingLimitDatetimePassed": True,
-                        "remainingQuantity": 1000,
+                        "remainingQuantity": 950,
                         "beginningDatetime": "2022-09-21T13:19:00Z",
-                        "bookingQuantity": 0,
+                        "bookingQuantity": 50,
                     }
                 ],
                 "thumbUrl": None,
@@ -352,6 +354,7 @@ class Returns200Test:
                 },
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": "2022-11-21T13:19:00Z",
+                "bookingsCount": 50,
             }
         ]
 
@@ -415,6 +418,7 @@ class Returns200Test:
                 "address": None,
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
+                "bookingsCount": 0,
             }
         ]
 
@@ -480,6 +484,7 @@ class Returns200Test:
                 },
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
+                "bookingsCount": 0,
             }
         ]
 
@@ -566,6 +571,7 @@ class Returns200Test:
                 },
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
+                "bookingsCount": 0,
             },
             {
                 "hasBookingLimitDatetimesPassed": False,
@@ -609,6 +615,7 @@ class Returns200Test:
                 },
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
+                "bookingsCount": 0,
             },
         ]
 
@@ -677,6 +684,7 @@ class Returns200Test:
                 },
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
+                "bookingsCount": 0,
             }
         ]
 
@@ -747,6 +755,7 @@ class Returns200Test:
                 },
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
+                "bookingsCount": 0,
             }
         ]
 
