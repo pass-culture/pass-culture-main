@@ -562,7 +562,7 @@ class GetBookingTicketTest:
         beginningDatetime = datetime.utcnow() + timedelta(days=2, seconds=200)
         booking = booking_factories.BookingFactory(
             user=user,
-            stock__offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id,
+            stock__offer__subcategoryId=subcategories.CONFERENCE.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
             stock__idAtProviders="11#11#CDS",
             stock__lastProvider=provider,
