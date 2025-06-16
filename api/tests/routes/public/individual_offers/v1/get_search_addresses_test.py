@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_adresse import AddressInfo
+from pcapi.connectors.api_adresse import InvalidFormatException
 from pcapi.connectors.api_adresse import NoResultException
 from pcapi.core.geography import factories as geography_factories
 
@@ -220,16 +221,23 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             ]
         }
 
+    @pytest.mark.parametrize(
+        "exception, error_message",
+        [
+            (NoResultException, "No municipality found"),
+            (InvalidFormatException, "Invalid format"),
+        ],
+    )
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_raise_400_because_municipality_not_found_on_BAN_API(
-        self, get_address_mock, get_municipality_centroid_mock, client: TestClient
+        self, get_address_mock, get_municipality_centroid_mock, client: TestClient, exception, error_message
     ):
         plain_api_key, _ = self.setup_provider()
         self.set_base_resources()
         # mock no result from BAN API
-        get_address_mock.side_effect = NoResultException()
-        get_municipality_centroid_mock.side_effect = NoResultException()
+        get_address_mock.side_effect = exception()
+        get_municipality_centroid_mock.side_effect = exception()
 
         result = client.with_explicit_token(plain_api_key).get(
             self.endpoint_url,
@@ -249,5 +257,5 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
 
         assert result.status_code == 400
         assert result.json == {
-            "__root__": ["No municipality found for `city=Parisse (comme disent les Anglais)` and `postalCode=75017`"]
+            "__root__": [f"{error_message} for `city=Parisse (comme disent les Anglais)` and `postalCode=75017`"]
         }
