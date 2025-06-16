@@ -143,7 +143,6 @@ export const OffersSearch = ({
     Object.entries(ADAGE_FILTERS_DEFAULT_VALUES).map(([key, value]) => {
       form.setValue(key as keyof SearchFormValues, value)
     })
-    onSubmit()
   }
 
   async function logFiltersOnSearch(nbHits: number, queryId?: string) {
@@ -198,6 +197,7 @@ export const OffersSearch = ({
             shouldDisplayMarseilleStudentOptions={
               isMarseilleEnabled && isUserInMarseilleProgram
             }
+            onSubmit={onSubmit}
           />
         </div>
 
@@ -206,6 +206,7 @@ export const OffersSearch = ({
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={setlocalisationFilterState}
           resetForm={resetForm}
+          onSubmit={onSubmit}
         />
       </FormProvider>
       <div className="search-results">

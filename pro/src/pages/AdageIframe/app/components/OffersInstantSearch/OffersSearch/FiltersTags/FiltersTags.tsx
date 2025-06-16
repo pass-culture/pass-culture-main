@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
 import { OfferAddressType } from 'apiClient/adage'
 import { CollectiveLocationType } from 'apiClient/v1'
@@ -22,6 +22,7 @@ interface FiltersTagsProps {
   localisationFilterState: LocalisationFilterStates
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
   resetForm: () => void
+  onSubmit: () => void
 }
 
 const createTag = (label: string, onClose: () => void) => {
@@ -51,9 +52,9 @@ export const FiltersTags = ({
   localisationFilterState,
   setLocalisationFilterState,
   resetForm,
+  onSubmit,
 }: FiltersTagsProps) => {
-  const { values, setFieldValue, handleSubmit } =
-    useFormikContext<SearchFormValues>()
+  const form = useFormContext<SearchFormValues>()
 
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
@@ -61,26 +62,26 @@ export const FiltersTags = ({
 
   const getOfferAdressTypeTag = () => {
     if (
-      values.eventAddressType === OfferAddressType.OTHER &&
-      values.locationType === CollectiveLocationType.TO_BE_DEFINED
+      form.watch('eventAddressType') === OfferAddressType.OTHER &&
+      form.watch('locationType') === CollectiveLocationType.TO_BE_DEFINED
     ) {
       return <></>
     }
 
     const label =
-      values.eventAddressType === OfferAddressType.OFFERER_VENUE ||
-      values.locationType === CollectiveLocationType.ADDRESS
+      form.watch('eventAddressType') === OfferAddressType.OFFERER_VENUE ||
+      form.watch('locationType') === CollectiveLocationType.ADDRESS
         ? 'Sortie chez un partenaire culturel'
         : 'Intervention d’un partenaire culturel dans mon établissement'
 
     return createTag(label, () => {
       if (isCollectiveOaActive) {
-        void setFieldValue('locationType', CollectiveLocationType.TO_BE_DEFINED)
+        form.setValue('locationType', CollectiveLocationType.TO_BE_DEFINED)
       } else {
-        void setFieldValue('eventAddressType', OfferAddressType.OTHER)
+        form.setValue('eventAddressType', OfferAddressType.OTHER)
       }
       setLocalisationFilterState(LocalisationFilterStates.NONE)
-      handleSubmit()
+      onSubmit()
     })
   }
   const getGeoLocalisationTag = () => {
@@ -88,25 +89,25 @@ export const FiltersTags = ({
       return null
     }
     return createTag(
-      `Localisation des partenaires : < à ${values.geolocRadius} km`,
+      `Localisation des partenaires : < à ${form.watch('geolocRadius')} km`,
       () => {
-        void setFieldValue('geolocRadius', 50)
+        form.setValue('geolocRadius', 50)
         setLocalisationFilterState(LocalisationFilterStates.NONE)
-        handleSubmit()
+        onSubmit()
       }
     )
   }
 
   const getVenueTag = () => {
-    if (!values.venue) {
+    if (!form.watch('venue')) {
       return null
     }
     const venueDisplayName = `Lieu :  ${
-      values.venue.publicName || values.venue.name
+      form.watch('venue')?.publicName || form.watch('venue')?.name
     }`
-    return createTag(venueDisplayName, async () => {
-      await setFieldValue('venue', null)
-      handleSubmit()
+    return createTag(venueDisplayName, () => {
+      form.setValue('venue', null)
+      onSubmit()
     })
   }
 
@@ -115,71 +116,72 @@ export const FiltersTags = ({
       {getVenueTag()}
       {getOfferAdressTypeTag()}
       {getGeoLocalisationTag()}
-      {values.academies.map((academy) =>
-        createTag(academy, async () => {
-          if (values.academies.length === 1) {
+      {form.watch('academies').map((academy) =>
+        createTag(academy, () => {
+          if (form.watch('academies').length === 1) {
             setLocalisationFilterState(LocalisationFilterStates.NONE)
           }
-          await setFieldValue(
+          form.setValue(
             'academies',
-            values.academies.filter((x) => x !== academy)
+            form.watch('academies').filter((x) => x !== academy)
           )
-          handleSubmit()
+          onSubmit()
         })
       )}
-      {values.departments.map((department) =>
+      {form.watch('departments').map((department) =>
         createTag(
           departmentOptions.find((dpt) => dpt.value === department)?.label ||
             '',
-          async () => {
-            if (values.departments.length === 1) {
+          () => {
+            if (form.watch('departments').length === 1) {
               setLocalisationFilterState(LocalisationFilterStates.NONE)
             }
-            await setFieldValue(
+            form.setValue(
               'departments',
-              values.departments.filter((x) => x !== department)
+              form.watch('departments').filter((x) => x !== department)
             )
-            handleSubmit()
+            onSubmit()
           }
         )
       )}
-      {values.domains.map((domain) =>
+      {form.watch('domains').map((domain) =>
         createTag(
           domainsOptions.find((dmn) => dmn.value === Number(domain))?.label ||
             '',
-          async () => {
-            await setFieldValue(
+          () => {
+            form.setValue(
               'domains',
-              values.domains.filter((x) => x !== domain)
+              form.watch('domains').filter((x) => x !== domain)
             )
-            handleSubmit()
+            onSubmit()
           }
         )
       )}
-      {values.students.map((student) =>
-        createTag(student, async () => {
-          await setFieldValue(
+      {form.watch('students').map((student) =>
+        createTag(student, () => {
+          form.setValue(
             'students',
-            values.students.filter((x) => x !== student)
+            form.watch('students').filter((x) => x !== student)
           )
-          handleSubmit()
+          onSubmit()
         })
       )}
 
-      {values.formats.map((format) =>
-        createTag(format, async () => {
-          await setFieldValue(
+      {form.watch('formats').map((format) =>
+        createTag(format, () => {
+          form.setValue(
             'formats',
-            values.formats.filter((x) => x !== format)
+            form.watch('formats').filter((x) => x !== format)
           )
-          handleSubmit()
+          onSubmit()
         })
       )}
-      {!areFiltersEmpty(values, isCollectiveOaActive) && (
+      {!areFiltersEmpty(form.watch(), isCollectiveOaActive) && (
         <Button
           onClick={resetForm}
           icon={fullRefreshIcon}
           variant={ButtonVariant.TERNARY}
+          type="submit"
         >
           Réinitialiser les filtres
         </Button>

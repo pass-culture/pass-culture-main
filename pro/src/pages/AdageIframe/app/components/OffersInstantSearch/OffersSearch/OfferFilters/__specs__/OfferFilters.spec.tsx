@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   CollectiveLocationType,
@@ -15,6 +15,7 @@ import {
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
+import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { LocalisationFilterStates } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
@@ -32,10 +33,14 @@ const renderOfferFilters = (
   localisationFilterState = LocalisationFilterStates.NONE,
   adageUser = defaultAdageUser,
   options?: RenderWithProvidersOptions
-) =>
-  renderWithProviders(
-    <AdageUserContextProvider adageUser={adageUser}>
-      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+) => {
+  const OfferFiltersWrapper = () => {
+    const form = useForm({
+      defaultValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, ...initialValues },
+    })
+
+    return (
+      <FormProvider {...form}>
         <OfferFilters
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={mockSetLocalisationFilterState}
@@ -45,11 +50,19 @@ const renderOfferFilters = (
             { value: 3, label: 'Arts' },
           ]}
           shouldDisplayMarseilleStudentOptions={true}
+          onSubmit={handleSubmit}
         />
-      </Formik>
+      </FormProvider>
+    )
+  }
+
+  renderWithProviders(
+    <AdageUserContextProvider adageUser={adageUser}>
+      <OfferFiltersWrapper />
     </AdageUserContextProvider>,
     options
   )
+}
 
 const initialValues = {
   query: '',
