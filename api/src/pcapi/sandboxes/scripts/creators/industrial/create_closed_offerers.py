@@ -76,6 +76,17 @@ def _create_closed_offerer(
             firstName="Acteur",
             lastName="Structure-Fermée",
             email=f"pro.{email}",
+            lastConnectionDate=now - datetime.timedelta(days=1),
+        ),
+        offerer=offerer,
+    )
+
+    offerers_factories.UserOffererFactory.create(
+        user=users_factories.NonAttachedProFactory.create(
+            firstName="Inactif",
+            lastName="Structure-Fermée",
+            email=f"inactif.{email}",
+            lastConnectionDate=now - datetime.timedelta(days=1200),
         ),
         offerer=offerer,
     )

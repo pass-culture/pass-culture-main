@@ -4657,7 +4657,8 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        assert "Anonymous" in user.firstName
+        assert user.firstName is None
+        assert user.lastName is None
         assert user.roles == [users_models.UserRole.ANONYMIZED]
         history = db.session.query(history_models.ActionHistory).one_or_none()
         assert history

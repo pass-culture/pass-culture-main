@@ -115,6 +115,7 @@ class TransactionalEmail(Enum):
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = models.TemplatePro(id_prod=37, id_not_prod=36)
     PRO_EMAIL_CHANGE_CONFIRMATION = models.TemplatePro(id_prod=14, id_not_prod=14, use_priority_queue=True)
     PRO_EMAIL_CHANGE_REQUEST = models.TemplatePro(id_prod=15, id_not_prod=15, use_priority_queue=True)
+    PRO_PRE_ANONYMIZATION = models.TemplatePro(id_prod=264, id_not_prod=68)
     FIRST_VENUE_APPROVED_OFFER_TO_PRO = models.TemplatePro(id_prod=4, id_not_prod=4)
     FIRST_VENUE_BOOKING_TO_PRO = models.TemplatePro(id_prod=20, id_not_prod=20)
     FRAUDULENT_BOOKING_SUSPICION = models.TemplatePro(id_prod=237, id_not_prod=64)
