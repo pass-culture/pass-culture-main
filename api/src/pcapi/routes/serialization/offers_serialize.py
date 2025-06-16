@@ -246,6 +246,8 @@ class ListOffersOfferResponseModel(BaseModel):
     isShowcase: bool | None
     address: AddressResponseIsLinkedToVenueModel | None
     isDigital: bool
+    publicationDatetime: datetime.datetime | None
+    bookingAllowedDatetime: datetime.datetime | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
@@ -490,7 +492,9 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingsCount: int | None
     bookingEmail: str | None
     dateCreated: datetime.datetime
-    publicationDate: datetime.datetime | None
+    publicationDate: datetime.datetime | None  # TODO: (tcoudray-pass, 16/06/25) Remove in favor of publicationDatetime
+    publicationDatetime: datetime.datetime | None
+    bookingAllowedDatetime: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
     extraData: Any

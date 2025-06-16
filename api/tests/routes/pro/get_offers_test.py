@@ -287,7 +287,12 @@ class Returns200Test:
             address__street="8 Boulevard de Bercy",
             address__banId="75112_0877_00008",
         )
-        event_offer = offers_factories.EventOfferFactory(venue=venue, offererAddress=offerer_address1)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            offererAddress=offerer_address1,
+            publicationDatetime=datetime.datetime(2022, 10, 21, 13, 19),
+            bookingAllowedDatetime=datetime.datetime(2022, 11, 21, 13, 19),
+        )
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
         )
@@ -345,6 +350,8 @@ class Returns200Test:
                     "postalCode": "75002",
                     "street": "8 Boulevard de Bercy",
                 },
+                "publicationDatetime": "2022-10-21T13:19:00Z",
+                "bookingAllowedDatetime": "2022-11-21T13:19:00Z",
             }
         ]
 
@@ -406,6 +413,8 @@ class Returns200Test:
                 "status": "DRAFT",
                 "isShowcase": False,
                 "address": None,
+                "publicationDatetime": None,
+                "bookingAllowedDatetime": None,
             }
         ]
 
@@ -469,6 +478,8 @@ class Returns200Test:
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
+                "publicationDatetime": None,
+                "bookingAllowedDatetime": None,
             }
         ]
 
@@ -553,6 +564,8 @@ class Returns200Test:
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                 },
+                "publicationDatetime": None,
+                "bookingAllowedDatetime": None,
             },
             {
                 "hasBookingLimitDatetimesPassed": False,
@@ -594,6 +607,8 @@ class Returns200Test:
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                 },
+                "publicationDatetime": None,
+                "bookingAllowedDatetime": None,
             },
         ]
 
@@ -660,6 +675,8 @@ class Returns200Test:
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                 },
+                "publicationDatetime": None,
+                "bookingAllowedDatetime": None,
             }
         ]
 
@@ -728,6 +745,8 @@ class Returns200Test:
                     "latitude": 4.34765,
                     "longitude": 1.34765,
                 },
+                "publicationDatetime": None,
+                "bookingAllowedDatetime": None,
             }
         ]
 
