@@ -8,7 +8,7 @@ import * as useNotification from 'commons/hooks/useNotification'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { RequestFormDialog, RequestFormDialogProps } from '../RequestFormDialog'
+import { RequestFormDialog, RequestFormDialogProps } from './RequestFormDialog'
 
 const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   renderWithProviders(

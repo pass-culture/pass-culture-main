@@ -1,14 +1,18 @@
-import { useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as Dialog from '@radix-ui/react-dialog'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'
 import { isDateValid } from 'commons/utils/date'
-import { Dialog } from 'components/Dialog/Dialog'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
+import fullMailIcon from 'icons/full-mail.svg'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import { DefaultFormContact } from './DefaultFormContact'
@@ -45,14 +49,18 @@ export const RequestFormDialog = ({
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
 
-  const initialValues = {
-    teacherEmail: userEmail ?? '',
-    description: '',
-    offerDate: '',
-  }
-  const onSubmit = async (formValues: RequestFormValues) => {
-    const payload = createCollectiveRequestPayload(formValues)
+  const methods = useForm<RequestFormValues>({
+    defaultValues: {
+      teacherEmail: userEmail ?? '',
+      description: '',
+      offerDate: '',
+    },
+    resolver: yupResolver(validationSchema()),
+  })
+
+  const onSubmit = async (values: RequestFormValues) => {
     try {
+      const payload = createCollectiveRequestPayload(values)
       await apiAdage.createCollectiveRequest(offerId, payload)
       notify.success('Votre demande a bien été envoyée')
       closeModal()
@@ -61,32 +69,26 @@ export const RequestFormDialog = ({
         'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
       )
       closeModal()
-      return
     }
   }
 
   const closeRequestFormDialog = async () => {
     if (!isPreview) {
+      const v = methods.getValues()
       await apiAdage.logRequestFormPopinDismiss({
         iframeFrom: location.pathname,
         collectiveOfferTemplateId: offerId,
-        comment: formik.values.description,
-        phoneNumber: formik.values.teacherPhone,
-        requestedDate: isDateValid(formik.values.offerDate)
-          ? new Date(formik.values.offerDate).toISOString()
+        comment: v.description,
+        phoneNumber: v.teacherPhone,
+        requestedDate: isDateValid(v.offerDate)
+          ? new Date(v.offerDate).toISOString()
           : undefined,
-        totalStudents: formik.values.nbStudents,
-        totalTeachers: formik.values.nbTeachers,
+        totalStudents: v.nbStudents,
+        totalTeachers: v.nbTeachers,
       })
     }
     closeModal()
   }
-
-  const formik = useFormik<RequestFormValues>({
-    onSubmit: onSubmit,
-    initialValues: initialValues,
-    validationSchema: validationSchema,
-  })
 
   const logContactUrl = () => {
     apiAdage.logContactUrlClick({
@@ -95,61 +97,39 @@ export const RequestFormDialog = ({
     })
   }
 
-  const getDescriptionElement = () => {
-    if (contactEmail && !contactPhone && !contactUrl && !contactForm) {
-      return renderContactElement('par mail', contactEmail, 'mail')
+  // Helper to render a single contact method
+  const renderContactInfo = (
+    label: string,
+    value?: string | null,
+    isMail?: boolean
+  ) => {
+    if (!value) {
+      return null
     }
-    if (!contactEmail && contactPhone && !contactUrl && !contactForm) {
-      return renderContactElement('par téléphone', contactPhone)
-    }
-    if (!contactEmail && !contactPhone && contactUrl && !contactForm) {
-      return renderCustomFormElement()
-    }
-    if (!contactEmail && !contactPhone && !contactUrl && contactForm) {
-      return renderDefaultFormElement()
-    }
-    return renderMultiContactElement(
-      {
-        contactEmail,
-        contactPhone,
-      },
-      contactForm === 'form',
-      contactUrl.length > 0
+    return (
+      <div>
+        <span className={styles['form-description']}>
+          Il vous propose de le faire {label} :
+        </span>
+        {isMail ? (
+          <a
+            href={`mailto:${value}`}
+            className={styles['form-description-text-contact']}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {value}
+          </a>
+        ) : (
+          <span className={styles['form-description-text-contact']}>
+            {value}
+          </span>
+        )}
+      </div>
     )
   }
 
-  const renderContactElement = (
-    description: string,
-    value: string | null | undefined,
-    type?: string
-  ) => (
-    <div>
-      <span className={styles['form-description']}>
-        Il vous propose de le faire {description} :
-      </span>
-      {type === 'mail' ? (
-        <a
-          href={`mailto:${value}`}
-          className={styles['form-description-text-contact']}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {value}
-        </a>
-      ) : (
-        <span className={styles['form-description-text-contact']}>{value}</span>
-      )}
-    </div>
-  )
-
-  const renderMultiContactElement = (
-    {
-      contactEmail,
-      contactPhone,
-    }: { contactEmail: string; contactPhone: string },
-    isDefaultForm: boolean,
-    isCustomForm: boolean
-  ) => (
+  const renderMultiContact = () => (
     <div className={styles['form-description']}>
       <span>Il vous propose de le faire :</span>
       <ul className={styles['form-description-list']}>
@@ -174,7 +154,7 @@ export const RequestFormDialog = ({
             </span>
           </li>
         )}
-        {isCustomForm && (
+        {contactUrl && contactForm !== 'form' && (
           <li>
             <div className={styles['form-description-link']}>
               <i>via</i> son formulaire :
@@ -191,8 +171,7 @@ export const RequestFormDialog = ({
             </div>
           </li>
         )}
-
-        {isDefaultForm &&
+        {contactForm === 'form' &&
           (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
             <li>
               en renseignant{' '}
@@ -202,7 +181,8 @@ export const RequestFormDialog = ({
             </li>
           )}
       </ul>
-      {isDefaultForm &&
+
+      {contactForm === 'form' &&
         (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
           <>
             <hr className={styles['separator']} />
@@ -214,74 +194,100 @@ export const RequestFormDialog = ({
                 fois l’offre publiée.
               </Callout>
             )}
-            <DefaultFormContact
-              closeRequestFormDialog={closeRequestFormDialog}
-              formik={formik}
-              isPreview={isPreview}
-            />
           </>
         )}
     </div>
   )
 
-  const renderCustomFormElement = () => (
-    <div>
-      <div className={styles['form-description-link-site']}>
-        Il vous propose de le faire <i>via</i> son formulaire :
-      </div>
-      <ButtonLink
-        onClick={logContactUrl}
-        variant={ButtonVariant.TERNARYBRAND}
-        className={styles['form-description-link-text']}
-        to={contactUrl}
-        isExternal
-        opensInNewTab
-      >
-        Aller sur le site
-      </ButtonLink>
-    </div>
-  )
-
-  const renderDefaultFormElement = () => (
-    <div>
-      {userRole === AdageFrontRoles.REDACTOR || isPreview ? (
-        <>
-          <span className={styles['form-description']}>
-            Vous pouvez le contacter en renseignant les informations ci-dessous.
-          </span>
-          <MandatoryInfo className={styles['form-mandatory']} />
-          {isPreview && (
-            <Callout className={styles['contact-callout']}>
-              Vous ne pouvez pas envoyer de demande de contact car ceci est un
-              aperçu de test du formulaire que verront les enseignants une fois
-              l’offre publiée.
-            </Callout>
-          )}
-          <DefaultFormContact
-            closeRequestFormDialog={closeRequestFormDialog}
-            formik={formik}
-            isPreview={isPreview}
-          />
-        </>
-      ) : (
+  // Determine which description element to render
+  const getDescriptionElement = () => {
+    if (contactEmail && !contactPhone && !contactUrl && !contactForm) {
+      return renderContactInfo('par mail', contactEmail, true)
+    }
+    if (!contactEmail && contactPhone && !contactUrl && !contactForm) {
+      return renderContactInfo('par téléphone', contactPhone)
+    }
+    if (!contactEmail && !contactPhone && contactUrl && !contactForm) {
+      return (
+        <div>
+          <div className={styles['form-description-link-site']}>
+            Il vous propose de le faire <i>via</i> son formulaire :
+          </div>
+          <ButtonLink
+            onClick={logContactUrl}
+            variant={ButtonVariant.TERNARYBRAND}
+            className={styles['form-description-link-text']}
+            to={contactUrl}
+            isExternal
+            opensInNewTab
+          >
+            Aller sur le site
+          </ButtonLink>
+        </div>
+      )
+    }
+    if (!contactEmail && !contactPhone && !contactUrl && contactForm) {
+      if (userRole === AdageFrontRoles.REDACTOR || isPreview) {
+        return (
+          <>
+            <span className={styles['form-description']}>
+              Vous pouvez le contacter en renseignant les informations
+              ci-dessous.
+            </span>
+            <MandatoryInfo className={styles['form-mandatory']} />
+            {isPreview && (
+              <Callout className={styles['contact-callout']}>
+                Vous ne pouvez pas envoyer de demande de contact car ceci est un
+                aperçu de test du formulaire que verront les enseignants une
+                fois l’offre publiée.
+              </Callout>
+            )}
+          </>
+        )
+      }
+      return (
         <Callout className={styles['contact-readonly']}>
           Vous ne pouvez voir les informations de contact du partenaire car vous
           n’avez pas les droits ADAGE adaptés
         </Callout>
-      )}
-    </div>
-  )
+      )
+    }
+
+    // Default case - multiple contacts
+    return renderMultiContact()
+  }
 
   return (
-    <Dialog
-      extraClassNames={styles['dialog-container']}
-      onCancel={closeRequestFormDialog}
+    <DialogBuilder
+      variant="drawer"
       title="Vous souhaitez contacter ce partenaire ?"
-      hideIcon
       open={isDialogOpen}
       refToFocusOnClose={dialogTriggerRef}
     >
       {getDescriptionElement()}
-    </Dialog>
+
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <DefaultFormContact />
+
+          <DialogBuilder.Footer>
+            <div className={styles['buttons-container']}>
+              <Dialog.Close asChild>
+                <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              </Dialog.Close>
+
+              <Button
+                type="submit"
+                iconPosition={IconPositionEnum.LEFT}
+                icon={fullMailIcon}
+                disabled={isPreview}
+              >
+                Envoyer ma demande
+              </Button>
+            </div>
+          </DialogBuilder.Footer>
+        </form>
+      </FormProvider>
+    </DialogBuilder>
   )
 }
