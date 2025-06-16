@@ -83,6 +83,27 @@ def _assert_user_action_history_as_expected(
     assert action.comment == comment
 
 
+def _assert_user_is_anonymized(user):
+    assert user.email == f"anonymous_{user.id}@anonymized.passculture"
+    assert user.password == b"Anonymized"
+    assert user.firstName is None
+    assert user.lastName is None
+    assert user.married_name is None
+    assert user.postalCode is None
+    assert user.phoneNumber is None
+    assert user.address is None
+    assert user.city is None
+    assert user.externalIds == []
+    assert user.idPieceNumber is None
+    assert user.login_device_history == []
+    assert user.email_history == []
+    assert user.trusted_devices == []
+    assert user.roles == [users_models.UserRole.ANONYMIZED]
+    assert len(user.action_history) == 1
+    assert user.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
+    assert user.action_history[0].authorUserId is None
+
+
 @pytest.mark.usefixtures("db_session")
 class CancelBeneficiaryBookingsOnSuspendAccountTest:
     @pytest.mark.parametrize(
@@ -2204,8 +2225,8 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
         assert user_to_anonymize.password == b"Anonymized"
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
-        assert user_to_anonymize.lastName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
+        assert user_to_anonymize.lastName is None
         assert user_to_anonymize.married_name is None
         assert user_to_anonymize.postalCode is None
         assert user_to_anonymize.phoneNumber is None
@@ -2240,7 +2261,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert len(sendinblue_testing.sendinblue_requests) == 1
         assert len(batch_testing.requests) == 1
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
 
     def test_anonymize_non_pro_non_beneficiary_user_keep_history_on_offerer(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
@@ -2258,7 +2279,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
 
         db.session.refresh(user_to_anonymize)
 
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
         assert (
             db.session.query(history_models.ActionHistory)
             .filter(history_models.ActionHistory.userId == user_to_anonymize.id)
@@ -2276,7 +2297,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         users_api.anonymize_non_pro_non_beneficiary_users()
         db.session.refresh(user_to_anonymize)
 
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
         assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
         assert sendinblue_testing.sendinblue_requests[0]["attributes"]["FIRSTNAME"] == ""
 
@@ -2358,96 +2379,269 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.firstName != "user_to_anonymize"
 
 
-class AnonymizeProUserTest:
-    @mock.patch("pcapi.core.users.api.delete_beamer_user")
-    def test_anonymize_pro_user(self, delete_beamer_user_mock):
-        user_offerer_to_delete = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
+class NotifyProUsersBeforeAnonymizationTest:
+    # users and joined data
+    expected_num_queries = 1
+
+    last_connection_date = datetime.datetime.utcnow() - relativedelta(years=3, days=-30)
+
+    @pytest.mark.parametrize(
+        "offerer_validation_status,user_offerer_validation_status",
+        [
+            (ValidationStatus.NEW, ValidationStatus.REJECTED),
+            (ValidationStatus.PENDING, ValidationStatus.REJECTED),
+            (ValidationStatus.VALIDATED, ValidationStatus.REJECTED),
+            (ValidationStatus.VALIDATED, ValidationStatus.DELETED),
+            (ValidationStatus.REJECTED, ValidationStatus.VALIDATED),
+            (ValidationStatus.REJECTED, ValidationStatus.REJECTED),
+            (ValidationStatus.CLOSED, ValidationStatus.VALIDATED),
+            (ValidationStatus.CLOSED, ValidationStatus.DELETED),
+        ],
+    )
+    def test_notify(self, offerer_validation_status, user_offerer_validation_status):
+        user_offerer = offerers_factories.NonAttachedUserOffererFactory(
+            user__email="test@example.com",
+            user__lastConnectionDate=self.last_connection_date,
+            offerer__validationStatus=offerer_validation_status,
+            validationStatus=user_offerer_validation_status,
         )
-        user_offerer_to_keep = offerers_factories.UserOffererFactory(
-            offerer=user_offerer_to_delete.offerer,
+        offerers_factories.NonAttachedUserOffererFactory(
+            offerer=user_offerer.offerer,
+            user__lastConnectionDate=self.last_connection_date - datetime.timedelta(days=1),
+            validationStatus=user_offerer_validation_status,
+        )
+        offerers_factories.NonAttachedUserOffererFactory(
+            offerer=user_offerer.offerer,
+            user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=2, months=8),
+            validationStatus=user_offerer_validation_status,
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            users_api.notify_pro_users_before_anonymization()
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "test@example.com"
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.PRO_PRE_ANONYMIZATION.value)
+
+    def test_notify_non_attached_pro_user(self):
+        user_to_notify = users_factories.NonAttachedProFactory(
+            lastConnectionDate=self.last_connection_date,
+        )
+        users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow())
+
+        with assert_num_queries(self.expected_num_queries):
+            users_api.notify_pro_users_before_anonymization()
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_to_notify.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.PRO_PRE_ANONYMIZATION.value)
+
+    def test_notify_never_connected_pro(self):
+        user_to_notify = users_factories.NonAttachedProFactory(dateCreated=self.last_connection_date)
+        users_factories.NonAttachedProFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            users_api.notify_pro_users_before_anonymization()
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_to_notify.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.PRO_PRE_ANONYMIZATION.value)
+
+    def test_do_not_notify(self):
+        users = []
+
+        for offerer_validation_status, user_offerer_validation_status in [
+            (ValidationStatus.NEW, ValidationStatus.VALIDATED),
+            (ValidationStatus.PENDING, ValidationStatus.VALIDATED),
+            (ValidationStatus.VALIDATED, ValidationStatus.NEW),
+            (ValidationStatus.VALIDATED, ValidationStatus.VALIDATED),
+        ]:
+            users.append(
+                offerers_factories.NonAttachedUserOffererFactory(
+                    user__lastConnectionDate=self.last_connection_date,
+                    offerer__validationStatus=offerer_validation_status,
+                    validationStatus=user_offerer_validation_status,
+                ).user
+            )
+
+        # Less than three years
+        users.extend(
+            [
+                users_factories.NonAttachedProFactory(
+                    lastConnectionDate=self.last_connection_date - datetime.timedelta(days=1)
+                ),
+                users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow()),
+            ]
+        )
+
+        # Also beneficiary or candidate to become beneficiary
+        users.append(
+            offerers_factories.DeletedUserOffererFactory(
+                user=users_factories.BeneficiaryGrant18Factory(
+                    roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.BENEFICIARY],
+                    lastConnectionDate=self.last_connection_date,
+                )
+            ).user
+        )
+        users.append(
+            offerers_factories.RejectedUserOffererFactory(
+                user=users_factories.UnderageBeneficiaryFactory(
+                    roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.UNDERAGE_BENEFICIARY],
+                    lastConnectionDate=self.last_connection_date,
+                )
+            ).user
+        )
+        users.append(
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=offerers_factories.RejectedUserOffererFactory(
+                    user__lastConnectionDate=self.last_connection_date,
+                ).user
+            ).user
+        )
+
+        # Attached to another active offerer
+        user_offerer = offerers_factories.DeletedUserOffererFactory(
+            user__lastConnectionDate=self.last_connection_date,
+        )
+        offerers_factories.NewUserOffererFactory(user=user_offerer.user)
+        users.append(user_offerer.user)
+
+        with assert_num_queries(self.expected_num_queries):
+            users_api.notify_pro_users_before_anonymization()
+
+        for user in users:
+            assert user.has_any_pro_role
+        assert len(mails_testing.outbox) == 0
+
+
+class AnonymizeProUserTest:
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=True)
+    @pytest.mark.parametrize(
+        "offerer_validation_status,user_offerer_validation_status",
+        [
+            (ValidationStatus.NEW, ValidationStatus.REJECTED),
+            (ValidationStatus.PENDING, ValidationStatus.REJECTED),
+            (ValidationStatus.VALIDATED, ValidationStatus.REJECTED),
+            (ValidationStatus.VALIDATED, ValidationStatus.DELETED),
+            (ValidationStatus.REJECTED, ValidationStatus.VALIDATED),
+            (ValidationStatus.REJECTED, ValidationStatus.REJECTED),
+            (ValidationStatus.CLOSED, ValidationStatus.VALIDATED),
+            (ValidationStatus.CLOSED, ValidationStatus.DELETED),
+        ],
+    )
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_anonymize_pro_user(
+        self, delete_beamer_user_mock, offerer_validation_status, user_offerer_validation_status
+    ):
+        user_offerer_to_anonymize = offerers_factories.NonAttachedUserOffererFactory(
+            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=366 * 3),
+            offerer__validationStatus=offerer_validation_status,
+            validationStatus=user_offerer_validation_status,
+        )
+        user_offerer_to_keep = offerers_factories.NonAttachedUserOffererFactory(
+            offerer=user_offerer_to_anonymize.offerer,
             user__lastConnectionDate=datetime.datetime.utcnow(),
         )
-        user_id = user_offerer_to_delete.user.id
+
         users_api.anonymize_pro_users()
 
-        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
-        assert db.session.query(users_models.User).filter_by(id=user_offerer_to_keep.user.id).count() == 1
-        delete_beamer_user_mock.assert_called_once_with(user_id)
+        _assert_user_is_anonymized(user_offerer_to_anonymize.user)
+        assert user_offerer_to_keep.user.has_non_attached_pro_role
+        delete_beamer_user_mock.assert_called_once_with(user_offerer_to_anonymize.user.id)
 
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=True)
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
     def test_keep_pro_users_with_activity_less_than_three_years(self, delete_beamer_user_mock):
-        users_factories.ProFactory(
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 - 1)),
-            roles=[users_models.UserRole.NON_ATTACHED_PRO],
+        users_factories.NonAttachedProFactory(
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-1)
         )
-        users_factories.ProFactory(
-            lastConnectionDate=datetime.datetime.utcnow(), roles=[users_models.UserRole.NON_ATTACHED_PRO]
-        )
+        users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow())
 
         users_api.anonymize_pro_users()
 
-        assert db.session.query(users_models.User).count() == 2
+        assert db.session.query(users_models.User).filter(users_models.User.has_non_attached_pro_role).count() == 2
         delete_beamer_user_mock.assert_not_called()
 
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=True)
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
-    def test_keep_last_user_in_offerer(self, delete_beamer_user_mock):
-        user_offerer_to_delete = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
+    def test_keep_pro_users_also_beneficiariy_or_candidate(self, delete_beamer_user_mock):
+        offerers_factories.DeletedUserOffererFactory(
+            user=users_factories.BeneficiaryGrant18Factory(
+                roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.BENEFICIARY],
+                lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+            )
         )
-        user_id = user_offerer_to_delete.user.id
+        offerers_factories.RejectedUserOffererFactory(
+            user=users_factories.UnderageBeneficiaryFactory(
+                roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.UNDERAGE_BENEFICIARY],
+                lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+            )
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=offerers_factories.RejectedUserOffererFactory(
+                user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+            ).user
+        )
+
         users_api.anonymize_pro_users()
 
-        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 1
+        assert db.session.query(users_models.User).filter(users_models.User.has_non_attached_pro_role).count() == 3
         delete_beamer_user_mock.assert_not_called()
 
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=True)
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_keep_when_attached_to_another_active_offerer(self, delete_beamer_user_mock):
+        user_offerer = offerers_factories.DeletedUserOffererFactory(
+            user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+        )
+        offerers_factories.NewUserOffererFactory(user=user_offerer.user)
+
+        users_api.anonymize_pro_users()
+
+        assert user_offerer.user.has_any_pro_role
+        delete_beamer_user_mock.assert_not_called()
+
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=True)
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
     def test_anonymize_non_attached_pro_user(self, delete_beamer_user_mock):
-        user_to_delete = users_factories.ProFactory(
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
-            roles=[users_models.UserRole.NON_ATTACHED_PRO],
+        user_to_anonymize = users_factories.NonAttachedProFactory(
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=366 * 3)
         )
-        user_to_keep1 = users_factories.ProFactory(
-            lastConnectionDate=datetime.datetime.utcnow(), roles=[users_models.UserRole.NON_ATTACHED_PRO]
-        )
+        user_to_keep1 = users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow())
         user_to_keep2 = users_factories.NonAttachedProFactory()
-        user_id = user_to_delete.id
+
         users_api.anonymize_pro_users()
 
-        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
-        assert db.session.query(users_models.User).filter_by(id=user_to_keep1.id).count() == 1
-        assert db.session.query(users_models.User).filter_by(id=user_to_keep2.id).count() == 1
-        delete_beamer_user_mock.assert_called_once_with(user_id)
+        _assert_user_is_anonymized(user_to_anonymize)
+        assert user_to_keep1.has_non_attached_pro_role
+        assert user_to_keep2.has_non_attached_pro_role
+        delete_beamer_user_mock.assert_called_once_with(user_to_anonymize.id)
 
-    @mock.patch("pcapi.core.users.api.delete_beamer_user")
-    def test_anonymize_invalid_attachement_pro_user(self, delete_beamer_user_mock):
-        user_offerer_to_delete = offerers_factories.UserOffererFactory(
-            validationStatus=ValidationStatus.PENDING,
-            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
-        )
-        user_offerer_to_keep = offerers_factories.UserOffererFactory(
-            validationStatus=ValidationStatus.PENDING,
-            user__lastConnectionDate=datetime.datetime.utcnow(),
-        )
-        user_id = user_offerer_to_delete.user.id
-        users_api.anonymize_pro_users()
-
-        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
-        assert db.session.query(users_models.User).filter_by(id=user_offerer_to_keep.userId).count() == 1
-        delete_beamer_user_mock.assert_called_once_with(user_id)
-
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=True)
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
     def test_anonymize_non_attached_never_connected_pro(self, delete_beamer_user_mock):
-        user_to_delete = users_factories.ProFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1))
+        user_to_anonymize = users_factories.NonAttachedProFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=366 * 3)
         )
-        user_to_keep = users_factories.ProFactory()
-        user_id = user_to_delete.id
+        user_to_keep = users_factories.NonAttachedProFactory()
+
         users_api.anonymize_pro_users()
 
-        assert db.session.query(users_models.User).filter_by(id=user_id).count() == 0
-        assert db.session.query(users_models.User).filter_by(id=user_to_keep.id).count() == 1
-        delete_beamer_user_mock.assert_called_once_with(user_id)
+        _assert_user_is_anonymized(user_to_anonymize)
+        assert user_to_keep.has_non_attached_pro_role
+        delete_beamer_user_mock.assert_called_once_with(user_to_anonymize.id)
+
+    @pytest.mark.features(WIP_ENABLE_PRO_ANONYMIZATION=False)
+    def test_feature_disabled(self):
+        user = offerers_factories.DeletedUserOffererFactory(
+            user__email="test@example.com",
+            user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, months=1),
+        ).user
+
+        users_api.anonymize_pro_users()
+
+        assert user.has_any_pro_role
+        assert user.email == "test@example.com"
 
 
 class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
@@ -2588,30 +2782,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
                 == 0
             )
 
-            assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
-            assert user_to_anonymize.password == b"Anonymized"
-            assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
-            assert user_to_anonymize.lastName == f"Anonymous_{user_to_anonymize.id}"
-            assert user_to_anonymize.married_name is None
-            assert user_to_anonymize.postalCode is None
-            assert user_to_anonymize.phoneNumber is None
+            _assert_user_is_anonymized(user_to_anonymize)
             assert user_to_anonymize.dateOfBirth.day == 1
             assert user_to_anonymize.dateOfBirth.month == 1
-            assert user_to_anonymize.address is None
-            assert user_to_anonymize.city is None
-            assert user_to_anonymize.externalIds == []
-            assert user_to_anonymize.idPieceNumber is None
-            assert user_to_anonymize.login_device_history == []
-            assert user_to_anonymize.user_email_history == []
             assert user_to_anonymize.irisFrance == iris
             assert user_to_anonymize.validatedBirthDate.day == 1
             assert user_to_anonymize.validatedBirthDate.month == 1
-            assert user_to_anonymize.roles == [users_models.UserRole.ANONYMIZED]
-            assert user_to_anonymize.login_device_history == []
-            assert user_to_anonymize.trusted_devices == []
-            assert len(user_to_anonymize.action_history) == 1
-            assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
-            assert user_to_anonymize.action_history[0].authorUserId is None
 
     def test_clean_chronicle_on_anonymize_beneficiary_user(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2646,7 +2822,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert len(sendinblue_testing.sendinblue_requests) == 1
         assert len(batch_testing.requests) == 1
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
 
     def test_anonymize_beneficiary_user_with_unprocessed_gdpr_extract(self) -> None:
         user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
@@ -2680,7 +2856,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
             users_api.anonymize_beneficiary_users()
             db.session.refresh(user_to_anonymize)
 
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
         assert db.session.query(users_models.GdprUserAnonymization).count() == 0
 
     def test_do_not_anonymize_user_tagged_when_he_is_less_than_21(self) -> None:
@@ -2750,7 +2926,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         users_api.anonymize_beneficiary_users()
         db.session.refresh(user_to_anonymize)
 
-        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.firstName is None
         assert db.session.query(users_models.GdprUserAnonymization).count() == 0
 
     @pytest.mark.parametrize(

@@ -69,8 +69,8 @@ from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository
+from pcapi.repository import session_management
 from pcapi.repository import transaction
-from pcapi.repository.session_management import is_managed_transaction
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.clean_accents import clean_accents
@@ -566,7 +566,7 @@ def unsuspend_account(
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
     db.session.flush()
-    if not is_managed_transaction():
+    if not session_management.is_managed_transaction():
         db.session.commit()
 
     logger.info(
@@ -1494,8 +1494,8 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
                 raise
 
     user.password = b"Anonymized"  # ggignore
-    user.firstName = f"Anonymous_{user.id}"
-    user.lastName = f"Anonymous_{user.id}"
+    user.firstName = None
+    user.lastName = None
     user.married_name = None
     user.postalCode = None
     user.phoneNumber = None  # type: ignore[method-assign]
@@ -1558,6 +1558,7 @@ def _remove_external_user(user: models.User) -> bool:
     return True
 
 
+@session_management.atomic()
 def anonymize_non_pro_non_beneficiary_users() -> None:
     """
     Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro
@@ -1586,8 +1587,9 @@ def anonymize_non_pro_non_beneficiary_users() -> None:
         )
     )
     for user in users:
-        anonymize_user(user)
-    db.session.commit()
+        with session_management.atomic():
+            if not anonymize_user(user):
+                session_management.mark_transaction_as_invalid()
 
 
 def is_beneficiary_anonymizable(user: models.User) -> bool:
@@ -1634,6 +1636,7 @@ def has_user_pending_anonymization(user_id: int) -> bool:
     ).scalar()
 
 
+@session_management.atomic()
 def anonymize_beneficiary_users() -> None:
     """
     Anonymize user accounts that have been beneficiaries which have not connected for at least 3
@@ -1677,108 +1680,101 @@ def anonymize_beneficiary_users() -> None:
         )
     )
     for user in itertools.chain(beneficiaries, beneficiaries_tagged_to_anonymize):
-        anonymize_user(user)
-    db.session.commit()
+        with session_management.atomic():
+            if not anonymize_user(user):
+                session_management.mark_transaction_as_invalid()
 
 
+def _get_anonymize_pro_query(time_clause: sa.sql.elements.BooleanClauseList) -> typing.Any:
+    aliased_user_offerer = sa_orm.aliased(offerers_models.UserOfferer)
+    aliased_offerer = sa_orm.aliased(offerers_models.Offerer)
+
+    return (
+        db.session.query(models.User)
+        .outerjoin(models.User.UserOfferers)
+        .outerjoin(offerers_models.UserOfferer.offerer)
+        .outerjoin(models.User.beneficiaryFraudChecks)
+        .filter(
+            # only NON_ATTACHED_PRO, excluding other role in the same array (BENEFICIARY, etc.)
+            models.User.roles == [models.UserRole.NON_ATTACHED_PRO],
+            fraud_models.BeneficiaryFraudCheck.id.is_(None),
+            # never connected or not connected within the last 3 years
+            time_clause,
+            # attachment or offerer is no longer active
+            sa.or_(
+                offerers_models.UserOfferer.id.is_(None),
+                offerers_models.UserOfferer.validationStatus.in_([ValidationStatus.REJECTED, ValidationStatus.DELETED]),
+                offerers_models.Offerer.validationStatus.in_([ValidationStatus.REJECTED, ValidationStatus.CLOSED]),
+            ),
+            # not attached to another waiting/active offerer
+            sa.not_(
+                sa.exists()
+                .where(aliased_user_offerer.userId == models.User.id)
+                .where(
+                    aliased_user_offerer.validationStatus.in_(
+                        [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.VALIDATED]
+                    )
+                )
+                .where(aliased_offerer.id == aliased_user_offerer.offererId)
+                .where(
+                    aliased_offerer.validationStatus.in_(
+                        [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.VALIDATED]
+                    )
+                )
+            ),
+        )
+    )
+
+
+@session_management.atomic()
+def notify_pro_users_before_anonymization() -> None:
+    """
+    Send an email one month before
+    """
+    almost_three_years_ago = datetime.date.today() - relativedelta(years=3, days=-30)
+
+    users = _get_anonymize_pro_query(
+        sa.or_(
+            sa.cast(models.User.lastConnectionDate, sa.Date) == almost_three_years_ago,
+            sa.and_(
+                models.User.lastConnectionDate.is_(None),
+                sa.cast(models.User.dateCreated, sa.Date) == almost_three_years_ago,
+            ),
+        ),
+    ).all()
+
+    for user in users:
+        transactional_mails.send_pre_anonymization_email_to_pro(user)
+
+
+@session_management.atomic()
 def anonymize_pro_users() -> None:
     """
-    Anonymize pro accounts which have not connected for at least 3 years and are either:
-    - not validated on an offerer
-    - validated on an offerer but at least one user would remain on this offerer
+    Anonymize pro accounts
     """
-    three_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365 * 3)
+    if not FeatureToggle.WIP_ENABLE_PRO_ANONYMIZATION.is_active():
+        return
 
-    exclude_non_pro_filters = [
-        ~models.User.roles.contains([models.UserRole.ADMIN]),
-        ~models.User.roles.contains([models.UserRole.ANONYMIZED]),
-        ~models.User.roles.contains([models.UserRole.BENEFICIARY]),
-        ~models.User.roles.contains([models.UserRole.UNDERAGE_BENEFICIARY]),
-    ]
+    three_years_ago = datetime.datetime.utcnow() - relativedelta(years=3)
 
-    aliased_offerer = sa_orm.aliased(offerers_models.Offerer)
-    aliased_user_offerer = sa_orm.aliased(offerers_models.UserOfferer)
-    aliased_user = sa_orm.aliased(models.User)
-
-    offerers = (
-        db.session.query(aliased_offerer.id)
-        .join(aliased_user_offerer, aliased_offerer.UserOfferers)
-        .join(aliased_user, aliased_user_offerer.user)
-        .filter(
-            aliased_user.lastConnectionDate >= three_years_ago,
-            aliased_user_offerer.validationStatus == ValidationStatus.VALIDATED,
-            aliased_offerer.id == offerers_models.Offerer.id,
-        )
-    )
-    validated_users = (
-        db.session.query(models.User.id)
-        .join(offerers_models.UserOfferer, models.User.UserOfferers)
-        .join(offerers_models.Offerer, offerers_models.UserOfferer.offerer)
-        .filter(
-            offerers_models.UserOfferer.validationStatus == ValidationStatus.VALIDATED,
-            offerers_models.Offerer.isActive,
-            models.User.lastConnectionDate < three_years_ago,
-            *exclude_non_pro_filters,
-            offerers.exists(),
-        )
-    )
-
-    non_validated_users = (
-        db.session.query(models.User.id)
-        .join(offerers_models.UserOfferer, models.User.UserOfferers)
-        .filter(
-            offerers_models.UserOfferer.validationStatus != ValidationStatus.VALIDATED,
-            models.User.lastConnectionDate < three_years_ago,
-            models.User.roles.contains([models.UserRole.PRO]),
-            *exclude_non_pro_filters,
-        )
-    )
-    non_attached_users = db.session.query(models.User.id).filter(
-        models.User.lastConnectionDate < three_years_ago,
-        models.User.roles.contains([models.UserRole.NON_ATTACHED_PRO]),
-        *exclude_non_pro_filters,
-    )
-    never_connected_users = db.session.query(models.User.id).filter(
-        models.User.lastConnectionDate.is_(None),
-        models.User.dateCreated < three_years_ago,
+    users = _get_anonymize_pro_query(
         sa.or_(
-            models.User.roles.contains([models.UserRole.PRO]),
-            models.User.roles.contains([models.UserRole.NON_ATTACHED_PRO]),
+            models.User.lastConnectionDate < three_years_ago,
+            sa.and_(models.User.lastConnectionDate.is_(None), models.User.dateCreated < three_years_ago),
         ),
-        *exclude_non_pro_filters,
     )
 
-    users = db.session.query(models.User).filter(
-        models.User.id.in_(
-            sa.union(validated_users, non_validated_users, non_attached_users, never_connected_users).subquery(),
-        ),
-    )
     for user in users:
-        gdpr_delete_pro_user(user)
+        with session_management.atomic():
+            anonymized = anonymize_user(user)
+            if not anonymized:
+                session_management.mark_transaction_as_invalid()
 
-    db.session.commit()
-
-
-def gdpr_delete_pro_user(user: models.User) -> None:
-    try:
-        delete_beamer_user(user.id)
-    except BeamerException:
-        pass
-    _remove_external_user(user)
-
-    db.session.query(history_models.ActionHistory).filter(
-        history_models.ActionHistory.userId != user.id,
-        history_models.ActionHistory.authorUserId == user.id,
-    ).update(
-        {
-            "authorUserId": None,
-        },
-        synchronize_session=False,
-    )
-    db.session.query(offerers_models.UserOfferer).filter(offerers_models.UserOfferer.userId == user.id).delete(
-        synchronize_session=False,
-    )
-    db.session.query(models.User).filter(models.User.id == user.id).delete(synchronize_session=False)
+        if anonymized:
+            try:
+                delete_beamer_user(user.id)
+            except BeamerException:
+                pass
 
 
 def anonymize_user_deposits() -> None:
@@ -1801,8 +1797,6 @@ def anonymize_user_deposits() -> None:
         },
         synchronize_session=False,
     )
-
-    db.session.commit()
 
 
 def clean_gdpr_extracts() -> None:
