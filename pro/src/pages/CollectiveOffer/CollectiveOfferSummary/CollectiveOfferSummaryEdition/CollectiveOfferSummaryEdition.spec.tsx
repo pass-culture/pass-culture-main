@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
@@ -7,13 +7,19 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
+import {
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
+} from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
 } from 'commons/utils/factories/userOfferersFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
 
@@ -29,10 +35,12 @@ vi.mock('apiClient/api', () => ({
 const renderCollectiveOfferSummaryEdition = (
   offer:
     | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferResponseModel,
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(<CollectiveOfferSummaryEdition offer={offer} />, {
     user: sharedCurrentUserFactory(),
+    ...options,
   })
 }
 
@@ -67,5 +75,30 @@ describe('CollectiveOfferSummary', () => {
       name: 'Mettre en pause',
     })
     expect(desactivateOffer).toBeInTheDocument()
+  })
+  it('should display new composant for new collective offer detail page when offer is bookable and FF is enabled', async () => {
+    renderCollectiveOfferSummaryEdition(getCollectiveOfferFactory(), {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
+    })
+
+    expect(
+      await screen.findByText(
+        'Nouveau composant de recap pour une offre réservable : Work in progress'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display new composant for new collective offer detail page when offer is template and FF is enabled', async () => {
+    renderCollectiveOfferSummaryEdition(getCollectiveOfferTemplateFactory(), {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
+    })
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(
+          'Nouveau composant de recap pour une offre réservable : Work in progress'
+        )
+      ).not.toBeInTheDocument()
+    )
   })
 })
