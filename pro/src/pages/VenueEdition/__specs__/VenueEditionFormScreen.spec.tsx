@@ -434,6 +434,42 @@ describe('VenueEditionFormScreen', () => {
       )
     })
 
+    it('should let the actor submit then when synchronized with acceslibre even if accessibility was never set', async () => {
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      renderForm({
+        ...baseVenue,
+        audioDisabilityCompliant: null,
+        motorDisabilityCompliant: null,
+        mentalDisabilityCompliant: null,
+        visualDisabilityCompliant: null,
+        externalAccessibilityId: '666',
+      })
+
+      await userEvent.click(screen.getByText(/Enregistrer/))
+
+      expect(editVenueSpy).toHaveBeenCalled()
+    })
+
+    it('should not let the actor submit then when not synchronized with acceslibre if accessibility was never set', async () => {
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      renderForm({
+        ...baseVenue,
+        audioDisabilityCompliant: null,
+        motorDisabilityCompliant: null,
+        mentalDisabilityCompliant: null,
+        visualDisabilityCompliant: null,
+        externalAccessibilityId: null,
+      })
+
+      await userEvent.click(screen.getByText(/Enregistrer/))
+      expect(
+        screen.getByText(
+          'Veuillez sélectionner au moins un critère d’accessibilité'
+        )
+      ).toBeInTheDocument()
+      expect(editVenueSpy).not.toHaveBeenCalled()
+    })
+
     it('should display an accessibility section', async () => {
       renderForm({ ...baseVenue })
 

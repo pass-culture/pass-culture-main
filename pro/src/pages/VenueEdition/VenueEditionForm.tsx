@@ -142,7 +142,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       })
     }
   }
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
