@@ -198,7 +198,7 @@ def _get_ban_address_or_none(street: str, city: str, postal_code: str) -> api_ad
             city=city,
             strict=True,
         )
-    except api_adresse.NoResultException:
+    except (api_adresse.NoResultException, api_adresse.InvalidFormatException):
         ban_address = None
     except api_adresse.AdresseApiServerErrorException:
         raise api_errors.ApiErrors({"global": ["BAN API is unavailable"]}, status_code=500)
@@ -213,6 +213,8 @@ def _get_municipality_or_raise_400(city: str, postal_code: str) -> api_adresse.A
         raise api_errors.ApiErrors(
             {"__root__": [f"No municipality found for `city={city}` and `postalCode={postal_code}`"]}
         )
+    except api_adresse.InvalidFormatException:
+        raise api_errors.ApiErrors({"__root__": [f"Invalid format for `city={city}` and `postalCode={postal_code}`"]})
     except api_adresse.AdresseApiServerErrorException:
         raise api_errors.ApiErrors({"global": ["BAN API is unavailable"]}, status_code=500)
 
