@@ -12,6 +12,8 @@ class NoBookingsProEmail(BaseQuery):
             `{settings.BIG_QUERY_TABLE_BASENAME}.marketing_pro_email_last_booking_40_days_ago`
         where
             cast(execution_date as date) = current_date()
+            and venue_booking_email is not null
+            and TRIM(venue_booking_email) != ''
     """
 
     model = ProEmailModel
