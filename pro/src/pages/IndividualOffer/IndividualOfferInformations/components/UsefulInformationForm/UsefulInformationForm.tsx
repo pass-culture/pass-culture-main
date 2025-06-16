@@ -194,9 +194,8 @@ export const UsefulInformationForm = ({
                 to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
               }}
             >
-              {offer.isDigital
-                ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
-                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis les paramètres généraux de votre page partenaire, elles s’appliqueront par défaut à toutes vos offres.'}
+              Indiquez ici tout ce qui peut être utile au bénéficiaire pour le
+              retrait de l’offre.
             </TipsBanner>
           }
         >
