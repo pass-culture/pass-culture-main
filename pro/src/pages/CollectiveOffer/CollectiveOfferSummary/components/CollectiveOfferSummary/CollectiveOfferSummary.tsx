@@ -48,6 +48,7 @@ export const CollectiveOfferSummary = ({
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
+
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   const canEditDetails = isActionAllowedOnCollectiveOffer(
