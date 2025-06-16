@@ -13,12 +13,7 @@ export const setInitialFormValues = (
       [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
       [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
       [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
-      [AccessibilityEnum.NONE]: [
-        venue.visualDisabilityCompliant,
-        venue.mentalDisabilityCompliant,
-        venue.audioDisabilityCompliant,
-        venue.motorDisabilityCompliant,
-      ].every((accessibility) => accessibility === false),
+      [AccessibilityEnum.NONE]: setAccessibilityNone(venue),
     },
     description: venue.description || '',
     email: venue.contact?.email || '',
@@ -28,6 +23,26 @@ export const setInitialFormValues = (
     isOpenToPublic: venue.isOpenToPublic.toString() || '',
     ...buildOpeningHoursValues(venue.openingHours),
   }
+}
+
+function setAccessibilityNone(venue: GetVenueResponseModel): boolean {
+  // for now just acceslibre
+  const isSynchronized = !!venue.externalAccessibilityId
+
+  if (isSynchronized) {
+    return [
+      venue.visualDisabilityCompliant,
+      venue.mentalDisabilityCompliant,
+      venue.audioDisabilityCompliant,
+      venue.motorDisabilityCompliant,
+    ].every((accessibility) => !accessibility)
+  }
+  return [
+    venue.visualDisabilityCompliant,
+    venue.mentalDisabilityCompliant,
+    venue.audioDisabilityCompliant,
+    venue.motorDisabilityCompliant,
+  ].every((accessibility) => accessibility === false)
 }
 
 function buildOpeningHoursValues(
