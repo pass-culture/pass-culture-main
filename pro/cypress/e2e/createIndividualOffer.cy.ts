@@ -67,7 +67,9 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I fill in event useful informations' })
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-    cy.findByLabelText('Email de contact *').type('passculture@example.com')
+    cy.findByLabelText('Email de contact communiqué aux bénéficiaires *').type(
+      'passculture@example.com'
+    )
 
     cy.stepLog({ message: 'I validate event useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
