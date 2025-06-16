@@ -1,5 +1,5 @@
-import { Form, FormikProvider, useFormikContext } from 'formik'
 import { useState } from 'react'
+import { FormProvider, useFormContext } from 'react-hook-form'
 import useSWR from 'swr'
 
 import {
@@ -44,6 +44,7 @@ interface OfferFiltersProps {
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
   domainsOptions: Option<number>[]
   shouldDisplayMarseilleStudentOptions: boolean
+  onSubmit: () => void
 }
 
 export const OfferFilters = ({
@@ -52,12 +53,14 @@ export const OfferFilters = ({
   setLocalisationFilterState,
   domainsOptions,
   shouldDisplayMarseilleStudentOptions,
+  onSubmit,
 }: OfferFiltersProps): JSX.Element => {
   const [modalOpenStatus, setModalOpenStatus] = useState<{
     [key: string]: boolean
   }>({})
 
-  const formik = useFormikContext<SearchFormValues>()
+  const form = useFormContext<SearchFormValues>()
+
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
@@ -70,10 +73,10 @@ export const OfferFilters = ({
 
   const getActiveLocalisationFilterCount = () => {
     if (localisationFilterState === LocalisationFilterStates.DEPARTMENTS) {
-      return formik.values.departments.length
+      return form.watch('departments').length
     }
     if (localisationFilterState === LocalisationFilterStates.ACADEMIES) {
-      return formik.values.academies.length
+      return form.watch('academies').length
     }
     return 0
   }
@@ -81,9 +84,9 @@ export const OfferFilters = ({
   const resetLocalisationFilterState = () => {
     if (
       (localisationFilterState === LocalisationFilterStates.DEPARTMENTS &&
-        formik.values.departments.length === 0) ||
+        form.watch('departments').length === 0) ||
       (localisationFilterState === LocalisationFilterStates.ACADEMIES &&
-        formik.values.academies.length === 0)
+        form.watch('academies').length === 0)
     ) {
       setLocalisationFilterState(LocalisationFilterStates.NONE)
     }
@@ -98,13 +101,7 @@ export const OfferFilters = ({
     }))
   )
 
-  const onReset = async (
-    modalName: string,
-    value: string | string[] | number,
-    fieldName?: string,
-    closeModal: boolean = true
-  ) => {
-    await clearFormikFieldValue(fieldName || modalName, value)
+  const closeModal = (modalName: string, closeModal: boolean = true) => {
     if (modalName === 'localisation') {
       setLocalisationFilterState(LocalisationFilterStates.NONE)
     }
@@ -113,10 +110,16 @@ export const OfferFilters = ({
     }
   }
 
-  const onSearch = (modalName: string) => {
-    formik.handleSubmit()
-    setModalOpenStatus((prevState) => ({ ...prevState, [modalName]: false }))
+  const resetModalFilter = (
+    filterName: keyof SearchFormValues,
+    value: string | string[] | number
+  ) => {
+    clearFormFieldValue(filterName, value)
+    closeModal(filterName)
+  }
 
+  const onSearch = (modalName: string) => {
+    setModalOpenStatus((prevState) => ({ ...prevState, [modalName]: false }))
     resetLocalisationFilterState()
   }
 
@@ -131,12 +134,14 @@ export const OfferFilters = ({
     label: academy,
   }))
 
-  const clearFormikFieldValue = async (
-    fieldName: string,
+  const clearFormFieldValue = (
+    fieldName: keyof SearchFormValues,
     value: string | string[] | number
   ) => {
-    await formik.setFieldValue(fieldName, value, true)
-    formik.handleSubmit()
+    form.setValue(fieldName, value, {
+      shouldValidate: true,
+    })
+    onSubmit()
   }
 
   const adressTypeRadios: RadioGroupProps['group'] = [
@@ -172,92 +177,72 @@ export const OfferFilters = ({
           value !== 'Écoles Marseille - CM1, CM2'
       )
 
-  const setMultiselectValue = async (
-    name: string,
+  const setMultiselectValue = (
+    name: keyof SearchFormValues,
     value: ItemProps['value'][]
   ) => {
-    await formik.setFieldValue(name, value)
+    form.setValue(name, value as string | number | string[])
   }
 
+  const locationFieldKey = isCollectiveOaActive
+    ? 'locationType'
+    : 'eventAddressType'
+
   return (
-    <FormikProvider value={formik}>
-      <Form onSubmit={formik.handleSubmit} className={className}>
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className={className}>
         <FormLayout.Row className={styles['filter-container-buttons']}>
           <div className={styles['filter-container-buttons-list']}>
             <div className={styles['filter-container-buttons-list-items']}>
               <AdageButtonFilter
                 isActive={
                   isCollectiveOaActive
-                    ? formik.values.locationType.length > 0 &&
-                      formik.values.locationType !==
+                    ? form.watch('locationType').length > 0 &&
+                      form.watch('locationType') !==
                         CollectiveLocationType.TO_BE_DEFINED
-                    : formik.values.eventAddressType.length > 0 &&
-                      formik.values.eventAddressType !== OfferAddressType.OTHER
+                    : form.watch('eventAddressType').length > 0 &&
+                      form.watch('eventAddressType') !== OfferAddressType.OTHER
                 }
                 title="Type d’intervention"
                 itemsLength={
                   isCollectiveOaActive
-                    ? formik.values.locationType &&
-                      formik.values.locationType !==
+                    ? form.watch('locationType') &&
+                      form.watch('locationType') !==
                         CollectiveLocationType.TO_BE_DEFINED
                       ? 1
                       : null
-                    : formik.values.eventAddressType &&
-                        formik.values.eventAddressType !==
+                    : form.watch('eventAddressType') &&
+                        form.watch('eventAddressType') !==
                           OfferAddressType.OTHER
                       ? 1
                       : null
                 }
-                isOpen={
-                  isCollectiveOaActive
-                    ? modalOpenStatus['locationType']
-                    : modalOpenStatus['eventAddressType']
-                }
+                isOpen={modalOpenStatus[locationFieldKey]}
                 setIsOpen={setModalOpenStatus}
-                filterName={
-                  isCollectiveOaActive ? 'locationType' : 'eventAddressType'
-                }
-                handleSubmit={formik.handleSubmit}
+                filterName={locationFieldKey}
+                handleSubmit={onSubmit}
               >
                 <ModalFilterLayout
                   onClean={() =>
-                    onReset(
-                      isCollectiveOaActive
-                        ? 'locationType'
-                        : 'eventAddressType',
+                    resetModalFilter(
+                      locationFieldKey,
                       isCollectiveOaActive
                         ? CollectiveLocationType.TO_BE_DEFINED
                         : OfferAddressType.OTHER
                     )
                   }
-                  onSearch={() =>
-                    onSearch(
-                      isCollectiveOaActive ? 'locationType' : 'eventAddressType'
-                    )
-                  }
+                  onSearch={() => onSearch(locationFieldKey)}
                 >
                   <RadioGroup
-                    key={
-                      formik.values[
-                        isCollectiveOaActive
-                          ? 'locationType'
-                          : 'eventAddressType'
-                      ]
-                    }
+                    name={locationFieldKey}
+                    key={form.watch(locationFieldKey)}
                     group={adressTypeRadios}
                     className={styles['filter-container-evenement']}
-                    name={
-                      isCollectiveOaActive ? 'locationType' : 'eventAddressType'
-                    }
                     legend="Choisir un type d'intervention"
-                    checkedOption={
-                      formik.values[
-                        isCollectiveOaActive
-                          ? 'locationType'
-                          : 'eventAddressType'
-                      ]
+                    checkedOption={form.watch(locationFieldKey)}
+                    onChange={(e) =>
+                      form.setValue(locationFieldKey, e.target.value)
                     }
-                    onChange={formik.handleChange}
                     variant={'default'}
                   />
                 </ModalFilterLayout>
@@ -281,7 +266,7 @@ export const OfferFilters = ({
                 filterName="localisation"
                 handleSubmit={() => {
                   resetLocalisationFilterState()
-                  formik.handleSubmit()
+                  onSubmit()
                 }}
               >
                 {localisationFilterState === LocalisationFilterStates.NONE && (
@@ -340,9 +325,10 @@ export const OfferFilters = ({
                 {localisationFilterState ===
                   LocalisationFilterStates.DEPARTMENTS && (
                   <ModalFilterLayout
-                    onClean={() =>
-                      onReset('localisation', [], 'departments', false)
-                    }
+                    onClean={() => {
+                      clearFormFieldValue('departments', [])
+                      closeModal('localisation', false)
+                    }}
                     onSearch={() => onSearch('localisation')}
                     title="Choisir un département"
                   >
@@ -351,7 +337,7 @@ export const OfferFilters = ({
                       label="Rechercher un département"
                       options={departmentOptions}
                       isOpen={modalOpenStatus['localisation']}
-                      selectedOptions={formik.values.departments}
+                      selectedOptions={form.watch('departments')}
                       onSelectedOptionsChanged={(selectedItems) =>
                         setMultiselectValue('departments', selectedItems)
                       }
@@ -361,9 +347,10 @@ export const OfferFilters = ({
                 {localisationFilterState ===
                   LocalisationFilterStates.ACADEMIES && (
                   <ModalFilterLayout
-                    onClean={() =>
-                      onReset('localisation', [], 'academies', false)
-                    }
+                    onClean={() => {
+                      clearFormFieldValue('academies', [])
+                      closeModal('localisation', false)
+                    }}
                     onSearch={() => onSearch('localisation')}
                     title="Choisir une académie"
                   >
@@ -372,7 +359,7 @@ export const OfferFilters = ({
                       label="Rechercher une académie"
                       options={academiesOptions}
                       isOpen={modalOpenStatus['localisation']}
-                      selectedOptions={formik.values.academies}
+                      selectedOptions={form.watch('academies')}
                       onSelectedOptionsChanged={(selectedItems) =>
                         setMultiselectValue('academies', selectedItems)
                       }
@@ -382,9 +369,10 @@ export const OfferFilters = ({
                 {localisationFilterState ===
                   LocalisationFilterStates.GEOLOCATION && (
                   <ModalFilterLayout
-                    onClean={() =>
-                      onReset('localisation', 50, 'geolocRadius', false)
-                    }
+                    onClean={() => {
+                      clearFormFieldValue('geolocRadius', 50)
+                      closeModal('localisation', false)
+                    }}
                     onSearch={() => onSearch('localisation')}
                     title="Autour de mon établissement scolaire"
                   >
@@ -396,24 +384,26 @@ export const OfferFilters = ({
                         min={1}
                         max={100}
                         displayValue={true}
-                        onChange={formik.handleChange}
-                        value={formik.values.geolocRadius}
+                        onChange={(e) =>
+                          form.setValue('geolocRadius', Number(e.target.value))
+                        }
+                        value={form.watch('geolocRadius')}
                       />
                     </div>
                   </ModalFilterLayout>
                 )}
               </AdageButtonFilter>
               <AdageButtonFilter
-                isActive={formik.values.domains.length > 0}
+                isActive={form.watch('domains').length > 0}
                 title="Domaine artistique"
-                itemsLength={formik.values.domains.length}
+                itemsLength={form.watch('domains').length}
                 isOpen={modalOpenStatus['domains']}
                 setIsOpen={setModalOpenStatus}
                 filterName="domains"
-                handleSubmit={formik.handleSubmit}
+                handleSubmit={onSubmit}
               >
                 <ModalFilterLayout
-                  onClean={() => onReset('domains', [])}
+                  onClean={() => resetModalFilter('domains', [])}
                   onSearch={() => onSearch('domains')}
                   title="Choisir un domaine artistique"
                 >
@@ -422,7 +412,7 @@ export const OfferFilters = ({
                     label="Rechercher un domaine artistique"
                     options={domainsOptions}
                     isOpen={modalOpenStatus['domains']}
-                    selectedOptions={formik.values.domains}
+                    selectedOptions={form.watch('domains')}
                     onSelectedOptionsChanged={(selectedItems) =>
                       setMultiselectValue('domains', selectedItems)
                     }
@@ -431,16 +421,16 @@ export const OfferFilters = ({
               </AdageButtonFilter>
 
               <AdageButtonFilter
-                isActive={formik.values.formats.length > 0}
+                isActive={form.watch('formats').length > 0}
                 title="Format"
-                itemsLength={formik.values.formats.length}
+                itemsLength={form.watch('formats').length}
                 isOpen={modalOpenStatus['formats']}
                 setIsOpen={setModalOpenStatus}
                 filterName="formats"
-                handleSubmit={formik.handleSubmit}
+                handleSubmit={onSubmit}
               >
                 <ModalFilterLayout
-                  onClean={() => onReset('formats', [])}
+                  onClean={() => resetModalFilter('formats', [])}
                   onSearch={() => onSearch('formats')}
                   title="Choisir un format"
                 >
@@ -449,7 +439,7 @@ export const OfferFilters = ({
                     label="Rechercher un format"
                     options={formatsOptions}
                     isOpen={modalOpenStatus['formats']}
-                    selectedOptions={formik.values.formats}
+                    selectedOptions={form.watch('formats')}
                     onSelectedOptionsChanged={(selectedItems) =>
                       setMultiselectValue('formats', selectedItems)
                     }
@@ -458,16 +448,16 @@ export const OfferFilters = ({
               </AdageButtonFilter>
 
               <AdageButtonFilter
-                isActive={formik.values.students.length > 0}
+                isActive={form.watch('students').length > 0}
                 title="Niveau scolaire"
-                itemsLength={formik.values.students.length}
+                itemsLength={form.watch('students').length}
                 isOpen={modalOpenStatus['students']}
                 setIsOpen={setModalOpenStatus}
                 filterName="students"
-                handleSubmit={formik.handleSubmit}
+                handleSubmit={onSubmit}
               >
                 <ModalFilterLayout
-                  onClean={() => onReset('students', [])}
+                  onClean={() => resetModalFilter('students', [])}
                   onSearch={() => onSearch('students')}
                   title="Choisir un niveau scolaire"
                 >
@@ -476,7 +466,7 @@ export const OfferFilters = ({
                     label="Rechercher un niveau scolaire"
                     options={studentsOptionsFiltered}
                     isOpen={modalOpenStatus['students']}
-                    selectedOptions={formik.values.students}
+                    selectedOptions={form.watch('students')}
                     onSelectedOptionsChanged={(selectedItems) =>
                       setMultiselectValue('students', selectedItems)
                     }
@@ -502,7 +492,7 @@ export const OfferFilters = ({
             </div>
           </div>
         </FormLayout.Row>
-      </Form>
-    </FormikProvider>
+      </form>
+    </FormProvider>
   )
 }

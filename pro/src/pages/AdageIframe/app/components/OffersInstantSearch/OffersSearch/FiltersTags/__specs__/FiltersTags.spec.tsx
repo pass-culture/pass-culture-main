@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { CollectiveLocationType, OfferAddressType } from 'apiClient/adage'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -21,18 +21,27 @@ const renderFiltersTag = (
   initialValues: SearchFormValues,
   localisationFilterState?: LocalisationFilterStates
 ) => {
-  renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={vi.fn()}>
-      <FiltersTags
-        domainsOptions={domainsOptions}
-        localisationFilterState={
-          localisationFilterState || LocalisationFilterStates.NONE
-        }
-        setLocalisationFilterState={mockSetLocalisationFilterState}
-        resetForm={mockResetForm}
-      />
-    </Formik>
-  )
+  const FiltersTagsWrapper = () => {
+    const form = useForm({
+      defaultValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, ...initialValues },
+    })
+
+    return (
+      <FormProvider {...form}>
+        <FiltersTags
+          domainsOptions={domainsOptions}
+          localisationFilterState={
+            localisationFilterState || LocalisationFilterStates.NONE
+          }
+          setLocalisationFilterState={mockSetLocalisationFilterState}
+          resetForm={mockResetForm}
+          onSubmit={() => {}}
+        />
+      </FormProvider>
+    )
+  }
+
+  renderWithProviders(<FiltersTagsWrapper />)
 }
 describe('FiltersTag', () => {
   const venueFilter = {
@@ -50,6 +59,7 @@ describe('FiltersTag', () => {
 
     expect(screen.getByText(/Lieu : Mon super lieu/)).toBeInTheDocument()
   })
+
   it('should remove venue tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -75,6 +85,7 @@ describe('FiltersTag', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should render in venue tag if event adress type school is selected', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -86,6 +97,7 @@ describe('FiltersTag', () => {
       screen.getByText('Sortie chez un partenaire culturel')
     ).toBeInTheDocument()
   })
+
   it('should remove tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -112,6 +124,7 @@ describe('FiltersTag', () => {
       screen.getByText('Localisation des partenaires : < à 10 km')
     ).toBeInTheDocument()
   })
+
   it('should remove geolocation tag on click', async () => {
     renderFiltersTag(
       {
@@ -140,6 +153,7 @@ describe('FiltersTag', () => {
     expect(screen.getByText('Amiens')).toBeInTheDocument()
     expect(screen.getByText('Paris')).toBeInTheDocument()
   })
+
   it('should remove domain tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -158,6 +172,7 @@ describe('FiltersTag', () => {
     expect(screen.getByText('01 - Ain')).toBeInTheDocument()
     expect(screen.getByText('75 - Paris')).toBeInTheDocument()
   })
+
   it('should not display tag if departement does not exit', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -166,6 +181,7 @@ describe('FiltersTag', () => {
 
     expect(screen.queryByText('abc123')).not.toBeInTheDocument()
   })
+
   it('should remove department tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -186,6 +202,7 @@ describe('FiltersTag', () => {
 
     expect(screen.getByText('Danse')).toBeInTheDocument()
   })
+
   it('should not display tag if domain does not exit', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -194,6 +211,7 @@ describe('FiltersTag', () => {
 
     expect(screen.queryByText('abc123')).not.toBeInTheDocument()
   })
+
   it('should remove domain tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
@@ -212,6 +230,7 @@ describe('FiltersTag', () => {
     expect(screen.getByText('Collège - 6e')).toBeInTheDocument()
     expect(screen.getByText('Lycée - Seconde')).toBeInTheDocument()
   })
+
   it('should remove student tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
