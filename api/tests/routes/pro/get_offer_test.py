@@ -121,6 +121,8 @@ class Returns200Test:
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
             offererAddress=None,
+            publicationDatetime=datetime(year=2020, month=11, day=15),
+            bookingAllowedDatetime=datetime(year=2020, month=12, day=15),
         )
 
         stock = offers_factories.EventStockFactory(
@@ -149,6 +151,8 @@ class Returns200Test:
             "dateCreated": "2020-10-15T00:00:00Z",
             "productId": None,
             "publicationDate": None,
+            "publicationDatetime": "2020-11-15T00:00:00Z",
+            "bookingAllowedDatetime": "2020-12-15T00:00:00Z",
             "description": "Tatort, but slower",
             "durationMinutes": 60,
             "extraData": {"ean": "1111111111111"},

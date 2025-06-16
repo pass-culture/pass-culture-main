@@ -15,6 +15,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
   address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
+  bookingAllowedDatetime?: string | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;
   bookingsCount?: number | null;
@@ -45,6 +46,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   priceCategories?: Array<PriceCategoryResponseModel> | null;
   productId?: number | null;
   publicationDate?: string | null;
+  publicationDatetime?: string | null;
   status: OfferStatus;
   subcategoryId: SubcategoryIdEnum;
   thumbUrl?: string | null;

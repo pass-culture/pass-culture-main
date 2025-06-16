@@ -9,6 +9,7 @@ import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
   address?: AddressResponseIsLinkedToVenueModel | null;
+  bookingAllowedDatetime?: string | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   isActive: boolean;
@@ -21,6 +22,7 @@ export type ListOffersOfferResponseModel = {
   isThing: boolean;
   name: string;
   productIsbn?: string | null;
+  publicationDatetime?: string | null;
   status: OfferStatus;
   stocks: Array<ListOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
