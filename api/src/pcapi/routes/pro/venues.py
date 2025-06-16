@@ -1,5 +1,8 @@
+import datetime
+
 import flask
 import pydantic.v1 as pydantic_v1
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
@@ -8,6 +11,7 @@ from flask_login import login_required
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
 from pcapi.connectors.entreprise import sirene
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
@@ -32,6 +36,8 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
 def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
+    aliased_venue = sa_orm.aliased(models.Venue)
+
     venue = (
         db.session.query(models.Venue)
         .filter(models.Venue.id == venue_id)
@@ -42,7 +48,22 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         )
         .options(sa_orm.joinedload(models.Venue.collectiveDomains))
         .options(sa_orm.joinedload(models.Venue.collectiveDmsApplications))
-        .options(sa_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount))
+        .outerjoin(
+            models.VenueBankAccountLink,
+            sa.and_(
+                models.VenueBankAccountLink.venueId == models.Venue.id,
+                models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
+        .outerjoin(models.VenueBankAccountLink.bankAccount)
+        .options(
+            sa_orm.contains_eager(models.Venue.bankAccountLinks)
+            .contains_eager(models.VenueBankAccountLink.bankAccount)
+            # Avoid N+1 query and avoid cartesian product to load linkedVenues:
+            .selectinload(finance_models.BankAccount.venueLinks)
+            .joinedload(models.VenueBankAccountLink.venue.of_type(aliased_venue))
+            .load_only(aliased_venue.id, aliased_venue.name, aliased_venue.publicName),
+        )
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     ).one_or_none()
     if not venue:
