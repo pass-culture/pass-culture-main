@@ -1,4 +1,3 @@
-import { type FormikContextType } from 'formik'
 import { UseFormResetField } from 'react-hook-form'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
@@ -16,26 +15,6 @@ const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['search-addressAutocomplete', ''],
   ['addressAutocomplete', ''],
 ])
-
-export const resetAddressFields = async <FormValues>({
-  formik,
-}: {
-  formik: FormikContextType<FormValues>
-}) => {
-  await Promise.all(
-    [...fieldsNames.entries()].map(([fieldName, defaultValue]) =>
-      formik.setFieldValue(fieldName, defaultValue)
-    )
-  )
-
-  // Make all fields untouched
-  // (This will prevent validation errors to be shown if user previously touched those fields, then switched that trigger OFF, then ON again)
-  await Promise.all(
-    [...fieldsNames.keys()].map((fieldName) =>
-      formik.setFieldTouched(fieldName, false)
-    )
-  )
-}
 
 export function resetReactHookFormAddressFields({
   resetField,

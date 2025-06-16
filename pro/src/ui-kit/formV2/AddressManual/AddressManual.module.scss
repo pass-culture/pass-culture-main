@@ -7,6 +7,7 @@
 .inline-fields {
   display: flex;
   gap: rem.torem(8px);
+  align-items: flex-start;
 
   .field-cp {
     flex: 1;

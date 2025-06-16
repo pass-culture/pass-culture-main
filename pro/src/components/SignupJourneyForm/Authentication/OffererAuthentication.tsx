@@ -1,5 +1,6 @@
-import { FormikProvider, useFormik } from 'formik'
-import { useEffect } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useCallback, useEffect } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -27,20 +28,18 @@ export const OffererAuthentication = (): JSX.Element => {
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
-    isOpenToPublic: 'true',
+    isOpenToPublic: offerer?.isOpenToPublic || 'true',
     addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
   }
 
-  const handlePreviousStep = () => {
+  const handlePreviousStep = useCallback(() => {
     setOfferer(null)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/structure')
-  }
+  }, [setOfferer, navigate])
 
-  const onSubmitOffererAuthentication = (
-    formValues: OffererAuthenticationFormValues
-  ) => {
+  const onSubmit = (formValues: any) => {
     setOfferer({
       ...formValues,
       city: removeQuotes(formValues.city),
@@ -52,25 +51,23 @@ export const OffererAuthentication = (): JSX.Element => {
     navigate('/parcours-inscription/activite')
   }
 
-  const formik = useFormik({
-    initialValues,
-    onSubmit: onSubmitOffererAuthentication,
-    validationSchema: validationSchema(isOpenToPublicEnabled),
-    enableReinitialize: true,
+  const methods = useForm({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema(isOpenToPublicEnabled)),
   })
 
   useEffect(() => {
     if (offerer?.siret === '' || offerer?.name === '') {
       handlePreviousStep()
     }
-  }, [])
+  }, [handlePreviousStep, offerer?.name, offerer?.siret])
 
   return (
     <FormLayout>
-      <FormikProvider value={formik}>
+      <FormProvider {...methods}>
         <form
           className={styles['signup-offerer-authentication-form']}
-          onSubmit={formik.handleSubmit}
+          onSubmit={methods.handleSubmit(onSubmit)}
           data-testid="signup-offerer-authentication-form"
         >
           <FormLayout.MandatoryInfo />
@@ -80,11 +77,11 @@ export const OffererAuthentication = (): JSX.Element => {
             previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
             previousStepTitle="Retour"
-            isDisabled={formik.isSubmitting}
+            isDisabled={methods.formState.isSubmitting}
             legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>
-      </FormikProvider>
+      </FormProvider>
     </FormLayout>
   )
 }

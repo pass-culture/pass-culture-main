@@ -1,23 +1,35 @@
 import cn from 'classnames'
-import { useField, useFormikContext } from 'formik'
+import { useFormContext } from 'react-hook-form'
 
+import { AddressFormValues } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { resetAddressFields } from 'commons/utils/resetAddressFields'
-import { AddressSelect } from 'components/Address/Address'
 import { Address } from 'components/Address/types'
-import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { AddressManual } from 'ui-kit/formV2/AddressManual/AddressManual'
+import { AddressSelect } from 'ui-kit/formV2/AddressSelect/AddressSelect'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import { OffererFormValues } from '../Offerer/Offerer'
 
 import styles from './OffererAuthenticationForm.module.scss'
 
+const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
+  ['street', ''],
+  ['postalCode', ''],
+  ['city', ''],
+  ['latitude', ''],
+  ['longitude', ''],
+  ['coords', ''],
+  ['banId', ''], // TODO: See with backend if it's preferable to send also "null" to be consistent with "inseeCode"
+  ['inseeCode', null],
+  ['search-addressAutocomplete', ''],
+  ['addressAutocomplete', ''],
+])
 export interface OffererAuthenticationFormValues
   extends OffererFormValues,
     Address {
@@ -31,59 +43,92 @@ export interface OffererAuthenticationFormValues
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
-  const formik = useFormikContext<OffererAuthenticationFormValues>()
+  const { watch, setValue, register, getFieldState, resetField } =
+    useFormContext<OffererAuthenticationFormValues>()
+
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
+  const manuallySetAddress = watch('manuallySetAddress')
 
-  const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
-    useField('manuallySetAddress')
+  const toggleManuallySetAddress = () => {
+    setValue('manuallySetAddress', !manuallySetAddress)
 
-  const toggleManuallySetAddress = async () => {
-    const isAddressManual = !manuallySetAddress.value
-    await setManuallySetAddress(isAddressManual)
-    if (isAddressManual) {
-      await resetAddressFields({ formik })
-    }
+    return [...fieldsNames.entries()].map(([fieldName, defaultValue]) => {
+      resetField(fieldName as keyof OffererAuthenticationFormValues, {
+        defaultValue: defaultValue,
+      })
+    })
   }
 
   return (
     <FormLayout.Section>
       <h1 className={styles['title']}>Identification</h1>
-      <FormLayout.Row>
-        <TextInput name="siret" label="Numéro de SIRET" type="text" disabled />
-        <TextInput name="name" label="Raison sociale" type="text" disabled />
+      <FormLayout.Row mdSpaceAfter>
         <TextInput
-          name="publicName"
+          {...register('siret')}
+          label="Numéro de SIRET"
+          type="text"
+          required={true}
+          disabled
+        />
+      </FormLayout.Row>
+      <FormLayout.Row mdSpaceAfter>
+        <TextInput
+          {...register('name')}
+          label="Raison sociale"
+          type="text"
+          required={true}
+          disabled
+        />
+      </FormLayout.Row>
+      <FormLayout.Row mdSpaceAfter>
+        <TextInput
+          {...register('publicName')}
           label="Nom public"
           type="text"
-          isOptional
           description="À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public."
         />
+      </FormLayout.Row>
+      <FormLayout.Row mdSpaceAfter>
         <AddressSelect
+          {...register('addressAutocomplete')}
+          label={'Adresse postale'}
           description="À modifier si l’adresse postale de votre structure est différente de la raison sociale."
-          disabled={manuallySetAddress.value}
+          disabled={manuallySetAddress}
+          error={getFieldState('addressAutocomplete').error?.message}
+          onAddressChosen={(addressData) => {
+            setValue('street', addressData.address)
+            setValue('postalCode', addressData.postalCode)
+            setValue('city', addressData.city)
+            setValue('latitude', addressData.latitude)
+            setValue('longitude', addressData.longitude)
+            setValue('banId', addressData.id)
+            setValue('inseeCode', addressData.inseeCode)
+          }}
         />
         <Button
           variant={ButtonVariant.QUATERNARY}
-          icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
+          icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
           onClick={toggleManuallySetAddress}
         >
-          {manuallySetAddress.value ? (
+          {manuallySetAddress ? (
             <>Revenir à la sélection automatique</>
           ) : (
             <>Vous ne trouvez pas votre adresse ?</>
           )}
         </Button>
-        {manuallySetAddress.value && <AddressManual />}
+        {manuallySetAddress && <AddressManual />}
+      </FormLayout.Row>
+      <FormLayout.Row>
         {isOpenToPublicEnabled && (
           <OpenToPublicToggle
             className={cn(styles['open-to-public-toggle'], {
               [styles['open-to-public-toggle-address-manual-open']]:
-                manuallySetAddress.value,
+                manuallySetAddress,
             })}
-            isOpenToPublic={formik.values.isOpenToPublic}
-            onChange={async (e) => {
-              await formik.setFieldValue('isOpenToPublic', e.target.value)
+            onChange={(e) => {
+              setValue('isOpenToPublic', e.target.value)
             }}
+            isOpenToPublic={watch('isOpenToPublic')}
           />
         )}
       </FormLayout.Row>
