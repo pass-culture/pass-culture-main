@@ -224,6 +224,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return self._obj.is_headline_offer
         if key == "address":
             return offer_address_getter_dict_helper(self._obj)
+        if key == "bookingsCount":
+            return sum([stock.dnBookedQuantity for stock in self._obj.stocks])
         return super().get(key, default)
 
 
@@ -248,6 +250,7 @@ class ListOffersOfferResponseModel(BaseModel):
     isDigital: bool
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
+    bookingsCount: int | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
