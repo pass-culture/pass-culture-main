@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useId } from 'react'
 
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
@@ -5,6 +6,7 @@ import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import styles from './OpenToPublicToggle.module.scss'
 
 export interface OpenToPublicToggleProps {
+  className?: string
   radioDescriptions?: {
     yes?: string
     no?: string
@@ -20,6 +22,7 @@ const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
   }
 
 export const OpenToPublicToggle = ({
+  className,
   radioDescriptions = {},
   onChange,
   isOpenToPublic,
@@ -35,7 +38,7 @@ export const OpenToPublicToggle = ({
     <>
       <RadioGroup
         name="isOpenToPublic"
-        className={styles['open-to-public-toggle']}
+        className={cn(styles['open-to-public-toggle'], className)}
         legend="Accueillez-vous du public dans votre structure ?"
         describedBy={descriptionId}
         variant="detailed"
