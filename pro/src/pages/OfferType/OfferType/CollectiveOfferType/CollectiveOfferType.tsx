@@ -15,6 +15,7 @@ import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 
 import styles from './CollectiveOfferType.module.scss'
@@ -124,18 +125,43 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           </Callout>
         )}
 
-      {!offerer?.allowedOnAdage && lastDmsApplication && (
-        <Callout
-          links={[
-            {
-              href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
-              label: 'Voir ma demande de référencement',
-            },
-          ]}
-        >
-          Vous avez une demande de référencement en cours de traitement
-        </Callout>
-      )}
+      {!offerer?.allowedOnAdage &&
+        (lastDmsApplication ? (
+          <Callout
+            className={styles['pending-offerer-callout']}
+            variant={CalloutVariant.INFO}
+            links={[
+              {
+                href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
+                label: 'Voir ma demande de référencement',
+              },
+            ]}
+          >
+            Vous avez une demande de référencement en cours de traitement
+          </Callout>
+        ) : (
+          <Callout
+            className={styles['pending-offerer-callout']}
+            links={[
+              {
+                href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
+                label: 'Faire une demande de référencement',
+                isExternal: true,
+              },
+              {
+                href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
+                label:
+                  'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+                isExternal: true,
+              },
+            ]}
+            variant={CalloutVariant.ERROR}
+          >
+            Pour proposer des offres à destination d’un groupe scolaire, vous
+            devez être référencé auprès du ministère de l’Éducation Nationale et
+            du ministère de la Culture.
+          </Callout>
+        ))}
     </>
   )
 }

@@ -357,4 +357,20 @@ describe('OfferType', () => {
 
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })
+
+  it('should display DS banner if structure not allowed on adage and last ds reference request not found ', async () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      allowedOnAdage: false,
+    })
+    renderOfferTypes('123')
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+
+    expect(
+      await screen.findByText('Faire une demande de référencement')
+    ).toBeInTheDocument()
+  })
 })
