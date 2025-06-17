@@ -1,6 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+import datetime
 
 import pytest
 
@@ -31,16 +29,11 @@ class Returns200Test:
             url="http://example.com/offer",
         )
 
-        publication_dt = datetime.now(tz=timezone.utc) + timedelta(days=10)
-        booking_allowed_dt = datetime.now(tz=timezone.utc) + timedelta(days=30)
-
         data = {
             "name": "New name",
             "description": "New description",
             "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
             "extraData": {"gtl_id": "07000000"},
-            "publicationDatetime": publication_dt.isoformat(),
-            "bookingAllowedDatetime": booking_allowed_dt.isoformat(),
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
@@ -52,8 +45,7 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert updated_offer.description == "New description"
-        assert updated_offer.publicationDatetime == publication_dt.replace(tzinfo=None)
-        assert updated_offer.bookingAllowedDatetime == booking_allowed_dt.replace(tzinfo=None)
+
         assert not updated_offer.product
 
     def test_patch_draft_offer_without_product_with_new_ean_should_succeed(self, client):
@@ -385,73 +377,50 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def when_trying_to_patch_forbidden_attributes(self, client):
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            name="New name",
-            url="http://example.com/offer",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        data = {
-            "dateCreated": format_into_utc_date(datetime(2019, 1, 1)),
-            "dateModifiedAtLastProvider": format_into_utc_date(datetime(2019, 1, 1)),
-            "id": 1,
-            "idAtProviders": 1,
-            "lastProviderId": 1,
-            "thumbCount": 2,
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json["lastProviderId"] == ["Vous ne pouvez pas changer cette information"]
-        forbidden_keys = {
-            "dateCreated",
-            "dateModifiedAtLastProvider",
-            "id",
-            "idAtProviders",
-            "lastProviderId",
-            "thumbCount",
-        }
-        for key in forbidden_keys:
-            assert key in response.json
-
-    def when_trying_to_set_a_description_way_to_long(self, client):
+    @pytest.mark.parametrize(
+        "patch_body,expected_response_json",
+        [
+            (
+                {
+                    "dateCreated": format_into_utc_date(datetime.datetime(2019, 1, 1)),
+                    "dateModifiedAtLastProvider": format_into_utc_date(datetime.datetime(2019, 1, 1)),
+                    "id": 1,
+                    "idAtProviders": 1,
+                    "lastProviderId": 1,
+                    "thumbCount": 2,
+                    "subcategoryId": subcategories.LIVRE_PAPIER.id,
+                    "product_id": 42,
+                },
+                {
+                    "dateCreated": ["Vous ne pouvez pas changer cette information"],
+                    "dateModifiedAtLastProvider": ["Vous ne pouvez pas changer cette information"],
+                    "id": ["Vous ne pouvez pas changer cette information"],
+                    "idAtProviders": ["Vous ne pouvez pas changer cette information"],
+                    "lastProviderId": ["Vous ne pouvez pas changer cette information"],
+                    "thumbCount": ["Vous ne pouvez pas changer cette information"],
+                    "product_id": ["Vous ne pouvez pas changer cette information"],
+                },
+            ),
+            (
+                {"description": "d" * 10_001},
+                {"description": ["ensure this value has at most 10000 characters"]},
+            ),
+            (
+                {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
+                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+        ],
+    )
+    def when_sending_incorrect_patch_body(self, patch_body, expected_response_json, client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CARTE_MUSEE.id, name="New name", url="http://example.com/offer"
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        data = {"description": "d" * 10_001}
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=patch_body)
 
         assert response.status_code == 400
-        assert response.json["description"] == ["ensure this value has at most 10000 characters"]
-
-    def when_trying_to_set_offer_name_with_ean(self, client):
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            name="New name",
-            url="http://example.com/offer",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        data = {
-            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
+        assert response.json == expected_response_json
 
     def when_trying_to_patch_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -474,25 +443,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
-
-    def when_trying_to_patch_product(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
-        )
-        offer = offers_factories.OfferFactory(
-            name="Name",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            venue=venue,
-            description="description",
-        )
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-
-        data = {"product_id": product.id}
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json["product_id"] == ["Vous ne pouvez pas changer cette information"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -524,101 +474,3 @@ class Returns404Test:
 
         response = client.with_session_auth(email).patch("/offers/draft/12345", json={})
         assert response.status_code == 404
-
-
-USER_EMAIL = "user@example.com"
-
-
-@pytest.fixture(name="offer")
-def offer_fixture():
-    user_offerer = offerers_factories.UserOffererFactory(user__email=USER_EMAIL)
-    venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
-    return offers_factories.OfferFactory(venue=venue)
-
-
-@pytest.fixture(name="offer")
-def auth_client_fixture(client, offer):
-    # offer fixture is needed because it sets the user and its offerer which
-    # are needed before authentication.
-    return client.with_session_auth(USER_EMAIL)
-
-
-def dt_with_delta(days, tz=timezone.utc):
-    return datetime.now(tz=tz) + timedelta(days=days)
-
-
-@pytest.mark.usefixtures("db_session")
-class PatchDraftOfferFuturePublicationErrorsTest:
-    def test_booking_allowed_dt_before_publication_dt_is_not_allowed(self, auth_client, offer):
-        publication_dt = dt_with_delta(days=10)
-        booking_allowed_dt = dt_with_delta(days=5)
-
-        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
-        assert response.status_code == 400
-        assert response.json == {"bookingAllowedDatetime": ["must be after `publicationDatetime`"]}
-
-    def test_publication_dt_must_be_timezone_aware(self, auth_client, offer):
-        publication_dt = dt_with_delta(days=10, tz=None)
-        booking_allowed_dt = dt_with_delta(days=30)
-
-        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
-        assert response.status_code == 400
-        assert response.json == {"publicationDatetime": ["The datetime must be timezone-aware."]}
-
-    def test_booking_allowed_dt_must_be_timezone_aware(self, auth_client, offer):
-        publication_dt = dt_with_delta(days=10)
-        booking_allowed_dt = dt_with_delta(days=30, tz=None)
-
-        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
-        assert response.status_code == 400
-        assert response.json == {"bookingAllowedDatetime": ["The datetime must be timezone-aware."]}
-
-    def test_publication_dt_cannot_be_in_the_past(self, auth_client, offer):
-        publication_dt = dt_with_delta(days=-100)
-        booking_allowed_dt = dt_with_delta(days=30)
-
-        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
-        assert response.status_code == 400
-        assert response.json == {"publicationDatetime": ["The datetime must be in the future."]}
-
-    def test_booking_allowed_dt_cannot_be_in_the_past(self, auth_client, offer):
-        publication_dt = dt_with_delta(days=10)
-        booking_allowed_dt = dt_with_delta(days=-30)
-
-        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
-        assert response.status_code == 400
-        assert response.json == {"bookingAllowedDatetime": ["The datetime must be in the future."]}
-
-    def test_either_both_are_set_or_both_are_null(self, auth_client, offer):
-        publication_dt = dt_with_delta(days=10)
-        booking_allowed_dt = dt_with_delta(days=30)
-
-        response = self.send_request(auth_client, offer.id, publication_dt, booking_allowed_dt)
-        assert response.status_code == 200
-
-        response = self.send_request(auth_client, offer.id, None, None)
-        assert response.status_code == 200
-
-        response = self.send_request(auth_client, offer.id, publication_dt, None)
-        assert response.status_code == 400
-        assert response.json == {
-            "__root__": [
-                "either both `publicationDatetime` and `bookingAllowedDatetime` are set or both are null",
-            ]
-        }
-
-        response = self.send_request(auth_client, offer.id, None, booking_allowed_dt)
-        assert response.status_code == 400
-        assert response.json == {
-            "__root__": [
-                "either both `publicationDatetime` and `bookingAllowedDatetime` are set or both are null",
-            ]
-        }
-
-    def send_request(self, client, offer_id, publication_dt, booking_allowed_dt):
-        data = {
-            "publicationDatetime": publication_dt.isoformat() if publication_dt else None,
-            "bookingAllowedDatetime": booking_allowed_dt.isoformat() if booking_allowed_dt else None,
-        }
-
-        return client.patch(f"offers/draft/{offer_id}", json=data)
