@@ -279,6 +279,7 @@ def _silence_noisy_loggers() -> None:
     logging.getLogger("gql.transport.requests").setLevel(logging.WARNING)
     # fontTools is used by weasyprint
     logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
+    logging.getLogger("fontTools.ttLib.ttFont").setLevel(logging.WARNING)
     # model overriding skips a lot of bindings
     logging.getLogger("transitions").setLevel(logging.ERROR)
 
