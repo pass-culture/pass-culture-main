@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 import pytz
+import time_machine
 from dateutil.relativedelta import relativedelta
 from flask import url_for
 
@@ -1989,7 +1990,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = db.session.query(users_models.User).filter_by(id=user_id).one()
         assert not user.deposits
 
-    def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client, legit_user):
+    def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
@@ -2009,11 +2010,32 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = authenticated_client.get(response.location)
         assert (
-            "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)"
+            "Le compte est déjà majeur (18+) il ne peut pas aussi être bénéficiaire (15-17)"
             in html_parser.extract_alert(response.data)
         )
 
-    def test_pre_decree_eligibility_when_beneficiary_of_post_decree_credit(self, authenticated_client, legit_user):
+    @time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME)
+    def test_underage_eligibility_when_exunderage_beneficiary(self, authenticated_client):
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(weeks=1)
+        exunderage_beneficiary = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
+        eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        exunderage_beneficiary.validatedBirthDate = eighteen_years_ago
+
+        form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.UNDERAGE.name,
+            "reason": "test",
+        }
+        response = self.post_to_endpoint(authenticated_client, user_id=exunderage_beneficiary.id, form=form)
+        redirected_response = authenticated_client.get(response.location)
+
+        assert redirected_response.status_code == 200
+        assert (
+            "Le compte est déjà majeur (18+) il ne peut pas aussi être bénéficiaire (15-17)"
+            in html_parser.extract_alert(redirected_response.data)
+        )
+
+    def test_pre_decree_eligibility_when_beneficiary_of_post_decree_credit(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
@@ -2027,7 +2049,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = authenticated_client.get(response.location)
         assert (
-            "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 18"
+            "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 15-17 ou 18"
             in html_parser.extract_alert(response.data)
         )
 

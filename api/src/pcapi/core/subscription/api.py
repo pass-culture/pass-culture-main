@@ -6,6 +6,7 @@ from sqlalchemy import exc as sqlalchemy_exceptions
 
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.exceptions as finance_exceptions
+import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
@@ -103,6 +104,8 @@ def activate_beneficiary_for_eligibility(
     deposit_source: str,
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
+    check_eligibility_is_applicable_to_user(eligibility, user)
+
     with pcapi_repository.transaction():
         deposit = deposit_api.upsert_deposit(
             user,
@@ -120,6 +123,15 @@ def activate_beneficiary_for_eligibility(
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     return user
+
+
+def check_eligibility_is_applicable_to_user(eligibility: users_models.EligibilityType, user: users_models.User) -> None:
+    if user.has_beneficiary_role and eligibility == users_models.EligibilityType.UNDERAGE:
+        raise exceptions.UnderageEligibilityWhenAlreadyEighteenException()
+
+    has_grant_17_18_deposit = user.deposit is not None and user.deposit.type == finance_models.DepositType.GRANT_17_18
+    if has_grant_17_18_deposit and eligibility == users_models.EligibilityType.AGE18:
+        raise exceptions.PreDecreeEligibilityWhenPostDecreeBeneficiaryException()
 
 
 def add_eligibility_role(user: users_models.User, eligibility: users_models.EligibilityType) -> None:

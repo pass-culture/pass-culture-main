@@ -1957,24 +1957,6 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     eligibility = users_models.EligibilityType[form.eligibility.data]
-    if form.status.data == fraud_models.FraudReviewStatus.OK.value:
-        if user.has_beneficiary_role and eligibility == users_models.EligibilityType.UNDERAGE:
-            flash(
-                "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)",
-                "warning",
-            )
-            return redirect(get_public_account_link(user_id), code=303)
-
-        has_grant_17_18_deposit = (
-            user.deposit is not None and user.deposit.type == finance_models.DepositType.GRANT_17_18
-        )
-        if has_grant_17_18_deposit and eligibility == users_models.EligibilityType.AGE18:
-            flash(
-                "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 18",
-                "warning",
-            )
-            return redirect(get_public_account_link(user_id), code=303)
-
     try:
         if eligibility == users_models.EligibilityType.AGE18 and user.has_underage_beneficiary_role:
             deposit_api.expire_current_deposit_for_user(user=user)
@@ -1991,6 +1973,19 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
             Markup("Une erreur s'est produite : {message}").format(message=str(exc) or exc.__class__.__name__),
             "warning",
         )
+
+    except subscription_exceptions.InvalidEligibilityTypeException as e:
+        mark_transaction_as_invalid()
+
+        if isinstance(e, subscription_exceptions.UnderageEligibilityWhenAlreadyEighteenException):
+            warning_message = "Le compte est déjà majeur (18+) il ne peut pas aussi être bénéficiaire (15-17)"
+        elif isinstance(e, subscription_exceptions.PreDecreeEligibilityWhenPostDecreeBeneficiaryException):
+            warning_message = "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 15-17 ou 18"
+        else:
+            warning_message = f"L'éligibilité '{eligibility.value}' n'est pas applicable à cet utilisateur"
+
+        flash(warning_message, "warning")
+
     else:
         flash("Validation réussie", "success")
 
