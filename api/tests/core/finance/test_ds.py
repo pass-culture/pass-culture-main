@@ -365,8 +365,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -419,9 +419,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         # that is going to be marked without continuation, it's unlinked.
         # We don't want any Cashflow to be generated using non valid bank accounts
         VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
-        fields_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        fields_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
