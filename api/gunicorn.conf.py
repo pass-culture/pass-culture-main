@@ -64,24 +64,6 @@ def post_fork(server, worker):
         # (total and available) and let Grafana and Alert Manager
         # calculate the ratio.
 
-        # DEPRECATED: use the metrics that aren't post-fixed with the
-        # deployment name in Kubernetes, and filter by the
-        # `role` dimension directly in Kubernetes
-        worker.total_threads = prometheus_client.Gauge(
-            "gunicorn_total_threads_" + KUBERNETES_DEPLOYMENT.replace("-", "_"),
-            "number of total Gunicorn threads",
-            registry=registry,
-            multiprocess_mode="sum",
-        )
-        worker.total_threads.set(worker.cfg.settings["threads"].value)
-        worker.available_threads = prometheus_client.Gauge(
-            "gunicorn_available_threads_" + KUBERNETES_DEPLOYMENT.replace("-", "_"),
-            "number of available Gunicorn threads",
-            registry=registry,
-            multiprocess_mode="sum",
-        )
-        worker.available_threads.set(worker.cfg.settings["threads"].value)
-
         # Use those metrics instead
         worker.total_threads = prometheus_client.Gauge(
             "gunicorn_total_threads",

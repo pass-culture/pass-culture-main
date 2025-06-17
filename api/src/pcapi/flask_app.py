@@ -52,9 +52,15 @@ app = Flask(__name__, static_url_path="/static")
 def setup_metrics(app_: Flask) -> None:
     if not int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0")):
         return
+
+    def get_url_prefix() -> str | None:
+        path = request.path
+        return next((p for p in path.split("/")), None)
+
     prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
         app_,
         group_by="url_rule",
+        default_labels={"url_prefix": get_url_prefix},
     )
     # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
