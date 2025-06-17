@@ -42,7 +42,7 @@ export const VenueSettingsScreen = ({
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
-  const [isSiretValued, setIsSiretValued] = useState(Boolean(venue.siret))
+  const [isSiretValued] = useState(Boolean(venue.siret))
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
 
@@ -120,7 +120,6 @@ export const VenueSettingsScreen = ({
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
           <VenueSettingsForm
-            updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={venue}

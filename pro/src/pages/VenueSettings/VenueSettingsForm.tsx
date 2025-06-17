@@ -31,7 +31,6 @@ import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
-  updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
@@ -39,7 +38,6 @@ interface VenueFormProps {
 
 export const VenueSettingsForm = ({
   offerer,
-  updateIsSiretValued,
   venueTypes,
   venueProviders,
   venue,
@@ -82,9 +80,6 @@ export const VenueSettingsForm = ({
             <FormLayout.Row>
               <SiretOrCommentFields
                 initialSiret={getValues('siret')}
-                isToggleDisabled
-                isCreatedEntity={false}
-                updateIsSiretValued={updateIsSiretValued}
                 siren={offerer.siren}
               />
             </FormLayout.Row>
