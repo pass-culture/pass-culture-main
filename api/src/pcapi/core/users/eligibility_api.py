@@ -232,6 +232,27 @@ def is_user_age_compatible_with_eligibility(
     return False
 
 
+def check_eligibility_is_applicable_to_user(eligibility: users_models.EligibilityType, user: users_models.User) -> None:
+    is_user_eighteen = user.has_beneficiary_role or (user.age is not None and user.age >= constants.ELIGIBILITY_AGE_18)
+    if eligibility == users_models.EligibilityType.UNDERAGE and is_user_eighteen:
+        raise exceptions.UnderageEligibilityWhenAlreadyEighteenException()
+
+    has_grant_17_18_deposit = user.deposit is not None and user.deposit.type == DepositType.GRANT_17_18
+    if eligibility == users_models.EligibilityType.AGE18 and has_grant_17_18_deposit:
+        raise exceptions.PreDecreeEligibilityWhenPostDecreeBeneficiaryException()
+
+
+def add_eligibility_role(user: users_models.User, eligibility: users_models.EligibilityType) -> None:
+    if is_underage_eligibility(eligibility, user.age) and not user.has_underage_beneficiary_role:
+        user.add_underage_beneficiary_role()
+    elif is_18_or_above_eligibility(eligibility, user.age) and not user.has_beneficiary_role:
+        user.add_beneficiary_role()
+    elif eligibility == users_models.EligibilityType.FREE and not user.has_free_beneficiary_role:
+        user.add_free_beneficiary_role()
+    else:
+        raise exceptions.InvalidEligibilityTypeException()
+
+
 def is_underage_eligibility(eligibility: users_models.EligibilityType | None, age: int | None) -> bool:
     if eligibility == users_models.EligibilityType.UNDERAGE:
         return True

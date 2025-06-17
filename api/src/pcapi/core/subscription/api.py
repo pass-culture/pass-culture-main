@@ -105,13 +105,16 @@ def activate_beneficiary_for_eligibility(
     deposit_source: str,
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
+    eligibility_api.check_eligibility_is_applicable_to_user(eligibility, user)
+
     with pcapi_repository.transaction():
         deposit = deposit_api.upsert_deposit(
             user,
             deposit_source=deposit_source,
             eligibility=eligibility,
         )
-        add_eligibility_role(user, eligibility_api.get_activated_eligibility(deposit.type))
+        activated_eligibility = eligibility_api.get_activated_eligibility(deposit.type)
+        eligibility_api.add_eligibility_role(user, activated_eligibility)
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
     transactional_mails.send_accepted_as_beneficiary_email(user=user)
@@ -122,17 +125,6 @@ def activate_beneficiary_for_eligibility(
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     return user
-
-
-def add_eligibility_role(user: users_models.User, eligibility: users_models.EligibilityType) -> None:
-    if eligibility_api.is_underage_eligibility(eligibility, user.age) and not user.has_underage_beneficiary_role:
-        user.add_underage_beneficiary_role()
-    elif eligibility_api.is_18_or_above_eligibility(eligibility, user.age) and not user.has_beneficiary_role:
-        user.add_beneficiary_role()
-    elif eligibility == users_models.EligibilityType.FREE and not user.has_free_beneficiary_role:
-        user.add_free_beneficiary_role()
-    else:
-        raise exceptions.InvalidEligibilityTypeException()
 
 
 def has_completed_profile_for_given_eligibility(

@@ -1352,7 +1352,6 @@ class BeneficiaryInformationUpdateTest:
 
         # when
         beneficiary = users_api.update_user_information_from_external_source(user, beneficiary_information)
-        db.session.refresh(user)
 
         # Then
         assert beneficiary.lastName == "Doe"

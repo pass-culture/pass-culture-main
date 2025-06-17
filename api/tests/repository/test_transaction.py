@@ -31,6 +31,15 @@ class AtomicTest:
         assert db.session.query(UserSession).count() == 0
 
     @pytest.mark.usefixtures("clean_database")
+    def test_atomic_rolls_back_invalid_transaction(self):
+        with atomic():
+            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            db.session.add(user_session)
+            mark_transaction_as_invalid()
+
+        assert db.session.query(UserSession).count() == 0
+
+    @pytest.mark.usefixtures("clean_database")
     def test_atomic_is_reentrant(self):
         user_session = UserSession(userId=1, uuid=uuid.uuid4())
 

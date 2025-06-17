@@ -29,12 +29,12 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import EligibilityType
@@ -1814,7 +1814,7 @@ class ManuallyValidatePhoneNumberTest(PostEndpointHelper):
 
         with patch(
             "pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step",
-            side_effect=subscription_exceptions.InvalidEligibilityTypeException("Test"),
+            side_effect=users_exceptions.InvalidEligibilityTypeException("Test"),
         ):
             response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
 
@@ -2015,7 +2015,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = db.session.query(users_models.User).filter_by(id=user_id).one()
         assert not user.deposits
 
-    def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client, legit_user):
+    def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
@@ -2035,11 +2035,35 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = authenticated_client.get(response.location)
         assert (
-            "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)"
+            "Le compte est déjà majeur (18+) il ne peut pas aussi être bénéficiaire (15-17)"
             in html_parser.extract_alert(response.data)
         )
 
-    def test_pre_decree_eligibility_when_beneficiary_of_post_decree_credit(self, authenticated_client, legit_user):
+    def test_underage_eligibility_when_eighteen(self, authenticated_client):
+        user = users_factories.IdentityValidatedUserFactory(age=18)
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.UNDERAGE.name,
+            "reason": "test",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        user = db.session.query(users_models.User).filter_by(id=user.id).one()
+        assert len(user.beneficiaryFraudReviews) == 0
+        assert user.roles == []
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "Le compte est déjà majeur (18+) il ne peut pas aussi être bénéficiaire (15-17)"
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_pre_decree_eligibility_when_beneficiary_of_post_decree_credit(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
@@ -2053,7 +2077,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
         response = authenticated_client.get(response.location)
         assert (
-            "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 18"
+            "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 15-17 ou 18"
             in html_parser.extract_alert(response.data)
         )
 
