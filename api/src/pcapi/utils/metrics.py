@@ -4,20 +4,21 @@ import time
 from typing import Any
 from urllib.parse import urlparse
 
-import prometheus_client
+from prometheus_client import Counter
+from prometheus_client import Histogram
 
 
 # Global metrics registry to avoid re-registering metrics
-_metrics_registry: dict[str, tuple[prometheus_client.Histogram, prometheus_client.Counter]] = {}
+_metrics_registry: dict[str, tuple[Histogram, Counter]] = {}
 
 
-def get_or_create_http_metrics(name_suffix: str) -> tuple[prometheus_client.Histogram, prometheus_client.Counter]:
+def get_or_create_http_metrics(name_suffix: str) -> tuple[Histogram, Counter]:
     """Get or create Prometheus metrics for HTTP requests with the given prefix."""
     if name_suffix in _metrics_registry:
         return _metrics_registry[name_suffix]
 
     # Create histogram for request duration
-    duration_histogram = prometheus_client.Histogram(
+    duration_histogram = Histogram(
         name=f"http_request_duration_seconds_{name_suffix}",
         documentation=f"Duration of HTTP requests for {name_suffix} in seconds",
         labelnames=["method", "url_pattern", "status_code"],
@@ -25,7 +26,7 @@ def get_or_create_http_metrics(name_suffix: str) -> tuple[prometheus_client.Hist
     )
 
     # Create counter for request count by status code
-    status_counter = prometheus_client.Counter(
+    status_counter = Counter(
         name=f"http_requests_total_{name_suffix}",
         documentation=f"Total number of HTTP requests for {name_suffix}",
         labelnames=["method", "url_pattern", "status_code"],
@@ -53,8 +54,8 @@ class HttpMetricsContext:
         self.method = method
         self.url = url
         self.start_time: float | None = None
-        self.duration_histogram: prometheus_client.Histogram | None = None
-        self.status_counter: prometheus_client.Counter | None = None
+        self.duration_histogram: Histogram | None = None
+        self.status_counter: Counter | None = None
 
     def __enter__(self) -> "HttpMetricsContext":
         if self.name_suffix:
