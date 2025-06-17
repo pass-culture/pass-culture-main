@@ -10,7 +10,7 @@ export const createCollectiveRequestPayload = (
     comment: formValues.description,
     phoneNumber: formValues.teacherPhone,
     requestedDate: isDateValid(formValues.offerDate)
-      ? formValues.offerDate
+      ? new Date(formValues.offerDate).toISOString()
       : undefined,
     totalTeachers: formValues.nbTeachers,
     totalStudents: formValues.nbStudents,

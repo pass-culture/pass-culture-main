@@ -1,9 +1,8 @@
 export interface RequestFormValues {
   teacherEmail: string
   teacherPhone?: string
-  offerDate: string
-  offerTime?: string
-  nbStudents?: number
-  nbTeachers?: number
+  offerDate?: Date | null
+  nbStudents?: number | null
+  nbTeachers?: number | null
   description: string
 }

@@ -1,17 +1,24 @@
-import { useFormik } from 'formik'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'
 import { isDateValid } from 'commons/utils/date'
 import { Dialog } from 'components/Dialog/Dialog'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
+import fullMailIcon from 'icons/full-mail.svg'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
-import { DefaultFormContact } from './DefaultFormContact'
 import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
@@ -48,8 +55,22 @@ export const RequestFormDialog = ({
   const initialValues = {
     teacherEmail: userEmail ?? '',
     description: '',
-    offerDate: '',
+    offerDate: new Date(),
+    teacherPhone: '',
+    nbStudents: 0,
+    nbTeachers: 0,
   }
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<RequestFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+  })
+
   const onSubmit = async (formValues: RequestFormValues) => {
     const payload = createCollectiveRequestPayload(formValues)
     try {
@@ -67,26 +88,21 @@ export const RequestFormDialog = ({
 
   const closeRequestFormDialog = async () => {
     if (!isPreview) {
+      const values = watch()
       await apiAdage.logRequestFormPopinDismiss({
         iframeFrom: location.pathname,
         collectiveOfferTemplateId: offerId,
-        comment: formik.values.description,
-        phoneNumber: formik.values.teacherPhone,
-        requestedDate: isDateValid(formik.values.offerDate)
-          ? new Date(formik.values.offerDate).toISOString()
+        comment: values.description,
+        phoneNumber: values.teacherPhone,
+        requestedDate: isDateValid(values.offerDate)
+          ? new Date(values.offerDate).toISOString()
           : undefined,
-        totalStudents: formik.values.nbStudents,
-        totalTeachers: formik.values.nbTeachers,
+        totalStudents: values.nbStudents,
+        totalTeachers: values.nbTeachers,
       })
     }
     closeModal()
   }
-
-  const formik = useFormik<RequestFormValues>({
-    onSubmit: onSubmit,
-    initialValues: initialValues,
-    validationSchema: validationSchema,
-  })
 
   const logContactUrl = () => {
     apiAdage.logContactUrlClick({
@@ -214,11 +230,6 @@ export const RequestFormDialog = ({
                 fois l’offre publiée.
               </Callout>
             )}
-            <DefaultFormContact
-              closeRequestFormDialog={closeRequestFormDialog}
-              formik={formik}
-              isPreview={isPreview}
-            />
           </>
         )}
     </div>
@@ -257,11 +268,6 @@ export const RequestFormDialog = ({
               l’offre publiée.
             </Callout>
           )}
-          <DefaultFormContact
-            closeRequestFormDialog={closeRequestFormDialog}
-            formik={formik}
-            isPreview={isPreview}
-          />
         </>
       ) : (
         <Callout className={styles['contact-readonly']}>
@@ -282,6 +288,78 @@ export const RequestFormDialog = ({
       refToFocusOnClose={dialogTriggerRef}
     >
       {getDescriptionElement()}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={styles['form-container']}
+      >
+        <FormLayout>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              label="Email"
+              {...register('teacherEmail')}
+              disabled
+              error={errors.teacherEmail?.message}
+            />
+          </FormLayout.Row>
+          <div className={styles['form-row']}>
+            <FormLayout.Row>
+              <PhoneNumberInput
+                label="Téléphone"
+                {...register('teacherPhone')}
+                error={errors.teacherPhone?.message}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row mdSpaceAfter>
+              <DatePicker
+                label="Date souhaitée"
+                {...register('offerDate')}
+                error={errors.offerDate?.message}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row mdSpaceAfter>
+              <TextInput
+                label="Nombre d'élèves"
+                type="number"
+                {...register('nbStudents', { valueAsNumber: true })}
+                error={errors.nbStudents?.message}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row mdSpaceAfter>
+              <TextInput
+                label="Nombre d'accompagnateurs"
+                type="number"
+                isOptional
+                {...register('nbTeachers', { valueAsNumber: true })}
+                error={errors.nbTeachers?.message}
+              />
+            </FormLayout.Row>
+          </div>
+          <FormLayout.Row>
+            <TextArea
+              label="Que souhaitez vous organiser ?"
+              maxLength={1000}
+              {...register('description')}
+              error={errors.description?.message}
+            />
+          </FormLayout.Row>
+          <div className={styles['buttons-container']}>
+            <Button
+              onClick={closeRequestFormDialog}
+              variant={ButtonVariant.SECONDARY}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              iconPosition={IconPositionEnum.LEFT}
+              icon={fullMailIcon}
+              disabled={isPreview}
+            >
+              Envoyer ma demande
+            </Button>
+          </div>
+        </FormLayout>
+      </form>
     </Dialog>
   )
 }
