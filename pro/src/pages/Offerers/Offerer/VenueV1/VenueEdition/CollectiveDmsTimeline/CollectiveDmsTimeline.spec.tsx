@@ -10,7 +10,7 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline'
+import { CollectiveDmsTimeline } from './CollectiveDmsTimeline'
 
 const mockLogEvent = vi.fn()
 

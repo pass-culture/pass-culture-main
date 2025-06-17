@@ -24,8 +24,8 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
         },
       ]}
       domains={[
-        { id: '1', label: 'domain 1' },
-        { id: '2', label: 'domain 2' },
+        { id: '1', label: 'Arts numériques' },
+        { id: '2', label: 'Architecture' },
       ]}
       venue={defaultGetVenue}
     />,
@@ -34,12 +34,29 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
 }
 
 describe('CollectiveDataForm', () => {
+  it('should check collective student', async () => {
+    renderCollectiveDataForm()
+
+    await userEvent.click(screen.getByLabelText('Public cible'))
+
+    const studentCheckbox = screen.getByRole('checkbox', {
+      name: 'Collège - 5e',
+    })
+
+    await userEvent.click(studentCheckbox)
+
+    expect(studentCheckbox).toBeChecked()
+  })
+
   it('should show all student levels when ENABLE_MARSEILLE is on', async () => {
     const featureOverrides = {
       features: ['ENABLE_MARSEILLE'],
     }
+
     renderCollectiveDataForm(featureOverrides)
+
     await userEvent.click(screen.getByLabelText('Public cible'))
+
     expect(
       screen.getByRole('checkbox', { name: 'Écoles Marseille - Maternelle' })
     ).toBeInTheDocument()
@@ -47,9 +64,25 @@ describe('CollectiveDataForm', () => {
 
   it('should show student levels without Marseille options when ENABLE_MARSEILLE is off', async () => {
     renderCollectiveDataForm()
+
     await userEvent.click(screen.getByLabelText('Public cible'))
+
     expect(
       screen.queryByText('Écoles Marseille - Maternelle')
     ).not.toBeInTheDocument()
+  })
+
+  it('should check collective domains', async () => {
+    renderCollectiveDataForm()
+
+    await userEvent.click(screen.getByLabelText('Domaines artistiques'))
+
+    const domainsCheckbox = screen.getByRole('checkbox', {
+      name: 'Architecture',
+    })
+
+    await userEvent.click(domainsCheckbox)
+
+    expect(domainsCheckbox).toBeChecked()
   })
 })
