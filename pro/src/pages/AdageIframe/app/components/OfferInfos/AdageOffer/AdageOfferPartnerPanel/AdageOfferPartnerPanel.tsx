@@ -4,7 +4,6 @@ import {
 } from 'apiClient/adage'
 import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
 import fullLinkIcon from 'icons/full-link.svg'
-import fullMailIcon from 'icons/full-mail.svg'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -115,15 +114,7 @@ export function AdageOfferPartnerPanel({
           userRole={adageUser?.role}
           isPreview={isPreview}
           playlistId={playlistId}
-        >
-          <SvgIcon
-            src={fullMailIcon}
-            alt=""
-            width="20"
-            className={styles['partner-panel-contact-icon']}
-          />{' '}
-          Contacter le partenaire
-        </ContactButton>
+        ></ContactButton>
       </div>
     </div>
   )

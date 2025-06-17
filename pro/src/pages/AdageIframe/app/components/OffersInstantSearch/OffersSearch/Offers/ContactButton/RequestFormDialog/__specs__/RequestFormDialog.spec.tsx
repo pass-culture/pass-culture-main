@@ -1,3 +1,4 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
@@ -12,19 +13,22 @@ import { RequestFormDialog, RequestFormDialogProps } from '../RequestFormDialog'
 
 const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   renderWithProviders(
-    <RequestFormDialog
-      closeModal={vi.fn()}
-      offerId={1}
-      userEmail={'contact@example.com'}
-      userRole={AdageFrontRoles.REDACTOR}
-      contactEmail=""
-      contactForm="form"
-      contactPhone=""
-      contactUrl=""
-      isPreview={false}
-      isDialogOpen
-      {...props}
-    />
+    <Dialog.Root defaultOpen>
+      <Dialog.Content aria-describedby={undefined}>
+        <RequestFormDialog
+          onConfirmDialog={vi.fn()}
+          offerId={1}
+          userEmail={'contact@example.com'}
+          userRole={AdageFrontRoles.REDACTOR}
+          contactEmail=""
+          contactForm="form"
+          contactPhone=""
+          contactUrl=""
+          isPreview={false}
+          {...props}
+        />{' '}
+      </Dialog.Content>
+    </Dialog.Root>
   )
 }
 
@@ -152,7 +156,7 @@ describe('RequestFormDialog', () => {
       close: vi.fn(),
     }))
 
-    renderRequestFormDialog({ closeModal: mockCloseModal })
+    renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
 
     const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
     await userEvent.type(
@@ -169,7 +173,7 @@ describe('RequestFormDialog', () => {
 
     expect(apiAdage.createCollectiveRequest).toHaveBeenCalledWith(1, {
       comment: 'Test description',
-      phoneNumber: '',
+      phoneNumber: undefined,
       requestedDate: today,
       totalTeachers: 0,
       totalStudents: 0,
@@ -190,7 +194,7 @@ describe('RequestFormDialog', () => {
       close: vi.fn(),
     }))
 
-    renderRequestFormDialog({ closeModal: mockCloseModal })
+    renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(
       'Que souhaitez vous organiser ? *'
@@ -248,7 +252,7 @@ describe('RequestFormDialog', () => {
 
   it('should log event when user close modal', async () => {
     const mockCloseModal = vi.fn()
-    renderRequestFormDialog({ closeModal: mockCloseModal })
+    renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(
       'Que souhaitez vous organiser ? *'
