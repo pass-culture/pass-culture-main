@@ -22,7 +22,7 @@ export const validationSchema =
       .required('Veuillez renseigner une adresse email'),
     teacherPhone: yup.string().test({
       name: 'is-phone-valid',
-      message: 'Veuillez entrer un numéro de téléphone valide',
+      message: 'Veuillez renseigner un numéro de téléphone valide',
       test: isPhoneValid,
     }),
     offerDate: yup.string(),
