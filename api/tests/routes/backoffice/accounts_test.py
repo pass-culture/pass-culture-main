@@ -2118,6 +2118,21 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         assert would_be_beneficiary.is_beneficiary
 
 
+class PostAtomicRollbackTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.atomic_rollback_test"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
+
+    def test_atomic_rollback(self, authenticated_client):
+        users_factories.UserFactory(id=1)
+
+        response = self.post_to_endpoint(authenticated_client)
+        assert response.status_code == 303
+
+        trusted_devices = db.session.query(users_models.TrustedDevice).all()
+        assert not trusted_devices, trusted_devices
+
+
 class GetPublicAccountHistoryTest:
     def test_history_contains_creation_date(self):
         user = users_factories.UserFactory()

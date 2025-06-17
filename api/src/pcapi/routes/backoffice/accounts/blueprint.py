@@ -48,6 +48,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
+from pcapi.core.users.models import TrustedDevice
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -1990,6 +1991,16 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Validation réussie", "success")
 
     return redirect(get_public_account_link(user_id), code=303)
+
+
+@public_accounts_blueprint.route("/review/test", methods=["POST"])
+def atomic_rollback_test() -> utils.BackofficeResponse:
+    trusted_device = TrustedDevice(userId=1, deviceId="1")
+    db.session.add(trusted_device)
+    db.session.flush()
+    mark_transaction_as_invalid()
+
+    return redirect(get_public_account_link(1), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])

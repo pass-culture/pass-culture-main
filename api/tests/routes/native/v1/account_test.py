@@ -2298,3 +2298,13 @@ class AnonymizeUserTest:
         assert response.json["code"] == "ALREADY_HAS_PENDING_ANONYMIZATION"
         assert user.isActive
         assert not mails_testing.outbox
+
+
+def test_atomic_rollback(client):
+    users_factories.UserFactory(id=1)
+
+    response = client.post("/native/v1/review/test")
+
+    assert response.status_code == 204
+    trusted_devices = db.session.query(users_models.TrustedDevice).all()
+    assert not trusted_devices, trusted_devices

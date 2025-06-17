@@ -28,6 +28,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -507,3 +508,13 @@ def unsuspend_account(user: users_models.User) -> None:
         raise api_errors.ForbiddenError({"code": "UNSUSPENSION_LIMIT_REACHED"})
 
     api.unsuspend_account(user, actor=user, send_email=True)
+
+
+@blueprint.native_route("/review/test", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@atomic()
+def atomic_rollback_test() -> None:
+    trusted_device = users_models.TrustedDevice(userId=1, deviceId="1")
+    db.session.add(trusted_device)
+    db.session.flush()
+    mark_transaction_as_invalid()
