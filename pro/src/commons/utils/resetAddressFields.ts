@@ -1,7 +1,5 @@
-import { UseFormResetField } from 'react-hook-form'
 
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { AddressFormValues } from 'commons/core/shared/types'
+import { AddressFormValues } from 'commons/core/shared/types';
 
 const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['street', ''],
@@ -16,11 +14,8 @@ const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['addressAutocomplete', ''],
 ])
 
-export function resetReactHookFormAddressFields({
-  resetField,
-}: {
-  resetField: UseFormResetField<OfferEducationalFormValues>
-}) {
+export function resetReactHookFormAddressFields(
+  resetField: { (name: any, defaultValue: any): void }) {
   ;[...fieldsNames.entries()].map(([fieldName, defaultValue]) =>
     resetField(fieldName, { defaultValue: defaultValue })
   )
