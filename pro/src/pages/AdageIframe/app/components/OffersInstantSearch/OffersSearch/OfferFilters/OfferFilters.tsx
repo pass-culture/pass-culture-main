@@ -188,6 +188,11 @@ export const OfferFilters = ({
     ? 'locationType'
     : 'eventAddressType'
 
+  const domainsValue = form.watch('domains')
+  const locationTypeValue = form.watch('locationType')
+  const eventAddressTypeValue = form.watch('eventAddressType')
+  const formatsValue = form.watch('formats')
+  const studentsValue = form.watch('students')
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={className}>
@@ -197,23 +202,20 @@ export const OfferFilters = ({
               <AdageButtonFilter
                 isActive={
                   isCollectiveOaActive
-                    ? form.watch('locationType').length > 0 &&
-                      form.watch('locationType') !==
-                        CollectiveLocationType.TO_BE_DEFINED
-                    : form.watch('eventAddressType').length > 0 &&
-                      form.watch('eventAddressType') !== OfferAddressType.OTHER
+                    ? locationTypeValue.length > 0 &&
+                      locationTypeValue !== CollectiveLocationType.TO_BE_DEFINED
+                    : eventAddressTypeValue.length > 0 &&
+                      eventAddressTypeValue !== OfferAddressType.OTHER
                 }
                 title="Type d’intervention"
                 itemsLength={
                   isCollectiveOaActive
-                    ? form.watch('locationType') &&
-                      form.watch('locationType') !==
-                        CollectiveLocationType.TO_BE_DEFINED
+                    ? locationTypeValue &&
+                      locationTypeValue !== CollectiveLocationType.TO_BE_DEFINED
                       ? 1
                       : null
-                    : form.watch('eventAddressType') &&
-                        form.watch('eventAddressType') !==
-                          OfferAddressType.OTHER
+                    : eventAddressTypeValue &&
+                        eventAddressTypeValue !== OfferAddressType.OTHER
                       ? 1
                       : null
                 }
@@ -394,9 +396,9 @@ export const OfferFilters = ({
                 )}
               </AdageButtonFilter>
               <AdageButtonFilter
-                isActive={form.watch('domains').length > 0}
+                isActive={domainsValue.length > 0}
                 title="Domaine artistique"
-                itemsLength={form.watch('domains').length}
+                itemsLength={domainsValue.length}
                 isOpen={modalOpenStatus['domains']}
                 setIsOpen={setModalOpenStatus}
                 filterName="domains"
@@ -412,7 +414,7 @@ export const OfferFilters = ({
                     label="Rechercher un domaine artistique"
                     options={domainsOptions}
                     isOpen={modalOpenStatus['domains']}
-                    selectedOptions={form.watch('domains')}
+                    selectedOptions={domainsValue}
                     onSelectedOptionsChanged={(selectedItems) =>
                       setMultiselectValue('domains', selectedItems)
                     }
@@ -421,9 +423,9 @@ export const OfferFilters = ({
               </AdageButtonFilter>
 
               <AdageButtonFilter
-                isActive={form.watch('formats').length > 0}
+                isActive={formatsValue.length > 0}
                 title="Format"
-                itemsLength={form.watch('formats').length}
+                itemsLength={formatsValue.length}
                 isOpen={modalOpenStatus['formats']}
                 setIsOpen={setModalOpenStatus}
                 filterName="formats"
@@ -439,7 +441,7 @@ export const OfferFilters = ({
                     label="Rechercher un format"
                     options={formatsOptions}
                     isOpen={modalOpenStatus['formats']}
-                    selectedOptions={form.watch('formats')}
+                    selectedOptions={formatsValue}
                     onSelectedOptionsChanged={(selectedItems) =>
                       setMultiselectValue('formats', selectedItems)
                     }
@@ -448,9 +450,9 @@ export const OfferFilters = ({
               </AdageButtonFilter>
 
               <AdageButtonFilter
-                isActive={form.watch('students').length > 0}
+                isActive={studentsValue.length > 0}
                 title="Niveau scolaire"
-                itemsLength={form.watch('students').length}
+                itemsLength={studentsValue.length}
                 isOpen={modalOpenStatus['students']}
                 setIsOpen={setModalOpenStatus}
                 filterName="students"
@@ -466,7 +468,7 @@ export const OfferFilters = ({
                     label="Rechercher un niveau scolaire"
                     options={studentsOptionsFiltered}
                     isOpen={modalOpenStatus['students']}
-                    selectedOptions={form.watch('students')}
+                    selectedOptions={studentsValue}
                     onSelectedOptionsChanged={(selectedItems) =>
                       setMultiselectValue('students', selectedItems)
                     }
