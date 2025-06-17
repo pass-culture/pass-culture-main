@@ -43,10 +43,11 @@ def offer_fixture():
 def expected_serialized_offer(offer, redactor, offer_venue=None):
     national_program = offer.nationalProgram
     is_favorite = offer.id in {offer.id for offer in redactor.favoriteCollectiveOfferTemplates}
-    address = offer.venue.offererAddress.address
+    venue_address = offer.venue.offererAddress.address
+    offer_venue_address = offer_venue.offererAddress.address if offer_venue and offer_venue.offererAddress else None
     coordinates = {
-        "longitude": float(address.longitude),
-        "latitude": float(address.latitude),
+        "longitude": float(venue_address.longitude),
+        "latitude": float(venue_address.latitude),
     }
 
     return {
@@ -57,16 +58,16 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "name": offer.name,
         "venue": {
             "adageId": offer.venue.adageId,
-            "address": address.street,
-            "city": address.city,
+            "address": venue_address.street,
+            "city": venue_address.city,
             "coordinates": coordinates,
             "distance": None,
             "id": offer.venue.id,
             "imgUrl": offer.venue.bannerUrl,
             "managingOfferer": {"name": offer.venue.managingOfferer.name},
             "name": offer.venue.name,
-            "postalCode": address.postalCode,
-            "departmentCode": address.departmentCode,
+            "postalCode": venue_address.postalCode,
+            "departmentCode": venue_address.departmentCode,
             "publicName": offer.venue.publicName,
         },
         "interventionArea": offer.interventionArea,
@@ -83,11 +84,11 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "addressType": offer.offerVenue["addressType"],
             "venueId": offer.offerVenue["venueId"],
             "otherAddress": offer.offerVenue["otherAddress"],
-            "address": offer_venue.street if offer_venue else None,
-            "city": offer_venue.city if offer_venue else None,
+            "address": offer_venue_address.street if offer_venue_address else None,
+            "city": offer_venue_address.city if offer_venue_address else None,
             "distance": None,
             "name": offer_venue.name if offer_venue else None,
-            "postalCode": offer_venue.postalCode if offer_venue else None,
+            "postalCode": offer_venue_address.postalCode if offer_venue_address else None,
             "publicName": offer_venue.publicName if offer_venue else None,
         },
         "location": None,

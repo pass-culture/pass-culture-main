@@ -197,6 +197,8 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
         offer: educational_models.CollectiveOffer,
         offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferResponseModel":
+        offer_venue_address = offerVenue.offererAddress.address if offerVenue and offerVenue.offererAddress else None
+
         return cls(
             id=offer.id,
             description=offer.description,
@@ -209,9 +211,9 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             offerVenue=CollectiveOfferOfferVenue(
                 name=offerVenue.name if offerVenue else None,
                 publicName=offerVenue.publicName if offerVenue else None,
-                address=offerVenue.street if offerVenue else None,
-                postalCode=offerVenue.postalCode if offerVenue else None,
-                city=offerVenue.city if offerVenue else None,
+                address=offer_venue_address.street if offer_venue_address else None,
+                postalCode=offer_venue_address.postalCode if offer_venue_address else None,
+                city=offer_venue_address.city if offer_venue_address else None,
                 distance=None,
                 addressType=offer.offerVenue["addressType"],  # type: ignore[arg-type]
                 venueId=offer.offerVenue["venueId"],
@@ -263,6 +265,8 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         else:
             dates = None
 
+        offer_venue_address = offerVenue.offererAddress.address if offerVenue and offerVenue.offererAddress else None
+
         return cls(
             id=offer.id,
             description=offer.description,
@@ -274,9 +278,9 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             offerVenue=CollectiveOfferOfferVenue(
                 name=offerVenue.name if offerVenue else None,
                 publicName=offerVenue.publicName if offerVenue else None,
-                address=offerVenue.street if offerVenue else None,
-                postalCode=offerVenue.postalCode if offerVenue else None,
-                city=offerVenue.city if offerVenue else None,
+                address=offer_venue_address.street if offer_venue_address else None,
+                postalCode=offer_venue_address.postalCode if offer_venue_address else None,
+                city=offer_venue_address.city if offer_venue_address else None,
                 distance=None,
                 addressType=offer.offerVenue["addressType"],  # type: ignore[arg-type]
                 venueId=offer.offerVenue["venueId"],

@@ -12,7 +12,6 @@ from pcapi.core.testing import assert_num_queries
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-
 stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
