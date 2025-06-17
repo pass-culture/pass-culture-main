@@ -1,30 +1,26 @@
 {% extends "layouts/base.html" %}
 {% set page_title = "Connexion" %}
 {% block content %}
-  <div class="container pc-login-container">
-    <div class="row">
-      <div class="col-md-8 col-lg-6 offset-lg-2">
-        <div class="card p-5">
-          <div class="d-flex justify-content-between align-items-start">
-            <img src="{{ url_for('static', filename='backoffice/icons/republique-francaise.svg') }}"
-                 class="government-logo"
-                 alt="Logo du Gouvernement Français"
-                 width="135" />
-            <img src="{{ url_for('static', filename='backoffice/icons/passculture.svg') }}"
-                 class="pass-culture-logo"
-                 alt="Logo du pass Culture" />
-          </div>
-          <hr class="my-5" />
-          <h1>Connexion au backoffice</h1>
-          <div>
-            <a href="{{ url_for('backoffice_web.login') }}"
-               class="btn mt-5 btn-outline-primary-subtle-bg">Se connecter via Google</a>
-          </div>
+<div class="container pc-login-container">
+  <div class="row">
+    <div class="col-md-8 col-lg-6 offset-lg-2">
+      <div class="card p-5">
+        <div class="d-flex justify-content-between align-items-start">
+          <img src="{{ url_for('static', filename='backoffice/icons/republique-francaise.svg') }}"
+            class="government-logo" alt="Logo du Gouvernement Français" width="135" />
+          <img src="{{ url_for('static', filename='backoffice/icons/passculture.svg') }}" class="pass-culture-logo"
+            alt="Logo du pass Culture" />
+        </div>
+        <hr class="my-5" />
+        <h1>Test déploiement BO</h1>
+        <div>
+          <a href="{{ url_for('backoffice_web.login') }}" class="btn mt-5 btn-outline-primary-subtle-bg">Se connecter
+            via Google</a>
         </div>
       </div>
     </div>
   </div>
-  <img src="{{ url_for('static', filename='backoffice/login/background.svg') }}"
-       class="pc-login-background"
-       alt="fond d'écran pass Culture" />
+</div>
+<img src="{{ url_for('static', filename='backoffice/login/background.svg') }}" class="pc-login-background"
+  alt="fond d'écran pass Culture" />
 {% endblock content %}
