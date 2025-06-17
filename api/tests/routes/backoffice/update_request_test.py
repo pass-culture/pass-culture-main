@@ -19,6 +19,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date_time
+from pcapi.utils import requests
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -1249,6 +1250,25 @@ class AskForCorrectionTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : dossier non trouvé"
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_ds_unavailable(self, mock_execute_query, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(user__email="original@example.com")
+
+        mock_execute_query.side_effect = requests.exceptions.HTTPError()
+
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
+        assert response.status_code == 303
+        mock_execute_query.assert_called_once()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+        assert len(mails_testing.outbox) == 0
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : La connexion à Démarches-Simplifiées a échoué :"
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")

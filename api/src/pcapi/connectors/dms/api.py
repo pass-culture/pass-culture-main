@@ -127,11 +127,20 @@ class DMSGraphQLClient:
             variables["input"]["correction"] = "incorrect"
         try:
             return self.execute_query(SEND_USER_MESSAGE_QUERY_NAME, variables)
+        except gql_exceptions.TransportQueryError as exc:
+            raise exceptions.DmsGraphQLApiError(exc.errors)
+        except requests_exception.RequestException as exc:
+            # DS unavailability does not need to be notified as an error in Sentry
+            logger.warning(
+                "[DMS] Connection error when sending user message",
+                extra={"application_scalar_id": application_scalar_id},
+            )
+            raise exceptions.DmsGraphQLAPIConnectError(str(exc))
         except Exception:
             logger.exception(
                 "DMS : unexpected error when sending message", extra={"application_scalar_id": application_scalar_id}
             )
-            return None
+            raise exceptions.DmsGraphQLApiException()
 
     def _execute_mutation(
         self,
