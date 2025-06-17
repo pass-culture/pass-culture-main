@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { SubcategoryIdEnum, WithdrawalTypeEnum } from 'apiClient/v1'
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -247,9 +247,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       externalTicketOfficeUrl: 'https://chuck.no',
       url: undefined,
       visualDisabilityCompliant: false,
-      withdrawalDelay: null,
+      withdrawalDelay: undefined,
       withdrawalDetails: 'My information',
-      withdrawalType: WithdrawalTypeEnum.NO_TICKET,
+      withdrawalType: undefined,
     })
   })
 

@@ -75,7 +75,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       withdrawalDetails:
         DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
-      withdrawalType: WithdrawalTypeEnum.NO_TICKET,
+      withdrawalType: undefined,
       bookingEmail: '',
       bookingContact: undefined,
       receiveNotificationEmails: false,
