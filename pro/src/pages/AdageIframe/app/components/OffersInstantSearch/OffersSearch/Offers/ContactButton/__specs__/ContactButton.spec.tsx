@@ -35,7 +35,7 @@ describe('ContactButton', () => {
     renderContactButton(defaultProps)
 
     const contactButton = screen.getByRole('button', {
-      name: 'Contacter',
+      name: 'Contacter le partenaire',
     })
     await userEvent.click(contactButton)
 
@@ -53,7 +53,7 @@ describe('ContactButton', () => {
     renderContactButton(defaultProps)
 
     const contactButton = screen.getByRole('button', {
-      name: 'Contacter',
+      name: 'Contacter le partenaire',
     })
     await userEvent.click(contactButton)
 

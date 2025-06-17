@@ -1,15 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import * as Dialog from '@radix-ui/react-dialog'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { useNotification } from 'commons/hooks/useNotification'
 import { isDateValid } from 'commons/utils/date'
-import { Dialog } from 'components/Dialog/Dialog'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import { DefaultFormContact } from './DefaultFormContact'
@@ -18,7 +20,6 @@ import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
 
 export interface RequestFormDialogProps {
-  closeModal: () => void
   offerId: number
   userEmail?: string | null
   userRole?: AdageFrontRoles
@@ -27,12 +28,11 @@ export interface RequestFormDialogProps {
   contactForm: string
   contactUrl: string
   isPreview: boolean
-  isDialogOpen: boolean
+  onConfirmDialog: () => void
   dialogTriggerRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const RequestFormDialog = ({
-  closeModal,
   offerId,
   userEmail,
   userRole,
@@ -41,8 +41,7 @@ export const RequestFormDialog = ({
   contactForm,
   contactUrl,
   isPreview,
-  isDialogOpen,
-  dialogTriggerRef,
+  onConfirmDialog,
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
 
@@ -60,24 +59,29 @@ export const RequestFormDialog = ({
     resolver: yupResolver(validationSchema),
   })
 
-  const { watch } = hookForm
+  const {
+    watch,
+    reset,
+    formState: { isSubmitting },
+  } = hookForm
 
   const onSubmit = async () => {
     const payload = createCollectiveRequestPayload(hookForm.getValues())
     try {
       await apiAdage.createCollectiveRequest(offerId, payload)
       notify.success('Votre demande a bien été envoyée')
-      closeModal()
+      reset()
     } catch {
       notify.error(
         'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
       )
-      closeModal()
+      reset()
       return
     }
+    onConfirmDialog()
   }
 
-  const closeRequestFormDialog = async () => {
+  const onCancel = async () => {
     if (!isPreview) {
       await apiAdage.logRequestFormPopinDismiss({
         iframeFrom: location.pathname,
@@ -91,7 +95,7 @@ export const RequestFormDialog = ({
         totalTeachers: watch('nbTeachers'),
       })
     }
-    closeModal()
+    reset()
   }
 
   const logContactUrl = () => {
@@ -221,11 +225,7 @@ export const RequestFormDialog = ({
               </Callout>
             )}
             <FormProvider {...hookForm}>
-              <DefaultFormContact
-                closeRequestFormDialog={closeRequestFormDialog}
-                submit={onSubmit}
-                isPreview={isPreview}
-              />
+              <DefaultFormContact />
             </FormProvider>
           </>
         )}
@@ -266,11 +266,7 @@ export const RequestFormDialog = ({
             </Callout>
           )}
           <FormProvider {...hookForm}>
-            <DefaultFormContact
-              closeRequestFormDialog={closeRequestFormDialog}
-              submit={onSubmit}
-              isPreview={isPreview}
-            />
+            <DefaultFormContact />
           </FormProvider>
         </>
       ) : (
@@ -283,15 +279,41 @@ export const RequestFormDialog = ({
   )
 
   return (
-    <Dialog
-      extraClassNames={styles['dialog-container']}
-      onCancel={closeRequestFormDialog}
-      title="Vous souhaitez contacter ce partenaire ?"
-      hideIcon
-      open={isDialogOpen}
-      refToFocusOnClose={dialogTriggerRef}
-    >
-      {getDescriptionElement()}
-    </Dialog>
+    <>
+      <Dialog.DialogTitle>
+        Vous souhaitez contacter ce partenaire ?
+      </Dialog.DialogTitle>
+
+      <form
+        onSubmit={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          return hookForm.handleSubmit(onSubmit)(e)
+        }}
+      >
+        {getDescriptionElement()}
+        <DialogBuilder.Footer>
+          <div className={styles['buttons-container']}>
+            <Dialog.Close asChild>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                onClick={onCancel}
+                type="button"
+              >
+                Annuler
+              </Button>
+            </Dialog.Close>
+            <Button
+              type="submit"
+              variant={ButtonVariant.PRIMARY}
+              isLoading={isSubmitting}
+              disabled={isPreview}
+            >
+              Envoyer ma demande
+            </Button>
+          </div>
+        </DialogBuilder.Footer>
+      </form>
+    </>
   )
 }

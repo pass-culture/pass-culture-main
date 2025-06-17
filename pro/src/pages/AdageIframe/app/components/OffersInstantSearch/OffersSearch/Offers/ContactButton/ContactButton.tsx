@@ -2,7 +2,10 @@ import React, { useRef, useState } from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import fullMailIcon from 'icons/full-mail.svg'
 import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { RequestFormDialog } from './RequestFormDialog/RequestFormDialog'
 
@@ -23,7 +26,6 @@ export interface ContactButtonProps {
 }
 
 export const ContactButton = ({
-  className,
   contactEmail,
   contactPhone,
   contactForm,
@@ -33,17 +35,18 @@ export const ContactButton = ({
   userEmail,
   userRole,
   isInSuggestions,
-  children,
   isPreview = false,
   playlistId,
 }: ContactButtonProps): JSX.Element => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const dialogTriggerRef = useRef<HTMLButtonElement>(null)
 
-  const handleButtonClick = () => {
-    setIsModalOpen(true)
+  const onConfirmDialog = () => {
+    setIsDialogOpen(false)
+  }
 
+  const handleButtonClick = () => {
     if (!isPreview) {
       apiAdage.logContactModalButtonClick({
         iframeFrom: location.pathname,
@@ -55,23 +58,22 @@ export const ContactButton = ({
     }
   }
 
-  const closeModal = () => {
-    setIsModalOpen(false)
-  }
-
   return (
-    <>
-      <div className={`prebooking-button-container ${className}`}>
+    <DialogBuilder
+      variant="drawer"
+      trigger={
         <Button
-          className="prebooking-button"
+          variant={ButtonVariant.PRIMARY}
+          icon={fullMailIcon}
           onClick={handleButtonClick}
-          ref={dialogTriggerRef}
         >
-          {children ?? 'Contacter'}
+          Contacter le partenaire
         </Button>
-      </div>
+      }
+      open={isDialogOpen}
+      onOpenChange={setIsDialogOpen}
+    >
       <RequestFormDialog
-        closeModal={closeModal}
         offerId={offerId}
         userEmail={userEmail}
         userRole={userRole}
@@ -80,9 +82,9 @@ export const ContactButton = ({
         contactUrl={contactUrl ?? ''}
         contactForm={contactForm ?? ''}
         isPreview={isPreview}
-        isDialogOpen={isModalOpen}
         dialogTriggerRef={dialogTriggerRef}
+        onConfirmDialog={onConfirmDialog}
       />
-    </>
+    </DialogBuilder>
   )
 }

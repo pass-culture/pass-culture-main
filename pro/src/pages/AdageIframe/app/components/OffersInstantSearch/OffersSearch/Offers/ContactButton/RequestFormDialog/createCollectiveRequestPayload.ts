@@ -8,7 +8,7 @@ export const createCollectiveRequestPayload = (
 ): PostCollectiveRequestBodyModel => {
   return {
     comment: formValues.description,
-    phoneNumber: formValues.teacherPhone,
+    phoneNumber: formValues.teacherPhone ? formValues.teacherPhone : undefined,
     requestedDate: isDateValid(formValues.offerDate)
       ? formValues.offerDate
       : undefined,
