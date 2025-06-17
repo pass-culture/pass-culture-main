@@ -28,7 +28,7 @@ import {
 import {
   CollectiveDataEdition,
   CollectiveDataEditionProps,
-} from '../CollectiveDataEdition'
+} from './CollectiveDataEdition'
 
 // RomainC: we need this mock to accelerate this test
 // it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments'
@@ -195,7 +195,7 @@ describe('CollectiveDataEdition', () => {
 
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       await userEvent.type(phoneField, '0612345678')
-      await userEvent.click(screen.getByText('Annuler et quitter'))
+      await userEvent.click(screen.getByText('Annuler'))
 
       await waitFor(() =>
         expect(
@@ -391,7 +391,7 @@ describe('CollectiveDataEdition', () => {
       await userEvent.type(emailField, 'email@domain.com')
 
       const submitButton = screen.getByRole('button', {
-        name: 'Enregistrer et quitter',
+        name: 'Enregistrer',
       })
       expect(submitButton).not.toBeDisabled()
       await userEvent.click(submitButton)
@@ -410,7 +410,7 @@ describe('CollectiveDataEdition', () => {
     await userEvent.type(emailField, 'email@domain.com')
 
     const submitButton = screen.getByRole('button', {
-      name: 'Enregistrer et quitter',
+      name: 'Enregistrer',
     })
     await userEvent.click(submitButton)
 

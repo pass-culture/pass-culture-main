@@ -1,8 +1,9 @@
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 
-import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../CollectiveDataForm/initialValues'
-import { extractInitialValuesFromVenue } from '../CollectiveDataForm/utils/extractInitialValuesFromVenue'
+import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
+
+import { extractInitialValuesFromVenue } from './extractInitialValuesFromVenue'
 
 describe('extractInitialValuesFromVenue', () => {
   it('should extract initial values', () => {
@@ -34,9 +35,6 @@ describe('extractInitialValuesFromVenue', () => {
       collectiveDomains: ['1'],
       collectiveInterventionArea:
         COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveInterventionArea,
-      'search-collectiveDomains': '',
-      'search-collectiveInterventionArea': '',
-      'search-collectiveStudents': '',
     })
   })
 })

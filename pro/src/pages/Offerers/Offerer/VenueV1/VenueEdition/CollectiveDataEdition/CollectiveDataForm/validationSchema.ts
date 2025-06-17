@@ -2,9 +2,12 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { emailSchema } from 'commons/utils/isValidEmail'
+import { extractPhoneParts } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+
+import { CollectiveDataFormValues } from './type'
 
 const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone) {
+  if (!phone || !extractPhoneParts(phone).phoneNumber) {
     return true
   }
 
@@ -13,7 +16,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
-export const validationSchema = yup.object().shape({
+export const validationSchema = yup.object<CollectiveDataFormValues>().shape({
   collectiveDescription: yup.string(),
   collectiveStudents: yup.array(),
   collectiveWebsite: yup
@@ -26,4 +29,7 @@ export const validationSchema = yup.object().shape({
     test: isPhoneValid,
   }),
   collectiveEmail: yup.string().test(emailSchema),
+  collectiveDomains: yup.array(),
+  collectiveLegalStatus: yup.string(),
+  collectiveInterventionArea: yup.array(),
 })

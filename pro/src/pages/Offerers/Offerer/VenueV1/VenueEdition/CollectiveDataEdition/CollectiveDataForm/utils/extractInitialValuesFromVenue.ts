@@ -16,8 +16,5 @@ export const extractInitialValuesFromVenue = (
       domain.id.toString()
     ),
     collectiveInterventionArea: venue.collectiveInterventionArea ?? [],
-    'search-collectiveStudents': '',
-    'search-collectiveDomains': '',
-    'search-collectiveInterventionArea': '',
   }
 }
