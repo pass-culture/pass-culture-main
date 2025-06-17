@@ -61,16 +61,18 @@ export const FiltersTags = ({
   )
 
   const getOfferAdressTypeTag = () => {
+    const eventAddressTypeValue = form.watch('eventAddressType')
+    const locationTypeValue = form.watch('locationType')
     if (
-      form.watch('eventAddressType') === OfferAddressType.OTHER &&
-      form.watch('locationType') === CollectiveLocationType.TO_BE_DEFINED
+      eventAddressTypeValue === OfferAddressType.OTHER &&
+      locationTypeValue === CollectiveLocationType.TO_BE_DEFINED
     ) {
       return <></>
     }
 
     const label =
-      form.watch('eventAddressType') === OfferAddressType.OFFERER_VENUE ||
-      form.watch('locationType') === CollectiveLocationType.ADDRESS
+      eventAddressTypeValue === OfferAddressType.OFFERER_VENUE ||
+      locationTypeValue === CollectiveLocationType.ADDRESS
         ? 'Sortie chez un partenaire culturel'
         : 'Intervention d’un partenaire culturel dans mon établissement'
 
@@ -99,11 +101,12 @@ export const FiltersTags = ({
   }
 
   const getVenueTag = () => {
-    if (!form.watch('venue')) {
+    const venueValue = form.watch('venue')
+    if (!venueValue) {
       return null
     }
     const venueDisplayName = `Lieu :  ${
-      form.watch('venue')?.publicName || form.watch('venue')?.name
+      venueValue.publicName || venueValue.name
     }`
     return createTag(venueDisplayName, () => {
       form.setValue('venue', null)
@@ -111,67 +114,72 @@ export const FiltersTags = ({
     })
   }
 
+  const academiesValue = form.watch('academies')
+  const departmentsValue = form.watch('departments')
+  const domainsValue = form.watch('domains')
+  const studentsValue = form.watch('students')
+  const formatsValue = form.watch('formats')
   return (
     <div className={styles.container}>
       {getVenueTag()}
       {getOfferAdressTypeTag()}
       {getGeoLocalisationTag()}
-      {form.watch('academies').map((academy) =>
+      {academiesValue.map((academy) =>
         createTag(academy, () => {
-          if (form.watch('academies').length === 1) {
+          if (academiesValue.length === 1) {
             setLocalisationFilterState(LocalisationFilterStates.NONE)
           }
           form.setValue(
             'academies',
-            form.watch('academies').filter((x) => x !== academy)
+            academiesValue.filter((x) => x !== academy)
           )
           onSubmit()
         })
       )}
-      {form.watch('departments').map((department) =>
+      {departmentsValue.map((department) =>
         createTag(
           departmentOptions.find((dpt) => dpt.value === department)?.label ||
             '',
           () => {
-            if (form.watch('departments').length === 1) {
+            if (departmentsValue.length === 1) {
               setLocalisationFilterState(LocalisationFilterStates.NONE)
             }
             form.setValue(
               'departments',
-              form.watch('departments').filter((x) => x !== department)
+              departmentsValue.filter((x) => x !== department)
             )
             onSubmit()
           }
         )
       )}
-      {form.watch('domains').map((domain) =>
+      {domainsValue.map((domain) =>
         createTag(
           domainsOptions.find((dmn) => dmn.value === Number(domain))?.label ||
             '',
           () => {
             form.setValue(
               'domains',
-              form.watch('domains').filter((x) => x !== domain)
+              domainsValue.filter((x) => x !== domain)
             )
             onSubmit()
           }
         )
       )}
-      {form.watch('students').map((student) =>
+      {studentsValue.map((student) =>
         createTag(student, () => {
           form.setValue(
             'students',
-            form.watch('students').filter((x) => x !== student)
+            studentsValue.filter((x) => x !== student)
           )
           onSubmit()
         })
       )}
 
-      {form.watch('formats').map((format) =>
+      {formatsValue.map((format) =>
         createTag(format, () => {
           form.setValue(
             'formats',
-            form.watch('formats').filter((x) => x !== format)
+            formatsValue.filter((x) => x !== format)
           )
           onSubmit()
         })
