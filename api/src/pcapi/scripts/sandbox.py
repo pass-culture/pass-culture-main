@@ -11,7 +11,7 @@ blueprint = Blueprint(__name__, __name__)
 @blueprint.cli.command("sandbox")
 @click.option("-n", "--name", help="Sandbox name", default="classic")
 @click.option("-c", "--clean", help="Clean database first", default="true")
-@click.option("-c", "--clean-bucket", help="Clean mediation bucket", default="false")
+@click.option("-cb", "--clean-bucket", help="Clean mediation bucket", default="false")
 def sandbox(name: str, clean: str, clean_bucket: str) -> None:
     if settings.CAN_RUN_SANDBOX:
         with_clean = clean == "true"
