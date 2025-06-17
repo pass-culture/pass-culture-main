@@ -5490,7 +5490,8 @@ class DeleteOffersAndAllRelatedObjectsTest:
     @pytest.mark.parametrize(
         "error", [sa.exc.IntegrityError("bad query", "<params>", "<orig>"), Exception("bad query")]
     )
-    def test_function_does_not_stop_if_error_occurs_at_a_random_round(self, caplog, error):
+    @mock.patch("pcapi.core.offers.api._fix_price_categories", return_value=None)  # avoid interference with test
+    def test_function_does_not_stop_if_error_occurs_at_a_random_round(self, mock_fix_price_categories, caplog, error):
         offers = self.build_many_eligible_for_search_offers_with_related_objects()
         offer_ids = [offer.id for offer in offers]
 
@@ -5517,6 +5518,35 @@ class DeleteOffersAndAllRelatedObjectsTest:
             factories.StockFactory.create_batch(2, offer=offer)
             users_factories.FavoriteFactory(offer=offer)
         return offers
+
+    def test_delete_offer_with_price_categories(self, caplog):
+        venue = offerers_factories.VenueFactory()
+        shared_label = factories.PriceCategoryLabelFactory(label="Tarif partagé", venue=venue)
+        unique_label = factories.PriceCategoryLabelFactory(label="Tarif non partagé", venue=venue)
+        offer = factories.EventOfferFactory(venue=venue)
+        category_1 = factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=10)
+        category_2 = factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=20)
+        factories.EventStockFactory(offer=offer, priceCategory=category_1)
+        factories.EventStockFactory(offer=offer, priceCategory=category_2)
+        other_offer = factories.EventOfferFactory(venue=venue)
+        other_category = factories.PriceCategoryFactory(offer=other_offer, priceCategoryLabel=shared_label, price=30)
+        other_stock = factories.EventStockFactory(offer=other_offer, priceCategory=other_category)
+        stock_with_wrong_category = factories.EventStockFactory(offer__venue=venue, priceCategory=category_1)
+
+        offer_id = offer.id
+
+        with caplog.at_level(logging.ERROR):
+            api.delete_offers_and_all_related_objects([offer_id])
+
+        assert caplog.records == []
+
+        assert_offers_have_been_completely_cleaned([offer_id])
+
+        assert len(other_offer.priceCategories) == 1
+        assert other_offer.priceCategories[0].priceCategoryLabel.label == "Tarif partagé"
+        assert other_stock.priceCategory == other_category
+        assert stock_with_wrong_category.priceCategory == category_1
+        assert category_1.offer == stock_with_wrong_category.offer
 
 
 @pytest.mark.usefixtures("db_session")
