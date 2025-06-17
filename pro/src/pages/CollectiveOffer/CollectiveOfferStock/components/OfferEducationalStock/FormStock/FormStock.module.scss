@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_outline.scss" as outline;
 
 .input-date svg {
   width: rem.torem(20px);
@@ -14,11 +15,35 @@
 }
 
 .custom-field-layout {
-  max-width: rem.torem(110px);
+  width: rem.torem(110px);
+  min-width: rem.torem(110px);
 }
 
 .layout-row {
   flex-wrap: wrap;
+}
+
+.label-container {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(8px);
+}
+
+.help-button {
+  border: none;
+  background-color: unset;
+  cursor: pointer;
+  padding: 0;
+  min-height: 0;
+  margin-left: rem.torem(4px);
+  margin-top: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--color-icon-brand-primary);
+
+  &:focus-visible {
+    @include outline.focus-outline;
+  }
 }
 
 @media (min-width: size.$tablet) {

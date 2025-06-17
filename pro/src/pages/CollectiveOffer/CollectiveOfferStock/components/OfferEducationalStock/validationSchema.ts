@@ -1,4 +1,4 @@
-import { isBefore, isSameDay } from 'date-fns'
+import { isAfter, isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
 import { MAX_PRICE_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
@@ -19,32 +19,31 @@ const isBookingDateBeforeStartDate = (
     return true
   }
 
-  if (
-    bookingLimitDatetime.toLocaleDateString() ===
-    context.parent.startDatetime.toLocaleDateString()
-  ) {
-    return true
-  }
-
-  return bookingLimitDatetime < context.parent.startDatetime
+  return (
+    isBefore(bookingLimitDatetime, context.parent.startDatetime) ||
+    isSameDay(bookingLimitDatetime, context.parent.startDatetime)
+  )
 }
 
-function isBookingDateAfterNow(bookingLimitDatetime: Date | null | undefined) {
+function isBookingDateAfterNow(
+  bookingLimitDatetime: string | null | undefined
+) {
   if (!bookingLimitDatetime) {
     return true
   }
 
-  return !isBefore(new Date(bookingLimitDatetime), todayAtMidnight())
+  return !isBefore(bookingLimitDatetime, todayAtMidnight())
 }
 
 export const generateValidationSchema = (
   preventPriceIncrease: boolean,
-  initialPrice: number | '',
+  initialPrice: number | null,
   isReadOnly: boolean
 ) => {
   let totalPriceValidation = yup
     .number()
     .nullable()
+    .transform((value) => (Number.isNaN(value) ? null : value))
     .min(0, 'Nombre positif attendu')
     .max(60000, 'Le prix ne doit pas dépasser 60 000€')
     .required('Le prix total TTC est obligatoire')
@@ -57,39 +56,46 @@ export const generateValidationSchema = (
 
   return yup.object().shape({
     startDatetime: yup
-      .date()
-      .nullable()
+      .string()
       .required('La date de début est obligatoire')
       .when([], {
         is: () => !preventPriceIncrease,
         then: (schema) =>
-          schema.min(
-            todayAtMidnight(),
-            "La date de l’évènement doit être supérieure à aujourd'hui"
+          schema.test(
+            'is-after-today',
+            "La date de l’évènement doit être supérieure à aujourd'hui",
+            function (startDate) {
+              return !isBefore(startDate, todayAtMidnight())
+            }
           ),
       }),
     endDatetime: yup
-      .date()
-      .nullable()
+      .string()
       .required('La date de fin est obligatoire')
       .when([], {
         is: () => !preventPriceIncrease,
         then: (schema) =>
           schema
-            .min(
-              todayAtMidnight(),
-              "La date de l’évènement doit être supérieure à aujourd'hui"
+            .test(
+              'is-after-today',
+              "La date de l’évènement doit être supérieure à aujourd'hui",
+              function (endDate) {
+                return !isBefore(endDate, todayAtMidnight())
+              }
             )
-            .test({
-              message: 'Les dates doivent être sur la même année scolaire',
-              test: (value, context) =>
-                value <=
-                getMaxEndDateInSchoolYear(context.parent.startDatetime),
-            }),
+            .test(
+              'is-same-year',
+              'Les dates doivent être sur la même année scolaire',
+              function (endDate) {
+                return !isAfter(
+                  endDate,
+                  getMaxEndDateInSchoolYear(this.parent.startDatetime)
+                )
+              }
+            ),
       }),
     eventTime: yup
       .string()
-      .nullable()
       .required('L’horaire est obligatoire')
       .when('startDatetime', {
         is: (startDatetime: string) =>
@@ -111,31 +117,32 @@ export const generateValidationSchema = (
       }),
     numberOfPlaces: yup
       .number()
-      .nullable()
+      .transform((value) => (Number.isNaN(value) ? null : value))
       .min(1, 'Minimum 1 participant')
       .max(3000, 'Le nombre de participants ne doit pas dépasser 3000')
+      .nullable()
       .required('Le nombre de participants est obligatoire'),
     totalPrice: totalPriceValidation,
     bookingLimitDatetime: yup
-      .date()
+      .string()
       .required('La date limite de réservation est obligatoire')
-      .test({
-        message:
-          'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
-        test: (value, context) => isBookingDateBeforeStartDate(value, context),
-      })
-      .test({
-        message:
-          'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-        test: (value) => isBookingDateAfterNow(value) || isReadOnly,
-      }),
+      .test(
+        'is-before-event',
+        'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
+        function (bookingDate) {
+          return isBookingDateBeforeStartDate(new Date(bookingDate), this)
+        }
+      )
+      .test(
+        'is-after-today',
+        'La date limite de réservation doit être égale ou postérieure à la date actuelle',
+        function (endDate) {
+          return isReadOnly || isBookingDateAfterNow(endDate)
+        }
+      ),
     priceDetail: yup
       .string()
       .required('L’information sur le prix est obligatoire')
       .max(MAX_PRICE_DETAILS_LENGTH),
   })
 }
-
-export const showcaseOfferValidationSchema = yup
-  .object()
-  .shape({ priceDetail: yup.string().nullable().max(MAX_PRICE_DETAILS_LENGTH) })

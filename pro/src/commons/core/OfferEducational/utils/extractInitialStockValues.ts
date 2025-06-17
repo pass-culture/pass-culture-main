@@ -9,7 +9,7 @@ import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from '../constants'
-import { OfferEducationalStockFormValues, EducationalOfferType } from '../types'
+import { OfferEducationalStockFormValues } from '../types'
 
 export const extractInitialStockValues = (
   offer: GetCollectiveOfferResponseModel,
@@ -96,6 +96,5 @@ export const extractInitialStockValues = (
     priceDetail:
       collectiveStock.educationalPriceDetail ??
       DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
-    educationalOfferType: EducationalOfferType.CLASSIC,
   }
 }
