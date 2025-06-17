@@ -16,6 +16,7 @@ type CELLS =
   | 'STOCKS'
   | 'COLLECTIVE_STATUS'
   | 'INDIVIDUAL_STATUS'
+  | 'INDIVIDUAL_BOOKINGS'
   | 'ACTIONS'
 
 export function getCellsDefinition(
@@ -69,6 +70,10 @@ export function getCellsDefinition(
     INDIVIDUAL_STATUS: {
       id: 'offer-head-status',
       title: isRefactoFutureOfferEnabled ? 'Publication' : 'Statut',
+    },
+    INDIVIDUAL_BOOKINGS: {
+      id: 'offer-head-bookings',
+      title: 'Réservations',
     },
     ACTIONS: {
       id: 'offer-head-actions',
