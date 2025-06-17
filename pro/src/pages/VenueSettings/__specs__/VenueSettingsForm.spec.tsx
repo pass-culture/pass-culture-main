@@ -55,7 +55,6 @@ function renderVenueSettingsForm(
           <VenueSettingsForm
             {...defaultProps}
             offerer={offerer}
-            updateIsSiretValued={() => {}}
             venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={defaultGetVenue}

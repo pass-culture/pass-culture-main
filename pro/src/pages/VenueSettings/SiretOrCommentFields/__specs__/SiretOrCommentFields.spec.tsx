@@ -58,23 +58,22 @@ function renderSiretOrComment(
   renderWithProviders(<Wrapper />, options)
 }
 
-describe('components | SiretOrCommentFields', () => {
+describe('SiretOrCommentFields', () => {
   let props: SiretOrCommentFieldsProps
 
   beforeEach(() => {
     const setIsFieldNameFrozen = vi.fn()
-    const updateIsSiretValued = vi.fn()
 
     props = {
-      isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
-      updateIsSiretValued: updateIsSiretValued,
       siren: '123456789',
+      initialSiret: '12345678901234',
     }
   })
 
-  it('should display Siret by default', () => {
+  it('should display Siret when siret is provided', () => {
     renderSiretOrComment(props)
+
     const siretField = screen.getByLabelText('SIRET de la structure *')
     expect(siretField).toBeInTheDocument()
     const commentField = screen.queryByText(
@@ -83,13 +82,12 @@ describe('components | SiretOrCommentFields', () => {
     expect(commentField).not.toBeInTheDocument()
   })
 
-  it('should display comment field when toggle is clicked', async () => {
-    renderSiretOrComment(props)
-
-    const toggle = screen.getByRole('button', {
-      name: 'Cette structure possède un SIRET',
+  it('should display comment field when there is no siret', () => {
+    renderSiretOrComment({
+      ...props,
+      initialSiret: '',
     })
-    await userEvent.click(toggle)
+
     const siretField = screen.queryByText('SIRET de la structure')
     expect(siretField).not.toBeInTheDocument()
     const commentField = screen.getByLabelText(
@@ -99,16 +97,6 @@ describe('components | SiretOrCommentFields', () => {
       }
     )
     expect(commentField).toBeInTheDocument()
-  })
-
-  it('should display toggle disabled', () => {
-    props.isToggleDisabled = true
-    renderSiretOrComment(props)
-
-    const toggle = screen.getByRole('button', {
-      name: 'Cette structure possède un SIRET',
-    })
-    expect(toggle).toBeDisabled()
   })
 
   describe('should validate SIRET on submit', () => {
@@ -126,17 +114,7 @@ describe('components | SiretOrCommentFields', () => {
         siret: '',
       })
 
-      const isCreatedEntity = false
-
-      renderSiretOrComment({ ...props, isCreatedEntity })
-
-      const input = screen.queryByLabelText(/SIRET de la structure/i)
-
-      if (!input) {
-        const isCreatedEntity = true
-
-        renderSiretOrComment({ ...props, isCreatedEntity })
-      }
+      renderSiretOrComment({ ...props })
 
       // Find input again after rerender
       const siretInput = screen.getByLabelText(/SIRET de la structure/i)
@@ -296,12 +274,14 @@ describe('components | SiretOrCommentFields', () => {
 
   describe('should validate comment on submit', () => {
     it('should display error message if comment empty', async () => {
-      renderSiretOrComment(props, false)
+      renderSiretOrComment(
+        {
+          ...props,
+          initialSiret: '',
+        },
+        false
+      )
 
-      const toggle = screen.getByRole('button', {
-        name: 'Cette structure possède un SIRET',
-      })
-      await userEvent.click(toggle)
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Enregistrer',
@@ -312,14 +292,5 @@ describe('components | SiretOrCommentFields', () => {
         screen.getByText('Veuillez renseigner un commentaire')
       ).toBeInTheDocument()
     })
-  })
-
-  it('should display InfoBox when SIRET is selected', () => {
-    renderSiretOrComment(props)
-    expect(
-      screen.getByText(
-        /Le SIRET de la structure doit être lié au SIREN de votre entitée juridique/i
-      )
-    ).toBeInTheDocument()
   })
 })
