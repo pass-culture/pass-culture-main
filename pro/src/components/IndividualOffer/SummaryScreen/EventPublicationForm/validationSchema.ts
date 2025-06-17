@@ -4,6 +4,7 @@ import * as yup from 'yup'
 import { isDateValid } from 'commons/utils/date'
 
 export const validationSchema = yup.object().shape({
+  publicationMode: yup.string<'now' | 'later'>().required(),
   publicationDate: yup.string().when('publicationMode', {
     is: (publicationMode: string) => publicationMode === 'later',
     then: (schema) =>
@@ -31,6 +32,7 @@ export const validationSchema = yup.object().shape({
     then: (schema) =>
       schema.required('Veuillez sélectionner une heure de publication'),
   }),
+  bookingAllowedMode: yup.string<'now' | 'later'>().required(),
   bookingAllowedDate: yup.string().when('bookingAllowedMode', {
     is: (bookingAllowedMode: string) => bookingAllowedMode === 'later',
     then: (schema) =>
