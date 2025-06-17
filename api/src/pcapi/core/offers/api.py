@@ -2224,8 +2224,41 @@ def delete_offers_stocks_related_objects(offer_ids: typing.Collection[int]) -> N
         ).delete(synchronize_session=False)
 
 
+def _fix_price_categories(offer_ids: typing.Collection[int]) -> None:
+    # In production database, we still have many price categories used in a stocks associated with different offers,
+    # whereas by model, a PriceCategory should be used only in stocks for PriceCategory.offer.
+    # So `ondelete="CASCADE"` set on PriceCategory.offerId makes offer deletion fail when not all these different offers
+    # are deleted at the same time.
+    # Instead of running a script which duplicates price categories to ensure that one is linked to stocks of a single
+    # offer, the choice is made here to reassign price category to the Stock.offer which persists after running
+    # delete_offers_and_all_related_objects, so that the PriceCategory is not deleted and there is no IntegrityError.
+    stocks = (
+        db.session.query(models.Stock)
+        .join(models.Stock.priceCategory)
+        .filter(
+            models.Stock.offerId.not_in(offer_ids),
+            models.PriceCategory.offerId.in_(offer_ids),
+        )
+        .options(
+            sa_orm.load_only(models.Stock.offerId, models.Stock.priceCategoryId),
+            sa_orm.contains_eager(models.Stock.priceCategory).load_only(models.PriceCategory.offerId),
+        )
+        .all()
+    )
+
+    if not stocks:
+        return
+
+    for stock in stocks:
+        stock.priceCategory.offerId = stock.offerId
+        db.session.add(stock.priceCategory)
+
+    db.session.flush()
+
+
 def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
     delete_offers_stocks_related_objects(offer_ids)
+    _fix_price_categories(offer_ids)
 
     related_models = [
         models.Stock,
