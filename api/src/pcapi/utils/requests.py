@@ -15,8 +15,8 @@ Usage:
     response = requests.post(
         "https://api.example.com/book",
         json=payload,
-        enable_metrics=True,
-        metrics_prefix="external_booking"
+        record_metrics=True,
+        metric_name_suffix="external_booking"
     )
 """
 
@@ -71,54 +71,42 @@ def _wrapper(
     request_send_func: Callable,
     request: requests.PreparedRequest,
     log_info: bool,
-    enable_metrics: bool = False,
-    metric_name_suffix: str = "",
     **kwargs: Any,
 ) -> requests.Response:
     if not kwargs.get("timeout"):
         kwargs["timeout"] = REQUEST_TIMEOUT_IN_SECOND
 
-    # Use metrics context if enabled
-    metrics_context = HttpMetricsContext(
-        name_suffix=metric_name_suffix if enable_metrics else "",
-        method=request.method or "UNKNOWN",
-        url=request.url or "",
-    )
+    try:
+        response = request_send_func(request, **kwargs)
+    except Exception as exc:
+        logger.warning(
+            "Call to external service failed with %s",
+            exc,
+            extra={
+                "method": request.method,
+                "url": _redact_url(request.url),
+            },
+        )
+        raise exc
 
-    with metrics_context:
-        try:
-            response = request_send_func(request, **kwargs)
-            # Record successful response status code
-            metrics_context.record_response(response.status_code)
-        except Exception as exc:
-            logger.warning(
-                "Call to external service failed with %s",
-                exc,
-                extra={
-                    "method": request.method,
-                    "url": _redact_url(request.url),
-                },
-            )
-            raise exc
-
-        if log_info:
-            logger.info(
-                "External service called",
-                extra={
-                    "url": _redact_url(response.url),
-                    "statusCode": response.status_code,
-                    "duration": response.elapsed.total_seconds(),
-                },
-            )
-        return response
+    if log_info:
+        logger.info(
+            "External service called",
+            extra={
+                "url": _redact_url(response.url),
+                "statusCode": response.status_code,
+                "duration": response.elapsed.total_seconds(),
+            },
+        )
+    return response
 
 
 def get(
     url: str,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
-    enable_metrics: bool = False,
-    metrics_prefix: str = "",
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
     **kwargs: Any,
 ) -> requests.Response:
     return request(
@@ -126,8 +114,8 @@ def get(
         url,
         disable_synchronous_retry=disable_synchronous_retry,
         log_info=log_info,
-        enable_metrics=enable_metrics,
-        metrics_prefix=metrics_prefix,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
         **kwargs,
     )
 
@@ -137,8 +125,8 @@ def post(
     hmac: str | None = None,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
-    enable_metrics: bool = False,
-    metrics_prefix: str = "",
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
     **kwargs: Any,
 ) -> requests.Response:
     if hmac:
@@ -148,8 +136,8 @@ def post(
         url,
         disable_synchronous_retry=disable_synchronous_retry,
         log_info=log_info,
-        enable_metrics=enable_metrics,
-        metrics_prefix=metrics_prefix,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
         **kwargs,
     )
 
@@ -158,8 +146,8 @@ def put(
     url: str,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
-    enable_metrics: bool = False,
-    metrics_prefix: str = "",
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
     **kwargs: Any,
 ) -> requests.Response:
     return request(
@@ -167,8 +155,8 @@ def put(
         url,
         disable_synchronous_retry=disable_synchronous_retry,
         log_info=log_info,
-        enable_metrics=enable_metrics,
-        metrics_prefix=metrics_prefix,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
         **kwargs,
     )
 
@@ -177,8 +165,8 @@ def delete(
     url: str,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
-    enable_metrics: bool = False,
-    metrics_prefix: str = "",
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
     **kwargs: Any,
 ) -> requests.Response:
     return request(
@@ -186,8 +174,8 @@ def delete(
         url,
         disable_synchronous_retry=disable_synchronous_retry,
         log_info=log_info,
-        enable_metrics=enable_metrics,
-        metrics_prefix=metrics_prefix,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
         **kwargs,
     )
 
@@ -197,15 +185,15 @@ def request(
     url: str,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
-    enable_metrics: bool = False,
-    metrics_prefix: str = "",
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
     **kwargs: Any,
 ) -> requests.Response:
     with Session(
         disable_synchronous_retry=disable_synchronous_retry,
         log_info=log_info,
-        enable_metrics=enable_metrics,
-        metrics_prefix=metrics_prefix,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
     ) as session:
         return session.request(method=method, url=url, **kwargs)
 
@@ -216,14 +204,16 @@ class Session(requests.Session):
         *args: Any,
         disable_synchronous_retry: bool = False,
         log_info: bool = True,
-        enable_metrics: bool = False,
-        metrics_prefix: str = "",
+        record_metrics: bool = False,
+        metric_name_suffix: str | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.log_info = log_info
-        self.enable_metrics = enable_metrics
-        self.metrics_prefix = metrics_prefix
+        if record_metrics and metric_name_suffix is not None:
+            raise ValueError("metric_name_suffix is required when record_metrics is True")
+        self.record_metrics = record_metrics
+        self.metric_name_suffix = metric_name_suffix
 
         if disable_synchronous_retry:
             return
@@ -234,14 +224,19 @@ class Session(requests.Session):
         self.mount("http://", adapter)
 
     def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
-        return _wrapper(
-            super().send,
-            request,
-            self.log_info,
-            enable_metrics=self.enable_metrics,
-            metric_name_suffix=self.metrics_prefix,
-            **kwargs,
-        )
+        if self.record_metrics and self.metric_name_suffix is not None:
+            metrics_context = HttpMetricsContext(
+                name_suffix=self.metric_name_suffix,
+                method=request.method or "UNKNOWN",
+                url=request.url or "",
+            )
+
+            with metrics_context:
+                response = _wrapper(super().send, request, self.log_info, **kwargs)
+                metrics_context.record_response(response.status_code)
+                return response
+        else:
+            return _wrapper(super().send, request, self.log_info, **kwargs)
 
 
 class CustomZeepTransport(zeep.Transport):
