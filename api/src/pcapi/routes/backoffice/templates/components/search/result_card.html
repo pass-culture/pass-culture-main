@@ -1,12 +1,18 @@
-{% from "components/badges.html" import build_pro_user_status_badge %}
+{% import "components/badges.html" as badges %}
 <div class="card shadow">
   <div class="card-body">
     <h5 class="mb-3">
-      {% if not row.isActive %}{{ row.isActive | format_state | format_badge("primary") }}{% endif %}
-      {% for role in row.roles %}{{ role | format_role(deposits=row.deposits) | format_badge("primary") }}{% endfor %}
-      {% if result_type == "user" %}
-        {# only set for pro user, don't fetch from user_offerer for others #}
-        {{ build_pro_user_status_badge(row) }}
+      {% if not row.isActive or row.roles or (result_type != "user" and row.tags) or (result_type == "user" and (row.proValidationStatus.value in ("VALIDATED", "PENDING", "NEW"))) %}
+        {% call badges.badges_container() %}
+          {% if not row.isActive %}{{ row.isActive | format_state | format_badge("primary") }}{% endif %}
+          {% for role in row.roles %}{{ role | format_role(deposits=row.deposits) | format_badge("primary") }}{% endfor %}
+          {% if result_type == "user" %}
+            {# only set for pro user, don't fetch from user_offerer for others #}
+            {{ badges.build_pro_user_status_badge(row) }}
+          {% else %}
+            {% for tag in row.tags %}{{ tag | format_badge("secondary") }}{% endfor %}
+          {% endif %}
+        {% endcall %}
       {% endif %}
     </h5>
     {% if result_type == "user" %}

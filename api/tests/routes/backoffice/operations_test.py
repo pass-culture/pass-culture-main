@@ -1,4 +1,5 @@
 import datetime
+import re
 from unittest.mock import patch
 
 import pytest
@@ -422,6 +423,55 @@ class GetEventDetailsTest(GetEndpointHelper):
             f"{response_non_beneficiary.user.full_name} ({response_non_beneficiary.user.id})",
             f"{response_suspended.user.full_name} ({response_suspended.user.id})",
         }
+
+    @staticmethod
+    def _extract_user_id_from_cell(cell_tag):
+        raw_text = html_parser.filter_whitespaces(cell_tag.text)
+        match = re.search("\ \((?P<user_id>\d+)\)", raw_text)
+        return match.groupdict().get("user_id") if match else None
+
+    def test_display_user_tags(self, authenticated_client):
+        tag1 = users_factories.UserTagFactory(name="tag1")
+        tag2 = users_factories.UserTagFactory(label="Tag 2")
+        user1 = users_factories.UserFactory(tags=[tag1, tag2])
+        user2 = users_factories.UserFactory()
+        event = operations_factories.SpecialEventFactory(
+            externalId="fake00001",
+            title="A",
+            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+        special_event_id = event.id
+        name_question = operations_factories.SpecialEventQuestionFactory(
+            event=event,
+            externalId="00001-abcde-00001",
+            title="Comment t'appelles-tu ?",
+        )
+
+        full_response1 = operations_factories.SpecialEventResponseFactory(
+            event=event, status=operations_models.SpecialEventResponseStatus.PRESELECTED, user=user1
+        )
+        operations_factories.SpecialEventAnswerFactory(
+            responseId=full_response1.id, questionId=name_question.id, text="Jean A"
+        )
+
+        full_response2 = operations_factories.SpecialEventResponseFactory(
+            event=event, status=operations_models.SpecialEventResponseStatus.PRESELECTED, user=user2
+        )
+        operations_factories.SpecialEventAnswerFactory(
+            responseId=full_response2.id, questionId=name_question.id, text="Jean B"
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, special_event_id=special_event_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, td_text_only=False)
+        assert len(rows) == 2
+        assert {self._extract_user_id_from_cell(e["Candidat"]) for e in rows} == {str(user1.id), str(user2.id)}
+        tags1 = [r["Tags"] for r in rows if self._extract_user_id_from_cell(r["Candidat"]) == str(user1.id)][0]
+        tags2 = [r["Tags"] for r in rows if self._extract_user_id_from_cell(r["Candidat"]) == str(user2.id)][0]
+        assert set(html_parser.extract_badges(tags1.decode())) == {"tag1", "Tag 2"}
+        assert html_parser.filter_whitespaces(tags2.text) == ""
 
     def test_only_one_line_for_multiple_deposits(self, authenticated_client):
         user = users_factories.UserFactory(roles=[users_models.UserRole.BENEFICIARY])

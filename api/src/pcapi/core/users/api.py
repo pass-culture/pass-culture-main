@@ -1058,6 +1058,9 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
 
 def search_public_account(search_query: str) -> BaseQuery:
     public_accounts = get_public_account_base_query()
+    public_accounts = public_accounts.options(
+        sa_orm.joinedload(models.User.tags).load_only(models.UserTag.id, models.UserTag.name, models.UserTag.label),
+    )
 
     return _filter_user_accounts(public_accounts, search_query)
 

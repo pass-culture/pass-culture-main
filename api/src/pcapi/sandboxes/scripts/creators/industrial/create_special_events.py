@@ -3,6 +3,7 @@ import logging
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.operations import factories as operations_factories
+from pcapi.core.users import factories as users_factories
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ def create_special_events() -> None:
 
 
 def _create_special_event_with_date() -> None:
+    tag_book_club = users_factories.UserTagFactory(label="Membre du book club")
+    tag_cine_club = users_factories.UserTagFactory(label="Membre du ciné club")
     event_date = datetime.date.today() + datetime.timedelta(days=15)
     event = operations_factories.SpecialEventFactory.create(
         externalId="fake00001", title="Jeu concours : gagne une place de concert", eventDate=event_date
@@ -38,7 +41,9 @@ def _create_special_event_with_date() -> None:
         title="Explique-nous pourquoi tu souhaites être sélectionné !",
     )
 
-    good_response = operations_factories.SpecialEventResponseFactory.create(event=event)
+    good_response = operations_factories.SpecialEventResponseFactory.create(
+        event=event, user__tags=[tag_book_club, tag_cine_club]
+    )
     operations_factories.SpecialEventAnswerFactory.create(
         responseId=good_response.id, questionId=date_question.id, text="Oui !"
     )
@@ -49,7 +54,7 @@ def _create_special_event_with_date() -> None:
         responseId=good_response.id, questionId=why_question.id, text="Parce que j'adore la squad interne !"
     )
 
-    terrible_response = operations_factories.SpecialEventResponseFactory.create(event=event)
+    terrible_response = operations_factories.SpecialEventResponseFactory.create(event=event, user__tags=[tag_book_club])
     operations_factories.SpecialEventAnswerFactory.create(
         responseId=terrible_response.id, questionId=date_question.id, text="Non, je boude."
     )
@@ -57,7 +62,7 @@ def _create_special_event_with_date() -> None:
         responseId=terrible_response.id, questionId=why_question.id, text="Je veux pas parce que je boude."
     )
 
-    long_response = operations_factories.SpecialEventResponseFactory.create(event=event)
+    long_response = operations_factories.SpecialEventResponseFactory.create(event=event, user__tags=[tag_cine_club])
     operations_factories.SpecialEventAnswerFactory.create(
         responseId=long_response.id, questionId=date_question.id, text="Je suis tout à fait disponible"
     )

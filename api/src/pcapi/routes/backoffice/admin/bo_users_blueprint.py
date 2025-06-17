@@ -63,6 +63,8 @@ def search_bo_users() -> utils.BackofficeResponse:
         sa_orm.joinedload(users_models.User.action_history),
         # deposits is used to compute the role tag in the card; joinedload to avoid N+1 query
         sa_orm.joinedload(users_models.User.deposits),
+        # tags is used to display the account tag in the card; joinedload to avoid N+1 query
+        sa_orm.joinedload(users_models.User.tags),
     )
 
     paginated_rows = paginate(

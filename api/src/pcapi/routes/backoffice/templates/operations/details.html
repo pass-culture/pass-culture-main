@@ -63,6 +63,7 @@
   <th>Candidatures totales</th>
   <th>Participations effectives</th>
   <th>Éligibilité</th>
+  <th>Tags</th>
   <th>Date de réponse</th>
 {% endblock table_header %}
 {% block table_body %}
@@ -142,6 +143,13 @@
           {% for role in response.user.roles %}{{ role | format_role(deposits=response.user.deposits) | format_badge("primary") }}{% endfor %}
         {% else %}
           -
+        {% endif %}
+      </td>
+      <td>
+        {% if response.user and row.account_tags %}
+          {% call badges.badges_container() %}
+            {% for tag in row.account_tags %}{{ tag | format_badge("secondary") }}{% endfor %}
+          {% endcall %}
         {% endif %}
       </td>
       <td>{{ response.dateSubmitted | format_date_time }}</td>

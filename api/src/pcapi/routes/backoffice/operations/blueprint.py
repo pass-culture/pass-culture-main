@@ -202,12 +202,22 @@ def _get_special_event_responses(
     if response_status_data := response_form.response_status.data:
         response_rows_filters.append(operations_models.SpecialEventResponse.status.in_(response_status_data))
 
+    account_tags_subquery = (
+        sa.select(sa.func.array_agg(sa.func.coalesce(users_models.UserTag.label, users_models.UserTag.name)))
+        .select_from(users_models.UserTag)
+        .join(users_models.UserTagMapping)
+        .filter(users_models.UserTagMapping.userId == users_models.User.id)
+        .correlate(users_models.User)
+        .scalar_subquery()
+    )
+
     response_rows_query = (
         db.session.query(
             operations_models.SpecialEventResponse,
             full_answers_subquery.label("full_answers"),
             try_count_subquery.label("try_count"),
             selected_count_subquery.label("selected_count"),
+            account_tags_subquery.label("account_tags"),
         )
         .filter(*response_rows_filters)
         .outerjoin(operations_models.SpecialEventResponse.user)

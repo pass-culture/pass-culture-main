@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 sentinel = ...
 
 
-def _filter_whitespaces(text: str) -> str:
+def filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
@@ -17,11 +17,14 @@ def get_soup(html_content: str, from_encoding: str = "utf-8") -> BeautifulSoup:
 
 def content_as_text(html_content: str, from_encoding: str = "utf-8") -> str:
     soup = get_soup(html_content, from_encoding=from_encoding)
-    return _filter_whitespaces(soup.text)
+    return filter_whitespaces(soup.text)
 
 
 def extract_table_rows(
-    html_content: str, parent_class: str | None = None, table_id: str | None = None
+    html_content: str,
+    parent_class: str | None = None,
+    table_id: str | None = None,
+    td_text_only: bool = True,
 ) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
@@ -73,7 +76,11 @@ def extract_table_rows(
         assert len(td_list) == len(headers)
         for idx, td in enumerate(td_list):
             if headers[idx]:
-                row_data[headers[idx]] = _filter_whitespaces(td.text)
+                if td_text_only:
+                    row_data[headers[idx]] = filter_whitespaces(td.text)
+                else:
+                    row_data[headers[idx]] = td
+
         rows.append(row_data)
 
     return rows
@@ -137,7 +144,7 @@ def extract(html_content: str, tag: str = "div", class_: str | None = None) -> l
         elements = soup.find_all(tag)
     else:
         elements = soup.select(f"{tag}.{class_.replace(' ', '.')}")
-    return [_filter_whitespaces(element.text) for element in elements]
+    return [filter_whitespaces(element.text) for element in elements]
 
 
 def extract_cards_text(html_content: str) -> list[str]:
@@ -166,7 +173,7 @@ def extract_alert(html_content: str, raise_if_not_found: bool = True) -> str | N
         return None
 
     assert alert is not None
-    return _filter_whitespaces(alert.text)
+    return filter_whitespaces(alert.text)
 
 
 def get_tag(html_content: str, class_: str = sentinel, tag: str = "div", **attrs: typing.Any) -> str:
@@ -191,7 +198,7 @@ def extract_alerts(html_content: str) -> list[str]:
     alerts = soup.find_all("div", class_="alert")
     assert alerts
 
-    return [_filter_whitespaces(alert.text) for alert in alerts]
+    return [filter_whitespaces(alert.text) for alert in alerts]
 
 
 def assert_no_alert(html_content: str) -> None:
@@ -214,7 +221,7 @@ def extract_select_options(html_content: str, name: str, selected_only: bool = F
 
     options = select.find_all("option", selected=selected_only or None)
 
-    return {option["value"]: _filter_whitespaces(option.text) for option in options if option["value"]}
+    return {option["value"]: filter_whitespaces(option.text) for option in options if option["value"]}
 
 
 def extract_input_value(html_content: str, name: str) -> str:
@@ -247,7 +254,7 @@ def extract_accessibility_badges(html_content: str) -> dict[str, str]:
         badge_soup = get_soup(div.encode("utf-8"))
         badge_caption = badge_soup.find("figcaption")
         assert badge_caption is not None
-        badge_text = _filter_whitespaces(badge_caption.text)
+        badge_text = filter_whitespaces(badge_caption.text)
         has_ok_icon = badge_soup.find("i", class_="bi-check-circle-fill") is not None
         has_nok_icon = badge_soup.find("i", class_="bi-x-circle-fill") is not None
         assert has_ok_icon != has_nok_icon  # cannot be ok and nok at the same time

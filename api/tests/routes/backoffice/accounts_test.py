@@ -585,6 +585,32 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         user_ids = {user_id_from_card(card_text) for card_text in cards_text}
         assert user_ids == {str(user2.id), str(user4.id)}
 
+    def test_display_accounts_tags(self, authenticated_client):
+        tag1 = users_factories.UserTagFactory(label="Tag 1")
+        tag2 = users_factories.UserTagFactory(name="tag-2")
+        tag3 = users_factories.UserTagFactory(label="Tag 3")
+        user1 = users_factories.UserFactory(tags=[tag1, tag2], firstName="jean", lastName="un")
+        user2 = users_factories.UserFactory(tags=[tag3], firstName="jean", lastName="deux")
+        users_factories.UserFactory(tags=[], firstName="robert", lastName="trois")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="jean"))
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        cards = soup.find_all(class_="card")
+        assert len(cards) == 2
+
+        user_ids = {user_id_from_card(html_parser.filter_whitespaces(card.text)) for card in cards}
+        assert user_ids == {str(user1.id), str(user2.id)}
+        card1 = [c for c in cards if user_id_from_card(html_parser.filter_whitespaces(c.text)) == str(user1.id)][0]
+        card2 = [c for c in cards if user_id_from_card(html_parser.filter_whitespaces(c.text)) == str(user2.id)][0]
+
+        card1_badges = html_parser.extract_badges(card1.encode())
+        card2_badges = html_parser.extract_badges(card2.encode())
+        assert set(card1_badges) == {"Tag 1", "tag-2"}
+        assert set(card2_badges) == {"Tag 3"}
+
     def test_search_suspended_public_account_data(self, authenticated_client):
         underage, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
         # we must have at least two results so that it does not redirect to details page and we can check cards content
