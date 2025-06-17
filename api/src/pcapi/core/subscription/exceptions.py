@@ -6,10 +6,6 @@ class IneligiblePostalCodeException(SubscriptionException):
     pass
 
 
-class InvalidEligibilityTypeException(SubscriptionException):
-    pass
-
-
 class InvalidAgeException(SubscriptionException):
     def __init__(self, age: int | None) -> None:
         super().__init__()

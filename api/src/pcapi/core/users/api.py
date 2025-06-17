@@ -283,7 +283,6 @@ def _update_user_information(
     user.remove_admin_role()
 
     db.session.add(user)
-    db.session.flush()
 
     return user
 

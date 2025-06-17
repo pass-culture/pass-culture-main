@@ -594,9 +594,6 @@ def handle_ok_manual_review(
     try:
         subscription_api.activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)
 
-    except subscription_exceptions.InvalidEligibilityTypeException as err:
-        raise EligibilityError(f"L'éligibilité '{eligibility.value}' n'est pas applicable à cet utilisateur") from err
-
     except subscription_exceptions.InvalidAgeException as err:
         err_msg = (
             "L'âge de l'utilisateur à l'inscription n'a pas pu être déterminé"

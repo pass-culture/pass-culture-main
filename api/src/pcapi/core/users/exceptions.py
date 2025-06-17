@@ -121,3 +121,15 @@ class UserNotEligible(DiscordException):
 
 class UnknownDepositType(Exception):
     pass
+
+
+class InvalidEligibilityTypeException(Exception):
+    pass
+
+
+class UnderageEligibilityWhenAlreadyEighteenException(InvalidEligibilityTypeException):
+    pass
+
+
+class PreDecreeEligibilityWhenPostDecreeBeneficiaryException(InvalidEligibilityTypeException):
+    pass

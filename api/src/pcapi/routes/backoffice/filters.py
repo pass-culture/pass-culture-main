@@ -970,6 +970,8 @@ def format_eligibility_type(eligibility_type: users_models.EligibilityType) -> s
             return "Ancien Pass 18"
         case users_models.EligibilityType.AGE17_18:
             return "Pass 17-18"
+        case users_models.EligibilityType.FREE:
+            return "Pass 15-16"
         case _:
             return eligibility_type.value
 
