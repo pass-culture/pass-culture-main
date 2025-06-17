@@ -2,10 +2,8 @@ import datetime
 from unittest.mock import patch
 
 import pytest
-import sqlalchemy.orm as sa_orm
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -492,7 +490,7 @@ class Returns200Test:
             }
         ]
 
-    def should_OK(self):
+    def should_not_list_offers_from_soft_deleted_venues(self):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -507,113 +505,6 @@ class Returns200Test:
 
         offers = offers_repository.get_offers_by_filters(user_id=pro.id, user_is_admin=False).all()
         assert len(offers) == 1
-
-    def should_xo(self):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.EventOfferFactory(venue=venue)
-        offers_factories.EventOfferFactory(venue=soft_deleted_venue)
-
-        soft_deleted_venue.isSoftDeleted = True
-        db.session.add(soft_deleted_venue)
-        db.session.flush()
-
-        query = offers_repository.get_offers_by_filters(user_id=pro.id, user_is_admin=False)
-        query_with_options = (
-            query.options(
-                sa_orm.load_only(
-                    offers_models.Offer.id,
-                    offers_models.Offer.name,
-                    offers_models.Offer.isActive,
-                    offers_models.Offer.subcategoryId,
-                    offers_models.Offer.validation,
-                    offers_models.Offer.ean,
-                    offers_models.Offer._extraData,
-                    offers_models.Offer.lastProviderId,
-                    offers_models.Offer.offererAddressId,
-                    offers_models.Offer.url,
-                ),
-                sa_orm.joinedload(offers_models.Offer.headlineOffers),
-            )
-            .options(
-                sa_orm.joinedload(offers_models.Offer.venue)
-                .load_only(
-                    offerers_models.Venue.id,
-                    offerers_models.Venue.name,
-                    offerers_models.Venue.publicName,
-                    offerers_models.Venue.departementCode,
-                    offerers_models.Venue.isVirtual,
-                )
-                .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
-                sa_orm.joinedload(offers_models.Offer.venue)
-                .joinedload(offerers_models.Venue.offererAddress)
-                .joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(offers_models.Offer.venue)
-                .joinedload(offerers_models.Venue.offererAddress)
-                .with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
-                ),
-            )
-            .limit(100)
-        )
-        assert len(query_with_options.all()) == 1
-
-    def should_xo2(self):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.EventOfferFactory(venue=venue)
-        offers_factories.EventOfferFactory(venue=soft_deleted_venue)
-
-        soft_deleted_venue.isSoftDeleted = True
-        db.session.add(soft_deleted_venue)
-        db.session.flush()
-
-        query = offers_repository.get_offers_by_filters(user_id=pro.id, user_is_admin=False)
-        aliased_venue = sa_orm.aliased(offerers_models.Venue, name="my_venue")
-        query_with_options = query.join(aliased_venue, offers_models.Offer.venueId == aliased_venue.id).limit(100)
-        assert len(query_with_options.all()) == 1
-
-    def should_not_return_soft_deleted_venues(self, client):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        event_offer = offers_factories.EventOfferFactory(venue=venue)
-        soft_deleted_venue_event_offer = offers_factories.EventOfferFactory(venue=soft_deleted_venue)
-
-        offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19))
-        offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 22, 13, 19))
-        offers_factories.EventStockFactory(
-            offer=soft_deleted_venue_event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
-        )
-        offers_factories.EventStockFactory(
-            offer=soft_deleted_venue_event_offer, beginningDatetime=datetime.datetime(2022, 9, 22, 13, 19)
-        )
-        authenticated_client = client.with_session_auth(email=pro.email)
-
-        from pcapi.models import db
-
-        db.session.flush()
-
-        soft_deleted_venue.isSoftDeleted = True
-        db.session.add(soft_deleted_venue)
-        db.session.flush()
-
-        with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get("/offers")
-        assert response.status_code == 200
-
-        assert len(response.json) == 1
 
     def should_return_offers_filtered_by_offerer_address(self, client):
         pro = users_factories.ProFactory()

@@ -7,6 +7,7 @@ from pcapi.core import testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -234,3 +235,27 @@ def test_invalid_active_offerer_only(client):
     with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
         response = client.get("/venues", params)
         assert response.status_code == 400
+
+
+def test_only_return_non_softdeleted_venues(client):
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    offerers_factories.VenueFactory(managingOfferer=offerer)
+    soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+    # We can't set the isSoftDeleted within the factories. It will crash due to the venue
+    # not being found.
+    soft_deleted_venue.isSoftDeleted = True
+    db.session.add(soft_deleted_venue)
+    db.session.flush()
+
+    client = client.with_session_auth(pro_user.email)
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    num_queries += 1  # select venue_ids with validated offers
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues")
+        assert response.status_code == 200
+
+    assert "venues" in response.json
+    assert len(response.json["venues"]) == 1
