@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import { useFormContext } from 'react-hook-form'
 
-import { AddressFormValues } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
 import { Address } from 'components/Address/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
@@ -18,18 +18,6 @@ import { OffererFormValues } from '../Offerer/Offerer'
 
 import styles from './OffererAuthenticationForm.module.scss'
 
-const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
-  ['street', ''],
-  ['postalCode', ''],
-  ['city', ''],
-  ['latitude', ''],
-  ['longitude', ''],
-  ['coords', ''],
-  ['banId', ''], // TODO: See with backend if it's preferable to send also "null" to be consistent with "inseeCode"
-  ['inseeCode', null],
-  ['search-addressAutocomplete', ''],
-  ['addressAutocomplete', ''],
-])
 export interface OffererAuthenticationFormValues
   extends OffererFormValues,
     Address {
@@ -52,11 +40,9 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const toggleManuallySetAddress = () => {
     setValue('manuallySetAddress', !manuallySetAddress)
 
-    return [...fieldsNames.entries()].map(([fieldName, defaultValue]) => {
-      resetField(fieldName as keyof OffererAuthenticationFormValues, {
-        defaultValue: defaultValue,
-      })
-    })
+    resetReactHookFormAddressFields((name, defaultValue) =>
+      resetField(name, defaultValue)
+    )
   }
 
   return (

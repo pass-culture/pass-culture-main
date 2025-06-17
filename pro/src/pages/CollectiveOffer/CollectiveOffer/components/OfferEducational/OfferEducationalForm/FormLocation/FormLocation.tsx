@@ -45,7 +45,9 @@ export const FormLocation = ({
     if (!shouldShowManualAddressForm) {
       setValue('location.address.isVenueAddress', false)
       setValue('location.address.isManualEdition', true)
-      resetReactHookFormAddressFields({ resetField })
+      resetReactHookFormAddressFields((name, defaultValue) =>
+        resetField(name, defaultValue)
+      )
     }
   }
 
@@ -73,7 +75,9 @@ export const FormLocation = ({
 
     if (isSpecificAddress) {
       setValue('location.address.label', '')
-      resetReactHookFormAddressFields({ resetField })
+      resetReactHookFormAddressFields((name, defaultValue) =>
+        resetField(name, defaultValue)
+      )
     } else {
       // If here, the user chose to use the venue address
       setVenueAddressFields()
@@ -211,7 +215,9 @@ export const FormLocation = ({
       setValue('location.locationComment', '')
       setValue('interventionArea', [])
     } else {
-      resetReactHookFormAddressFields({ resetField })
+      resetReactHookFormAddressFields((name, defaultValue) =>
+        resetField(name, defaultValue)
+      )
     }
   }
 

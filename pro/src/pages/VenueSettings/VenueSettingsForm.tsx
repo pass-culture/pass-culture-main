@@ -7,7 +7,7 @@ import {
   VenueProviderResponse,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import { AddressFormValues } from 'commons/core/shared/types'
+import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -37,19 +37,6 @@ interface VenueFormProps {
   venue: GetVenueResponseModel
 }
 
-const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
-  ['street', ''],
-  ['postalCode', ''],
-  ['city', ''],
-  ['latitude', ''],
-  ['longitude', ''],
-  ['coords', ''],
-  ['banId', ''], // TODO: See with backend if it's preferable to send also "null" to be consistent with "inseeCode"
-  ['inseeCode', null],
-  ['search-addressAutocomplete', ''],
-  ['addressAutocomplete', ''],
-])
-
 export const VenueSettingsForm = ({
   offerer,
   updateIsSiretValued,
@@ -64,6 +51,7 @@ export const VenueSettingsForm = ({
     setValue,
     watch,
     clearErrors,
+    resetField,
     formState: { isDirty, isSubmitting, errors },
   } = methods
 
@@ -74,10 +62,10 @@ export const VenueSettingsForm = ({
   const toggleManuallySetAddress = () => {
     setValue('manuallySetAddress', !manuallySetAddress)
 
-    return [...fieldsNames.entries()].map(([fieldName, defaultValue]) => {
-      setValue(fieldName as keyof VenueSettingsFormValues, defaultValue)
-      clearErrors()
-    })
+    resetReactHookFormAddressFields((name, defaultValue) =>
+      resetField(name, defaultValue)
+    )
+    clearErrors()
   }
 
   return (

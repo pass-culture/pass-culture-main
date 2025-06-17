@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useEffect } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -31,6 +31,10 @@ export const OffererAuthentication = (): JSX.Element => {
     isOpenToPublic: offerer?.isOpenToPublic || 'true',
     addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
+    latitude: offerer?.latitude || 0,
+    longitude: offerer?.longitude || 0,
+    banId: offerer?.banId || '',
+    inseeCode: offerer?.inseeCode || '',
   }
 
   const handlePreviousStep = useCallback(() => {
@@ -39,7 +43,7 @@ export const OffererAuthentication = (): JSX.Element => {
     navigate('/parcours-inscription/structure')
   }, [setOfferer, navigate])
 
-  const onSubmit = (formValues: any) => {
+  const onSubmit = (formValues: OffererAuthenticationFormValues) => {
     setOfferer({
       ...formValues,
       city: removeQuotes(formValues.city),
@@ -51,9 +55,11 @@ export const OffererAuthentication = (): JSX.Element => {
     navigate('/parcours-inscription/activite')
   }
 
-  const methods = useForm({
+  const methods = useForm<OffererAuthenticationFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(validationSchema(isOpenToPublicEnabled)),
+    resolver: yupResolver(
+      validationSchema(isOpenToPublicEnabled)
+    ) as unknown as Resolver<OffererAuthenticationFormValues>,
   })
 
   useEffect(() => {
