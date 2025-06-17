@@ -13,7 +13,6 @@ import {
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
-  EducationalOfferType,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
@@ -81,8 +80,6 @@ export const CollectiveOfferStockCreation = ({
     offer: GetCollectiveOfferResponseModel,
     values: OfferEducationalStockFormValues
   ) => {
-    const isTemplate =
-      values.educationalOfferType === EducationalOfferType.SHOWCASE
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {

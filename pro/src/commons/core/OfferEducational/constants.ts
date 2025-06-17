@@ -1,7 +1,6 @@
 import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
 
 import {
-  EducationalOfferType,
   OfferEducationalFormValues,
   OfferEducationalStockFormValues,
   VisibilityFormValues,
@@ -80,11 +79,10 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   startDatetime: '',
   endDatetime: '',
   eventTime: '',
-  numberOfPlaces: '',
-  totalPrice: '',
+  numberOfPlaces: null,
+  totalPrice: null,
   bookingLimitDatetime: '',
   priceDetail: '',
-  educationalOfferType: EducationalOfferType.CLASSIC,
 }
 
 export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {

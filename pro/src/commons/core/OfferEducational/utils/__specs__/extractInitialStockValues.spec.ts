@@ -45,7 +45,6 @@ describe('extractInitialVisibilityValues', () => {
       startDatetime: '2023-02-23',
       endDatetime: '2023-02-23',
       eventTime: '11:46',
-      educationalOfferType: 'CLASSIC',
       numberOfPlaces: 20,
       priceDetail: 'test',
       totalPrice: 1200,
@@ -87,10 +86,9 @@ describe('extractInitialVisibilityValues', () => {
       startDatetime: '2030-07-30',
       endDatetime: '',
       eventTime: '',
-      educationalOfferType: 'CLASSIC',
       numberOfPlaces: 20,
       priceDetail: '',
-      totalPrice: '',
+      totalPrice: null,
     })
   })
 
@@ -115,10 +113,9 @@ describe('extractInitialVisibilityValues', () => {
       startDatetime: '',
       endDatetime: '',
       eventTime: '',
-      educationalOfferType: 'CLASSIC',
-      numberOfPlaces: '',
+      numberOfPlaces: null,
       priceDetail: '',
-      totalPrice: '',
+      totalPrice: null,
     })
   })
 
@@ -141,10 +138,9 @@ describe('extractInitialVisibilityValues', () => {
       startDatetime: '',
       endDatetime: '',
       eventTime: '',
-      educationalOfferType: 'CLASSIC',
       numberOfPlaces: 8,
       priceDetail: '',
-      totalPrice: '',
+      totalPrice: null,
     })
   })
 
@@ -167,10 +163,9 @@ describe('extractInitialVisibilityValues', () => {
       startDatetime: '',
       endDatetime: '',
       eventTime: '',
-      educationalOfferType: 'CLASSIC',
       numberOfPlaces: 6,
       priceDetail: '',
-      totalPrice: '',
+      totalPrice: null,
     })
   })
 })

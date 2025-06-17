@@ -1,3 +1,5 @@
+import { addDays, addYears, format, subMinutes } from 'date-fns'
+
 import { OfferEducationalStockFormValues } from 'commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
@@ -5,23 +7,14 @@ import { generateValidationSchema } from '../validationSchema'
 
 describe('validationSchema', () => {
   const values = {
-    startDatetime: '2024-09-01',
-    endDatetime: '2024-09-01',
-    bookingLimitDatetime: '2024-09-01',
+    startDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+    endDatetime: addDays(new Date(), 3).toISOString().split('T')[0],
+    bookingLimitDatetime: addDays(new Date(), 1).toISOString().split('T')[0],
     eventTime: '14:00',
     numberOfPlaces: 56,
     priceDetail: 'Détails sur le prix',
     totalPrice: 1500,
   }
-
-  beforeEach(() => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2024-09-01T13:00:00Z'))
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-  })
 
   const cases: {
     description: string
@@ -33,8 +26,9 @@ describe('validationSchema', () => {
       description: 'start and end date should be on same school year',
       formValues: {
         ...values,
-        startDatetime: '2024-09-01',
-        endDatetime: '2025-09-01',
+        endDatetime: addYears(values.startDatetime, 2)
+          .toISOString()
+          .split('T')[0],
       },
       expectedErrors: ['Les dates doivent être sur la même année scolaire'],
     },
@@ -43,8 +37,8 @@ describe('validationSchema', () => {
         'should allow a start datetime set on 01/09/N and an end datetime set on 31/08/N+1',
       formValues: {
         ...values,
-        startDatetime: '2024-09-01',
-        endDatetime: '2025-08-31',
+        startDatetime: '2050-09-01',
+        endDatetime: '2051-08-31',
       },
       expectedErrors: [],
     },
@@ -52,8 +46,9 @@ describe('validationSchema', () => {
       description: 'booking datetime should not be after start datetime',
       formValues: {
         ...values,
-        startDatetime: '2024-09-01',
-        bookingLimitDatetime: '2024-09-02',
+        bookingLimitDatetime: addDays(values.startDatetime, 1)
+          .toISOString()
+          .split('T')[0],
       },
       expectedErrors: [
         'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
@@ -64,7 +59,10 @@ describe('validationSchema', () => {
         'event time should be after current time when start date is today',
       formValues: {
         ...values,
-        eventTime: '11:00',
+        startDatetime: new Date().toISOString().split('T')[0],
+        endDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+        bookingLimitDatetime: new Date().toISOString().split('T')[0],
+        eventTime: format(subMinutes(new Date(), 1), 'HH:mm'),
       },
       expectedErrors: ["L'heure doit être postérieure à l'heure actuelle"],
     },

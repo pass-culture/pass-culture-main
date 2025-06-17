@@ -5,7 +5,7 @@ import * as router from 'react-router'
 
 import { CollectiveOfferAllowedAction } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
-import { Mode, EducationalOfferType } from 'commons/core/OfferEducational/types'
+import { Mode } from 'commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -58,7 +58,6 @@ describe('OfferEducationalStock', () => {
         numberOfPlaces: 10,
         totalPrice: 100,
         priceDetail: 'Détail du prix',
-        educationalOfferType: EducationalOfferType.CLASSIC,
       },
       mode: Mode.EDITION,
     }
@@ -155,7 +154,7 @@ it('should not disable start datetime, end datetime and event time inputs when d
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const startDatetimeInput = screen.getByLabelText('Date de début')
-  const endDatetimeInput = screen.getByLabelText('Date de fin')
+  const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
   const eventTimeInput = screen.getByLabelText('Horaire')
 
   expect(startDatetimeInput).not.toBeDisabled()

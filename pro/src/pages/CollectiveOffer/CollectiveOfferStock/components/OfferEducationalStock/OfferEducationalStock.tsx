@@ -1,8 +1,8 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
+import { yupResolver } from '@hookform/resolvers/yup'
 import { addDays, isBefore } from 'date-fns'
-import { FormikProvider, useFormik } from 'formik'
-import { useEffect, useState } from 'react'
-import * as yup from 'yup'
+import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   CollectiveBookingStatus,
@@ -15,7 +15,6 @@ import {
   OfferEducationalStockFormValues,
   isCollectiveOffer,
   Mode,
-  EducationalOfferType,
 } from 'commons/core/OfferEducational/types'
 import { NBSP } from 'commons/core/shared/constants'
 import { isDateValid } from 'commons/utils/date'
@@ -25,13 +24,13 @@ import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
@@ -40,10 +39,7 @@ import {
 } from './constants/labels'
 import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
-import {
-  generateValidationSchema,
-  showcaseOfferValidationSchema,
-} from './validationSchema'
+import { generateValidationSchema } from './validationSchema'
 
 export interface OfferEducationalStockProps<
   T = GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
@@ -94,28 +90,19 @@ export const OfferEducationalStock = <
     setIsLoading(false)
   }
 
-  const { dirty, resetForm, ...formik } = useFormik({
-    initialValues,
-    onSubmit: postForm,
-    validationSchema: yup.lazy((values: OfferEducationalStockFormValues) => {
-      const isShowcase =
-        values.educationalOfferType === EducationalOfferType.SHOWCASE
-      /* istanbul ignore next: TO FIX remove this condition as we should not have template offer here */
-      return isShowcase
-        ? showcaseOfferValidationSchema
-        : generateValidationSchema(
-            preventPriceIncrease,
-            initialValues.totalPrice,
-            mode === Mode.READ_ONLY
-          )
-    }),
+  const form = useForm({
+    defaultValues: initialValues,
+    resolver: yupResolver<OfferEducationalStockFormValues>(
+      generateValidationSchema(
+        preventPriceIncrease,
+        initialValues.totalPrice,
+        mode === Mode.READ_ONLY
+      )
+    ),
+    mode: 'onSubmit',
   })
 
-  useEffect(() => {
-    // update formik values with initial values when initial values
-    // are updated after stock update
-    resetForm({ values: initialValues })
-  }, [initialValues, resetForm])
+  const values = form.watch()
 
   return (
     <>
@@ -124,9 +111,9 @@ export const OfferEducationalStock = <
         offer={offer}
         mode={mode}
       />
-      <FormikProvider value={{ ...formik, resetForm, dirty }}>
-        <form onSubmit={formik.handleSubmit} noValidate>
-          <ScrollToFirstErrorAfterSubmit />
+      <FormProvider {...form}>
+        <form noValidate onSubmit={form.handleSubmit(postForm)}>
+          <ScrollToFirstHookFormErrorAfterSubmit />
 
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             {isCollectiveOffer(offer) && offer.isPublicApi && (
@@ -175,9 +162,11 @@ export const OfferEducationalStock = <
                   disabled={!canEditDiscount}
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_PRICE_DETAILS_LENGTH}
-                  name="priceDetail"
+                  {...form.register('priceDetail')}
                   description={PRICE_DETAIL_PLACEHOLDER}
-                  hideAsterisk={true}
+                  error={form.formState.errors.priceDetail?.message}
+                  asterisk={false}
+                  required
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -192,16 +181,17 @@ export const OfferEducationalStock = <
                   <DatePicker
                     disabled={!canEditDates}
                     label={BOOKING_LIMIT_DATETIME_LABEL}
-                    hasLabelLineBreak={false}
                     minDate={new Date(offer.dateCreated)}
                     maxDate={
-                      isDateValid(new Date(formik.values.startDatetime))
-                        ? new Date(formik.values.startDatetime)
+                      isDateValid(new Date(values.startDatetime))
+                        ? new Date(values.startDatetime)
                         : undefined
                     }
-                    name="bookingLimitDatetime"
+                    {...form.register('bookingLimitDatetime')}
+                    error={form.formState.errors.bookingLimitDatetime?.message}
                     className={styles['input-date']}
-                    hideAsterisk={true}
+                    required
+                    asterisk={false}
                   />
                 </FormLayout.Row>
               </>
@@ -222,7 +212,10 @@ export const OfferEducationalStock = <
                 </ButtonLink>
               </ActionsBarSticky.Left>
 
-              <ActionsBarSticky.Right dirtyForm={dirty} mode={mode}>
+              <ActionsBarSticky.Right
+                dirtyForm={form.formState.isDirty}
+                mode={mode}
+              >
                 <Button
                   type="submit"
                   disabled={!(canEditDiscount || canEditDates)}
@@ -234,9 +227,9 @@ export const OfferEducationalStock = <
             </ActionsBarSticky>
           </FormLayout>
         </form>
-      </FormikProvider>
+      </FormProvider>
       <RouteLeavingGuardCollectiveOfferCreation
-        when={dirty && !formik.isSubmitting}
+        when={form.formState.isDirty && !form.formState.isSubmitting}
       />
     </>
   )

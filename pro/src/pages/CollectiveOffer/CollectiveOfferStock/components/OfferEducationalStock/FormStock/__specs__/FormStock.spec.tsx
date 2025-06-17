@@ -1,12 +1,12 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
-import { Form, Formik } from 'formik'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   OfferEducationalStockFormValues,
   Mode,
-  EducationalOfferType,
 } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
@@ -18,7 +18,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { generateValidationSchema } from '../../validationSchema'
 import { FormStock, FormStockProps } from '../FormStock'
 
-const renderFormStock = ({
+function renderFormStock({
   initialValues,
   onSubmit = vi.fn(),
   props,
@@ -28,26 +28,35 @@ const renderFormStock = ({
   onSubmit: () => void
   props: FormStockProps
   options?: RenderWithProvidersOptions
-}) => {
-  return renderWithProviders(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={generateValidationSchema(
-        props.preventPriceIncrease,
-        initialValues.totalPrice,
-        false
-      )}
-    >
-      <Form>
-        <FormStock {...props} />
-        <Button type="submit" isLoading={false}>
-          Enregistrer
-        </Button>
-      </Form>
-    </Formik>,
-    options
-  )
+}) {
+  const preventPriceIncrease = props.preventPriceIncrease
+
+  function FormStockWrapper() {
+    const form = useForm({
+      defaultValues: initialValues,
+      resolver: yupResolver<OfferEducationalStockFormValues>(
+        generateValidationSchema(
+          preventPriceIncrease,
+          initialValues.totalPrice,
+          false
+        )
+      ),
+      mode: 'onTouched',
+    })
+
+    return (
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FormStock {...props} />
+          <Button type="submit" isLoading={false}>
+            Enregistrer
+          </Button>
+        </form>
+      </FormProvider>
+    )
+  }
+
+  return renderWithProviders(<FormStockWrapper />, options)
 }
 
 describe('FormStock', () => {
@@ -66,11 +75,10 @@ describe('FormStock', () => {
       startDatetime: '',
       endDatetime: '',
       eventTime: '',
-      numberOfPlaces: '',
-      totalPrice: '',
+      numberOfPlaces: null,
+      totalPrice: null,
       bookingLimitDatetime: '',
       priceDetail: '',
-      educationalOfferType: EducationalOfferType.SHOWCASE,
     }
   })
 
@@ -115,7 +123,7 @@ describe('FormStock', () => {
     await userEvent.click(startDatetimeInput)
     await userEvent.clear(startDatetimeInput)
     await waitFor(() => userEvent.type(startDatetimeInput, userDateInput))
-    const endDatetimeInput = screen.getByLabelText('Date de fin')
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
     expect(endDatetimeInput).toHaveValue(userDateInput)
   })
 
@@ -176,7 +184,7 @@ describe('FormStock', () => {
     })
 
     const startDatetimeInput = screen.getByLabelText('Date de début')
-    const endDatetimeInput = screen.getByLabelText('Date de fin')
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
     const eventTimeInput = screen.getByLabelText('Horaire')
 
     expect(startDatetimeInput).toBeDisabled()
@@ -197,7 +205,7 @@ describe('FormStock', () => {
     })
 
     const startDatetimeInput = screen.getByLabelText('Date de début')
-    const endDatetimeInput = screen.getByLabelText('Date de fin')
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
     const eventTimeInput = screen.getByLabelText('Horaire')
     const placeInput = screen.getByLabelText('Nombre de participants')
     const priceInput = screen.getByLabelText('Prix total TTC')
@@ -222,7 +230,7 @@ describe('FormStock', () => {
     })
 
     const startDatetimeInput = screen.getByLabelText('Date de début')
-    const endDatetimeInput = screen.getByLabelText('Date de fin')
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
     const eventTimeInput = screen.getByLabelText('Horaire')
     const placeInput = screen.getByLabelText('Nombre de participants')
     const priceInput = screen.getByLabelText('Prix total TTC')

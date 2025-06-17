@@ -62,7 +62,7 @@ export const DatePicker = React.forwardRef(
             aria-required={required}
             onBlur={onBlur}
             value={value}
-            aria-describedby={errorId}
+            aria-describedby={error ? errorId : undefined}
             ref={ref}
           />
         </div>

@@ -73,16 +73,10 @@ export type OfferEducationalStockFormValues = {
   startDatetime: string
   endDatetime: string
   eventTime: string
-  numberOfPlaces: number | ''
-  totalPrice: number | ''
+  numberOfPlaces: number | null
+  totalPrice: number | null
   bookingLimitDatetime: string
   priceDetail: string
-  educationalOfferType: EducationalOfferType
-}
-
-export enum EducationalOfferType {
-  SHOWCASE = 'SHOWCASE',
-  CLASSIC = 'CLASSIC',
 }
 
 export const isOfferEducational = (
