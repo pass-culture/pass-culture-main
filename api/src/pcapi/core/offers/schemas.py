@@ -283,6 +283,8 @@ class UpdateOffer(BaseModel):
     withdrawal_delay: int | None = None
     withdrawal_details: str | None = None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
+    publicationDatetime: datetime.datetime | None
+    bookingAllowedDatetime: datetime.datetime | None
 
     is_active: bool | None = None
 

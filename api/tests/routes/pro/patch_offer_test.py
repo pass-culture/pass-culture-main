@@ -1,6 +1,5 @@
 import contextlib
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -31,7 +30,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     def test_patch_offer(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
@@ -41,16 +39,18 @@ class Returns200Test:
             url="test@test.com",
             description="description",
         )
+        publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
+        booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)
 
-        # When
         data = {
             "name": "New name",
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
+            "publicationDatetime": format_into_utc_date(publication_datetime),
+            "bookingAllowedDatetime": format_into_utc_date(booking_allowed_datetime),
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
@@ -60,7 +60,36 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
+        assert updated_offer.publicationDatetime == publication_datetime.replace(tzinfo=None)
+        assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime.replace(tzinfo=None)
         assert not updated_offer.product
+
+    def test_patch_offer_unset_publication_datetime(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            name="New name",
+            url="test@test.com",
+            description="description",
+            bookingAllowedDatetime=datetime.datetime.now() + datetime.timedelta(days=2),
+            publicationDatetime=datetime.datetime.now() + datetime.timedelta(days=3),
+        )
+
+        assert offer.publicationDatetime
+        assert offer.bookingAllowedDatetime
+
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/{offer.id}",
+            json={"publicationDatetime": None, "bookingAllowedDatetime": None},
+        )
+
+        assert response.status_code == 200
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.publicationDatetime == None
+        assert updated_offer.bookingAllowedDatetime == None
 
     def test_we_handle_unique_address_among_manual_edition_while_patch_offer(self, client):
         user_offerer_1 = offerers_factories.UserOffererFactory(user__email="user1@example.com")
@@ -838,237 +867,129 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def when_trying_to_patch_forbidden_attributes(self, app, client):
-        # Given
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            name="New name",
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "dateCreated": format_into_utc_date(datetime(2019, 1, 1)),
-            "dateModifiedAtLastProvider": format_into_utc_date(datetime(2019, 1, 1)),
-            "id": 1,
-            "idAtProviders": 1,
-            "lastProviderId": 1,
-            "thumbCount": 2,
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+    @pytest.mark.parametrize(
+        "offer_data, patch_body, expected_response_json",
+        [
+            (
+                {},
+                {
+                    "dateCreated": format_into_utc_date(datetime.datetime(2019, 1, 1)),
+                    "dateModifiedAtLastProvider": format_into_utc_date(datetime.datetime(2019, 1, 1)),
+                    "id": 1,
+                    "idAtProviders": 1,
+                    "lastProviderId": 1,
+                    "thumbCount": 2,
+                    "subcategoryId": subcategories.LIVRE_PAPIER.id,
+                },
+                {
+                    "dateCreated": ["Vous ne pouvez pas changer cette information"],
+                    "dateModifiedAtLastProvider": ["Vous ne pouvez pas changer cette information"],
+                    "id": ["Vous ne pouvez pas changer cette information"],
+                    "idAtProviders": ["Vous ne pouvez pas changer cette information"],
+                    "lastProviderId": ["Vous ne pouvez pas changer cette information"],
+                    "thumbCount": ["Vous ne pouvez pas changer cette information"],
+                    "subcategoryId": ["Vous ne pouvez pas changer cette information"],
+                },
+            ),
+            (
+                {},
+                {
+                    "url": "missing.something",
+                    "externalTicketOfficeUrl": "missing.something",
+                },
+                {
+                    "url": ['L\'URL doit commencer par "http://" ou "https://"'],
+                    "externalTicketOfficeUrl": ['L\'URL doit commencer par "http://" ou "https://"'],
+                },
+            ),
+            (
+                {},
+                {
+                    "url": "https://missing",
+                    "externalTicketOfficeUrl": "https://missing",
+                },
+                {
+                    "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                    "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                },
+            ),
+            (
+                {},
+                {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
+                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+            (
+                {},
+                {
+                    "publicationDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
+                    "bookingAllowedDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
+                },
+                {
+                    "publicationDatetime": ["The datetime must be timezone-aware."],
+                    "bookingAllowedDatetime": ["The datetime must be timezone-aware."],
+                },
+            ),
+            (
+                {},
+                {
+                    "publicationDatetime": format_into_utc_date(datetime.datetime.now() - datetime.timedelta(days=2)),
+                    "bookingAllowedDatetime": format_into_utc_date(
+                        datetime.datetime.now() - datetime.timedelta(days=2)
+                    ),
+                },
+                {
+                    "publicationDatetime": ["The datetime must be in the future."],
+                    "bookingAllowedDatetime": ["The datetime must be in the future."],
+                },
+            ),
+            (
+                {"validation": OfferValidationStatus.REJECTED},
+                {"visualDisabilityCompliant": True},
+                {"global": ["Les offres refusées ne sont pas modifiables"]},
+            ),
+            (
+                {
+                    "subcategoryId": subcategories.CONCERT.id,
+                    "withdrawalType": WithdrawalTypeEnum.BY_EMAIL,
+                    "withdrawalDelay": 60 * 15,
+                    "bookingContact": "booking@conta.ct",
+                    "name": "New name",
+                    "url": "test@test.com",
+                    "description": "description",
+                },
+                {"bookingContact": None},
+                {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
+            ),
+            (
+                {
+                    "subcategoryId": subcategories.CONCERT.id,
+                    "withdrawalType": WithdrawalTypeEnum.BY_EMAIL,
+                    "withdrawalDelay": 60 * 15,
+                    "bookingContact": "booking@conta.ct",
+                    "name": "New name",
+                    "url": "test@test.com",
+                    "description": "description",
+                },
+                {"withdrawalType": "no_ticket"},
+                {"offer": ["Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"]},
+            ),
+        ],
+    )
+    def when_sending_incorrect_patch_body_to_thing_offer(self, offer_data, patch_body, expected_response_json, client):
+        default_offer_data = {
+            "subcategoryId": subcategories.CARTE_MUSEE.id,
+            "name": "New name",
+            "url": "test@test.com",
+            "description": "description",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["lastProviderId"] == ["Vous ne pouvez pas changer cette information"]
-        forbidden_keys = {
-            "dateCreated",
-            "dateModifiedAtLastProvider",
-            "id",
-            "idAtProviders",
-            "lastProviderId",
-            "thumbCount",
-            "subcategoryId",
-        }
-        for key in forbidden_keys:
-            assert key in response.json
-
-    def should_fail_when_url_has_no_scheme(self, app, client):
-        # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(
-            venue=virtual_venue,
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            name="New name",
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "name": "Les lièvres pas malins",
-            "url": "missing.something",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
-
-    def should_fail_when_name_contains_ean(self, app, client):
-        # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(
-            venue=virtual_venue,
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            name="New name",
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["name"] == ["Le titre d'une offre ne peut contenir l'EAN"]
-
-    def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app, client):
-        # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(
-            venue=virtual_venue,
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            name="New name",
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "name": "Les lièvres pas malins",
-            "externalTicketOfficeUrl": "missing.something",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit commencer par "http://" ou "https://"']
-
-    def should_fail_when_url_has_no_host(self, app, client):
-        # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(
-            venue=virtual_venue,
-            name="New name",
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "name": "Les lièvres pas malins",
-            "url": "https://missing",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["url"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
-
-    def should_fail_when_externalTicketOfficeUrl_has_no_host(self, app, client):
-        # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(
-            venue=virtual_venue,
-            name="New name",
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "name": "Les lièvres pas malins",
-            "externalTicketOfficeUrl": "https://missing",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
-
-    def test_patch_rejected_offer_fails(self, app, client):
-        offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.REJECTED,
-            name="New name",
-            subcategoryId=subcategories.CARTE_MUSEE.id,
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        data = {
-            "visualDisabilityCompliant": True,
-        }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json["global"] == ["Les offres refusées ne sont pas modifiables"]
-
-    def test_reuse_unchanged_withdrawal(self, client):
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.CONCERT.id,
-            withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=60 * 15,
-            bookingContact="booking@conta.ct",
-            name="New name",
-            url="test@test.com",
-            description="description",
-        )
+        default_offer_data.update(**offer_data)
+        offer = offers_factories.OfferFactory(**default_offer_data)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        data = {
-            "withdrawalType": "no_ticket",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=patch_body)
 
         assert response.status_code == 400
-        assert response.json["offer"] == [
-            "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"
-        ]
-
-    def test_booking_contact_is_checked_when_changed(self, client):
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.CONCERT.id,
-            withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=60 * 15,
-            bookingContact="booking@conta.ct",
-            name="New name",
-            url="test@test.com",
-            description="description",
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        data = {"bookingContact": None}
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json["offer"] == [
-            "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"
-        ]
+        assert response.json == expected_response_json
 
     def should_fail_when_trying_to_update_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -1160,7 +1081,7 @@ class UpdateEventOpeningHoursTest:
 
     def test_update_start_date(self, auth_client):
         event_opening_hours = build_event_opening_hours()
-        new_start_date = event_opening_hours.startDatetime + timedelta(days=2)
+        new_start_date = event_opening_hours.startDatetime + datetime.timedelta(days=2)
 
         response = self._update_opening_hours(
             auth_client, event_opening_hours, startDatetime=date_utils.format_into_utc_date(new_start_date)
@@ -1172,7 +1093,7 @@ class UpdateEventOpeningHoursTest:
 
     def test_update_end_date(self, auth_client):
         event_opening_hours = build_event_opening_hours()
-        new_end_date = event_opening_hours.endDatetime + timedelta(days=2)
+        new_end_date = event_opening_hours.endDatetime + datetime.timedelta(days=2)
 
         response = self._update_opening_hours(
             auth_client, event_opening_hours, endDatetime=date_utils.format_into_utc_date(new_end_date)
