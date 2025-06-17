@@ -96,7 +96,18 @@ export const OffersSearch = ({
       options: {
         arg: TrackingFilterBody
       }
-    ) => apiAdage.logTrackingFilter(options.arg)
+    ) => {
+      const serializedArg = {
+        ...options.arg,
+        filterValues: {
+          ...options.arg.filterValues,
+          domains: JSON.stringify(options.arg.filterValues.domains || []),
+          students: JSON.stringify(options.arg.filterValues.students || []),
+          formats: JSON.stringify(options.arg.filterValues.formats || []),
+        },
+      }
+      return apiAdage.logTrackingFilter(serializedArg)
+    }
   )
 
   const { data: educationalDomains, error: educationalDomainsApiError } =
