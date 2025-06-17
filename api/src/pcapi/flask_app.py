@@ -36,6 +36,25 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.sentry import init_sentry_sdk
 
 
+URL_PREFIX_VALUES = [
+    "account-update-requests",
+    "backoffice",
+    "individual-bookings",
+    "openapi.json",
+    "account-update-requests",
+    "adage",
+    "adage-iframe",
+    "auth",
+    "health",
+    "individual-bookings",
+    "institutional",
+    "native",
+    "pro",
+    "public",
+    "public-accounts",
+    "webhooks",
+]
+
 monkeypatches.install_monkey_patches()
 
 logger = logging.getLogger(__name__)
@@ -51,9 +70,20 @@ app = Flask(__name__, static_url_path="/static")
 def setup_metrics(app_: Flask) -> None:
     if not int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0")):
         return
+
+    def get_url_prefix() -> str | None:
+        path = request.path
+        prefix = next((p for p in path.split("/")), None)
+        # XXX: many routes that should be under /pro are missing that prefix; here we're adding a shim
+        # to only use "approved" prefixes and fallback to "pro", to avoid ending up with nonsensical prefixes
+        if prefix not in URL_PREFIX_VALUES:
+            return "pro"
+        return prefix
+
     prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
         app_,
         group_by="url_rule",
+        default_labels={"url_prefix": get_url_prefix},
     )
     # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
