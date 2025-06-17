@@ -201,6 +201,7 @@ export const IndividualOfferInformationsScreen = ({
   const initialValues = setDefaultInitialValuesFromOffer({
     offer,
     selectedVenue,
+    offerSubCategory,
   })
   const previousInitialValues = usePrevious(initialValues)
   const initialValuesHasChanged = !isEqual(previousInitialValues, initialValues)

@@ -1,6 +1,7 @@
 import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
+  SubcategoryResponseModel,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
@@ -22,11 +23,13 @@ import { UsefulInformationFormValues } from './types'
 interface SetDefaultInitialValuesFromOfferProps {
   offer?: GetIndividualOfferWithAddressResponseModel | null
   selectedVenue?: VenueListItemResponseModel | undefined
+  offerSubCategory?: SubcategoryResponseModel
 }
 
 export function setDefaultInitialValuesFromOffer({
   offer,
   selectedVenue = undefined,
+  offerSubCategory,
 }: SetDefaultInitialValuesFromOfferProps): UsefulInformationFormValues {
   if (!offer) {
     return DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES
@@ -99,7 +102,11 @@ export function setDefaultInitialValuesFromOffer({
       offer.withdrawalDelay === null
         ? undefined
         : offer.withdrawalDelay?.toString(),
-    withdrawalType: offer.withdrawalType || WithdrawalTypeEnum.NO_TICKET,
+    withdrawalType:
+      offer.withdrawalType ||
+      (offerSubCategory?.canBeWithdrawable
+        ? WithdrawalTypeEnum.NO_TICKET
+        : undefined),
     accessibility: {
       [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
       [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,

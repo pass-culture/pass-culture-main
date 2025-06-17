@@ -133,7 +133,7 @@ export const UsefulInformationForm = ({
               <RadioGroup
                 variant="detailed"
                 name="withdrawalType"
-                checkedOption={withdrawalType || WithdrawalTypeEnum.NO_TICKET}
+                checkedOption={withdrawalType}
                 group={
                   withdrawalType === WithdrawalTypeEnum.IN_APP
                     ? providedTicketWithdrawalTypeRadios
