@@ -55,6 +55,7 @@ dependencies = [
   "phonenumberslite==9.0.6",
   "pillow==11.2.1",
   "prometheus-flask-exporter>=0.23.2",
+  "protobuf==5.29.5",
   "psycopg2>=2.9.10",
   "py7zr>=1.0.0",
   # required by schwifty, upgraded manually because of setuptools
