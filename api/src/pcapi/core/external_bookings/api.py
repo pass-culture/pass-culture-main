@@ -202,7 +202,7 @@ def book_event_ticket(
         headers={"Content-Type": "application/json"},
         timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         enable_metrics=True,
-        metrics_prefix="external_booking_create",
+        metric_name_suffix="external_booking_create",
     )
     _check_external_booking_response_is_ok(response)
 
@@ -299,7 +299,7 @@ def cancel_event_ticket(
         hmac=hmac_signature,
         timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         enable_metrics=True,
-        metrics_prefix="external_booking_cancel",
+        metric_name_suffix="external_booking_cancel",
     )
     _check_external_booking_response_is_ok(response)
 

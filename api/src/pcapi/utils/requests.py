@@ -72,7 +72,7 @@ def _wrapper(
     request: requests.PreparedRequest,
     log_info: bool,
     enable_metrics: bool = False,
-    metrics_prefix: str = "",
+    metric_name_suffix: str = "",
     **kwargs: Any,
 ) -> requests.Response:
     if not kwargs.get("timeout"):
@@ -80,7 +80,9 @@ def _wrapper(
 
     # Use metrics context if enabled
     metrics_context = HttpMetricsContext(
-        prefix=metrics_prefix if enable_metrics else "", method=request.method or "UNKNOWN", url=request.url or ""
+        name_suffix=metric_name_suffix if enable_metrics else "",
+        method=request.method or "UNKNOWN",
+        url=request.url or "",
     )
 
     with metrics_context:
@@ -237,7 +239,7 @@ class Session(requests.Session):
             request,
             self.log_info,
             enable_metrics=self.enable_metrics,
-            metrics_prefix=self.metrics_prefix,
+            metric_name_suffix=self.metrics_prefix,
             **kwargs,
         )
 
