@@ -312,9 +312,9 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
     waiting_for_offerer_validation: WaitingForOffererValidation | None
     waiting_for_adage_validation: WaitingForAdageValidation | None
 
-    @validator("updated_at", pre=False)
-    def strip_timezone(cls, value: datetime) -> datetime:
-        return without_timezone(value)
+    @validator("updated_at", "updated_by_user_at", "last_message_sent_by_instructor_at", pre=False)
+    def strip_timezone(cls, value: datetime | None) -> datetime | None:
+        return without_timezone(value) if value else None
 
     @root_validator(pre=True)
     def to_representation(cls: "MarkWithoutContinuationApplicationDetail", obj: dict) -> dict:
