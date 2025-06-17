@@ -1,7 +1,8 @@
-import { addYears } from 'date-fns'
+import { addYears, isAfter } from 'date-fns'
 import * as yup from 'yup'
 
 import { isDateValid } from 'commons/utils/date'
+import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
 
 export const validationSchema = yup.object().shape({
   publicationMode: yup.string<'now' | 'later'>().required(),
@@ -14,7 +15,11 @@ export const validationSchema = yup.object().shape({
           'is-in-future',
           'Veuillez indiquer une date dans le futur',
           function (value) {
-            return isDateValid(value) && new Date(value) > new Date()
+            const dateTime =
+              isDateValid(value) && this.parent.publicationTime
+                ? buildDateTime(value, this.parent.publicationTime)
+                : undefined
+            return dateTime && isAfter(dateTime, new Date())
           }
         )
         .test(
@@ -42,7 +47,11 @@ export const validationSchema = yup.object().shape({
           'is-in-future',
           'Veuillez indiquer une date dans le futur',
           function (value) {
-            return isDateValid(value) && new Date(value) > new Date()
+            const dateTime =
+              isDateValid(value) && this.parent.bookingAllowedTime
+                ? buildDateTime(value, this.parent.bookingAllowedTime)
+                : undefined
+            return dateTime && isAfter(dateTime, new Date())
           }
         )
         .test(
