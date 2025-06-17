@@ -10,6 +10,14 @@ Usage:
     from pcapi.utils import requests
 
     response = requests.get("https://example.com")
+
+    # With metrics enabled:
+    response = requests.post(
+        "https://api.example.com/book",
+        json=payload,
+        enable_metrics=True,
+        metrics_prefix="external_booking"
+    )
 """
 
 import logging
@@ -23,6 +31,8 @@ import requests  # noqa: TID251
 import zeep
 from requests.adapters import HTTPAdapter  # noqa: TID251
 from urllib3.util.retry import Retry
+
+from pcapi.utils.metrics import HttpMetricsContext
 
 
 # fmt: off
@@ -61,69 +71,157 @@ def _wrapper(
     request_send_func: Callable,
     request: requests.PreparedRequest,
     log_info: bool,
+    enable_metrics: bool = False,
+    metrics_prefix: str = "",
     **kwargs: Any,
 ) -> requests.Response:
     if not kwargs.get("timeout"):
         kwargs["timeout"] = REQUEST_TIMEOUT_IN_SECOND
-    try:
-        response = request_send_func(request, **kwargs)
-    except Exception as exc:
-        logger.warning(
-            "Call to external service failed with %s",
-            exc,
-            extra={
-                "method": request.method,
-                "url": _redact_url(request.url),
-            },
-        )
-        raise exc
-    if log_info:
-        logger.info(
-            "External service called",
-            extra={
-                "url": _redact_url(response.url),
-                "statusCode": response.status_code,
-                "duration": response.elapsed.total_seconds(),
-            },
-        )
-    return response
+
+    # Use metrics context if enabled
+    metrics_context = HttpMetricsContext(
+        prefix=metrics_prefix if enable_metrics else "", method=request.method or "UNKNOWN", url=request.url or ""
+    )
+
+    with metrics_context:
+        try:
+            response = request_send_func(request, **kwargs)
+            # Record successful response status code
+            metrics_context.record_response(response.status_code)
+        except Exception as exc:
+            logger.warning(
+                "Call to external service failed with %s",
+                exc,
+                extra={
+                    "method": request.method,
+                    "url": _redact_url(request.url),
+                },
+            )
+            raise exc
+
+        if log_info:
+            logger.info(
+                "External service called",
+                extra={
+                    "url": _redact_url(response.url),
+                    "statusCode": response.status_code,
+                    "duration": response.elapsed.total_seconds(),
+                },
+            )
+        return response
 
 
-def get(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
-    return request("GET", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+def get(
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    enable_metrics: bool = False,
+    metrics_prefix: str = "",
+    **kwargs: Any,
+) -> requests.Response:
+    return request(
+        "GET",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        enable_metrics=enable_metrics,
+        metrics_prefix=metrics_prefix,
+        **kwargs,
+    )
 
 
 def post(
-    url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    url: str,
+    hmac: str | None = None,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    enable_metrics: bool = False,
+    metrics_prefix: str = "",
+    **kwargs: Any,
 ) -> requests.Response:
     if hmac:
         kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
-    return request("POST", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+    return request(
+        "POST",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        enable_metrics=enable_metrics,
+        metrics_prefix=metrics_prefix,
+        **kwargs,
+    )
 
 
-def put(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
-    return request("PUT", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+def put(
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    enable_metrics: bool = False,
+    metrics_prefix: str = "",
+    **kwargs: Any,
+) -> requests.Response:
+    return request(
+        "PUT",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        enable_metrics=enable_metrics,
+        metrics_prefix=metrics_prefix,
+        **kwargs,
+    )
 
 
 def delete(
-    url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    enable_metrics: bool = False,
+    metrics_prefix: str = "",
+    **kwargs: Any,
 ) -> requests.Response:
-    return request("DELETE", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+    return request(
+        "DELETE",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        enable_metrics=enable_metrics,
+        metrics_prefix=metrics_prefix,
+        **kwargs,
+    )
 
 
 def request(
-    method: str, url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    method: str,
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    enable_metrics: bool = False,
+    metrics_prefix: str = "",
+    **kwargs: Any,
 ) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
+    with Session(
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        enable_metrics=enable_metrics,
+        metrics_prefix=metrics_prefix,
+    ) as session:
         return session.request(method=method, url=url, **kwargs)
 
 
 class Session(requests.Session):
     def __init__(
-        self, *args: Any, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+        self,
+        *args: Any,
+        disable_synchronous_retry: bool = False,
+        log_info: bool = True,
+        enable_metrics: bool = False,
+        metrics_prefix: str = "",
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.log_info = log_info
+        self.enable_metrics = enable_metrics
+        self.metrics_prefix = metrics_prefix
 
         if disable_synchronous_retry:
             return
@@ -134,7 +232,14 @@ class Session(requests.Session):
         self.mount("http://", adapter)
 
     def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
-        return _wrapper(super().send, request, self.log_info, **kwargs)
+        return _wrapper(
+            super().send,
+            request,
+            self.log_info,
+            enable_metrics=self.enable_metrics,
+            metrics_prefix=self.metrics_prefix,
+            **kwargs,
+        )
 
 
 class CustomZeepTransport(zeep.Transport):
