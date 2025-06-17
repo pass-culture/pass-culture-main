@@ -192,10 +192,6 @@ class PatchDraftOfferBodyModel(BaseModel):
     description: str | None = Field(max_length=OFFER_DESCRIPTION_MAX_LENGTH)
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
-    publicationDatetime: datetime.datetime | None
-    bookingAllowedDatetime: datetime.datetime | None
-
-    _validate_publication_datetime = serialization_utils.validate_datetime("publicationDatetime")
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
@@ -208,40 +204,6 @@ class PatchDraftOfferBodyModel(BaseModel):
 
         check_offer_subcategory_is_valid(subcategory_id)
         return subcategory_id
-
-    @root_validator(pre=True)
-    def validate_publication_dt_and_booking_allowed_dt_set_together(cls, values: dict) -> dict:
-        publication_dt = values.get("publicationDatetime")
-        booking_allowed_dt = values.get("bookingAllowedDatetime")
-
-        if publication_dt and booking_allowed_dt:
-            return values
-
-        if not publication_dt and not booking_allowed_dt:
-            return values
-
-        raise ValueError("either both `publicationDatetime` and `bookingAllowedDatetime` are set or both are null")
-
-    @validator("bookingAllowedDatetime")
-    def validate_booking_allowed_datetime(
-        cls, bookingAllowedDatetime: datetime.datetime | None, values: dict
-    ) -> datetime.datetime | None:
-        booking_allowed_dt = serialization_utils.check_date_in_future_and_remove_timezone(bookingAllowedDatetime)
-        if not booking_allowed_dt:
-            return None
-
-        try:
-            publication_dt = values["publicationDatetime"]
-        except KeyError:
-            # publicationDatetime cannot be null at this point, therefore, if
-            # it is missing it means that it did not pass parsing/validation.
-            # There is no need to raise it again in another way.
-            return booking_allowed_dt
-
-        if publication_dt > booking_allowed_dt:
-            raise ValueError("must be after `publicationDatetime`")
-
-        return booking_allowed_dt
 
     class Config:
         alias_generator = serialization_utils.to_camel
