@@ -1798,7 +1798,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         alerts = soup.find_all("div", class_="alert")
         assert len(alerts) == 1
         alert = alerts[0]
-        assert html_parser._filter_whitespaces(alert.text) == "Un nouvel incident a été créé pour 1 réservation."
+        assert html_parser.filter_whitespaces(alert.text) == "Un nouvel incident a été créé pour 1 réservation."
         url_tags = alert.find_all("a")
         assert len(url_tags) == 1
         url_tag = url_tags[0]
