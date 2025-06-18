@@ -1044,31 +1044,3 @@ class Returns404Test:
 
         # then
         assert response.status_code == 404
-
-
-@pytest.fixture(name="auth_client")
-def auth_client_fixture(client):
-    user = offerers_factories.UserOffererFactory(user__email="user@example.com").user
-    return client.with_session_auth(user.email)
-
-
-def build_venue():
-    offerer = offerers_factories.UserOffererFactory(user__email="user@example.com").offerer
-    return offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-
-def build_event_opening_hours():
-    venue = build_venue()
-    return offers_factories.EventOpeningHoursFactory(offer__venue=venue, offer__subcategoryId=subcategories.VISITE.id)
-
-
-def base_opening_hours():
-    return {
-        "MONDAY": [],
-        "TUESDAY": [],
-        "WEDNESDAY": [],
-        "THURSDAY": [],
-        "FRIDAY": [],
-        "SATURDAY": [],
-        "SUNDAY": [],
-    }
