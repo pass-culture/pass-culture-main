@@ -30,6 +30,7 @@ class GetOffererTest:
     num_queries += 1  # select offerer_address
     num_queries += 1  # select venues_id with active offers
     num_queries += 1  # select offer to check if offerer has a partner page
+    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_basics(self, client):
         pro = users_factories.ProFactory()

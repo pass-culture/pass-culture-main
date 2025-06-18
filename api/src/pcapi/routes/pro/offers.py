@@ -259,11 +259,8 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
 @atomic()
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     if not body.ids:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
+        raise api_errors.ResourceNotFoundError(
+            {"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
         )
     query = offers_repository.get_offers_by_ids(current_user, body.ids)  # type: ignore[arg-type]
     offers_api.batch_delete_draft_offers(query)

@@ -49,6 +49,7 @@ class Returns200Test:
     num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
     num_queries += 1  # 11 future_offer
     num_queries += 1  # 12 update offer
+    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")

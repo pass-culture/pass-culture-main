@@ -564,7 +564,8 @@ class Returns200Test:
         # select future_offer
         # select price category
         # update offer
-        with assert_num_queries(8):
+        # FF WIP_REFACTO_FUTURE_OFFER
+        with assert_num_queries(9):
             response = http_client.patch(f"/offers/{offer_id}", json=data)
         get_address_mock.assert_not_called()
 

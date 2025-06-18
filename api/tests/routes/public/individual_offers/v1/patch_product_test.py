@@ -377,6 +377,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         expected_num_queries += 1  # reload mediations
 
         expected_num_queries += 1  # check venue offerer address
+        expected_num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
         with assert_num_queries(expected_num_queries):
             response = client.with_explicit_token(plain_api_key).patch(
                 "/public/offers/v1/products",

@@ -19,10 +19,10 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
 
     num_queries_success_no_offers = num_queries_404 + 1  # fetch offers
 
-    # fetch stocks (1 query)
-    # fetch mediations (1 query)
-    # fetch price categories (1 query)
-    num_queries_success = num_queries_success_no_offers + 3
+    num_queries_success = num_queries_success_no_offers + 1  # fetch stocks (1 query)
+    num_queries_success += 1  # fetch mediations (1 query)
+    num_queries_success += 1  # fetch price categories (1 query)
+    num_queries_success += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()

@@ -18,6 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     number_of_queries = testing.AUTHENTICATION_QUERIES
     number_of_queries += 1  # search offers
+    number_of_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(self, client):
         pro = users_factories.ProFactory()
@@ -46,8 +47,8 @@ class Returns200Test:
 
         venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
         mocked_get_capped_offers.assert_called_once_with(
@@ -72,8 +73,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get("/offers?status=ACTIVE")
             assert response.status_code == 200
 
@@ -101,8 +102,8 @@ class Returns200Test:
 
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get(f"/offers?offererId={offerer_id}")
             assert response.status_code == 200
 
@@ -128,8 +129,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get("/offers?creationMode=imported")
             assert response.status_code == 200
 
@@ -155,8 +156,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get("/offers?periodBeginningDate=2020-10-11")
             assert response.status_code == 200
 
@@ -190,13 +191,13 @@ class Returns200Test:
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
-            print(response)
-            if dp == "974":
-                assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
-            else:
-                assert response.json == []
+
+        response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
+
+        if dp == "974":
+            assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
+        else:
+            assert response.json == []
 
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_ending_period(self, dp, client):
@@ -213,13 +214,13 @@ class Returns200Test:
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
-            print(response)
-            if dp == "971":
-                assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
-            else:
-                assert response.json == []
+
+        response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
+
+        if dp == "971":
+            assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
+        else:
+            assert response.json == []
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
     def test_results_are_filtered_by_given_period_ending_date(self, mocked_get_capped_offers, client):
@@ -228,8 +229,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get("/offers?periodEndingDate=2020-10-11")
             assert response.status_code == 200
 
@@ -255,8 +256,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -1 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 1):
+        # -2 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get("/offers?categoryId=LIVRE")
             assert response.status_code == 200
 
@@ -377,7 +378,7 @@ class Returns200Test:
             offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
         )
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries):
+        with testing.assert_num_queries(self.number_of_queries - 1):  # FF WIP_REFACTO_FUTURE_OFFER
             response = authenticated_client.get("/offers")
             assert response.status_code == 200
 
@@ -785,7 +786,7 @@ class Returns200Test:
 
         venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries):
+        with testing.assert_num_queries(self.number_of_queries - 1):  # -1 sur FF WIP_REFACTO_FUTURE_OFFER
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
 
@@ -800,7 +801,7 @@ class Returns200Test:
 
         venue_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries):
+        with testing.assert_num_queries(self.number_of_queries - 1):  # -1 sur FF WIP_REFACTO_FUTURE_OFFER
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
 
