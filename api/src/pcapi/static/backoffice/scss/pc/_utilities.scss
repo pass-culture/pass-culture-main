@@ -93,3 +93,8 @@ tr:has([type="checkbox"]:checked) {
 .gap-1px {
   gap:1px !important;
 }
+
+.ts-control{
+  /* fix for tomselect bug */
+    min-height:2.25em;
+}
