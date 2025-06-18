@@ -3116,7 +3116,7 @@ class SetPricingPointTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Ce partenaire culturel est déja lié à un point de valorisation"
+            == "Ce partenaire culturel est déjà lié à un point de valorisation"
         )
 
     def test_venue_has_siret(self, authenticated_client):

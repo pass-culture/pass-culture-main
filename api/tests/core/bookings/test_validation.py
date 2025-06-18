@@ -55,7 +55,7 @@ class CheckOfferAlreadyBookedTest:
 
         with pytest.raises(exceptions.OfferIsAlreadyBooked) as error:
             validation.check_offer_already_booked(booking.user, booking.stock.offer)
-        assert error.value.errors == {"offerId": ["Cette offre a déja été reservée par l'utilisateur"]}
+        assert error.value.errors == {"offerId": ["Cette offre a déjà été réservée par l'utilisateur"]}
 
 
 @pytest.mark.usefixtures("db_session")

@@ -1789,7 +1789,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         if "user_idPieceNumber_key" in message:
             flash(
                 Markup(
-                    "Le numéro de pièce d'identité <b>{id_piece_number}</b> est déja associé à un autre compte utilisateur."
+                    "Le numéro de pièce d'identité <b>{id_piece_number}</b> est déjà associé à un autre compte utilisateur."
                 ).format(id_piece_number=form.id_piece_number.data),
                 "warning",
             )
