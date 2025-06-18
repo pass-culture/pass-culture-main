@@ -100,6 +100,15 @@ export const DetailedChecked: StoryObj<typeof Checkbox> = {
   },
 }
 
+export const DetailedIndeterminate: StoryObj<typeof Checkbox> = {
+  args: {
+    label: 'Checkbox label',
+    variant: 'detailed',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    indeterminate: true,
+  },
+}
+
 export const DetailedHasError: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
@@ -115,6 +124,14 @@ export const DetailedDisabled: StoryObj<typeof Checkbox> = {
     variant: 'detailed',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     disabled: true,
+  },
+}
+
+export const DetailedWithIconNoDescription: StoryObj<typeof Checkbox> = {
+  args: {
+    label: 'Checkbox label',
+    variant: 'detailed',
+    asset: { variant: 'icon', src: strokeCalendarIcon },
   },
 }
 
