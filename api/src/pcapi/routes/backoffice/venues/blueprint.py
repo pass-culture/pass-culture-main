@@ -1207,7 +1207,7 @@ def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
             flash(escape(exc.errors["pricingPointId"][0]), "warning")
     except offerers_exceptions.CannotLinkVenueToPricingPoint:
         mark_transaction_as_invalid()
-        flash("Ce partenaire culturel est déja lié à un point de valorisation", "warning")
+        flash("Ce partenaire culturel est déjà lié à un point de valorisation", "warning")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 

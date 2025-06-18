@@ -5,7 +5,7 @@ from pcapi.domain.client_exceptions import ClientError
 
 class OfferIsAlreadyBooked(ClientError):
     def __init__(self) -> None:
-        super().__init__("offerId", "Cette offre a déja été reservée par l'utilisateur")
+        super().__init__("offerId", "Cette offre a déjà été réservée par l'utilisateur")
 
 
 class QuantityIsInvalid(ClientError):

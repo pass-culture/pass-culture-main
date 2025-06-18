@@ -1667,7 +1667,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
 
         assert (
             html_parser.extract_alert(response.data)
-            == f"Le numéro de pièce d'identité {other_user.idPieceNumber} est déja associé à un autre compte utilisateur."
+            == f"Le numéro de pièce d'identité {other_user.idPieceNumber} est déjà associé à un autre compte utilisateur."
         )
 
         assert user.idPieceNumber != other_user.idPieceNumber
