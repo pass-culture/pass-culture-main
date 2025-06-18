@@ -71,6 +71,28 @@ class GetProfileTest:
             assert response.status_code == 200
         assert response.json["profile"] is None
 
+    def test_get_profile_with_two_profile_completions(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        fraud_check_1 = fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=datetime.datetime.utcnow() - relativedelta(months=1),
+        )
+        fraud_check_1.resultContent["activity"] = "NOT_AN_ACTIVITY"
+        fraud_check_2 = fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.AGE17_18
+        )
+        fraud_check_2.resultContent["activity"] = "Lycéen"
+
+        client.with_token(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/profile")
+            assert response.status_code == 200
+
+        profile_content = response.json["profile"]
+        assert profile_content is not None
+        assert profile_content["activity"] == "Lycéen"
+
     def test_post_profile_then_get(self, client):
         user = users_factories.EligibleGrant18Factory()
         profile_data = {
