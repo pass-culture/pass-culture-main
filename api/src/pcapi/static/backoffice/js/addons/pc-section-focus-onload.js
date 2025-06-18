@@ -5,7 +5,7 @@ class PcSectionFocusOnload extends PcAddOn {
   static SCROLLSPY_SELECTOR = '[data-bs-spy="scroll"]'
   static SELECTOR = '[data-bs-spy="scroll"]>.focus'
 
-  bindEvents = () => {
+  initialize = () => {
     let $sections = document.querySelectorAll(PcSectionFocusOnload.SELECTOR)
     let $section = null
     const windowHash = window.location.hash
