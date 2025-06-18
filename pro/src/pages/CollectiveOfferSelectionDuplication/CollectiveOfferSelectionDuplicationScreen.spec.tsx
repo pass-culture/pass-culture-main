@@ -4,7 +4,6 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
 import {
@@ -16,25 +15,10 @@ import * as useNotification from 'commons/hooks/useNotification'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { CollectiveOfferSelectionDuplication } from '../CollectiveOfferSelectionDuplication'
+import { CollectiveOfferSelectionDuplication } from './CollectiveOfferSelectionDuplication'
 
-interface InitialValuesProps {
-  searchFilter: string
-  templateOfferId: string
-}
-
-const renderCollectiveOfferSelectionDuplication = ({
-  initialValues,
-  onSubmit,
-}: {
-  initialValues: InitialValuesProps
-  onSubmit: () => void
-}) => {
-  renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      <CollectiveOfferSelectionDuplication />
-    </Formik>
-  )
+function renderCollectiveOfferSelectionDuplication() {
+  renderWithProviders(<CollectiveOfferSelectionDuplication />)
 }
 
 vi.mock('apiClient/api', () => ({
@@ -49,7 +33,6 @@ vi.mock('commons/core/OfferEducational/utils/createOfferFromTemplate', () => ({
 
 describe('CollectiveOfferConfirmation', () => {
   let initialValues = { searchFilter: 'string', templateOfferId: 'string' }
-  const onSubmit = vi.fn()
   const notifyError = vi.fn()
 
   beforeEach(() => {
@@ -68,10 +51,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render selection duplication page', async () => {
-    renderCollectiveOfferSelectionDuplication({
-      initialValues,
-      onSubmit,
-    })
+    renderCollectiveOfferSelectionDuplication()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -88,7 +68,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display list of offers matching user search', async () => {
-    renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+    renderCollectiveOfferSelectionDuplication()
 
     expect(
       await screen.findByText('Les dernières offres vitrines créées')
@@ -118,7 +98,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should select an offer', async () => {
-    renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+    renderCollectiveOfferSelectionDuplication()
 
     await waitFor(() =>
       expect(
@@ -136,7 +116,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should redirect on submit button and offer selected', async () => {
     vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
-    renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+    renderCollectiveOfferSelectionDuplication()
 
     await waitFor(() =>
       expect(
@@ -155,7 +135,8 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should display message when no offer', async () => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
-    renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+
+    renderCollectiveOfferSelectionDuplication()
 
     await waitFor(() =>
       expect(
@@ -179,12 +160,15 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display an error message when there is an api error', async () => {
-    vi.spyOn(api, 'getCollectiveOffers').mockRejectedValueOnce('')
-    renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
+    vi.spyOn(api, 'getCollectiveOffers').mockRejectedValueOnce(
+      'Nous avons rencontré un problème lors de la récupération des données.'
+    )
+
+    renderCollectiveOfferSelectionDuplication()
 
     await waitFor(() =>
       expect(
-        screen.getByText('Les dernières offres vitrines créées')
+        screen.getByText(/Les dernières offres vitrines créées/)
       ).toBeInTheDocument()
     )
 
@@ -193,8 +177,8 @@ describe('CollectiveOfferConfirmation', () => {
     })
 
     await userEvent.type(searchField, 'Le nom de l’offre 3')
-
     await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
+
     await waitFor(() =>
       expect(notifyError).toHaveBeenNthCalledWith(
         1,
