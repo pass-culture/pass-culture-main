@@ -771,39 +771,3 @@ def update_event_opening_hours(
         raise api_errors.ApiErrors(errors={error.field: [error.msg]})
     except exceptions.OfferException as error:
         raise api_errors.ApiErrors(errors=error.errors)
-
-
-@private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["DELETE"])
-@login_required
-@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
-@atomic()
-def delete_event_opening_hours(offer_id: int, event_opening_hours_id: int) -> None:
-    offer = (
-        db.session.query(models.Offer)
-        .filter(models.Offer.id == offer_id)
-        .options(
-            sa_orm.joinedload(models.Offer.venue).load_only(offerers_models.Venue.managingOffererId),
-            sa_orm.selectinload(models.Offer.stocks).selectinload(models.Stock.bookings),
-        )
-        .one_or_none()
-    )
-
-    if not offer:
-        raise NotFound()
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    opening_hours = (
-        db.session.query(models.EventOpeningHours)
-        .filter(models.EventOpeningHours.offerId == offer_id, models.EventOpeningHours.id == event_opening_hours_id)
-        .options(sa_orm.joinedload(models.EventOpeningHours.weekDayOpeningHours))
-        .one_or_none()
-    )
-
-    if not opening_hours:
-        raise NotFound()
-
-    try:
-        offers_api.delete_event_opening_hours(opening_hours)
-    except exceptions.EventOpeningHoursException as error:
-        raise api_errors.ApiErrors(errors={error.field: [error.msg]}, status_code=400)
