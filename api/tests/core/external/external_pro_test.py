@@ -25,8 +25,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 # 2 extra SQL queries: select exists on offer and booking tables
 # 1 extra query to check if the venue has any related collective offer with 'marseille en grand'
 # 1 check if the venue is concerned with marseille_en_grand
-# 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
-EXPECTED_PRO_ATTR_NUM_QUERIES = 7
+EXPECTED_PRO_ATTR_NUM_QUERIES = 6
 
 
 def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
@@ -76,6 +75,7 @@ def test_update_external_pro_user_attributes(
     create_collective_offer,
     create_template_offer,
     create_collective_offer_meg,
+    features,
 ):
     email = "juste.leblanc@example.net"
 
@@ -273,11 +273,7 @@ def test_update_external_pro_user_attributes(
         venueTypeCode=VenueTypeCode.CONCERT_HALL,  # different from others
     )
 
-    num_queries = EXPECTED_PRO_ATTR_NUM_QUERIES
-    if create_booking:
-        num_queries -= 1  # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
-
-    with assert_num_queries(num_queries):
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -384,7 +380,7 @@ def _check_user_without_validated_offerer(user):
     assert attributes.has_collective_offers is False
 
 
-def test_update_external_pro_booking_email_attributes():
+def test_update_external_pro_booking_email_attributes(features):
     email = "musee@example.net"
     offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
     venue = offerers_factories.VenueFactory(
@@ -431,7 +427,7 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.has_bookings is False
 
 
-def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_banner():
+def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_banner(features):
     email = "musee@example.net"
     offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
     offerers_factories.VenueFactory(
@@ -452,7 +448,7 @@ def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_b
     assert attributes.has_banner_url is True
 
 
-def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_with_banner():
+def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_with_banner(features):
     email = "musee@example.net"
     offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
     offerers_factories.VenueFactory(
@@ -473,7 +469,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
     assert attributes.has_banner_url is True
 
 
-def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_without_banner():
+def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_without_banner(features):
     email = "musee@example.net"
     offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
     offerers_factories.VenueFactory(

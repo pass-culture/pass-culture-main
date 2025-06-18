@@ -542,7 +542,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         num_queries = 2  # Select API key + rollback
         super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
-    def test_can_book_collective_offer(self, client):
+    def test_can_book_collective_offer(self, client, features):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 
@@ -567,7 +567,6 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         expected_num_queries += 1  # get educational year (filtered)
         expected_num_queries += 1  # create new booking
         expected_num_queries += 1  # get educational domain and collective domain
-        expected_num_queries += 1  # get FF (during booking serialize for adage notify_prebooking)
 
         with assert_num_queries(expected_num_queries):
             response = self.assert_request_has_expected_result(

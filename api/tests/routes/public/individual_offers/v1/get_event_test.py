@@ -50,8 +50,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         event_offer_id = self.setup_base_resource().id
 
         # 1. api_key
-        # 2. feature
-        # 3. offer
+        # 2. offer
         with testing.assert_num_queries(self.num_queries_with_error):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 404
@@ -61,8 +60,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         event_offer_id = self.setup_base_resource(venue_provider.venue).id
 
         # 1. api_key
-        # 2. feature
-        # 3. offer
+        # 2. offer
         with testing.assert_num_queries(self.num_queries_with_error):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 404

@@ -579,13 +579,27 @@ class UbbleTestClient(TestClient):
         return f"{timestamp}:877-test-v1:{signature}"
 
 
-@pytest.fixture
-def features(request):
+@pytest.fixture(name="cached_features")
+def cached_features_fixture(db_session):
+    from pcapi.core.testing import FeaturesCache
+
+    cache = FeaturesCache()
+    cache.refresh()
+    yield cache
+
+
+@pytest.fixture()
+def features(request, cached_features, monkeypatch):
     from pcapi.core.testing import FeaturesContext
     from pcapi.models.feature import FeatureToggle
 
+    def new_is_active(self):
+        return cached_features[self.name]
+
+    monkeypatch.setattr(FeatureToggle, "is_active", new_is_active)
+
     marker = request.node.get_closest_marker("features")
-    _features = FeaturesContext()
+    _features = FeaturesContext(cached_features)
     if marker:
         if kwargs := marker.kwargs:
             if invalid_features := {feature for feature in kwargs if feature not in FeatureToggle._member_names_}:

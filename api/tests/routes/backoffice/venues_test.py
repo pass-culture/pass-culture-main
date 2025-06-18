@@ -292,10 +292,9 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    # get WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
-    def test_keep_search_parameters_on_top(self, authenticated_client, venue):
+    def test_keep_search_parameters_on_top(self, authenticated_client, venue, features):
         url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
 
         with assert_num_queries(self.expected_num_queries):
@@ -322,7 +321,7 @@ class GetVenueTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"04", "05", "06"}
 
-    def test_get_venue(self, authenticated_client):
+    def test_get_venue(self, authenticated_client, features):
         venue = offerers_factories.VenueFactory(
             venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
             contact__website="www.example.com",
@@ -370,7 +369,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Partenaire culturel" in badges
         assert "Suspendu" not in badges
 
-    def test_get_venue_with_adage_id(self, authenticated_client):
+    def test_get_venue_with_adage_id(self, authenticated_client, features):
         venue_id = offerers_factories.VenueFactory(
             adageId="7122022", contact=None, managingOfferer__allowedOnAdage=True
         ).id
@@ -384,7 +383,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Cartographié sur ADAGE : Oui" in response_text
         assert "ID ADAGE : 7122022" in response_text
 
-    def test_get_venue_with_no_contact(self, authenticated_client):
+    def test_get_venue_with_no_contact(self, authenticated_client, features):
         venue = offerers_factories.VenueFactory(contact=None)
 
         with assert_num_queries(self.expected_num_queries):
@@ -395,7 +394,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Email : {venue.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
 
-    def test_get_venue_with_provider(self, authenticated_client):
+    def test_get_venue_with_provider(self, authenticated_client, features):
         venue_provider = providers_factories.AllocineVenueProviderFactory(lastSyncDate=datetime(2024, 1, 5, 12, 0))
         venue_id = venue_provider.venue.id
         with assert_num_queries(self.expected_num_queries):
@@ -418,7 +417,7 @@ class GetVenueTest(GetEndpointHelper):
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
 
-    def test_get_virtual_venue(self, authenticated_client):
+    def test_get_virtual_venue(self, authenticated_client, features):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer__allowedOnAdage=True)
 
         url = url_for(self.endpoint, venue_id=venue.id)
@@ -455,7 +454,7 @@ class GetVenueTest(GetEndpointHelper):
             (offerers_factories.ManualReviewVenueConfidenceRuleFactory, "Revue manuelle"),
         ],
     )
-    def test_get_venue_with_confidence_rule(self, authenticated_client, factory, expected_text):
+    def test_get_venue_with_confidence_rule(self, authenticated_client, factory, expected_text, features):
         rule = factory()
         url = url_for(self.endpoint, venue_id=rule.venue.id)
 
@@ -473,7 +472,7 @@ class GetVenueTest(GetEndpointHelper):
             (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle (entité juridique)"),
         ],
     )
-    def test_get_venue_with_offerer_confidence_rule(self, authenticated_client, factory, expected_text):
+    def test_get_venue_with_offerer_confidence_rule(self, authenticated_client, factory, expected_text, features):
         rule = factory()
         venue = offerers_factories.VenueFactory(managingOfferer=rule.offerer)
         url = url_for(self.endpoint, venue_id=venue.id)
@@ -485,7 +484,7 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert f"Validation des offres : {expected_text}" in response_text
 
-    def test_get_caledonian_venue(self, authenticated_client):
+    def test_get_caledonian_venue(self, authenticated_client, features):
         venue = offerers_factories.CaledonianVenueFactory()
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -506,7 +505,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Cartographié sur ADAGE" not in response_text
         assert "ID ADAGE" not in response_text
 
-    def test_get_fraudulent_venue(self, authenticated_client):
+    def test_get_fraudulent_venue(self, authenticated_client, features):
         venue = offerers_factories.VenueFactory()
         bookings_factories.FraudulentBookingTagFactory(booking__stock__offer__venue=venue)
         url = url_for(self.endpoint, venue_id=venue.id)
@@ -518,7 +517,7 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert "Réservations frauduleuses" in response_text
 
-    def test_get_venue_managed_by_closed_offerer(self, authenticated_client):
+    def test_get_venue_managed_by_closed_offerer(self, authenticated_client, features):
         closed_venue = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
         url = url_for(self.endpoint, venue_id=closed_venue.id)
 
@@ -538,7 +537,7 @@ class GetVenueTest(GetEndpointHelper):
         ],
     )
     def test_links_depending_on_permissions(
-        self, client, roles_with_permissions, role, has_offers_links, has_bookings_links
+        self, client, roles_with_permissions, role, has_offers_links, has_bookings_links, features
     ):
         bo_user = users_factories.AdminFactory(
             backoffice_profile__roles=[r for r in roles_with_permissions if r.name == role.value]
@@ -600,12 +599,11 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get venue with pricing point (1 query)
     # get total revenue (1 query)
     # get venue stats (6 query)
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
-    expected_num_queries = 11
+    expected_num_queries = 10
     # -1 sql query replaced with clickhouse query
     expected_num_queries_when_clickhouse_enabled = expected_num_queries - 1
 
-    def test_get_venue_with_no_siret(self, authenticated_client, venue_with_no_siret):
+    def test_get_venue_with_no_siret(self, authenticated_client, venue_with_no_siret, features):
         venue_id = venue_with_no_siret.id
         url = url_for(self.endpoint, venue_id=venue_id)
 
@@ -618,7 +616,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert venue_with_no_siret.siret is None
         assert f"Point de valorisation : {pricing_point.name}" in cards_content[2]
 
-    def test_get_venue_with_no_bank_account(self, authenticated_client):
+    def test_get_venue_with_no_bank_account(self, authenticated_client, features):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
@@ -627,7 +625,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         cards_content = html_parser.extract_cards_text(response.data)
         assert cards_content[2].endswith("Compte bancaire :")
 
-    def test_get_venue_with_bank_account(self, authenticated_client):
+    def test_get_venue_with_bank_account(self, authenticated_client, features):
         bank_account = finance_factories.BankAccountFactory()
         venue = offerers_factories.VenueFactory(pricing_point="self")
         offerers_factories.VenueBankAccountLinkFactory(
@@ -651,6 +649,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         venue_with_accepted_bank_account,
         individual_offerer_bookings,
         collective_venue_booking,
+        features,
     ):
         venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
@@ -664,6 +663,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         authenticated_client,
         venue_with_accepted_bank_account,
         individual_offerer_bookings,
+        features,
     ):
         venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
@@ -673,7 +673,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert "30,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
     def test_venue_total_revenue_collective_bookings_only(
-        self, authenticated_client, venue_with_accepted_bank_account, collective_venue_booking
+        self, authenticated_client, venue_with_accepted_bank_account, collective_venue_booking, features
     ):
         venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
@@ -682,7 +682,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         assert "42,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
-    def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_account):
+    def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_account, features):
         venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
@@ -715,6 +715,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         offerer_inactive_collective_offers,
         offerer_active_collective_offer_templates,
         offerer_inactive_collective_offer_templates,
+        features,
     ):
         venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
@@ -724,7 +725,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert "7 offres actives ( 2 IND / 5 EAC ) 16 offres inactives ( 5 IND / 11 EAC )" in cards_text
 
-    def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_account):
+    def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_account, features):
         venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
@@ -748,8 +749,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
     # venue and offerer (to check is_caledonian)
     # bookings revenue stats
     # collective bookings revenue stats
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
-    expected_num_queries = 6
+    expected_num_queries = 5
     expected_num_queries_when_clickhouse_enabled = expected_num_queries - 2
 
     def test_venue_revenue_details(
@@ -759,6 +759,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         venue_with_accepted_bank_account,
         individual_offerer_bookings,
         collective_venue_booking,
+        features,
     ):
         venue_id = venue_with_accepted_bank_account.id
         current_year = datetime.utcnow().year
@@ -800,7 +801,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
             ),
         ],
     )
-    def test_venue_revenue_details_from_clickhouse(self, mock_run_query, authenticated_client):
+    def test_venue_revenue_details_from_clickhouse(self, mock_run_query, authenticated_client, features):
         venue_id = offerers_factories.VenueFactory().id
 
         with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):

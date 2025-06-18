@@ -121,8 +121,7 @@ class GetUserRecommendationsTest:
         OfferFactory(id=1, product=product)
         offer_2 = OfferFactory(id=2)
 
-        expected_num_queries = 1  # feature
-        expected_num_queries += 1  # user
+        expected_num_queries = 1  # user
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
