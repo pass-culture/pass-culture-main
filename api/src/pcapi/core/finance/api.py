@@ -2610,7 +2610,8 @@ def get_reimbursements_by_venue(
     )
 
     query = (
-        pricing_query.with_entities(
+        pricing_query.execution_options(include_deleted=True)
+        .with_entities(
             *common_columns,
             models.Pricing.amount.label("pricing_amount"),
             bookings_models.Booking.amount.label("booking_unit_amount"),
