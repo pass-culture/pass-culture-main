@@ -94,7 +94,7 @@ class ReferenceScheme(Base, Model):
         # we did not get the latest reference, and hence we should
         # fail now. It could indicate a bug.
         try:
-            self.query.with_for_update(nowait=True).filter_by(id=self.id).update(
+            db.session.query(type(self)).with_for_update(nowait=True).filter_by(id=self.id).update(
                 {"nextNumber": ReferenceScheme.nextNumber + 1}
             )
         except sa_exc.OperationalError as exc:
@@ -107,7 +107,7 @@ class ReferenceScheme(Base, Model):
         if not settings.IS_RUNNING_TESTS:
             raise ValueError("Reference next number sequence can only be reset in tests")
         try:
-            self.query.with_for_update(nowait=True).filter_by(id=self.id).update({"nextNumber": 1})
+            db.session.query(type(self)).with_for_update(nowait=True).filter_by(id=self.id).update({"nextNumber": 1})
         except sa_exc.OperationalError as exc:
             if isinstance(exc.orig, psycopg2.errors.LockNotAvailable):
                 msg = f"Could not acquire lock on reference {self.id}"

@@ -210,7 +210,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/synchro_titelive", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_synchronize_with_titelive_form(product_id: int) -> utils.BackofficeResponse:
-    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -249,7 +249,7 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> utils.Backoff
 @list_products_blueprint.route("/<int:product_id>/synchro-titelive", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
-    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -271,7 +271,7 @@ def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeRespon
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
-    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -289,7 +289,7 @@ def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def whitelist_product(product_id: int) -> utils.BackofficeResponse:
-    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -301,7 +301,7 @@ def whitelist_product(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
-    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -319,7 +319,7 @@ def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def blacklist_product(product_id: int) -> utils.BackofficeResponse:
-    product = offers_models.Product.query.filter_by(id=product_id).one_or_none()
+    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 

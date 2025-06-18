@@ -2270,7 +2270,7 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
     ]
 
     for model in related_models:
-        model.query.filter(model.offerId.in_(offer_ids)).delete(synchronize_session=False)  # type: ignore[attr-defined]
+        db.session.query(model).filter(model.offerId.in_(offer_ids)).delete(synchronize_session=False)  # type: ignore[attr-defined]
 
     delete_mediations(offer_ids, reindex=False)
 
@@ -2312,7 +2312,7 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
         unindex_offers_partial = functools.partial(search.unindex_offer_ids, chunk)
         on_commit(unindex_offers_partial)
 
-        models.Offer.query.filter(models.Offer.id.in_(chunk)).delete(synchronize_session=False)
+        db.session.query(models.Offer).filter(models.Offer.id.in_(chunk)).delete(synchronize_session=False)
         db.session.flush()
 
         log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}

@@ -10,7 +10,6 @@ from datetime import timedelta
 from datetime import timezone
 from decimal import Decimal
 from unittest import mock
-from unittest.mock import patch
 
 import pytest
 import pytz
@@ -5495,9 +5494,9 @@ class DeleteOffersAndAllRelatedObjectsTest:
         offers = self.build_many_eligible_for_search_offers_with_related_objects()
         offer_ids = [offer.id for offer in offers]
 
-        with patch("pcapi.core.offers.api.db") as mock:
+        with mock.patch("pcapi.core.offers.api.logger.info") as logger_mock:
             with caplog.at_level(logging.ERROR):
-                mock.session.flush.side_effect = [error] + [None for _ in range(len(offers) - 1)]
+                logger_mock.side_effect = [error] + [None for _ in range(len(offers) - 1)]
 
                 api.delete_offers_and_all_related_objects(offer_ids, offer_chunk_size=1)
 
