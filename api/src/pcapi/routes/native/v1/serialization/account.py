@@ -1,7 +1,9 @@
 import datetime
+import re
 import typing
 from enum import Enum
 
+import email_validator
 import pydantic.v1 as pydantic_v1
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
@@ -13,6 +15,7 @@ from sqlalchemy.orm import joinedload
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.users.models as users_models
+from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
@@ -50,8 +53,26 @@ class BaseAccountRequest(ConfiguredBaseModel):
 
 
 class AccountRequest(BaseAccountRequest):
-    email: str
+    email: pydantic_v1.EmailStr
     password: str
+
+    @validator("email", pre=True)
+    @classmethod
+    def validate_email(cls, email: str) -> str:
+        try:
+            emailinfo = email_validator.validate_email(
+                email, check_deliverability=settings.ENABLE_EMAIL_DELIVERABILITY_CHECK
+            )
+            sanitized_email = sanitize_email(emailinfo.normalized)
+
+            # check for non-ascii and special characters
+            allowed_pattern = re.compile(r"^[a-zA-Z0-9+\-_.@]+$")
+            if not allowed_pattern.match(sanitized_email):
+                raise ValueError("unsupported special characters detected")
+
+            return sanitized_email
+        except Exception as e:
+            raise ValueError(email) from e
 
 
 class GoogleAccountRequest(BaseAccountRequest):
@@ -264,7 +285,15 @@ class EmailUpdateStatus(ConfiguredBaseModel):
 
 
 class ResendEmailValidationRequest(ConfiguredBaseModel):
-    email: str
+    email: pydantic_v1.EmailStr
+
+    @validator("email", pre=True)
+    @classmethod
+    def validate_email(cls, email: str) -> str:
+        try:
+            return sanitize_email(email)
+        except Exception as e:
+            raise ValueError(email) from e
 
 
 class EmailValidationRemainingResendsResponse(ConfiguredBaseModel):

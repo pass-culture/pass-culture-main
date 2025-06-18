@@ -19,6 +19,7 @@
                         "type": "string"
                     },
                     "email": {
+                        "format": "email",
                         "title": "Email",
                         "type": "string"
                     },
@@ -3957,6 +3958,7 @@
             "ResendEmailValidationRequest": {
                 "properties": {
                     "email": {
+                        "format": "email",
                         "title": "Email",
                         "type": "string"
                     }
