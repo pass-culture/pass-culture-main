@@ -48,7 +48,7 @@
        data-bs-target="#{{ navbar_name }}-navbar"
        data-bs-smooth-scroll="true"
        tabindex="0"
-       class="py-3 vh-100 overflow-y-scroll"
+       class="py-3 overflow-y-auto pc-fill-to-bottom"
        id="{{ navbar_name }}-container">
     <div class="vstack gap-1">
       {# wrap sections in divs to separate them with gaps #}
@@ -66,7 +66,7 @@
 {% block page %}
   <div class="d-flex container-fluid h-100 p-0 overflow-y-auto">
     <!-- MAIN COLUMN -->
-    <div class="col-9 px-5 py-3">
+    <div class="col-9 px-5 pt-3">
       {% block main_column_container %}
         <div class="vstack gap-3">
           <!-- TITLE + TAGS -->
@@ -97,7 +97,7 @@
     <!-- SIDE COLUMN -->
     <div class="col-3 shadow-sm">
       {% block side_column_container %}
-        <div class="vstack gap-4 py-4 px-3 overflow-y-auto vh-100">
+        <div class="vstack gap-4 pt-4 px-3 pc-fill-to-bottom overflow-y-auto">
           {% block side_column %}
           {% endblock side_column %}
         </div>
