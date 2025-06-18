@@ -1,20 +1,25 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import { FormProvider, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { parseAndValidateFrenchPhoneNumber } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useNotification } from 'commons/hooks/useNotification'
 import { isDateValid } from 'commons/utils/date'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
-import { DefaultFormContact } from './DefaultFormContact'
 import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
@@ -224,9 +229,6 @@ export const RequestFormDialog = ({
                 fois l’offre publiée.
               </Callout>
             )}
-            <FormProvider {...hookForm}>
-              <DefaultFormContact />
-            </FormProvider>
           </>
         )}
     </div>
@@ -265,9 +267,6 @@ export const RequestFormDialog = ({
               l’offre publiée.
             </Callout>
           )}
-          <FormProvider {...hookForm}>
-            <DefaultFormContact />
-          </FormProvider>
         </>
       ) : (
         <Callout className={styles['contact-readonly']}>
@@ -292,6 +291,80 @@ export const RequestFormDialog = ({
         }}
       >
         {getDescriptionElement()}
+
+        <FormLayout>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              label="Email"
+              {...hookForm.register('teacherEmail')}
+              error={hookForm.formState.errors.teacherEmail?.message}
+              required
+              disabled
+            />
+          </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <PhoneNumberInput
+              {...hookForm.register('teacherPhone')}
+              onBlur={(event) => {
+                // This is because entries like "+33600110011invalid" are considered valid by libphonenumber-js,
+                // We need to explicitely extract "+33600110011" that is in the .number property
+                try {
+                  const phoneNumber = parseAndValidateFrenchPhoneNumber(
+                    event.target.value
+                  ).number
+                  hookForm.setValue('teacherPhone', phoneNumber)
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                } catch (e) {
+                  // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
+                }
+              }}
+              value={watch('teacherPhone')}
+              onChange={(event) =>
+                hookForm.setValue('teacherPhone', event.target.value)
+              }
+              error={hookForm.formState.errors.teacherPhone?.message}
+              name="phoneNumber"
+              label={'Téléphone'}
+            />
+          </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <DatePicker
+              className={styles['date-field-layout']}
+              label="Date souhaitée"
+              minDate={new Date()}
+              error={hookForm.formState.errors.offerDate?.message}
+              {...hookForm.register('offerDate')}
+            />
+          </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              label="Nombre d'élèves"
+              {...hookForm.register('nbStudents')}
+              error={hookForm.formState.errors.nbStudents?.message}
+              type="number"
+            />
+          </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              label="Nombre d'accompagnateurs"
+              {...hookForm.register('nbTeachers')}
+              error={hookForm.formState.errors.nbTeachers?.message}
+              type="number"
+            />
+          </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <TextArea
+              name="description"
+              value={watch('description')}
+              onChange={(e) => hookForm.setValue('description', e.target.value)}
+              label="Que souhaitez vous organiser ?"
+              maxLength={1000}
+              description="Décrivez le projet que vous souhaiteriez co-construire avec l’acteur culturel (Ex : Je souhaite organiser une visite que vous proposez dans votre théâtre pour un projet pédagogique autour du théâtre et de l’expression corporelle avec ma classe de 30 élèves entre janvier et mars. Je suis joignable par téléphone ou par mail.)"
+              required
+              error={hookForm.formState.errors.description?.message}
+            />
+          </FormLayout.Row>
+        </FormLayout>
         <DialogBuilder.Footer>
           <div className={styles['buttons-container']}>
             <Dialog.Close asChild>

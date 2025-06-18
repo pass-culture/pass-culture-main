@@ -8,7 +8,7 @@ import {
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
-import { ContactButton, ContactButtonProps } from '../ContactButton'
+import { ContactButton, ContactButtonProps } from './ContactButton'
 
 const renderContactButton = (
   props: ContactButtonProps,

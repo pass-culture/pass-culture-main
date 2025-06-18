@@ -26,8 +26,8 @@ export const validationSchema =
       test: isPhoneValid,
     }),
     offerDate: yup.string(),
-    nbStudents: yup.number().min(0, 'Nombre positif attendu'),
-    nbTeachers: yup.number().min(0, 'Nombre positif attendu'),
+    nbStudents: yup.number().transform((value) => (Number.isNaN(value) ? undefined : value)).min(0, 'Nombre positif attendu'),
+    nbTeachers: yup.number().transform((value) => (Number.isNaN(value) ? undefined : value)).min(0, 'Nombre positif attendu'),
     description: yup
       .string()
       .nullable()
