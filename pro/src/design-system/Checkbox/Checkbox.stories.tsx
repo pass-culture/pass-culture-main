@@ -19,6 +19,7 @@ export default {
         'className',
         'asset',
         'collapsed',
+        'asterisk',
       ],
     },
   },
@@ -45,6 +46,15 @@ export const DefaultIndeterminate: StoryObj<typeof Checkbox> = {
     variant: 'default',
     checked: true,
     indeterminate: true,
+  },
+}
+
+export const DefaultRequired: StoryObj<typeof Checkbox> = {
+  args: {
+    label: 'Checkbox label',
+    variant: 'default',
+    checked: true,
+    required: true,
   },
 }
 
