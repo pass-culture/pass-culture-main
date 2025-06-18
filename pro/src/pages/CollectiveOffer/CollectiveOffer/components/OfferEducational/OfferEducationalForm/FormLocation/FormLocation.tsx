@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { AdresseData } from 'apiClient/adresse/types'
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
@@ -84,9 +85,16 @@ export const FormLocation = ({
     }
   }
 
-  const onAddressSelect = () => {
+  const onAddressSelect = (data: AdresseData) => {
     setValue('location.address.isVenueAddress', false)
     setValue('location.address.isManualEdition', false)
+    setValue('street', data.address)
+    setValue('postalCode', data.postalCode)
+    setValue('city', data.city)
+    setValue('latitude', data.latitude.toString())
+    setValue('longitude', data.longitude.toString())
+    setValue('banId', data.id)
+    setValue('inseeCode', data.inseeCode)
   }
 
   const locationTypeRadios: RadioGroupProps['group'] = [
