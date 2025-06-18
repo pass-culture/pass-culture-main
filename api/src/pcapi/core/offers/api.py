@@ -20,7 +20,6 @@ from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
 
 import pcapi.core.bookings.api as bookings_api
-import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
@@ -539,34 +538,6 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
     log_extra = {"updated_fields": update_fields, "nb_offers": offers_count, "nb_venues": len(found_venue_ids)}
     logger.info("Batch update of offers: end", extra=log_extra)
-
-
-def create_event_opening_hours(
-    body: offers_schemas.CreateEventOpeningHoursModel,
-    offer: models.Offer,
-) -> models.EventOpeningHours:
-    validation.check_offer_can_have_opening_hours(offer)
-
-    event_opening_hours = models.EventOpeningHours(
-        offer=offer,
-        startDatetime=body.startDatetime,
-        endDatetime=body.endDatetime,
-    )
-    db.session.add(event_opening_hours)
-    db.session.flush()
-
-    for weekday in models.Weekday:
-        timeSpans = getattr(body.openingHours, weekday.name)
-        if timeSpans:
-            weekday_opening_hours = models.EventWeekDayOpeningHours(
-                eventOpeningHours=event_opening_hours,
-                weekday=weekday,
-                timeSpans=timeSpans,
-            )
-            db.session.add(weekday_opening_hours)
-            db.session.flush()
-
-    return event_opening_hours
 
 
 def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
@@ -2202,80 +2173,6 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
         extra_data["visa"] = movie.visa
 
     product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
-
-
-def update_event_opening_hours(
-    event: offers_models.EventOpeningHours, update_body: offers_schemas.UpdateEventOpeningHoursModel
-) -> None:
-    """Update an event opening hours information: start and end dates,
-    opening hours.
-
-    Start and end dates updates are trivial. The opening hours part is
-    a little bit more complicated. The update body must contain the
-    whole opening hours update. This means that:
-        * an unknown day should be removed from the event opening hours;
-        * an existing day will overwrite existing timespans;
-        * a new day (unknown to the event opening hours) will create a new
-        database object.
-
-    Warning: no update nor insert will be committed by this function.
-    """
-    offers_validation.check_event_opening_hours_can_be_updated(event.offer, event, update_body)
-
-    if update_body.startDatetime:
-        event.startDatetime = update_body.startDatetime
-
-    if update_body.endDatetime:
-        event.endDatetime = update_body.endDatetime
-
-    if update_body.openingHours:
-        existing_days_with_opening_hours = {day.weekday.value for day in event.weekDayOpeningHours}
-        new_opening_hours = update_body.openingHours.dict()
-
-        to_remove = {day for day, ts in new_opening_hours.items() if not ts}
-        to_update = {day for day, ts in new_opening_hours.items() if ts and day in existing_days_with_opening_hours}
-        to_create = new_opening_hours.keys() - to_remove - to_update
-
-        for weekday_opening_hours in event.weekDayOpeningHours:
-            weekday = weekday_opening_hours.weekday.value
-
-            if weekday in to_remove:
-                db.session.delete(weekday_opening_hours)
-
-            elif weekday in to_update:
-                weekday_opening_hours.timeSpans = new_opening_hours[weekday]
-
-        for weekday in to_create:
-            time_spans = new_opening_hours[weekday]
-            db.session.add(
-                models.EventWeekDayOpeningHours(
-                    eventOpeningHours=event, weekday=models.Weekday[weekday], timeSpans=time_spans
-                )
-            )
-
-
-def delete_event_opening_hours(event_opening_hours: offers_models.EventOpeningHours) -> None:
-    """Delete an offer's opening hours and cancel its related bookings.
-
-    No database row in really deleted, it is marked as soft deleted instead.
-    Same for any of its offer's stocks.
-    """
-    event_opening_hours.isSoftDeleted = True
-    for stock in event_opening_hours.offer.stocks:
-        stock.isSoftDeleted = True
-
-        for booking in stock.bookings:
-            try:
-                bookings_api.cancel_booking_by_offerer(booking)
-            except (bookings_exceptions.BookingIsAlreadyCancelled, bookings_exceptions.BookingIsAlreadyRefunded):
-                # this should not happen but it can safely be ignored since
-                # the main goal here is to block the user from using its
-                # booking.
-                continue
-            except bookings_exceptions.BookingIsAlreadyUsed:
-                raise exceptions.EventOpeningHoursException(
-                    field="booking", msg=f"booking #{booking.id} is already used, it cannot be cancelled"
-                )
 
 
 def delete_offers_stocks_related_objects(offer_ids: typing.Collection[int]) -> None:

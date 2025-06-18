@@ -5,7 +5,6 @@ import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-from werkzeug.exceptions import NotFound
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
@@ -81,7 +80,6 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "future_offer",
         "pending_bookings",
         "headline_offer",
-        "event_opening_hours",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
@@ -139,36 +137,6 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         stocks = []
         stocks_count = 0
     return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, has_stocks=has_stocks)
-
-
-@private_api.route("/offers/<int:offer_id>/event_opening_hours", methods=["POST"])
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    response_model=offers_serialize.GetEventOpeningHoursResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def post_event_opening_hours(
-    offer_id: int,
-    body: offers_schemas.CreateEventOpeningHoursModel,
-) -> offers_serialize.GetEventOpeningHoursResponseModel:
-    try:
-        offer = offers_repository.get_offer_by_id(offer_id)
-    except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            }
-        )
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    try:
-        event_opening_hours = offers_api.create_event_opening_hours(body=body, offer=offer)
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(errors=error.errors)
-
-    return offers_serialize.GetEventOpeningHoursResponseModel.from_orm(event_opening_hours)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
@@ -475,7 +443,6 @@ def patch_offer(
                 "product",
                 "bookings_count",
                 "is_non_free_offer",
-                "event_opening_hours",
             ],
         )
     except exceptions.OfferNotFound:
@@ -737,66 +704,3 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)
-
-
-@private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
-@atomic()
-def update_event_opening_hours(
-    offer_id: int, event_opening_hours_id: int, body: offers_schemas.UpdateEventOpeningHoursModel
-) -> None:
-    offer = db.session.query(models.Offer).get_or_404(offer_id)
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    opening_hours = (
-        db.session.query(models.EventOpeningHours)
-        .filter(models.EventOpeningHours.id == event_opening_hours_id, models.EventOpeningHours.offerId == offer_id)
-        .options(sa_orm.selectinload(models.EventOpeningHours.weekDayOpeningHours))
-        .first()
-    )
-    if not opening_hours:
-        raise NotFound()
-
-    try:
-        offers_api.update_event_opening_hours(opening_hours, body)
-    except exceptions.EventOpeningHoursException as error:
-        raise api_errors.ApiErrors(errors={error.field: [error.msg]})
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(errors=error.errors)
-
-
-@private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["DELETE"])
-@login_required
-@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
-@atomic()
-def delete_event_opening_hours(offer_id: int, event_opening_hours_id: int) -> None:
-    offer = (
-        db.session.query(models.Offer)
-        .filter(models.Offer.id == offer_id)
-        .options(
-            sa_orm.joinedload(models.Offer.venue).load_only(offerers_models.Venue.managingOffererId),
-            sa_orm.selectinload(models.Offer.stocks).selectinload(models.Stock.bookings),
-        )
-        .one_or_none()
-    )
-
-    if not offer:
-        raise NotFound()
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    opening_hours = (
-        db.session.query(models.EventOpeningHours)
-        .filter(models.EventOpeningHours.offerId == offer_id, models.EventOpeningHours.id == event_opening_hours_id)
-        .options(sa_orm.joinedload(models.EventOpeningHours.weekDayOpeningHours))
-        .one_or_none()
-    )
-
-    if not opening_hours:
-        raise NotFound()
-
-    try:
-        offers_api.delete_event_opening_hours(opening_hours)
-    except exceptions.EventOpeningHoursException as error:
-        raise api_errors.ApiErrors(errors={error.field: [error.msg]}, status_code=400)

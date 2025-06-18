@@ -934,10 +934,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
     @property
-    def hasOpeningHours(self) -> bool:
-        return any(not eventOpeningHours.isSoftDeleted for eventOpeningHours in self.eventOpeningHours)
-
-    @property
     def isEditable(self) -> bool:
         """This property is used by the pro frontend, to display the Edit button in the Offers list"""
         if not self.isFromProvider:

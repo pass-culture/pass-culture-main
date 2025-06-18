@@ -20,7 +20,6 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.utils.date import timespan_str_to_numrange
 
 from . import models
 
@@ -355,77 +354,6 @@ _DAY_TO_WEEKDAY = {
 }
 
 
-class EventOpeningHoursFactory(BaseFactory):
-    class Meta:
-        model = models.EventOpeningHours
-
-    offer = factory.SubFactory(
-        OfferFactory,
-        isActive=True,
-        subcategoryId=subcategories.VISITE.id,
-        venue=factory.SubFactory(offerers_factories.VenueFactory, venueTypeCode=VenueTypeCode.MUSEUM),
-    )
-    startDatetime = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=7)
-    )
-    endDatetime = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-    )
-
-    @factory.post_generation
-    def weekday_opening_hours(  # type: ignore[misc]
-        obj: models.EventOpeningHours,
-        create: bool,
-        extracted: list[models.EventWeekDayOpeningHours] | None,
-    ) -> list[models.EventWeekDayOpeningHours] | None:
-        if not create or extracted is False:
-            return None
-        week_day_opening_hours = extracted
-        if not week_day_opening_hours:
-            week_day_opening_hours = []
-
-        last_more_than_a_week = True
-        days_count = 0
-
-        if obj.endDatetime:
-            days_count = (obj.endDatetime - obj.startDatetime).days + 1
-            last_more_than_a_week = days_count > 7
-
-        if last_more_than_a_week:
-            for weekday in models.Weekday:
-                if weekday.value == "MONDAY":
-                    time_span = timespan_str_to_numrange([OPENING_HOURS[1]])
-                elif weekday.value != "SUNDAY":
-                    time_span = timespan_str_to_numrange(OPENING_HOURS)
-                else:
-                    time_span = None
-                week_day_opening_hours.append(
-                    EventWeekDayOpeningHoursFactory.create(eventOpeningHours=obj, weekday=weekday, timeSpans=time_span)
-                )
-        else:
-            for i in range(0, days_count):
-                assert obj.endDatetime  # to make mypy happy
-                current_date = obj.endDatetime + datetime.timedelta(days=i)
-                week_day_opening_hours.append(
-                    EventWeekDayOpeningHoursFactory.create(
-                        eventOpeningHours=obj,
-                        weekday=_DAY_TO_WEEKDAY[current_date.weekday()],
-                        timeSpans=timespan_str_to_numrange(OPENING_HOURS),
-                    )
-                )
-
-        return week_day_opening_hours
-
-
-class EventWeekDayOpeningHoursFactory(BaseFactory):
-    class Meta:
-        model = models.EventWeekDayOpeningHours
-
-    eventOpeningHours = factory.SubFactory(EventOpeningHoursFactory)
-    weekday = models.Weekday.MONDAY
-    timeSpans = timespan_str_to_numrange(OPENING_HOURS)
-
-
 class StockFactory(BaseFactory):
     class Meta:
         model = models.Stock
@@ -458,27 +386,6 @@ class EventStockFactory(StockFactory):
         lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
     )
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
-    priceCategory = factory.SubFactory(
-        PriceCategoryFactory,
-        offer=factory.SelfAttribute("..offer"),
-        price=factory.SelfAttribute("..price"),
-        priceCategoryLabel__venue=factory.SelfAttribute("..offer.venue"),
-    )
-
-
-class EventWithOpeningHoursStockFactory(StockFactory):
-    offer = factory.SubFactory(
-        OfferFactory,
-        isActive=True,
-        subcategoryId=subcategories.VISITE.id,
-        venue=factory.SubFactory(offerers_factories.VenueFactory, venueTypeCode=VenueTypeCode.MUSEUM),
-    )
-    eventOpeningHours = factory.SubFactory(
-        EventOpeningHoursFactory,
-        offer=factory.SelfAttribute("..offer"),
-    )
-    beginningDatetime = None
-    bookingLimitDatetime = None
     priceCategory = factory.SubFactory(
         PriceCategoryFactory,
         offer=factory.SelfAttribute("..offer"),
