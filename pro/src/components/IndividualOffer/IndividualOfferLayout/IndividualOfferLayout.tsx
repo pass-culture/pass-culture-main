@@ -27,6 +27,7 @@ import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import styles from './IndividualOfferLayout.module.scss'
+import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 
 export interface IndividualOfferLayoutProps {
@@ -128,6 +129,9 @@ export const IndividualOfferLayout = ({
               Publication prévue le {publicationDate} à {publicationTime}
             </div>
           )}
+        {mode !== OFFER_WIZARD_MODE.CREATION && offer && (
+          <OfferPublicationEdition offer={offer} />
+        )}
       </div>
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
