@@ -3999,6 +3999,40 @@ class PrepareInvoiceContextTest:
         assert context["total_contribution_amount"] == 6626
         assert context["total_reimbursed_amount"] == -2015604
 
+    def test_with_soft_deleted_venues(self, invoice_data):
+        bank_account, stocks, venue = invoice_data
+        user = users_factories.RichBeneficiaryFactory()
+        for stock in stocks:
+            finance_event = factories.UsedBookingFinanceEventFactory(
+                booking__stock=stock,
+                booking__user=user,
+            )
+            api.price_event(finance_event)
+
+        # Soft delete the venue
+        venue_id = venue.id
+        venue.isSoftDeleted = True
+        db.session.add(venue)
+        db.session.commit()
+        assert offerers_models.Venue.query.filter_by(id=venue_id).first() is None
+
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+        invoice = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=cashflow_ids,
+        )
+        batch = db.session.get(models.CashflowBatch, batch.id)
+
+        softdeleted_context = api.get_reimbursements_by_venue(invoice)
+        assert softdeleted_context
+
+        offerers_models.Venue.query.filter_by(id=venue_id).update({"isSoftDeleted": False})
+        assert offerers_models.Venue.query.filter_by(id=venue_id).first() is not None
+
+        assert list(api.get_reimbursements_by_venue(invoice)) == list(softdeleted_context)
+
     def test_get_invoice_period_second_half(self):
         cutoff = utils.get_cutoff_as_datetime(datetime.date(2020, 3, 31))
         start_period, end_period = api.get_invoice_period(cutoff)
