@@ -475,15 +475,6 @@ class IndividualOfferResponseGetterDict(GetterDict):
             extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
             extra_data_copy["ean"] = self._obj.ean
             return extra_data_copy
-        if key == "eventOpeningHours":
-            return next(
-                (
-                    eventOpeningHour
-                    for eventOpeningHour in self._obj.eventOpeningHours
-                    if not eventOpeningHour.isSoftDeleted
-                ),
-                None,
-            )
         return super().get(key, default)
 
 
@@ -533,7 +524,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
-    eventOpeningHours: GetEventOpeningHoursResponseModel | None
 
     class Config:
         orm_mode = True

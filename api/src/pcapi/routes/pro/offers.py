@@ -81,7 +81,6 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "future_offer",
         "pending_bookings",
         "headline_offer",
-        "event_opening_hours",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
@@ -451,7 +450,6 @@ def patch_offer(
                 "product",
                 "bookings_count",
                 "is_non_free_offer",
-                "event_opening_hours",
             ],
         )
     except exceptions.OfferNotFound:

@@ -116,7 +116,6 @@ export type { GetEducationalOffererResponseModel } from './models/GetEducational
 export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOfferersQueryModel';
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
-export type { GetEventOpeningHoursResponseModel } from './models/GetEventOpeningHoursResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
 export type { GetIndividualOfferWithAddressResponseModel } from './models/GetIndividualOfferWithAddressResponseModel';
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
@@ -238,7 +237,6 @@ export { Target } from './models/Target';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { ThingStockCreateBodyModel } from './models/ThingStockCreateBodyModel';
 export type { ThingStockUpdateBodyModel } from './models/ThingStockUpdateBodyModel';
-export type { TimeSpan } from './models/TimeSpan';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
