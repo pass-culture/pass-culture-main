@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { GetEventOpeningHoursResponseModel } from './GetEventOpeningHoursResponseModel';
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
@@ -20,7 +19,6 @@ export type GetIndividualOfferResponseModel = {
   dateCreated: string;
   description?: string | null;
   durationMinutes?: number | null;
-  eventOpeningHours?: GetEventOpeningHoursResponseModel | null;
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
   hasBookingLimitDatetimesPassed: boolean;

@@ -11,12 +11,10 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import schemas
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -980,108 +978,6 @@ class CheckOfferNameDoesNotContainEanTest:
     def test_check_offer_name_does_not_contain_ean_should_raise(self, offer_name):
         with pytest.raises(exceptions.OfferException):
             validation.check_offer_name_does_not_contain_ean(offer_name)
-
-
-def build_venue():
-    offerer = offerers_factories.UserOffererFactory(user__email="user@example.com").offerer
-    return offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-
-def build_event_opening_hours():
-    venue = build_venue()
-    return offers_factories.EventOpeningHoursFactory(offer__venue=venue, offer__subcategoryId=subcategories.VISITE.id)
-
-
-def now_with_offset(days):
-    return datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=days)
-
-
-class ValidateEventOpeningHoursCanBeUpdatedTest:
-    @property
-    def event_opening_hours(self):
-        if not hasattr(self, "_event_opening_hours"):
-            self._event_opening_hours = build_event_opening_hours()
-        return self._event_opening_hours
-
-    @property
-    def offer(self):
-        if not hasattr(self, "_offer"):
-            self._offer = self.event_opening_hours.offer
-        return self._offer
-
-    def assert_is_valid(self, **kwargs):
-        body = schemas.UpdateEventOpeningHoursModel(**kwargs)
-        assert validation.check_event_opening_hours_can_be_updated(self.offer, self.event_opening_hours, body) is None
-
-    def assert_is_not_valid(self, **kwargs):
-        error = kwargs.pop("err", exceptions.EventOpeningHoursException)
-        field = kwargs.pop("field", None)
-
-        body = schemas.UpdateEventOpeningHoursModel(**kwargs)
-
-        with pytest.raises(error) as exc_info:
-            validation.check_event_opening_hours_can_be_updated(self.offer, self.event_opening_hours, body)
-
-        if field:
-            assert getattr(exc_info.value, "field") == field
-
-    def test_start_date_in_the_future_is_ok(self):
-        new_start_date = now_with_offset(5)
-        self.assert_is_valid(startDatetime=new_start_date)
-
-    def test_end_date_in_the_future_is_ok(self):
-        new_end_date = now_with_offset(5)
-        self.assert_is_valid(endDatetime=new_end_date)
-
-    def test_offer_with_unauthorized_subcategory_cannot_update_anything(self):
-        self.offer.subcategoryId = subcategories.CINE_VENTE_DISTANCE.id
-        db.session.commit()
-
-        new_start_date = now_with_offset(5)
-        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.OfferException)
-
-    def test_offer_with_timestamped_stock_cannot_update_anything(self):
-        new_start_date = now_with_offset(5)
-        offers_factories.StockFactory(beginningDatetime=new_start_date, offer=self.offer)
-
-        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.OfferException)
-
-    def test_the_event_has_been_soft_deleted_any_update_is_not_ok(self):
-        self.event_opening_hours.isSoftDeleted = True
-        db.session.commit()
-
-        new_start_date = now_with_offset(5)
-        self.assert_is_not_valid(startDatetime=new_start_date, err=exceptions.EventOpeningHoursException, field="event")
-
-    def test_the_event_has_ended_any_update_is_not_ok(self):
-        now = now_with_offset(0)
-        self.event_opening_hours.startDatetime = now - datetime.timedelta(days=30)
-        self.event_opening_hours.endDatetime = now - datetime.timedelta(days=20)
-        db.session.commit()
-
-        new_start_date = now_with_offset(5)
-        self.assert_is_not_valid(
-            startDatetime=new_start_date, err=exceptions.EventOpeningHoursException, field="event.endDatetime"
-        )
-
-    def test_new_start_after_current_event_end_is_not_ok(self):
-        start_date = self.event_opening_hours.endDatetime.replace(tzinfo=datetime.timezone.utc)
-        new_start_date = start_date + datetime.timedelta(days=3)
-        self.assert_is_not_valid(
-            startDatetime=new_start_date, err=exceptions.EventOpeningHoursException, field="event.startDatetime"
-        )
-
-    def test_new_start_too_close_is_not_ok(self):
-        new_start_date = now_with_offset(1)
-        self.assert_is_not_valid(
-            startDatetime=new_start_date, err=exceptions.EventOpeningHoursException, field="event.startDatetime"
-        )
-
-    def test_new_end_too_close_is_not_ok(self):
-        new_end_date = now_with_offset(1)
-        self.assert_is_not_valid(
-            endDatetime=new_end_date, err=exceptions.EventOpeningHoursException, field="event.endDatetime"
-        )
 
 
 class CheckOfferCanHaveActivationCodesTest:

@@ -126,9 +126,7 @@ class AlgoliaSerializationMixin:
         prices = {stock.price for stock in offer.searchableStocks}
         dates = set()
         times = set()
-        if (
-            offer.isEvent and not offer.hasOpeningHours
-        ):  # TODO (tcoudray-pass): update indexing strategy for event opening hours
+        if offer.isEvent:
             dates = {stock.beginningDatetime.timestamp() for stock in offer.searchableStocks}  # type: ignore[union-attr]
             times = {
                 date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime)  # type: ignore[arg-type]
