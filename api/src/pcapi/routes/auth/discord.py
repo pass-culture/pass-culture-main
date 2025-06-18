@@ -171,7 +171,7 @@ def discord_signin_post() -> str | Response | None:
             minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )
     except (ReCaptchaException, InvalidRecaptchaTokenException) as exc:
-        logger.error("Recaptcha failed: %s", str(exc))
+        logger.warning("Recaptcha failed: %s", str(exc))
         raise ApiErrors({"recaptcha": "Erreur recaptcha"}, 401)
 
     try:
