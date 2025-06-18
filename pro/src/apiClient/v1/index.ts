@@ -65,7 +65,6 @@ export type { CollectiveStockResponseModel } from './models/CollectiveStockRespo
 export type { CombinedInvoiceListModel } from './models/CombinedInvoiceListModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
-export type { CreateEventOpeningHoursModel } from './models/CreateEventOpeningHoursModel';
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
 export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel';
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';
