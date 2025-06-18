@@ -40,6 +40,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
@@ -658,7 +659,15 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
     match status:
         case offer_mixin.OfferStatus.DRAFT | offer_mixin.CollectiveOfferStatus.DRAFT:
             return "Brouillon"
-        case offer_mixin.OfferStatus.ACTIVE | offer_mixin.CollectiveOfferStatus.ACTIVE:
+        case offer_mixin.OfferStatus.SCHEDULED:
+            return "Programmée"
+        case offer_mixin.OfferStatus.PUBLISHED:
+            return "Publiée"
+        case offer_mixin.CollectiveOfferStatus.ACTIVE:
+            return "Publiée"
+        case offer_mixin.OfferStatus.ACTIVE:
+            if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
+                return "Réservable"
             return "Publiée"
         case offer_mixin.OfferStatus.PENDING | offer_mixin.CollectiveOfferStatus.PENDING:
             return "En instruction"

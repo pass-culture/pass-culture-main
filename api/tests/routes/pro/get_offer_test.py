@@ -46,12 +46,12 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    # session
-    # user
-    # payload (joined query)
-    # user offerer
-    # stocks of offer (a backref)
-    num_queries = 5
+    num_queries = 1  # session
+    num_queries += 1  # user
+    num_queries += 1  # payload (joined query)
+    num_queries += 1  # user offerer
+    num_queries += 1  # stocks of offer (a backref)
+    num_queries += 1  # # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_access_by_pro_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()

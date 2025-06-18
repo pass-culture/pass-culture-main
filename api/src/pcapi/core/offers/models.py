@@ -34,6 +34,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -1144,8 +1145,20 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         if self.validation == OfferValidationStatus.DRAFT:
             return OfferStatus.DRAFT
 
-        if not self.isActive:
-            return OfferStatus.INACTIVE
+        if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
+            now_utc = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+
+            if not self.publicationDatetime:
+                return OfferStatus.INACTIVE
+
+            if now_utc < self.publicationDatetime:
+                return OfferStatus.SCHEDULED
+
+            if self.bookingAllowedDatetime and now_utc < self.bookingAllowedDatetime:
+                return OfferStatus.PUBLISHED
+        else:
+            if not self.isActive:
+                return OfferStatus.INACTIVE
 
         if self.validation == OfferValidationStatus.APPROVED:
             if self.hasBookingLimitDatetimesPassed:
@@ -1157,15 +1170,31 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @status.expression  # type: ignore[no-redef]
     def status(cls) -> Case:
-        return sa.case(
+        cases = [
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
             (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
-            (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
-            (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
-            (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
-            else_=OfferStatus.ACTIVE.name,
-        )
+        ]
+
+        if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
+            cases += [
+                (cls.publicationDatetime.is_(None), OfferStatus.INACTIVE.name),
+                (cls.publicationDatetime > sa.func.now(), OfferStatus.SCHEDULED.name),
+                (
+                    cls.bookingAllowedDatetime.is_not(None) & (cls.bookingAllowedDatetime > sa.func.now()),
+                    OfferStatus.PUBLISHED.name,
+                ),
+                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
+                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
+            ]
+        else:
+            cases += [
+                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
+                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
+                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
+            ]
+
+        return sa.case(*cases, else_=OfferStatus.ACTIVE.name)
 
     @property
     def isActivable(self) -> bool:

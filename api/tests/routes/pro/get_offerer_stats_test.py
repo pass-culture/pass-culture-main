@@ -78,6 +78,7 @@ class OffererStatsTest:
         queries += 1  # check user_offerer exists
         queries += 1  # select offerer_stats
         queries += 1  # select offers with images, join on headline offer & stocks
+        queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
         with testing.assert_num_queries(queries):
             response = client.get(f"/offerers/{offerer_id}/stats")
             assert response.status_code == 200

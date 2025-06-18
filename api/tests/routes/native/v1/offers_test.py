@@ -1886,7 +1886,7 @@ class OffersV2Test:
     def test_get_not_headline_offer(self, client):
         headline_offer = offers_factories.HeadlineOfferFactory()
         offer_id = headline_offer.offer.id
-        with assert_num_queries(self.base_num_queries):
+        with assert_num_queries(self.base_num_queries + 1):  # FF WIP_REFACTO_FUTURE_OFFER
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200

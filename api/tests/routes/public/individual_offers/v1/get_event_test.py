@@ -22,13 +22,12 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     num_queries_with_error = 1  # retrieve API key
     num_queries_with_error += 1  # retrieve offer
 
-    # fetch stocks (1 query)
-    # fetch mediations (1 query)
-    # fetch price categories (1 query)
-    num_queries = num_queries_with_error + 3
+    num_queries = num_queries_with_error + 1  # fetch stocks (1 query)
+    num_queries += 1  # fetch mediations (1 query)
+    num_queries += 1  # fetch price categories (1 query)
+    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
-    # fetch product (1 query)
-    num_queries_full = num_queries + 1
+    num_queries_full = num_queries + 1  # fetch product (1 query)
 
     def setup_base_resource(self, venue=None) -> offers_models.Offer:
         venue = venue or self.setup_venue()

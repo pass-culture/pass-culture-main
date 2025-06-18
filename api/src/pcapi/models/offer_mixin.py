@@ -11,13 +11,18 @@ if TYPE_CHECKING:
 
 
 class OfferStatus(str, enum.Enum):
-    ACTIVE = "ACTIVE"
-    PENDING = "PENDING"
-    EXPIRED = "EXPIRED"
-    REJECTED = "REJECTED"
-    SOLD_OUT = "SOLD_OUT"
-    INACTIVE = "INACTIVE"
+    # validation statuses
     DRAFT = "DRAFT"
+    PENDING = "PENDING"
+    REJECTED = "REJECTED"
+    # offer lifecycle statuses
+    INACTIVE = "INACTIVE"
+    SCHEDULED = "SCHEDULED"  # not yet published
+    PUBLISHED = "PUBLISHED"  # published but not yet bookable
+    ACTIVE = "ACTIVE"  # published & bookable
+    # stock lifecycle related statuses
+    SOLD_OUT = "SOLD_OUT"  # no more stock available
+    EXPIRED = "EXPIRED"  # stocks booking limit datetime has passed
 
 
 class CollectiveOfferStatus(str, enum.Enum):

@@ -222,6 +222,7 @@ class OffererHeadlineOfferTest:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer
     num_queries += 1  # get headline offer
+    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_get_offerer_headline_offer_success(self, client):
         user_offerer = offerers_factories.UserOffererFactory()

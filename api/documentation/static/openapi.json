@@ -5564,13 +5564,15 @@
             "OfferStatus": {
                 "description": "An enumeration.",
                 "enum": [
-                    "ACTIVE",
+                    "DRAFT",
                     "PENDING",
-                    "EXPIRED",
                     "REJECTED",
-                    "SOLD_OUT",
                     "INACTIVE",
-                    "DRAFT"
+                    "SCHEDULED",
+                    "PUBLISHED",
+                    "ACTIVE",
+                    "SOLD_OUT",
+                    "EXPIRED"
                 ],
                 "title": "OfferStatus",
                 "type": "string"
