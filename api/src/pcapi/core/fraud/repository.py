@@ -29,7 +29,8 @@ def has_admin_ko_review(user: users_models.User) -> bool:
 
 def get_latest_completed_profile_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     if profile_completion_checks := _get_completed_profile_checks(user):
-        return profile_completion_checks[0]
+        # user.beneficiaryFraudChecks are sorted by ascending dateCreated
+        return profile_completion_checks[-1]
 
     return None
 
