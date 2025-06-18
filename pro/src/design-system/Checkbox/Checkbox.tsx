@@ -38,6 +38,14 @@ type CheckboxBaseProps = {
    * Name of the input checkbox. Not necessary unless using a form library that relies on the name of the element.
    */
   name?: string
+  /**
+   * Whether the checkbox is required or not.
+   */
+  required?: boolean
+  /**
+   * Whether the required asterisk is displayed or not.
+   */
+  asterisk?: boolean
 }
 
 export type CheckboxProps = CheckboxBaseProps &
@@ -87,6 +95,8 @@ export const Checkbox = forwardRef(
       onChange,
       onBlur,
       name,
+      required,
+      asterisk = true,
     }: CheckboxProps,
     ref?: ForwardedRef<HTMLInputElement>
   ) => {
@@ -138,10 +148,11 @@ export const Checkbox = forwardRef(
             onChange={onChange}
             onBlur={onBlur}
             name={name}
+            aria-required={required}
           />
           <div className={styles['checkbox-label-row']}>
             <div className={styles['checkbox-label-row-left']}>
-              {label}
+              {label} {required && asterisk && '*'}
               {description && (
                 <p className={styles['checkbox-description']}>{description}</p>
               )}
