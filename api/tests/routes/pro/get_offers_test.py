@@ -428,7 +428,10 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        event_offer = offers_factories.EventOfferFactory(venue=venue)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            publicationDatetime=datetime.datetime(2022, 10, 21, 13, 19),
+        )
 
         offers_factories.EventStockFactory(
             offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19), isSoftDeleted=True
@@ -482,7 +485,7 @@ class Returns200Test:
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
-                "publicationDatetime": None,
+                "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
             }
@@ -501,10 +504,18 @@ class Returns200Test:
         )
 
         event_offer1 = offers_factories.EventOfferFactory(
-            name="The Weeknd", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=offerer_address1
+            name="The Weeknd",
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            offererAddress=offerer_address1,
+            publicationDatetime=datetime.datetime(2022, 10, 21, 13, 19),
         )
         event_offer2 = offers_factories.EventOfferFactory(
-            name="Taylor Swift", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=offerer_address1
+            name="Taylor Swift",
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            offererAddress=offerer_address1,
+            publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
 
         offerer_address2 = offerers_factories.OffererAddressFactory(
@@ -569,7 +580,7 @@ class Returns200Test:
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                 },
-                "publicationDatetime": None,
+                "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
             },
@@ -613,7 +624,7 @@ class Returns200Test:
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                 },
-                "publicationDatetime": None,
+                "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
             },
@@ -632,7 +643,11 @@ class Returns200Test:
         )
 
         event_offer1 = offers_factories.EventOfferFactory(
-            name="The Weeknd", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=offerer_address1
+            name="The Weeknd",
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            offererAddress=offerer_address1,
+            publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
 
         offerer_id = offerer.id
@@ -682,7 +697,7 @@ class Returns200Test:
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                 },
-                "publicationDatetime": None,
+                "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
             }
@@ -705,7 +720,11 @@ class Returns200Test:
         )
 
         event_offer1 = offers_factories.EventOfferFactory(
-            name="The Weeknd", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=None
+            name="The Weeknd",
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            offererAddress=None,
+            publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
@@ -753,7 +772,7 @@ class Returns200Test:
                     "latitude": 4.34765,
                     "longitude": 1.34765,
                 },
-                "publicationDatetime": None,
+                "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
             }

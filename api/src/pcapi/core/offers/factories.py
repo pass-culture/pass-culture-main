@@ -201,6 +201,17 @@ class OfferFactory(BaseFactory):
                 models.OfferValidationStatus.PENDING,
             )
 
+        # TODO: (tcoudray-pass, 18/06/2025) Refacto when we get rid of `isActive`
+        if (
+            kwargs["isActive"]
+            and kwargs.get("validation") != models.OfferValidationStatus.DRAFT
+            and not kwargs.get("publicationDatetime")
+        ):
+            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+
+        if kwargs.get("validation") != models.OfferValidationStatus.DRAFT and not kwargs.get("finalizationDatetime"):
+            kwargs["finalizationDatetime"] = datetime.datetime.now()
+
         product = kwargs.get("product")
         if product:
             _check_offer_kwargs(product, kwargs)
