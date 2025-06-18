@@ -77,10 +77,14 @@ function renderFormLocation(
     'location' | 'venueId' | 'interventionArea'
   >
 ) {
+  let getValues: () => any
+
   function FormLocationWrapper() {
     const form = useForm({
       defaultValues: initialValues,
     })
+
+    getValues = form.getValues
 
     return (
       <FormProvider {...form}>
@@ -89,7 +93,10 @@ function renderFormLocation(
     )
   }
 
-  return renderWithProviders(<FormLocationWrapper />)
+  return {
+    ...renderWithProviders(<FormLocationWrapper />),
+    getValues: () => getValues(),
+  }
 }
 
 describe('FormLocation', () => {
@@ -137,7 +144,7 @@ describe('FormLocation', () => {
   })
 
   it('should update address fields when an address is selected from autocomplete', async () => {
-    renderFormLocation(props, initialValues)
+    const { getValues } = renderFormLocation(props, initialValues)
 
     await userEvent.click(screen.getByText('Autre adresse'))
 
@@ -159,6 +166,15 @@ describe('FormLocation', () => {
         selector: 'option',
       })
     ).toBeInTheDocument()
+
+    const formValues = getValues()
+
+    expect(formValues.street).toBe('10 Rue des lilas')
+    expect(formValues.postalCode).toBe('69002')
+    expect(formValues.latitude).toBe('11.1')
+    expect(formValues.longitude).toBe('-11.1')
+    expect(formValues.coords).toBe('48.87004, 2.3785')
+    expect(formValues.banId).toBe('1')
   })
 
   it('should disable the form when disableForm prop is true', () => {
