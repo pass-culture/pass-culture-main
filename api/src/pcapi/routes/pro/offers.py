@@ -5,7 +5,6 @@ import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-from werkzeug.exceptions import NotFound
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
@@ -714,30 +713,3 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)
-
-
-@private_api.route("/offers/<int:offer_id>/event_opening_hours/<int:event_opening_hours_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
-@atomic()
-def update_event_opening_hours(
-    offer_id: int, event_opening_hours_id: int, body: offers_schemas.UpdateEventOpeningHoursModel
-) -> None:
-    offer = db.session.query(models.Offer).get_or_404(offer_id)
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    opening_hours = (
-        db.session.query(models.EventOpeningHours)
-        .filter(models.EventOpeningHours.id == event_opening_hours_id, models.EventOpeningHours.offerId == offer_id)
-        .options(sa_orm.selectinload(models.EventOpeningHours.weekDayOpeningHours))
-        .first()
-    )
-    if not opening_hours:
-        raise NotFound()
-
-    try:
-        offers_api.update_event_opening_hours(opening_hours, body)
-    except exceptions.EventOpeningHoursException as error:
-        raise api_errors.ApiErrors(errors={error.field: [error.msg]})
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(errors=error.errors)
