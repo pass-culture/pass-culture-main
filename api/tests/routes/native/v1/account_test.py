@@ -578,6 +578,30 @@ class AccountCreationTest:
         assert response.status_code == 400, response.json
         assert "password" in response.json
 
+    @pytest.mark.parametrize(
+        "invalid_email",
+        [
+            "[hello]@example.com",
+            "hello@world@example.com",
+            "hello$@example.com",
+            "hello|world@example.com",
+            "hello·world@example.com",
+        ],
+    )
+    def test_account_creation_with_invalid_email(self, client, invalid_email):
+        data = {
+            "email": invalid_email,
+            "password": "user@AZERTY1234",
+            "birthdate": "1960-12-31",
+            "notifications": False,
+            "token": "dummy token",
+            "marketingEmailSubscription": False,
+        }
+        response = client.post("/native/v1/account", json=data)
+
+        assert response.status_code == 400, response.json
+        assert "email" in response.json
+
 
 class AccountCreationEmailExistsTest:
     identifier = "email@example.com"
