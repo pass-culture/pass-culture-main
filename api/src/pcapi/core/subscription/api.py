@@ -45,11 +45,13 @@ FREE_ELIGIBILITY_DEPOSIT_SOURCE = "complétion du profil"
 
 
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
+    user_id = user.id  # keep id to avoid PendingRollbackError when falling into IntegrityError
+
     # ensure the FOR UPDATE lock is freed if anything arises
     with pcapi_repository.transaction():
         user = (
             db.session.query(users_models.User)
-            .filter(users_models.User.id == user.id)
+            .filter(users_models.User.id == user_id)
             .populate_existing()
             .with_for_update()
             .one()
@@ -81,7 +83,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
             try:
                 users_api.update_user_information_from_external_source(user, source_data)
             except sqlalchemy_exceptions.IntegrityError as e:
-                logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user.id})
+                logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user_id})
                 return False
 
             deposit_source = identity_fraud_check.get_detailed_source()
@@ -92,7 +94,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
             activate_beneficiary_for_eligibility(user, deposit_source, eligibility_to_activate)
         except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
             # this error may happen on identity provider concurrent requests
-            logger.info("A deposit already exists for user %s", user.id)
+            logger.info("A deposit already exists for user %s", user_id)
             return False
 
         return True
