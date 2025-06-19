@@ -53,7 +53,9 @@ describe('CollectiveOfferConfirmation', () => {
   it('should render selection duplication page', async () => {
     renderCollectiveOfferSelectionDuplication()
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    await waitForElementToBeRemoved(() =>
+      screen.queryAllByTestId('skeleton-loader')
+    )
 
     expect(
       screen.getByText('Rechercher l’offre vitrine à dupliquer')

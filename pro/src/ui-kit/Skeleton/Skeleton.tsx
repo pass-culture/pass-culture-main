@@ -5,6 +5,7 @@ import styles from './Skeleton.module.scss'
 interface SkeletonProps {
   height?: string
   width?: string
+  margin?: string
   roundedFull?: boolean
 }
 
@@ -12,6 +13,7 @@ export const Skeleton = ({
   height = '1.5rem',
   width = '100%',
   roundedFull = false,
+  margin = '0.5rem 0',
 }: SkeletonProps): JSX.Element => {
   return (
     <div>
@@ -25,6 +27,7 @@ export const Skeleton = ({
         style={{
           height,
           width,
+          margin,
         }}
       />
     </div>
