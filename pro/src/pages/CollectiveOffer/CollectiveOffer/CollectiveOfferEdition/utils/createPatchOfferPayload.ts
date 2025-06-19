@@ -136,9 +136,22 @@ const offerLocationSerializer = (
   }
 }
 
+const locationFields = [
+  'location',
+  'street',
+  'banId',
+  'postalCode',
+  'city',
+  'coords',
+]
+
+const locationSerializers = Object.fromEntries(
+  locationFields.map((key) => [key, offerLocationSerializer])
+)
+
 const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
   ...baseSerializer,
-  location: offerLocationSerializer,
+  ...locationSerializers,
 }
 
 const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyModel> =
