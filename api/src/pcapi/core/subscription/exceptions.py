@@ -10,6 +10,14 @@ class InvalidEligibilityTypeException(SubscriptionException):
     pass
 
 
+class UnderageEligibilityWhenAlreadyEighteenException(InvalidEligibilityTypeException):
+    pass
+
+
+class PreDecreeEligibilityWhenPostDecreeBeneficiaryException(InvalidEligibilityTypeException):
+    pass
+
+
 class InvalidAgeException(SubscriptionException):
     def __init__(self, age: int | None) -> None:
         super().__init__()
