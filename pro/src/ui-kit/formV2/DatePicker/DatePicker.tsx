@@ -52,6 +52,7 @@ export const DatePicker = React.forwardRef(
             {required && asterisk ? ' *' : ''}
           </label>
           <BaseDatePicker
+            data-testid={name}
             name={name}
             id={labelId}
             hasError={Boolean(error)}

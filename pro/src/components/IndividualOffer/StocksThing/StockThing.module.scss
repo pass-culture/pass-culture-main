@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-bottom: rem.torem(16px);
 }
 
 .callout-area {
@@ -45,7 +46,7 @@
   }
 
   .field-layout-small {
-    max-width: rem.torem(180px);
+    max-width: rem.torem(224px);
   }
 
   .field-layout-shrink {
