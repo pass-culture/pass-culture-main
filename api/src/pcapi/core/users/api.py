@@ -1866,7 +1866,8 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     for chronicle in chronicles_data:
         product_name = None
         for product in chronicle.products:
-            if chronicle.ean and product.ean == chronicle.ean:
+            product_identifier = chronicle.get_product_identifier(product)
+            if chronicle.productIdentifier and product_identifier == chronicle.productIdentifier:
                 product_name = product.name
                 break
         chronicles.append(
@@ -1875,7 +1876,15 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
                 city=chronicle.city,
                 content=chronicle.content,
                 dateCreated=chronicle.dateCreated,
-                ean=chronicle.ean,
+                ean=chronicle.productIdentifier
+                if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.EAN
+                else None,
+                allocineId=chronicle.productIdentifier
+                if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID
+                else None,
+                visa=chronicle.productIdentifier
+                if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.VISA
+                else None,
                 email=chronicle.email,
                 firstName=chronicle.firstName,
                 isIdentityDiffusible=chronicle.isIdentityDiffusible,

@@ -198,7 +198,7 @@
                     {% if chronicle.firstName %}<tr><td>Prénom</td><td>{{chronicle.firstName}}</td></tr>{% endif %}
                     <tr><td>Adresse de messagerie</td><td>{{chronicle.email}}</td></tr>
                     {% if chronicle.productName %}<tr><td>Titre du livre</td><td>{{chronicle.productName}}</td></tr>
-                    {% elif chronicle.ean %}<tr><td>EAN du livre</td><td>{{chronicle.ean}}</td></tr>{% endif %}
+                    {% elif chronicle.productIdentifier %}<tr><td>{{ chronicle.productIdentifierName }} du livre</td><td>{{chronicle.productIdentifier}}</td></tr>{% endif %}
                     <tr><td>Chronique</td><td>{{chronicle.content |replace('\n', '<br/>' | safe)}}</td></tr>
                     <tr><td>Accepte la diffusion sur les médias sociaux</td><td>{%if chronicle.isSocialMediaDiffusible%}oui{%else%}non{%endif%}</td></tr>
                     <tr><td>Accepte la diffusion d'identité</td><td>{%if chronicle.isIdentityDiffusible%}oui{%else%}non{%endif%}</td></tr>

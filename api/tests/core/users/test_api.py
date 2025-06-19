@@ -3070,7 +3070,7 @@ def generate_beneficiary():
         age=17,
         city="Trantor",
         dateCreated=now,
-        ean="1234567890123",
+        productIdentifier="1234567890123",
         email="useremail@example.com",
         firstName="Hari",
         isIdentityDiffusible=True,
@@ -3209,6 +3209,9 @@ def generate_minimal_beneficiary():
             content="",
             email="",
             externalId="",
+            productIdentifier="1234567899999",
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
         )
     )
     db.session.add(
@@ -3412,6 +3415,7 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                 "chronicles": [
                     {
                         "age": 17,
+                        "allocineId": None,
                         "city": "Trantor",
                         "content": "A small chronicle content.",
                         "dateCreated": "2024-01-01T00:00:00",
@@ -3421,6 +3425,7 @@ class ExtractBeneficiaryDataTest(StorageFolderManager):
                         "isIdentityDiffusible": True,
                         "isSocialMediaDiffusible": True,
                         "productName": "my super book",
+                        "visa": None,
                     },
                 ],
                 "deposits": [
