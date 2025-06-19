@@ -520,6 +520,13 @@ class ProfileCompletionContent(pydantic_v1.BaseModel):
     postal_code: str | None  # Optional because it was not saved up until now
     school_type: users_models.SchoolTypeEnum | None
 
+    @validator("activity", pre=True)
+    def validate_activity(cls, value: users_models.ActivityEnum | str | None) -> users_models.ActivityEnum | str | None:
+        # Avoid validation error for old data because of rewording
+        if value == "Chômeur":
+            return users_models.ActivityEnum.UNEMPLOYED.value
+        return value
+
     class Config:
         allow_population_by_field_name = True
         use_enum_values = True
