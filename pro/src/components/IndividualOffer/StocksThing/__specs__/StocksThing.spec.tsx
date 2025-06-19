@@ -374,7 +374,6 @@ describe('screens:StocksThing', () => {
       const expirationInput = screen.getByLabelText("Date d'expiration *")
       expect(expirationInput).toBeDisabled()
       const date = new Date()
-      date.setUTCHours(22, 59, 59, 999)
       expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Enregistrer et continuer'))
       // TEST
