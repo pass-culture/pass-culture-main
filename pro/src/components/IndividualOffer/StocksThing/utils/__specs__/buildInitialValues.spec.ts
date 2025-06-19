@@ -63,8 +63,8 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       stockId: 1,
       remainingQuantity: 'unlimited',
       bookingsQuantity: '20',
-      quantity: '',
       bookingLimitDatetime: '',
+      quantity: undefined,
       price: 12,
       isDuo: true,
     })

@@ -90,6 +90,10 @@ export const QuantityInput = ({
     }
   }, [isUnlimited])
 
+  useEffect(() => {
+    if (isUnlimited != isEmptyValue) setIsUnlimited(isEmptyValue)
+  }, [isEmptyValue])
+
   const onQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(event)
 

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { TextInput, TextInputProps } from 'ui-kit/form/TextInput/TextInput'
 
-export type Quantity = number | ''
+type Quantity = number | ''
 
 /**
  * Props for the QuantityInput component.
