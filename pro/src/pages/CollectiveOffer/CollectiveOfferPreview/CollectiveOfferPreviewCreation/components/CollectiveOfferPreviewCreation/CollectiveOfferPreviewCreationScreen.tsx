@@ -23,6 +23,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { RedirectToBankAccountDialog } from 'components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
+import { PreviewHeader } from 'pages/CollectiveOffer/CollectiveOfferPreview/components/PreviewHeader'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -119,10 +120,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
 
   return (
     <div>
-      <p>
-        Voici à quoi ressemblera votre offre une fois publiée sur la plateforme
-        ADAGE.
-      </p>
+      <PreviewHeader offer={offer} />
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
