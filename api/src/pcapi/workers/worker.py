@@ -30,7 +30,7 @@ def log_worker_error(job: Job, exception_type: type, exception_value: Exception,
     """This handler is called by `rq.Worker.handle_exception()` from an `except` clause,
     so we can (and should) use `logger.exception`."""
     # we don't need the whole path for pcapi.workers.function_xxx
-    shortened_function_name = job.func_name.split(".")[-1]
+    shortened_function_name = job.func_name.split(".")[-1] if job.func_name else "no name"
     logger.exception(
         "[RQ](%s) Failed job !",
         shortened_function_name,
@@ -44,7 +44,7 @@ def log_worker_error(job: Job, exception_type: type, exception_value: Exception,
 
 def work_horse_killed_handler(job: Job, retpid: int, ret_val: int, rusage: struct_rusage) -> None:
     # we don't need the whole path for pcapi.workers.function_xxx
-    shortened_function_name = job.func_name.split(".")[-1]
+    shortened_function_name = job.func_name.split(".")[-1] if job.func_name else "no name"
     logger.exception(
         "[RQ](%s) Work horse killed !",
         shortened_function_name,
