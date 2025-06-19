@@ -102,6 +102,7 @@ import strokeMoreIcon from 'icons/stroke-more.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
+import strokeNoImageIcon from 'icons/stroke-no-image.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokePageNotFoundIcon from 'icons/stroke-page-not-found.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
@@ -265,6 +266,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeVisualArtIcon },
   { src: strokeAddCalendarIcon },
   { src: strokePictureIcon, viewBox: '0 0 58 58' },
+  { src: strokeNoImageIcon },
 ]
 
 export const otherIcons: IconListItem[] = [
