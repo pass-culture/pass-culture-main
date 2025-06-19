@@ -219,7 +219,7 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I fill in stocks' })
     cy.get('#price').type('42')
-    cy.get('#bookingLimitDatetime').type('2042-05-03')
+    cy.get('[data-testid="bookingLimitDatetime"').type('2042-05-03')
     cy.get('#quantity').type('42')
 
     cy.stepLog({ message: 'I validate stocks step' })

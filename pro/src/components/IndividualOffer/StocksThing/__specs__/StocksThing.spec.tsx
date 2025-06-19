@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
 import { Route, Routes } from 'react-router'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -161,8 +162,8 @@ describe('screens:StocksThing', () => {
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('spinbutton', {
-        name: 'Quantité',
+      screen.getByLabelText('Quantité', {
+        exact: false,
       })
     ).toBeInTheDocument()
   })
@@ -362,8 +363,8 @@ describe('screens:StocksThing', () => {
 
       await userEvent.click(screen.getByText('Valider'))
       expect(
-        screen.getByRole('spinbutton', {
-          name: 'Quantité',
+        screen.getByLabelText('Quantité', {
+          exact: false,
         })
       ).toBeDisabled()
 
@@ -376,6 +377,7 @@ describe('screens:StocksThing', () => {
       date.setUTCHours(22, 59, 59, 999)
       expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Enregistrer et continuer'))
+      // TEST
       expect(api.createThingStock).toHaveBeenCalledWith({
         offerId: offer.id,
 
@@ -492,10 +494,9 @@ describe('screens:StocksThing', () => {
     async ({ value, expectedNumber }) => {
       await renderStockThingScreen([], props, contextValue)
 
-      const quantityInput = screen.getByRole('spinbutton', {
-        name: 'Quantité',
-      })
+      const quantityInput = screen.getByLabelText('Quantité')
       await userEvent.type(quantityInput, value)
+      await userEvent.tab()
       expect(quantityInput).toHaveValue(expectedNumber)
     }
   )
@@ -519,11 +520,12 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
     await userEvent.type(
-      screen.getByRole('spinbutton', {
-        name: 'Quantité',
+      screen.getByLabelText('Quantité', {
+        exact: false,
       }),
       '20'
     )
+    await userEvent.tab()
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -539,8 +541,8 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
     await userEvent.type(
-      screen.getByRole('spinbutton', {
-        name: 'Quantité',
+      screen.getByLabelText('Quantité', {
+        exact: false,
       }),
       '20'
     )
@@ -568,7 +570,7 @@ describe('screens:StocksThing', () => {
     )
 
     const input = screen.getByLabelText('Date limite de réservation')
-
+    await waitFor(() => expect(input).toHaveValue('2020-12-15'))
     await userEvent.clear(input)
     await userEvent.click(screen.getByLabelText('Prix *'))
 
@@ -590,11 +592,10 @@ describe('screens:StocksThing', () => {
     )
 
     const input = screen.getByLabelText('Date limite de réservation')
-
+    await waitFor(() => expect(input).toHaveValue('2020-12-15'))
     await userEvent.clear(input)
     await userEvent.type(input, '2020-12-15')
     await userEvent.click(screen.getByLabelText('Prix *'))
-
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
 })

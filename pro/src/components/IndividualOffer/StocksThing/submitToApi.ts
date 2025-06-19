@@ -1,3 +1,5 @@
+import { UseFormReset, UseFormSetError } from 'react-hook-form'
+
 import { api } from 'apiClient/api'
 import {
   getHumanReadableApiError,
@@ -8,15 +10,18 @@ import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 
 import { getDepartmentCode } from '../utils/getDepartmentCode'
 
-import { serializeUpdateThingStock, serializeCreateThingStock } from './adapters/serializers'
-import { StockThingFormValues, StockThingFormik } from './types'
+import {
+  serializeUpdateThingStock,
+  serializeCreateThingStock,
+} from './adapters/serializers'
+import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 
 export const submitToApi = async (
   values: StockThingFormValues,
   offer: GetIndividualOfferWithAddressResponseModel,
-  resetForm: StockThingFormik['resetForm'],
-  setErrors: StockThingFormik['setErrors']
+  resetForm: UseFormReset<StockThingFormValues>,
+  setErrors: UseFormSetError<StockThingFormValues>
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })
@@ -29,17 +34,27 @@ export const submitToApi = async (
   try {
     const departementCode = getDepartmentCode(offer)
     if (values.stockId) {
-      await api.updateThingStock(values.stockId, serializeUpdateThingStock(values, departementCode))
+      await api.updateThingStock(
+        values.stockId,
+        serializeUpdateThingStock(values, departementCode)
+      )
     } else {
-      await api.createThingStock(serializeCreateThingStock(values, offer.id, departementCode))
+      await api.createThingStock(
+        serializeCreateThingStock(values, offer.id, departementCode)
+      )
     }
   } catch (error) {
     if (isErrorAPIError(error)) {
       const serializedApiErrors = serializeApiErrors(error.body)
-      setErrors(serializedApiErrors)
+      for (const [key, value] of Object.entries(serializedApiErrors)) {
+        const message = typeof value === 'string' ? value : value?.join(',  ')
+        setErrors(key as keyof StockThingFormValues, {
+          message,
+        })
+      }
       // for this error, we want to display a custom error on the price field
       if (serializedApiErrors.priceLimitationRule) {
-        setErrors({ price: 'Non valide' })
+        setErrors('price', { type: 'custom', message: 'Non valide' })
       }
       if (serializedApiErrors.url) {
         throw new Error(
@@ -54,7 +69,5 @@ export const submitToApi = async (
     api.getOffer(offer.id),
     api.getStocks(offer.id),
   ])
-  resetForm({
-    values: buildInitialValues(offerResponse, stockResponse.stocks),
-  })
+  resetForm(buildInitialValues(offerResponse, stockResponse.stocks))
 }

@@ -1,8 +1,14 @@
-import { ThingStockCreateBodyModel, ThingStockUpdateBodyModel } from 'apiClient/v1'
+import {
+  ThingStockCreateBodyModel,
+  ThingStockUpdateBodyModel,
+} from 'apiClient/v1'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import { StockThingFormValues } from '../../types'
-import { serializeCreateThingStock, serializeUpdateThingStock } from '../serializers'
+import {
+  serializeCreateThingStock,
+  serializeUpdateThingStock,
+} from '../serializers'
 
 describe('serializeCreateThingStock', () => {
   let formValues: StockThingFormValues
@@ -25,14 +31,18 @@ describe('serializeCreateThingStock', () => {
   })
 
   it('should serialize data for stock thing creation', () => {
-    const expectedCreateThingStock: ThingStockCreateBodyModel  = {
+    const expectedCreateThingStock: ThingStockCreateBodyModel = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
       offerId: 12,
     }
 
-    const serializedData = serializeCreateThingStock(formValues, offerId, departementCode)
+    const serializedData = serializeCreateThingStock(
+      formValues,
+      offerId,
+      departementCode
+    )
     expect(serializedData).toStrictEqual(expectedCreateThingStock)
   })
 
@@ -68,26 +78,12 @@ describe('serializeCreateThingStock', () => {
     expect(serializedData.quantity).toStrictEqual(0)
   })
 
-  it('should set null when quantity field is empty', () => {
+  it('should set undefined when quantity field is empty', () => {
     const serializedData = serializeCreateThingStock(
       {
         stockId: 1,
         ...formValues,
-        quantity: null,
-      },
-      offerId,
-      departementCode
-    )
-    // null is set in unlimited in api
-    expect(serializedData.quantity).toStrictEqual(null)
-  })
-
-  it('should set null when quantity field is ""', () => {
-    const serializedData = serializeCreateThingStock(
-      {
-        stockId: 1,
-        ...formValues,
-        quantity: '',
+        quantity: undefined,
       },
       offerId,
       departementCode
@@ -117,13 +113,16 @@ describe('serializeUpdateThingStock', () => {
   })
 
   it('should serialize data for stock thing creation', () => {
-    const expectedUpdateThingStock: ThingStockUpdateBodyModel  = {
+    const expectedUpdateThingStock: ThingStockUpdateBodyModel = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
     }
 
-    const serializedData = serializeUpdateThingStock(formValues, departementCode)
+    const serializedData = serializeUpdateThingStock(
+      formValues,
+      departementCode
+    )
     expect(serializedData).toStrictEqual(expectedUpdateThingStock)
   })
 
@@ -156,25 +155,12 @@ describe('serializeUpdateThingStock', () => {
     expect(serializedData.quantity).toStrictEqual(0)
   })
 
-  it('should set null when quantity field is empty', () => {
+  it('should set undefined when quantity field is empty', () => {
     const serializedData = serializeUpdateThingStock(
       {
         stockId: 1,
         ...formValues,
-        quantity: null,
-      },
-      departementCode
-    )
-    // null is set in unlimited in api
-    expect(serializedData.quantity).toStrictEqual(null)
-  })
-
-  it('should set null when quantity field is ""', () => {
-    const serializedData = serializeUpdateThingStock(
-      {
-        stockId: 1,
-        ...formValues,
-        quantity: '',
+        quantity: undefined,
       },
       departementCode
     )

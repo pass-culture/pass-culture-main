@@ -23,10 +23,7 @@ export const buildInitialValues = (
     stockId: stocks[0].id,
     remainingQuantity: stocks[0].remainingQuantity?.toString() || 'unlimited',
     bookingsQuantity: stocks[0].bookingsQuantity.toString(),
-    quantity:
-      stocks[0].quantity === undefined || stocks[0].quantity === null
-        ? ''
-        : stocks[0].quantity,
+    quantity: stocks[0].quantity ?? undefined,
     bookingLimitDatetime: stocks[0].bookingLimitDatetime
       ? format(
           getLocalDepartementDateTimeFromUtc(
