@@ -26,10 +26,10 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
+import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
 
 type SearchFormValues = {
   searchFilter: string
@@ -163,7 +163,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           </form>
 
           {isLoading ? (
-            <Spinner />
+            <SkeletonLoader />
           ) : (
             <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
               <RadioGroup
