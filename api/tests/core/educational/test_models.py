@@ -637,6 +637,34 @@ class EducationalInstitutionProgramTest:
 
 
 class CollectiveOfferDisplayedStatusTest:
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES)
+    def test_get_offer_displayed_status_hybrid(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        [hybrid_status] = (
+            db.session.query(CollectiveOffer.displayedStatus)
+            .outerjoin(CollectiveOffer.collectiveStock)
+            .filter(CollectiveOffer.id == offer.id)
+            .one()
+        )
+        assert offer.displayedStatus.value == hybrid_status
+
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES)
+    def test_get_offer_displayed_status_hybrid_filter(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        # add an offer with another status that will not be present in the result
+        other_status = next((s for s in CollectiveOfferDisplayedStatus if s != status))
+        factories.create_collective_offer_by_status(other_status, venue=offer.venue)
+
+        result = (
+            db.session.query(CollectiveOffer)
+            .outerjoin(CollectiveOffer.collectiveStock)
+            .filter(CollectiveOffer.displayedStatus == status.value)
+            .one()
+        )
+        assert result.id == offer.id
+
     @pytest.mark.parametrize(
         "status",
         ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.CANCELLED},

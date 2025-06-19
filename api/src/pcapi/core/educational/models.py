@@ -549,7 +549,9 @@ class CollectiveOffer(
 ):
     __tablename__ = "collective_offer"
 
-    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive: sa_orm.Mapped[bool] = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
+    )
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
@@ -885,7 +887,7 @@ class CollectiveOffer(
 
         return not self.isArchived, -date_limit_score, self.dateCreated
 
-    @property
+    @hybrid_property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
         status, is_hidden, is_archived = self.get_base_displayed_status()
 
@@ -969,6 +971,112 @@ class CollectiveOffer(
             status = CollectiveOfferDisplayedStatus.PUBLISHED
 
         return status, is_hidden, is_archived
+
+    @displayedStatus.expression  # type: ignore[no-redef]
+    def displayedStatus(cls) -> sa_elements.Case:
+        # to use this property, CollectiveOffer must be queried with a join on CollectiveStock
+        # so that correlate(CollectiveStock) links to the correct stock
+
+        last_booking_status = (
+            sa.select(CollectiveBooking.status)
+            .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
+            .order_by(CollectiveBooking.dateCreated.desc())
+            .limit(1)
+            .correlate(CollectiveStock)
+            .scalar_subquery()
+        )
+
+        last_booking_cancel_reason = (
+            sa.select(CollectiveBooking.cancellationReason)
+            .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
+            .order_by(CollectiveBooking.dateCreated.desc())
+            .limit(1)
+            .correlate(CollectiveStock)
+            .scalar_subquery()
+        )
+
+        return sa.case(
+            (
+                cls.isArchived.is_(True),
+                CollectiveOfferDisplayedStatus.ARCHIVED.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
+                CollectiveOfferDisplayedStatus.DRAFT.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
+                CollectiveOfferDisplayedStatus.UNDER_REVIEW.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
+                CollectiveOfferDisplayedStatus.REJECTED.name,
+            ),
+            (
+                cls.validation != offer_mixin.OfferValidationStatus.APPROVED.name,
+                CollectiveOfferDisplayedStatus.PUBLISHED.name,
+            ),
+            (
+                cls.isActive.is_(False),
+                CollectiveOfferDisplayedStatus.HIDDEN.name,
+            ),
+            (
+                last_booking_status.is_(None),
+                sa.case(
+                    (
+                        CollectiveStock.startDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.CANCELLED.name,
+                    ),
+                    (
+                        CollectiveStock.bookingLimitDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.EXPIRED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.PUBLISHED.name,
+                ),
+            ),
+            (
+                last_booking_status == CollectiveBookingStatus.PENDING.name,
+                sa.case(
+                    (
+                        CollectiveStock.bookingLimitDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.EXPIRED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.PREBOOKED.name,
+                ),
+            ),
+            (
+                last_booking_status == CollectiveBookingStatus.CONFIRMED.name,
+                sa.case(
+                    (
+                        CollectiveStock.endDatetime <= sa.func.now(),
+                        CollectiveOfferDisplayedStatus.ENDED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.BOOKED.name,
+                ),
+            ),
+            (
+                last_booking_status == CollectiveBookingStatus.USED.name,
+                CollectiveOfferDisplayedStatus.ENDED.name,
+            ),
+            (
+                last_booking_status == CollectiveBookingStatus.REIMBURSED.name,
+                CollectiveOfferDisplayedStatus.REIMBURSED.name,
+            ),
+            (
+                last_booking_status == CollectiveBookingStatus.CANCELLED.name,
+                sa.case(
+                    (
+                        sa.and_(
+                            last_booking_cancel_reason == CollectiveBookingCancellationReasons.EXPIRED.name,
+                            sa.func.now() <= CollectiveStock.startDatetime,
+                        ),
+                        CollectiveOfferDisplayedStatus.EXPIRED.name,
+                    ),
+                    else_=CollectiveOfferDisplayedStatus.CANCELLED.name,
+                ),
+            ),
+            else_=CollectiveOfferDisplayedStatus.PUBLISHED.name,
+        )
 
     def _get_allowed_actions(self) -> tuple[CollectiveOfferAllowedAction, ...]:
         displayed_status = self.displayedStatus
