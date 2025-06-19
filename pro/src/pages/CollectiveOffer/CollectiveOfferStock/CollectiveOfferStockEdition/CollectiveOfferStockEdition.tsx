@@ -18,7 +18,7 @@ import {
   PATCH_SUCCESS_MESSAGE,
 } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { isCollectiveStockEditable } from 'commons/utils/isCollectiveStockEditable'
+import { isCollectiveStockEditable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {

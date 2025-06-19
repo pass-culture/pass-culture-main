@@ -3,7 +3,7 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from 'commons/core/OfferEducational/types'
-import { isCollectiveOfferEditable } from 'commons/utils/isCollectiveOfferEditable'
+import { isCollectiveOfferEditable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

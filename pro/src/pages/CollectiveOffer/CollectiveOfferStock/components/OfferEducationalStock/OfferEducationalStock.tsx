@@ -57,8 +57,8 @@ export interface OfferEducationalStockProps<
 
 export const OfferEducationalStock = <
   T extends
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel,
+  | GetCollectiveOfferResponseModel
+  | GetCollectiveOfferTemplateResponseModel,
 >({
   initialValues,
   offer,
@@ -72,10 +72,10 @@ export const OfferEducationalStock = <
 
   const preventPriceIncrease = Boolean(
     isCollectiveOffer(offer) &&
-      (offer.booking?.status === CollectiveBookingStatus.CONFIRMED ||
-        (offer.booking?.status === CollectiveBookingStatus.USED &&
-          startDatetime &&
-          isBefore(new Date(), addDays(new Date(startDatetime), 2))))
+    (offer.booking?.status === CollectiveBookingStatus.CONFIRMED ||
+      (offer.booking?.status === CollectiveBookingStatus.USED &&
+        startDatetime &&
+        isBefore(new Date(), addDays(new Date(startDatetime), 2))))
   )
 
   const canEditDiscount = isActionAllowedOnCollectiveOffer(
@@ -104,10 +104,10 @@ export const OfferEducationalStock = <
       return isShowcase
         ? showcaseOfferValidationSchema
         : generateValidationSchema(
-            preventPriceIncrease,
-            initialValues.totalPrice,
-            mode === Mode.READ_ONLY
-          )
+          preventPriceIncrease,
+          initialValues.totalPrice,
+          mode === Mode.READ_ONLY
+        )
     }),
   })
 
@@ -212,9 +212,8 @@ export const OfferEducationalStock = <
                   variant={ButtonVariant.SECONDARY}
                   to={
                     mode === Mode.CREATION
-                      ? `/offre/collectif/${offer.id}/creation${
-                          requestId ? `?requete=${requestId}` : ''
-                        }`
+                      ? `/offre/collectif/${offer.id}/creation${requestId ? `?requete=${requestId}` : ''
+                      }`
                       : '/offres/collectives'
                   }
                 >
