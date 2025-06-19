@@ -7,6 +7,7 @@ import {
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
+  getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferVenueFactory,
@@ -121,10 +122,10 @@ describe('screens | OfferEducational : edition offerer step', () => {
           }),
           id: thirdVenueId,
         },
-        booking: {
+        booking: getCollectiveOfferBookingFactory({
           id: 1,
           status: CollectiveBookingStatus.USED
-        },
+        }),
       }),
     }
     renderComponent(props)

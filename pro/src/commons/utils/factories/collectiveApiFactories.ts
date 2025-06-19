@@ -25,6 +25,8 @@ import {
   ListOffersVenueResponseModel,
   CollectiveOfferDisplayedStatus,
   CollectiveLocationType,
+  CollectiveBookingStatus,
+  GetCollectiveOfferBookingResponseModel,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 
@@ -33,6 +35,7 @@ let stockId = 1
 let venueId = 1
 let offererId = 1
 let bookingId = 1
+let offerBookingId = 1
 let bookingDetailsId = 1
 let institutionId = 1
 
@@ -125,6 +128,10 @@ export const getCollectiveOfferFactory = (
     location: {
       locationType: CollectiveLocationType.ADDRESS,
     },
+    history: {
+      past: [],
+      future: [],
+    },
     ...customCollectiveOffer,
   }
 }
@@ -143,6 +150,20 @@ export const getCollectiveOfferCollectiveStockFactory = (
     isCancellable: false,
     isEducationalStockEditable: true,
     ...customGetCollectiveOfferCollectiveStock,
+  }
+}
+
+export const getCollectiveOfferBookingFactory = (
+  customGetCollectiveOfferBooking: Partial<GetCollectiveOfferBookingResponseModel> = {}
+): GetCollectiveOfferBookingResponseModel => {
+  const currentBookingId = offerBookingId++
+  return {
+    id: currentBookingId,
+    status: CollectiveBookingStatus.CONFIRMED,
+    dateCreated: new Date().toISOString(),
+    cancellationLimitDate: add(Date.now(), { days: 1 }).toISOString(),
+    confirmationLimitDate: add(Date.now(), { days: 1 }).toISOString(),
+    ...customGetCollectiveOfferBooking,
   }
 }
 

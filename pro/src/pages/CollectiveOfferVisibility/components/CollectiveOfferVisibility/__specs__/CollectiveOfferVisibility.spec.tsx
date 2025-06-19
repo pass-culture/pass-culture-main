@@ -12,7 +12,10 @@ import { DEFAULT_VISIBILITY_FORM_VALUES } from 'commons/core/OfferEducational/co
 import { Mode } from 'commons/core/OfferEducational/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import * as useNotification from 'commons/hooks/useNotification'
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import {
+  getCollectiveOfferBookingFactory,
+  getCollectiveOfferFactory,
+} from 'commons/utils/factories/collectiveApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -110,10 +113,10 @@ describe('CollectiveOfferVisibility', () => {
 
   it('should display booking link for sold out offer with pending booking', () => {
     const offer = getCollectiveOfferFactory({
-      booking: {
+      booking: getCollectiveOfferBookingFactory({
         id: 76,
         status: CollectiveBookingStatus.PENDING,
-      },
+      }),
     })
 
     renderVisibilityStep({

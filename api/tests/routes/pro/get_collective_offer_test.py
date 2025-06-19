@@ -12,6 +12,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils.date import format_into_utc_date
 
 
 @pytest.mark.usefixtures("db_session")
@@ -27,15 +28,17 @@ class Returns200Test:
     def test_basics(self, client):
         template = educational_factories.CollectiveOfferTemplateFactory()
         stock = educational_factories.CollectiveStockFactory()
+        teacher = educational_factories.EducationalRedactorFactory()
         national_program = educational_factories.NationalProgramFactory()
         provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory(bannerUrl="http://localhost/image.png")
         offer = educational_factories.CollectiveOfferFactory(
             collectiveStock=stock,
-            teacher=educational_factories.EducationalRedactorFactory(),
-            templateId=template.id,
-            nationalProgramId=national_program.id,
-            providerId=provider.id,
-            venue___bannerUrl="http://localhost/image.png",
+            teacher=teacher,
+            template=template,
+            nationalProgram=national_program,
+            provider=provider,
+            venue=venue,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -47,42 +50,97 @@ class Returns200Test:
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
-        response_json = response.json
-        assert "iban" not in response_json["venue"]
-        assert "bic" not in response_json["venue"]
-        assert response_json["venue"]["imgUrl"] == "http://localhost/image.png"
-        assert "iban" not in response_json["venue"]["managingOfferer"]
-        assert "bic" not in response_json["venue"]["managingOfferer"]
-        assert "validationStatus" not in response_json["venue"]["managingOfferer"]
-        assert response_json["venue"]["departementCode"] == offer.venue.offererAddress.address.departmentCode
-        assert response_json["venue"]["managingOfferer"] == {
-            "id": offer.venue.managingOffererId,
-            "name": offer.venue.managingOfferer.name,
-            "siren": offer.venue.managingOfferer.siren,
-            "allowedOnAdage": offer.venue.managingOfferer.allowedOnAdage,
+        assert response.json == {
+            "allowedActions": ["CAN_DUPLICATE", "CAN_ARCHIVE"],
+            "audioDisabilityCompliant": False,
+            "booking": None,
+            "bookingEmails": offer.bookingEmails,
+            "collectiveStock": {
+                "bookingLimitDatetime": format_into_utc_date(stock.bookingLimitDatetime),
+                "educationalPriceDetail": stock.priceDetail,
+                "endDatetime": format_into_utc_date(stock.endDatetime),
+                "id": stock.id,
+                "isBooked": False,
+                "isCancellable": False,
+                "isEducationalStockEditable": True,
+                "numberOfTickets": stock.numberOfTickets,
+                "price": float(stock.price),
+                "startDatetime": format_into_utc_date(stock.startDatetime),
+            },
+            "contactEmail": offer.contactEmail,
+            "contactPhone": offer.contactPhone,
+            "dateCreated": format_into_utc_date(offer.dateCreated),
+            "dates": {
+                "end": format_into_utc_date(stock.startDatetime),
+                "start": format_into_utc_date(stock.endDatetime),
+            },
+            "description": offer.description,
+            "displayedStatus": educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
+            "domains": [],
+            "durationMinutes": None,
+            "formats": [f.value for f in offer.formats],
+            "hasBookingLimitDatetimesPassed": False,
+            "history": {
+                "future": [
+                    "PREBOOKED",
+                    "BOOKED",
+                    "ENDED",
+                    "REIMBURSED",
+                ],
+                "past": [{"datetime": format_into_utc_date(offer.lastValidationDate), "status": "PUBLISHED"}],
+            },
+            "id": offer.id,
+            "imageCredit": None,
+            "imageUrl": None,
+            "institution": None,
+            "interventionArea": offer.interventionArea,
+            "isActive": True,
+            "isBookable": True,
+            "isCancellable": False,
+            "isEditable": True,
+            "isNonFreeOffer": None,
+            "isPublicApi": True,
+            "isTemplate": False,
+            "isVisibilityEditable": True,
+            "location": None,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "name": offer.name,
+            "nationalProgram": {
+                "id": national_program.id,
+                "name": national_program.name,
+            },
+            "offerVenue": {
+                "addressType": "other",
+                "otherAddress": "1 rue des polissons, Paris 75017",
+                "venueId": None,
+            },
+            "provider": {
+                "name": provider.name,
+            },
+            "students": ["Lycée - Seconde"],
+            "teacher": {
+                "civility": teacher.civility,
+                "email": teacher.email,
+                "firstName": teacher.firstName,
+                "lastName": teacher.lastName,
+            },
+            "templateId": template.id,
+            "venue": {
+                "departementCode": "75",
+                "id": venue.id,
+                "imgUrl": "http://localhost/image.png",
+                "managingOfferer": {
+                    "allowedOnAdage": True,
+                    "id": venue.managingOfferer.id,
+                    "name": venue.managingOfferer.name,
+                    "siren": venue.managingOfferer.siren,
+                },
+                "name": venue.name,
+                "publicName": venue.publicName,
+            },
+            "visualDisabilityCompliant": False,
         }
-        assert response_json["imageCredit"] is None
-        assert response_json["imageUrl"] is None
-        assert "dateCreated" in response_json
-        assert "institution" in response_json
-        assert response_json["isVisibilityEditable"] is True
-        assert response_json["id"] == offer.id
-        assert response_json["booking"] is None
-        assert response_json["teacher"] == {
-            "email": offer.teacher.email,
-            "firstName": offer.teacher.firstName,
-            "lastName": offer.teacher.lastName,
-            "civility": offer.teacher.civility,
-        }
-        assert response_json["templateId"] == template.id
-        assert response_json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
-        assert response_json["formats"] == [fmt.value for fmt in offer.formats]
-        assert response_json["provider"]["name"] == provider.name
-        assert response_json["displayedStatus"] == "PUBLISHED"
-        assert response_json["isTemplate"] is False
-        assert response_json["isActive"] is True
-
-        assert response_json["location"] is None
 
     def test_location_address_venue(self, client):
         venue = offerers_factories.VenueFactory()
@@ -258,7 +316,7 @@ class Returns200Test:
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers/{offer_id}")
 
-    def test_last_booking_fields(self, client):
+    def test_booking_field(self, client):
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -275,8 +333,34 @@ class Returns200Test:
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
-        response_json = response.json
-        assert response_json["booking"] == {"id": booking.id, "status": booking.status.value}
+        assert response.json["booking"] == {
+            "id": booking.id,
+            "status": educational_models.CollectiveBookingStatus.REIMBURSED.value,
+            "dateCreated": format_into_utc_date(booking.dateCreated),
+            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
+            "cancellationReason": None,
+            "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+        }
+
+    def test_booking_field_cancelled(self, client):
+        offer = educational_factories.CancelledWithBookingCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        client = client.with_session_auth(email="user@example.com")
+        offer_id = offer.id
+        with assert_num_queries(self.num_queries):
+            response = client.get(f"/collective/offers/{offer_id}")
+            assert response.status_code == 200
+
+        assert response.json["booking"] == {
+            "id": booking.id,
+            "status": educational_models.CollectiveBookingStatus.CANCELLED.value,
+            "dateCreated": format_into_utc_date(booking.dateCreated),
+            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
+            "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER.value,
+            "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+        }
 
     def test_dates_on_offer(self, client):
         beginningDate = datetime.utcnow() + timedelta(days=100)

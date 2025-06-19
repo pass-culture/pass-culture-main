@@ -47,6 +47,7 @@ export { CollectiveBookingStatusFilter } from './models/CollectiveBookingStatusF
 export { CollectiveLocationType } from './models/CollectiveLocationType';
 export { CollectiveOfferAllowedAction } from './models/CollectiveOfferAllowedAction';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
+export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
 export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
@@ -152,6 +153,7 @@ export type { HasInvoiceResponseModel } from './models/HasInvoiceResponseModel';
 export type { HeadlineOfferCreationBodyModel } from './models/HeadlineOfferCreationBodyModel';
 export type { HeadlineOfferDeleteBodyModel } from './models/HeadlineOfferDeleteBodyModel';
 export type { HeadLineOfferResponseModel } from './models/HeadLineOfferResponseModel';
+export type { HistoryStep } from './models/HistoryStep';
 export type { IndividualRevenue } from './models/IndividualRevenue';
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
 export type { InvoiceListV2QueryModel } from './models/InvoiceListV2QueryModel';
