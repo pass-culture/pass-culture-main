@@ -144,9 +144,18 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               {...registerSearch('searchFilter')}
               name="searchFilter"
               type="search"
+              autoComplete="off"
               onChange={(e) => {
                 if (e.target.value === '') {
                   searchFilterForm.setValue('searchFilter', e.target.value)
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  searchFilterForm.setValue(
+                    'searchFilter',
+                    (e.target as HTMLInputElement).value
+                  )
                 }
               }}
               className={styles['search-input']}
@@ -171,7 +180,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 variant="detailed"
                 legend={
                   <>
-                    <p>
+                    <p className={styles['offers-description']}>
                       {searchFilterForm.watch('searchFilter').length < 1
                         ? 'Les dernières offres vitrines créées'
                         : `${offers && pluralize(offers.length, 'offre')}` +
