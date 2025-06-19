@@ -12,6 +12,7 @@ from markupsafe import Markup
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import NotFound
 
+import pcapi.core.chronicles.api as chronicles_api
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -62,13 +63,21 @@ def list_chronicles() -> utils.BackofficeResponse:
         product_subquery.label("products"),
     )
     q_filters = []
-    if form.q.data and string_utils.is_ean_valid(form.q.data):
+    product_identifier = string_utils.format_ean_or_visa(form.q.data) if form.q.data else None
+    if product_identifier and string_utils.is_numeric(product_identifier):
         query = query.join(chronicles_models.Chronicle.products)
-        q_filters.append(offers_models.Product.ean == string_utils.format_ean_or_visa(form.q.data))
+        product_identifier = form.q.data
+        q_filters.append(
+            sa.or_(
+                offers_models.Product.ean == product_identifier,
+                offers_models.Product.extraData["allocineId"].astext == product_identifier,
+                offers_models.Product.extraData["visa"].astext == product_identifier,
+            )
+        )
     elif form.q.data:
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.CHRONICLE_CONTENT.name):
             q_filters.append(
-                sa.and_(  # type: ignore[type-var]
+                sa.and_(
                     chronicles_models.Chronicle.__content_ts_vector__.op("@@")(sa.func.plainto_tsquery("french", w))
                     for w in form.q.data.split(" ")
                     if len(w) > 1
@@ -80,7 +89,7 @@ def list_chronicles() -> utils.BackofficeResponse:
             else:
                 query = query.join(chronicles_models.Chronicle.products)
             split_product_name = "%".join(form.q.data.split(" "))
-            q_filters.append(offers_models.Product.name.ilike(f"%{split_product_name}%"))
+            q_filters.append(offers_models.Product.name.ilike(f"%{split_product_name}%"))  # type: ignore[arg-type]
     if q_filters:
         query = query.filter(sa.or_(*q_filters))
 
@@ -149,11 +158,16 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
     )
     product_name = None
     for product in chronicle.products:
-        if product.ean == chronicle.ean:
+        product_identifier = chronicles_api.get_product_identifier(chronicle, product)
+        if product_identifier == chronicle.productIdentifier:
             product_name = product.name
             break
 
-    attach_product_form = forms.AttachProductForm()
+    attach_product_form = (
+        forms.AttachBookProductForm()
+        if chronicle.clubType == chronicles_models.ChronicleClubType.BOOK_CLUB
+        else forms.AttachCineProductForm()
+    )
 
     return render_template(
         "chronicles/details.html",
@@ -246,25 +260,48 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
-    form = forms.AttachProductForm()
+    selected_chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+
+    form = (
+        forms.AttachBookProductForm()
+        if selected_chronicle.clubType == chronicles_models.ChronicleClubType.BOOK_CLUB
+        else forms.AttachCineProductForm()
+    )
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
 
-    selected_chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
-    chronicles = [selected_chronicle]
-    if selected_chronicle.ean:
-        chronicles = (
-            db.session.query(chronicles_models.Chronicle)
-            .filter(chronicles_models.Chronicle.ean == selected_chronicle.ean)
-            .all()
-        )
-    products = db.session.query(offers_models.Product).filter(offers_models.Product.ean == form.ean.data).all()
+    chronicles = (
+        db.session.query(chronicles_models.Chronicle)
+        .filter(chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier)
+        .all()
+    )
+    match selected_chronicle.productIdentifierType:
+        case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            products = (
+                db.session.query(offers_models.Product)
+                .filter(offers_models.Product.extraData["allocineId"].astext == form.product_identifier.data)
+                .all()
+            )
+        case chronicles_models.ChronicleProductIdentifierType.EAN:
+            products = (
+                db.session.query(offers_models.Product)
+                .filter(offers_models.Product.ean == form.product_identifier.data)
+                .all()
+            )
+        case chronicles_models.ChronicleProductIdentifierType.VISA:
+            products = (
+                db.session.query(offers_models.Product)
+                .filter(offers_models.Product.extraData["visa"].astext == form.product_identifier.data)
+                .all()
+            )
+        case _:
+            raise ValueError()
 
     if not products:
         mark_transaction_as_invalid()
-        flash("Aucune œuvre n'a été trouvée pour cet EAN", "warning")
+        flash("Aucune œuvre n'a été trouvée pour cet identifiant", "warning")
         return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
         )
@@ -305,8 +342,8 @@ def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeRespon
         .filter(
             sa.or_(
                 sa.and_(
-                    chronicles_models.Chronicle.ean == selected_chronicle.ean,
-                    ~chronicles_models.Chronicle.ean.is_(None),
+                    chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+                    ~chronicles_models.Chronicle.productIdentifier.is_(None),
                 ),
                 chronicles_models.Chronicle.id == chronicle_id,
             )

@@ -40,8 +40,8 @@ def create_industrial_chronicles() -> None:
             age=(15 + (i % 5)),
             city=user.city,
             content=f"Chronique sur le produit {product.name} écrite par l'utilisateur {user.full_name} ({user.id}).",
-            eanChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
-            ean=ean,
+            identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
+            productIdentifier=ean,
             email=user.email,
             firstName=user.firstName,
             isActive=bool(i % 5 == 0),
@@ -58,8 +58,8 @@ def create_industrial_chronicles() -> None:
             age=(15 + (i % 5)),
             city=["Paris", None][i % 2],
             content=f"Chronique sur le produit {product.name} mais sans utilisateur.",
-            eanChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
-            ean=ean,
+            identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
+            productIdentifier=ean,
             email=f"emailnotfound{i}@example.com",
             isActive=bool(i % 5 == 0),
             isIdentityDiffusible=bool(i % 2 == 0),
@@ -74,8 +74,8 @@ def create_industrial_chronicles() -> None:
             age=(15 + (i % 5)),
             city=user.city,
             content=f"Chronique sans produit mais écrite par l'utilisateur {user.full_name} ({user.id}).",
-            eanChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
-            ean=ean,
+            identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
+            productIdentifier=ean,
             email=user.email,
             firstName=user.firstName,
             isActive=bool(i % 5 == 0),
@@ -88,7 +88,7 @@ def create_industrial_chronicles() -> None:
         content="minimal chronicle",
     )
     chronicles_factories.ChronicleFactory.create(
-        ean=ean_generator(123),
+        productIdentifier=ean_generator(123),
         content="""
 Une chronique avec un très long contenu en Français mais comme je n'ai pas d'idées voici à la place un extrait quelconque du Discours de la servitude volontaire d'Étienne de La Boétie:
 

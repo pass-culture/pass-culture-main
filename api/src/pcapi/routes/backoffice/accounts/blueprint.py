@@ -2196,11 +2196,11 @@ def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
         db.session.query(
             chronicles_models.Chronicle.id,
             chronicles_models.Chronicle.dateCreated,
-            chronicles_models.Chronicle.ean,
+            chronicles_models.Chronicle.productIdentifier,
             chronicles_models.Chronicle.isPublished,
             sa.func.coalesce(
                 offers_models.Product.name,
-                chronicles_models.Chronicle.ean,
+                chronicles_models.Chronicle.productIdentifier,
                 "",
             ).label("title"),
         )

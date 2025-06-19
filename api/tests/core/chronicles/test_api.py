@@ -207,8 +207,8 @@ class SaveBookClubChronicleTest:
         assert chronicle.age == 18
         assert chronicle.city == "Paris"
         assert chronicle.firstName == "Bob"
-        assert chronicle.ean == ean
-        assert chronicle.eanChoiceId == ean_choice_id
+        assert chronicle.productIdentifier == ean
+        assert chronicle.identifierChoiceId == ean_choice_id
         assert chronicle.content == "some random chronicle description"
         assert chronicle.isIdentityDiffusible
         assert chronicle.isSocialMediaDiffusible
@@ -244,8 +244,8 @@ class SaveBookClubChronicleTest:
         assert chronicle.age is None
         assert chronicle.city is None
         assert chronicle.firstName is None
-        assert chronicle.ean == ean
-        assert chronicle.eanChoiceId == ean_choice_id
+        assert chronicle.productIdentifier == ean
+        assert chronicle.identifierChoiceId == ean_choice_id
         assert chronicle.content == "some random chronicle description"
         assert not chronicle.isIdentityDiffusible
         assert not chronicle.isSocialMediaDiffusible
@@ -465,7 +465,7 @@ class ExtractBookClubEanTest:
             choice_id=choice_id,
             text="nothing to see here",
         )
-        chronicles_factories.ChronicleFactory(ean=ean, eanChoiceId=choice_id)
+        chronicles_factories.ChronicleFactory(productIdentifier=ean, identifierChoiceId=choice_id)
 
         result = api._extract_book_club_ean(form)
 
@@ -499,5 +499,427 @@ class ExtractBookClubEanTest:
         form = typeform.TypeformAnswer(field_id="")
 
         result = api._extract_book_club_ean(form)
+
+        assert result is None
+
+
+@pytest.mark.usefixtures("db_session")
+class ImportCineClubChroniclesTest:
+    def _get_api_result(self):
+        return [
+            typeform.TypeformResponse(
+                response_id=random_string(),
+                date_submitted=datetime.datetime(2024, 10, 24),
+                phone_number=None,
+                email="email@mail.test",
+                answers=[
+                    typeform.TypeformAnswer(
+                        field_id=random_string(),
+                        choice_id=None,
+                        text="should be ignored",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.CineClub.NAME_ID.value,
+                        choice_id=None,
+                        text="Bob",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.CineClub.MOVIE_ID.value,
+                        choice_id=random_string(),
+                        text="Movie Title - 285223 (sort le 11 juin)",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.CineClub.CHRONICLE_ID.value,
+                        choice_id=None,
+                        text=random_string(150),
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.CineClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                        choice_id=constants.CineClub.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value,
+                        text="oui",
+                    ),
+                    typeform.TypeformAnswer(
+                        field_id=constants.CineClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                        choice_id=constants.CineClub.SOCIAL_MEDIA_ANSWER_ID.value,
+                        text="oui",
+                    ),
+                ],
+            ),
+        ]
+
+    def test_import_cine_club_chronicles_with_old_chronicle(self):
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            clubType=models.ChronicleClubType.CINE_CLUB,
+            productIdentifierType=models.ChronicleProductIdentifierType.ALLOCINE_ID,
+        )
+        api_results = self._get_api_result()
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=api_results) as typeform_mock:
+            api.import_cine_club_chronicles()
+
+            typeform_mock.assert_called_once_with(
+                form_id=constants.CineClub.FORM_ID.value,
+                num_results=pcapi_settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                since=old_chronicle.dateCreated,
+                sort="submitted_at,asc",
+            )
+
+        chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
+        assert chronicle.email == "email@mail.test"
+
+    def test_import_cine_club_chronicles_without_old_chronicle(self):
+        api_results = self._get_api_result()
+
+        with patch("pcapi.core.chronicles.api.typeform.get_responses", return_value=api_results) as typeform_mock:
+            api.import_cine_club_chronicles()
+
+            typeform_mock.assert_called_once_with(
+                form_id=constants.CineClub.FORM_ID.value,
+                num_results=pcapi_settings.TYPEFORM_IMPORT_CHUNK_SIZE,
+                since=None,
+                sort="submitted_at,asc",
+            )
+
+        chronicle = db.session.query(models.Chronicle).order_by(models.Chronicle.id.desc()).first()
+        assert chronicle.email == "email@mail.test"
+
+
+@pytest.mark.usefixtures("db_session")
+class SaveCineClubChronicleTest:
+    def test_save_cine_club_chronicle_full(self):
+        allocine_id = "1000013191"
+        identifier_choice_id = random_string()
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=random_string(),
+                    choice_id=None,
+                    text="should be ignored",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.NAME_ID.value,
+                    choice_id=None,
+                    text="Bob",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=identifier_choice_id,
+                    text=f"Movie Title - {allocine_id} (sort le 1 janvier)",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                    choice_id=constants.CineClub.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value,
+                    text="oui",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                    choice_id=constants.CineClub.SOCIAL_MEDIA_ANSWER_ID.value,
+                    text="oui",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).first()
+        assert chronicle.firstName == "Bob"
+        assert chronicle.productIdentifier == allocine_id
+        assert chronicle.productIdentifierType == models.ChronicleProductIdentifierType.ALLOCINE_ID
+        assert chronicle.identifierChoiceId == identifier_choice_id
+        assert chronicle.content == "some random chronicle description"
+        assert chronicle.isIdentityDiffusible
+        assert chronicle.isSocialMediaDiffusible
+        assert not chronicle.isActive
+        assert chronicle.externalId == form.response_id
+        assert chronicle.userId is None
+
+    def test_save_cine_club_chronicle_empty(self):
+        allocine_id = "1000013191"
+        identifier_choice_id = random_string()
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=identifier_choice_id,
+                    text=f"Movie Title - {allocine_id} (sort le 25 mars)",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).first()
+        assert chronicle.firstName is None
+        assert chronicle.productIdentifier == allocine_id
+        assert chronicle.identifierChoiceId == identifier_choice_id
+        assert chronicle.content == "some random chronicle description"
+        assert not chronicle.isIdentityDiffusible
+        assert not chronicle.isSocialMediaDiffusible
+        assert not chronicle.isActive
+        assert chronicle.externalId == form.response_id
+        assert chronicle.userId is None
+
+    def test_do_not_save_cine_club_chronicle_without_email(self):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email=None,
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=random_string(),
+                    text="1000013191",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        assert db.session.query(models.Chronicle).count() == 0
+
+    def test_save_cine_club_chronicle_without_content(self):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=random_string(),
+                    text="1000013191",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        assert db.session.query(models.Chronicle).count() == 0
+
+    def test_save_cine_club_chronicle_without_allocine_id(self):
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        assert db.session.query(models.Chronicle).count() == 0
+
+    def test_save_cine_club_chronicle_link_to_user(self):
+        user = users_factories.UserFactory(
+            email="email@mail.test",
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=random_string(),
+                    text="Movie Title - 1000013191",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).first()
+        assert chronicle.userId == user.id
+
+    def test_save_book_club_chronicle_refuse_publication(self):
+        users_factories.UserFactory(
+            email="email@mail.test",
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=random_string(),
+                    text="Movie Title - 1000013191",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value,
+                    choice_id=random_string(),
+                    text="non",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.SOCIAL_MEDIA_QUESTION_ID.value,
+                    choice_id=random_string(),
+                    text="non",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).first()
+
+        assert not chronicle.isIdentityDiffusible
+        assert not chronicle.isSocialMediaDiffusible
+
+    def test_save_cine_club_chronicle_link_to_product(self):
+        product = offers_factories.ProductFactory(extraData={"allocineId": "1000013191"})
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=random_string(),
+                    text="Movie Title - 1000013191",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).first()
+
+        assert chronicle.products == [product]
+
+    def test_save_book_club_chronicle_already_saved(self):
+        old_chronicle = chronicles_factories.ChronicleFactory()
+        ean = "1000013191"
+        identifier_choice_id = random_string()
+        form = typeform.TypeformResponse(
+            response_id=old_chronicle.externalId,
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=identifier_choice_id,
+                    text=ean,
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicles = db.session.query(models.Chronicle).all()
+        assert len(chronicles) == 1
+        assert chronicles[0].id == old_chronicle.id
+
+
+@pytest.mark.usefixtures("db_session")
+class ExtractCineClubEanTest:
+    def test_allocine_id_in_text(self):
+        allocine_id = "1000013371"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.CineClub.MOVIE_ID.value,
+            choice_id=choice_id,
+            text=f"book title - {allocine_id} (sort le 18 juin)",
+        )
+
+        result = api._extract_cine_club_movie_identifier(form)
+
+        assert result == allocine_id
+
+    def test_choice_in_db(self):
+        allocine_id = "1000013371"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.CineClub.MOVIE_ID.value,
+            choice_id=choice_id,
+            text="nothing to see here",
+        )
+        chronicles_factories.ChronicleFactory(productIdentifier=allocine_id, identifierChoiceId=choice_id)
+
+        result = api._extract_cine_club_movie_identifier(form)
+
+        assert result == allocine_id
+
+    def test_ends_with_allocine_id(self):
+        allocine_id = "1000013371"
+        choice_id = random_string()
+        form = typeform.TypeformAnswer(
+            field_id=constants.CineClub.MOVIE_ID.value,
+            choice_id=choice_id,
+            text=f"book title - {allocine_id}",
+        )
+
+        result = api._extract_cine_club_movie_identifier(form)
+
+        assert result == allocine_id
+
+    def test_unknown_choice(self):
+        form = typeform.TypeformAnswer(
+            field_id=constants.CineClub.MOVIE_ID.value,
+            choice_id=random_string(),
+            text="nothing to see here",
+        )
+
+        result = api._extract_cine_club_movie_identifier(form)
+
+        assert result is None
+
+    def test_empty_answer(self):
+        form = typeform.TypeformAnswer(field_id="")
+
+        result = api._extract_cine_club_movie_identifier(form)
 
         assert result is None

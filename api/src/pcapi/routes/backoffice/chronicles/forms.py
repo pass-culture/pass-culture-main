@@ -67,9 +67,15 @@ class UpdateContentForm(forms_utils.PCForm):
     )
 
 
-class AttachProductForm(forms_utils.PCForm):
-    ean = fields.PCStringField(
+class AttachBookProductForm(forms_utils.PCForm):
+    product_identifier = fields.PCStringField(
         "EAN", validators=[Regexp(r"^[0-9]{13}$", message="L'EAN doit être composé de 13 chiffres")]
+    )
+
+
+class AttachCineProductForm(forms_utils.PCForm):
+    product_identifier = fields.PCStringField(
+        "ID Allociné", validators=[Regexp(r"^\d+$", message="L'ID Allocine doit être composé de chiffres")]
     )
 
 

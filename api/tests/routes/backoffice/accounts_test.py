@@ -1357,7 +1357,7 @@ class GetUserActivityTest(GetEndpointHelper):
         user = users_factories.BeneficiaryFactory()
         first_chronicle = chronicles_factories.ChronicleFactory(
             user=user,
-            ean="9782370730541",
+            productIdentifier="9782370730541",
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
             products=[offers_factories.ProductFactory(ean="9782370730541", name="Le Backoffice pour les nuls")],
         )
@@ -1367,13 +1367,9 @@ class GetUserActivityTest(GetEndpointHelper):
             dateSubmitted=datetime.datetime.utcnow() - datetime.timedelta(days=2),
             event__title="Jeu concours",
         )
-        no_ean_chronicle = chronicles_factories.ChronicleFactory(
-            user=user,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        )
         last_chronicle = chronicles_factories.ChronicleFactory(
             user=user,
-            ean="12345678954321",
+            productIdentifier="12345678954321",
             isActive=True,
             isSocialMediaDiffusible=True,
             dateCreated=datetime.datetime.utcnow(),
@@ -1385,23 +1381,19 @@ class GetUserActivityTest(GetEndpointHelper):
             assert response.status_code == 200
 
         activity = html_parser.extract_table_rows(response.data)
-        assert len(activity) == 4
+        assert len(activity) == 3
 
         assert activity[0]["Type d'activité"] == "Chronique"
         assert activity[0]["Date"].startswith(last_chronicle.dateCreated.strftime("%d/%m/%Y"))
         assert activity[0]["Commentaire"] == "Rédaction d'une chronique sur 12345678954321 : publiée"
 
-        assert activity[1]["Type d'activité"] == "Chronique"
-        assert activity[1]["Date"].startswith(no_ean_chronicle.dateCreated.strftime("%d/%m/%Y"))
-        assert activity[1]["Commentaire"] == "Rédaction d'une chronique sur une œuvre : non publiée"
+        assert activity[1]["Type d'activité"] == "Opération spéciale"
+        assert activity[1]["Date"].startswith(special_event_response.dateSubmitted.strftime("%d/%m/%Y"))
+        assert activity[1]["Commentaire"] == "Candidature à l'opération spéciale Jeu concours : Nouvelle"
 
-        assert activity[2]["Type d'activité"] == "Opération spéciale"
-        assert activity[2]["Date"].startswith(special_event_response.dateSubmitted.strftime("%d/%m/%Y"))
-        assert activity[2]["Commentaire"] == "Candidature à l'opération spéciale Jeu concours : Nouvelle"
-
-        assert activity[3]["Type d'activité"] == "Chronique"
-        assert activity[3]["Date"].startswith(first_chronicle.dateCreated.strftime("%d/%m/%Y"))
-        assert activity[3]["Commentaire"] == "Rédaction d'une chronique sur Le Backoffice pour les nuls : non publiée"
+        assert activity[2]["Type d'activité"] == "Chronique"
+        assert activity[2]["Date"].startswith(first_chronicle.dateCreated.strftime("%d/%m/%Y"))
+        assert activity[2]["Commentaire"] == "Rédaction d'une chronique sur Le Backoffice pour les nuls : non publiée"
 
     def test_get_beneficiary_activity_empty(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()

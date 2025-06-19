@@ -1,6 +1,9 @@
 import logging
+import re
 from datetime import datetime
+from functools import partial
 from re import search
+from typing import Type
 
 import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
@@ -31,13 +34,25 @@ def anonymize_unlinked_chronicles() -> None:
 
 def import_book_club_chronicles() -> None:
     form_id = constants.BOOK_CLUB_FORM_ID
-    for form in typeform.get_responses_generator(_get_last_chronicle_date, form_id):
+    get_last_chronicle_date = partial(_get_last_chronicle_date, models.ChronicleClubType.BOOK_CLUB)
+    for form in typeform.get_responses_generator(get_last_chronicle_date, form_id):
         save_book_club_chronicle(form)
 
 
-def _get_last_chronicle_date() -> datetime | None:
+def import_cine_club_chronicles() -> None:
+    form_id = constants.CINE_CLUB_FORM_ID
+    get_last_chronicle_date = partial(_get_last_chronicle_date, models.ChronicleClubType.CINE_CLUB)
+    for form in typeform.get_responses_generator(get_last_chronicle_date, form_id):
+        save_cine_club_chronicle(form)
+
+
+def _get_last_chronicle_date(club_type: models.ChronicleClubType) -> datetime | None:
     return (
-        db.session.query(models.Chronicle.dateCreated).order_by(models.Chronicle.dateCreated.desc()).limit(1).scalar()
+        db.session.query(models.Chronicle.dateCreated)
+        .filter(models.Chronicle.clubType == club_type)
+        .order_by(models.Chronicle.dateCreated.desc())
+        .limit(1)
+        .scalar()
     )
 
 
@@ -51,19 +66,49 @@ def _extract_book_club_ean(answer: typeform.TypeformAnswer) -> str | None:
     # Try to find the ean in db by its choice id.
     # This case could happen if the answer was deleted by an admin in typeform.
     ean = (
-        db.session.query(models.Chronicle.ean)
-        .filter(models.Chronicle.eanChoiceId == answer.choice_id)
+        db.session.query(models.Chronicle.productIdentifier)
+        .filter(models.Chronicle.identifierChoiceId == answer.choice_id)
         .limit(1)
         .scalar()
     )
     return ean
 
 
+def _extract_cine_club_movie_identifier(answer: typeform.TypeformAnswer) -> str | None:
+    if not answer.choice_id:
+        return None
+    if answer.text:
+        match = re.search(r"-\s+(\d+)", answer.text)
+        if match:
+            movie_id = match.group(1)
+            return movie_id
+    movie_id = (
+        db.session.query(models.Chronicle.productIdentifier)
+        .filter(models.Chronicle.identifierChoiceId == answer.choice_id)
+        .limit(1)
+        .scalar()
+    )
+    return movie_id
+
+
 @atomic()
-def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
+def save_chronicle(
+    form: typeform.TypeformResponse,
+    club_constants: Type[constants.BookClub] | Type[constants.CineClub],
+    club_type: models.ChronicleClubType,
+    chronicle_type_id: models.ChronicleProductIdentifierType,
+) -> None:
+    club_name = "Book Club" if club_constants == constants.BookClub else "Cine Club"
+
+    if club_type == models.ChronicleClubType.BOOK_CLUB:
+        product_identifier_field = constants.BookClub.BOOK_EAN_ID.value
+    else:
+        product_identifier_field = constants.CineClub.MOVIE_ID.value
+
     logger.info(
-        "Import chronicle for book club: starting",
+        "Import chronicle: starting",
         extra={
+            "club_name": club_name,
             "response_id": form.response_id,
         },
     )
@@ -71,20 +116,22 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
     for answer in form.answers:
         answer_dict[answer.field_id] = answer
 
-    try:
-        age = int(answer_dict.get(constants.BookClub.AGE_ID.value, EMPTY_ANSWER).text)
-    except (TypeError, ValueError):
-        age = None
+    age = None
+    if hasattr(club_constants, "AGE_ID"):
+        try:
+            age = int(answer_dict.get(club_constants.AGE_ID.value, EMPTY_ANSWER).text)
+        except (TypeError, ValueError):
+            age = None
 
     is_identity_diffusible = (
-        answer_dict.get(constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value, EMPTY_ANSWER).choice_id
-        == constants.BookClub.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value
+        answer_dict.get(club_constants.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value, EMPTY_ANSWER).choice_id
+        == club_constants.DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID.value
     )
     is_social_media_diffusible = (
-        answer_dict.get(constants.BookClub.SOCIAL_MEDIA_QUESTION_ID.value, EMPTY_ANSWER).choice_id
-        == constants.BookClub.SOCIAL_MEDIA_ANSWER_ID.value
+        answer_dict.get(club_constants.SOCIAL_MEDIA_QUESTION_ID.value, EMPTY_ANSWER).choice_id
+        == club_constants.SOCIAL_MEDIA_ANSWER_ID.value
     )
-    content = answer_dict.get(constants.BookClub.CHRONICLE_ID.value, EMPTY_ANSWER).text
+    content = answer_dict.get(club_constants.CHRONICLE_ID.value, EMPTY_ANSWER).text
     user_id = None
     if form.email:
         user_id = (
@@ -98,45 +145,66 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
             .scalar()
         )
 
-    ean = _extract_book_club_ean(answer_dict.get(constants.BookClub.BOOK_EAN_ID.value, EMPTY_ANSWER))
-    ean_choice_id = answer_dict.get(constants.BookClub.BOOK_EAN_ID.value, EMPTY_ANSWER).choice_id
-
+    product_choice_id = answer_dict.get(product_identifier_field, EMPTY_ANSWER).choice_id
     products: list[offers_models.Product] = []
-    if ean:
-        products = db.session.query(offers_models.Product).filter(offers_models.Product.ean == ean).all()
+    product_identifier = None
+    if chronicle_type_id == models.ChronicleProductIdentifierType.EAN:
+        product_identifier = _extract_book_club_ean(answer_dict.get(product_identifier_field, EMPTY_ANSWER))
+        if product_identifier:
+            products = (
+                db.session.query(offers_models.Product).filter(offers_models.Product.ean == product_identifier).all()
+            )
+    elif chronicle_type_id == models.ChronicleProductIdentifierType.ALLOCINE_ID:
+        product_identifier = _extract_cine_club_movie_identifier(
+            answer_dict.get(product_identifier_field, EMPTY_ANSWER)
+        )
+        if product_identifier:
+            products = (
+                db.session.query(offers_models.Product)
+                .filter(offers_models.Product.extraData["allocineId"].astext == product_identifier)
+                .all()
+            )
 
     try:
-        if all((content, ean, form.email)):
+        city = None
+        if hasattr(club_constants, "CITY_ID"):
+            city = answer_dict.get(club_constants.CITY_ID.value, EMPTY_ANSWER).text
+
+        if all((content, product_identifier, form.email)):
             chronicle = models.Chronicle(
                 age=age,
-                city=answer_dict.get(constants.BookClub.CITY_ID.value, EMPTY_ANSWER).text,
+                city=city,
                 content=content,
                 dateCreated=form.date_submitted,
-                ean=ean,
-                eanChoiceId=ean_choice_id,
+                identifierChoiceId=product_choice_id,
                 email=form.email,
-                firstName=answer_dict.get(constants.BookClub.NAME_ID.value, EMPTY_ANSWER).text,
+                firstName=answer_dict.get(club_constants.NAME_ID.value, EMPTY_ANSWER).text,
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
                 products=products,
                 userId=user_id,
                 isActive=False,
+                productIdentifierType=chronicle_type_id,
+                productIdentifier=product_identifier,
+                clubType=club_type,
             )
             db.session.add(chronicle)
             db.session.flush()
             logger.info(
-                "Import chronicle for book club: success",
+                "Import chronicle: success",
                 extra={
+                    "club_name": club_name,
                     "response_id": form.response_id,
                 },
             )
         else:
             logger.info(
-                "Import chronicle for book club: ignored",
+                "Import chronicle: ignored",
                 extra={
+                    "club_name": club_name,
                     "response_id": form.response_id,
-                    "has_ean": bool(ean),
+                    "has_product_identifier": bool(product_identifier),
                     "has_content": bool(content),
                     "has_email": bool(form.email),
                 },
@@ -144,6 +212,18 @@ def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
     except sa.exc.IntegrityError:
         # the chronicle is already in db
         mark_transaction_as_invalid()
+
+
+def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
+    save_chronicle(
+        form, constants.BookClub, models.ChronicleClubType.BOOK_CLUB, models.ChronicleProductIdentifierType.EAN
+    )
+
+
+def save_cine_club_chronicle(form: typeform.TypeformResponse) -> None:
+    save_chronicle(
+        form, constants.CineClub, models.ChronicleClubType.CINE_CLUB, models.ChronicleProductIdentifierType.ALLOCINE_ID
+    )
 
 
 def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Chronicle]:
@@ -159,3 +239,15 @@ def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Ch
         )
 
     return chronicles_query.filter(models.Chronicle.isPublished).order_by(models.Chronicle.id.desc()).all()
+
+
+def get_product_identifier(chronicle: models.Chronicle, product: offers_models.Product) -> str | None:
+    match chronicle.productIdentifierType:
+        case models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            return str(product.extraData.get("allocineId")) if product.extraData else None
+        case models.ChronicleProductIdentifierType.EAN:
+            return product.ean
+        case models.ChronicleProductIdentifierType.VISA:
+            return product.extraData.get("visa") if product.extraData else None
+        case _:
+            raise ValueError()

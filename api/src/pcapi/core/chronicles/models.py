@@ -1,4 +1,5 @@
 import datetime
+import enum
 import logging
 
 import sqlalchemy as sa
@@ -53,15 +54,26 @@ class OfferChronicle(PcObject, Base, Model):
     )
 
 
+class ChronicleProductIdentifierType(enum.Enum):
+    ALLOCINE_ID = "ALLOCINE_ID"
+    EAN = "EAN"
+    VISA = "VISA"
+
+
+class ChronicleClubType(enum.Enum):
+    BOOK_CLUB = "BOOK"
+    CINE_CLUB = "CINE"
+
+
 class Chronicle(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "chronicle"
     age = sa.Column(sa.SmallInteger, nullable=True)
     city = sa.Column(sa.Text(), nullable=True)
+    clubType = sa.Column(db_utils.MagicEnum(ChronicleClubType), nullable=False)
     content = sa.Column(sa.Text, nullable=False)
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    ean = sa.Column(sa.Text(), nullable=True, index=True)
     # used to reconciliate data if the form changed on typeform
-    eanChoiceId = sa.Column(sa.Text(), nullable=True)
+    identifierChoiceId = sa.Column(sa.Text(), nullable=True)
     email = sa.Column(sa.Text(), nullable=False)
     firstName = sa.Column(sa.Text(), nullable=True)
     externalId = sa.Column(sa.Text(), nullable=False, unique=True)
@@ -77,6 +89,10 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", backref="chronicles", secondary=OfferChronicle.__table__
     )
+    productIdentifierType: ChronicleProductIdentifierType = sa.Column(
+        db_utils.MagicEnum(ChronicleProductIdentifierType), nullable=False
+    )
+    productIdentifier = sa.Column(sa.Text(), nullable=False, index=True)
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True, index=True)
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="chronicles")
 
@@ -95,6 +111,18 @@ class Chronicle(PcObject, Base, Model, DeactivableMixin):
     @isPublished.expression  # type: ignore[no-redef]
     def isPublished(cls) -> BinaryExpression:
         return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))
+
+    @property
+    def productIdentifierName(self) -> str:
+        match self.productIdentifierType:
+            case ChronicleProductIdentifierType.ALLOCINE_ID:
+                return "ID Allociné"
+            case ChronicleProductIdentifierType.EAN:
+                return "EAN"
+            case ChronicleProductIdentifierType.VISA:
+                return "Visa"
+            case _:
+                raise ValueError()
 
 
 @sa.event.listens_for(Chronicle, "after_insert")
