@@ -13,7 +13,7 @@ import {
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useNotification } from 'commons/hooks/useNotification'
-import { isCollectiveInstitutionEditable } from 'commons/utils/isCollectiveInstitutionEditable'
+import { isCollectiveInstitutionEditable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

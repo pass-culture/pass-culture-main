@@ -7,9 +7,11 @@ import {
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isCollectiveInstitutionEditable } from 'commons/utils/isCollectiveInstitutionEditable'
-import { isCollectiveOfferEditable } from 'commons/utils/isCollectiveOfferEditable'
-import { isCollectiveStockEditable } from 'commons/utils/isCollectiveStockEditable'
+import {
+  isCollectiveInstitutionEditable,
+  isCollectiveOfferEditable,
+  isCollectiveStockEditable,
+} from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
