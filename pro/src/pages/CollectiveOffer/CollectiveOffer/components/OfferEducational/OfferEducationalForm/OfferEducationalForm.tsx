@@ -60,8 +60,8 @@ export type OfferEducationalFormProps = {
   onImageDelete: ImageUploaderOfferProps['onImageDelete']
   isOfferCreated?: boolean
   offer?:
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel
+  | GetCollectiveOfferResponseModel
+  | GetCollectiveOfferTemplateResponseModel
   isSubmitting: boolean
   venues?: VenueListItemResponseModel[]
 }
