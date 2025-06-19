@@ -3,6 +3,7 @@ import datetime
 import pytest
 from flask import url_for
 
+import pcapi.core.chronicles.models as chronicles_models
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offers import factories as offers_factories
@@ -65,6 +66,19 @@ class ListChroniclesTest(GetEndpointHelper):
         chronicles_factories.ChronicleFactory()
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=ean))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(chronicle_with_product.id)
+
+    def test_search_by_allocine_id(self, authenticated_client):
+        allocine_id = "1000013191"
+        product = offers_factories.ProductFactory(extraData={"allocineId": allocine_id})
+        chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
+        chronicles_factories.ChronicleFactory()
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=allocine_id))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -180,9 +194,45 @@ class GetChronicleDetailsTest(GetEndpointHelper):
     # - fetch chronicle's action history
     expected_num_queries = 4
 
-    def test_nominal(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "product_idx, product_identifier,product_identifier_type,club_type,identifier_display_content",
+        [
+            (
+                0,
+                "1235467890123",
+                chronicles_models.ChronicleProductIdentifierType.EAN,
+                chronicles_models.ChronicleClubType.BOOK_CLUB,
+                "EAN",
+            ),
+            (
+                1,
+                "1000013191",
+                chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+                "ID Allociné",
+            ),
+            (
+                2,
+                "1000013192",
+                chronicles_models.ChronicleProductIdentifierType.VISA,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+                "Visa",
+            ),
+        ],
+    )
+    def test_nominal(
+        self,
+        product_idx,
+        product_identifier,
+        product_identifier_type,
+        club_type,
+        identifier_display_content,
+        authenticated_client,
+    ):
         products = [
             offers_factories.ProductFactory(ean="1235467890123"),
+            offers_factories.ProductFactory(extraData={"allocineId": "1000013191"}),
+            offers_factories.ProductFactory(extraData={"visa": "1000013192"}),
             offers_factories.ProductFactory(),
         ]
         user = users_factories.BeneficiaryFactory()
@@ -191,7 +241,9 @@ class GetChronicleDetailsTest(GetEndpointHelper):
             age=18,
             city="valechat",
             content="A short content",
-            ean=products[0].ean,
+            productIdentifier=product_identifier,
+            productIdentifierType=product_identifier_type,
+            clubType=club_type,
             email=user.email,
             firstName=user.firstName,
             isIdentityDiffusible=True,
@@ -213,8 +265,8 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert f"Âge : {chronicle.age} ans" in content_as_text
         assert f"Ville : {chronicle.city}" in content_as_text
         assert f"Email : {chronicle.email}" in content_as_text
-        assert f"Titre de l'œuvre : {products[0].name}" in content_as_text
-        assert f"EAN : {chronicle.ean}" in content_as_text
+        assert f"Titre de l'œuvre : {products[product_idx].name}" in content_as_text
+        assert f"{identifier_display_content} : {chronicle.productIdentifier}" in content_as_text
         assert "Accord diffusion réseaux sociaux : Oui" in content_as_text
         assert "Accord de diffusion maison d'édition : Oui" in content_as_text
         assert chronicle.content in content_as_text
@@ -236,7 +288,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert "Ville : Non renseignée" in content_as_text
         assert f"Email : {chronicle.email}" in content_as_text
         assert "Titre de l'œuvre : Non renseigné" in content_as_text
-        assert "EAN : Non renseigné" in content_as_text
+        assert f"EAN : {chronicle.productIdentifier}" in content_as_text
         assert "Accord diffusion réseaux sociaux : Non" in content_as_text
         assert "Accord de diffusion maison d'édition : Non" in content_as_text
         assert chronicle.content in content_as_text
@@ -388,23 +440,52 @@ class AttachProductTest(PostEndpointHelper):
     # session
     # current user
     # get chronicle
+    # get every chronicle with same productIdentifier
     # get product
     # check if the chronicle is not already attached to the product
     # attach product to chronicle
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 6 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 7 + GetChronicleDetailsTest.expected_num_queries
 
-    def test_attach_product(self, authenticated_client, legit_user):
-        ean = "1234567890123"
-        product = offers_factories.ProductFactory(ean=ean)
-        chronicle = chronicles_factories.ChronicleFactory()
+    @pytest.mark.parametrize(
+        "product_identifier,product_identifier_type,club_type",
+        [
+            (
+                "1235467890123",
+                chronicles_models.ChronicleProductIdentifierType.EAN,
+                chronicles_models.ChronicleClubType.BOOK_CLUB,
+            ),
+            (
+                "1000013191",
+                chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+            ),
+            (
+                "1000013192",
+                chronicles_models.ChronicleProductIdentifierType.VISA,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+            ),
+        ],
+    )
+    def test_attach_product(
+        self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
+    ):
+        if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
+            product = offers_factories.ProductFactory(ean=product_identifier)
+        elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            product = offers_factories.ProductFactory(extraData={"allocineId": product_identifier})
+        else:
+            product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
+        chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=product_identifier, productIdentifierType=product_identifier_type, clubType=club_type
+        )
 
         response = self.post_to_endpoint(
             follow_redirects=True,
             expected_num_queries=self.expected_num_queries,
             chronicle_id=chronicle.id,
             client=authenticated_client,
-            form={"ean": ean},
+            form={"product_identifier": product_identifier},
         )
         db.session.refresh(chronicle)
 
@@ -415,22 +496,49 @@ class AttachProductTest(PostEndpointHelper):
             f"Le produit {product.name} a été rattaché à toutes les chroniques sur la même œuvre que celle-ci"
         ]
 
-    def test_attach_product_to_multiple_chronicles(self, authenticated_client, legit_user):
-        ean = "1234567890123"
-        product = offers_factories.ProductFactory(ean=ean)
-        chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(2, ean="0123456789123")
+    @pytest.mark.parametrize(
+        "product_identifier,product_identifier_type,club_type",
+        [
+            (
+                "1235467890123",
+                chronicles_models.ChronicleProductIdentifierType.EAN,
+                chronicles_models.ChronicleClubType.BOOK_CLUB,
+            ),
+            (
+                "1000013191",
+                chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+            ),
+            (
+                "1000013192",
+                chronicles_models.ChronicleProductIdentifierType.VISA,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+            ),
+        ],
+    )
+    def test_attach_product_to_multiple_chronicles(
+        self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
+    ):
+        if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
+            product = offers_factories.ProductFactory(ean=product_identifier)
+        elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            product = offers_factories.ProductFactory(extraData={"allocineId": product_identifier})
+        else:
+            product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
+
+        chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(
+            2, productIdentifier=product_identifier, productIdentifierType=product_identifier_type, clubType=club_type
+        )
         untouched_chronicle = chronicles_factories.ChronicleFactory()
 
-        # second request to retrieve all chronicles with that ean
-        expected_num_queries = self.expected_num_queries + 1
         # update the second chronicle
-        expected_num_queries += 1
+        expected_num_queries = self.expected_num_queries + 1
         response = self.post_to_endpoint(
             follow_redirects=True,
             expected_num_queries=expected_num_queries,
             chronicle_id=chronicles_to_update[0].id,
             client=authenticated_client,
-            form={"ean": ean},
+            form={"product_identifier": product_identifier},
         )
         db.session.refresh(untouched_chronicle)
         db.session.refresh(chronicles_to_update[0])
@@ -445,15 +553,42 @@ class AttachProductTest(PostEndpointHelper):
         assert chronicles_to_update[1].products == [product]
         assert untouched_chronicle.products == []
 
-    def test_product_not_found(self, authenticated_client, legit_user):
-        chronicle = chronicles_factories.ChronicleFactory()
+    @pytest.mark.parametrize(
+        "product_identifier,product_identifier_type,club_type",
+        [
+            (
+                "1235467890123",
+                chronicles_models.ChronicleProductIdentifierType.EAN,
+                chronicles_models.ChronicleClubType.BOOK_CLUB,
+            ),
+            (
+                "1000013191",
+                chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+            ),
+            (
+                "1000013192",
+                chronicles_models.ChronicleProductIdentifierType.VISA,
+                chronicles_models.ChronicleClubType.CINE_CLUB,
+            ),
+        ],
+    )
+    def test_product_not_found(
+        self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
+    ):
+        chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifierType=product_identifier_type, clubType=club_type
+        )
 
         response = self.post_to_endpoint(
-            follow_redirects=True, chronicle_id=chronicle.id, client=authenticated_client, form={"ean": "1234567890123"}
+            follow_redirects=True,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={"product_identifier": product_identifier},
         )
         db.session.refresh(chronicle)
 
-        assert html_parser.extract_alerts(response.data) == ["Aucune œuvre n'a été trouvée pour cet EAN"]
+        assert html_parser.extract_alerts(response.data) == ["Aucune œuvre n'a été trouvée pour cet identifiant"]
 
 
 class DetachProductTest(PostEndpointHelper):
@@ -489,8 +624,12 @@ class DetachProductTest(PostEndpointHelper):
 
     def test_detach_product_from_multiple_chronicles(self, authenticated_client, legit_user):
         product = offers_factories.ProductFactory()
-        chronicles = chronicles_factories.ChronicleFactory.create_batch(2, ean="1234567890123", products=[product])
-        untouched_chronicle = chronicles_factories.ChronicleFactory(ean="0123456789012", products=[product])
+        chronicles = chronicles_factories.ChronicleFactory.create_batch(
+            2, productIdentifier="1234567890123", products=[product]
+        )
+        untouched_chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier="0123456789012", products=[product]
+        )
 
         response = self.post_to_endpoint(
             follow_redirects=True,

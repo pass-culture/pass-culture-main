@@ -47,6 +47,7 @@ from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.core import mails as mails_api
 from pcapi.core import object_storage
 from pcapi.core import token as token_utils
+from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import constants as chronicles_constants
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -1862,7 +1863,8 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     for chronicle in chronicles_data:
         product_name = None
         for product in chronicle.products:
-            if chronicle.ean and product.ean == chronicle.ean:
+            product_identifier = chronicles_api.get_product_identifier(chronicle, product)
+            if chronicle.productIdentifier and product_identifier == chronicle.productIdentifier:
                 product_name = product.name
                 break
         chronicles.append(
@@ -1871,7 +1873,17 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
                 city=chronicle.city,
                 content=chronicle.content,
                 dateCreated=chronicle.dateCreated,
-                ean=chronicle.ean,
+                ean=chronicle.productIdentifier
+                if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.EAN
+                else None,
+                allocineId=chronicle.productIdentifier
+                if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID
+                else None,
+                visa=chronicle.productIdentifier
+                if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.VISA
+                else None,
+                productIdentifier=chronicle.productIdentifier,
+                productIdentifierType=chronicle.productIdentifierType.value,
                 email=chronicle.email,
                 firstName=chronicle.firstName,
                 isIdentityDiffusible=chronicle.isIdentityDiffusible,

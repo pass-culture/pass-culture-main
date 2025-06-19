@@ -6,6 +6,17 @@
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/standard.html" %}
+{% macro get_product_identifier(product, productIdentifierType) %}
+  {% if productIdentifierType == "EAN" %}
+    {{ product.ean }}
+  {% elif productIdentifierType == "ALLOCINE_ID" %}
+    {{ product.extraData.allocineId }}
+  {% elif productIdentifierType == "VISA" %}
+    {{ product.extraData.visa }}
+  {% else %}
+    -
+  {% endif %}
+{% endmacro %}
 {% block main_content %}
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
@@ -90,9 +101,9 @@
                 {% endif %}
               </p>
               <p class="mb-1">
-                <span class="fw-bold">EAN :</span>
-                {% if chronicle.ean %}
-                  {{ chronicle.ean }}
+                <span class="fw-bold">{{ chronicle.productIdentifierName }} :</span>
+                {% if chronicle.productIdentifier %}
+                  {{ chronicle.productIdentifier }}
                 {% else %}
                   Non renseigné
                 {% endif %}
@@ -131,7 +142,7 @@
               <thead>
                 <tr>
                   {% if has_permission("MANAGE_CHRONICLE") %}<th scope="col"></th>{% endif %}
-                  <th scope="col-2">EAN</th>
+                  <th scope="col-2">{{ chronicle.productIdentifierName }}</th>
                   <th scope="col-2">Titre</th>
                 </tr>
               </thead>
@@ -157,12 +168,13 @@
                         </div>
                       </td>
                     {% endif %}
-                    {% if product.ean == chronicle.ean %}
+                    {% set product_identifier = get_product_identifier(product, chronicle.productIdentifierType.value) %}
+                    {% if product_identifier == chronicle.productIdentifier %}
                       <td>
-                        <b>{{ product.ean }}</b>
+                        <b>{{ product_identifier }}</b>
                       </td>
                     {% else %}
-                      <td>{{ product.ean }}</td>
+                      <td>{{ product_identifier }}</td>
                     {% endif %}
                     <td>{{ product.name }}</td>
                   </tr>

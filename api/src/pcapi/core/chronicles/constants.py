@@ -3,6 +3,7 @@ from enum import Enum
 
 ANONYMIZED_EMAIL = "anonymized_email@anonymized.passculture"
 BOOK_CLUB_FORM_ID = "K20ivtdr"
+CINE_CLUB_FORM_ID = "kUeY2sN4"
 
 
 class BookClub(Enum):
@@ -16,3 +17,14 @@ class BookClub(Enum):
     DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "WOTBxKezQuY9"
     SOCIAL_MEDIA_QUESTION_ID = "j9l8TcDOCNN4"
     SOCIAL_MEDIA_ANSWER_ID = "1KVoMDhUVrEd"
+
+
+class CineClub(Enum):
+    FORM_ID = "kUeY2sN4"
+    NAME_ID = "62f6nEVeTOdw"
+    MOVIE_ID = "nv8CkjvnYsO1"
+    CHRONICLE_ID = "mhuWo0Zb9Y1d"
+    DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID = "pmF7QlnbpbXE"
+    DIFFUSIBLE_PERSONAL_DATA_ANSWER_ID = "34TU7FpVjo5b"
+    SOCIAL_MEDIA_QUESTION_ID = "CiUbpTHx9qiI"
+    SOCIAL_MEDIA_ANSWER_ID = "WvzWCPCSwSgZ"
