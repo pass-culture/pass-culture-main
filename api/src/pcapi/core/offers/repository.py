@@ -185,22 +185,17 @@ def get_capped_offers_for_filters(
 
 def get_offers_by_publication_date(
     publication_date: datetime.datetime | None = None,
-) -> tuple[BaseQuery, BaseQuery]:
+) -> BaseQuery:
     if publication_date is None:
         publication_date = datetime.datetime.utcnow()
 
     upper_bound = publication_date
     lower_bound = upper_bound - datetime.timedelta(minutes=15)
 
-    future_offers_subquery = db.session.query(models.FutureOffer).filter(
-        models.FutureOffer.publicationDate <= upper_bound,
-        models.FutureOffer.publicationDate > lower_bound,
-        sa.not_(models.FutureOffer.isSoftDeleted),
-    )
-    offer_ids_future = [future_offer.offerId for future_offer in future_offers_subquery]
-    return (
-        db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids_future)),
-        future_offers_subquery,
+    return db.session.query(models.Offer).filter(
+        models.Offer.publicationDatetime != None,
+        models.Offer.publicationDatetime <= upper_bound,
+        models.Offer.publicationDatetime > lower_bound,
     )
 
 
@@ -732,10 +727,6 @@ def _find_today_event_stock_ids_filter_by_departments(
     return {stock.id for stock in query}
 
 
-def delete_future_offer(offer_id: int) -> None:
-    db.session.query(models.FutureOffer).filter_by(offerId=offer_id).delete()
-
-
 def get_available_activation_code(stock: models.Stock) -> models.ActivationCode | None:
     activable_code = next(
         (
@@ -939,8 +930,6 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
                 ),
             )
-        if "future_offer" in load_options:
-            query = query.outerjoin(models.Offer.futureOffer).options(sa_orm.contains_eager(models.Offer.futureOffer))
         if "pending_bookings" in load_options:
             query = query.options(
                 sa_orm.with_expression(

@@ -34,11 +34,14 @@ def make_fully_featured_offer(venue: offerers_models.Venue | None = None) -> off
     return offer
 
 
-def make_future_offer() -> offers_models.Offer:
-    offer = offers_factories.OfferFactory(isActive=False)
-    publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-    offers_factories.FutureOfferFactory(offer=offer, publicationDate=publication_date)
-    return offer
+def make_future_offer(venue: offerers_models.Venue | None = None) -> offers_models.Offer:
+    publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    booking_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+    return offers_factories.StockFactory(
+        offer__venue=venue or offerers_factories.VenueFactory(),
+        offer__publicationDatetime=publication_date,
+        offer__bookingAllowedDatetime=booking_date,
+    ).offer
 
 
 def make_booked_offer() -> offers_models.Offer:
