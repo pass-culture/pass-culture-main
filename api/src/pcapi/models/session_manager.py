@@ -120,7 +120,7 @@ class DbClass:
         return current_app.extensions[EXTENSION_NAME]
 
     @property
-    def session(self) -> sa.orm.session.Session:
+    def session(self) -> SessionBase:
         session = getattr(g, "sqlalchemy_session", None)
         if session is None:
             session = self.session_maker(bind=self.engine)
