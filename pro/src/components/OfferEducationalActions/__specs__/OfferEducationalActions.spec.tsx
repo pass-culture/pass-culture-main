@@ -13,6 +13,7 @@ import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
+  getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
@@ -144,12 +145,11 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display booking link for booked offer', () => {
+    const booking = getCollectiveOfferBookingFactory()
+
     const offer = getCollectiveOfferFactory({
       displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-      booking: {
-        id: 1,
-        status: CollectiveBookingStatus.CONFIRMED,
-      },
+      booking,
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -159,7 +159,7 @@ describe('OfferEducationalActions', () => {
       screen.getByRole('link', { name: 'Voir la réservation' })
     ).toHaveAttribute(
       'href',
-      `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1`
+      `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${booking.id}`
     )
     expect(screen.getByText('réservée')).toBeInTheDocument()
   })
@@ -167,10 +167,10 @@ describe('OfferEducationalActions', () => {
   it('should display booking link for used booking', () => {
     const offer = getCollectiveOfferFactory({
       displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
-      booking: {
+      booking: getCollectiveOfferBookingFactory({
         id: 1,
         status: CollectiveBookingStatus.USED,
-      },
+      }),
     })
     renderOfferEducationalActions({
       ...defaultValues,
@@ -189,10 +189,10 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        booking: {
+        booking: getCollectiveOfferBookingFactory({
           id: 1,
           status: CollectiveBookingStatus.CANCELLED,
-        },
+        }),
       }),
     })
     expect(
@@ -211,10 +211,10 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        booking: {
+        booking: getCollectiveOfferBookingFactory({
           id: 1,
           status: CollectiveBookingStatus.CONFIRMED,
-        },
+        }),
       }),
     })
     const bookingLink = screen.getByRole('link', {

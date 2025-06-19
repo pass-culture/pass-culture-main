@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
+import type { CollectiveOfferHistory } from './CollectiveOfferHistory';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
@@ -33,6 +34,7 @@ export type GetCollectiveOfferResponseModel = {
   durationMinutes?: number | null;
   formats: Array<EacFormat>;
   hasBookingLimitDatetimesPassed: boolean;
+  history: CollectiveOfferHistory;
   id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;

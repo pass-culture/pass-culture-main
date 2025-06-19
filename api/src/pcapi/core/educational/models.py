@@ -895,19 +895,38 @@ class CollectiveOffer(
 
     @property
     def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
-        if self.isArchived:
+        status, is_hidden, is_archived = self.get_base_displayed_status()
+
+        if is_archived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
+        if is_hidden:
+            return CollectiveOfferDisplayedStatus.HIDDEN
+
+        return status
+
+    def get_base_displayed_status(self) -> tuple[CollectiveOfferDisplayedStatus, bool, bool]:
+        """
+        Return tuple is (status, is_hidden, is_archived)
+        status does not take into account the hiding and archiving of the offer
+        """
+        is_hidden = False
+        is_archived = False
+
+        if self.isArchived:
+            is_archived = True
+
+        status: CollectiveOfferDisplayedStatus | None = None
         match self.validation:
             case offer_mixin.OfferValidationStatus.DRAFT:
-                return CollectiveOfferDisplayedStatus.DRAFT
+                status = CollectiveOfferDisplayedStatus.DRAFT
             case offer_mixin.OfferValidationStatus.PENDING:
-                return CollectiveOfferDisplayedStatus.UNDER_REVIEW
+                status = CollectiveOfferDisplayedStatus.UNDER_REVIEW
             case offer_mixin.OfferValidationStatus.REJECTED:
-                return CollectiveOfferDisplayedStatus.REJECTED
+                status = CollectiveOfferDisplayedStatus.REJECTED
             case offer_mixin.OfferValidationStatus.APPROVED:
                 if not self.isActive:
-                    return CollectiveOfferDisplayedStatus.HIDDEN
+                    is_hidden = True
 
                 last_booking = self.lastBooking
                 last_booking_status = last_booking.status if last_booking else None
@@ -918,28 +937,29 @@ class CollectiveOffer(
                 match last_booking_status:
                     case None:
                         if has_started:
-                            return CollectiveOfferDisplayedStatus.CANCELLED
-
-                        if has_booking_limit_passed:
-                            return CollectiveOfferDisplayedStatus.EXPIRED
-
-                        return CollectiveOfferDisplayedStatus.PUBLISHED
+                            status = CollectiveOfferDisplayedStatus.CANCELLED
+                        elif has_booking_limit_passed:
+                            status = CollectiveOfferDisplayedStatus.EXPIRED
+                        else:
+                            status = CollectiveOfferDisplayedStatus.PUBLISHED
 
                     case CollectiveBookingStatus.PENDING:
                         if has_booking_limit_passed:
-                            return CollectiveOfferDisplayedStatus.EXPIRED
-                        return CollectiveOfferDisplayedStatus.PREBOOKED
+                            status = CollectiveOfferDisplayedStatus.EXPIRED
+                        else:
+                            status = CollectiveOfferDisplayedStatus.PREBOOKED
 
                     case CollectiveBookingStatus.CONFIRMED:
                         if has_ended:
-                            return CollectiveOfferDisplayedStatus.ENDED
-                        return CollectiveOfferDisplayedStatus.BOOKED
+                            status = CollectiveOfferDisplayedStatus.ENDED
+                        else:
+                            status = CollectiveOfferDisplayedStatus.BOOKED
 
                     case CollectiveBookingStatus.USED:
-                        return CollectiveOfferDisplayedStatus.ENDED
+                        status = CollectiveOfferDisplayedStatus.ENDED
 
                     case CollectiveBookingStatus.REIMBURSED:
-                        return CollectiveOfferDisplayedStatus.REIMBURSED
+                        status = CollectiveOfferDisplayedStatus.REIMBURSED
 
                     case CollectiveBookingStatus.CANCELLED:
                         if (
@@ -948,12 +968,15 @@ class CollectiveOffer(
                         ):
                             # There is a script that set the booking status to CANCELLED with cancellation reason EXPIRED when the booking is expired.
                             # We need to distinguish between an expired booking and a cancelled booking.
-                            return CollectiveOfferDisplayedStatus.EXPIRED
+                            status = CollectiveOfferDisplayedStatus.EXPIRED
+                        else:
+                            status = CollectiveOfferDisplayedStatus.CANCELLED
 
-                        return CollectiveOfferDisplayedStatus.CANCELLED
+        if status is None:
+            logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
+            status = CollectiveOfferDisplayedStatus.PUBLISHED
 
-        logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
-        return CollectiveOfferDisplayedStatus.PUBLISHED
+        return status, is_hidden, is_archived
 
     def _get_allowed_actions(self) -> tuple[CollectiveOfferAllowedAction, ...]:
         displayed_status = self.displayedStatus

@@ -24,6 +24,7 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
+from pcapi.routes.serialization import collective_history_serialize
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
@@ -381,7 +382,11 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
 
 class GetCollectiveOfferBookingResponseModel(BaseModel):
     id: int
+    dateCreated: datetime
     status: educational_models.CollectiveBookingStatus
+    cancellationLimitDate: datetime
+    cancellationReason: educational_models.CollectiveBookingCancellationReasons | None
+    confirmationLimitDate: datetime
 
     class Config:
         orm_mode = True
@@ -411,6 +416,10 @@ class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         if key == "location":
             return get_collective_offer_location_model(self._obj)
+
+        if key == "history":
+            return collective_history_serialize.get_collective_offer_history(self._obj)
+
         return super().get(key, default)
 
 
@@ -458,10 +467,6 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     contactUrl: str | None
     contactForm: educational_models.OfferContactFormEnum | None
     allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
 
 
 class CollectiveOfferRedactorModel(BaseModel):
@@ -512,6 +517,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isTemplate: bool = False
     dates: TemplateDatesModel | None
     allowedActions: list[educational_models.CollectiveOfferAllowedAction]
+    history: collective_history_serialize.CollectiveOfferHistory
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
