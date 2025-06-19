@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
@@ -15,7 +17,12 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
+from pcapi.utils import date as date_utils
+from pcapi.utils import email as email_utils
+from pcapi.utils import string as string_utils
+from pcapi.utils.clean_accents import clean_accents
 
 from . import forms
 
@@ -28,9 +35,65 @@ non_payment_notices_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_notices() -> list[offerers_models.NonPaymentNotice]:
+def _get_notices(form: forms.GetNoticesSearchForm) -> list[offerers_models.NonPaymentNotice]:
+    ids_query = sa.select(offerers_models.NonPaymentNotice.id)
+
+    if form.status.data:
+        ids_query = ids_query.filter(
+            offerers_models.NonPaymentNotice.status.in_(
+                [offerers_models.NoticeStatus[status] for status in form.status.data]
+            ),
+        )
+
+    if form.notice_type.data:
+        ids_query = ids_query.filter(
+            offerers_models.NonPaymentNotice.noticeType.in_(
+                [offerers_models.NoticeType[notice_type] for notice_type in form.notice_type.data]
+            ),
+        )
+
+    if form.offerer.data:
+        ids_query = ids_query.filter(offerers_models.NonPaymentNotice.offererId.in_(form.offerer.data))
+
+    if form.venue.data:
+        ids_query = ids_query.filter(offerers_models.NonPaymentNotice.venueId.in_(form.venue.data))
+
+    if form.batch.data:
+        ids_query = ids_query.filter(offerers_models.NonPaymentNotice.batchId.in_(form.batch.data))
+
+    if form.from_to_date.data:
+        if form.from_to_date.from_date is not None and form.from_to_date.to_date is not None:
+            from_date = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.min.time())
+            to_date = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.max.time())
+            ids_query = ids_query.filter(offerers_models.NonPaymentNotice.dateReceived.between(from_date, to_date))
+
+    if form.q.data:
+        search_query = form.q.data
+
+        if email_utils.is_valid_email(search_query):
+            ids_query = ids_query.filter(offerers_models.NonPaymentNotice.emitterEmail == search_query)
+
+        else:
+            or_filters = []
+
+            if string_utils.is_numeric(search_query):
+                or_filters.extend([offerers_models.NonPaymentNotice.id == int(search_query)])
+
+            search_name = f"%{clean_accents(search_query).replace(' ', '%').replace('-', '%')}%"
+            or_filters.extend(
+                [
+                    sa.func.immutable_unaccent(offerers_models.NonPaymentNotice.emitterName).ilike(search_name),
+                    offerers_models.NonPaymentNotice.reference == search_query,
+                ]
+            )
+
+            ids_query = ids_query.filter(sa.or_(*or_filters))
+
+    ids_query = ids_query.distinct().limit(form.limit.data + 1)
+
     notices_query = (
         db.session.query(offerers_models.NonPaymentNotice)
+        .filter(offerers_models.NonPaymentNotice.id.in_(ids_query))
         .options(
             sa_orm.joinedload(offerers_models.NonPaymentNotice.venue).load_only(
                 offerers_models.Venue.id,
@@ -50,16 +113,27 @@ def _get_notices() -> list[offerers_models.NonPaymentNotice]:
     )
 
     notices = notices_query.all()
-    return notices
+    return utils.limit_rows(notices, form.limit.data)
 
 
 @non_payment_notices_blueprint.route("", methods=["GET"])
 def list_notices() -> utils.BackofficeResponse:
-    notices = _get_notices()
+    search_form = forms.GetNoticesSearchForm(formdata=utils.get_query_params())
+
+    if not search_form.validate():
+        flash(utils.build_form_error_msg(search_form), "warning")
+        return render_template("non_payment_notices/list.html", rows=[], form=search_form)
+
+    notices = _get_notices(search_form)
+
+    autocomplete.prefill_offerers_choices(search_form.offerer)
+    autocomplete.prefill_venues_choices(search_form.venue)
+    autocomplete.prefill_cashflow_batch_choices(search_form.batch)
 
     return render_template(
         "non_payment_notices/list.html",
         rows=notices,
+        form=search_form,
     )
 
 
@@ -74,7 +148,7 @@ def get_create_non_payment_notice_form() -> utils.BackofficeResponse:
         dst=url_for("backoffice_web.non_payment_notices.create_non_payment_notice"),
         div_id="create-non-payment-notice",  # must be consistent with parameter passed to build_lazy_modal
         title="Saisir un avis d'impayé",
-        button_text="Saisir l'avis",
+        button_text="Enregistrer",
     )
 
 
