@@ -427,6 +427,7 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
         if event.bookingId:
             event = (
                 db.session.query(models.FinanceEvent)
+                .execution_options(include_deleted=True)
                 .filter_by(id=event.id)
                 .options(
                     sa_orm.joinedload(models.FinanceEvent.booking, innerjoin=True)
@@ -445,6 +446,7 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
         elif event.collectiveBookingId:
             event = (
                 db.session.query(models.FinanceEvent)
+                .execution_options(include_deleted=True)
                 .filter_by(id=event.id)
                 .options(
                     sa_orm.joinedload(models.FinanceEvent.collectiveBooking, innerjoin=True)

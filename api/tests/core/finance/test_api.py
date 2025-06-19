@@ -193,6 +193,51 @@ class PriceEventTest:
         assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert pricing2.lines[1].amount == 5 * 100
 
+    def test_pricing_individual_on_soft_deleted_venue(self):
+        user = users_factories.RichBeneficiaryFactory()
+        event1 = self._make_individual_event(price=19_999, user=user)
+        booking1 = event1.booking
+
+        event2 = self._make_individual_event(price=100, user=user, venue=booking1.venue)
+        booking2 = event2.booking
+
+        # Soft delete the venue
+        venue = booking1.venue
+        venue_id = venue.id
+        venue.isSoftDeleted = True
+        db.session.add(venue)
+        db.session.commit()
+        assert offerers_models.Venue.query.filter_by(id=venue_id).first() is None
+
+        api.price_event(event1)
+
+        pricing1 = db.session.query(models.Pricing).one()
+        assert pricing1.event == event1
+        assert pricing1.booking == booking1
+        assert pricing1.collectiveBooking is None
+        assert pricing1.venue == booking1.venue
+        assert pricing1.pricingPoint == booking1.venue
+        assert pricing1.valueDate == booking1.dateUsed
+        assert pricing1.amount == -(19_999 * 100)
+        assert pricing1.standardRule == "Remboursement total pour les offres physiques"
+        assert pricing1.customRule is None
+        assert pricing1.revenue == 19_999 * 100
+        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing1.lines[0].amount == -(19_999 * 100)
+        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing1.lines[1].amount == 0
+
+        api.price_event(event2)
+        pricing2 = db.session.query(models.Pricing).filter_by(booking=event2.booking).one()
+        assert pricing2.booking == booking2
+        assert pricing2.amount == -(95 * 100)
+        assert pricing2.standardRule == "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)"
+        assert pricing2.revenue == pricing1.revenue + (100 * 100)
+        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing2.lines[0].amount == -(100 * 100)
+        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing2.lines[1].amount == 5 * 100
+
     def test_pricing_collective(self):
         event1 = self._make_collective_event(price=19_999)
         booking1 = event1.collectiveBooking
