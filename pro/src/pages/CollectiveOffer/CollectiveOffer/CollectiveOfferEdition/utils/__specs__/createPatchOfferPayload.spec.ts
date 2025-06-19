@@ -209,6 +209,34 @@ describe('createPatchOfferPayload', () => {
     )
   })
 
+  it('should return patch offer payload with location key when OA FF is active and city has changed', () => {
+    const payload = createPatchOfferPayload(
+      { ...offer, city: 'Paris' },
+      initialValues,
+      true
+    )
+
+    expect(payload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          address: {
+            city: 'Paris',
+            latitude: '3',
+            longitude: '2',
+            postalCode: '13007',
+            street: 'rue de la paix',
+            isVenueAddress: false,
+            label: 'Une autre adresse',
+            isManualEdition: false,
+            banId: '',
+            coords: '',
+          },
+        },
+      })
+    )
+  })
+
   it('should return patch offer payload with location key when OA FF is active and locationType is SCHOOL', () => {
     const payload = createPatchOfferPayload(
       {
