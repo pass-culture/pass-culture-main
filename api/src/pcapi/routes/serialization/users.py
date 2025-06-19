@@ -239,6 +239,10 @@ class GdprChronicleData(BaseModel):
     content: str
     dateCreated: datetime
     ean: str | None
+    allocineId: str | None
+    visa: str | None
+    productIdentifier: str
+    productIdentifierType: str
     email: str
     firstName: str | None
     isIdentityDiffusible: bool
