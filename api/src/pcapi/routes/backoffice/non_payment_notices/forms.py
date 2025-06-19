@@ -1,3 +1,5 @@
+import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import validators
 
@@ -6,6 +8,85 @@ from pcapi.models import db
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
+
+
+class GetNoticesSearchForm(forms_utils.PCForm):
+    class Meta:
+        csrf = False
+
+    q = fields.PCOptSearchField("ID ou référence de l'avis d'impayé, nom ou email de l'émetteur")
+
+    status = fields.PCSelectMultipleField(
+        "États",
+        choices=forms_utils.choices_from_enum(
+            offerers_models.NoticeStatus,
+            formatter=filters.format_notice_status,
+        ),
+    )
+
+    notice_type = fields.PCSelectMultipleField(
+        "Type d'avis",
+        choices=forms_utils.choices_from_enum(
+            offerers_models.NoticeType,
+            formatter=filters.format_notice_type,
+        ),
+    )
+
+    offerer = fields.PCTomSelectField(
+        "Entités juridiques",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_offerers",
+    )
+
+    venue = fields.PCTomSelectField(
+        "Partenaires culturels",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_pricing_points",
+    )
+
+    batch = fields.PCTomSelectField(
+        "N° de virement",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_cashflow_batches",
+    )
+
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (100, "Afficher 100 résultats maximum"),
+            (500, "Afficher 500 résultats maximum"),
+            (1000, "Afficher 1000 résultats maximum"),
+        ),
+        default="100",
+        coerce=int,
+        validators=(validators.Optional(),),
+    )
+
+    from_to_date = fields.PCDateRangeField(
+        "Reçus entre",
+        validators=(validators.Optional(),),
+        max_date=datetime.date.today(),
+        reset_to_blank=True,
+    )
+
+    def is_empty(self) -> bool:
+        return not any(
+            (
+                self.q.data,
+                self.status.data,
+                self.notice_type.data,
+                self.offerer.data,
+                self.venue.data,
+                self.batch.data,
+                self.from_to_date.data,
+            )
+        )
 
 
 class CreateNonPaymentNoticeForm(FlaskForm):

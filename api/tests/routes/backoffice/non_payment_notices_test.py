@@ -101,6 +101,149 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
         assert rows[2]["Motif"] == "Déjà payé"
         assert rows[2]["N° de virement"] == "VIR123"
 
+    def test_list_notices_by_id(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+        offerers_factories.NonPaymentNoticeFactory()
+        notice_id = str(notice.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=notice_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == notice_id
+
+    def test_list_notices_by_emitter_email(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory(emitterEmail="david.impaye@example.com")
+        offerers_factories.NonPaymentNoticeFactory(emitterEmail="david.paye@example.com")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="david.impaye@example.com"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_emitter_name(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory(emitterName="David Impayé")
+        notice_with_close_name = offerers_factories.NonPaymentNoticeFactory(emitterName="Les Sociétés David")
+        offerers_factories.NonPaymentNoticeFactory(emitterName="Rien à voir")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="David"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert set(row["ID"] for row in rows) == {str(notice.id), str(notice_with_close_name.id)}
+
+    def test_list_notices_by_reference(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory(reference="AZERT")
+        offerers_factories.NonPaymentNoticeFactory(reference="AZERTY")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="AZERT"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_status(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory(status=offerers_models.NoticeStatus.CLOSED)
+        offerers_factories.NonPaymentNoticeFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, status=offerers_models.NoticeStatus.CLOSED.name))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_type(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory(noticeType=offerers_models.NoticeType.BAILIFF)
+        offerers_factories.NonPaymentNoticeFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, notice_type=offerers_models.NoticeType.BAILIFF.name)
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_batch(self, authenticated_client):
+        batch = finance_factories.CashflowBatchFactory()
+        notice = offerers_factories.NonPaymentNoticeFactory(batch=batch)
+        offerers_factories.NonPaymentNoticeFactory(batch=finance_factories.CashflowBatchFactory())
+        offerers_factories.NonPaymentNoticeFactory()
+        batch_id = str(batch.id)
+
+        # one more query because of cashflow_batches validation
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, batch=batch_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        notice = offerers_factories.NonPaymentNoticeFactory(venue=venue)
+        offerers_factories.NonPaymentNoticeFactory(venue=offerers_factories.VenueFactory())
+        offerers_factories.NonPaymentNoticeFactory()
+        venue_id = str(venue.id)
+
+        # one more query because of venue validation
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_offerer(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        notice = offerers_factories.NonPaymentNoticeFactory(offerer=offerer)
+        offerers_factories.NonPaymentNoticeFactory(offerer=offerers_factories.OffererFactory())
+        offerers_factories.NonPaymentNoticeFactory()
+        offerer_id = str(offerer.id)
+
+        # one more query because of offerer validation
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
+    def test_list_notices_by_dates(self, authenticated_client):
+        now = datetime.datetime(2025, 6, 5)
+        notice = offerers_factories.NonPaymentNoticeFactory(dateReceived=now - datetime.timedelta(days=2))
+        offerers_factories.NonPaymentNoticeFactory(dateReceived=now - datetime.timedelta(days=4))
+        offerers_factories.NonPaymentNoticeFactory(dateReceived=now)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    from_to_date="02/06/2025 - 04/06/2025",
+                )
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(notice.id)
+
 
 class GetCreateNonPaymentNoticeFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.non_payment_notices.get_create_non_payment_notice_form"
