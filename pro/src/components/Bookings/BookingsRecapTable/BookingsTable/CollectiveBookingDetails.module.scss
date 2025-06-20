@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
 .container {
@@ -19,46 +18,9 @@
   }
 }
 
-.contact-details-title {
-  @include fonts.body-accent;
-
-  margin-bottom: rem.torem(8px);
-}
-
-.contact-details {
-  display: flex;
-  flex-direction: column;
-  gap: rem.torem(8px);
-  padding: rem.torem(8px);
-  background-color: var(--color-background-default);
-  border-radius: rem.torem(6px);
-  border: rem.torem(1px) solid var(--color-border-subtle);
-}
-
-.contact-detail {
-  display: flex;
-  gap: rem.torem(8px);
-  align-items: center;
-
-  &-icon {
-    display: flex;
-    height: rem.torem(16px);
-    width: rem.torem(16px);
-    color: var(--color-icon-default);
-  }
-
-  &-location-icon {
-    align-self: flex-start;
-  }
-}
 
 @media (min-width: size.$tablet) {
   .container {
     flex-wrap: nowrap;
-  }
-
-  .contact-details {
-    width: rem.torem(315px);
-    padding: rem.torem(16px);
   }
 }
