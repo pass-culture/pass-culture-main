@@ -2,7 +2,6 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -24,8 +23,8 @@ import {
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -98,12 +97,12 @@ describe('route CollectiveOffers', () => {
         await renderOffers()
 
         await userEvent.click(
-          screen.getByText('Statut', {
-            selector: 'label',
+          screen.getByRole('button', {
+            name: 'Statut',
           })
         )
-        const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Expirée'))
+
+        await userEvent.click(screen.getByText('Expirée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -134,14 +133,14 @@ describe('route CollectiveOffers', () => {
         await renderOffers()
 
         await userEvent.click(
-          screen.getByText('Statut', {
-            selector: 'label',
+          screen.getByRole('button', {
+            name: 'Statut',
           })
         )
-        const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Expirée'))
-        await userEvent.click(within(list).getByText('Préréservée'))
-        await userEvent.click(within(list).getByText('Réservée'))
+
+        await userEvent.click(screen.getByText('Expirée'))
+        await userEvent.click(screen.getByText('Préréservée'))
+        await userEvent.click(screen.getByText('Réservée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -174,12 +173,12 @@ describe('route CollectiveOffers', () => {
         await renderOffers()
 
         await userEvent.click(
-          screen.getByText('Statut', {
-            selector: 'label',
+          screen.getByRole('button', {
+            name: 'Statut',
           })
         )
-        const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Expirée'))
+
+        await userEvent.click(screen.getByText('Expirée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })

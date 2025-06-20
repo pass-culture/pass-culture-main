@@ -2,7 +2,7 @@ import {
   collectiveFormatEventDate,
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../support/helpers.ts';
 
 describe('Adage confirmation', () => {
   let login: string
@@ -97,8 +97,8 @@ describe('Adage confirmation', () => {
       cy.findByText('Filtrer').click()
 
       cy.stepLog({ message: 'I search with status "PREBOOKED"' })
-      cy.get('#search-status').click()
-      cy.get('#list-status').find('#option-display-PREBOOKED').click()
+      cy.findByRole('button', { name: 'Statut' }).click()
+      cy.findByText('Préréservée').click()
 
       // We click outside the filter to close it
       cy.findByLabelText('Statut').click()
@@ -175,13 +175,11 @@ describe('Adage confirmation', () => {
       cy.findByText('Réinitialiser les filtres').click()
 
       cy.stepLog({ message: 'Status filter is empty' })
-      cy.findByTestId('wrapper-search-status').within(() => {
-        cy.get('select').invoke('val').should('be.empty')
-      })
+      cy.findByRole('button', { name: 'Statut' }).invoke('val').should('be.empty')
 
       cy.stepLog({ message: 'I search with status "BOOKED"' })
-      cy.get('#search-status').click()
-      cy.get('#list-status').find('#option-display-BOOKED').click()
+      cy.findByRole('button', { name: 'Statut' }).click()
+      cy.findByText('Réservée').click()
 
       // We click outside the filter to close it
       cy.findByLabelText('Statut').click()
@@ -222,9 +220,7 @@ describe('Adage confirmation', () => {
       cy.findByText('Réinitialiser les filtres').click()
 
       cy.stepLog({ message: 'Status filter is empty' })
-      cy.findByTestId('wrapper-search-status').within(() => {
-        cy.get('select').invoke('val').should('be.empty')
-      })
+      cy.findByRole('button', { name: 'Statut' }).invoke('val').should('be.empty')
 
       cy.sandboxCall(
         'GET',

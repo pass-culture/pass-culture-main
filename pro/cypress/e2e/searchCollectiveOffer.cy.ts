@@ -1,9 +1,9 @@
-import { addWeeks, format } from 'date-fns'
+import { addWeeks, format } from 'date-fns';
 
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
-} from '../support/helpers.ts'
+} from '../support/helpers.ts';
 
 describe('Search collective offers', () => {
   let offerPublishedTemplate: { name: string; venueName: string }
@@ -255,8 +255,8 @@ describe('Search collective offers', () => {
     cy.findByText('Filtrer').click()
 
     cy.stepLog({ message: 'I search with status "En instruction"' })
-    cy.get('#search-status').click()
-    cy.get('#list-status').find('#option-display-UNDER_REVIEW').click()
+    cy.findByRole('button', { name: 'Statut' }).click()
+    cy.findByText('En instruction').click()
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
 
@@ -298,8 +298,9 @@ describe('Search collective offers', () => {
     cy.findByLabelText(/Nom de l’offre/).type('brouillon', { delay: 0 })
 
     cy.stepLog({ message: 'I search with status "Brouillon"' })
-    cy.get('#search-status').click()
-    cy.get('#list-status').find('#option-display-DRAFT').click()
+    cy.findByRole('button', { name: 'Statut' }).click()
+    cy.findByTestId('panel-scrollable').scrollTo('bottom') 
+    cy.findByText('Brouillon').click()
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
 
@@ -319,19 +320,15 @@ describe('Search collective offers', () => {
     cy.findByText('Réinitialiser les filtres').click()
 
     cy.stepLog({ message: 'All filters are empty' })
-    cy.get('#search-status').should('be.empty')
-    cy.findByTestId('wrapper-lieu').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
-    cy.findByTestId('wrapper-format').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
-    cy.findByTestId('wrapper-collectiveOfferType').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
-    cy.findByTestId('wrapper-search-status').within(() => {
-      cy.get('select').invoke('val').should('be.empty')
-    })
+    cy.findByRole('button', { name: 'Statut' }).click()
+
+    cy.findByText('En instruction').should('not.be.checked')
+
+    cy.findByRole('combobox', { name: /Structure/ }).invoke('val').should('eq', 'all')
+
+    cy.findByRole('combobox', { name: /Format/ }).invoke('val').should('eq', 'all')
+
+    cy.findByRole('combobox', { name: /Type de l’offre/ }).invoke('val').should('eq', 'all')
 
     cy.stepLog({ message: 'I reset the name search' })
     cy.findByLabelText(/Nom de l’offre/).clear()

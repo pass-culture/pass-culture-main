@@ -115,8 +115,10 @@ describe('Create collective offers', () => {
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
 
-    cy.get('#search-status').click()
-    cy.get('#list-status').find('#option-display-DRAFT').click()
+    cy.findByRole('button', { name: 'Statut' }).click()
+    cy.findByTestId('panel-scrollable').scrollTo('bottom') 
+    cy.findByText('Brouillon').click()
+
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
     cy.findByText('Rechercher').click()
@@ -285,8 +287,9 @@ describe('Create collective offers', () => {
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
 
-    cy.get('#search-status').click()
-    cy.get('#list-status').find('#option-display-DRAFT').click()
+    cy.findByRole('button', { name: 'Statut' }).click()
+    cy.findByTestId('panel-scrollable').scrollTo('bottom') 
+    cy.findByText('Brouillon').click()
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
     cy.findByText('Rechercher').click()
