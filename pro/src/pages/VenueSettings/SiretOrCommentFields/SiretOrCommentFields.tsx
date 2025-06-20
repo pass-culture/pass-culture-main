@@ -2,10 +2,13 @@ import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { getDataFromAddress } from 'apiClient/adresse/apiAdresse'
+import { AdresseData } from 'apiClient/adresse/types'
 import { getSiretData } from 'commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
-import { handleAddressSelect } from 'commons/utils/handleAddressSelect'
-import { serializeAdressData } from 'components/Address/serializer'
+import {
+  AutocompleteItemProps,
+  handleAddressSelect,
+} from 'commons/utils/handleAddressSelect'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
@@ -15,6 +18,24 @@ import { Toggle } from 'ui-kit/Toggle/Toggle'
 import { VenueSettingsFormValues } from '../types'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
+
+const serializeAdressData = (
+  adressData: AdresseData[]
+): AutocompleteItemProps[] => {
+  return adressData.map((data) => ({
+    value: data.id,
+    label: data.label,
+    disabled: false,
+    extraData: {
+      postalCode: data.postalCode,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      address: data.address,
+      city: data.city,
+      inseeCode: data.inseeCode,
+    },
+  }))
+}
 
 export type SiretOrCommentFieldsProps = {
   isCreatedEntity: boolean
