@@ -910,9 +910,9 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
         .filter(
             users_models.User.id == form.pro_user_id.data,
             users_models.User.id.not_in(
-                db.session.query(offerers_models.UserOfferer.userId)
-                .filter(offerers_models.UserOfferer.offererId == offerer_id)
-                .subquery()
+                db.session.query(offerers_models.UserOfferer.userId).filter(
+                    offerers_models.UserOfferer.offererId == offerer_id
+                )
             ),
         )
         .limit(1)

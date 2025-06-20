@@ -248,7 +248,7 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
 
 def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearchForm) -> BaseQuery:
     base_query, _, _, warnings = utils.generate_search_query(
-        query=db.session.query(educational_models.CollectiveOffer),
+        query=db.session.query(educational_models.CollectiveOffer.id),
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
         joins_definition=JOIN_DICT,
@@ -263,7 +263,7 @@ def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearch
         )
 
     # +1 to check if there are more results than requested
-    return base_query.with_entities(educational_models.CollectiveOffer.id).limit(form.limit.data + 1)
+    return base_query.limit(form.limit.data + 1)
 
 
 def _get_collective_offers(
@@ -287,7 +287,7 @@ def _get_collective_offers(
             educational_models.CollectiveOffer,
             rules_subquery.label("rules"),
         )
-        .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form).subquery()))
+        .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form)))
         .join(offerers_models.Venue)
         .join(offerers_models.Offerer)
         .outerjoin(educational_models.CollectiveOffer.collectiveStock)
