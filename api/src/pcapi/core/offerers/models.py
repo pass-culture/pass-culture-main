@@ -1411,6 +1411,8 @@ class NoticeStatusMotivation(enum.Enum):
 
 
 class NonPaymentNotice(PcObject, Base, Model):
+    __tablename__ = "non_payment_notice"
+
     amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
     batchId = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True)
     batch: sa_orm.Mapped["finance_models.CashflowBatch"] = sa_orm.relationship("CashflowBatch", foreign_keys=[batchId])
