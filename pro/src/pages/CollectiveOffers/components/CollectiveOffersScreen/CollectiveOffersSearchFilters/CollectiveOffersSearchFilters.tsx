@@ -1,5 +1,4 @@
-import { FormikProvider, useFormik } from 'formik'
-import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -21,9 +20,11 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
-import { SelectInput } from 'ui-kit/form/Select/SelectInput'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
+
+import styles from '../CollectiveOffersScreen.module.scss'
 
 interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
@@ -35,50 +36,6 @@ interface CollectiveOffersSearchFiltersProps {
   resetFilters: () => void
   venues: SelectOption[]
   searchButtonRef?: React.RefObject<HTMLButtonElement>
-}
-
-const collectiveFilterStatus = [
-  {
-    label: 'En instruction',
-    value: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-  },
-  {
-    label: 'Non conforme',
-    value: CollectiveOfferDisplayedStatus.REJECTED,
-  },
-  {
-    label: 'Publiée sur ADAGE',
-    value: CollectiveOfferDisplayedStatus.PUBLISHED,
-  },
-  {
-    label: 'En pause',
-    value: CollectiveOfferDisplayedStatus.HIDDEN,
-  },
-  { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
-  {
-    label: 'Réservée',
-    value: CollectiveOfferDisplayedStatus.BOOKED,
-  },
-  { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
-  { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
-  { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
-  {
-    label: 'Brouillon',
-    value: CollectiveOfferDisplayedStatus.DRAFT,
-  },
-  {
-    label: 'Remboursée',
-    value: CollectiveOfferDisplayedStatus.REIMBURSED,
-  },
-  {
-    label: 'Annulée',
-    value: CollectiveOfferDisplayedStatus.CANCELLED,
-  },
-]
-
-type StatusFormValues = {
-  status: CollectiveOfferDisplayedStatus[]
-  'search-status': string
 }
 
 export const CollectiveOffersSearchFilters = ({
@@ -103,22 +60,6 @@ export const CollectiveOffersSearchFilters = ({
     label: format,
   }))
 
-  const formik = useFormik<StatusFormValues>({
-    initialValues: {
-      status: Array.isArray(selectedFilters.status)
-        ? selectedFilters.status
-        : [selectedFilters.status],
-      'search-status': '',
-    },
-    onSubmit: () => {},
-  })
-
-  // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
-  useEffect(() => {
-    updateSearchFilters({ status: formik.values.status })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.status])
-
   const updateSearchFilters = (
     newSearchFilters: Partial<CollectiveSearchFiltersParams>
   ) => {
@@ -126,26 +67,6 @@ export const CollectiveOffersSearchFilters = ({
       ...currentSearchFilters,
       ...newSearchFilters,
     }))
-  }
-
-  const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
-    updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
-  }
-
-  const storeSelectedVenue = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ venueId: event.currentTarget.value })
-  }
-
-  const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({
-      format: event.currentTarget.value as EacFormat | 'all',
-    })
-  }
-
-  const storeCollectiveOfferType = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({
-      collectiveOfferType: event.currentTarget.value as CollectiveOfferTypeEnum,
-    })
   }
 
   const onBeginningDateChange = (periodBeginningDate: string) => {
@@ -174,20 +95,64 @@ export const CollectiveOffersSearchFilters = ({
     applyFilters(newSearchFilters)
   }
 
-  const onResetFilters = async () => {
-    await formik.setFieldValue('status', defaultCollectiveFilters.status)
+  const collectiveFilterStatus = [
+    {
+      id: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+      label: 'En instruction',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.REJECTED,
+      label: 'Non conforme',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.PUBLISHED,
+      label: 'Publiée sur ADAGE',
+    },
+    ...(!isNewOffersAndBookingsActive
+      ? [
+          {
+            id: CollectiveOfferDisplayedStatus.HIDDEN,
+            label: 'En pause',
+          },
+        ]
+      : []),
+    {
+      id: CollectiveOfferDisplayedStatus.PREBOOKED,
+      label: 'Préréservée',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.BOOKED,
+      label: 'Réservée',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.EXPIRED,
+      label: 'Expirée',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.ENDED,
+      label: 'Terminée',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.ARCHIVED,
+      label: 'Archivée',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.DRAFT,
+      label: 'Brouillon',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.REIMBURSED,
+      label: 'Remboursée',
+    },
+    {
+      id: CollectiveOfferDisplayedStatus.CANCELLED,
+      label: 'Annulée',
+    },
+  ]
+
+  const onResetFilters = () => {
     resetFilters()
   }
-
-  const searchByOfferNameLabel = 'Nom de l’offre'
-
-  const statusFilterOptions = [
-    ...collectiveFilterStatus.filter(
-      (status) =>
-        !isNewOffersAndBookingsActive ||
-        status.value !== CollectiveOfferDisplayedStatus.HIDDEN
-    ),
-  ]
 
   return (
     <OffersTableSearch
@@ -196,59 +161,80 @@ export const CollectiveOffersSearchFilters = ({
       isDisabled={disableAllFilters}
       hasActiveFilters={hasFilters}
       nameInputProps={{
-        label: searchByOfferNameLabel,
+        label: 'Nom de l’offre',
         disabled: disableAllFilters,
-        onChange: storeNameOrIsbnSearchValue,
+        onChange: (event) =>
+          updateSearchFilters({ nameOrIsbn: event.currentTarget.value }),
         value: selectedFilters.nameOrIsbn,
       }}
       onResetFilters={onResetFilters}
       searchButtonRef={searchButtonRef}
     >
-      <FormLayout.Row inline>
-        <FormikProvider value={formik}>
-          <SelectAutocomplete
-            multi
+      <FormLayout.Row inline mdSpaceAfter>
+        <div className={styles['offer-multiselect-status']}>
+          <MultiSelect
             name="status"
             label="Statut"
-            options={statusFilterOptions}
-            isOptional
+            options={collectiveFilterStatus}
+            hasSearch
+            searchLabel="Rechercher"
+            buttonLabel="Statut"
+            onSelectedOptionsChanged={(selectedOptions) => {
+              const selectedIds = selectedOptions.map(
+                (option) => option.id as CollectiveOfferDisplayedStatus
+              )
+
+              updateSearchFilters({
+                status: selectedIds,
+              })
+            }}
             disabled={disableAllFilters}
+            selectedOptions={selectedFilters.status.map((option) => ({
+              id: option,
+              label:
+                collectiveFilterStatus.find((op) => op.id === option)?.label ||
+                '',
+            }))}
           />
-        </FormikProvider>
-        <FieldLayout label="Structure" name="lieu" isOptional>
-          <SelectInput
-            defaultOption={ALL_OFFERERS_OPTION}
-            onChange={storeSelectedVenue}
-            disabled={disableAllFilters}
-            name="lieu"
-            options={venues}
-            value={selectedFilters.venueId}
-          />
-        </FieldLayout>
-        <FieldLayout label="Format" name="format" isOptional>
-          <SelectInput
-            defaultOption={ALL_FORMATS_OPTION}
-            onChange={storeSelectedFormat}
-            disabled={disableAllFilters}
-            name="format"
-            options={formats}
-            value={selectedFilters.format}
-          />
-        </FieldLayout>
+        </div>
+        <Select
+          defaultOption={ALL_OFFERERS_OPTION}
+          onChange={(event) =>
+            updateSearchFilters({ venueId: event.currentTarget.value })
+          }
+          disabled={disableAllFilters}
+          name="structure"
+          options={venues}
+          value={selectedFilters.venueId}
+          label="Structure"
+        />
+        <Select
+          defaultOption={ALL_FORMATS_OPTION}
+          onChange={(event) =>
+            updateSearchFilters({
+              format: event.currentTarget.value as EacFormat | 'all',
+            })
+          }
+          disabled={disableAllFilters}
+          name="format"
+          options={formats}
+          value={selectedFilters.format}
+          label="Format"
+        />
         {!isNewOffersAndBookingsActive && (
-          <FieldLayout
-            label="Type de l’offre"
+          <Select
+            onChange={(event) =>
+              updateSearchFilters({
+                collectiveOfferType: event.currentTarget
+                  .value as CollectiveOfferTypeEnum,
+              })
+            }
+            disabled={disableAllFilters}
             name="collectiveOfferType"
-            isOptional
-          >
-            <SelectInput
-              onChange={storeCollectiveOfferType}
-              disabled={disableAllFilters}
-              name="collectiveOfferType"
-              options={COLLECTIVE_OFFER_TYPES_OPTIONS}
-              value={selectedFilters.collectiveOfferType}
-            />
-          </FieldLayout>
+            options={COLLECTIVE_OFFER_TYPES_OPTIONS}
+            value={selectedFilters.collectiveOfferType}
+            label="Type de l’offre"
+          />
         )}
       </FormLayout.Row>
       <FieldLayout label="Période de l’évènement" name="period" isOptional>
