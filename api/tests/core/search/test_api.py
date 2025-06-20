@@ -203,7 +203,7 @@ class ReindexOfferIdsTest:
         num_queries = 1  # base query for indexation
         num_queries += 1  # FF
         num_queries += 1  # last30DaysBookings
-        num_queries += 1  # eventOpeningHours
+
         num_queries += 1  # venues from offers
         with assert_num_queries(num_queries):
             with assert_no_duplicated_queries():

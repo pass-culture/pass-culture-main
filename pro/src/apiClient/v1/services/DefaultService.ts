@@ -21,7 +21,6 @@ import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStock
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
 import type { CookieConsentRequest } from '../models/CookieConsentRequest';
-import type { CreateEventOpeningHoursModel } from '../models/CreateEventOpeningHoursModel';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
 import type { CreateThumbnailBodyModel } from '../models/CreateThumbnailBodyModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
@@ -43,7 +42,6 @@ import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollec
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
-import type { GetEventOpeningHoursResponseModel } from '../models/GetEventOpeningHoursResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
 import type { GetIndividualOfferWithAddressResponseModel } from '../models/GetIndividualOfferWithAddressResponseModel';
 import type { GetMusicTypesResponse } from '../models/GetMusicTypesResponse';
@@ -111,7 +109,6 @@ import type { StockStatsResponseModel } from '../models/StockStatsResponseModel'
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
 import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
 import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
-import type { UpdateEventOpeningHoursModel } from '../models/UpdateEventOpeningHoursModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1901,83 +1898,6 @@ export class DefaultService {
       url: '/offers/{offer_id}',
       path: {
         'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * post_event_opening_hours <POST>
-   * @param offerId
-   * @param requestBody
-   * @returns GetEventOpeningHoursResponseModel Created
-   * @throws ApiError
-   */
-  public postEventOpeningHours(
-    offerId: number,
-    requestBody?: CreateEventOpeningHoursModel,
-  ): CancelablePromise<GetEventOpeningHoursResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offers/{offer_id}/event_opening_hours',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * delete_event_opening_hours <DELETE>
-   * @param offerId
-   * @param eventOpeningHoursId
-   * @returns void
-   * @throws ApiError
-   */
-  public deleteEventOpeningHours(
-    offerId: number,
-    eventOpeningHoursId: number,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/offers/{offer_id}/event_opening_hours/{event_opening_hours_id}',
-      path: {
-        'offer_id': offerId,
-        'event_opening_hours_id': eventOpeningHoursId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * update_event_opening_hours <PATCH>
-   * @param offerId
-   * @param eventOpeningHoursId
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public updateEventOpeningHours(
-    offerId: number,
-    eventOpeningHoursId: number,
-    requestBody?: UpdateEventOpeningHoursModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offers/{offer_id}/event_opening_hours/{event_opening_hours_id}',
-      path: {
-        'offer_id': offerId,
-        'event_opening_hours_id': eventOpeningHoursId,
       },
       body: requestBody,
       mediaType: 'application/json',
