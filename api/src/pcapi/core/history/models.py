@@ -199,6 +199,16 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
+    noticeId: int | None = sa.Column(
+        sa.BigInteger, sa.ForeignKey("non_payment_notice.id", ondelete="CASCADE"), nullable=True
+    )
+
+    notice: sa_orm.Mapped["offerers_models.NonPaymentNotice | None"] = sa_orm.relationship(
+        "NonPaymentNotice",
+        foreign_keys=[noticeId],
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+    )
+
     comment = sa.Column(sa.Text(), nullable=True)
 
     __table_args__ = (
@@ -217,4 +227,5 @@ class ActionHistory(PcObject, Base, Model):
         sa.Index("ix_action_history_bankAccountId", bankAccountId, postgresql_where=bankAccountId.is_not(None)),
         sa.Index("ix_action_history_ruleId", ruleId, postgresql_where=ruleId.is_not(None)),
         sa.Index("ix_action_history_chronicleId", chronicleId, postgresql_where=chronicleId.is_not(None)),
+        sa.Index("ix_action_history_noticeId", noticeId, postgresql_where=noticeId.is_not(None)),
     )

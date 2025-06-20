@@ -26,6 +26,7 @@ def add_action(
     bank_account: finance_models.BankAccount | None = None,
     rule: offers_models.OfferValidationRule | None = None,
     chronicle: chronicles_models.Chronicle | None = None,
+    notice: offerers_models.NonPaymentNotice | None = None,
     comment: str | None = None,
     **extra_data: typing.Any,
 ) -> models.ActionHistory:
@@ -34,12 +35,12 @@ def add_action(
         models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         models.ActionType.ROLE_PERMISSIONS_CHANGED,
     )
-    if not any((user, offerer, venue, finance_incident, bank_account, rule, chronicle)) and (
+    if not any((user, offerer, venue, finance_incident, bank_account, rule, chronicle, notice)) and (
         action_type not in legit_actions
     ):
-        raise ValueError("No resource (user, offerer, venue, finance incident, bank account, rule)")
+        raise ValueError("No resource (user, offerer, venue, finance incident, bank account, rule, chronicle, notice)")
 
-    # author/user/offerer/venue/bank_account object and its would may not be associated before flush() or commit()
+    # author/user/offerer/venue/bank_account/rule/chronicle/notice object and its would may not be associated before flush() or commit()
     db.session.flush()
 
     if user is not None and user.id is None:
@@ -60,6 +61,9 @@ def add_action(
     if chronicle is not None and chronicle.id is None:
         raise RuntimeError("Unsaved chronicle would be saved with action %s" % chronicle.id)
 
+    if notice is not None and notice.id is None:
+        raise RuntimeError("Unsaved notice would be saved with action %s" % notice.id)
+
     if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
         # Examples: offerer validated by token (without authentication), offerer created by script
@@ -75,6 +79,7 @@ def add_action(
         bankAccount=bank_account,
         rule=rule,
         chronicle=chronicle,
+        notice=notice,
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )

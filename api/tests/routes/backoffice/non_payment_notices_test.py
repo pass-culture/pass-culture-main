@@ -5,6 +5,7 @@ import pytest
 from flask import url_for
 
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -294,6 +295,12 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.motivation is None
         assert notice.batch is None
 
+        action_history = db.session.query(history_models.ActionHistory).one()
+        assert action_history.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action_history.notice is notice
+        assert action_history.offerer is None
+        assert action_history.venue is None
+
     def test_create_non_payment_notice_with_offerer_only(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
         response = self.post_to_endpoint(
@@ -328,6 +335,12 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.motivation is None
         assert notice.batch is None
 
+        action_history = db.session.query(history_models.ActionHistory).one()
+        assert action_history.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action_history.notice is notice
+        assert action_history.offerer is offerer
+        assert action_history.venue is None
+
     def test_create_non_payment_notice_with_venue_only(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         response = self.post_to_endpoint(
@@ -361,6 +374,12 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.venue == venue
         assert notice.motivation is None
         assert notice.batch is None
+
+        action_history = db.session.query(history_models.ActionHistory).one()
+        assert action_history.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action_history.notice is notice
+        assert action_history.offerer is venue.managingOfferer
+        assert action_history.venue is venue
 
     def test_create_non_payment_notice_with_offerer_and_venue(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -397,6 +416,12 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.motivation is None
         assert notice.batch is None
 
+        action_history = db.session.query(history_models.ActionHistory).one()
+        assert action_history.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action_history.notice is notice
+        assert action_history.offerer is offerer
+        assert action_history.venue is venue
+
     def test_create_non_payment_notice_with_offerer_and_wrong_venue(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory()
@@ -420,3 +445,4 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         )
 
         assert db.session.query(offerers_models.NonPaymentNotice).count() == 0
+        assert db.session.query(history_models.ActionHistory).count() == 0
