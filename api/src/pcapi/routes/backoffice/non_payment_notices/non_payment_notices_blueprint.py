@@ -99,14 +99,15 @@ def create_non_payment_notice() -> utils.BackofficeResponse:
             venueId=int(form.venue.data[0]) if form.venue.data[0] else None,
         )
         db.session.add(notice)
-        if notice.venue or notice.offerer:
-            history_api.add_action(
-                history_models.ActionType.NON_PAYMENT_NOTICE_CREATED,
-                author=current_user,
-                venue=notice.venue,
-                offerer=notice.offerer,
-            )
+        history_api.add_action(
+            history_models.ActionType.NON_PAYMENT_NOTICE_CREATED,
+            author=current_user,
+            notice=notice,
+            venue=notice.venue,
+            offerer=notice.offerer,
+        )
         db.session.flush()
+
         flash("L'avis d'impayé a été créé", "success")
 
     except sa_exc.IntegrityError as err:
