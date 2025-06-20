@@ -10,11 +10,12 @@ import strokeWarningIcon from 'icons/stroke-warning.svg'
 
 const OFFER_STATUS_PROPERTIES: Record<
   string,
-  {
-    variant: TagVariant
-    icon: string
-    label: string
-  }
+  | {
+      variant: TagVariant
+      icon: string
+      label: string
+    }
+  | undefined
 > = {
   [OfferStatus.EXPIRED]: {
     variant: TagVariant.ERROR,
@@ -51,6 +52,16 @@ const OFFER_STATUS_PROPERTIES: Record<
     icon: fullHideIcon,
     label: 'en pause',
   },
+  [OfferStatus.SCHEDULED]: {
+    variant: TagVariant.WARNING,
+    icon: fullHideIcon,
+    label: 'programmée',
+  },
+  [OfferStatus.PUBLISHED]: {
+    variant: TagVariant.WARNING,
+    icon: fullHideIcon,
+    label: 'publiée non réservable',
+  },
 }
 
 type StatusLabelProps = {
@@ -60,8 +71,8 @@ type StatusLabelProps = {
 export const StatusLabel = ({ status }: StatusLabelProps) => {
   return (
     <Tag
-      label={OFFER_STATUS_PROPERTIES[status].label}
-      variant={OFFER_STATUS_PROPERTIES[status].variant}
+      label={OFFER_STATUS_PROPERTIES[status]?.label || status}
+      variant={OFFER_STATUS_PROPERTIES[status]?.variant || TagVariant.DEFAULT}
     />
   )
 }

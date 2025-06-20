@@ -38,4 +38,12 @@ describe('StatusLabel', () => {
     renderStatusLabel(OfferStatus.SOLD_OUT)
     expect(screen.getByText('épuisée')).toBeInTheDocument()
   })
+  it('should display "programmée" if offer is scheduled', () => {
+    renderStatusLabel(OfferStatus.SCHEDULED)
+    expect(screen.getByText('épuisée')).toBeInTheDocument()
+  })
+  it('should display "épuisée" if offer is published', () => {
+    renderStatusLabel(OfferStatus.PUBLISHED)
+    expect(screen.getByText('publiée non réservable')).toBeInTheDocument()
+  })
 })
