@@ -2,7 +2,6 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
@@ -210,12 +209,12 @@ describe('route CollectiveOffers', () => {
       await renderOffers()
 
       await userEvent.click(
-        screen.getByText('Statut', {
-          selector: 'label',
+        screen.getByRole('button', {
+          name: 'Statut',
         })
       )
-      const list = screen.getByTestId('list')
-      await userEvent.click(within(list).getByText('Réservée'))
+
+      await userEvent.click(screen.getByText('Réservée'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
@@ -232,14 +231,14 @@ describe('route CollectiveOffers', () => {
       await renderOffers()
 
       await userEvent.click(
-        screen.getByText('Statut', {
-          selector: 'label',
+        screen.getByRole('button', {
+          name: 'Statut',
         })
       )
-      const list = screen.getByTestId('list')
-      await userEvent.click(within(list).getByText('Réservée'))
-      await userEvent.click(within(list).getByText('En instruction'))
-      await userEvent.click(within(list).getByText('Archivée'))
+
+      await userEvent.click(screen.getByText('Réservée'))
+      await userEvent.click(screen.getByText('En instruction'))
+      await userEvent.click(screen.getByText('Archivée'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
