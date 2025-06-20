@@ -9,7 +9,7 @@ const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: StockEventFormHiddenValues = {
 export const STOCK_EVENT_FORM_DEFAULT_VALUES: StockEventFormValues = {
   beginningDate: '',
   beginningTime: '',
-  remainingQuantity: '',
+  remainingQuantity: null,
   bookingsQuantity: 0,
   bookingLimitDatetime: '',
   priceCategoryId: '',

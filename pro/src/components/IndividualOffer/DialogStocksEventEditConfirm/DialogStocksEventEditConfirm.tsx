@@ -1,7 +1,7 @@
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 
 interface DialogStocksEventEditConfirmProps {
-  onConfirm: () => void
+  onConfirm: () => Promise<void>
   onCancel: () => void
   isDialogOpen: boolean
 }
@@ -14,7 +14,10 @@ export const DialogStocksEventEditConfirm = ({
   return (
     <ConfirmDialog
       onCancel={onCancel}
-      onConfirm={onConfirm}
+      onConfirm={async () => {
+        await onConfirm()
+        return
+      }}
       title="Des réservations sont en cours pour cette offre"
       confirmText="Confirmer les modifications"
       cancelText="Annuler"
