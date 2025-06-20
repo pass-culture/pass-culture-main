@@ -5,5 +5,5 @@ export const validationSchema = yup.object().shape({
   institution: yup
     .string()
     .required('Veuillez sélectionner un établissement scolaire dans la liste'),
-  'search-institution': yup.string(),
+  teacher: yup.string(),
 })

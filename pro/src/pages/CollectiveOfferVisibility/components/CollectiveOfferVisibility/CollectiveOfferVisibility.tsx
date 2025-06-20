@@ -1,6 +1,8 @@
-import { FormikProvider, useFormik } from 'formik'
-import { useMemo, useState } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useMemo, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
+import { InferType } from 'yup'
 
 import { api } from 'apiClient/api'
 import {
@@ -10,11 +12,7 @@ import {
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import {
-  isCollectiveOffer,
-  Mode,
-  VisibilityFormValues,
-} from 'commons/core/OfferEducational/types'
+import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
@@ -39,7 +37,7 @@ import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavin
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferVisibility.module.scss'
@@ -76,6 +74,8 @@ interface TeacherOption extends SelectOption {
   gender?: string | null
   email: string
 }
+
+export type VisibilityFormValues = InferType<typeof validationSchema>
 
 export const CollectiveOfferVisibilityScreen = ({
   mode,
@@ -147,8 +147,8 @@ export const CollectiveOfferVisibilityScreen = ({
         payload: collectiveOffer,
       })
 
-      formik.resetForm({
-        values: extractInitialVisibilityValues(collectiveOffer.institution),
+      reset({
+        ...extractInitialVisibilityValues(collectiveOffer.institution),
       })
       setButtonPressed(false)
     } catch {
@@ -157,46 +157,103 @@ export const CollectiveOfferVisibilityScreen = ({
     }
   }
 
-  initialValues = requestInformations
-    ? {
+  const finalInitialValues = useMemo(() => {
+    if (mode === Mode.EDITION && requestInformations) {
+      return {
         ...extractInitialVisibilityValues(null, null, requestInformations),
         institution:
           institutionsOptions
             .find(
-              (option) =>
-                option.institutionId ===
+              (opt) =>
+                opt.institutionId ===
                 requestInformations.institution.institutionId
             )
             ?.value.toString() || '',
       }
-    : initialValues
+    }
+    return initialValues
+  }, [mode, requestInformations, institutionsOptions, initialValues])
 
-  const formik = useFormik<VisibilityFormValues>({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    enableReinitialize: true,
+  const form = useForm<VisibilityFormValues>({
+    defaultValues: finalInitialValues,
+    resolver: yupResolver(validationSchema),
   })
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { isDirty, isSubmitting },
+  } = form
+
+  useEffect(() => {
+    const fetchInitialTeacher = async () => {
+      if (
+        mode === Mode.EDITION &&
+        requestInformations?.redactor.email &&
+        requestInformations.institution.institutionId
+      ) {
+        try {
+          const payload = await api.getAutocompleteEducationalRedactorsForUai(
+            requestInformations.institution.institutionId,
+            requestInformations.redactor.lastName ?? ''
+          )
+
+          setTeachersOptions(
+            payload.map(({ name, surname, gender, email }) => ({
+              label: `${surname} ${name}`.trim(),
+              value: email,
+              surname,
+              name,
+              gender,
+              email,
+            }))
+          )
+
+          setValue('teacher', requestInformations.redactor.email)
+        } catch {
+          notify.error(GET_DATA_ERROR_MESSAGE)
+        }
+      }
+    }
+
+    void fetchInitialTeacher()
+  }, [mode, requestInformations, setValue, notify])
+
+  useEffect(() => {
+    if (!requestInformations || institutionsOptions.length === 0) {
+      return
+    }
+    const institution = institutionsOptions.find(
+      (opt) =>
+        opt.institutionId === requestInformations.institution.institutionId
+    )
+    if (institution) {
+      reset({
+        institution: institution.value.toString(),
+        teacher: requestInformations.redactor.email,
+      })
+    }
+  }, [requestInformations, institutionsOptions, reset])
 
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
-    : (teachersOptions.find(
-        (teacher) => teacher.value === formik.values.teacher
-      ) ?? null)
+    : (teachersOptions.find((teacher) => teacher.value === watch('teacher')) ??
+      null)
+
+  const watchedInstitution = watch('institution').trim().toLowerCase()
 
   const selectedInstitution: InstitutionOption | null = requestId
     ? institutionsOptions.filter(({ label }) =>
-        label
-          .toLowerCase()
-          .includes(formik.values['search-institution'].trim().toLowerCase())
+        label.toLowerCase().includes(watchedInstitution)
       )[0]
     : (institutionsOptions.find(
-        (institution) => institution.value === formik.values.institution
+        (institution) => institution.value === watchedInstitution
       ) ?? null)
 
-  const onChangeTeacher = async () => {
-    const searchTeacherValue = formik.values['search-teacher']?.trim()
-
+  const onChangeTeacher = async (searchTeacherValue: string) => {
     if (
       !searchTeacherValue ||
       searchTeacherValue.length < 3 ||
@@ -232,7 +289,6 @@ export const CollectiveOfferVisibilityScreen = ({
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
-
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -243,8 +299,8 @@ export const CollectiveOfferVisibilityScreen = ({
         mode={mode}
       />
 
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
             {isCollectiveOffer(offer) && offer.isPublicApi && (
               <BannerPublicApi className={styles['banner-space']}>
@@ -262,45 +318,62 @@ export const CollectiveOfferVisibilityScreen = ({
                   <Spinner />
                 ) : (
                   <>
-                    <SelectAutocomplete
+                    {/* <Controller
                       name="institution"
+                      control={control}
+                      render={({ field }) => ( */}
+                    <SelectAutocomplete
+                      {...register('institution')}
                       options={institutionsOptions}
                       label="Nom de l’établissement scolaire ou code UAI"
                       description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                       hideArrow
-                      onReset={async () => {
+                      onChange={() => {
+                        console.log('onChange')
+                        // field.onChange(e)
                         setTeachersOptions([])
-                        await formik.setFieldValue('search-teacher', '')
+                        setValue('teacher', '')
                       }}
-                      onSearch={async () => {
-                        if (formik.dirty) {
-                          await formik.setFieldValue('institution', '')
-                          await formik.setFieldValue('search-teacher', '')
-                        }
-                      }}
-                      resetOnOpen={false}
+                      // resetOnOpen={false}
                       disabled={!canEditInstitution}
+                      onReset={() => {
+                        setTeachersOptions([])
+                        setValue('teacher', '')
+                      }}
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
+                      onSearch={(value) => {
+                        console.log(value)
+                        setValue('institution', value)
+                        setValue('teacher', '')
+                      }}
                     />
+                    {/* )}
+                    /> */}
                   </>
                 )}
               </FormLayout.Row>
 
               <FormLayout.Row className={styles['row-layout']}>
                 <SelectAutocomplete
-                  name="teacher"
+                  {...register('teacher')}
+                  value={watch('teacher')}
                   options={teachersOptions}
                   label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                   isOptional
                   description="Ex: Camille Dupont"
                   hideArrow
-                  disabled={!canEditInstitution || !selectedInstitution}
-                  onSearch={async () => {
-                    await onChangeTeacher()
+                  disabled={!canEditInstitution || !watch('institution')}
+                  onSearch={onChangeTeacher}
+                  // resetOnOpen={false}
+                  onReset={() => {
+                    setTeachersOptions([])
+                    setValue('teacher', '')
                   }}
-                  resetOnOpen={false}
+                  // onChange={(e) => {
+                  //   field.onChange(e)
+                  // }}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -319,13 +392,11 @@ export const CollectiveOfferVisibilityScreen = ({
                   {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
                 </ButtonLink>
               </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>
+              <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
                 <Button
                   type="submit"
                   disabled={
-                    buttonPressed ||
-                    !formik.values.institution ||
-                    !canEditInstitution
+                    buttonPressed || !watchedInstitution || !canEditInstitution
                   }
                 >
                   Enregistrer et continuer
@@ -334,9 +405,9 @@ export const CollectiveOfferVisibilityScreen = ({
             </ActionsBarSticky>
           </FormLayout>
         </form>
-      </FormikProvider>
+      </FormProvider>
       <RouteLeavingGuardCollectiveOfferCreation
-        when={formik.dirty && !formik.isSubmitting}
+        when={isDirty && !isSubmitting}
       />
     </>
   )
