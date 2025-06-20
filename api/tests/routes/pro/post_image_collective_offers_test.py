@@ -70,7 +70,7 @@ class AttachCollectiveOfferImageTest:
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is False
 
     def test_attach_image_ended(self, client):
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         auth_client = client.with_session_auth(email="user@example.com")

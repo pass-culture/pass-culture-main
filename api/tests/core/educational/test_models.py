@@ -719,7 +719,7 @@ class CollectiveOfferAllowedActionsTest:
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 
     def test_get_ended_offer_allowed_actions(self):
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [
@@ -748,9 +748,7 @@ class CollectiveOfferAllowedActionsTest:
         }
 
     def test_get_offer_ended_allowed_actions_public_api(self):
-        offer = factories.EndedCollectiveOfferFactory(
-            booking_is_confirmed=True, provider=providers_factories.ProviderFactory()
-        )
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory(provider=providers_factories.ProviderFactory())
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActions == [
@@ -810,9 +808,7 @@ class CollectiveOfferAllowedActionsTest:
         assert offer.allowedActionsForPublicApi == []
 
     def test_get_ended_offer_allowed_actions_for_public_api(self):
-        offer = factories.EndedCollectiveOfferFactory(
-            booking_is_confirmed=True, provider=providers_factories.ProviderFactory()
-        )
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory(provider=providers_factories.ProviderFactory())
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
         assert offer.allowedActionsForPublicApi == [

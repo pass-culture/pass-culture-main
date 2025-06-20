@@ -202,7 +202,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True, venue=venue)
+        offer = educational_factories.EndedCollectiveOfferConfirmedBookingFactory(venue=venue)
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer.id}/duplicate")
 

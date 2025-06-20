@@ -87,7 +87,7 @@ class DeleteImageFromFileTest:
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
 
     def test_delete_image_ended(self, client):
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")

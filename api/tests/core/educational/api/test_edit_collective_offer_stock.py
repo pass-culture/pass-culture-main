@@ -284,7 +284,7 @@ class EditCollectiveOfferStocksTest:
         assert offer.collectiveStock.numberOfTickets == 1200
 
     def test_can_lower_price_and_edit_price_details_ended(self):
-        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = educational_factories.EndedCollectiveOfferConfirmedBookingFactory()
 
         new_price = offer.collectiveStock.price - 100
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
@@ -365,7 +365,7 @@ class ReturnErrorTest:
             )
 
     def test_cannot_increase_price_ended(self):
-        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = educational_factories.EndedCollectiveOfferConfirmedBookingFactory()
         price = offer.collectiveStock.price
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
 
@@ -392,7 +392,7 @@ class ReturnErrorTest:
                 )
 
     def test_cannot_edit_dates_ended(self):
-        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = educational_factories.EndedCollectiveOfferConfirmedBookingFactory()
 
         new_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
         for date_field in ("bookingLimitDatetime", "startDatetime", "endDatetime"):

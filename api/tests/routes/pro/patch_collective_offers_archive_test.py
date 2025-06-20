@@ -85,7 +85,7 @@ class Returns204Test:
         assert offer.isActive == offer_was_active
 
     def test_archive_offer_ended(self, client):
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
         venue = offer.venue
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
