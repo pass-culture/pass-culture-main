@@ -1219,6 +1219,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         connect_as=connect_as,
         allowed_actions=allowed_actions,
         action=OfferDetailsActionType,
+        music_titelive_subcategories=subcategories.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS,
     )
 
 
