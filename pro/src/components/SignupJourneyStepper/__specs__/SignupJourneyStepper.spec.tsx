@@ -10,8 +10,10 @@ import {
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
+import {
+  DEFAULT_ADDRESS_FORM_VALUES,
+  DEFAULT_OFFERER_FORM_VALUES,
+} from 'components/SignupJourneyForm/Offerer/constants'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 

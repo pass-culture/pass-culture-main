@@ -44,7 +44,6 @@ export const VenueSettingsForm = ({
 }: VenueFormProps) => {
   const methods = useFormContext<VenueSettingsFormValues>()
   const {
-    getValues,
     register,
     setValue,
     watch,
@@ -79,7 +78,7 @@ export const VenueSettingsForm = ({
           {!venue.isVirtual && (
             <FormLayout.Row>
               <SiretOrCommentFields
-                initialSiret={getValues('siret')}
+                initialSiret={watch('siret')}
                 siren={offerer.siren}
               />
             </FormLayout.Row>

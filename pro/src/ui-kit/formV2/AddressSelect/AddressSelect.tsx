@@ -6,13 +6,12 @@ import { getDataFromAddress } from 'apiClient/api'
 import { SelectOption } from 'commons/custom_types/form'
 import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOptions'
 import {
-  DEBOUNCE_TIME_BEFORE_REQUEST,
-  DEFAULT_SUGGESTION_LIMIT,
-} from 'components/Address/constants'
-import {
   type CustomEvent,
   SelectAutocomplete,
 } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
+
+const DEBOUNCE_TIME_BEFORE_REQUEST = 400
+const DEFAULT_SUGGESTION_LIMIT = 5
 
 export type AddressSelectProps = {
   /** Name of the field, used for form submission and accessibility */

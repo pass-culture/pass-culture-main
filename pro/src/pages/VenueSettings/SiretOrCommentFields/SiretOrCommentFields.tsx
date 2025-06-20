@@ -1,10 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
-import { getDataFromAddress } from 'apiClient/adresse/apiAdresse'
+import { getDataFromAddress } from 'apiClient/api'
 import { getSiretData } from 'commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
-import { handleAddressSelect } from 'commons/utils/handleAddressSelect'
-import { serializeAdressData } from 'components/Address/serializer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
 import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
@@ -58,10 +56,14 @@ export const SiretOrCommentFields = ({
       setValue('name', response.values?.name ?? '')
       // getSuggestions pour récupérer les adresses
       const addressSuggestions = await getDataFromAddress(address)
-      setValue('search-addressAutocomplete', address)
-      setValue('addressAutocomplete', address)
 
-      handleAddressSelect(setValue, serializeAdressData(addressSuggestions)[0])
+      setValue('addressAutocomplete', address)
+      setValue('street', addressSuggestions[0]?.address ?? '')
+      setValue('postalCode', addressSuggestions[0]?.postalCode ?? '')
+      setValue('city', addressSuggestions[0]?.city ?? '')
+      setValue('latitude', addressSuggestions[0]?.latitude.toString() ?? '')
+      setValue('longitude', addressSuggestions[0]?.longitude.toString() ?? '')
+      setValue('inseeCode', addressSuggestions[0]?.inseeCode ?? '')
     } catch {
       return
     }
