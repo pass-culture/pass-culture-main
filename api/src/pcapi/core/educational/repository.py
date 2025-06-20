@@ -1402,7 +1402,7 @@ def get_collective_offer_templates_for_playlist_query(
         sa_orm.joinedload(educational_models.CollectivePlaylist.venue).joinedload(
             offerers_models.Venue.googlePlacesInfo
         ),
-    )
+    ).populate_existing()
     return query
 
 
@@ -1723,6 +1723,7 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
             *_get_collective_offer_template_address_joinedload_with_expression(),
         )
         .filter(educational_models.EducationalRedactor.id == redactor_id)
+        .populate_existing()
         .all()
     )
 
