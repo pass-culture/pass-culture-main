@@ -657,6 +657,9 @@ class DeleteProUserTest(PostEndpointHelper):
     ):
         user = users_factories.BeneficiaryFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
         history_factories.SuspendedUserActionHistoryFactory(user=user)
+        uaur_id = users_factories.UserAccountUpdateRequestFactory(
+            user=user, updateTypes=[users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]
+        ).id
         user_id = user.id
         deposit_id = user.deposits[0].id
         beneficiary_fraud_check_id = user.beneficiaryFraudChecks[0].id
@@ -683,4 +686,11 @@ class DeleteProUserTest(PostEndpointHelper):
             .filter(history_models.ActionHistory.userId == user_id)
             .count()
             == 0
+        )
+        assert (
+            db.session.query(users_models.UserAccountUpdateRequest)
+            .filter(users_models.UserAccountUpdateRequest.id == uaur_id)
+            .one()
+            .userId
+            is None
         )

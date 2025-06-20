@@ -1021,7 +1021,7 @@ class UserAccountUpdateRequest(PcObject, Base, Model):
     email: str = sa.Column(sa.Text, nullable=False)
     birthDate = sa.Column(sa.Date, nullable=True)
     # User found from his/her email - may be null in case of wrong email
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], backref="accountUpdateRequests")
     # One or several changes may be requested
     updateTypes: sa_orm.Mapped[list[UserAccountUpdateType]] = sa.Column(
