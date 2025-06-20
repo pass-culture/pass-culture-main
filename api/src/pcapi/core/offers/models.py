@@ -1174,25 +1174,20 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
             (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
+            # TODO: (tcoudray-pass, 20/06/25) Replace with `cls.publicationDatetime.is_(None)` when `publicationDatetime` has been migrated
+            ((cls.isActive.is_(False)), OfferStatus.INACTIVE.name),
+            (
+                # TODO: (tcoudray-pass, 20/06/25) Remove `cls.publicationDatetime.is_not(None)` when `publicationDatetime` has been migrated
+                cls.publicationDatetime.is_not(None) & (cls.publicationDatetime > sa.func.now()),
+                OfferStatus.SCHEDULED.name,
+            ),
+            (
+                cls.bookingAllowedDatetime.is_not(None) & (cls.bookingAllowedDatetime > sa.func.now()),
+                OfferStatus.PUBLISHED.name,
+            ),
+            (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
+            (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
         ]
-
-        if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
-            cases += [
-                (cls.publicationDatetime.is_(None), OfferStatus.INACTIVE.name),
-                (cls.publicationDatetime > sa.func.now(), OfferStatus.SCHEDULED.name),
-                (
-                    cls.bookingAllowedDatetime.is_not(None) & (cls.bookingAllowedDatetime > sa.func.now()),
-                    OfferStatus.PUBLISHED.name,
-                ),
-                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
-                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
-            ]
-        else:
-            cases += [
-                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
-                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
-                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
-            ]
 
         return sa.case(*cases, else_=OfferStatus.ACTIVE.name)
 

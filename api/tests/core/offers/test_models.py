@@ -390,6 +390,7 @@ class NewOfferStatusTest:
 
         assert inactive_offer.status == offer_mixin.OfferStatus.INACTIVE
 
+    @pytest.mark.skip(reason="We must wait for `publicationDatetime` migration to implement this new behaviour")
     def test_expression_inactive(self):
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         inactive_offer = factories.OfferFactory(

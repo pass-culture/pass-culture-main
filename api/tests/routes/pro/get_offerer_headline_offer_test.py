@@ -17,7 +17,6 @@ class Return200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer exists
     num_queries += 1  # select offer that is headline
-    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_get_offerer_headline_offer_success(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -69,7 +68,6 @@ class Return400Test:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer
     num_queries += 1  # get headline offer
-    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
     num_queries += 1  # rollback (atomic)
 
     def test_access_by_unauthorized_pro_user(self, client):
@@ -77,7 +75,7 @@ class Return400Test:
         offerer = offerers_factories.OffererFactory()
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        with assert_num_queries(self.num_queries - 2):  # unauthorized, so no query to headline offer made
+        with assert_num_queries(self.num_queries - 1):  # unauthorized, so no query to headline offer made
             response = client.get(f"/offerers/{offerer_id}/headline-offer")
             assert response.status_code == 403
 
