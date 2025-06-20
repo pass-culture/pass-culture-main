@@ -426,7 +426,7 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
         offers_future_query = query.join(models.Offer.futureOffer)
         for offer in offers_future_query:
-            reminders_notifications.notify_users_future_offer_activated(offer)
+            reminders_notifications.notify_users_offer_is_bookable(offer)
 
     offers_api.batch_update_offers(query, {"isActive": body.is_active})
 

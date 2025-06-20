@@ -28,7 +28,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
     if is_active:
         individual_offer_future_query = individual_offer_query.join(models.Offer.futureOffer)
         for offer in individual_offer_future_query:
-            reminders_notifications.notify_users_future_offer_activated(offer)
+            reminders_notifications.notify_users_offer_is_bookable(offer)
 
     offers_api.batch_update_offers(individual_offer_query, {"isActive": is_active})
 

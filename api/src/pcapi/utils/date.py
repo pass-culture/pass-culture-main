@@ -283,3 +283,8 @@ def format_offset(off: timedelta | None, sep: str = ":") -> str:
             if ss.microseconds:
                 s += ".%06d" % ss.microseconds
     return s
+
+
+def get_naive_utc_now() -> datetime:
+    """To replace deprecated `datetime.utcnow()`"""
+    return datetime.now(tz.utc).replace(tzinfo=None)

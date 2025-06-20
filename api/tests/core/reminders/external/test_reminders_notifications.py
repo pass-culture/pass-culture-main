@@ -5,15 +5,15 @@ import pytest
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.reminders import factories
 from pcapi.core.reminders import models
-from pcapi.core.reminders.external.reminders_notifications import notify_users_future_offer_activated
+from pcapi.core.reminders.external.reminders_notifications import notify_users_offer_is_bookable
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 
 
 @pytest.mark.usefixtures("db_session")
-class NotifyUsersFutureOfferActivatedTest:
-    def test_notify_users_future_offer_activated(self):
+class NotifyUsersOfferIsBookableTest:
+    def test_notify_users_offer_is_bookable(self):
         user_1 = users_factories.UserFactory()
         user_2 = users_factories.UserFactory()
         user_3 = users_factories.UserFactory()
@@ -25,7 +25,7 @@ class NotifyUsersFutureOfferActivatedTest:
         factories.OfferReminderFactory(offer=offer, user=user_2)
         factories.OfferReminderFactory(offer=offer_2, user=user_3)
 
-        notify_users_future_offer_activated(offer)
+        notify_users_offer_is_bookable(offer)
 
         expected_push_counts = 1  # for trigger event future offer activated
         assert len(push_testing.requests) == expected_push_counts
@@ -73,8 +73,9 @@ class NotifyUsersFutureOfferActivatedTest:
 
         factories.OfferReminderFactory(offer=offer_2, user=user_1)
 
-        with caplog.at_level(logging.WARNING):
-            notify_users_future_offer_activated(offer)
+        with caplog.at_level(logging.INFO):
+            notify_users_offer_is_bookable(offer)
 
         assert len(push_testing.requests) == 0
-        assert caplog.records[0].message == "No users found"
+        assert caplog.records[0].message == "[Offer bookable] No users to notify"
+        assert caplog.records[0].extra == {"offerId": offer.id}
