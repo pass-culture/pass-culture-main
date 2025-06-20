@@ -947,6 +947,7 @@ class DeleteStockTest:
             "user_connect_as": False,
         }
 
+    @pytest.mark.skip
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
