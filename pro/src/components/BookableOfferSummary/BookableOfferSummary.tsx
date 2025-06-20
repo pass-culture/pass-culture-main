@@ -1,19 +1,28 @@
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
+import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstititutionDetails'
+
+import styles from './BookingOfferSummary.module.scss'
 
 export type BookableOfferSummaryProps = {
   offer: GetCollectiveOfferResponseModel
 }
 
 export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
+  const { institution } = offer
+
   return (
     <Layout layout={'sticky-actions'}>
-      <div>
-        <p>
-          Nouveau composant de recap pour une offre réservable : Work in
-          progress
-        </p>
-        <p>{offer.name}</p>
+      <div className={styles['container']}>
+        <div>
+          <p>
+            Nouveau composant de recap pour une offre réservable : Work in
+            progress
+          </p>
+          <p>{offer.name}</p>
+        </div>
+        {/* FIXME: this should be offer.booking.educationalRedactor instead of null*/}
+        {institution && <EducationalInstitutionDetails educationalInstitution={institution} educationalRedactor={null} newLayout />}
       </div>
     </Layout>
   )
