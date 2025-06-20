@@ -9,16 +9,16 @@ export const computeInitialValues = (
   days: [],
   startingDate: '',
   endingDate: '',
-  beginningTimes: [''],
+  beginningTimes: [{ beginningTime: '' }],
   quantityPerPriceCategories: [
     {
-      quantity: '',
+      quantity: undefined,
       priceCategory:
         priceCategoryOptions.length === 1
           ? String(priceCategoryOptions[0].value)
           : '',
     },
   ],
-  bookingLimitDateInterval: '',
+  bookingLimitDateInterval: null,
   monthlyOption: null,
 })

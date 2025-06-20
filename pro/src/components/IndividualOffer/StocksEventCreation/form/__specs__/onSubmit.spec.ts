@@ -43,10 +43,13 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2020-03-03',
         endingDate: '',
-        beginningTimes: ['10:00', '10:30'],
+        beginningTimes: [
+          { beginningTime: '10:00' },
+          { beginningTime: '10:30' },
+        ],
         quantityPerPriceCategories: [
           { quantity: 5, priceCategory: '1' },
-          { quantity: '', priceCategory: '2' },
+          { priceCategory: '2' },
         ],
         bookingLimitDateInterval: 2,
         monthlyOption: null,
@@ -86,7 +89,7 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2020-03-03',
         endingDate: '2020-03-06',
-        beginningTimes: ['10:00:00'],
+        beginningTimes: [{ beginningTime: '10:00:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: null,
@@ -126,7 +129,7 @@ describe('onSubmit', () => {
         days: [RecurrenceDays.SATURDAY, RecurrenceDays.SUNDAY],
         startingDate: '2020-03-03',
         endingDate: '2020-03-20',
-        beginningTimes: ['10:00'],
+        beginningTimes: [{ beginningTime: '10:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: null,
@@ -167,7 +170,7 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2020-03-03',
         endingDate: '2020-06-20',
-        beginningTimes: ['10:00'],
+        beginningTimes: [{ beginningTime: '10:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: MonthlyOption.X_OF_MONTH,
@@ -207,7 +210,7 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2020-03-31',
         endingDate: '2020-06-20',
-        beginningTimes: ['10:00'],
+        beginningTimes: [{ beginningTime: '10:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: MonthlyOption.X_OF_MONTH,
@@ -237,7 +240,7 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2020-03-03',
         endingDate: '2020-06-20',
-        beginningTimes: ['10:00'],
+        beginningTimes: [{ beginningTime: '10:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: MonthlyOption.BY_FIRST_DAY,
@@ -278,7 +281,7 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2020-03-31',
         endingDate: '2020-10-20',
-        beginningTimes: ['10:00'],
+        beginningTimes: [{ beginningTime: '10:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: MonthlyOption.BY_FIRST_DAY,
@@ -312,7 +315,7 @@ describe('onSubmit', () => {
         days: [],
         startingDate: '2023-03-31',
         endingDate: '2023-06-20',
-        beginningTimes: ['10:00'],
+        beginningTimes: [{ beginningTime: '10:00' }],
         quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
         bookingLimitDateInterval: 2,
         monthlyOption: MonthlyOption.BY_LAST_DAY,
@@ -376,13 +379,15 @@ describe('onSubmit', () => {
       days: [],
       startingDate: '2020-03-03',
       endingDate: '2023-07-20',
-      beginningTimes: ['08:00'],
+      beginningTimes: [{ beginningTime: '08:00' }],
       quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
       bookingLimitDateInterval: 2,
       monthlyOption: MonthlyOption.BY_FIRST_DAY,
     }
 
-    vi.spyOn(api, 'bulkCreateEventStocks').mockRejectedValueOnce({ stocks: ['Erreur'] })
+    vi.spyOn(api, 'bulkCreateEventStocks').mockRejectedValueOnce({
+      stocks: ['Erreur'],
+    })
 
     const result = await onSubmit(formValues, '75', 66, notify)
 

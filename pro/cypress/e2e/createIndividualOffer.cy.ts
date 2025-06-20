@@ -131,19 +131,15 @@ describe('Create individual offers', { testIsolation: false }, () => {
       cy.findByLabelText('Tarif *').select('0,00\xa0€ - Fosse Sceptique')
     })
 
-    cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
-      // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Nombre de places').type('100')
-    })
+    cy.findAllByLabelText('Nombre de places').eq(0).type('100')
+
     cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
       // trouve la euxième liste déroulante avec le label:
       cy.findByLabelText('Tarif *').select('10,00\xa0€ - Fosse Debout')
     })
 
-    cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
-      // trouve le troisième champ avec le label:
-      cy.findByLabelText('Nombre de places').type('20')
-    })
+    cy.findAllByLabelText('Nombre de places').eq(1).type('20')
+
     cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
       // trouve la troisième liste déroulante avec le label:
       cy.findByLabelText('Tarif *').select('100,00\xa0€ - Carré Or')
