@@ -317,7 +317,7 @@ class ReindexVenueIdsTest:
         venue1 = offerers_factories.VenueFactory(isPermanent=False)
         venue2 = offerers_factories.VenueFactory(isPermanent=True, managingOfferer__isActive=False)
         venue3 = offerers_factories.VenueFactory(
-            isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE
+            isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.OTHER
         )
 
         search_testing.search_store["venues"][indexable_venue.id] = "dummy"

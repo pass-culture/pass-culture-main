@@ -365,7 +365,7 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     isVirtual: false,
     name: 'Mon super lieu',
     id: 1,
-    venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
+    venueTypeCode: VenueTypeCode.AUTRE,
     hasVenueProviders: false,
     isPermanent: true,
     bannerUrl: null,

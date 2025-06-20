@@ -9484,7 +9484,6 @@
             "VenueTypeEnum": {
                 "description": "An enumeration.",
                 "enum": [
-                    "ADMINISTRATIVE",
                     "ARTISTIC_COURSE",
                     "BOOKSTORE",
                     "CONCERT_HALL",
