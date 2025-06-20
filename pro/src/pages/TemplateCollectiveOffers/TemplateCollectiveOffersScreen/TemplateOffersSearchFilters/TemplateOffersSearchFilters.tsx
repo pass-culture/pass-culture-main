@@ -1,11 +1,6 @@
-import { FormikProvider, useFormik } from 'formik'
-import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import {
-  CollectiveOfferDisplayedStatus,
-  EacFormat,
-  GetOffererResponseModel,
-} from 'apiClient/v1'
+import { EacFormat, GetOffererResponseModel } from 'apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
@@ -17,7 +12,6 @@ import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/Offe
 import styles from 'components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 interface TemplateOffersSearchFiltersProps {
@@ -31,35 +25,38 @@ interface TemplateOffersSearchFiltersProps {
   venues: SelectOption[]
 }
 
-const collectiveFilterStatus = [
-  {
-    label: 'En instruction',
-    value: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-  },
-  {
-    label: 'Non conforme',
-    value: CollectiveOfferDisplayedStatus.REJECTED,
-  },
-  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.PUBLISHED },
-  {
-    label: 'En pause',
-    value: CollectiveOfferDisplayedStatus.HIDDEN,
-  },
-  { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
-  {
-    label: 'Brouillon',
-    value: CollectiveOfferDisplayedStatus.DRAFT,
-  },
-  {
-    label: 'Terminée',
-    value: CollectiveOfferDisplayedStatus.ENDED,
-  },
-]
+// const collectiveFilterStatus = [
+//   {
+//     label: 'En instruction',
+//     value: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+//   },
+//   {
+//     label: 'Non conforme',
+//     value: CollectiveOfferDisplayedStatus.REJECTED,
+//   },
+//   {
+//     label: 'Publiée sur ADAGE',
+//     value: CollectiveOfferDisplayedStatus.PUBLISHED,
+//   },
+//   {
+//     label: 'En pause',
+//     value: CollectiveOfferDisplayedStatus.HIDDEN,
+//   },
+//   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
+//   {
+//     label: 'Brouillon',
+//     value: CollectiveOfferDisplayedStatus.DRAFT,
+//   },
+//   {
+//     label: 'Terminée',
+//     value: CollectiveOfferDisplayedStatus.ENDED,
+//   },
+// ]
 
-type StatusFormValues = {
-  status: CollectiveOfferDisplayedStatus[]
-  'search-status': string
-}
+// type StatusFormValues = {
+//   status: CollectiveOfferDisplayedStatus[]
+//   'search-status': string
+// }
 
 export const TemplateOffersSearchFilters = ({
   hasFilters,
@@ -76,21 +73,21 @@ export const TemplateOffersSearchFilters = ({
     label: format,
   }))
 
-  const formik = useFormik<StatusFormValues>({
-    initialValues: {
-      status: Array.isArray(selectedFilters.status)
-        ? selectedFilters.status
-        : [selectedFilters.status],
-      'search-status': '',
-    },
-    onSubmit: () => {},
-  })
+  // const formik = useFormik<StatusFormValues>({
+  //   initialValues: {
+  //     status: Array.isArray(selectedFilters.status)
+  //       ? selectedFilters.status
+  //       : [selectedFilters.status],
+  //     'search-status': '',
+  //   },
+  //   onSubmit: () => {},
+  // })
 
   // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
-  useEffect(() => {
-    updateSearchFilters({ status: formik.values.status })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.status])
+  // useEffect(() => {
+  //   updateSearchFilters({ status: formik.values.status })
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values.status])
 
   const updateSearchFilters = (
     newSearchFilters: Partial<CollectiveSearchFiltersParams>
@@ -141,11 +138,11 @@ export const TemplateOffersSearchFilters = ({
     applyFilters(newSearchFilters)
   }
 
-  const resetCollectiveFilters = async () => {
-    await formik.setFieldValue(
-      'status',
-      DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
-    )
+  const resetCollectiveFilters = () => {
+    // await formik.setFieldValue(
+    //   'status',
+    //   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
+    // )
     resetFilters()
   }
 
@@ -197,7 +194,7 @@ export const TemplateOffersSearchFilters = ({
           periodEndingDate={selectedFilters.periodEndingDate}
         />
       </FieldLayout>
-      <FormikProvider value={formik}>
+      {/* <FormikProvider value={formik}>
         <SelectAutocomplete
           multi
           name="status"
@@ -206,7 +203,7 @@ export const TemplateOffersSearchFilters = ({
           isOptional
           disabled={disableAllFilters}
         />
-      </FormikProvider>
+      </FormikProvider> */}
     </OffersTableSearch>
   )
 }
