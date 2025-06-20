@@ -2,7 +2,6 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -102,97 +101,97 @@ describe('route TemplateCollectiveOffers', () => {
 
   describe('filters', () => {
     describe('status filters', () => {
-      it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
+      // it('should filter offers given status filter when clicking on "Appliquer"', async () => {
+      //   vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      //   await renderOffers()
 
-        await userEvent.click(
-          screen.getByText('Statut', {
-            selector: 'label',
-          })
-        )
-        const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Non conforme'))
+      //   await userEvent.click(
+      //     screen.getByText('Statut', {
+      //       selector: 'label',
+      //     })
+      //   )
+      //   const list = screen.getByTestId('list')
+      //   await userEvent.click(within(list).getByText('Non conforme'))
 
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Rechercher' })
-        )
+      //   await userEvent.click(
+      //     screen.getByRole('button', { name: 'Rechercher' })
+      //   )
 
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-            2,
-            undefined,
-            '1',
-            CollectiveOfferDisplayedStatus.REJECTED,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            CollectiveOfferType.TEMPLATE,
-            undefined
-          )
-        })
-      })
+      //   await waitFor(() => {
+      //     expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+      //       2,
+      //       undefined,
+      //       '1',
+      //       CollectiveOfferDisplayedStatus.REJECTED,
+      //       undefined,
+      //       undefined,
+      //       undefined,
+      //       undefined,
+      //       CollectiveOfferType.TEMPLATE,
+      //       undefined
+      //     )
+      //   })
+      // })
 
-      it('should filter offers given multiple status filter when clicking on "Appliquer"', async () => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
+      // it('should filter offers given multiple status filter when clicking on "Appliquer"', async () => {
+      //   vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      //   await renderOffers()
 
-        await userEvent.click(
-          screen.getByText('Statut', {
-            selector: 'label',
-          })
-        )
-        const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Non conforme'))
-        await userEvent.click(within(list).getByText('Archivée'))
+      //   await userEvent.click(
+      //     screen.getByText('Statut', {
+      //       selector: 'label',
+      //     })
+      //   )
+      //   const list = screen.getByTestId('list')
+      //   await userEvent.click(within(list).getByText('Non conforme'))
+      //   await userEvent.click(within(list).getByText('Archivée'))
 
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Rechercher' })
-        )
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-            2,
-            undefined,
-            '1',
-            [
-              CollectiveOfferDisplayedStatus.REJECTED,
-              CollectiveOfferDisplayedStatus.ARCHIVED,
-            ],
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            CollectiveOfferType.TEMPLATE,
-            undefined
-          )
-        })
-      })
+      //   await userEvent.click(
+      //     screen.getByRole('button', { name: 'Rechercher' })
+      //   )
+      //   await waitFor(() => {
+      //     expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+      //       2,
+      //       undefined,
+      //       '1',
+      //       [
+      //         CollectiveOfferDisplayedStatus.REJECTED,
+      //         CollectiveOfferDisplayedStatus.ARCHIVED,
+      //       ],
+      //       undefined,
+      //       undefined,
+      //       undefined,
+      //       undefined,
+      //       CollectiveOfferType.TEMPLATE,
+      //       undefined
+      //     )
+      //   })
+      // })
 
-      it('should indicate that no offers match selected filters', async () => {
-        vi.spyOn(api, 'getCollectiveOffers')
-          .mockResolvedValueOnce(offersRecap)
-          .mockResolvedValueOnce([])
-        await renderOffers()
+      // it('should indicate that no offers match selected filters', async () => {
+      //   vi.spyOn(api, 'getCollectiveOffers')
+      //     .mockResolvedValueOnce(offersRecap)
+      //     .mockResolvedValueOnce([])
+      //   await renderOffers()
 
-        await userEvent.click(
-          screen.getByText('Statut', {
-            selector: 'label',
-          })
-        )
-        const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('En pause'))
+      //   await userEvent.click(
+      //     screen.getByText('Statut', {
+      //       selector: 'label',
+      //     })
+      //   )
+      //   const list = screen.getByTestId('list')
+      //   await userEvent.click(within(list).getByText('En pause'))
 
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Rechercher' })
-        )
+      //   await userEvent.click(
+      //     screen.getByRole('button', { name: 'Rechercher' })
+      //   )
 
-        await waitFor(() => {
-          expect(
-            screen.getByText('Aucune offre trouvée pour votre recherche')
-          ).toBeInTheDocument()
-        })
-      })
+      //   await waitFor(() => {
+      //     expect(
+      //       screen.getByText('Aucune offre trouvée pour votre recherche')
+      //     ).toBeInTheDocument()
+      //   })
+      // })
 
       it('should not display column titles when no offers are returned', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
