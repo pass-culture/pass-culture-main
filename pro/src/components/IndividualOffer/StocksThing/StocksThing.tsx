@@ -36,7 +36,7 @@ import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
-import { useNotifyReactFormError } from '../hooks/useNotifyFormError'
+import { useNotifyFormError } from '../hooks/useNotifyFormError'
 import { getDepartmentCode } from '../utils/getDepartmentCode'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
@@ -170,7 +170,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     formState: { errors, isSubmitting, isDirty, defaultValues },
   } = hookForm
 
-  useNotifyReactFormError({
+  useNotifyFormError({
     isSubmitting,
     errors,
   })

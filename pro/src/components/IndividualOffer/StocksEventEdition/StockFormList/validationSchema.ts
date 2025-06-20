@@ -1,12 +1,18 @@
+import { format, isBefore, isValid, isEqual } from 'date-fns'
 import * as yup from 'yup'
+import { ObjectSchema } from 'yup'
 
 import { oneOfSelectOption } from 'commons/core/shared/utils/validation'
 import { SelectOption } from 'commons/custom_types/form'
-import { getToday, removeTime } from 'commons/utils/date'
+import { getToday, removeTime, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+import {
+  StocksEventFormValues,
+  StockEventFormValues,
+} from 'components/IndividualOffer/StocksEventEdition/StockFormList/types'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
 
 const isBeforeBeginningDate = (
-  bookingLimitDatetime: Date | undefined | null,
+  bookingLimitDatetime: string | undefined | null,
   context: yup.TestContext
 ) => {
   if (
@@ -16,56 +22,85 @@ const isBeforeBeginningDate = (
   ) {
     return true
   }
-  return bookingLimitDatetime <= context.parent.beginningDate
+
+  return (
+    isBefore(
+      new Date(bookingLimitDatetime),
+      new Date(context.parent.beginningDate)
+    ) ||
+    isEqual(
+      new Date(context.parent.beginningDate),
+      new Date(bookingLimitDatetime)
+    )
+  )
 }
 
 const getSingleValidationSchema = (
   priceCategoriesOptions?: SelectOption[]
-) => ({
-  beginningDate: yup
-    .date()
-    .nullable()
-    // A date field getting an empty string throws an error even if field is nullable or not required.
-    // https://github.com/jquense/yup/issues/764
-    .typeError('Veuillez renseigner une date')
-    .required('Veuillez renseigner une date')
-    .when(['readOnlyFields'], ([readOnlyFields], schema) => {
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (readOnlyFields.includes('beginningDate')) {
+): ObjectSchema<StockEventFormValues> => {
+  return yup.object().shape({
+    beginningDate: yup
+      .string()
+      .nullable()
+      // A date field getting an empty string throws an error even if field is nullable or not required.
+      // https://github.com/jquense/yup/issues/764
+      .typeError('Veuillez renseigner une date')
+      .required('Veuillez renseigner une date')
+      .when(['readOnlyFields'], ([readOnlyFields], schema) => {
+        /* istanbul ignore next: DEBT, TO FIX */
+        if (readOnlyFields.includes('beginningDate')) {
+          return schema
+        }
         return schema
-      }
-      return schema.min(removeTime(getToday()), 'L’évènement doit être à venir')
-    }),
-  beginningTime: yup
-    .string()
-    .nullable()
-    .required('Veuillez renseigner un horaire'),
-  priceCategoryId: oneOfSelectOption(
-    yup.string().required('Veuillez renseigner un tarif'),
-    priceCategoriesOptions ?? []
-  ),
-  bookingLimitDatetime: yup.date().nullable().test({
-    name: 'bookingLimitDatetime-before-beginningDate',
-    message: 'Veuillez renseigner une date antérieure à la date de l’évènement',
-    test: isBeforeBeginningDate,
-  }),
-  bookingsQuantity: yup.number(),
-  remainingQuantity: yup
-    .number()
-    .nullable()
-    .typeError('Doit être un nombre')
-    .min(0, 'Doit être positif')
-    .max(
-      MAX_STOCKS_QUANTITY,
-      'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
-    ),
-})
+          .test((v) => (v ? isValid(new Date(v)) : true))
+          .test(
+            'beginningDate-before-today',
+            'L’évènement doit être à venir',
+            (d: string) => {
+              return isBefore(removeTime(getToday()), new Date(d))
+            }
+          )
+      })
+      .transform((d) => format(d, FORMAT_ISO_DATE_ONLY)),
+    beginningTime: yup
+      .string()
+      .nullable()
+      .required('Veuillez renseigner un horaire'),
+    priceCategoryId: oneOfSelectOption(
+      yup.string().required('Veuillez renseigner un tarif'),
+      priceCategoriesOptions ?? []
+    ).required(),
+    bookingLimitDatetime: yup
+      .string()
+      .required()
+      .test(
+        'bookingLimitDatetime-before-beginningDate',
+        'Veuillez renseigner une date antérieure à la date de l’évènement',
+        isBeforeBeginningDate
+      ),
+    bookingsQuantity: yup.number().required(),
+    remainingQuantity: yup
+      .number()
+      .required()
+      .nullable()
+      .typeError('Doit être un nombre')
+      .min(0, 'Doit être positif')
+      .max(
+        MAX_STOCKS_QUANTITY,
+        'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+      ),
+    stockId: yup.number().required(),
+    isDeletable: yup.boolean().required(),
+    readOnlyFields: yup.array().required(),
+  })
+}
 
-export const getValidationSchema = (priceCategoriesOptions?: SelectOption[]) =>
+export const getValidationSchema = (
+  priceCategoriesOptions?: SelectOption[]
+): ObjectSchema<StocksEventFormValues> =>
   yup.object().shape({
     stocks: yup
       .array()
-      .of(
-        yup.object().shape(getSingleValidationSchema(priceCategoriesOptions))
-      ),
+      .required()
+      .of(getSingleValidationSchema(priceCategoriesOptions)),
   })
