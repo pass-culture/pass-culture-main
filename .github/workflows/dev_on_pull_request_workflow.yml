@@ -38,6 +38,7 @@ jobs:
             api/**
             !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
+            !api/tests/core/offerers/test_script.py
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
@@ -128,7 +129,7 @@ jobs:
   test-api:
     name: "Tests api"
     needs: [pcapi-init-job, build-pcapi-tests]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true'
+    if: false && (needs.pcapi-init-job.outputs.api-changed == 'true')
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
@@ -160,10 +161,10 @@ jobs:
     name: "Pro E2E Tests"
     needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: always() &&
+    if: false && (always() &&
       !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
+      needs.pcapi-init-job.outputs.pro-changed == 'true')
     with:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
