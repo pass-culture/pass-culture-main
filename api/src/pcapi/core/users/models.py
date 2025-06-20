@@ -331,7 +331,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     def remove_free_beneficiary_role(self) -> None:
         if self.has_free_beneficiary_role:
-            self.roles.remove(UserRole.BENEFICIARY)
+            self.roles.remove(UserRole.FREE_BENEFICIARY)
 
     def remove_pro_role(self) -> None:
         if self.has_pro_role:
