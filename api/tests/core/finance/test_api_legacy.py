@@ -2098,6 +2098,7 @@ class GenerateInvoiceTest:
         + 1  # select Booking.id
         + 1  # update Booking.status
         + 1  # update CollectiveBooking.status
+        + 1  # update FinanceIncident.status
     )
 
     def test_one_regular_rule_one_rate(self):

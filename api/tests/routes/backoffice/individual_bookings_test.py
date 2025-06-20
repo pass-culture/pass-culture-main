@@ -207,6 +207,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "incident_status, display_alert",
         [
+            (finance_models.IncidentStatus.INVOICED, True),
             (finance_models.IncidentStatus.VALIDATED, True),
             (finance_models.IncidentStatus.CREATED, False),
             (finance_models.IncidentStatus.CANCELLED, False),
