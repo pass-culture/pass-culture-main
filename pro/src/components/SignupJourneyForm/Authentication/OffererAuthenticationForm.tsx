@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import { useFormContext } from 'react-hook-form'
 
+import { Address } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
-import { Address } from 'components/Address/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
 import fullBackIcon from 'icons/full-back.svg'

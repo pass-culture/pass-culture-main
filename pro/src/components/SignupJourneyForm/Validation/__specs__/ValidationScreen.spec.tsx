@@ -17,11 +17,11 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Address } from 'commons/core/shared/types'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Address } from 'components/Address/types'
 import { Notification } from 'components/Notification/Notification'
 import { Validation } from 'components/SignupJourneyForm/Validation/Validation'
 
