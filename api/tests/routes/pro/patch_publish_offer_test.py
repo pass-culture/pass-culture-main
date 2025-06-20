@@ -12,6 +12,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import local_datetime_to_default_timezone
 
 
@@ -114,7 +115,7 @@ class Returns200Test:
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={"id": offer_id, "publicationDatetime": publication_date.isoformat()},
+                json={"id": offer_id, "publicationDatetime": format_into_utc_date(publication_date)},
             )
 
         expected_publication_date = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
@@ -164,8 +165,8 @@ class Returns200Test:
                 "/offers/publish",
                 json={
                     "id": offer_id,
-                    "publicationDatetime": publication_date.isoformat(),
-                    "bookingAllowedDatetime": booking_allowed_datetime.isoformat(),
+                    "publicationDatetime": format_into_utc_date(publication_date),
+                    "bookingAllowedDatetime": format_into_utc_date(booking_allowed_datetime),
                 },
             )
 
@@ -261,12 +262,12 @@ class Returns400Test:
             "/offers/publish",
             json={
                 "id": stock.offerId,
-                "publicationDatetime": publication_date.isoformat(),
+                "publicationDatetime": format_into_utc_date(publication_date),
             },
         )
 
         assert response.status_code == 400
-        assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]
+        assert response.json["publicationDatetime"] == ["The datetime must be in the future."]
         offer = db.session.get(offers_models.Offer, stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
 

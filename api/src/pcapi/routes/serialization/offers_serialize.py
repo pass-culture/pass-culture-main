@@ -152,6 +152,9 @@ class PatchOfferPublishBodyModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
+    _validation_publication_datetime = validate_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
+
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
