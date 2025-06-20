@@ -1,17 +1,11 @@
-import { useFormik } from 'formik'
-
 export interface StockThingFormValues {
   stockId?: number
-  remainingQuantity: string
-  bookingsQuantity: string
-  quantity: number | null | ''
-  bookingLimitDatetime: string
-  price: number | ''
-  activationCodes: string[]
-  activationCodesExpirationDatetime: string
-  isDuo: boolean | undefined
+  bookingLimitDatetime?: string | undefined
+  activationCodesExpirationDatetime?: string | undefined
+  remainingQuantity?: string | undefined
+  bookingsQuantity?: string | undefined
+  quantity?: number | undefined
+  price?: number | undefined
+  activationCodes?: string[] | undefined
+  isDuo?: boolean | undefined
 }
-
-export type StockThingFormik = ReturnType<
-  typeof useFormik<StockThingFormValues>
->

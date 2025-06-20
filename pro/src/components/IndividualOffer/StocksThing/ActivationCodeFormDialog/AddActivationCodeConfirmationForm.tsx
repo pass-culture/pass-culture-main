@@ -1,15 +1,20 @@
+import { useState, ChangeEvent } from 'react'
+
+import { isDateValid, formatShortDateForInput } from 'commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 
 interface AddActivationCodeConfirmationFormProps {
   unsavedActivationCodes: string[] | undefined
   clearActivationCodes: () => void
-  submitActivationCodes: () => void
+  submitActivationCodes: (expirationDate: string | undefined) => void
   today: Date
   minExpirationDate: Date | null
+  departmentCode: string
 }
 
 export const AddActivationCodeConfirmationForm = ({
@@ -18,13 +23,18 @@ export const AddActivationCodeConfirmationForm = ({
   submitActivationCodes,
   today,
   minExpirationDate,
+  departmentCode,
 }: AddActivationCodeConfirmationFormProps) => {
+  const [expirationDate, setExpirationDate] = useState<string | undefined>(
+    undefined
+  )
   const getMinimumExpirationDatetime = (date: Date) => {
     const result = new Date(date)
     result.setDate(result.getDate() + 7)
     return result
   }
   const minDate = minExpirationDate === null ? today : minExpirationDate
+
   return (
     <div className={styles['activation-codes-form']}>
       <div>
@@ -43,11 +53,22 @@ export const AddActivationCodeConfirmationForm = ({
       </div>
       <div className={styles['activation-codes-form-expiration-date']}>
         <DatePicker
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            if (isDateValid(event.target.value)) {
+              setExpirationDate(
+                formatShortDateForInput(
+                  getLocalDepartementDateTimeFromUtc(
+                    event.target.value,
+                    departmentCode
+                  )
+                )
+              )
+            }
+          }}
           label={'Date limite de validité'}
           className={styles['date-input']}
           name="activationCodesExpirationDatetime"
           minDate={getMinimumExpirationDatetime(minDate)}
-          isOptional={true}
         />
       </div>
       <div>
@@ -64,7 +85,9 @@ export const AddActivationCodeConfirmationForm = ({
         >
           Retour
         </Button>
-        <Button onClick={submitActivationCodes}>Valider</Button>
+        <Button onClick={() => submitActivationCodes(expirationDate)}>
+          Valider
+        </Button>
       </div>
     </div>
   )

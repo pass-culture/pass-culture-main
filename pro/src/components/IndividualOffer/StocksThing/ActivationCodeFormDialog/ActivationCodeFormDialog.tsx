@@ -13,11 +13,15 @@ import { AddActivationCodeForm } from './AddActivationCodeForm'
 
 interface ActivationCodeFormProps {
   onCancel: () => void
-  onSubmit: (activationCodes: string[]) => void
+  onSubmit: (
+    activationCodes: string[],
+    expirationDate: string | undefined
+  ) => void
   today: Date
   minExpirationDate: Date | null
   isDialogOpen: boolean
   activationCodeButtonRef: React.RefObject<HTMLButtonElement>
+  departmentCode: string
 }
 
 export const ActivationCodeFormDialog = ({
@@ -27,6 +31,7 @@ export const ActivationCodeFormDialog = ({
   minExpirationDate,
   isDialogOpen,
   activationCodeButtonRef,
+  departmentCode,
 }: ActivationCodeFormProps) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [unsavedActivationCodes, setUnsavedActivationCodes] =
@@ -97,9 +102,12 @@ export const ActivationCodeFormDialog = ({
         <AddActivationCodeConfirmationForm
           unsavedActivationCodes={unsavedActivationCodes}
           clearActivationCodes={onCancel}
-          submitActivationCodes={() => onSubmit(unsavedActivationCodes)}
+          submitActivationCodes={(expirationDate: string | undefined) =>
+            onSubmit(unsavedActivationCodes, expirationDate)
+          }
           today={today}
           minExpirationDate={minExpirationDate}
+          departmentCode={departmentCode}
         />
       )}
     </Dialog>
