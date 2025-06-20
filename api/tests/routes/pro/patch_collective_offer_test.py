@@ -1119,7 +1119,7 @@ class Returns403Test:
         assert offer.description == previous_description
 
     def test_patch_collective_offer_ended(self, client):
-        offer = educational_factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = educational_factories.EndedCollectiveOfferConfirmedBookingFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         previous_name = offer.name

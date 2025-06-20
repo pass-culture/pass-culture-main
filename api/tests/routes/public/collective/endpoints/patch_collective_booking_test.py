@@ -74,7 +74,7 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
 
     def test_cancel_offer_ended(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = educational_factories.EndedCollectiveOfferFactory(venue=venue_provider.venue, booking_is_confirmed=True)
+        offer = educational_factories.EndedCollectiveOfferConfirmedBookingFactory(venue=venue_provider.venue)
         [booking] = offer.collectiveStock.collectiveBookings
 
         response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(booking_id=booking.id))

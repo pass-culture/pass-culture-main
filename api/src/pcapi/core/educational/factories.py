@@ -546,20 +546,20 @@ class BookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         ConfirmedCollectiveBookingFactory.create(collectiveStock=stock)
 
 
+class EndedCollectiveOfferConfirmedBookingFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_booking(self, _create: bool, _extracted: typing.Any, **kwargs: typing.Any) -> None:
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
+        ConfirmedCollectiveBookingFactory.create(collectiveStock=stock)
+
+
 class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
-    def booking_is_confirmed(self, _create: bool, booking_is_confirmed: bool = False, **kwargs: typing.Any) -> None:
-        if booking_is_confirmed:
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        else:
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
-
+    def create_booking(self, _create: bool, _extracted: typing.Any, **kwargs: typing.Any) -> None:
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
-
-        if booking_is_confirmed:
-            ConfirmedCollectiveBookingFactory.create(collectiveStock=stock)
-        else:
-            UsedCollectiveBookingFactory.create(collectiveStock=stock)
+        UsedCollectiveBookingFactory.create(collectiveStock=stock)
 
 
 class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):

@@ -99,7 +99,7 @@ class Returns204Test:
         assert offer.collectiveStock.collectiveBookings[0].status == models.CollectiveBookingStatus.CANCELLED
 
     def test_cancel_ended(self, client):
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True)
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth("pro@example.com")
