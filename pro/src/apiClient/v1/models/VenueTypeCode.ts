@@ -6,7 +6,6 @@
  * An enumeration.
  */
 export enum VenueTypeCode {
-  LIEU_ADMINISTRATIF = 'Lieu administratif',
   COURS_ET_PRATIQUE_ARTISTIQUES = 'Cours et pratique artistiques',
   LIBRAIRIE = 'Librairie',
   MUSIQUE_SALLE_DE_CONCERTS = 'Musique - Salle de concerts',
