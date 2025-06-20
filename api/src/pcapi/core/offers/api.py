@@ -83,6 +83,7 @@ from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
+from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.date import local_datetime_to_default_timezone
 from pcapi.workers import push_notification_job
 
@@ -378,6 +379,11 @@ def update_offer(
     if not updates:
         return offer
 
+    if "bookingAllowedDatetime" in updates:
+        bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime", aliases=aliases)
+        if not bookingAllowedDatetime or (bookingAllowedDatetime <= get_naive_utc_now()):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
+
     if (
         "audioDisabilityCompliant" in updates
         or "mentalDisabilityCompliant" in updates
@@ -582,7 +588,7 @@ def activate_future_offers_and_remind_users() -> None:
 
     for offer_id in offer_ids:
         offer = db.session.get(models.Offer, offer_id)
-        reminders_notifications.notify_users_future_offer_activated(offer=offer)
+        reminders_notifications.notify_users_offer_is_bookable(offer=offer)
 
 
 def set_upper_timespan_of_inactive_headline_offers() -> None:

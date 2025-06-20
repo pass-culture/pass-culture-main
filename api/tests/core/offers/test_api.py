@@ -1921,6 +1921,26 @@ class UpdateOfferTest:
         assert updated_offer.offererAddressId == new_offerer_address.id
         assert updated_offer.venueId == new_venue.id
 
+    @pytest.mark.parametrize(
+        "bookingAllowedDatetime,expected_calls_count",
+        [
+            (datetime.now() - timedelta(minutes=5), 1),
+            (None, 1),
+            (datetime.now() + timedelta(days=5), 0),
+        ],
+    )
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
+    def test_booking_allowed_datetime_update(
+        self, notify_users_offer_is_bookable_mock, bookingAllowedDatetime, expected_calls_count
+    ):
+        offer = factories.OfferFactory(bookingAllowedDatetime=datetime.now() + timedelta(days=1))
+
+        body = offers_schemas.UpdateOffer(bookingAllowedDatetime=bookingAllowedDatetime)
+
+        updated_offer = api.update_offer(offer, body)
+        assert len(notify_users_offer_is_bookable_mock.mock_calls) == expected_calls_count
+        assert updated_offer.bookingAllowedDatetime == bookingAllowedDatetime
+
 
 now_datetime_with_tz = datetime.now(timezone.utc)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
@@ -2383,9 +2403,9 @@ class ActivateFutureOffersTest:
 @pytest.mark.usefixtures("db_session")
 class ActivateFutureOffersAndRemindUsersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated")
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
     def test_activate_future_offers_and_remind_users(
-        self, notify_users_future_offer_activated_mock, mocked_async_index_offer_ids
+        self, notify_users_offer_is_bookable_mock, mocked_async_index_offer_ids
     ):
         offer_1 = factories.OfferFactory(isActive=False)
         publication_date = datetime.utcnow() - timedelta(minutes=14)
@@ -2400,7 +2420,7 @@ class ActivateFutureOffersAndRemindUsersTest:
         future_offer_3 = factories.FutureOfferFactory(offer=offer_3, publicationDate=publication_date_3)
 
         api.activate_future_offers_and_remind_users()
-        notify_users_future_offer_activated_mock.assert_has_calls(
+        notify_users_offer_is_bookable_mock.assert_has_calls(
             [mock.call(offer=offer_1), mock.call(offer=offer_2)], any_order=True
         )
 

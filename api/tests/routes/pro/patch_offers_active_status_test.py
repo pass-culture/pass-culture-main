@@ -139,12 +139,12 @@ class ActivateFutureOffersTest:
         offers_factories.FutureOfferFactory(offer=offer_to_publish_2, publicationDate=publication_date)
 
         with patch(
-            "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
-        ) as mock_notify_users_future_offer_activated:
+            "pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable"
+        ) as mock_notify_users_offer_is_bookable:
             client = client.with_session_auth("pro@example.com")
             data = {"ids": [offer_to_publish_1.id, offer_to_publish_2.id], "isActive": True}
             response = client.patch("/offers/active-status", json=data)
-            mock_notify_users_future_offer_activated.assert_has_calls(
+            mock_notify_users_offer_is_bookable.assert_has_calls(
                 [call(offer_to_publish_1), call(offer_to_publish_2)], any_order=True
             )
 
@@ -165,12 +165,12 @@ class ActivateFutureOffersTest:
         offers_factories.FutureOfferFactory(offer=offer_published_2, publicationDate=publication_date)
 
         with patch(
-            "pcapi.core.reminders.external.reminders_notifications.notify_users_future_offer_activated"
-        ) as mock_notify_users_future_offer_activated:
+            "pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable"
+        ) as mock_notify_users_offer_is_bookable:
             client = client.with_session_auth("pro@example.com")
             data = {"ids": [offer_published_1.id, offer_published_2.id], "isActive": False}
             response = client.patch("/offers/active-status", json=data)
-            mock_notify_users_future_offer_activated.assert_not_called()
+            mock_notify_users_offer_is_bookable.assert_not_called()
 
         assert response.status_code == 204
         assert not db.session.get(Offer, offer_published_1.id).isActive
