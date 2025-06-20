@@ -49,8 +49,8 @@ export interface CollectiveEditionOfferNavigationProps {
   isTemplate: boolean
   offerId?: number
   offer?:
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel
+  | GetCollectiveOfferResponseModel
+  | GetCollectiveOfferTemplateResponseModel
 }
 
 export const CollectiveEditionOfferNavigation = ({

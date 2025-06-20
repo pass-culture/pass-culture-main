@@ -36,7 +36,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   interventionArea: Array<string>;
   isActive: boolean;
   isCancellable: boolean;
-  isEditable: boolean;
   isNonFreeOffer?: boolean | null;
   isTemplate?: boolean;
   location?: GetCollectiveOfferLocationModel | null;

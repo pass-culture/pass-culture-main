@@ -5,6 +5,7 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   SharedCurrentUserResponseModel,
+  CollectiveOfferAllowedAction,
   UserRole,
 } from 'apiClient/v1'
 import {
@@ -317,6 +318,38 @@ describe('TemplateCollectiveOffersScreen', () => {
       expect(secondOfferCheckbox).not.toBeChecked()
       expect(thirdOfferCheckbox).not.toBeChecked()
       expect(fourthOfferCheckbox).not.toBeChecked()
+    })
+    it('should check all selectable offers checkboxes', async () => {
+      const offer = collectiveOfferFactory({ name: 'offer 1' })
+      const archivableOffer = collectiveOfferFactory({ name: 'offer 2', allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE] })
+      const unselctableOffer = collectiveOfferFactory({ name: 'offer 3', allowedActions: [] })
+
+      renderOffers({
+        ...props,
+        offers: [offer, archivableOffer, unselctableOffer],
+      })
+
+      const firstOfferCheckbox = screen.getByRole('checkbox', {
+        name: offer.name,
+      })
+      const secondOfferCheckbox = screen.getByRole('checkbox', {
+        name: archivableOffer.name,
+      })
+      const thirdOfferCheckbox = screen.getByRole('checkbox', {
+        name: unselctableOffer.name,
+      })
+
+      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+
+      expect(firstOfferCheckbox).toBeChecked()
+      expect(secondOfferCheckbox).toBeChecked()
+      expect(thirdOfferCheckbox).not.toBeChecked()
+
+      await userEvent.click(screen.getByLabelText('Tout désélectionner'))
+
+      expect(firstOfferCheckbox).not.toBeChecked()
+      expect(secondOfferCheckbox).not.toBeChecked()
+      expect(thirdOfferCheckbox).not.toBeChecked()
     })
   })
 

@@ -727,14 +727,6 @@ class CollectiveOffer(
             offer_mixin.CollectiveOfferStatus.REJECTED,
         ]
 
-    @property
-    def isVisibilityEditable(self) -> bool:
-        is_editable = self.isEditable
-        if self.collectiveStock:
-            is_editable = is_editable and not self.collectiveStock.isSoldOut
-
-        return is_editable
-
     @hybrid_property
     def hasEndDatePassed(self) -> bool:
         return False

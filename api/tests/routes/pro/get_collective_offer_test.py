@@ -62,7 +62,6 @@ class Returns200Test:
                 "id": stock.id,
                 "isBooked": False,
                 "isCancellable": False,
-                "isEducationalStockEditable": True,
                 "numberOfTickets": stock.numberOfTickets,
                 "price": float(stock.price),
                 "startDatetime": format_into_utc_date(stock.startDatetime),
@@ -97,11 +96,9 @@ class Returns200Test:
             "isActive": True,
             "isBookable": True,
             "isCancellable": False,
-            "isEditable": True,
             "isNonFreeOffer": None,
             "isPublicApi": True,
             "isTemplate": False,
-            "isVisibilityEditable": True,
             "location": None,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
@@ -258,7 +255,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json["collectiveStock"]["isBooked"] is True
         assert response_json["isCancellable"] is False
-        assert response_json["isVisibilityEditable"] is False
 
     def test_cancellable(self, client):
         # Given
@@ -278,7 +274,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json["collectiveStock"]["isBooked"] is True
         assert response_json["isCancellable"] is True
-        assert response_json["isVisibilityEditable"] is False
 
     def test_cancellable_with_not_cancellable_booking(self, client):
         # Given
@@ -299,7 +294,6 @@ class Returns200Test:
         response_json = response.json
         assert response_json["collectiveStock"]["isBooked"] is True
         assert response_json["isCancellable"] is True
-        assert response_json["isVisibilityEditable"] is False
 
     def test_performance(self, client):
         # Given

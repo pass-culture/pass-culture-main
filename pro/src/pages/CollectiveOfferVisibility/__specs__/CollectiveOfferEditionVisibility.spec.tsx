@@ -2,9 +2,8 @@ import { screen } from '@testing-library/react'
 
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
-import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
+import { CollectiveOfferEditionVisibility } from '../CollectiveOfferEditionVisibility'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -14,12 +13,11 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderCollectiveOfferCreationVisibility = (
+const renderCollectiveOfferEditionVisibility = (
   path: string,
-  props: MandatoryCollectiveOfferFromParamsProps,
   storeOverride?: any
 ) => {
-  renderWithProviders(<CollectiveOfferVisibility {...props} />, {
+  renderWithProviders(<CollectiveOfferEditionVisibility {...defaultProps} />, {
     initialRouterEntries: [path],
     storeOverrides: storeOverride,
   })
@@ -31,30 +29,24 @@ const defaultProps = {
   offerer: undefined,
 }
 
-describe('CollectiveOfferVisibility', () => {
+describe('CollectiveOfferEditionVisibility', () => {
   it('should render collective offer visibility form', async () => {
-    renderCollectiveOfferCreationVisibility(
-      '/offre/A1/collectif/visibilite',
-      defaultProps
-    )
+    renderCollectiveOfferEditionVisibility('/offre/A1/collectif/visibilite')
 
     expect(
       await screen.findByRole('heading', {
-        name: /Créer une offre/,
+        name: /Éditer une offre collective/,
       })
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: "Renseignez l'établissement scolaire et l'enseignant",
       })
     ).toBeInTheDocument()
   })
   it('should render new collective offer visibility form if ff active', async () => {
-    renderCollectiveOfferCreationVisibility(
-      '/offre/A1/collectif/visibilite',
-      defaultProps
-    )
+    renderCollectiveOfferEditionVisibility('/offre/A1/collectif/visibilite')
 
     expect(
       await screen.findByRole('heading', {

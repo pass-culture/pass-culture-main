@@ -105,7 +105,6 @@ class Returns200Test:
             "contactPhone": "+33199006328",
             "hasBookingLimitDatetimesPassed": False,
             "isActive": False,
-            "isEditable": True,
             "isPublicApi": False,
             "id": duplicate.id,
             "name": offer.name,
@@ -140,7 +139,6 @@ class Returns200Test:
                 "price": 100.0,
                 "numberOfTickets": 25,
                 "educationalPriceDetail": offer.collectiveStock.priceDetail,
-                "isEducationalStockEditable": True,
             },
             "institution": {
                 "id": duplicate.institution.id,
@@ -151,7 +149,6 @@ class Returns200Test:
                 "phoneNumber": duplicate.institution.phoneNumber,
                 "institutionId": duplicate.institution.institutionId,
             },
-            "isVisibilityEditable": True,
             "templateId": None,
             "booking": None,
             "teacher": None,

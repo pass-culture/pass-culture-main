@@ -134,7 +134,6 @@ class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: int
     isActive: bool
-    isEditable: bool
     isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
@@ -372,7 +371,6 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     price: float
     numberOfTickets: int | None
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
-    isEditable: bool = Field(alias="isEducationalStockEditable")
 
     class Config:
         allow_population_by_field_name = True
@@ -436,7 +434,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
     isActive: bool
-    isEditable: bool
     id: int
     name: str
     venue: GetCollectiveOfferVenueResponseModel
@@ -509,7 +506,6 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
     lastBooking: GetCollectiveOfferBookingResponseModel | None = Field(alias="booking")
     institution: EducationalInstitutionResponseModel | None
-    isVisibilityEditable: bool
     templateId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
