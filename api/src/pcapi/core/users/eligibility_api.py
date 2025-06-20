@@ -285,6 +285,7 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.dateti
     ]
     last_birthday_action = max(birthday_actions, key=lambda action: action.actionDate, default=None)
 
+    known_birthday_at_date: datetime.date | None = None
     match last_identity_provider_birthday_check, last_birthday_action:
         case None, None:
             if user.dateOfBirth is None:

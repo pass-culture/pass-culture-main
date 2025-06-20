@@ -42,6 +42,7 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
+    from pcapi.core.fraud.models import BeneficiaryFraudCheck
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
@@ -225,13 +226,15 @@ class User(PcObject, Base, Model, DeactivableMixin):
     backoffice_profile: sa_orm.Mapped["BackOfficeUserProfile"] = sa_orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"
     )
-    sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
-
     gdprUserDataExtracts: sa_orm.Mapped[list["GdprUserDataExtract"]] = sa_orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
     tags: sa_orm.Mapped[list["UserTag"]] = sa_orm.relationship("UserTag", secondary=UserTagMapping.__table__)
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
+    beneficiaryFraudChecks: sa_orm.Mapped[list["BeneficiaryFraudCheck"]] = sa_orm.relationship(
+        "BeneficiaryFraudCheck", back_populates="user", order_by="BeneficiaryFraudCheck.dateCreated"
+    )
+
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
     # immutable_unaccent is a wrapper so that index uses an immutable function.
@@ -247,6 +250,8 @@ class User(PcObject, Base, Model, DeactivableMixin):
         # otherwise an index on the single email domain is not used by the query planner
         sa.Index("ix_user_email_domain_and_id", sa.func.email_domain(email), "id"),
     )
+
+    sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])

@@ -553,17 +553,19 @@ class RegistrationStepStatus(enum.Enum):
 
 
 def _get_id_check_age_at_decree_start(user: users_models.User) -> int | None:
-    id_checks_at_decree_start = [
-        fraud_check
+    id_checks_birth_date_at_decree_start = [
+        fraud_check.get_identity_check_birth_date()
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and fraud_check.get_identity_check_birth_date() is not None
         and fraud_check.dateCreated < settings.CREDIT_V3_DECREE_DATETIME
     ]
-    if not id_checks_at_decree_start:
+    known_birth_dates_at_decree_start = [
+        birth_date for birth_date in id_checks_birth_date_at_decree_start if birth_date is not None
+    ]
+    if not known_birth_dates_at_decree_start:
         return None
 
-    id_check_birth_date = max(f.get_identity_check_birth_date() for f in id_checks_at_decree_start)
+    id_check_birth_date = max(known_birth_dates_at_decree_start)
     return users_utils.get_age_at_date(id_check_birth_date, settings.CREDIT_V3_DECREE_DATETIME, user.departementCode)
 
 
