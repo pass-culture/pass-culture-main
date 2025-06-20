@@ -2042,6 +2042,21 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.roles == [users_models.UserRole.BENEFICIARY]
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
 
+    def test_transition_from_free_beneficiary_to_17_18(self):
+        ex_free_beneficiary = users_factories.EmailValidatedUserFactory(
+            roles=[users_models.UserRole.FREE_BENEFICIARY], age=17
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=ex_free_beneficiary)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=ex_free_beneficiary, status=fraud_models.FraudCheckStatus.OK)
+        fraud_factories.HonorStatementFraudCheckFactory(user=ex_free_beneficiary)
+
+        is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(ex_free_beneficiary)
+
+        assert is_user_activated
+        assert ex_free_beneficiary.has_underage_beneficiary_role
+        assert not ex_free_beneficiary.has_free_beneficiary_role
+        assert ex_free_beneficiary.deposit.type == finance_models.DepositType.GRANT_17_18
+
 
 @pytest.mark.usefixtures("db_session")
 class SubscriptionMessageTest:
