@@ -39,7 +39,7 @@ import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavin
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferVisibility.module.scss'
@@ -188,14 +188,16 @@ export const CollectiveOfferVisibilityScreen = ({
     ? institutionsOptions.filter(({ label }) =>
         label
           .toLowerCase()
-          .includes(formik.values['search-institution'].trim().toLowerCase())
+          .includes(formik.values['institution'].trim().toLowerCase())
       )[0]
     : (institutionsOptions.find(
         (institution) => institution.value === formik.values.institution
       ) ?? null)
 
+  console.log('formik.values.institution', formik.values.institution)
+
   const onChangeTeacher = async () => {
-    const searchTeacherValue = formik.values['search-teacher']?.trim()
+    const searchTeacherValue = formik.values['teacher']?.trim()
 
     if (
       !searchTeacherValue ||
@@ -232,7 +234,7 @@ export const CollectiveOfferVisibilityScreen = ({
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
-
+  console.log('values', formik.values)
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -270,19 +272,28 @@ export const CollectiveOfferVisibilityScreen = ({
                       hideArrow
                       onReset={async () => {
                         setTeachersOptions([])
-                        await formik.setFieldValue('search-teacher', '')
+                        await formik.setFieldValue('teacher', '')
                       }}
-                      onSearch={async () => {
-                        if (formik.dirty) {
-                          await formik.setFieldValue('institution', '')
-                          await formik.setFieldValue('search-teacher', '')
-                        }
+                      // onSearch={async () => {
+                      //   if (formik.dirty) {
+                      //     // await formik.setFieldValue('institution', '')
+                      //     await formik.setFieldValue('teacher', '')
+                      //   }
+                      // }}
+                      onChange={async (event) => {
+                        // if (formik.dirty) {
+                        await formik.setFieldValue(
+                          'institution',
+                          event.target.value
+                        )
+                        await formik.setFieldValue('teacher', '')
+                        //  }
                       }}
-                      resetOnOpen={false}
                       disabled={!canEditInstitution}
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
+                      value={formik.values.institution}
                     />
                   </>
                 )}
@@ -300,7 +311,13 @@ export const CollectiveOfferVisibilityScreen = ({
                   onSearch={async () => {
                     await onChangeTeacher()
                   }}
-                  resetOnOpen={false}
+                  onChange={async (event) => {
+                    // if (formik.dirty) {
+                    await formik.setFieldValue('teacher', event.target.value)
+                    //  await formik.setFieldValue('teacher', '')
+                    //  }
+                  }}
+                  value={formik.values.teacher}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
