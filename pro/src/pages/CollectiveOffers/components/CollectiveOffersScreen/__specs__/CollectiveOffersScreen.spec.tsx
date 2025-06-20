@@ -8,16 +8,16 @@ import {
   UserRole,
 } from 'apiClient/v1'
 import {
+  ALL_OFFERERS_OPTION,
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-  ALL_OFFERERS_OPTION,
 } from 'commons/core/Offers/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -238,8 +238,9 @@ describe('CollectiveOffersScreen', () => {
 
   it('should display status checkboxes on press status filter', async () => {
     renderOffers(props)
+
     await userEvent.click(
-      screen.getByRole('combobox', {
+      screen.getByRole('button', {
         name: 'Statut',
       })
     )
@@ -407,7 +408,7 @@ describe('CollectiveOffersScreen', () => {
       { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
     )
     expect(
-      screen.queryByRole('combobox', { name: 'Type de l’offre' })
+      screen.queryByRole('button', { name: 'Type de l’offre' })
     ).not.toBeInTheDocument()
   })
 
@@ -420,7 +421,7 @@ describe('CollectiveOffersScreen', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('combobox', {
+      screen.getByRole('button', {
         name: 'Statut',
       })
     )
