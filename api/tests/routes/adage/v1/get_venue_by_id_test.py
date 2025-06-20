@@ -77,7 +77,7 @@ class Returns200Test:
             isPermanent=False,
             managingOfferer=offerer,
             name="zertyu",
-            venueTypeCode=VenueTypeCode.ADMINISTRATIVE,
+            venueTypeCode=VenueTypeCode.OTHER,
         )
         offerers_factories.CollectiveVenueFactory(
             isPermanent=True,

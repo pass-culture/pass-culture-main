@@ -169,7 +169,6 @@ class BannerMetaModel(typing.TypedDict, total=False):
 
 
 class VenueTypeCode(enum.Enum):
-    ADMINISTRATIVE = "Lieu administratif"
     ARTISTIC_COURSE = "Cours et pratique artistiques"
     BOOKSTORE = "Librairie"
     CONCERT_HALL = "Musique - Salle de concerts"
