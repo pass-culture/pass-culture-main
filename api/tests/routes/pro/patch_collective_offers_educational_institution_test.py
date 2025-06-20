@@ -131,7 +131,7 @@ class Returns403Test:
 
     def test_change_institution_ended(self, client) -> None:
         institution1 = factories.EducationalInstitutionFactory()
-        offer = factories.EndedCollectiveOfferFactory(booking_is_confirmed=True, institution=institution1)
+        offer = factories.EndedCollectiveOfferConfirmedBookingFactory(institution=institution1)
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = factories.EducationalInstitutionFactory()
 
