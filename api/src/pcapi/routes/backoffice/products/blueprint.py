@@ -14,6 +14,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import get_by_ean13
+from pcapi.core.categories import subcategories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -204,6 +205,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         rejected_offers_count=rejected_offers_count,
         ineligibility_reasons=ineligibility_reasons,
         product_whitelist=product_whitelist,
+        music_titelive_subcategories=subcategories.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS,
     )
 
 

@@ -82,7 +82,6 @@ class GetProductDetailsTest(GetEndpointHelper):
 
         assert descriptions["Catégorie"] == "Livre"
         assert descriptions["Sous-catégorie"] == "Livre papier"
-        assert descriptions["Type de musique"] == "Alternatif"
         assert descriptions["Nombre d'offres associées"] == "1"
         assert descriptions["Approuvées actives"] == "1"
         assert descriptions["Approuvées inactives"] == "0"
@@ -134,12 +133,47 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert product_unlinked_offer[0]["Nom"] == unlinked_offer.name
         assert product_unlinked_offer[0]["Statut"] == "Épuisée"
 
+    @pytest.mark.parametrize(
+        "subcategory_id",
+        (
+            subcategories.LIVRE_PAPIER.id,
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        ),
+    )
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_get_detail_product_display_music_type_only_for_music_support(
+        self, mock_get_by_ean13, subcategory_id, authenticated_client
+    ):
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategory_id,
+            extraData={"gtl_id": "08010000"},
+        )
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        # The following 3 queries are not executed in this case:
+        # 1) No Stock associated with the linked Offer
+        # 2) No Stock associated with Unlinked Offer
+        # 3) No FF WIP_REFACTO_FUTURE_OFFER
+        with assert_num_queries(self.expected_num_queries - 3):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        if subcategory_id in (
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        ):
+            assert descriptions["Type de musique"] == "Alternatif"
+        else:
+            assert "Type de musique" not in descriptions
+
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product_without_ean(self, mock_get_by_ean13, authenticated_client):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
-        # The following 4 queries are not executed in this case:
+        # The following 5 queries are not executed in this case:
         # 1) No Stock associated with the linked Offer
         # 2) No Unlinked Offer
         # 3) No Stock associated with Unlinked Offer

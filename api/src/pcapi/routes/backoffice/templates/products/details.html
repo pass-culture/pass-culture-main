@@ -275,7 +275,7 @@
       {{ product.subcategoryId | format_offer_subcategory }}
     {% endcall %}
     {% set extra_data = product.extraData %}
-    {% if extra_data.gtl_id %}
+    {% if extra_data.gtl_id and product.subcategoryId in music_titelive_subcategories %}
       {% call description_detail_vertical("Type de musique") %}
         {{ extra_data.gtl_id | format_music_gtl_id }}
       {% endcall %}

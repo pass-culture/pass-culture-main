@@ -3165,7 +3165,6 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert str(offer.id) == descriptions["Offer ID"]
         assert descriptions["Catégorie"] == "Films, vidéos"
         assert descriptions["Sous-catégorie"] == "Support physique (DVD, Blu-ray...)"
-        assert descriptions["Type de musique"] == "Alternatif"
         assert descriptions["Statut"] == "Épuisée"
         assert descriptions["Score data"] == "55"
         assert descriptions["Raison de score faible"] == "Prix Sous-catégorie Description de l'offre"
@@ -3188,6 +3187,34 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "• Validée" in badges
 
         assert html_parser.count_table_rows(response.data) == 0
+
+    @pytest.mark.parametrize(
+        "subcategory_id",
+        (
+            subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        ),
+    )
+    def test_get_detail_offer_display_music_type_only_for_music_support(self, subcategory_id, authenticated_client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategory_id,
+            extraData={"gtl_id": "08010000"},
+        )
+
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        if subcategory_id in (
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        ):
+            assert descriptions["Type de musique"] == "Alternatif"
+        else:
+            assert "Type de musique" not in descriptions
 
     def test_get_detail_offer_with_product(self, authenticated_client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
