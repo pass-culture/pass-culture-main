@@ -147,6 +147,22 @@ describe('IndividualOffersScreen', () => {
     expect(headers[5].textContent).toEqual('Actions')
   })
 
+  it('should display the Publication column if FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
+    renderOffers(props, { features: ['WIP_REFACTO_FUTURE_OFFER'] })
+
+    expect(
+      screen.getByRole('columnheader', { name: 'Publication' })
+    ).toBeInTheDocument()
+  })
+
+  it('should not display the Publication column if FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
+    renderOffers(props)
+
+    expect(
+      screen.queryByRole('columnheader', { name: 'Publication' })
+    ).not.toBeInTheDocument()
+  })
+
   it('should render as much offers as returned by the api', () => {
     const firstOffer = listOffersOfferFactory()
     const secondOffer = listOffersOfferFactory()
@@ -592,5 +608,22 @@ describe('IndividualOffersScreen', () => {
     })
 
     expect(screen.getByText('My offer')).toBeInTheDocument()
+  })
+
+  it('should display the publication and booking columns if the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
+    renderOffers(
+      { ...props, offers: [listOffersOfferFactory()] },
+      { features: ['WIP_REFACTO_FUTURE_OFFER'] }
+    )
+
+    expect(screen.getByText('Publication')).toBeInTheDocument()
+    expect(screen.getByText('Réservations')).toBeInTheDocument()
+  })
+
+  it('should not display the publication and booking columns if the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
+    renderOffers({ ...props, offers: [listOffersOfferFactory()] })
+
+    expect(screen.queryByText('Publication')).not.toBeInTheDocument()
+    expect(screen.queryByText('Réservations')).not.toBeInTheDocument()
   })
 })

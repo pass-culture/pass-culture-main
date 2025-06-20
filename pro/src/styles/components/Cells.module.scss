@@ -77,6 +77,10 @@
   grid-area: stock-or-institution;
 }
 
+.bookings-column {
+  grid-area: bookings;
+}
+
 .status-column {
   grid-area: status;
   min-width: rem.torem(160px);

@@ -21,7 +21,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -135,7 +135,7 @@ export const IndividualActionsCells = ({
           styles['actions-column'],
           className
         )}
-        headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
+        headers={`${rowId} ${getCellsDefinition().ACTIONS.id}`}
       >
         <div className={styles['actions-column-container']}>
           <DropdownMenuWrapper

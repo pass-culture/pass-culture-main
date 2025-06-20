@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 
 interface OfferInstitutionCellProps {
@@ -33,7 +33,7 @@ export const OfferInstitutionCell = ({
         styles['institution-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.INSTITUTION.id}`}
+      headers={`${rowId} ${getCellsDefinition().INSTITUTION.id}`}
     >
       {showEducationalInstitution}
     </td>

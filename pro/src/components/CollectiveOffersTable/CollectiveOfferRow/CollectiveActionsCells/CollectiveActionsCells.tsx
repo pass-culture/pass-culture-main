@@ -38,7 +38,7 @@ import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedO
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { CELLS_DEFINITIONS } from 'components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPenIcon from 'icons/full-edit.svg'
@@ -334,7 +334,7 @@ export const CollectiveActionsCells = ({
         styles['actions-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.ACTIONS.id}`}
+      headers={`${rowId} ${getCellsDefinition().ACTIONS.id}`}
     >
       <div className={styles['actions-column-container']}>
         {shouldDisplayBookingLink && offer.booking && (

@@ -18,7 +18,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
-import { CELLS_DEFINITIONS } from '../../utils/cellDefinitions'
+import { getCellsDefinition } from '../../utils/cellDefinitions'
 
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
@@ -86,7 +86,7 @@ export const OfferNameCell = ({
         styles['title-column'],
         className
       )}
-      headers={`${rowId} ${CELLS_DEFINITIONS.NAME.id}`}
+      headers={`${rowId} ${getCellsDefinition().NAME.id}`}
     >
       <Link
         className={classNames({
@@ -109,7 +109,7 @@ export const OfferNameCell = ({
                 className={styles['offers-table-cell-mobile-label']}
                 aria-hidden={true}
               >
-                {`${CELLS_DEFINITIONS.NAME.title} :`}
+                {`${getCellsDefinition().NAME.title} :`}
               </span>
             )}
             {offer.name}
