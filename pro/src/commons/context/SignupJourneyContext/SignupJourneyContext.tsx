@@ -2,10 +2,10 @@ import React, { createContext, useContext, useState } from 'react'
 
 import { Target } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { Address } from 'components/Address/types'
 import { ActivityFormValues } from 'components/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OffererFormValues } from 'components/SignupJourneyForm/Offerer/Offerer'
+import { Address } from 'ui-kit/formV2/AddressSelect/type'
 
 import { defaultActivityValues } from './constants'
 

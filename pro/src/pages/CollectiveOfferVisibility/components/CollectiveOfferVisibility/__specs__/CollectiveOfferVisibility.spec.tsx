@@ -22,8 +22,8 @@ import {
 } from 'commons/utils/renderWithProviders'
 
 import {
-  CollectiveOfferVisibilityScreen,
   CollectiveOfferVisibilityProps,
+  CollectiveOfferVisibilityScreen,
 } from '../CollectiveOfferVisibility'
 
 vi.mock('apiClient/api', () => ({

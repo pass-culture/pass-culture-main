@@ -1,6 +1,15 @@
 import { FieldInputProps } from 'formik'
 
-import { AutocompleteItemProps } from 'components/Address/Address'
+import { AdresseData } from 'apiClient/adresse/types'
+
+
+export interface AutocompleteItemProps {
+  value: string | number
+  label: string
+  disabled?: boolean
+  extraData?: Partial<AdresseData>
+}
+
 
 export const handleAddressSelect = (
   setFieldValue: any,

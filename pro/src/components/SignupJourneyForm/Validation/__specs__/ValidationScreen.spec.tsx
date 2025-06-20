@@ -21,9 +21,9 @@ import { getOffererNameFactory } from 'commons/utils/factories/individualApiFact
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Address } from 'components/Address/types'
 import { Notification } from 'components/Notification/Notification'
 import { Validation } from 'components/SignupJourneyForm/Validation/Validation'
+import { Address } from 'ui-kit/formV2/AddressSelect/type'
 
 vi.mock('apiClient/api', () => ({
   api: {
