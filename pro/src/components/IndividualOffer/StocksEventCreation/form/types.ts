@@ -24,18 +24,18 @@ export enum MonthlyOption {
 }
 
 export type QuantityPerPriceCategoryForm = {
-  quantity: number | ''
+  quantity?: number | null
   priceCategory: string
 }
 
 export type RecurrenceFormValues = {
-  recurrenceType: string
+  recurrenceType: RecurrenceType
   days: RecurrenceDays[]
-  startingDate: string
-  endingDate: string
-  beginningTimes: string[]
+  startingDate: string | null
+  endingDate: string | null
+  beginningTimes: { beginningTime: string }[]
   quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
-  bookingLimitDateInterval: number | ''
+  bookingLimitDateInterval: number | null
   monthlyOption: MonthlyOption | null
 }
 

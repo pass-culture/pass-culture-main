@@ -70,18 +70,21 @@ describe('RecurrenceForm', () => {
   it('should add and remove a beginning time', async () => {
     renderRecurrenceForm()
 
-    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: /Supprimer/ })
+    ).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Ajouter un créneau'))
 
     const deleteButton = screen.getAllByRole('button', {
-      name: 'Supprimer',
+      name: /Supprimer/,
     })[0]
-    expect(deleteButton).toBeEnabled()
 
     await userEvent.click(deleteButton)
 
-    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: /Supprimer/ })
+    ).not.toBeInTheDocument()
   })
 
   it('should show an add button until we have less or an equal number of fields than different price_categories', async () => {
@@ -93,21 +96,29 @@ describe('RecurrenceForm', () => {
     renderRecurrenceForm({ ...defaultProps, priceCategories: priceCategories })
 
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
-    const deleteButton = screen.getAllByRole('button', {
-      name: 'Supprimer les places',
-    })[0]
-    expect(deleteButton).toBeEnabled()
+
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
     expect(
       screen.queryByText('Ajouter d’autres places et tarifs')
     ).not.toBeInTheDocument()
 
-    await userEvent.click(deleteButton)
+    const deleteButton = screen.getAllByRole('button', {
+      name: 'Supprimer les places',
+    })[0]
+
     await userEvent.click(deleteButton)
 
+    await userEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Supprimer les places',
+      })[0]
+    )
+
     expect(
-      screen.getByRole('button', { name: 'Supprimer les places' })
-    ).toBeDisabled()
+      screen.queryByRole('button', {
+        name: 'Supprimer les places',
+      })
+    ).not.toBeInTheDocument()
   })
 
   it('should render for daily recurrence', async () => {

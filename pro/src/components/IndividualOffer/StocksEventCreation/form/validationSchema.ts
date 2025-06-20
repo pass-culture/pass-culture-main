@@ -1,8 +1,6 @@
 import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
-import { oneOfSelectOption } from 'commons/core/shared/utils/validation'
-import { SelectOption } from 'commons/custom_types/form'
 import { getToday, isDateValid, removeTime } from 'commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
 
@@ -11,9 +9,10 @@ import {
   RecurrenceDays,
   RecurrenceType,
   TimeSlotTypeOption,
+  MonthlyOption,
 } from './types'
 
-export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
+export const getValidationSchema = () =>
   yup.object().shape({
     recurrenceType: yup
       .string()
@@ -21,6 +20,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .oneOf(Object.values(RecurrenceType)),
     startingDate: yup
       .string()
+      .required()
       .transform((curr, orig) => (orig === '' ? null : curr))
       .nullable()
       .test(
@@ -37,6 +37,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       }),
     endingDate: yup
       .string()
+      .required()
       .transform((curr, orig) => (orig === '' ? null : curr))
       .nullable('Veuillez renseigner une date de fin')
       .when('recurrenceType', {
@@ -61,38 +62,47 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       }),
     days: yup
       .array()
-      .of(yup.string())
+      .required()
+      .of(yup.string<RecurrenceDays>().defined())
       .when('recurrenceType', {
         is: RecurrenceType.WEEKLY,
         then: (schema) => schema.min(1, 'Veuillez renseigner au moins un jour'),
       }),
     beginningTimes: yup
       .array()
-      .of(yup.string().nullable().required('Veuillez renseigner un horaire'))
+      .required()
+      .of(
+        yup
+          .object()
+          .shape({
+            beginningTime: yup
+              .string()
+              .required('Veuillez renseigner un horaire'),
+          })
+          .nullable()
+          .required()
+      )
       .test('arebeginningTimesUnique', function (list) {
-        if (!list) {
-          return
-        }
-
         const beginningTimesMap = [...list]
-        const duplicateIndex = beginningTimesMap.reduce<yup.ValidationError[]>(
-          (accumulator, currentValue, index) => {
-            if (
-              beginningTimesMap.indexOf(currentValue) !==
-              beginningTimesMap.lastIndexOf(currentValue)
-            ) {
-              accumulator.push(
-                new yup.ValidationError(
-                  'Veuillez renseigner des horaires différents',
-                  null,
-                  `beginningTimes[${index}]`
+        const duplicateIndex = beginningTimesMap
+          .map((time) => time.beginningTime)
+          .reduce<yup.ValidationError[]>(
+            (accumulator, currentValue, index, self) => {
+              if (
+                self.indexOf(currentValue) !== self.lastIndexOf(currentValue)
+              ) {
+                accumulator.push(
+                  new yup.ValidationError(
+                    'Veuillez renseigner des horaires différents',
+                    null,
+                    `beginningTimes[${index}]`
+                  )
                 )
-              )
-            }
-            return accumulator
-          },
-          []
-        )
+              }
+              return accumulator
+            },
+            []
+          )
 
         if (duplicateIndex.length > 0) {
           return new yup.ValidationError(duplicateIndex)
@@ -101,6 +111,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       }),
     quantityPerPriceCategories: yup
       .array()
+      .required()
       .of(
         yup.object().shape({
           quantity: yup
@@ -111,16 +122,10 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
               MAX_STOCKS_QUANTITY,
               'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
             ),
-          priceCategory: oneOfSelectOption(
-            yup.string().required('Veuillez renseigner un tarif'),
-            priceCategoriesOptions
-          ),
+          priceCategory: yup.string().required('Veuillez renseigner un tarif'),
         })
       )
       .test('isPriceCategoryUnique', function (list) {
-        if (!list) {
-          return
-        }
         const price_category_map = list.map((a) => a.priceCategory)
         const duplicateIndex = price_category_map.reduce<yup.ValidationError[]>(
           (ac, a, i) => {
@@ -146,9 +151,10 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
         }
         return true
       }),
-    bookingLimitDateInterval: yup.number(),
+    bookingLimitDateInterval: yup.number().required().nullable(),
     monthlyOption: yup
-      .string()
+      .string<MonthlyOption>()
+      .required()
       .nullable()
       .when('recurrenceType', {
         is: RecurrenceType.MONTHLY,

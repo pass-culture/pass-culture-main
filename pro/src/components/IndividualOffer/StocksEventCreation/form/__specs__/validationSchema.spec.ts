@@ -1,6 +1,5 @@
 import { addDays, addMonths } from 'date-fns'
 
-import { SelectOption } from 'commons/custom_types/form'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
 import { weekDays } from '../constants'
@@ -13,16 +12,12 @@ import {
 } from '../types'
 import { getValidationSchema, validationSchema } from '../validationSchema'
 
-const priceCategoriesOptions: SelectOption[] = [
-  { label: 'Tarif 1', value: '1' },
-]
-
 const baseValidForm: RecurrenceFormValues = {
   recurrenceType: RecurrenceType.UNIQUE,
   days: [],
   startingDate: '2050-03-03',
   endingDate: '',
-  beginningTimes: ['10:00', '10:30'],
+  beginningTimes: [{ beginningTime: '10:00' }, { beginningTime: '10:30' }],
   quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
   bookingLimitDateInterval: 2,
   monthlyOption: null,
@@ -55,22 +50,18 @@ describe('validationSchema', () => {
         recurrenceType: RecurrenceType.UNIQUE,
         startingDate: '',
         endingDate: '',
-        beginningTimes: [''],
+        beginningTimes: [{ beginningTime: '' }],
         quantityPerPriceCategories: [
           { quantity: -5, priceCategory: '666' },
-          { quantity: '', priceCategory: '' },
+          { priceCategory: '' },
         ],
-        bookingLimitDateInterval: '',
         monthlyOption: null,
       },
       expectedErrors: [
         'Veuillez renseigner une date',
         'Veuillez renseigner un horaire',
-        '"666 " n’est pas une valeur valide de la liste',
         'Veuillez indiquer un nombre supérieur à 0',
         'Veuillez renseigner un tarif',
-        'quantityPerPriceCategories[1].quantity must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
-        'bookingLimitDateInterval must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
       ],
     },
     {
@@ -101,7 +92,10 @@ describe('validationSchema', () => {
         recurrenceType: RecurrenceType.DAILY,
         startingDate: '2050-01-01',
         endingDate: '2050-02-01',
-        beginningTimes: ['10:00', '10:00'],
+        beginningTimes: [
+          { beginningTime: '10:00' },
+          { beginningTime: '10:00' },
+        ],
       },
       expectedErrors: [
         'Veuillez renseigner des horaires différents',
@@ -133,7 +127,7 @@ describe('validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        getValidationSchema(priceCategoriesOptions),
+        getValidationSchema(),
         formValues
       )
       expect(errors).toEqual(expectedErrors)

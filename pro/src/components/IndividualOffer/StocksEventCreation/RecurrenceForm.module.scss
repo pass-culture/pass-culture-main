@@ -80,12 +80,13 @@
 
 .booking-date-limit-container {
   display: flex;
+  align-items: center;
   gap: rem.torem(8px);
 }
 
 .booking-date-limit-input {
-  width: rem.torem(72px);
   margin-bottom: 0;
+  max-width: rem.torem(110px);
 }
 
 .booking-date-limit-text {
@@ -119,4 +120,36 @@
 
 .recurrence-section {
   margin-bottom: rem.torem(16px);
+}
+
+.time-picker-container {
+  position: relative;
+}
+
+.time-slot {
+  position: relative;
+  width: rem.torem(100px);
+
+  &-picker {
+    min-width: rem.torem(110px);
+  }
+
+  &-clear {
+    position: absolute;
+    z-index: 1;
+    top: calc(var(--typography-body-line-height) / 2 + rem.torem(8px));
+    right: calc(-1 * rem.torem(16px));
+
+    &-button {
+      border: none;
+      border-radius: 100%;
+      cursor: pointer;
+      display: flex;
+
+      &-icon {
+        width: rem.torem(20px);
+        height: rem.torem(20px);
+      }
+    }
+  }
 }
