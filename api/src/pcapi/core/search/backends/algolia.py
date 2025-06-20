@@ -5,6 +5,7 @@ from collections import abc
 import algoliasearch.http.requester
 import algoliasearch.search_client
 
+import pcapi.core.artist.models as artists_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -40,11 +41,15 @@ class AlgoliaBackend(
     def __init__(self) -> None:
         super().__init__()
         client = create_algolia_client()
+        self.algolia_artists_client = client.init_index(settings.ALGOLIA_ARTISTS_INDEX_NAME)
         self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.algolia_collective_offers_templates_client = client.init_index(
             settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
+
+    def index_artists(self, artists: artists_models.Artist) -> None:
+        self.algolia_artists_client.save_objects([self.serialize_artist(artist) for artist in artists])
 
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         # Warning: if you ever need to alter the DB, please make sure you take into account that
