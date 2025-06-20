@@ -470,7 +470,7 @@ class NewOfferStatusTest:
     def test_expression_expired(self):
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         expired_stock = factories.StockFactory(
-            bookingLimitDatetime=datetime.datetime.utcnow(),
+            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
             offer__publicationDatetime=yesterday,
         )
         expired_offer = expired_stock.offer
